@@ -2,10 +2,10 @@ import { type ReactElement, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -41,7 +41,6 @@ import {
   Call02Icon,
   SmartPhone01Icon,
   Note01Icon,
-  Cancel01Icon
 } from 'hugeicons-react';
 
 interface ContactFormProps {
@@ -143,26 +142,26 @@ export function ContactForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-3xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
+      <DialogContent className="sm:max-w-[750px] max-h-[85vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden">
         
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                 <AddTeamIcon size={24} className="text-pink-600 dark:text-pink-500" />
+        <DialogHeader className="px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
+                 <AddTeamIcon size={20} className="text-pink-600 dark:text-pink-500" />
                </div>
              </div>
-             <div className="space-y-1">
-                <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {contact ? t('contactManagement.form.editContact', 'İletişim Düzenle') : t('contactManagement.form.addContact', 'Yeni İletişim Ekle')}
-                </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
-                  {contact ? t('contactManagement.form.editDescription', 'Mevcut kaydı güncelleyin') : t('contactManagement.form.addDescription', 'Rehberinize yeni bir kişi ekleyin')}
-                </DialogDescription>
-             </div>
+             <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
+               {contact ? t('contactManagement.form.editContact', 'İletişim Düzenle') : t('contactManagement.form.addContact', 'Yeni İletişim Ekle')}
+             </DialogTitle>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full">
-            <Cancel01Icon size={20} />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => onOpenChange(false)} 
+            className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
+          >
+            <X className="h-4 w-4" />
           </Button>
         </DialogHeader>
 

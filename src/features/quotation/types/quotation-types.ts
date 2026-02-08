@@ -70,6 +70,7 @@ export interface CreateQuotationLineDto {
   lineGrandTotal: number;
   description?: string | null;
   pricingRuleHeaderId?: number | null;
+  projectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -95,6 +96,7 @@ export interface UpdateQuotationLineDto {
   lineGrandTotal: number;
   description?: string | null;
   pricingRuleHeaderId?: number | null;
+  projectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -122,6 +124,7 @@ export interface QuotationLineGetDto {
   lineGrandTotal: number;
   description?: string | null;
   pricingRuleHeaderId?: number | null;
+  projectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;

@@ -16,7 +16,16 @@ import { useUIStore } from '@/stores/ui-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Calculator, Layers, Loader2, FileCheck, FileText } from 'lucide-react';
+import { Send, Calculator, Layers, Loader2, FileCheck, FileText, Share2, FileDown, MessageCircle, Mail, Save, X } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { formatCurrency } from '../utils/format-currency';
 import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
@@ -157,7 +166,73 @@ export function QuotationDetailPage(): ReactElement {
 
   const { calculateLineTotals } = useQuotationCalculations();
   const { data: erpRates = [] } = useExchangeRate();
-  const { currencyOptions: currencyOptionsForExchangeRates } = useCurrencyOptions();
+  const { currencyOptions: currencyOptionsForExchangeRates, currencyOptions } = useCurrencyOptions();
+
+  const currencyCode = useMemo(() => {
+    const currencyId = Number(form.getValues('quotation.currency'));
+    const option = currencyOptions.find(opt => opt.value === currencyId);
+    return option?.code || 'TRY';
+  }, [form.getValues('quotation.currency'), currencyOptions]);
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(18);
+    doc.text(t('quotation.detail.title', 'Teklif Detayı'), 14, 20);
+    doc.setFontSize(11);
+    doc.text(`${t('quotation.date', 'Tarih')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+    doc.text(`${t('quotation.offerNo', 'Teklif No')}: ${quotation?.offerNo || ''}`, 14, 34);
+
+    const headers = [[
+      t('quotation.lines.productCode', 'Ürün Kodu'),
+      t('quotation.lines.productName', 'Ürün Adı'),
+      t('quotation.lines.quantity', 'Miktar'),
+      t('quotation.lines.unitPrice', 'Birim Fiyat'),
+      t('quotation.lines.vatRate', 'KDV'),
+      t('quotation.lines.total', 'Toplam')
+    ]];
+
+    const data = lines.map(line => [
+      line.productCode,
+      line.productName,
+      line.quantity,
+      formatCurrency(line.unitPrice, currencyCode),
+      `%${line.vatRate}`,
+      formatCurrency(line.lineTotal, currencyCode)
+    ]);
+
+    autoTable(doc, {
+      startY: 40,
+      head: headers,
+      body: data,
+      styles: { font: 'helvetica', fontStyle: 'normal' },
+      theme: 'grid',
+    });
+
+    return doc;
+  };
+
+  const handleExportPDF = () => {
+    const doc = generatePDF();
+    doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
+  };
+
+  const handleShareWhatsApp = () => {
+    const doc = generatePDF();
+    doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
+    const text = encodeURIComponent(t('quotation.share.whatsappMessage', 'Merhaba, teklif dosyasını iletiyorum.'));
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+    toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen WhatsApp üzerinden paylaşınız.'));
+  };
+
+  const handleShareMail = () => {
+    const doc = generatePDF();
+    doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
+    const subject = encodeURIComponent(t('quotation.share.mailSubject', 'Teklif Dosyası'));
+    const body = encodeURIComponent(t('quotation.share.mailBody', 'Merhaba, ekte teklif dosyasını bulabilirsiniz.'));
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen e-posta ile paylaşınız.'));
+  };
 
   useEffect(() => {
     if (exchangeRatesData && exchangeRatesData.length > 0 && !exchangeRatesInitializedRef.current && currencyOptionsForExchangeRates.length > 0) {
@@ -508,6 +583,53 @@ export function QuotationDetailPage(): ReactElement {
 
             {/* ACTION BUTTONS */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-white/10">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/quotations')}
+                className="group"
+              >
+                <X className="mr-2 h-4 w-4" />
+                {t('quotation.cancel', 'İptal')}
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button type="button" variant="outline" className="group">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    {t('quotation.export', 'Dışa Aktar')}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#130822] border-slate-100 dark:border-white/10">
+                  <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
+                    <FileDown className="mr-2 h-4 w-4 text-slate-500" />
+                    {t('quotation.exportPdf', 'PDF İndir')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
+                    <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
+                    {t('quotation.shareWhatsapp', 'WhatsApp ile Paylaş')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleShareMail} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
+                    <Mail className="mr-2 h-4 w-4 text-blue-500" />
+                    {t('quotation.shareMail', 'E-posta ile Paylaş')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {!isReadOnly && (
+                <Button 
+                  type="submit" 
+                  disabled={updateMutation.isPending}
+                  className="group bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white min-w-[140px]"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  {updateMutation.isPending 
+                    ? t('quotation.saving', 'Kaydediliyor...') 
+                    : t('quotation.save', 'Değişiklikleri Kaydet')
+                  }
+                </Button>
+              )}
+
               {quotation?.status === 0 && !isReadOnly && quotationStatus !== 4 && (
                 <Button 
                   type="button"

@@ -12,7 +12,17 @@ import { QuotationHeaderForm } from './QuotationHeaderForm';
 import { QuotationLineTable } from './QuotationLineTable';
 import { QuotationSummaryCard } from './QuotationSummaryCard';
 import { Button } from '@/components/ui/button';
-import { Save, X } from 'lucide-react';
+import { Save, X, FileDown, Mail, MessageCircle, Share2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
+import { formatCurrency } from '../utils/format-currency';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/quotation-types';
 import { useUIStore } from '@/stores/ui-store';
@@ -34,6 +44,7 @@ export function QuotationCreateForm(): ReactElement {
   
   const createMutation = useCreateQuotationBulk();
   const { data: customerOptions = [] } = useCustomerOptions();
+  const { currencyOptions } = useCurrencyOptions();
 
   useEffect(() => {
     setPageTitle(t('quotation.create.title', 'Yeni Teklif Oluştur'));
@@ -214,6 +225,70 @@ export function QuotationCreateForm(): ReactElement {
     setLines(updatedLines);
   };
 
+  const currencyCode = useMemo(() => {
+    const found = currencyOptions.find((opt) => opt.dovizTipi === watchedCurrency);
+    return found?.code || 'TRY';
+  }, [watchedCurrency, currencyOptions]);
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(18);
+    doc.text(t('quotation.create.title', 'Yeni Teklif'), 14, 20);
+    doc.setFontSize(11);
+    doc.text(`${t('quotation.date', 'Tarih')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+
+    const headers = [[
+      t('quotation.lines.productCode', 'Ürün Kodu'),
+      t('quotation.lines.productName', 'Ürün Adı'),
+      t('quotation.lines.quantity', 'Miktar'),
+      t('quotation.lines.unitPrice', 'Birim Fiyat'),
+      t('quotation.lines.vatRate', 'KDV'),
+      t('quotation.lines.total', 'Toplam')
+    ]];
+
+    const data = lines.map(line => [
+      line.productCode,
+      line.productName,
+      line.quantity,
+      formatCurrency(line.unitPrice, currencyCode),
+      `%${line.vatRate}`,
+      formatCurrency(line.lineTotal, currencyCode)
+    ]);
+
+    autoTable(doc, {
+      startY: 35,
+      head: headers,
+      body: data,
+      styles: { font: 'helvetica', fontStyle: 'normal' },
+      theme: 'grid',
+    });
+
+    return doc;
+  };
+
+  const handleExportPDF = () => {
+    const doc = generatePDF();
+    doc.save("teklif.pdf");
+  };
+
+  const handleShareWhatsApp = () => {
+    const doc = generatePDF();
+    doc.save("teklif.pdf");
+    const text = encodeURIComponent(t('quotation.share.whatsappMessage', 'Merhaba, teklif dosyasını iletiyorum.'));
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+    toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen WhatsApp üzerinden paylaşınız.'));
+  };
+
+  const handleShareMail = () => {
+    const doc = generatePDF();
+    doc.save("teklif.pdf");
+    const subject = encodeURIComponent(t('quotation.share.mailSubject', 'Teklif Dosyası'));
+    const body = encodeURIComponent(t('quotation.share.mailBody', 'Merhaba, ekte teklif dosyasını bulabilirsiniz.'));
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen e-posta ile paylaşınız.'));
+  };
+
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     const formData = form.getValues();
@@ -288,6 +363,30 @@ export function QuotationCreateForm(): ReactElement {
                 <X className="mr-2 h-4 w-4" />
                 {t('quotation.cancel', 'İptal')}
               </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button type="button" variant="outline" className="group">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    {t('quotation.export', 'Dışa Aktar')}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#130822] border-slate-100 dark:border-white/10">
+                  <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
+                    <FileDown className="mr-2 h-4 w-4 text-slate-500" />
+                    {t('quotation.exportPdf', 'PDF İndir')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
+                    <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
+                    {t('quotation.shareWhatsapp', 'WhatsApp ile Paylaş')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleShareMail} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
+                    <Mail className="mr-2 h-4 w-4 text-blue-500" />
+                    {t('quotation.shareMail', 'E-posta ile Paylaş')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button
                 type="submit"
                 disabled={createMutation.isPending}

@@ -824,9 +824,9 @@ export function QuotationHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>Para Birimi</FormLabel>
                       <div className="relative">
-                        <div className={styles.iconWrapper}><Coins className="h-4 w-4 text-emerald-500" /></div>
+                        <div className={styles.iconWrapper}><Coins className="h-4 w-4" /></div>
                         <VoiceSearchCombobox
-                          className={cn(styles.inputBase, "font-bold tracking-wide text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30")}
+                          className={styles.inputBase}
                           value={field.value ? String(field.value) : ''}
                           onSelect={(value) => value && handleCurrencyChange(value)}
                           options={erpRates.map((currency: KurDto) => ({

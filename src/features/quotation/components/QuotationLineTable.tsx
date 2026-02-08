@@ -34,7 +34,7 @@ import { useUpdateQuotationLines } from '../hooks/useUpdateQuotationLines';
 import { useDeleteQuotationLine } from '../hooks/useDeleteQuotationLine';
 import { quotationApi } from '../api/quotation-api';
 import { formatCurrency } from '../utils/format-currency';
-import { Trash2, Edit, Plus, ShoppingCart, Box, AlertTriangle, Layers, Loader2, Menu, FileSpreadsheet, FileText, Presentation } from 'lucide-react';
+import { Trash2, Edit, Plus, ShoppingCart, Box, AlertTriangle, Layers, Loader2, Menu, FileSpreadsheet, FileText, Presentation, X } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, CreateQuotationLineDto, QuotationLineGetDto } from '../types/quotation-types';
@@ -775,7 +775,7 @@ export function QuotationLineTable({
 
       <Dialog open={addLineDialogOpen} onOpenChange={setAddLineDialogOpen}>
         <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
-          <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+          <DialogHeader className="px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
             <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
                 <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
@@ -784,8 +784,16 @@ export function QuotationLineTable({
               </div>
               {t('quotation.lines.addTitle', 'Yeni Satır Ekle')}
             </DialogTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
+              onClick={() => setAddLineDialogOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </DialogHeader>
-          <div className="p-6 sm:p-8">
+          <div className="px-6 py-4">
             {newLine && (
               <QuotationLineForm
                 line={newLine}
@@ -805,7 +813,7 @@ export function QuotationLineTable({
 
       <Dialog open={editLineDialogOpen} onOpenChange={setEditLineDialogOpen}>
         <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
-          <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+          <DialogHeader className="px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
             <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 p-0.5 shadow-lg shadow-blue-500/20">
                 <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
@@ -814,8 +822,16 @@ export function QuotationLineTable({
               </div>
               {t('quotation.lines.editTitle', 'Satır Düzenle')}
             </DialogTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
+              onClick={() => setEditLineDialogOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </DialogHeader>
-          <div className="p-6 sm:p-8">
+          <div className="px-6 py-4">
             {lineToEdit && (
               <QuotationLineForm
                 line={lineToEdit}

@@ -8,6 +8,8 @@ import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { useErpProjects } from '@/services/hooks/useErpProjects';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
 import { useProductSelection } from '../hooks/useProductSelection';
@@ -77,6 +79,7 @@ export function QuotationLineForm({
   const { calculateLineTotals } = useQuotationCalculations();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
+  const { data: projects = [] } = useErpProjects();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
@@ -705,10 +708,9 @@ export function QuotationLineForm({
               type="button"
               variant="outline"
               onClick={() => setProductDialogOpen(true)}
-              className="gap-2 h-11 px-4 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex-none"
+              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex-none items-center justify-center"
             >
-              <Search className="h-4 w-4" />
-              {t('quotation.lines.selectStock', 'Stok Rehberi')}
+              <Search className="h-5 w-5" />
             </Button>
           </div>
 
@@ -718,6 +720,20 @@ export function QuotationLineForm({
               placeholder={t('quotation.lines.productName', 'Stok Adı')}
               readOnly
               className="bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full"
+            />
+          </div>
+
+          <div className="w-full">
+            <VoiceSearchCombobox
+              className="h-11 bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 rounded-xl"
+              value={formData.projectCode || ''}
+              onSelect={(value) => handleFieldChange('projectCode', value)}
+              options={projects.map((p) => ({
+                value: p.projeKod,
+                label: p.projeKod + ' - ' + p.projeAciklama
+              }))}
+              placeholder={t('quotation.header.projectCode', 'Proje Kodu')}
+              searchPlaceholder={t('common.search', 'Ara...')}
             />
           </div>
         </div>
@@ -731,8 +747,8 @@ export function QuotationLineForm({
           </label>
           <Input
             type="number"
-            step="0.001"
-            min="0.01"
+            step="1"
+            min="1"
             value={quantityInputValue}
             onChange={(e) => {
               const inputValue = e.target.value;

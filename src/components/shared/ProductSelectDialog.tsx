@@ -1,10 +1,9 @@
 import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LayoutGrid, List as ListIcon } from 'lucide-react';
+import { LayoutGrid, List as ListIcon, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -682,7 +681,7 @@ export function ProductSelectDialog({
   disableRelatedStocks = false,
 }: ProductSelectDialogProps): ReactElement {
   const { t, i18n } = useTranslation();
-  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('stocks');
   const [isListening, setIsListening] = useState(false);
@@ -976,17 +975,22 @@ export function ProductSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-2xl rounded-2xl overflow-hidden">
-        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0 border-b border-slate-200/50 dark:border-white/5">
-          <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-orange-600">
+      <DialogContent className="sm:max-w-[750px] max-h-[85vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden">
+        <DialogHeader className="px-6 py-3 flex-shrink-0 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+          <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
             {t('productSelectDialog.title', 'Stok Seç')}
           </DialogTitle>
-          <DialogDescription className="text-slate-500 dark:text-slate-400">
-            {t('productSelectDialog.description', 'Teklif satırına eklenecek stoku seçin')}
-          </DialogDescription>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
+            onClick={() => onOpenChange(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </DialogHeader>
 
-        <div className="px-6 py-4 flex-shrink-0 bg-slate-50/50 dark:bg-white/5 border-b border-slate-200/50 dark:border-white/5">
+        <div className="px-6 py-3 flex-shrink-0 bg-slate-50/50 dark:bg-white/5 border-b border-slate-200/50 dark:border-white/5">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1 flex gap-2">
               <div className="relative flex-1 group">
