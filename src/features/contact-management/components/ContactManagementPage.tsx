@@ -1,7 +1,7 @@
 import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
-import { Plus, Search, RefreshCw, X, Filter, Trash2, Menu, FileSpreadsheet, FileText, Presentation, Check, SlidersHorizontal, CheckSquare } from 'lucide-react';
+import { Plus, Search, RefreshCw, X, Filter, Trash2, Menu, FileSpreadsheet, FileText, Presentation, Check, SlidersHorizontal, CheckSquare, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useQueryClient } from '@tanstack/react-query';
@@ -16,6 +16,7 @@ import type { ContactFormSchema } from '../types/contact-types';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
+  DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import {
@@ -53,6 +54,7 @@ export function ContactManagementPage(): ReactElement {
   const [editingContact, setEditingContact] = useState<ContactDto | null>(null);
   
   const [searchTerm, setSearchTerm] = useState('');
+  const [pageSize, setPageSize] = useState(10);
   const [showFilters, setShowFilters] = useState(false);
   const [showColumns, setShowColumns] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -331,7 +333,29 @@ export function ContactManagementPage(): ReactElement {
             </div>
 
             <div className="flex items-center gap-2">
-            <Popover open={showFilters} onOpenChange={setShowFilters}>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button 
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white"
+                        >
+                            <span className="font-medium text-sm">{pageSize}</span>
+                            <ChevronDown size={16} />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-20 bg-[#151025] border border-white/10 shadow-2xl rounded-xl overflow-hidden p-1">
+                        {[10, 20, 50].map((size) => (
+                            <DropdownMenuItem 
+                                key={size} 
+                                onClick={() => setPageSize(size)}
+                                className={`flex items-center justify-center text-xs font-medium px-2 py-1.5 rounded-lg cursor-pointer transition-colors ${pageSize === size ? 'bg-pink-500/10 text-pink-500' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                            >
+                                {size}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Popover open={showFilters} onOpenChange={setShowFilters}>
                 <PopoverTrigger asChild>
                     <button 
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showFilters ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
@@ -460,50 +484,6 @@ export function ContactManagementPage(): ReactElement {
                     </div>
                 </PopoverContent>
             </Popover>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
-                    <Menu size={18} className="text-slate-500 dark:text-slate-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
-                  <div className="p-2">
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.actions', 'İşlemler')}
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-white/5 my-1"></div>
-
-                  <div className="p-2">
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.export', 'Dışa Aktar')}
-                    </div>
-                    <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <FileSpreadsheet size={16} className="text-emerald-500" />
-                      <span>{t('common.exportExcel', 'Excel İndir')}</span>
-                    </button>
-                    <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <FileText size={16} className="text-red-400" />
-                      <span>{t('common.exportPDF', 'PDF İndir')}</span>
-                    </button>
-                    <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <Presentation size={16} className="text-orange-400" />
-                      <span>{t('common.exportPPT', 'PowerPoint İndir')}</span>
-                    </button>
-                  </div>
-                </DropdownMenuContent>
-            </DropdownMenu>
-            </div>
-          </div>
-
-{/* Old filters removed */}
-      </div>
-
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-        <div className="flex justify-end px-4 py-2 gap-2">
-
-
             <Popover open={showColumns} onOpenChange={setShowColumns}>
                 <PopoverTrigger asChild>
                     <button 
@@ -563,13 +543,55 @@ export function ContactManagementPage(): ReactElement {
                     </div>
                 </PopoverContent>
             </Popover>
-        </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
+                    <Menu size={18} className="text-slate-500 dark:text-slate-400" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {t('common.actions', 'İşlemler')}
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-white/5 my-1"></div>
+
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {t('common.export', 'Dışa Aktar')}
+                    </div>
+                    <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <FileSpreadsheet size={16} className="text-emerald-500" />
+                      <span>{t('common.exportExcel', 'Excel İndir')}</span>
+                    </button>
+                    <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <FileText size={16} className="text-red-400" />
+                      <span>{t('common.exportPDF', 'PDF İndir')}</span>
+                    </button>
+                    <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <Presentation size={16} className="text-orange-400" />
+                      <span>{t('common.exportPPT', 'PowerPoint İndir')}</span>
+                    </button>
+                  </div>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            </div>
+          </div>
+
+{/* Old filters removed */}
+      </div>
+
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+
         <ContactTable
-          contacts={filteredContacts}
-          isLoading={isLoading}
-          onEdit={handleEdit}
-          visibleColumns={visibleColumns}
-        />
+            contacts={filteredContacts}
+            isLoading={isLoading}
+            onEdit={handleEdit}
+            visibleColumns={visibleColumns}
+            pageSize={pageSize}
+          />
       </div>
 
       <ContactForm

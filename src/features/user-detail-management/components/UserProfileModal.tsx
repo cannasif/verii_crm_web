@@ -199,7 +199,7 @@ export function UserProfileModal({
                 "w-full flex-1 px-6 border rounded-2xl hover:bg-accent/50 [&>span]:w-full [&>span]:flex [&>span]:items-center [&>span]:justify-between",
                 darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
               )}>
-                <div className="flex items-center gap-4">
+                <div className="flex-1 flex items-center gap-4">
                   <div className={cn("p-3 rounded-xl", darkMode ? "bg-blue-500/20 text-blue-400" : "bg-blue-50 text-blue-600")}>
                     <Globe size={24} />
                   </div>

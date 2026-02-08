@@ -67,12 +67,13 @@ interface ContactTableProps {
   isLoading: boolean;
   onEdit: (contact: ContactDto) => void;
   visibleColumns: Array<keyof ContactDto>;
+  pageSize: number;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ContactDto>[] => [
     { key: 'id', label: t('contactManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[80px]' },
-    { key: 'fullName', label: t('contactManagement.table.fullName', 'Ad Soyad'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[150px]' },
-    { key: 'email', label: t('contactManagement.table.email', 'E-posta'), type: 'email', className: 'min-w-[180px] break-all' },
+    { key: 'fullName', label: t('contactManagement.table.fullName', 'Ad Soyad'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[200px]' },
+    { key: 'email', label: t('contactManagement.table.email', 'E-posta'), type: 'email', className: 'min-w-[200px] break-all' },
     { key: 'phone', label: t('contactManagement.table.phone', 'Telefon'), type: 'phone', className: 'whitespace-nowrap' },
     { key: 'mobile', label: t('contactManagement.table.mobile', 'Mobil'), type: 'mobile', className: 'whitespace-nowrap' },
     { key: 'customerName', label: t('contactManagement.table.customer', 'Müşteri'), type: 'customer', className: 'min-w-[200px]' },
@@ -132,13 +133,17 @@ export function ContactTable({
   isLoading,
   onEdit,
   visibleColumns,
+  pageSize,
 }: ContactTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<ContactDto | null>(null);
   
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pageSize, contacts]);
 
   const [sortConfig, setSortConfig] = useState<{ key: keyof ContactDto; direction: 'asc' | 'desc' } | null>(null);
 
@@ -291,8 +296,8 @@ export function ContactTable({
     );
   }
 
-  const headStyle = "cursor-pointer select-none text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors py-4 font-bold text-xs uppercase tracking-wider whitespace-nowrap";
-  const cellStyle = "text-slate-600 dark:text-slate-400 text-sm py-4 border-b border-slate-100 dark:border-white/5 align-middle";
+  const headStyle = "cursor-pointer select-none text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors py-1.5 font-bold text-xs uppercase tracking-wider whitespace-nowrap";
+  const cellStyle = "text-slate-600 dark:text-slate-400 text-sm py-1.5 border-b border-slate-100 dark:border-white/5 align-middle";
 
   return (
     <div className="flex flex-col gap-4">
