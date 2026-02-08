@@ -14,8 +14,8 @@ export const normalizeQueryParams = (
     pageSize: params.pageSize,
     sortBy: params.sortBy,
     sortDirection: params.sortDirection,
-    filters: params.filters && Array.isArray(params.filters) 
-      ? {} 
+    filters: params.filters && Array.isArray(params.filters)
+      ? {}
       : (params.filters as Record<string, unknown> | undefined),
   };
 };
