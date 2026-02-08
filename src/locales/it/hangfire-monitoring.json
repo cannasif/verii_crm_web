@@ -1,0 +1,29 @@
+{
+  "menu": "Monitoraggio Hangfire",
+  "title": "Monitoraggio Hangfire",
+  "description": "Monitora stato job, errori e coda dead-letter.",
+  "refresh": "Aggiorna",
+  "stats": {
+    "enqueued": "In coda",
+    "processing": "In elaborazione",
+    "succeeded": "Riusciti",
+    "failed": "Falliti"
+  },
+  "table": {
+    "jobId": "Job ID",
+    "jobName": "Job",
+    "state": "Stato",
+    "time": "Ora",
+    "reason": "Motivo"
+  },
+  "failed": {
+    "title": "Job falliti",
+    "empty": "Nessun job fallito.",
+    "total": "Totale"
+  },
+  "deadLetter": {
+    "title": "Coda Dead-Letter",
+    "empty": "La coda dead-letter e vuota.",
+    "enqueued": "In coda"
+  }
+}

@@ -71,6 +71,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/user-management': 'admin-only',
   '/user-discount-limit-management': 'users.discount-limits.view',
   '/users/mail-settings': 'admin-only',
+  '/hangfire-monitoring': 'admin-only',
   '/access-control/permission-definitions': 'admin-only',
   '/access-control/permission-groups': 'admin-only',
   '/access-control/user-group-assignments': 'admin-only',
@@ -155,6 +156,7 @@ export const ACCESS_CONTROL_ADMIN_ONLY_PATTERNS: RegExp[] = [
   /^\/access-control(\/|$)/,
   /^\/user-management(\/|$)/,
   /^\/users\/mail-settings(\/|$)/,
+  /^\/hangfire-monitoring(\/|$)/,
 ];
 
 

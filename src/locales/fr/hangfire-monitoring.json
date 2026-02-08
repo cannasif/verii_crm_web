@@ -1,0 +1,29 @@
+{
+  "menu": "Surveillance Hangfire",
+  "title": "Surveillance Hangfire",
+  "description": "Surveillez la sante des jobs, les echecs et la file dead-letter.",
+  "refresh": "Rafraichir",
+  "stats": {
+    "enqueued": "En file",
+    "processing": "En cours",
+    "succeeded": "Reussis",
+    "failed": "Echoues"
+  },
+  "table": {
+    "jobId": "Job ID",
+    "jobName": "Job",
+    "state": "Etat",
+    "time": "Heure",
+    "reason": "Raison"
+  },
+  "failed": {
+    "title": "Jobs en echec",
+    "empty": "Aucun job en echec.",
+    "total": "Total"
+  },
+  "deadLetter": {
+    "title": "File Dead-Letter",
+    "empty": "La file dead-letter est vide.",
+    "enqueued": "En file"
+  }
+}

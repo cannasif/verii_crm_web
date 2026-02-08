@@ -181,6 +181,10 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           { title: t('sidebar.permissionDefinitions', 'İzin Tanımları'), href: '/access-control/permission-definitions' },
           { title: t('sidebar.permissionGroups', 'İzin Grupları'), href: '/access-control/permission-groups' },
           { title: t('sidebar.userGroupAssignments', 'Kullanıcı Grup Atamaları'), href: '/access-control/user-group-assignments' },
+          {
+            title: t('menu', { ns: 'hangfire-monitoring', defaultValue: 'Hangfire İzleme' }),
+            href: '/hangfire-monitoring',
+          },
         ],
       },
       {
