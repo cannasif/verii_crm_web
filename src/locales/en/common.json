@@ -72,6 +72,9 @@
     "VERII WMS": "VERII WMS",
     "crm": "CRM"
   },
+  "nav": {
+    "customersConflictInbox": "Conflict Inbox"
+  },
   "powerbiRls": {
     "title": "Power BI RLS Management",
     "description": "Map report + user role and define RLS roles.",
@@ -148,6 +151,7 @@
     "districtManagement": "District Management",
     "customerTypeManagement": "Customer Type Management",
     "customerManagement": "Customer Management",
+    "customersConflictInbox": "Conflict Inbox",
     "contactManagement": "Customer Contact Management",
     "paymentTypeManagement": "Payment Type Management",
     "userDiscountLimitManagement": "User Discount Limit Management",

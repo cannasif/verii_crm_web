@@ -72,6 +72,9 @@
     "VERII WMS": "VERII WMS",
     "crm": "V3RII CRM"
   },
+  "nav": {
+    "customersConflictInbox": "Çakışma Gelen Kutusu"
+  },
   "powerbiRls": {
     "title": "PowerBI RLS Yönetimi",
     "description": "Rapor + kullanıcı rolü eşleştirip RLS rolleri tanımlayın.",
@@ -148,6 +151,7 @@
     "districtManagement": "İlçe Yönetimi",
     "customerTypeManagement": "Müşteri Tipi Yönetimi",
     "customerManagement": "Müşteri Yönetimi",
+    "customersConflictInbox": "Çakışma Gelen Kutusu",
     "contactManagement": "Müşteri İletişim Yönetimi",
     "paymentTypeManagement": "Ödeme Tipi Yönetimi",
     "userDiscountLimitManagement": "Kullanıcı İskonto Limiti Yönetimi",

@@ -82,6 +82,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         icon: <UserGroupIcon size={iconSize} className="text-purple-500" />,
         children: [
           { title: t('sidebar.customerManagement', 'Müşteri Yönetimi'), href: '/customer-management' },
+          { title: t('sidebar.customersConflictInbox', 'Çakışma Gelen Kutusu'), href: '/customers/conflict-inbox' },
           { title: t('sidebar.erpCustomerManagement', 'ERP Müşteri'), href: '/erp-customers' },
           { title: t('sidebar.contactManagement', 'Müşteri İletişimleri'), href: '/contact-management' },
           { title: t('sidebar.customerTypeManagement', 'Müşteri Tipleri'), href: '/customer-type-management' },

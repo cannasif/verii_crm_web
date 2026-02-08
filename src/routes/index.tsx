@@ -27,6 +27,7 @@ const CityManagementPage = lazyImport(() => import('@/features/city-management')
 const DistrictManagementPage = lazyImport(() => import('@/features/district-management'), 'DistrictManagementPage');
 const CustomerTypeManagementPage = lazyImport(() => import('@/features/customer-type-management'), 'CustomerTypeManagementPage');
 const CustomerManagementPage = lazyImport(() => import('@/features/customer-management'), 'CustomerManagementPage');
+const ConflictInboxPage = lazyImport(() => import('@/features/customer-dedupe'), 'ConflictInboxPage');
 const Customer360Page = lazyImport(() => import('@/features/customer-360'), 'Customer360Page');
 const Salesmen360Page = lazyImport(() => import('@/features/salesman-360'), 'Salesmen360Page');
 const ContactManagementPage = lazyImport(() => import('@/features/contact-management'), 'ContactManagementPage');
@@ -112,6 +113,7 @@ export const router = createBrowserRouter([
       { path: 'district-management', element: <DistrictManagementPage /> },
       { path: 'customer-type-management', element: <CustomerTypeManagementPage /> },
       { path: 'customer-management', element: <CustomerManagementPage /> },
+      { path: 'customers/conflict-inbox', element: <ConflictInboxPage /> },
       { path: 'customer-360/:customerId', element: <Customer360Page /> },
       { path: 'salesmen-360/:userId', element: <Salesmen360Page /> },
       { path: 'contact-management', element: <ContactManagementPage /> },

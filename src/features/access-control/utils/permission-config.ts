@@ -17,6 +17,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/orders/:id': 'sales.orders.view',
 
   '/customer-management': 'customers.customer-management.view',
+  '/customers/conflict-inbox': 'customers.conflict-inbox.view',
   '/erp-customers': 'customers.erp-customers.view',
   '/contact-management': 'customers.contact-management.view',
   '/customer-type-management': 'customers.customer-type-management.view',
@@ -83,6 +84,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/orders(\/|$)/, permission: 'sales.orders.view' },
 
   { pattern: /^\/customer-management(\/|$)/, permission: 'customers.customer-management.view' },
+  { pattern: /^\/customers\/conflict-inbox(\/|$)/, permission: 'customers.conflict-inbox.view' },
   { pattern: /^\/erp-customers(\/|$)/, permission: 'customers.erp-customers.view' },
   { pattern: /^\/contact-management(\/|$)/, permission: 'customers.contact-management.view' },
   { pattern: /^\/customer-type-management(\/|$)/, permission: 'customers.customer-type-management.view' },
@@ -165,6 +167,7 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key: string; fallback: st
   'sales.orders.view': { key: 'sidebar.orders', fallback: 'Siparisler' },
 
   'customers.customer-management.view': { key: 'sidebar.customerManagement', fallback: 'Musteri Yonetimi' },
+  'customers.conflict-inbox.view': { key: 'sidebar.customersConflictInbox', fallback: 'Cakisma Gelen Kutusu' },
   'customers.erp-customers.view': { key: 'sidebar.erpCustomerManagement', fallback: 'ERP Musteri' },
   'customers.contact-management.view': { key: 'sidebar.contactManagement', fallback: 'Musteri Iletisimleri' },
   'customers.customer-type-management.view': { key: 'sidebar.customerTypeManagement', fallback: 'Musteri Tipleri' },

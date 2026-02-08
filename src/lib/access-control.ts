@@ -65,7 +65,7 @@ const ROLE_PERMISSIONS: Record<string, Permission[] | ['*']> = {
 const ROUTE_PERMISSION_RULES: Array<{ pattern: RegExp; permission: Permission }> = [
   { pattern: /^\/$/, permission: 'dashboard.view' },
   { pattern: /^\/(demands|quotations|orders)(\/|$)/, permission: 'sales.view' },
-  { pattern: /^\/(customer-management|erp-customers|contact-management|customer-type-management)(\/|$)/, permission: 'customers.view' },
+  { pattern: /^\/(customer-management|customers\/conflict-inbox|erp-customers|contact-management|customer-type-management)(\/|$)/, permission: 'customers.view' },
   { pattern: /^\/customer-360\/\d+$/, permission: 'customer360.view' },
   { pattern: /^\/salesmen-360\/[^/]+$/, permission: 'salesman360.view' },
   { pattern: /^\/(daily-tasks|activity-management|activity-type-management)(\/|$)/, permission: 'activity.view' },
