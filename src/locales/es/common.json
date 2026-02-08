@@ -334,14 +334,14 @@
       "Completed": "Completado"
     },
     "explain": {
-      "revenueQualityTitle": "Los scores de calidad de ingresos se calculan por reglas a partir de los últimos 12 meses de pedidos/cotizaciones/actividad.",
+      "revenueQualityTitle": "Los scores de calidad de ingresos se calculan por reglas a partir de los ultimos 12 meses de pedidos/cotizaciones/actividad e incluyen cohort, retention, RFM, LTV, churn, upsell y payment.",
       "churnRisk": "El riesgo de abandono se calcula entre 0 y 100 según última fecha de pedido, última actividad y frecuencia de pedidos. Un score más alto significa mayor riesgo de pérdida.",
       "upsellPropensity": "La propensión a venta adicional se puntúa 0–100 según número de pedidos, conversión cotización–pedido y importe medio. Un score más alto indica mayor oportunidad.",
       "paymentBehavior": "El comportamiento de pago es actualmente un score proxy (continuidad de pedidos, tasa de rechazo de cotizaciones, recencia) y no historial de cobro directo, escala 0–100.",
       "rfmSegment": "El segmento RFM asigna Champions/Loyal/AtRisk/Potential según reglas de recencia, frecuencia y monetario.",
       "cohortRetentionTitle": "La retención por cohorte toma el primer mes de pedido como cohorte; si hay pedido en meses siguientes, cuenta como retenido y calcula el porcentaje de retención.",
-      "recommendedActionsTitle": "Las acciones recomendadas son sugerencias de seguimiento prioritarias del motor de reglas (ej. larga inactividad, cotización abierta, churn alto).",
-      "executeAction": "Ejecutar convierte esta recomendación en actividad/tarea: el backend llama a `POST /api/customers/{id}/recommended-actions/execute` y crea un nuevo registro de actividad.",
+      "recommendedActionsTitle": "Las acciones recomendadas son sugerencias prioritarias del motor de reglas (ej. larga inactividad, cotizacion abierta, churn alto). Cada accion es trazable con reason + source rule code.",
+      "executeAction": "Ejecutar convierte esta recomendacion en actividad/tarea: el backend llama a `POST /api/customer360/{id}/actions/execute` y crea un nuevo registro de actividad.",
       "noCohortData": "Los datos de cohorte no están disponibles aún por historial de pedidos insuficiente.",
       "modelNote": "Nota: estos scores son deterministas v1 y podrán mejorarse con datos de cobro ERP y modelos ML."
     }
@@ -422,14 +422,14 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "Los scores se calculan por reglas a partir del rendimiento cartera/pedidos/actividad del representante en los últimos 12 meses.",
+      "revenueQualityTitle": "Los scores se calculan por reglas a partir del rendimiento cartera/pedidos/actividad del representante en los ultimos 12 meses e incluyen cohort, retention, RFM, LTV, churn, upsell y payment.",
       "churnRisk": "El riesgo de abandono de cartera se puntúa 0–100 según clientes activos frente a clientes inactivos en los últimos 90 días.",
       "upsellPropensity": "La propensión a venta adicional se puntúa 0–100 según intensidad de pedidos, cotizaciones ganadas y ritmo de actividad.",
       "paymentBehavior": "El comportamiento de pago usa actualmente métricas proxy; será más preciso cuando se integre el historial de cobro directo.",
       "rfmSegment": "El segmento RFM clasifica la cartera por comportamiento recencia/frecuencia/monetario.",
       "cohortRetentionTitle": "La retención por cohorte agrupa clientes por primer mes de pedido en la cartera del representante y muestra tasas de retención mensuales.",
-      "recommendedActionsTitle": "Las acciones recomendadas sugieren acciones prioritarias: limpieza de pipeline, aumento de actividad, intervención en churn.",
-      "executeAction": "Ejecutar convierte la recomendación en actividad/tarea: el backend llama a `POST /api/salesmen/{userId}/recommended-actions/execute`.",
+      "recommendedActionsTitle": "Las acciones recomendadas sugieren acciones prioritarias: limpieza de pipeline, aumento de actividad e intervencion en churn. Cada accion es trazable con reason + source rule code.",
+      "executeAction": "Ejecutar convierte la recomendacion en actividad/tarea: el backend llama a `POST /api/salesmen360/{userId}/actions/execute`.",
       "noCohortData": "Los datos de cohorte no están disponibles aún por historial de pedidos insuficiente.",
       "modelNote": "Nota: los scores actuales son deterministas v1 y pueden reforzarse con quota/forecast/ML."
     }

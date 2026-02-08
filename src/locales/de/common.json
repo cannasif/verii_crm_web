@@ -327,14 +327,14 @@
       "Completed": "Abgeschlossen"
     },
     "explain": {
-      "revenueQualityTitle": "Umsatzqualitäts-Scores werden regelbasiert aus den letzten 12 Monaten Bestell-/Angebots-/Aktivitätsdaten berechnet.",
+      "revenueQualityTitle": "Umsatzqualitaets-Scores werden regelbasiert aus den letzten 12 Monaten Bestell-/Angebots-/Aktivitaetsdaten berechnet und decken cohort, retention, RFM, LTV, churn, upsell und payment ab.",
       "churnRisk": "Churn Risk is calculated between 0-100 using last order date, last activity date, and order frequency. Higher score means higher risk of loss.",
       "upsellPropensity": "Upsell Propensity is scored 0-100 from order count, quotation-to-order conversion, and average order amount signals. Higher score indicates stronger upsell opportunity.",
       "paymentBehavior": "Zahlungsverhalten ist derzeit ein Proxy-Score (Bestellkontinuität, Angebotsablehnung, letzte Bestellung) statt direkter Forderungshistorie, Skala 0–100.",
       "rfmSegment": "RFM-Segment ordnet Champions/Loyal/AtRisk/Potential nach Recency-, Frequency- und Monetary-Regeln zu.",
       "cohortRetentionTitle": "Kohortenbindung: Erster Bestellmonat = Kohorte; bei Bestellung in Folgemonaten gilt als gehalten, es wird die Retentionsrate berechnet.",
-      "recommendedActionsTitle": "Empfohlene Aktionen sind priorisierte Follow-up-Vorschläge einer Regel-Engine (z. B. lange Inaktivität, offenes Angebot, hohes Churn).",
-      "executeAction": "Execute converts this recommendation into an activity/task: backend calls `POST /api/customers/{id}/recommended-actions/execute` and creates a new Activity record.",
+      "recommendedActionsTitle": "Empfohlene Aktionen sind priorisierte Follow-up-Vorschlaege der Regel-Engine (z. B. lange Inaktivitaet, offenes Angebot, hohes Churn). Jede Aktion ist mit reason + source rule code nachvollziehbar.",
+      "executeAction": "Execute wandelt diese Empfehlung in eine Aktivitaet/Aufgabe um: Backend ruft `POST /api/customer360/{id}/actions/execute` auf und erstellt einen neuen Activity-Eintrag.",
       "noCohortData": "Cohort data is not available yet due to insufficient order history.",
       "modelNote": "Note: These scores are deterministic v1 and can be improved later with ERP collection data and ML models."
     }
@@ -415,14 +415,14 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "Scores werden regelbasiert aus der Portfolior-/Bestell-/Aktivitätsperformance des Vertreters der letzten 12 Monate berechnet.",
+      "revenueQualityTitle": "Scores werden regelbasiert aus der Portfolio-/Bestell-/Aktivitaetsperformance des Vertreters der letzten 12 Monate berechnet und umfassen cohort, retention, RFM, LTV, churn, upsell und payment.",
       "churnRisk": "Portfolio-Churn-Risiko wird 0–100 anhand aktiver Kunden vs. in den letzten 90 Tagen inaktiver Kunden berechnet.",
       "upsellPropensity": "Upsell-Potenzial wird 0–100 aus Bestellintensität, gewonnenen Angeboten und Aktivitätstakt berechnet.",
       "paymentBehavior": "Zahlungsverhalten nutzt derzeit Proxy-Metriken; wird genauer, sobald direkte Forderungshistorie angebunden ist.",
       "rfmSegment": "RFM-Segment klassifiziert das Portfolio nach Recency-/Frequency-/Monetary-Verhalten.",
       "cohortRetentionTitle": "Kohortenbindung gruppiert Kunden nach erstem Bestellmonat im Vertreter-Portfolio und zeigt monatliche Bindungsraten.",
-      "recommendedActionsTitle": "Empfohlene Aktionen schlagen priorisierte Schritte vor (z. B. Pipeline bereinigen, Aktivität steigern, Churn eingreifen).",
-      "executeAction": "Execute converts the recommendation into an activity/task: backend calls `POST /api/salesmen/{userId}/recommended-actions/execute`.",
+      "recommendedActionsTitle": "Empfohlene Aktionen schlagen priorisierte Schritte vor (z. B. Pipeline bereinigen, Aktivitaet steigern, Churn eingreifen). Jede Aktion ist mit reason + source rule code nachvollziehbar.",
+      "executeAction": "Execute wandelt die Empfehlung in eine Aktivitaet/Aufgabe um: Backend ruft `POST /api/salesmen360/{userId}/actions/execute` auf.",
       "noCohortData": "Cohort data is not available yet due to insufficient order history.",
       "modelNote": "Note: Current scores are deterministic v1 and can be strengthened with quota/forecast/ML."
     }

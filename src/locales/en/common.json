@@ -338,16 +338,16 @@
       "Completed": "Completed"
     },
     "explain": {
-      "revenueQualityTitle": "Revenue quality scores are rule-based and calculated from last 12 months of order/quotation/activity data.",
-      "churnRisk": "Churn Risk is calculated between 0-100 using last order date, last activity date, and order frequency. Higher score means higher risk of loss.",
+      "revenueQualityTitle": "Revenue quality scores are rule-based and calculated from the last 12 months of order/quotation/activity data, covering cohort, retention, RFM, LTV, churn, upsell and payment metrics.",
+      "churnRisk": "Churn Risk is calculated between 0-100 using last order recency, last activity recency, and 12-month order frequency signals. Higher score means higher loss risk.",
       "upsellPropensity": "Upsell Propensity is scored 0-100 from order count, quotation-to-order conversion, and average order amount signals. Higher score indicates stronger upsell opportunity.",
-      "paymentBehavior": "Payment Behavior is currently a proxy score (order continuity, quotation rejection rate, last-order recency) rather than direct collection history, calculated 0-100.",
+      "paymentBehavior": "Payment Behavior is currently a proxy score (order continuity, quotation rejection rate, last-order recency) instead of direct ERP collection history, calculated 0-100.",
       "rfmSegment": "RFM Segment assigns Champions/Loyal/AtRisk/Potential based on recency, frequency, and monetary rules.",
-      "cohortRetentionTitle": "Cohort Retention takes first order month as cohort; if there is an order in following months, it counts as retained and calculates retention percentage.",
-      "recommendedActionsTitle": "Recommended Actions are prioritized follow-up suggestions from a rule engine (e.g., long inactivity, open quotation, high churn).",
-      "executeAction": "Execute converts this recommendation into an activity/task: backend calls `POST /api/customers/{id}/recommended-actions/execute` and creates a new Activity record.",
+      "cohortRetentionTitle": "Cohort Retention uses first touch/order month as cohort; if there is an order in following months, it counts as retained and produces monthly retention percentage.",
+      "recommendedActionsTitle": "Recommended Actions are prioritized follow-up suggestions from a rule engine (e.g., long inactivity, open quotation, high churn). Each action is traceable with reason + source rule code.",
+      "executeAction": "Execute converts this recommendation into an activity/task: backend calls `POST /api/customer360/{id}/actions/execute` and creates a new Activity record.",
       "noCohortData": "Cohort data is not available yet due to insufficient order history.",
-      "modelNote": "Note: These scores are deterministic v1 and can be improved later with ERP collection data and ML models."
+      "modelNote": "Note: These scores are deterministic v1 and can be improved later with ERP collection data, quota/forecast signals, and ML models."
     }
   },
   "salesman360": {
@@ -426,14 +426,14 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "Scores are rule-based, calculated from the sales rep's last 12 months portfolio/order/activity performance.",
+      "revenueQualityTitle": "Scores are rule-based, calculated from the sales rep's last 12 months portfolio/order/activity performance, covering cohort, retention, RFM, LTV, churn, upsell and payment metrics.",
       "churnRisk": "Portfolio Churn Risk is scored 0-100 based on active customers versus customers becoming inactive in the last 90 days.",
       "upsellPropensity": "Upsell Propensity is scored 0-100 using order intensity, won quotations, and activity cadence signals.",
-      "paymentBehavior": "Payment Behavior currently uses proxy metrics; it becomes more accurate once direct collection history is integrated.",
+      "paymentBehavior": "Payment Behavior currently uses proxy metrics; it becomes more accurate once direct ERP collection history is integrated.",
       "rfmSegment": "RFM Segment classifies the portfolio by recency/frequency/monetary behavior.",
       "cohortRetentionTitle": "Cohort Retention cohorts customers by first order month within the rep portfolio and shows monthly retention rates.",
-      "recommendedActionsTitle": "Recommended Actions suggest prioritized actions such as pipeline cleanup, activity increase, and churn intervention.",
-      "executeAction": "Execute converts the recommendation into an activity/task: backend calls `POST /api/salesmen/{userId}/recommended-actions/execute`.",
+      "recommendedActionsTitle": "Recommended Actions suggest prioritized actions such as pipeline cleanup, activity increase, and churn intervention. Each action is traceable with reason + source rule code.",
+      "executeAction": "Execute converts the recommendation into an activity/task: backend calls `POST /api/salesmen360/{userId}/actions/execute`.",
       "noCohortData": "Cohort data is not available yet due to insufficient order history.",
       "modelNote": "Note: Current scores are deterministic v1 and can be strengthened with quota/forecast/ML."
     }

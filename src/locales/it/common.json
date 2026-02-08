@@ -334,14 +334,14 @@
       "Completed": "Completato"
     },
     "explain": {
-      "revenueQualityTitle": "I punteggi di qualità del fatturato sono calcolati a regole dagli ultimi 12 mesi di ordini/preventivi/attività.",
+      "revenueQualityTitle": "I punteggi di qualita del fatturato sono calcolati a regole sugli ultimi 12 mesi di ordini/preventivi/attivita e includono cohort, retention, RFM, LTV, churn, upsell e payment.",
       "churnRisk": "Il rischio di abbandono è calcolato tra 0 e 100 in base a ultima data ordine, ultima attività e frequenza ordini. Punteggio più alto significa maggior rischio di perdita.",
       "upsellPropensity": "La propensione alla vendita aggiuntiva è puntata 0–100 da numero ordini, conversione preventivo–ordine e importo medio. Punteggio più alto indica maggiore opportunità.",
       "paymentBehavior": "Il comportamento di pagamento è attualmente un punteggio proxy (continuità ordini, tasso rifiuto preventivi, recenza) e non storico incassi diretto, scala 0–100.",
       "rfmSegment": "Il segmento RFM assegna Champions/Loyal/AtRisk/Potential in base a regole di recency, frequency e monetary.",
       "cohortRetentionTitle": "La ritenzione per coorte prende il primo mese d'ordine come coorte; se c'è ordine nei mesi successivi conta come trattenuto e calcola la percentuale di ritenzione.",
-      "recommendedActionsTitle": "Le azioni raccomandate sono suggerimenti di follow-up prioritari del motore di regole (es. lunga inattività, preventivo aperto, churn alto).",
-      "executeAction": "Esegui converte questa raccomandazione in attività/attività: il backend chiama `POST /api/customers/{id}/recommended-actions/execute` e crea un nuovo record attività.",
+      "recommendedActionsTitle": "Le azioni raccomandate sono suggerimenti prioritari del motore di regole (es. lunga inattivita, preventivo aperto, churn alto). Ogni azione e tracciabile con reason + source rule code.",
+      "executeAction": "Esegui converte questa raccomandazione in attivita/task: il backend chiama `POST /api/customer360/{id}/actions/execute` e crea un nuovo record attivita.",
       "noCohortData": "I dati di coorte non sono ancora disponibili per storico ordini insufficiente.",
       "modelNote": "Nota: questi punteggi sono deterministici v1 e potranno essere migliorati con dati incassi ERP e modelli ML."
     }
@@ -422,14 +422,14 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "I punteggi sono calcolati a regole dalle performance portafoglio/ordini/attività del rappresentante negli ultimi 12 mesi.",
+      "revenueQualityTitle": "I punteggi sono calcolati a regole dalle performance portafoglio/ordini/attivita del rappresentante negli ultimi 12 mesi e includono cohort, retention, RFM, LTV, churn, upsell e payment.",
       "churnRisk": "Il rischio di abbandono del portafoglio è puntato 0–100 in base a clienti attivi vs clienti diventati inattivi negli ultimi 90 giorni.",
       "upsellPropensity": "La propensione alla vendita aggiuntiva è puntata 0–100 con intensità ordini, preventivi vinti e ritmo attività.",
       "paymentBehavior": "Il comportamento di pagamento usa attualmente metriche proxy; diventa più accurato con l'integrazione dello storico incassi diretto.",
       "rfmSegment": "Il segmento RFM classifica il portafoglio per comportamento recency/frequency/monetary.",
       "cohortRetentionTitle": "Cohort Retention cohorts customers by first order month within the rep portfolio and shows monthly retention rates.",
-      "recommendedActionsTitle": "Le azioni raccomandate suggeriscono azioni prioritarie: pulizia pipeline, aumento attività, intervento su churn.",
-      "executeAction": "Esegui converte la raccomandazione in attività/attività: il backend chiama `POST /api/salesmen/{userId}/recommended-actions/execute`.",
+      "recommendedActionsTitle": "Le azioni raccomandate suggeriscono azioni prioritarie: pulizia pipeline, aumento attivita, intervento su churn. Ogni azione e tracciabile con reason + source rule code.",
+      "executeAction": "Esegui converte la raccomandazione in attivita/task: il backend chiama `POST /api/salesmen360/{userId}/actions/execute`.",
       "noCohortData": "I dati di coorte non sono ancora disponibili per storico ordini insufficiente.",
       "modelNote": "Nota: i punteggi attuali sono deterministici v1 e possono essere rafforzati con quota/forecast/ML."
     }

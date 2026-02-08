@@ -331,16 +331,16 @@
       "Completed": "Tamamlandı"
     },
     "explain": {
-      "revenueQualityTitle": "Gelir kalitesi skorları son 12 ay sipariş/teklif/aktivite verilerinden kural tabanlı hesaplanır.",
-      "churnRisk": "Churn Risk; son sipariş tarihi, son aktivite tarihi ve sipariş sıklığına göre 0-100 arası hesaplanır. Yüksek skor daha yüksek kayıp riski demektir.",
-      "upsellPropensity": "Upsell Propensity; sipariş adedi, tekliften siparişe dönüşüm ve ortalama sipariş tutarı sinyallerine göre 0-100 hesaplanır. Yüksek skor satış fırsatı anlamına gelir.",
-      "paymentBehavior": "Payment Behavior şu an tahsilat geçmişi yerine proxy sinyallerle (sipariş devamlılığı, teklif red oranı, son sipariş recency) 0-100 hesaplanır.",
+      "revenueQualityTitle": "Gelir kalitesi skorları son 12 ay sipariş/teklif/aktivite verilerinden kural tabanlı hesaplanır; cohort, retention, RFM, LTV, churn, upsell ve payment metriklerini içerir.",
+      "churnRisk": "Churn Risk; son sipariş günü, son aktivite günü ve son 12 ay sipariş sıklığı sinyalleriyle 0-100 hesaplanır. Yüksek skor daha yüksek kayıp riski demektir.",
+      "upsellPropensity": "Upsell Propensity; sipariş adedi, tekliften siparişe dönüşüm oranı ve ortalama sipariş tutarı sinyalleriyle 0-100 hesaplanır. Yüksek skor satış fırsatı anlamına gelir.",
+      "paymentBehavior": "Payment Behavior şu an ERP tahsilat geçmişi yerine proxy sinyallerle (sipariş devamlılığı, teklif red oranı, son sipariş recency) 0-100 hesaplanır.",
       "rfmSegment": "RFM Segment; recency (yakınlık), frequency (sıklık), monetary (tutar) kurallarına göre Champions/Loyal/AtRisk/Potential sınıfı üretir.",
-      "cohortRetentionTitle": "Cohort Retention, ilk sipariş ayını cohort kabul eder; takip eden aylarda sipariş varsa retained sayar ve yüzde retention üretir.",
-      "recommendedActionsTitle": "Recommended Actions, kural motorunun ürettiği öncelikli takip önerileridir (örn. uzun süre aktivite yok, açık teklif var, churn yüksek).",
-      "executeAction": "Execute, bu öneriyi aktivite/göreve çevirir: backend `POST /api/customers/{id}/recommended-actions/execute` çağrılır ve yeni Activity kaydı oluşur.",
+      "cohortRetentionTitle": "Cohort Retention, ilk temas/sipariş ayını cohort kabul eder; takip eden aylarda sipariş varsa retained sayar ve aylık retention yüzdesi üretir.",
+      "recommendedActionsTitle": "Recommended Actions, kural motorunun ürettiği öncelikli takip önerileridir (örn. uzun süre aktivite yok, açık teklif var, churn yüksek). Her aksiyon reason + rule code ile izlenebilir.",
+      "executeAction": "Execute, bu öneriyi aktivite/göreve çevirir: backend `POST /api/customer360/{id}/actions/execute` çağrılır ve yeni Activity kaydı oluşur.",
       "noCohortData": "Henüz yeterli sipariş geçmişi olmadığı için cohort verisi oluşmadı.",
-      "modelNote": "Not: Bu skorlar deterministic v1'dir; ileride ERP tahsilat verisi ve ML modelleriyle geliştirilecektir."
+      "modelNote": "Not: Bu skorlar deterministic v1'dir; ileride ERP tahsilat verisi, quota/forecast ve ML modelleriyle geliştirilecektir."
     }
   },
   "salesman360": {
@@ -419,14 +419,14 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "Skorlar satış temsilcisinin son 12 ay portföy/sipariş/aktivite performansından kural tabanlı hesaplanır.",
+      "revenueQualityTitle": "Skorlar satış temsilcisinin son 12 ay portföy/sipariş/aktivite performansından kural tabanlı hesaplanır; cohort, retention, RFM, LTV, churn, upsell ve payment metriklerini içerir.",
       "churnRisk": "Portföy Churn Risk; aktif müşteri ve son 90 günde pasifleşen müşteri oranına göre 0-100 hesaplanır.",
       "upsellPropensity": "Upsell Propensity; sipariş yoğunluğu, kazanılan teklif sayısı ve aktivite temposu sinyalleriyle 0-100 hesaplanır.",
-      "paymentBehavior": "Payment Behavior şu an proxy metriklerle hesaplanır; doğrudan tahsilat geçmişi bağlandığında daha doğru hale gelir.",
+      "paymentBehavior": "Payment Behavior şu an proxy metriklerle hesaplanır; doğrudan ERP tahsilat geçmişi bağlandığında daha doğru hale gelir.",
       "rfmSegment": "RFM Segment, portföyün recency/frequency/monetary davranışına göre sınıflandırma verir.",
       "cohortRetentionTitle": "Cohort Retention, temsilci portföyündeki müşterileri ilk sipariş ayına göre cohort'lar ve aylık retention oranını gösterir.",
-      "recommendedActionsTitle": "Recommended Actions, pipeline temizliği, aktivite artırımı, churn müdahalesi gibi öncelikli aksiyonları önerir.",
-      "executeAction": "Execute, öneriyi aktivite/görev kaydına çevirir: backend `POST /api/salesmen/{userId}/recommended-actions/execute` çağrılır.",
+      "recommendedActionsTitle": "Recommended Actions, pipeline temizliği, aktivite artırımı, churn müdahalesi gibi öncelikli aksiyonları önerir. Her aksiyon reason + rule code ile izlenebilir.",
+      "executeAction": "Execute, öneriyi aktivite/görev kaydına çevirir: backend `POST /api/salesmen360/{userId}/actions/execute` çağrılır.",
       "noCohortData": "Henüz yeterli sipariş geçmişi olmadığı için cohort verisi oluşmadı.",
       "modelNote": "Not: Mevcut skorlar deterministic v1'dir; quota/forecast/ML eklenerek güçlendirilebilir."
     }
