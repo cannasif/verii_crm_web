@@ -1,7 +1,7 @@
 import axios from 'axios';
 import i18n from './i18n';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://crmapi.v3rii.com';
 
 interface RuntimeConfig {
   apiUrl?: string;
