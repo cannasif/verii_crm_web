@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect } from 'react';
+import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
@@ -7,14 +7,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
+import type { PagedFilter } from '@/types/api';
 import { ActivityTable } from './ActivityTable';
 import { ActivityForm } from './ActivityForm';
+import { ActivityAdvancedFilter } from './ActivityAdvancedFilter';
 import { useCreateActivity } from '../hooks/useCreateActivity';
 import { useUpdateActivity } from '../hooks/useUpdateActivity';
 import { useActivities } from '../hooks/useActivities';
 import { buildCreateActivityPayload } from '../utils/build-create-payload';
+import { rowsToBackendFilters } from '../types/activity-filter.types';
 import type { ActivityDto } from '../types/activity-types';
 import type { ActivityFormSchema } from '../types/activity-types';
+import type { ActivityFilterRow } from '../types/activity-filter.types';
+import { ACTIVITY_QUERY_KEYS } from '../utils/query-keys';
+
+function buildSimpleFilters(searchTerm: string, activeFilter: string): PagedFilter[] {
+  const out: PagedFilter[] = [];
+  const trimmed = searchTerm.trim();
+  if (trimmed) {
+    out.push({ column: 'Subject', operator: 'Contains', value: trimmed });
+  }
+  if (activeFilter === 'active') {
+    out.push({ column: 'IsCompleted', operator: 'Equals', value: 'false' });
+  } else if (activeFilter === 'inactive') {
+    out.push({ column: 'IsCompleted', operator: 'Equals', value: 'true' });
+  }
+  return out;
+}
 
 export function ActivityManagementPage(): ReactElement {
   const { t } = useTranslation();
@@ -27,21 +46,31 @@ export function ActivityManagementPage(): ReactElement {
   const [pageSize] = useState(20);
   const [sortBy, setSortBy] = useState('Id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [filters, setFilters] = useState<Record<string, unknown>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [draftFilterRows, setDraftFilterRows] = useState<ActivityFilterRow[]>([]);
+  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const simpleFilters = useMemo(
+    () => buildSimpleFilters(searchTerm, activeFilter),
+    [searchTerm, activeFilter]
+  );
+  const apiFilters = useMemo<PagedFilter[]>(
+    () => [...simpleFilters, ...appliedAdvancedFilters],
+    [simpleFilters, appliedAdvancedFilters]
+  );
 
   const queryClient = useQueryClient();
   const createActivity = useCreateActivity();
   const updateActivity = useUpdateActivity();
-  
+
   const { data: activitiesResponse, isLoading: activitiesLoading } = useActivities({
     pageNumber,
     pageSize,
     sortBy,
     sortDirection,
-    filters
+    filters: apiFilters,
   });
 
   const activities = activitiesResponse?.data || [];
@@ -63,18 +92,6 @@ export function ActivityManagementPage(): ReactElement {
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {
-    const newFilters: Record<string, unknown> = {};
-    if (searchTerm) {
-      newFilters.subject = searchTerm;
-    }
-    
-    if (activeFilter === 'active') {
-        newFilters.isCompleted = false;
-    } else if (activeFilter === 'inactive') {
-        newFilters.isCompleted = true;
-    }
-    
-    setFilters(newFilters);
     setPageNumber(1);
   }, [searchTerm, activeFilter]);
 
@@ -89,8 +106,19 @@ export function ActivityManagementPage(): ReactElement {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await queryClient.invalidateQueries({ queryKey: ['activities'] });
+    await queryClient.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.LIST] });
     setTimeout(() => setIsRefreshing(false), 500);
+  };
+
+  const handleAdvancedSearch = (): void => {
+    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows));
+    setPageNumber(1);
+  };
+
+  const handleAdvancedClear = (): void => {
+    setDraftFilterRows([]);
+    setAppliedAdvancedFilters([]);
+    setPageNumber(1);
   };
 
   const handleEdit = (activity: ActivityDto): void => {
@@ -214,6 +242,13 @@ export function ActivityManagementPage(): ReactElement {
              ))}
           </div>
       </div>
+
+      <ActivityAdvancedFilter
+        draftRows={draftFilterRows}
+        onDraftRowsChange={setDraftFilterRows}
+        onSearch={handleAdvancedSearch}
+        onClear={handleAdvancedClear}
+      />
 
       {/* Table Section */}
       <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-6 transition-all duration-300">

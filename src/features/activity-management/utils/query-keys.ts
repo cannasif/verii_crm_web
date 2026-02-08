@@ -9,7 +9,7 @@ export const queryKeys = {
     pageSize?: number;
     sortBy?: string;
     sortDirection?: string;
-    filters?: Record<string, unknown>;
+    filters?: import('@/types/api').PagedFilter[] | Record<string, unknown>;
   }) => [ACTIVITY_QUERY_KEYS.LIST, params] as const,
   detail: (id: number) => [ACTIVITY_QUERY_KEYS.DETAIL, id] as const,
 };
