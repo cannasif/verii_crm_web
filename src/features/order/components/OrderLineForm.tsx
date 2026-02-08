@@ -125,7 +125,10 @@ export function OrderLineForm({
     } else {
       setRelatedLines([]);
     }
+  }, [line]);
 
+  useEffect(() => {
+    const lineRelatedLines = (line as OrderLineFormState & { relatedLines?: OrderLineFormState[] }).relatedLines || [];
     const loadTemporaryStockData = async (): Promise<void> => {
       if (line.productCode && line.productName) {
         const targetCurrencyCode = currencyOptions.find((opt) => opt.dovizTipi === currency)?.code || 'TRY';

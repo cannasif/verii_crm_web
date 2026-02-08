@@ -147,7 +147,10 @@ export function QuotationLineForm({
     } else {
       setRelatedLines([]);
     }
+  }, [line]);
 
+  useEffect(() => {
+    const lineRelatedLines = (line as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines || [];
     const loadTemporaryStockData = async (): Promise<void> => {
       if (line.productCode && line.productName) {
         const targetCurrencyCode = currencyOptions.find((opt) => opt.dovizTipi === currency)?.code || 'TRY';
