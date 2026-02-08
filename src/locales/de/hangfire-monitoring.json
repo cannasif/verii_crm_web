@@ -1,0 +1,29 @@
+{
+  "menu": "Hangfire Uberwachung",
+  "title": "Hangfire Uberwachung",
+  "description": "Uberwachen Sie Job-Status, fehlgeschlagene Jobs und die Dead-Letter-Warteschlange.",
+  "refresh": "Aktualisieren",
+  "stats": {
+    "enqueued": "In Warteschlange",
+    "processing": "In Bearbeitung",
+    "succeeded": "Erfolgreich",
+    "failed": "Fehlgeschlagen"
+  },
+  "table": {
+    "jobId": "Job ID",
+    "jobName": "Job",
+    "state": "Status",
+    "time": "Zeit",
+    "reason": "Grund"
+  },
+  "failed": {
+    "title": "Fehlgeschlagene Jobs",
+    "empty": "Keine fehlgeschlagenen Jobs gefunden.",
+    "total": "Gesamt"
+  },
+  "deadLetter": {
+    "title": "Dead-Letter-Warteschlange",
+    "empty": "Dead-Letter-Warteschlange ist leer.",
+    "enqueued": "In Warteschlange"
+  }
+}

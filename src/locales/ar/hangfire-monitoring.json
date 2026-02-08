@@ -1,0 +1,29 @@
+{
+  "menu": "مراقبة Hangfire",
+  "title": "مراقبة Hangfire",
+  "description": "مراقبة صحة المهام والمهام الفاشلة وطابور dead-letter.",
+  "refresh": "تحديث",
+  "stats": {
+    "enqueued": "في الانتظار",
+    "processing": "قيد المعالجة",
+    "succeeded": "ناجح",
+    "failed": "فشل"
+  },
+  "table": {
+    "jobId": "معرف المهمة",
+    "jobName": "المهمة",
+    "state": "الحالة",
+    "time": "الوقت",
+    "reason": "السبب"
+  },
+  "failed": {
+    "title": "المهام الفاشلة",
+    "empty": "لا توجد مهام فاشلة.",
+    "total": "الإجمالي"
+  },
+  "deadLetter": {
+    "title": "طابور Dead-Letter",
+    "empty": "طابور dead-letter فارغ.",
+    "enqueued": "في الانتظار"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "menu": "Hangfire Monitoring",
+  "title": "Hangfire Monitoring",
+  "description": "Observe job health, failed jobs and dead-letter queue.",
+  "refresh": "Refresh",
+  "stats": {
+    "enqueued": "Enqueued",
+    "processing": "Processing",
+    "succeeded": "Succeeded",
+    "failed": "Failed"
+  },
+  "table": {
+    "jobId": "Job ID",
+    "jobName": "Job",
+    "state": "State",
+    "time": "Time",
+    "reason": "Reason"
+  },
+  "failed": {
+    "title": "Failed Jobs",
+    "empty": "No failed jobs found.",
+    "total": "Total"
+  },
+  "deadLetter": {
+    "title": "Dead-Letter Queue",
+    "empty": "Dead-letter queue is empty.",
+    "enqueued": "Enqueued"
+  }
+}
