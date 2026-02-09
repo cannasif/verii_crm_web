@@ -19,8 +19,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { formatCurrency } from '../utils/format-currency';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
@@ -230,8 +228,12 @@ export function QuotationCreateForm(): ReactElement {
     return found?.code || 'TRY';
   }, [watchedCurrency, currencyOptions]);
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
+  const generatePDF = async () => {
+    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable'),
+    ]);
+    const doc = new JsPDF();
     
     doc.setFontSize(18);
     doc.text(t('quotation.create.title', 'Yeni Teklif'), 14, 20);
@@ -267,21 +269,21 @@ export function QuotationCreateForm(): ReactElement {
     return doc;
   };
 
-  const handleExportPDF = () => {
-    const doc = generatePDF();
+  const handleExportPDF = async () => {
+    const doc = await generatePDF();
     doc.save("teklif.pdf");
   };
 
-  const handleShareWhatsApp = () => {
-    const doc = generatePDF();
+  const handleShareWhatsApp = async () => {
+    const doc = await generatePDF();
     doc.save("teklif.pdf");
     const text = encodeURIComponent(t('quotation.share.whatsappMessage', 'Merhaba, teklif dosyasını iletiyorum.'));
     window.open(`https://wa.me/?text=${text}`, '_blank');
     toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen WhatsApp üzerinden paylaşınız.'));
   };
 
-  const handleShareMail = () => {
-    const doc = generatePDF();
+  const handleShareMail = async () => {
+    const doc = await generatePDF();
     doc.save("teklif.pdf");
     const subject = encodeURIComponent(t('quotation.share.mailSubject', 'Teklif Dosyası'));
     const body = encodeURIComponent(t('quotation.share.mailBody', 'Merhaba, ekte teklif dosyasını bulabilirsiniz.'));

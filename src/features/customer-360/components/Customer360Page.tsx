@@ -2,21 +2,6 @@ import { type ReactElement, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CircleHelp, RefreshCw, User, MapPin, FileText, ClipboardList, ShoppingCart, Activity, Clock } from 'lucide-react';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  Legend,
-  BarChart,
-  Bar,
-} from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -43,6 +28,7 @@ import {
 } from '../hooks/useCustomer360';
 import { CustomerCurrencySummaryCards } from './CustomerCurrencySummaryCards';
 import { CustomerAmountComparisonByCurrencyTable } from './CustomerAmountComparisonByCurrencyTable';
+import { useRechartsModule } from '@/lib/useRechartsModule';
 import type {
   CohortRetentionDto,
   Customer360SimpleItemDto,
@@ -384,6 +370,8 @@ function AnalyticsChartsSection({
   noDataKey: string;
   showAmountBar?: boolean;
 }): ReactElement {
+  const recharts = useRechartsModule();
+  const Recharts = recharts;
   const pieData = [
     { name: t('customer360.analyticsCharts.demand'), value: distribution.demandCount },
     { name: t('customer360.analyticsCharts.quotation'), value: distribution.quotationCount },
@@ -405,11 +393,13 @@ function AnalyticsChartsSection({
         <CardContent>
           {pieData.length === 0 ? (
             <p className="text-sm text-muted-foreground py-8 text-center">{t(noDataKey)}</p>
+          ) : !Recharts ? (
+            <Skeleton className="h-64 w-full" />
           ) : (
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
+              <Recharts.ResponsiveContainer width="100%" height="100%">
+                <Recharts.PieChart>
+                  <Recharts.Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
@@ -420,12 +410,12 @@ function AnalyticsChartsSection({
                     label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                   >
                     {pieData.map((_, index) => (
-                      <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      <Recharts.Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
-                  </Pie>
-                  <RechartsTooltip formatter={(value: number | undefined) => [value ?? 0, '']} />
-                </PieChart>
-              </ResponsiveContainer>
+                  </Recharts.Pie>
+                  <Recharts.Tooltip formatter={(value: number | undefined) => [value ?? 0, '']} />
+                </Recharts.PieChart>
+              </Recharts.ResponsiveContainer>
             </div>
           )}
         </CardContent>
@@ -438,20 +428,22 @@ function AnalyticsChartsSection({
         <CardContent>
           {!monthlyTrend?.length ? (
             <p className="text-sm text-muted-foreground py-8 text-center">{t(noDataKey)}</p>
+          ) : !Recharts ? (
+            <Skeleton className="h-64 w-full" />
           ) : (
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={monthlyTrend} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
-                  <RechartsTooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="demandCount" name={t('customer360.analyticsCharts.demand')} stroke={CHART_COLORS[0]} strokeWidth={2} dot={{ r: 3 }} />
-                  <Line type="monotone" dataKey="quotationCount" name={t('customer360.analyticsCharts.quotation')} stroke={CHART_COLORS[1]} strokeWidth={2} dot={{ r: 3 }} />
-                  <Line type="monotone" dataKey="orderCount" name={t('customer360.analyticsCharts.order')} stroke={CHART_COLORS[2]} strokeWidth={2} dot={{ r: 3 }} />
-                </LineChart>
-              </ResponsiveContainer>
+              <Recharts.ResponsiveContainer width="100%" height="100%">
+                <Recharts.LineChart data={monthlyTrend} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                  <Recharts.CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <Recharts.XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <Recharts.YAxis tick={{ fontSize: 11 }} />
+                  <Recharts.Tooltip />
+                  <Recharts.Legend />
+                  <Recharts.Line type="monotone" dataKey="demandCount" name={t('customer360.analyticsCharts.demand')} stroke={CHART_COLORS[0]} strokeWidth={2} dot={{ r: 3 }} />
+                  <Recharts.Line type="monotone" dataKey="quotationCount" name={t('customer360.analyticsCharts.quotation')} stroke={CHART_COLORS[1]} strokeWidth={2} dot={{ r: 3 }} />
+                  <Recharts.Line type="monotone" dataKey="orderCount" name={t('customer360.analyticsCharts.order')} stroke={CHART_COLORS[2]} strokeWidth={2} dot={{ r: 3 }} />
+                </Recharts.LineChart>
+              </Recharts.ResponsiveContainer>
             </div>
           )}
         </CardContent>
@@ -465,17 +457,19 @@ function AnalyticsChartsSection({
           <CardContent>
             {barData.every((d) => d.value === 0) ? (
               <p className="text-sm text-muted-foreground py-8 text-center">{t(noDataKey)}</p>
+            ) : !Recharts ? (
+              <Skeleton className="h-64 w-full" />
             ) : (
               <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 20, left: 80, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis type="number" tickFormatter={(v) => currencyFormatter.format(v)} tick={{ fontSize: 11 }} />
-                    <YAxis type="category" dataKey="name" width={75} tick={{ fontSize: 11 }} />
-                    <RechartsTooltip formatter={(value: number | undefined) => [currencyFormatter.format(value ?? 0), '']} />
-                    <Bar dataKey="value" fill={CHART_COLORS[0]} radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <Recharts.ResponsiveContainer width="100%" height="100%">
+                  <Recharts.BarChart data={barData} layout="vertical" margin={{ top: 5, right: 20, left: 80, bottom: 5 }}>
+                    <Recharts.CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <Recharts.XAxis type="number" tickFormatter={(v) => currencyFormatter.format(v)} tick={{ fontSize: 11 }} />
+                    <Recharts.YAxis type="category" dataKey="name" width={75} tick={{ fontSize: 11 }} />
+                    <Recharts.Tooltip formatter={(value: number | undefined) => [currencyFormatter.format(value ?? 0), '']} />
+                    <Recharts.Bar dataKey="value" fill={CHART_COLORS[0]} radius={[0, 4, 4, 0]} />
+                  </Recharts.BarChart>
+                </Recharts.ResponsiveContainer>
               </div>
             )}
           </CardContent>

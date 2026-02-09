@@ -1,5 +1,6 @@
 import axios from 'axios';
 import i18n from './i18n';
+import { useAuthStore } from '@/stores/auth-store';
 
 const API_BASE_URL = 'https://crmapi.v3rii.com';
 
@@ -68,12 +69,6 @@ export function getApiBaseUrl(): string {
   return apiUrl || normalizeBaseUrl(API_BASE_URL);
 }
 
-let authStoreModule: Promise<typeof import('@/stores/auth-store')> | null = null;
-function getAuthStore(): Promise<typeof import('@/stores/auth-store')> {
-  if (!authStoreModule) authStoreModule = import('@/stores/auth-store');
-  return authStoreModule;
-}
-
 export const api = axios.create({
   baseURL: apiUrl,
   headers: {
@@ -81,7 +76,7 @@ export const api = axios.create({
   },
 });
 
-api.interceptors.request.use(async (config) => {
+api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || apiUrl || api.defaults.baseURL;
 
   const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
@@ -91,14 +86,9 @@ api.interceptors.request.use(async (config) => {
 
   config.headers['X-Language'] = i18n.language || 'tr';
 
-  try {
-    const { useAuthStore } = await getAuthStore();
-    const branch = useAuthStore.getState().branch;
-    if (branch?.code) {
-      config.headers['X-Branch-Code'] = branch.code;
-    }
-  } catch {
-    void 0;
+  const branch = useAuthStore.getState().branch;
+  if (branch?.code) {
+    config.headers['X-Branch-Code'] = branch.code;
   }
 
   return config;
@@ -106,17 +96,11 @@ api.interceptors.request.use(async (config) => {
 
 api.interceptors.response.use(
   (response) => response.data,
-  async (error) => {
+  (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token');
       sessionStorage.removeItem('access_token');
-
-      try {
-        const { useAuthStore } = await getAuthStore();
-        useAuthStore.getState().logout();
-      } catch {
-        void 0;
-      }
+      useAuthStore.getState().logout();
 
       if (window.location.pathname !== '/auth/login') {
         window.location.href = '/auth/login?sessionExpired=true';

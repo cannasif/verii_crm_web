@@ -23,8 +23,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { formatCurrency } from '../utils/format-currency';
 import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
@@ -174,8 +172,12 @@ export function QuotationDetailPage(): ReactElement {
     return option?.code || 'TRY';
   }, [form.getValues('quotation.currency'), currencyOptions]);
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
+  const generatePDF = async () => {
+    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable'),
+    ]);
+    const doc = new JsPDF();
     
     doc.setFontSize(18);
     doc.text(t('quotation.detail.title', 'Teklif Detayı'), 14, 20);
@@ -212,21 +214,21 @@ export function QuotationDetailPage(): ReactElement {
     return doc;
   };
 
-  const handleExportPDF = () => {
-    const doc = generatePDF();
+  const handleExportPDF = async () => {
+    const doc = await generatePDF();
     doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
   };
 
-  const handleShareWhatsApp = () => {
-    const doc = generatePDF();
+  const handleShareWhatsApp = async () => {
+    const doc = await generatePDF();
     doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
     const text = encodeURIComponent(t('quotation.share.whatsappMessage', 'Merhaba, teklif dosyasını iletiyorum.'));
     window.open(`https://wa.me/?text=${text}`, '_blank');
     toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen WhatsApp üzerinden paylaşınız.'));
   };
 
-  const handleShareMail = () => {
-    const doc = generatePDF();
+  const handleShareMail = async () => {
+    const doc = await generatePDF();
     doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
     const subject = encodeURIComponent(t('quotation.share.mailSubject', 'Teklif Dosyası'));
     const body = encodeURIComponent(t('quotation.share.mailBody', 'Merhaba, ekte teklif dosyasını bulabilirsiniz.'));

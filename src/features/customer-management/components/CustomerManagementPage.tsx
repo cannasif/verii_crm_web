@@ -25,8 +25,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { 
   Mail01Icon, 
   Call02Icon, 
@@ -168,8 +166,12 @@ export function CustomerManagementPage(): ReactElement {
     XLSX.writeFile(wb, "musteriler.xlsx");
   };
 
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
+  const handleExportPDF = async () => {
+    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable'),
+    ]);
+    const doc = new JsPDF();
     
     const tableColumn = tableColumns
         .filter(col => visibleColumns.includes(col.key))

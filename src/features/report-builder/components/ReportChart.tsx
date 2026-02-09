@@ -1,21 +1,6 @@
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
-import {
   Table,
   TableBody,
   TableCell,
@@ -25,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import type { ChartType } from '../types';
+import { useRechartsModule } from '@/lib/useRechartsModule';
 
 type ColumnItem = string | { name: string; sqlType?: string; dotNetType?: string; isNullable?: boolean };
 
@@ -52,6 +38,8 @@ function normalizeColumns(cols: ColumnItem[]): string[] {
 }
 
 export function ReportChart({ columns, rows, chartType, className }: ReportChartProps): ReactElement {
+  const recharts = useRechartsModule();
+  const Recharts = recharts;
   const columnLabels = useMemo(() => normalizeColumns(columns), [columns]);
   const normalizedRows = useMemo(
     () => (Array.isArray(rows) ? rows.map(ensureRowArray) : []),
@@ -117,6 +105,14 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
     );
   }
 
+  if (!Recharts) {
+    return (
+      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
+        Loading chart...
+      </div>
+    );
+  }
+
   if (chartType === 'pie' && labelKey && valueKeys.length > 0) {
     const data = tableData.map((r) => ({
       name: String(r[labelKey] ?? ''),
@@ -124,41 +120,41 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
     }));
     return (
       <div className={cn('h-[300px] w-full', className)}>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+        <Recharts.ResponsiveContainer width="100%" height="100%">
+          <Recharts.PieChart>
+            <Recharts.Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
               {data.map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                <Recharts.Cell key={i} fill={COLORS[i % COLORS.length]} />
               ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
+            </Recharts.Pie>
+            <Recharts.Tooltip />
+            <Recharts.Legend />
+          </Recharts.PieChart>
+        </Recharts.ResponsiveContainer>
       </div>
     );
   }
 
   if ((chartType === 'bar' || chartType === 'line') && labelKey) {
-    const ChartComponent = chartType === 'bar' ? BarChart : LineChart;
+    const ChartComponent = chartType === 'bar' ? Recharts.BarChart : Recharts.LineChart;
     return (
       <div className={cn('h-[300px] w-full', className)}>
-        <ResponsiveContainer width="100%" height="100%">
+        <Recharts.ResponsiveContainer width="100%" height="100%">
           <ChartComponent data={tableData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={labelKey} />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <Recharts.CartesianGrid strokeDasharray="3 3" />
+            <Recharts.XAxis dataKey={labelKey} />
+            <Recharts.YAxis />
+            <Recharts.Tooltip />
+            <Recharts.Legend />
             {valueKeys.map((key, i) =>
               chartType === 'bar' ? (
-                <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} />
+                <Recharts.Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} />
               ) : (
-                <Line key={key} type="monotone" dataKey={key} stroke={COLORS[i % COLORS.length]} />
+                <Recharts.Line key={key} type="monotone" dataKey={key} stroke={COLORS[i % COLORS.length]} />
               )
             )}
           </ChartComponent>
-        </ResponsiveContainer>
+        </Recharts.ResponsiveContainer>
       </div>
     );
   }
