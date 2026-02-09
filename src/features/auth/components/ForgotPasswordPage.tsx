@@ -18,7 +18,7 @@ import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import loginImage from '../../../../public/veriicrmlogo.png';
 
 export function ForgotPasswordPage(): React.JSX.Element {
-  useTranslation('auth');
+  const { t } = useTranslation('auth');
   const navigate = useNavigate();
   const { mutate: requestPasswordReset, isPending } = useForgotPassword();
 
@@ -46,21 +46,21 @@ export function ForgotPasswordPage(): React.JSX.Element {
       </div>
 
       <div className="relative z-10 w-full h-full flex flex-col items-center px-4 py-8 overflow-y-auto">
-        <div className="w-full max-w-md p-10 rounded-3xl bg-[#140a1e]/70 backdrop-blur-xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4),_inset_0_0_20px_rgba(255,255,255,0.07)] animate-[fadeIn_0.8s_ease-out] my-auto">
+        <div className="w-full max-w-md p-10 rounded-3xl bg-[#140a1e]/70 backdrop-blur-xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_0_20px_rgba(255,255,255,0.07)] animate-[fadeIn_0.8s_ease-out] my-auto">
           <div className="text-center mb-8">
             <img
               src={loginImage}
-              alt="Logo"
+              alt={t('auth.forgotPassword.logoAlt', 'Logo')}
               className="inline-flex items-center justify-center w-80 h-50 object-contain p-2"
             />
             <p className="text-slate-400 text-xs uppercase tracking-[0.15em] mt-2 font-medium">
-              Şifremi Unuttum
+              {t('auth.forgotPassword.title')}
             </p>
           </div>
 
           <div className="mb-6">
             <p className="text-slate-300 text-sm text-center">
-              Hesabınıza ait e-posta adresini girin, size sıfırlama bağlantısı gönderelim.
+              {t('auth.forgotPassword.description')}
             </p>
           </div>
 
@@ -80,7 +80,7 @@ export function ForgotPasswordPage(): React.JSX.Element {
                         <Input
                           {...field}
                           type="email"
-                          placeholder="ornek@sirket.com"
+                          placeholder={t('auth.forgotPassword.emailPlaceholder')}
                           className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 focus:bg-black/50"
                         />
                       </div>
@@ -93,9 +93,9 @@ export function ForgotPasswordPage(): React.JSX.Element {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-pink-600 via-orange-500 to-yellow-500 hover:from-pink-500 hover:via-orange-400 hover:to-yellow-400 text-white font-bold text-sm mt-6 shadow-lg shadow-orange-900/20 tracking-wide uppercase transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full py-4 rounded-xl bg-linear-to-r from-pink-600 via-orange-500 to-yellow-500 hover:from-pink-500 hover:via-orange-400 hover:to-yellow-400 text-white font-bold text-sm mt-6 shadow-lg shadow-orange-900/20 tracking-wide uppercase transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                {isPending ? "İşleniyor..." : "Sıfırlama Bağlantısı Gönder"}
+                {isPending ? t('auth.forgotPassword.processing') : t('auth.forgotPassword.submitButton')}
               </button>
 
               <button
@@ -103,7 +103,7 @@ export function ForgotPasswordPage(): React.JSX.Element {
                 onClick={() => navigate('/auth/login')}
                 className="w-full py-3 rounded-xl bg-black/30 border border-white/10 text-white text-sm hover:bg-black/50 transition-all"
               >
-                Giriş Ekranına Dön
+                {t('auth.forgotPassword.backToLogin')}
               </button>
             </form>
           </Form>
