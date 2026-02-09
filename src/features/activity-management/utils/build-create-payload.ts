@@ -1,9 +1,16 @@
 import type { CreateActivityDto } from '../types/activity-types';
-import { ActivityPriority, ActivityStatus, ReminderChannel, type ActivityFormSchema } from '../types/activity-types';
+import { ActivityPriority, ActivityStatus, ReminderChannel, type ActivityFormSchema, type ReminderChannel as ReminderChannelType } from '../types/activity-types';
 
 function toActivityTypeId(value: string): number | undefined {
   const num = Number(value);
   return Number.isInteger(num) && !Number.isNaN(num) ? num : undefined;
+}
+
+function toIsoDateTime(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return undefined;
+  return date.toISOString();
 }
 
 export function buildCreateActivityPayload(
@@ -24,8 +31,8 @@ export function buildCreateActivityPayload(
     subject: data.subject,
     description: data.description,
     activityTypeId,
-    startDateTime: data.startDateTime,
-    endDateTime: data.endDateTime || undefined,
+    startDateTime: toIsoDateTime(data.startDateTime) || new Date().toISOString(),
+    endDateTime: toIsoDateTime(data.endDateTime),
     isAllDay: data.isAllDay,
     status: data.status ?? ActivityStatus.Scheduled,
     priority: data.priority ?? ActivityPriority.Medium,
@@ -33,9 +40,9 @@ export function buildCreateActivityPayload(
     erpCustomerCode: data.erpCustomerCode || undefined,
     contactId: data.contactId || undefined,
     assignedUserId,
-    reminders: (data.reminders || []).map((offsetMinutes) => ({
-      offsetMinutes,
-      channel: ReminderChannel.InApp,
+    reminders: (data.reminders || []).map((reminder) => ({
+      offsetMinutes: reminder.offsetMinutes,
+      channel: (reminder.channel ?? ReminderChannel.InApp) as ReminderChannelType,
     })),
   };
 }

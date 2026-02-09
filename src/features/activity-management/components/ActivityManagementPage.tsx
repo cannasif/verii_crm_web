@@ -16,7 +16,7 @@ import { useUpdateActivity } from '../hooks/useUpdateActivity';
 import { useActivities } from '../hooks/useActivities';
 import { buildCreateActivityPayload } from '../utils/build-create-payload';
 import { rowsToBackendFilters } from '../types/activity-filter.types';
-import { ActivityPriority, ActivityStatus, ReminderChannel, type ActivityDto, type ActivityFormSchema } from '../types/activity-types';
+import { ActivityPriority, ActivityStatus, ReminderChannel, type ActivityDto, type ActivityFormSchema, type ReminderChannel as ReminderChannelType } from '../types/activity-types';
 import type { ActivityFilterRow } from '../types/activity-filter.types';
 import { ACTIVITY_QUERY_KEYS } from '../utils/query-keys';
 
@@ -37,6 +37,13 @@ function buildSimpleFilters(searchTerm: string, activeFilter: string): PagedFilt
 function toActivityTypeId(value: string): number | undefined {
   const num = Number(value);
   return Number.isInteger(num) && !Number.isNaN(num) ? num : undefined;
+}
+
+function toIsoDateTime(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return undefined;
+  return date.toISOString();
 }
 
 export function ActivityManagementPage(): ReactElement {
@@ -151,12 +158,12 @@ export function ActivityManagementPage(): ReactElement {
       priority: data.priority ?? ActivityPriority.Medium,
       contactId: data.contactId || undefined,
       assignedUserId,
-      startDateTime: data.startDateTime,
-      endDateTime: data.endDateTime || undefined,
+      startDateTime: toIsoDateTime(data.startDateTime) || new Date().toISOString(),
+      endDateTime: toIsoDateTime(data.endDateTime),
       isAllDay: data.isAllDay,
-      reminders: (data.reminders || []).map((offsetMinutes) => ({
-        offsetMinutes,
-        channel: ReminderChannel.InApp,
+      reminders: (data.reminders || []).map((reminder) => ({
+        offsetMinutes: reminder.offsetMinutes,
+        channel: (reminder.channel ?? ReminderChannel.InApp) as ReminderChannelType,
       })),
     };
   };

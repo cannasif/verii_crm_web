@@ -169,7 +169,7 @@ export interface ActivityFormData {
   startDateTime: string;
   endDateTime?: string;
   isAllDay: boolean;
-  reminders: number[];
+  reminders: CreateActivityReminderDto[];
 }
 
 export const activityFormSchema = z.object({
@@ -210,7 +210,12 @@ export const activityFormSchema = z.object({
     .optional()
     .nullable(),
   isAllDay: z.boolean(),
-  reminders: z.array(z.number()),
+  reminders: z.array(
+    z.object({
+      offsetMinutes: z.number().min(0).max(525600),
+      channel: z.number(),
+    })
+  ),
 });
 
 export type ActivityFormSchema = z.infer<typeof activityFormSchema>;

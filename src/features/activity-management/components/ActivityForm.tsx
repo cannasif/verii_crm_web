@@ -1,5 +1,5 @@
 import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,6 +26,7 @@ import {
   activityFormSchema,
   ActivityPriority,
   ActivityStatus,
+  ReminderChannel,
   type ActivityDto,
   type ActivityFormSchema,
 } from '../types/activity-types';
@@ -37,7 +38,7 @@ import { useQuery } from '@tanstack/react-query';
 import { contactApi } from '@/features/contact-management/api/contact-api';
 import type { PagedFilter } from '@/types/api';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
-import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell } from 'lucide-react';
+import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell, Plus, Trash2 } from 'lucide-react';
 
 interface ActivityFormProps {
   open: boolean;
@@ -84,6 +85,34 @@ function normalizePriority(value: number | string | undefined): number {
   return ActivityPriority.Medium;
 }
 
+function toDateTimeInputValue(value?: string | null): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function toDefaultStartDateTime(initialDate?: string | null): string {
+  if (initialDate && initialDate.length === 10) {
+    return `${initialDate}T09:00`;
+  }
+  const now = new Date();
+  now.setSeconds(0, 0);
+  return toDateTimeInputValue(now.toISOString());
+}
+
+const REMINDER_CHANNEL_OPTIONS = [
+  { value: String(ReminderChannel.InApp), label: 'In-App' },
+  { value: String(ReminderChannel.Email), label: 'Email' },
+  { value: String(ReminderChannel.Sms), label: 'SMS' },
+  { value: String(ReminderChannel.Push), label: 'Push' },
+] as const;
+
 export function ActivityForm({
   open,
   onOpenChange,
@@ -107,17 +136,23 @@ export function ActivityForm({
       activityType: '',
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
-      startDateTime: new Date().toISOString().split('T')[0],
+      startDateTime: toDefaultStartDateTime(initialDate),
       endDateTime: undefined,
       isAllDay: false,
       reminders: [],
     },
   });
 
+  const { fields: reminderFields, append: appendReminder, remove: removeReminder } = useFieldArray({
+    control: form.control,
+    name: 'reminders',
+  });
+
   const isFormValid = form.formState.isValid;
   const isSubmitting = isLoading;
 
   const watchedCustomerId = form.watch('potentialCustomerId');
+  const watchedReminders = form.watch('reminders') || [];
 
   const { data: activityTypesResponse } = useQuery({
     queryKey: ['activityTypes'],
@@ -148,7 +183,7 @@ export function ActivityForm({
 
   useEffect(() => {
     if (open && !activity && initialDate) {
-      form.setValue('startDateTime', initialDate);
+      form.setValue('startDateTime', toDefaultStartDateTime(initialDate));
     }
   }, [open, initialDate, activity, form]);
 
@@ -164,10 +199,13 @@ export function ActivityForm({
         priority: normalizePriority(activity.priority),
         contactId: activity.contactId || undefined,
         assignedUserId: activity.assignedUserId || undefined,
-        startDateTime: activity.startDateTime ? new Date(activity.startDateTime).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        endDateTime: activity.endDateTime ? new Date(activity.endDateTime).toISOString().split('T')[0] : undefined,
+        startDateTime: toDateTimeInputValue(activity.startDateTime) || toDefaultStartDateTime(),
+        endDateTime: toDateTimeInputValue(activity.endDateTime),
         isAllDay: activity.isAllDay,
-        reminders: (activity.reminders || []).map((reminder) => reminder.offsetMinutes),
+        reminders: (activity.reminders || []).map((reminder) => ({
+          offsetMinutes: reminder.offsetMinutes,
+          channel: reminder.channel,
+        })),
       });
       setSelectedCustomerDisplayName(null);
       return;
@@ -183,7 +221,7 @@ export function ActivityForm({
       priority: ActivityPriority.Medium,
       contactId: undefined,
       assignedUserId: undefined,
-      startDateTime: initialDate || new Date().toISOString().split('T')[0],
+      startDateTime: toDefaultStartDateTime(initialDate),
       endDateTime: undefined,
       isAllDay: false,
       reminders: [],
@@ -201,6 +239,12 @@ export function ActivityForm({
       form.reset();
       onOpenChange(false);
     }
+  };
+
+  const addPresetReminder = (offsetMinutes: number): void => {
+    const exists = watchedReminders.some((reminder) => reminder.offsetMinutes === offsetMinutes);
+    if (exists) return;
+    appendReminder({ offsetMinutes, channel: ReminderChannel.InApp });
   };
 
   return (
@@ -271,15 +315,15 @@ export function ActivityForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="startDateTime" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate', 'Tarih')} <span className="text-red-500">*</span></FormLabel>
-                      <FormControl><Input {...field} type="date" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
+                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate', 'Başlangıç')} <span className="text-red-500">*</span></FormLabel>
+                      <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="endDateTime" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate', 'Bitiş Tarihi')}</FormLabel>
-                      <FormControl><Input type="date" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || undefined)} /></FormControl>
+                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate', 'Bitiş')}</FormLabel>
+                      <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || undefined)} /></FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
                   )} />
@@ -400,42 +444,83 @@ export function ActivityForm({
                     <FormMessage className="text-xs text-red-500" />
                   </FormItem>
                 )} />
-                <FormField
-                  control={form.control}
-                  name="reminders"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders', 'Hatırlatmalar')}</FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-2 gap-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-3">
-                          {REMINDER_MINUTE_PRESETS.map((offset) => {
-                            const checked = (field.value || []).includes(offset);
-                            const label = offset >= 1440
-                              ? t('activityManagement.reminderDaysBefore', { count: Math.floor(offset / 1440), defaultValue: `${Math.floor(offset / 1440)} gün önce` })
-                              : t('activityManagement.reminderMinutesBefore', { count: offset, defaultValue: `${offset} dk önce` });
 
-                            return (
-                              <label key={offset} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
-                                <Checkbox
-                                  checked={checked}
-                                  onCheckedChange={(value) => {
-                                    const current = field.value || [];
-                                    const next = value
-                                      ? [...current, offset]
-                                      : current.filter((item) => item !== offset);
-                                    field.onChange(next.sort((a, b) => a - b));
-                                  }}
-                                />
-                                <span>{label}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders', 'Hatırlatmalar')}</FormLabel>
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendReminder({ offsetMinutes: 15, channel: ReminderChannel.InApp })}>
+                      <Plus size={14} className="mr-1" /> {t('common.add', 'Ekle')}
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {REMINDER_MINUTE_PRESETS.map((offset) => (
+                      <Button key={offset} type="button" variant="ghost" size="sm" className="border border-slate-200 dark:border-white/10" onClick={() => addPresetReminder(offset)}>
+                        {offset >= 1440 ? `${Math.floor(offset / 1440)} gün` : `${offset} dk`}
+                      </Button>
+                    ))}
+                  </div>
+
+                  {reminderFields.length === 0 && (
+                    <div className="text-xs text-slate-500 dark:text-slate-400 rounded-lg border border-dashed border-slate-200 dark:border-white/10 p-3">
+                      {t('activityManagement.noReminder', 'Hatırlatma eklenmedi')}
+                    </div>
                   )}
-                />
+
+                  <div className="space-y-2">
+                    {reminderFields.map((field, index) => (
+                      <div key={field.id} className="grid grid-cols-12 gap-2 items-center rounded-lg border border-slate-200 dark:border-white/10 p-2">
+                        <div className="col-span-5">
+                          <FormField
+                            control={form.control}
+                            name={`reminders.${index}.offsetMinutes`}
+                            render={({ field: reminderOffsetField }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    min={0}
+                                    max={525600}
+                                    value={String(reminderOffsetField.value ?? 0)}
+                                    onChange={(event) => reminderOffsetField.onChange(Number(event.target.value || 0))}
+                                    className={INPUT_STYLE}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="col-span-5">
+                          <FormField
+                            control={form.control}
+                            name={`reminders.${index}.channel`}
+                            render={({ field: reminderChannelField }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Combobox
+                                    options={REMINDER_CHANNEL_OPTIONS.map((option) => ({
+                                      value: option.value,
+                                      label: t(`activityManagement.reminderChannel${option.label}`, option.label),
+                                    }))}
+                                    value={String(reminderChannelField.value ?? ReminderChannel.InApp)}
+                                    onValueChange={(value) => reminderChannelField.onChange(Number(value))}
+                                    placeholder={t('activityManagement.select', 'Seç')}
+                                    className={INPUT_STYLE}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="col-span-2 flex justify-end">
+                          <Button type="button" variant="ghost" size="icon" className="text-red-500" onClick={() => removeReminder(index)}>
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </FormSection>
 
               <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2 border-t border-slate-100 dark:border-white/5">
