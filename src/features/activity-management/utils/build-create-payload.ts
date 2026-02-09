@@ -1,5 +1,5 @@
 import type { CreateActivityDto } from '../types/activity-types';
-import type { ActivityFormSchema } from '../types/activity-types';
+import { ActivityPriority, ActivityStatus, ReminderChannel, type ActivityFormSchema } from '../types/activity-types';
 
 function toActivityTypeId(value: string): number | undefined {
   const num = Number(value);
@@ -11,18 +11,31 @@ export function buildCreateActivityPayload(
   options: { assignedUserIdFallback?: number } = {}
 ): CreateActivityDto {
   const activityTypeId = toActivityTypeId(data.activityType);
+  if (activityTypeId === undefined) {
+    throw new Error('Aktivite tipi seçilmelidir.');
+  }
+
+  const assignedUserId = data.assignedUserId ?? options.assignedUserIdFallback;
+  if (assignedUserId === undefined) {
+    throw new Error('Atanan kullanıcı zorunludur.');
+  }
+
   return {
     subject: data.subject,
     description: data.description,
-    activityType: data.activityType,
-    ...(activityTypeId !== undefined && { activityTypeId }),
-    activityDate: data.activityDate,
-    status: data.status,
-    isCompleted: data.isCompleted,
+    activityTypeId,
+    startDateTime: data.startDateTime,
+    endDateTime: data.endDateTime || undefined,
+    isAllDay: data.isAllDay,
+    status: data.status ?? ActivityStatus.Scheduled,
+    priority: data.priority ?? ActivityPriority.Medium,
     potentialCustomerId: data.potentialCustomerId || undefined,
     erpCustomerCode: data.erpCustomerCode || undefined,
-    priority: data.priority || undefined,
     contactId: data.contactId || undefined,
-    assignedUserId: data.assignedUserId ?? options.assignedUserIdFallback,
+    assignedUserId,
+    reminders: (data.reminders || []).map((offsetMinutes) => ({
+      offsetMinutes,
+      channel: ReminderChannel.InApp,
+    })),
   };
 }

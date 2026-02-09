@@ -13,23 +13,75 @@ export interface ActivityTypeRef {
   deletedByFullUser?: string;
 }
 
+export const ActivityStatus = {
+  Scheduled: 0,
+  Completed: 1,
+  Cancelled: 2,
+} as const;
+
+export type ActivityStatus = (typeof ActivityStatus)[keyof typeof ActivityStatus];
+
+export const ActivityPriority = {
+  Low: 0,
+  Medium: 1,
+  High: 2,
+} as const;
+
+export type ActivityPriority = (typeof ActivityPriority)[keyof typeof ActivityPriority];
+
+export const ReminderChannel = {
+  InApp: 0,
+  Email: 1,
+  Sms: 2,
+  Push: 3,
+} as const;
+
+export type ReminderChannel = (typeof ReminderChannel)[keyof typeof ReminderChannel];
+
+export const ReminderStatus = {
+  Pending: 0,
+  Sent: 1,
+  Failed: 2,
+  Cancelled: 3,
+} as const;
+
+export type ReminderStatus = (typeof ReminderStatus)[keyof typeof ReminderStatus];
+
+export interface ActivityReminderDto {
+  id: number;
+  activityId: number;
+  offsetMinutes: number;
+  channel: ReminderChannel;
+  sentAt?: string;
+  status: ReminderStatus;
+  createdDate: string;
+  updatedDate?: string;
+  deletedDate?: string;
+  isDeleted: boolean;
+}
+
+export interface CreateActivityReminderDto {
+  offsetMinutes: number;
+  channel: ReminderChannel;
+}
+
 export interface ActivityDto {
   id: number;
   subject: string;
   description?: string;
-  activityType: string | ActivityTypeRef;
-  potentialCustomerId?: number;
-  potentialCustomer?: {
+  activityTypeId: number;
+  activityType: ActivityTypeRef;
+  startDateTime: string;
+  endDateTime?: string;
+  isAllDay: boolean;
+  status: ActivityStatus | number | string;
+  priority: ActivityPriority | number | string;
+  assignedUserId: number;
+  assignedUser?: {
     id: number;
-    name: string;
-    customerCode?: string;
+    fullName?: string;
+    userName?: string;
   };
-  erpCustomerCode?: string;
-  productCode?: string;
-  productName?: string;
-  status: string;
-  isCompleted: boolean;
-  priority?: string;
   contactId?: number;
   contact?: {
     id: number;
@@ -37,13 +89,18 @@ export interface ActivityDto {
     lastName?: string;
     fullName?: string;
   };
-  assignedUserId?: number;
-  assignedUser?: {
+  potentialCustomerId?: number;
+  potentialCustomer?: {
     id: number;
-    fullName?: string;
-    userName?: string;
+    name: string;
+    customerCode?: string;
   };
-  activityDate: string;
+  erpCustomerCode?: string;
+  reminders: ActivityReminderDto[];
+  activityDate?: string;
+  isCompleted?: boolean;
+  productCode?: string;
+  productName?: string;
   createdDate: string;
   updatedDate?: string;
   deletedDate?: string;
@@ -59,47 +116,44 @@ export interface ActivityDto {
 export interface CreateActivityDto {
   subject: string;
   description?: string;
-  activityType: string;
-  activityTypeId?: number;
+  activityTypeId: number;
+  startDateTime: string;
+  endDateTime?: string;
+  isAllDay: boolean;
+  status: ActivityStatus | number;
+  priority: ActivityPriority | number;
+  assignedUserId: number;
+  contactId?: number;
   potentialCustomerId?: number;
   erpCustomerCode?: string;
-  productCode?: string;
-  productName?: string;
-  status: string;
-  isCompleted: boolean;
-  priority?: string;
-  contactId?: number;
-  assignedUserId?: number;
-  activityDate: string;
+  reminders: CreateActivityReminderDto[];
 }
 
 export interface UpdateActivityDto {
   subject: string;
   description?: string;
-  activityType: string;
-  activityTypeId?: number;
+  activityTypeId: number;
+  startDateTime: string;
+  endDateTime?: string;
+  isAllDay: boolean;
+  status: ActivityStatus | number;
+  priority: ActivityPriority | number;
+  assignedUserId: number;
+  contactId?: number;
   potentialCustomerId?: number;
   erpCustomerCode?: string;
-  productCode?: string;
-  productName?: string;
-  status: string;
-  isCompleted: boolean;
-  priority?: string;
-  contactId?: number;
-  assignedUserId?: number;
-  activityDate: string;
+  reminders: CreateActivityReminderDto[];
 }
 
 export interface ActivityListFilters {
-  activityType?: string;
-  status?: string;
-  priority?: string;
+  activityTypeId?: number;
+  status?: ActivityStatus | number;
+  priority?: ActivityPriority | number;
   potentialCustomerId?: number;
   contactId?: number;
   assignedUserId?: number;
-  isCompleted?: boolean;
-  createdDateFrom?: string;
-  createdDateTo?: string;
+  startDateTimeFrom?: string;
+  startDateTimeTo?: string;
 }
 
 export interface ActivityFormData {
@@ -108,14 +162,14 @@ export interface ActivityFormData {
   activityType: string;
   potentialCustomerId?: number;
   erpCustomerCode?: string;
-  productCode?: string;
-  productName?: string;
-  status: string;
-  isCompleted: boolean;
-  priority?: string;
+  status: number;
+  priority?: number;
   contactId?: number;
   assignedUserId?: number;
-  activityDate: string;
+  startDateTime: string;
+  endDateTime?: string;
+  isAllDay: boolean;
+  reminders: number[];
 }
 
 export const activityFormSchema = z.object({
@@ -129,8 +183,7 @@ export const activityFormSchema = z.object({
     .optional(),
   activityType: z
     .string()
-    .min(1, 'activityManagement.activityTypeRequired')
-    .max(50, 'activityManagement.activityTypeMaxLength'),
+    .min(1, 'activityManagement.activityTypeRequired'),
   potentialCustomerId: z
     .number()
     .optional()
@@ -139,24 +192,8 @@ export const activityFormSchema = z.object({
     .string()
     .optional()
     .nullable(),
-  productCode: z
-    .string()
-    .optional()
-    .nullable(),
-  productName: z
-    .string()
-    .optional()
-    .nullable(),
-  status: z
-    .string()
-    .min(1, 'activityManagement.statusRequired')
-    .max(50, 'activityManagement.statusMaxLength'),
-  isCompleted: z.boolean(),
-  priority: z
-    .string()
-    .max(50, 'activityManagement.priorityMaxLength')
-    .optional()
-    .nullable(),
+  status: z.number(),
+  priority: z.number().optional().nullable(),
   contactId: z
     .number()
     .optional()
@@ -165,9 +202,15 @@ export const activityFormSchema = z.object({
     .number()
     .optional()
     .nullable(),
-  activityDate: z
+  startDateTime: z
     .string()
     .min(1, 'activityManagement.activityDateRequired'),
+  endDateTime: z
+    .string()
+    .optional()
+    .nullable(),
+  isAllDay: z.boolean(),
+  reminders: z.array(z.number()),
 });
 
 export type ActivityFormSchema = z.infer<typeof activityFormSchema>;

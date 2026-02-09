@@ -154,7 +154,7 @@ export function ActivityAdvancedFilter({
                 </Select>
               ) : (
                 <Input
-                  type={row.column === 'DueDate' ? 'date' : 'text'}
+                  type={row.column === 'StartDateTime' ? 'date' : 'text'}
                   placeholder={t('advancedFilter.value', 'Value')}
                   value={row.value}
                   onChange={(e) => updateRow(row.id, { value: e.target.value })}

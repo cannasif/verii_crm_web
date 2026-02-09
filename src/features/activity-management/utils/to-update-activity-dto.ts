@@ -1,25 +1,37 @@
-import type { ActivityDto, ActivityTypeRef, UpdateActivityDto } from '../types/activity-types';
+import { ActivityPriority, ActivityStatus, ReminderChannel, type ActivityDto, type UpdateActivityDto } from '../types/activity-types';
 
-function toActivityTypeString(value: string | ActivityTypeRef): string {
-  if (typeof value === 'object' && value !== null && 'id' in value) return String((value as ActivityTypeRef).id);
-  return String(value);
+function toStatus(value: ActivityDto['status']): number {
+  if (typeof value === 'number') return value;
+  if (value === 'Completed') return ActivityStatus.Completed;
+  if (value === 'Cancelled' || value === 'Canceled') return ActivityStatus.Cancelled;
+  return ActivityStatus.Scheduled;
+}
+
+function toPriority(value: ActivityDto['priority']): number {
+  if (typeof value === 'number') return value;
+  if (value === 'Low') return ActivityPriority.Low;
+  if (value === 'High') return ActivityPriority.High;
+  return ActivityPriority.Medium;
 }
 
 export function toUpdateActivityDto(activity: ActivityDto, overrides?: Partial<UpdateActivityDto>): UpdateActivityDto {
   return {
     subject: activity.subject,
     description: activity.description,
-    activityType: toActivityTypeString(activity.activityType),
+    activityTypeId: activity.activityTypeId,
+    startDateTime: activity.startDateTime,
+    endDateTime: activity.endDateTime,
+    isAllDay: activity.isAllDay,
+    status: toStatus(activity.status),
+    priority: toPriority(activity.priority),
+    contactId: activity.contactId,
     potentialCustomerId: activity.potentialCustomerId,
     erpCustomerCode: activity.erpCustomerCode,
-    productCode: activity.productCode,
-    productName: activity.productName,
-    status: activity.status,
-    isCompleted: activity.isCompleted,
-    priority: activity.priority,
-    contactId: activity.contactId,
     assignedUserId: activity.assignedUserId,
-    activityDate: activity.activityDate,
+    reminders: (activity.reminders || []).map((reminder) => ({
+      offsetMinutes: reminder.offsetMinutes,
+      channel: reminder.channel ?? ReminderChannel.InApp,
+    })),
     ...overrides,
   };
 }

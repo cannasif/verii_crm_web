@@ -21,9 +21,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Combobox } from '@/components/ui/combobox';
-import { activityFormSchema, type ActivityFormSchema } from '../types/activity-types';
-import type { ActivityDto } from '../types/activity-types';
-import { ACTIVITY_STATUSES, ACTIVITY_PRIORITIES } from '../utils/activity-constants';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  activityFormSchema,
+  ActivityPriority,
+  ActivityStatus,
+  type ActivityDto,
+  type ActivityFormSchema,
+} from '../types/activity-types';
+import { ACTIVITY_STATUSES, ACTIVITY_PRIORITIES, REMINDER_MINUTE_PRESETS } from '../utils/activity-constants';
 import { activityTypeApi } from '@/features/activity-type/api/activity-type-api';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
@@ -31,19 +37,7 @@ import { useQuery } from '@tanstack/react-query';
 import { contactApi } from '@/features/contact-management/api/contact-api';
 import type { PagedFilter } from '@/types/api';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
-import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
-import { 
-  Search, 
-  Calendar, 
-  FileText, 
-  List, 
-  CheckSquare, 
-  Building2, 
-  Box, 
-  User, 
-  AlertCircle, 
-  X 
-} from 'lucide-react';
+import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell } from 'lucide-react';
 
 interface ActivityFormProps {
   open: boolean;
@@ -56,24 +50,38 @@ interface ActivityFormProps {
 
 const INPUT_STYLE = `
   h-11 rounded-lg
-  bg-slate-50 dark:bg-white/5 
-  border border-slate-200 dark:border-white/10 
+  bg-slate-50 dark:bg-white/5
+  border border-slate-200 dark:border-white/10
   text-slate-900 dark:text-white text-sm
-  placeholder:text-slate-400 dark:placeholder:text-slate-500 
+  placeholder:text-slate-400 dark:placeholder:text-slate-500
   focus-visible:bg-white dark:focus-visible:bg-white/5
   focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
   transition-all duration-200 w-full
 `;
 
-const LABEL_STYLE = "text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2";
+const LABEL_STYLE = 'text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2';
 
-function FormSection({ title, children, className = '' }: { title: string; children: ReactNode; className?: string }) {
+function FormSection({ title, children, className = '' }: { title: string; children: ReactNode; className?: string }): ReactElement {
   return (
     <section className={className}>
       <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">{title}</h3>
       <div className="space-y-4">{children}</div>
     </section>
   );
+}
+
+function normalizeStatus(value: number | string | undefined): number {
+  if (typeof value === 'number') return value;
+  if (value === 'Completed') return ActivityStatus.Completed;
+  if (value === 'Cancelled' || value === 'Canceled') return ActivityStatus.Cancelled;
+  return ActivityStatus.Scheduled;
+}
+
+function normalizePriority(value: number | string | undefined): number {
+  if (typeof value === 'number') return value;
+  if (value === 'Low') return ActivityPriority.Low;
+  if (value === 'High') return ActivityPriority.High;
+  return ActivityPriority.Medium;
 }
 
 export function ActivityForm({
@@ -88,7 +96,6 @@ export function ActivityForm({
   const { data: customerOptions = [] } = useCustomerOptions();
   const { data: userOptions = [] } = useUserOptions();
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
-  const [productSelectDialogOpen, setProductSelectDialogOpen] = useState(false);
   const [selectedCustomerDisplayName, setSelectedCustomerDisplayName] = useState<string | null>(null);
 
   const form = useForm<ActivityFormSchema>({
@@ -98,16 +105,18 @@ export function ActivityForm({
       subject: '',
       description: '',
       activityType: '',
-      status: 'Scheduled',
-      isCompleted: false,
-      activityDate: new Date().toISOString().split('T')[0],
+      status: ActivityStatus.Scheduled,
+      priority: ActivityPriority.Medium,
+      startDateTime: new Date().toISOString().split('T')[0],
+      endDateTime: undefined,
+      isAllDay: false,
+      reminders: [],
     },
   });
 
   const isFormValid = form.formState.isValid;
   const isSubmitting = isLoading;
 
-  const watchedStatus = form.watch('status');
   const watchedCustomerId = form.watch('potentialCustomerId');
 
   const { data: activityTypesResponse } = useQuery({
@@ -124,7 +133,10 @@ export function ActivityForm({
     queryKey: ['contactOptions', watchedCustomerId],
     queryFn: async () => {
       const response = await contactApi.getList({
-        pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc',
+        pageNumber: 1,
+        pageSize: 1000,
+        sortBy: 'Id',
+        sortDirection: 'asc',
         filters: watchedCustomerId ? [{ column: 'CustomerId', operator: 'eq', value: watchedCustomerId.toString() }] as PagedFilter[] : undefined,
       });
       return response.data || [];
@@ -136,7 +148,7 @@ export function ActivityForm({
 
   useEffect(() => {
     if (open && !activity && initialDate) {
-      form.setValue('activityDate', initialDate);
+      form.setValue('startDateTime', initialDate);
     }
   }, [open, initialDate, activity, form]);
 
@@ -145,47 +157,39 @@ export function ActivityForm({
       form.reset({
         subject: activity.subject,
         description: activity.description || '',
-        activityType: activity.activityType
-          ? typeof activity.activityType === 'object' && activity.activityType !== null && 'id' in activity.activityType
-            ? String((activity.activityType as { id: number }).id)
-            : String(activity.activityType)
-          : '',
+        activityType: activity.activityTypeId ? String(activity.activityTypeId) : '',
         potentialCustomerId: activity.potentialCustomerId || undefined,
         erpCustomerCode: activity.erpCustomerCode || '',
-        productCode: activity.productCode || '',
-        productName: activity.productName || '',
-        status: activity.status,
-        isCompleted: activity.isCompleted,
-        priority: activity.priority || undefined,
+        status: normalizeStatus(activity.status),
+        priority: normalizePriority(activity.priority),
         contactId: activity.contactId || undefined,
         assignedUserId: activity.assignedUserId || undefined,
-        activityDate: activity.activityDate ? new Date(activity.activityDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-      } as ActivityFormSchema);
+        startDateTime: activity.startDateTime ? new Date(activity.startDateTime).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        endDateTime: activity.endDateTime ? new Date(activity.endDateTime).toISOString().split('T')[0] : undefined,
+        isAllDay: activity.isAllDay,
+        reminders: (activity.reminders || []).map((reminder) => reminder.offsetMinutes),
+      });
       setSelectedCustomerDisplayName(null);
-    } else {
-      form.reset({
-        subject: '',
-        description: '',
-        activityType: '',
-        potentialCustomerId: undefined,
-        erpCustomerCode: '',
-        productCode: '',
-        productName: '',
-        status: 'Scheduled',
-        isCompleted: false,
-        priority: undefined,
-        contactId: undefined,
-        assignedUserId: undefined,
-        activityDate: initialDate || new Date().toISOString().split('T')[0],
-      } as ActivityFormSchema);
-      setSelectedCustomerDisplayName(null);
+      return;
     }
-  }, [activity, form, initialDate]);
 
-  useEffect(() => {
-    if (watchedStatus === 'Completed') form.setValue('isCompleted', true);
-    else if (watchedStatus !== 'Completed' && form.getValues('isCompleted')) form.setValue('isCompleted', false);
-  }, [watchedStatus, form]);
+    form.reset({
+      subject: '',
+      description: '',
+      activityType: '',
+      potentialCustomerId: undefined,
+      erpCustomerCode: '',
+      status: ActivityStatus.Scheduled,
+      priority: ActivityPriority.Medium,
+      contactId: undefined,
+      assignedUserId: undefined,
+      startDateTime: initialDate || new Date().toISOString().split('T')[0],
+      endDateTime: undefined,
+      isAllDay: false,
+      reminders: [],
+    });
+    setSelectedCustomerDisplayName(null);
+  }, [activity, form, initialDate]);
 
   useEffect(() => {
     if (!watchedCustomerId) form.setValue('contactId', undefined);
@@ -238,7 +242,7 @@ export function ActivityForm({
                       <FormLabel className={LABEL_STYLE}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType', 'Tip')} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Combobox
-                          options={activityTypes.map(type => ({ value: String(type.id), label: type.name }))}
+                          options={activityTypes.map((type) => ({ value: String(type.id), label: type.name }))}
                           value={field.value ? String(field.value) : ''}
                           onValueChange={field.onChange}
                           placeholder={t('activityManagement.select', 'Seç')}
@@ -253,9 +257,9 @@ export function ActivityForm({
                       <FormLabel className={LABEL_STYLE}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.status', 'Durum')} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Combobox
-                          options={ACTIVITY_STATUSES.map(status => ({ value: status.value, label: t(`activityManagement.status${status.value.replace(' ', '')}`, status.label) }))}
-                          value={field.value}
-                          onValueChange={field.onChange}
+                          options={ACTIVITY_STATUSES.map((statusOption) => ({ value: String(statusOption.value), label: t(statusOption.labelKey, statusOption.label) }))}
+                          value={String(field.value)}
+                          onValueChange={(value) => field.onChange(Number(value))}
                           placeholder={t('activityManagement.select', 'Seç')}
                           className={INPUT_STYLE}
                         />
@@ -265,24 +269,45 @@ export function ActivityForm({
                   )} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="activityDate" render={({ field }) => (
+                  <FormField control={form.control} name="startDateTime" render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate', 'Tarih')} <span className="text-red-500">*</span></FormLabel>
                       <FormControl><Input {...field} type="date" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
                   )} />
+                  <FormField control={form.control} name="endDateTime" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate', 'Bitiş Tarihi')}</FormLabel>
+                      <FormControl><Input type="date" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || undefined)} /></FormControl>
+                      <FormMessage className="text-xs text-red-500" />
+                    </FormItem>
+                  )} />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="priority" render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.priority', 'Öncelik')}</FormLabel>
                       <FormControl>
                         <Combobox
-                          options={[{ value: 'none', label: t('activityManagement.noPrioritySelected', 'Seçilmedi') }, ...ACTIVITY_PRIORITIES.map(priority => ({ value: priority.value, label: t(`activityManagement.priority${priority.value}`, priority.label) }))]}
-                          value={field.value || 'none'}
-                          onValueChange={(value) => field.onChange(value && value !== 'none' ? value : undefined)}
+                          options={ACTIVITY_PRIORITIES.map((priorityOption) => ({ value: String(priorityOption.value), label: t(priorityOption.labelKey, priorityOption.label) }))}
+                          value={String(field.value ?? ActivityPriority.Medium)}
+                          onValueChange={(value) => field.onChange(Number(value))}
                           placeholder={t('activityManagement.select', 'Seç')}
                           className={INPUT_STYLE}
                         />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500" />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="isAllDay" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.allDay', 'Tüm Gün')}</FormLabel>
+                      <FormControl>
+                        <div className="h-11 px-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center gap-3">
+                          <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                          <span className="text-sm text-slate-700 dark:text-slate-300">{t('activityManagement.allDay', 'Tüm Gün')}</span>
+                        </div>
                       </FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
@@ -291,43 +316,46 @@ export function ActivityForm({
               </FormSection>
 
               <FormSection title={t('activityManagement.relations', 'Müşteri & ilişkiler')}>
-                <FormField control={form.control} name="potentialCustomerId" render={({ field }) => {
-                          const watchedErpCode = form.watch('erpCustomerCode');
-                          const selectedCustomer = customerOptions.find((c) => c.id === field.value);
-                          const displayValue = selectedCustomer
-                            ? (selectedCustomer.name || selectedCustomer.customerCode || String(field.value))
-                            : watchedErpCode
-                              ? (selectedCustomerDisplayName
-                                  ? `${selectedCustomerDisplayName} (${t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })})`
-                                  : t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` }))
-                              : '';
+                <FormField
+                  control={form.control}
+                  name="potentialCustomerId"
+                  render={({ field }) => {
+                    const watchedErpCode = form.watch('erpCustomerCode');
+                    const selectedCustomer = customerOptions.find((customer) => customer.id === field.value);
+                    const displayValue = selectedCustomer
+                      ? selectedCustomer.name || selectedCustomer.customerCode || String(field.value)
+                      : watchedErpCode
+                        ? selectedCustomerDisplayName
+                          ? `${selectedCustomerDisplayName} (${t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })})`
+                          : t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })
+                        : '';
 
-                          return (
-                            <FormItem>
-                              <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.customer', 'Müşteri')}</FormLabel>
-                              <div className="flex w-full items-center gap-2">
-                                <FormControl>
-                                  <Input
-                                    readOnly
-                                    value={displayValue}
-                                    placeholder={t('activityManagement.selectCustomer', 'Müşteri seçin')}
-                                    className={`${INPUT_STYLE} flex-1 cursor-pointer`}
-                                    onClick={() => setCustomerSelectDialogOpen(true)}
-                                  />
-                                </FormControl>
-                                <Button type="button" variant="outline" onClick={() => setCustomerSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10" aria-label={t('activityManagement.selectCustomer', 'Müşteri seçin')}>
-                                  <Search size={18} />
-                                </Button>
-                                {(field.value != null || watchedErpCode) && (
-                                  <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(e) => { e.stopPropagation(); field.onChange(undefined); form.setValue('erpCustomerCode', ''); setSelectedCustomerDisplayName(null); }} aria-label={t('common.clear', 'Temizle')}>
-                                    <X size={18} />
-                                  </Button>
-                                )}
-                              </div>
-                              <FormMessage className="text-xs text-red-500" />
-                            </FormItem>
-                          );
-                        }}
+                    return (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.customer', 'Müşteri')}</FormLabel>
+                        <div className="flex w-full items-center gap-2">
+                          <FormControl>
+                            <Input
+                              readOnly
+                              value={displayValue}
+                              placeholder={t('activityManagement.selectCustomer', 'Müşteri seçin')}
+                              className={`${INPUT_STYLE} flex-1 cursor-pointer`}
+                              onClick={() => setCustomerSelectDialogOpen(true)}
+                            />
+                          </FormControl>
+                          <Button type="button" variant="outline" onClick={() => setCustomerSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10" aria-label={t('activityManagement.selectCustomer', 'Müşteri seçin')}>
+                            <Search size={18} />
+                          </Button>
+                          {(field.value != null || watchedErpCode) && (
+                            <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(event) => { event.stopPropagation(); field.onChange(undefined); form.setValue('erpCustomerCode', ''); setSelectedCustomerDisplayName(null); }} aria-label={t('common.clear', 'Temizle')}>
+                              <X size={18} />
+                            </Button>
+                          )}
+                        </div>
+                        <FormMessage className="text-xs text-red-500" />
+                      </FormItem>
+                    );
+                  }}
                 />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="contactId" render={({ field }) => (
@@ -335,9 +363,9 @@ export function ActivityForm({
                       <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.contactId', 'İletişim')}</FormLabel>
                       <FormControl>
                         <Combobox
-                          options={[{ value: 'none', label: t('activityManagement.noContactSelected', 'Seçilmedi') }, ...contactOptions.map(contact => ({ value: contact.id.toString(), label: contact.fullName }))]}
+                          options={[{ value: 'none', label: t('activityManagement.noContactSelected', 'Seçilmedi') }, ...contactOptions.map((contact) => ({ value: contact.id.toString(), label: contact.fullName }))]}
                           value={field.value && field.value !== 0 ? field.value.toString() : 'none'}
-                          onValueChange={(value) => field.onChange(value && value !== 'none' ? parseInt(value) : undefined)}
+                          onValueChange={(value) => field.onChange(value && value !== 'none' ? Number(value) : undefined)}
                           placeholder={watchedCustomerId ? t('activityManagement.select', 'Seç') : t('activityManagement.selectCustomerFirst', 'Önce Müşteri')}
                           disabled={!watchedCustomerId}
                           className={INPUT_STYLE}
@@ -351,9 +379,9 @@ export function ActivityForm({
                       <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser', 'Atanan Kullanıcı')}</FormLabel>
                       <FormControl>
                         <Combobox
-                          options={[{ value: 'none', label: t('activityManagement.noUserSelected', 'Seçilmedi') }, ...userOptions.map(user => ({ value: user.id.toString(), label: user.fullName }))]}
+                          options={[{ value: 'none', label: t('activityManagement.noUserSelected', 'Seçilmedi') }, ...userOptions.map((userOption) => ({ value: userOption.id.toString(), label: userOption.fullName }))]}
                           value={field.value && field.value !== 0 ? field.value.toString() : 'none'}
-                          onValueChange={(value) => field.onChange(value && value !== 'none' ? parseInt(value) : undefined)}
+                          onValueChange={(value) => field.onChange(value && value !== 'none' ? Number(value) : undefined)}
                           placeholder={t('activityManagement.select', 'Seç')}
                           className={INPUT_STYLE}
                         />
@@ -372,29 +400,41 @@ export function ActivityForm({
                     <FormMessage className="text-xs text-red-500" />
                   </FormItem>
                 )} />
-                <FormField control={form.control} name="productCode" render={({ field }) => {
-                  const watchedProductName = form.watch('productName');
-                  const displayValue = field.value && watchedProductName ? `${field.value} - ${watchedProductName}` : field.value || watchedProductName || '';
-                  return (
+                <FormField
+                  control={form.control}
+                  name="reminders"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Box size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.product', 'Stok/Ürün')}</FormLabel>
-                      <div className="flex w-full items-center gap-2">
-                        <FormControl>
-                          <Input readOnly value={displayValue} placeholder={t('activityManagement.selectProduct', 'Stok/Ürün seçin')} className={`${INPUT_STYLE} flex-1`} />
-                        </FormControl>
-                        <Button type="button" variant="outline" onClick={() => setProductSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10">
-                          <Search size={18} />
-                        </Button>
-                        {(field.value || watchedProductName) && (
-                          <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={() => { field.onChange(''); form.setValue('productName', ''); }}>
-                            <X size={18} />
-                          </Button>
-                        )}
-                      </div>
+                      <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders', 'Hatırlatmalar')}</FormLabel>
+                      <FormControl>
+                        <div className="grid grid-cols-2 gap-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-3">
+                          {REMINDER_MINUTE_PRESETS.map((offset) => {
+                            const checked = (field.value || []).includes(offset);
+                            const label = offset >= 1440
+                              ? t('activityManagement.reminderDaysBefore', { count: Math.floor(offset / 1440), defaultValue: `${Math.floor(offset / 1440)} gün önce` })
+                              : t('activityManagement.reminderMinutesBefore', { count: offset, defaultValue: `${offset} dk önce` });
+
+                            return (
+                              <label key={offset} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                                <Checkbox
+                                  checked={checked}
+                                  onCheckedChange={(value) => {
+                                    const current = field.value || [];
+                                    const next = value
+                                      ? [...current, offset]
+                                      : current.filter((item) => item !== offset);
+                                    field.onChange(next.sort((a, b) => a - b));
+                                  }}
+                                />
+                                <span>{label}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
-                  );
-                }}
+                  )}
                 />
               </FormSection>
 
@@ -410,7 +450,7 @@ export function ActivityForm({
           </Form>
         </div>
       </DialogContent>
-      
+
       <CustomerSelectDialog
         open={customerSelectDialogOpen}
         onOpenChange={setCustomerSelectDialogOpen}
@@ -419,16 +459,6 @@ export function ActivityForm({
           form.setValue('erpCustomerCode', customer.erpCustomerCode ?? '');
           setSelectedCustomerDisplayName(customer.customerName ?? null);
           setCustomerSelectDialogOpen(false);
-        }}
-      />
-      
-      <ProductSelectDialog
-        open={productSelectDialogOpen}
-        onOpenChange={setProductSelectDialogOpen}
-        onSelect={(product: ProductSelectionResult) => {
-          form.setValue('productCode', product.code);
-          form.setValue('productName', product.name);
-          setProductSelectDialogOpen(false);
         }}
       />
     </Dialog>

@@ -20,6 +20,7 @@ import { buildCreateActivityPayload } from '@/features/activity-management/utils
 import { toUpdateActivityDto } from '@/features/activity-management/utils/to-update-activity-dto';
 import type { ActivityDto } from '@/features/activity-management/types/activity-types';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
+import { ActivityStatus } from '@/features/activity-management/types/activity-types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
 import { useAuthStore } from '@/stores/auth-store';
@@ -105,17 +106,17 @@ export function DailyTasksPage(): ReactElement {
   const filters: Array<{ column: string; operator: string; value: string }> = [
     statusFilter !== 'all' ? { column: 'Status', operator: 'eq', value: statusFilter } : undefined,
     assignedUserFilter ? { column: 'AssignedUserId', operator: 'eq', value: assignedUserFilter.toString() } : undefined,
-    activeTab === 'tasks' ? { column: 'ActivityDate', operator: 'gte', value: weekDateRange.startDate } : undefined,
-    activeTab === 'tasks' ? { column: 'ActivityDate', operator: 'lte', value: weekDateRange.endDate } : undefined,
-    activeTab === 'list' ? { column: 'ActivityDate', operator: 'eq', value: todayDate } : undefined,
-    activeTab === 'calendar' ? { column: 'ActivityDate', operator: 'gte', value: calendarDateRange.startDate } : undefined,
-    activeTab === 'calendar' ? { column: 'ActivityDate', operator: 'lte', value: calendarDateRange.endDate } : undefined,
+    activeTab === 'tasks' ? { column: 'StartDateTime', operator: 'gte', value: weekDateRange.startDate } : undefined,
+    activeTab === 'tasks' ? { column: 'StartDateTime', operator: 'lte', value: weekDateRange.endDate } : undefined,
+    activeTab === 'list' ? { column: 'StartDateTime', operator: 'eq', value: todayDate } : undefined,
+    activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'gte', value: calendarDateRange.startDate } : undefined,
+    activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'lte', value: calendarDateRange.endDate } : undefined,
   ].filter((f): f is { column: string; operator: string; value: string } => f !== undefined);
 
   const { data, isLoading, refetch } = useActivities({
     pageNumber: 1,
     pageSize: 1000,
-    sortBy: 'ActivityDate',
+    sortBy: 'StartDateTime',
     sortDirection: 'asc',
     filters: filters.length > 0 ? filters : undefined,
   });
@@ -125,13 +126,20 @@ export function DailyTasksPage(): ReactElement {
   const createActivity = useCreateActivity();
 
   const activities = useMemo<ActivityDto[]>(
-    () => data?.data ?? EMPTY_ACTIVITIES,
+    () =>
+      (data?.data ?? EMPTY_ACTIVITIES).map((activity) => ({
+        ...activity,
+        activityDate: activity.activityDate ?? activity.startDateTime,
+        isCompleted:
+          activity.isCompleted ??
+          Number(activity.status) === ActivityStatus.Scheduled,
+      })),
     [data?.data]
   );
 
   const filteredActivities = useMemo(() => {
     let filtered = activities;
-    if (statusFilter !== 'all') filtered = filtered.filter((activity) => activity.status === statusFilter);
+    if (statusFilter !== 'all') filtered = filtered.filter((activity) => String(activity.status) === statusFilter);
     if (assignedUserFilter) filtered = filtered.filter((activity) => activity.assignedUserId === assignedUserFilter);
     
     if (activeTab === 'tasks') {
@@ -160,7 +168,12 @@ export function DailyTasksPage(): ReactElement {
 
   // --- Handlers ---
   const handleToggleComplete = async (activity: ActivityDto) => {
-    await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: activity.isCompleted ? 'Scheduled' : 'Completed', isCompleted: !activity.isCompleted }) });
+    await updateActivity.mutateAsync({
+      id: activity.id,
+      data: toUpdateActivityDto(activity, {
+        status: activity.isCompleted ? ActivityStatus.Scheduled : ActivityStatus.Completed,
+      }),
+    });
     void refetch();
   };
   const handleDelete = async (id: number) => { await deleteActivity.mutateAsync(id); void refetch(); };
@@ -173,9 +186,9 @@ export function DailyTasksPage(): ReactElement {
     setFormOpen(false);
     void refetch();
   };
-  const handleStartTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: 'In Progress', isCompleted: false }) }); void refetch(); };
-  const handleCompleteTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: 'Completed', isCompleted: true }) }); void refetch(); };
-  const handlePutOnHold = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: 'Postponed' }) }); void refetch(); };
+  const handleStartTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Scheduled }) }); void refetch(); };
+  const handleCompleteTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Completed }) }); void refetch(); };
+  const handlePutOnHold = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Cancelled }) }); void refetch(); };
   const handlePreviousMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1));
   const handleNextMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1));
   const handleToday = () => setCalendarMonth(new Date());
@@ -331,13 +344,13 @@ export function DailyTasksPage(): ReactElement {
                             <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className={filterButtonStyle(statusFilter === 'all')}>
                                 {t('dailyTasks.all', 'Tümü')}
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter('Scheduled')} className={filterButtonStyle(statusFilter === 'Scheduled')}>
+                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Scheduled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Scheduled))}>
                                 <Clock size={12} className="mr-1" /> {t('dailyTasks.pending', 'Bekleyen')}
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter('In Progress')} className={filterButtonStyle(statusFilter === 'In Progress')}>
-                                <Play size={10} className="mr-1" fill="currentColor" /> {t('dailyTasks.inProgress', 'Aktif')}
+                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Cancelled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Cancelled))}>
+                                <PauseCircle size={12} className="mr-1" /> {t('activityManagement.statusCanceled', 'İptal Edildi')}
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter('Completed')} className={filterButtonStyle(statusFilter === 'Completed')}>
+                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Completed))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Completed))}>
                                 <CheckCircle2 size={12} className="mr-1" /> {t('dailyTasks.completed', 'Biten')}
                             </Button>
                         </div>
@@ -445,12 +458,12 @@ export function DailyTasksPage(): ReactElement {
 
                             {/* Hızlı Aksiyonlar */}
                             <div className="flex gap-2">
-                                {activity.status === 'Scheduled' && (
+                                {Number(activity.status) === ActivityStatus.Scheduled && (
                                     <Button size="sm" className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 hover:bg-blue-600 hover:text-white p-0 transition-colors shadow-none" onClick={() => handleStartTask(activity)}>
                                         <Play size={12} className="md:w-3.5 md:h-3.5" fill="currentColor" />
                                     </Button>
                                 )}
-                                {activity.status === 'In Progress' && (
+                                {Number(activity.status) === ActivityStatus.Scheduled && (
                                     <Button size="sm" className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 hover:bg-amber-600 hover:text-white p-0 transition-colors shadow-none" onClick={() => handlePutOnHold(activity)}>
                                         <PauseCircle size={14} className="md:w-4 md:h-4" />
                                     </Button>

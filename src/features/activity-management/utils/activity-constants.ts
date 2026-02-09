@@ -1,22 +1,20 @@
-export const ACTIVITY_TYPES = [
-  { value: 'Call', label: 'Call' },
-  { value: 'Meeting', label: 'Meeting' },
-  { value: 'Email', label: 'Email' },
-  { value: 'Task', label: 'Task' },
-  { value: 'Note', label: 'Note' },
-  { value: 'Event', label: 'Event' },
-] as const;
+import { ActivityPriority, ActivityStatus } from '../types/activity-types';
 
 export const ACTIVITY_STATUSES = [
-  { value: 'Scheduled', label: 'Scheduled', color: 'blue' },
-  { value: 'In Progress', label: 'In Progress', color: 'yellow' },
-  { value: 'Completed', label: 'Completed', color: 'green' },
-  { value: 'Canceled', label: 'Canceled', color: 'red' },
-  { value: 'Postponed', label: 'Postponed', color: 'gray' },
+  { value: ActivityStatus.Scheduled, label: 'Scheduled', labelKey: 'activityManagement.statusScheduled' },
+  { value: ActivityStatus.Completed, label: 'Completed', labelKey: 'activityManagement.statusCompleted' },
+  { value: ActivityStatus.Cancelled, label: 'Cancelled', labelKey: 'activityManagement.statusCanceled' },
 ] as const;
 
 export const ACTIVITY_PRIORITIES = [
-  { value: 'Low', label: 'Low', color: 'gray' },
-  { value: 'Medium', label: 'Medium', color: 'yellow' },
-  { value: 'High', label: 'High', color: 'red' },
+  { value: ActivityPriority.Low, label: 'Low', labelKey: 'activityManagement.priorityLow' },
+  { value: ActivityPriority.Medium, label: 'Medium', labelKey: 'activityManagement.priorityMedium' },
+  { value: ActivityPriority.High, label: 'High', labelKey: 'activityManagement.priorityHigh' },
+] as const;
+
+export const REMINDER_MINUTE_PRESETS = [
+  15,
+  30,
+  60,
+  1440,
 ] as const;
