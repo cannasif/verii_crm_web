@@ -154,9 +154,9 @@ export function ContactForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[750px] max-h-[85vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
         
-        <DialogHeader className="px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+        <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
           <div className="flex items-center gap-3">
              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
@@ -177,12 +177,29 @@ export function ContactForm({
           </Button>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 custom-scrollbar">
           <Form {...form}>
             <form id="contact-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                   
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}>
+                          <UserCircleIcon size={16} className="text-pink-500" />
+                          {t('contactManagement.form.firstName', 'Ad')} <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder', 'Örn: Ali')} maxLength={100} />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="salutation"
@@ -216,15 +233,15 @@ export function ContactForm({
 
                   <FormField
                     control={form.control}
-                    name="firstName"
+                    name="lastName"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.firstName', 'Ad')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.lastName', 'Soyad')} <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder', 'Örn: Ali')} maxLength={100} />
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder', 'Örn: Yılmaz')} maxLength={100} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
@@ -243,57 +260,6 @@ export function ContactForm({
                         <FormControl>
                           <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.middleNamePlaceholder', 'Örn: Kemal')} maxLength={100} />
                         </FormControl>
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="col-span-1 md:col-span-2">
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LABEL_STYLE}>
-                            <UserCircleIcon size={16} className="text-pink-500" />
-                            {t('contactManagement.form.lastName', 'Soyad')} <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder', 'Örn: Yılmaz')} maxLength={100} />
-                          </FormControl>
-                          <FormMessage className="text-xs" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="customerId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
-                          <Building03Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.customer', 'Müşteri')} <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))}
-                          value={field.value && field.value !== 0 ? field.value.toString() : ""}
-                          disabled={customersLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                              <SelectValue placeholder={t('contactManagement.form.selectCustomer', 'Müşteri seçiniz...')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className={DROPDOWN_CONTENT_STYLE}>
-                            {customers?.map((customer) => (
-                              <SelectItem key={customer.id} value={customer.id.toString()} className={DROPDOWN_ITEM_STYLE}>
-                                {customer.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )}
@@ -336,16 +302,31 @@ export function ContactForm({
 
                   <FormField
                     control={form.control}
-                    name="phone"
+                    name="customerId"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <Call02Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.phone', 'Telefon')}
+                          <Building03Icon size={16} className="text-pink-500" />
+                          {t('contactManagement.form.customer', 'Müşteri')} <span className="text-red-500">*</span>
                         </FormLabel>
-                        <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder="0212..." maxLength={20} />
-                        </FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))}
+                          value={field.value && field.value !== 0 ? field.value.toString() : ""}
+                          disabled={customersLoading}
+                        >
+                          <FormControl>
+                            <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
+                              <SelectValue placeholder={t('contactManagement.form.selectCustomer', 'Müşteri seçiniz...')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className={DROPDOWN_CONTENT_STYLE}>
+                            {customers?.map((customer) => (
+                              <SelectItem key={customer.id} value={customer.id.toString()} className={DROPDOWN_ITEM_STYLE}>
+                                {customer.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )}
@@ -362,6 +343,23 @@ export function ContactForm({
                         </FormLabel>
                         <FormControl>
                           <Input {...field} className={INPUT_STYLE} placeholder="05XX..." maxLength={20} />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}>
+                          <Call02Icon size={16} className="text-pink-500" />
+                          {t('contactManagement.form.phone', 'Telefon')}
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} className={INPUT_STYLE} placeholder="0212..." maxLength={20} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
