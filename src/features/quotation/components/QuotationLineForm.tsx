@@ -12,12 +12,13 @@ import { useErpProjects } from '@/services/hooks/useErpProjects';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
+import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { quotationApi } from '../api/quotation-api';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/quotation-types';
-import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search } from 'lucide-react';
+import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info } from 'lucide-react';
 
 interface TemporaryStockData {
   productCode: string;
@@ -96,6 +97,7 @@ export function QuotationLineForm({
   const { calculateLineTotals } = useQuotationCalculations();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
+  const [pricingInfoOpen, setPricingInfoOpen] = useState(false);
   const { data: projects = [] } = useErpProjects();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
@@ -163,6 +165,24 @@ export function QuotationLineForm({
     discountRate3: formData.discountRate3,
     userDiscountLimits,
   });
+
+  const matchingPricingRules = useMemo(
+    () =>
+      pricingRules
+        .filter((rule) => normalizeGroupCode(rule.stokCode) === normalizeGroupCode(formData.productCode))
+        .sort((left, right) => (left.minQuantity ?? 0) - (right.minQuantity ?? 0)),
+    [pricingRules, formData.productCode]
+  );
+
+  const matchingDiscountLimit = useMemo(
+    () =>
+      userDiscountLimits.find((limit) =>
+        groupMatches(limit.erpProductGroupCode, activeGroupCode)
+      ) ?? null,
+    [userDiscountLimits, activeGroupCode]
+  );
+
+  const ruleInsightCount = matchingPricingRules.length + (matchingDiscountLimit ? 1 : 0);
 
 
   useEffect(() => {
@@ -579,52 +599,52 @@ export function QuotationLineForm({
     if (field === 'quantity' && formData.productCode) {
       const newQuantity = value as number;
       const mainStockData = temporaryStockData.find((data) => data.productCode === formData.productCode);
-      const matchingPricingRule = pricingRules.find(
-        (rule) => rule.stokCode === formData.productCode
-      );
+      const matchingPricingRule = pricingRules
+        .filter((rule) => normalizeGroupCode(rule.stokCode) === normalizeGroupCode(formData.productCode))
+        .filter((rule) => {
+          const minQuantity = rule.minQuantity ?? 0;
+          const maxQuantity = rule.maxQuantity ?? Infinity;
+          return newQuantity >= minQuantity && newQuantity <= maxQuantity;
+        })
+        .sort((left, right) => (right.minQuantity ?? 0) - (left.minQuantity ?? 0))[0];
 
-      if (matchingPricingRule && mainStockData) {
-        const minQuantity = matchingPricingRule.minQuantity;
-        const maxQuantity = matchingPricingRule.maxQuantity ?? Infinity;
+      if (matchingPricingRule) {
+        if (matchingPricingRule.fixedUnitPrice !== null && matchingPricingRule.fixedUnitPrice !== undefined) {
+          const convertedPrice = convertPriceWithCurrency(
+            matchingPricingRule.fixedUnitPrice,
+            matchingPricingRule.currencyCode,
+            currency
+          );
 
-        if (newQuantity >= minQuantity && newQuantity <= maxQuantity) {
-          if (matchingPricingRule.fixedUnitPrice !== null && matchingPricingRule.fixedUnitPrice !== undefined) {
-            const convertedPrice = convertPriceWithCurrency(
-              matchingPricingRule.fixedUnitPrice,
-              matchingPricingRule.currencyCode,
-              currency
-            );
-
-            calculated = {
-              ...calculated,
-              unitPrice: convertedPrice,
-              discountRate1: matchingPricingRule.discountRate1,
-              discountRate2: matchingPricingRule.discountRate2,
-              discountRate3: matchingPricingRule.discountRate3,
-              pricingRuleHeaderId: matchingPricingRule.pricingRuleHeaderId,
-            };
-            calculated = calculateLineTotals(calculated);
-          } else {
-            calculated = {
-              ...calculated,
-              discountRate1: matchingPricingRule.discountRate1,
-              discountRate2: matchingPricingRule.discountRate2,
-              discountRate3: matchingPricingRule.discountRate3,
-              pricingRuleHeaderId: matchingPricingRule.pricingRuleHeaderId,
-            };
-            calculated = calculateLineTotals(calculated);
-          }
+          calculated = {
+            ...calculated,
+            unitPrice: convertedPrice,
+            discountRate1: matchingPricingRule.discountRate1,
+            discountRate2: matchingPricingRule.discountRate2,
+            discountRate3: matchingPricingRule.discountRate3,
+            pricingRuleHeaderId: matchingPricingRule.pricingRuleHeaderId,
+          };
+          calculated = calculateLineTotals(calculated);
         } else {
           calculated = {
             ...calculated,
-            unitPrice: mainStockData.unitPrice,
-            discountRate1: mainStockData.discountRate1,
-            discountRate2: mainStockData.discountRate2,
-            discountRate3: mainStockData.discountRate3,
-            pricingRuleHeaderId: null,
+            discountRate1: matchingPricingRule.discountRate1,
+            discountRate2: matchingPricingRule.discountRate2,
+            discountRate3: matchingPricingRule.discountRate3,
+            pricingRuleHeaderId: matchingPricingRule.pricingRuleHeaderId,
           };
           calculated = calculateLineTotals(calculated);
         }
+      } else if (mainStockData) {
+        calculated = {
+          ...calculated,
+          unitPrice: mainStockData.unitPrice,
+          discountRate1: mainStockData.discountRate1,
+          discountRate2: mainStockData.discountRate2,
+          discountRate3: mainStockData.discountRate3,
+          pricingRuleHeaderId: null,
+        };
+        calculated = calculateLineTotals(calculated);
       }
     }
 
@@ -735,6 +755,23 @@ export function QuotationLineForm({
               className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex-none items-center justify-center"
             >
               <Search className="h-5 w-5" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setPricingInfoOpen(true)}
+              disabled={!formData.productCode}
+              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex-none items-center gap-2"
+            >
+              <Info className="h-4 w-4" />
+              <span className="text-xs font-medium">
+                {t('common.pricingInsights.button', 'Kural')}
+              </span>
+              {ruleInsightCount > 0 && (
+                <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">
+                  {ruleInsightCount}
+                </span>
+              )}
             </Button>
           </div>
 
@@ -1072,6 +1109,15 @@ export function QuotationLineForm({
         onOpenChange={setCompanyDialogOpen}
         onSelect={handleCompanySelect}
         className="z-[200]"
+      />
+
+      <PricingRuleInsightDialog
+        open={pricingInfoOpen}
+        onOpenChange={setPricingInfoOpen}
+        productCode={formData.productCode}
+        activeGroupCode={activeGroupCode}
+        rules={matchingPricingRules}
+        discountLimit={matchingDiscountLimit}
       />
 
       <ProductSelectDialog

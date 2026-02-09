@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -16,7 +17,7 @@ import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { demandApi } from '../api/demand-api';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/demand-types';
-import { X, Check, Package, Calculator, Percent, DollarSign } from 'lucide-react';
+import { X, Check, Package, Calculator, Percent, DollarSign, Info } from 'lucide-react';
 
 interface TemporaryStockData {
   productCode: string;
@@ -106,6 +107,7 @@ export function DemandLineForm({
 
   const [formData, setFormData] = useState<DemandLineFormState>(line);
   const [relatedLines, setRelatedLines] = useState<DemandLineFormState[]>([]);
+  const [pricingInfoOpen, setPricingInfoOpen] = useState(false);
   const [temporaryStockData, setTemporaryStockData] = useState<TemporaryStockData[]>([]);
   const [lastLoadedProductCode, setLastLoadedProductCode] = useState<string | null>(null);
   const [quantityInputValue, setQuantityInputValue] = useState<string>(String(line.quantity || ''));
@@ -132,6 +134,24 @@ export function DemandLineForm({
     discountRate3: formData.discountRate3,
     userDiscountLimits,
   });
+
+  const matchingPricingRules = useMemo(
+    () =>
+      pricingRules
+        .filter((rule) => normalizeGroupCode(rule.stokCode) === normalizeGroupCode(formData.productCode))
+        .sort((left, right) => (left.minQuantity ?? 0) - (right.minQuantity ?? 0)),
+    [pricingRules, formData.productCode]
+  );
+
+  const matchingDiscountLimit = useMemo(
+    () =>
+      userDiscountLimits.find((limit) =>
+        groupMatches(limit.erpProductGroupCode, activeGroupCode)
+      ) ?? null,
+    [userDiscountLimits, activeGroupCode]
+  );
+
+  const ruleInsightCount = matchingPricingRules.length + (matchingDiscountLimit ? 1 : 0);
 
 
   useEffect(() => {
@@ -548,52 +568,52 @@ export function DemandLineForm({
     if (field === 'quantity' && formData.productCode) {
       const newQuantity = value as number;
       const mainStockData = temporaryStockData.find((data) => data.productCode === formData.productCode);
-      const matchingPricingRule = pricingRules.find(
-        (rule) => rule.stokCode === formData.productCode
-      );
+      const matchingPricingRule = pricingRules
+        .filter((rule) => normalizeGroupCode(rule.stokCode) === normalizeGroupCode(formData.productCode))
+        .filter((rule) => {
+          const minQuantity = rule.minQuantity ?? 0;
+          const maxQuantity = rule.maxQuantity ?? Infinity;
+          return newQuantity >= minQuantity && newQuantity <= maxQuantity;
+        })
+        .sort((left, right) => (right.minQuantity ?? 0) - (left.minQuantity ?? 0))[0];
 
-      if (matchingPricingRule && mainStockData) {
-        const minQuantity = matchingPricingRule.minQuantity;
-        const maxQuantity = matchingPricingRule.maxQuantity ?? Infinity;
+      if (matchingPricingRule) {
+        if (matchingPricingRule.fixedUnitPrice !== null && matchingPricingRule.fixedUnitPrice !== undefined) {
+          const convertedPrice = convertPriceWithCurrency(
+            matchingPricingRule.fixedUnitPrice,
+            matchingPricingRule.currencyCode,
+            currency
+          );
 
-        if (newQuantity >= minQuantity && newQuantity <= maxQuantity) {
-          if (matchingPricingRule.fixedUnitPrice !== null && matchingPricingRule.fixedUnitPrice !== undefined) {
-            const convertedPrice = convertPriceWithCurrency(
-              matchingPricingRule.fixedUnitPrice,
-              matchingPricingRule.currencyCode,
-              currency
-            );
-
-            calculated = {
-              ...calculated,
-              unitPrice: convertedPrice,
-              discountRate1: matchingPricingRule.discountRate1,
-              discountRate2: matchingPricingRule.discountRate2,
-              discountRate3: matchingPricingRule.discountRate3,
-              pricingRuleHeaderId: matchingPricingRule.pricingRuleHeaderId,
-            };
-            calculated = calculateLineTotals(calculated);
-          } else {
-            calculated = {
-              ...calculated,
-              discountRate1: matchingPricingRule.discountRate1,
-              discountRate2: matchingPricingRule.discountRate2,
-              discountRate3: matchingPricingRule.discountRate3,
-              pricingRuleHeaderId: matchingPricingRule.pricingRuleHeaderId,
-            };
-            calculated = calculateLineTotals(calculated);
-          }
+          calculated = {
+            ...calculated,
+            unitPrice: convertedPrice,
+            discountRate1: matchingPricingRule.discountRate1,
+            discountRate2: matchingPricingRule.discountRate2,
+            discountRate3: matchingPricingRule.discountRate3,
+            pricingRuleHeaderId: matchingPricingRule.pricingRuleHeaderId,
+          };
+          calculated = calculateLineTotals(calculated);
         } else {
           calculated = {
             ...calculated,
-            unitPrice: mainStockData.unitPrice,
-            discountRate1: mainStockData.discountRate1,
-            discountRate2: mainStockData.discountRate2,
-            discountRate3: mainStockData.discountRate3,
-            pricingRuleHeaderId: null,
+            discountRate1: matchingPricingRule.discountRate1,
+            discountRate2: matchingPricingRule.discountRate2,
+            discountRate3: matchingPricingRule.discountRate3,
+            pricingRuleHeaderId: matchingPricingRule.pricingRuleHeaderId,
           };
           calculated = calculateLineTotals(calculated);
         }
+      } else if (mainStockData) {
+        calculated = {
+          ...calculated,
+          unitPrice: mainStockData.unitPrice,
+          discountRate1: mainStockData.discountRate1,
+          discountRate2: mainStockData.discountRate2,
+          discountRate3: mainStockData.discountRate3,
+          pricingRuleHeaderId: null,
+        };
+        calculated = calculateLineTotals(calculated);
       }
     }
 
@@ -717,6 +737,22 @@ export function DemandLineForm({
               >
                 <Package className="h-3.5 w-3.5" />
                 {t('demand.lines.selectStock', 'Stok Seç')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setPricingInfoOpen(true)}
+                disabled={!formData.productCode}
+                className="gap-2"
+                size="sm"
+              >
+                <Info className="h-3.5 w-3.5" />
+                {t('common.pricingInsights.button', 'Kural')}
+                {ruleInsightCount > 0 && (
+                  <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">
+                    {ruleInsightCount}
+                  </span>
+                )}
               </Button>
             </div>
             <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
@@ -1087,6 +1123,14 @@ export function DemandLineForm({
           open={productDialogOpen}
           onOpenChange={setProductDialogOpen}
           onSelect={handleProductSelect}
+        />
+        <PricingRuleInsightDialog
+          open={pricingInfoOpen}
+          onOpenChange={setPricingInfoOpen}
+          productCode={formData.productCode}
+          activeGroupCode={activeGroupCode}
+          rules={matchingPricingRules}
+          discountLimit={matchingDiscountLimit}
         />
       </CardContent>
     </Card>
