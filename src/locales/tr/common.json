@@ -37,7 +37,26 @@
     "forbiddenDescription": "Bu sayfayi goruntuleme yetkiniz yok.",
     "forbiddenFrom": "Istenen yol",
     "goBack": "Geri don",
-    "goHome": "Anasayfaya git"
+    "goHome": "Anasayfaya git",
+    "pricingInsights": {
+      "button": "Kural",
+      "title": "Fiyat ve Iskonto Kurallari",
+      "description": "Secili stok icin aktif kural araliklari ve iskonto limitleri",
+      "stock": "Stok",
+      "group": "Grup",
+      "rules": "Kural Araliklari",
+      "noRule": "Bu stok icin eslesen fiyat kurali bulunamadi.",
+      "range": "Miktar",
+      "fixedPrice": "Sabit Fiyat",
+      "currency": "Doviz",
+      "discountLimit": "Iskonto Limit Araligi",
+      "noLimit": "Bu grup icin tanimli kullanici iskonto limiti bulunamadi.",
+      "limitGroup": "Limit Grubu",
+      "discount1": "Indirim 1",
+      "discount2": "Indirim 2",
+      "discount3": "Indirim 3",
+      "discount2And3": "Ind. 2/3"
+    }
   },
   "auth": {
     "login": {

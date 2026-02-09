@@ -37,7 +37,26 @@
     "forbiddenDescription": "Sie haben keine Berechtigung, diese Seite zu sehen.",
     "forbiddenFrom": "Angeforderter Pfad",
     "goBack": "Zuruck",
-    "goHome": "Startseite"
+    "goHome": "Startseite",
+    "pricingInsights": {
+      "button": "Regel",
+      "title": "Preis- und Rabattregeln",
+      "description": "Aktive Regelbereiche und Rabattlimits fur den gewahlten Artikel",
+      "stock": "Artikel",
+      "group": "Gruppe",
+      "rules": "Regelbereiche",
+      "noRule": "Keine passende Preisregel fur diesen Artikel gefunden.",
+      "range": "Menge",
+      "fixedPrice": "Festpreis",
+      "currency": "Wahrung",
+      "discountLimit": "Rabattlimit-Bereich",
+      "noLimit": "Fur diese Gruppe wurde kein Benutzer-Rabattlimit gefunden.",
+      "limitGroup": "Limit-Gruppe",
+      "discount1": "Rabatt 1",
+      "discount2": "Rabatt 2",
+      "discount3": "Rabatt 3",
+      "discount2And3": "Rab. 2/3"
+    }
   },
   "auth": {
     "login": {

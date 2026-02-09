@@ -37,7 +37,26 @@
     "forbiddenDescription": "Vous n'avez pas l'autorisation d'afficher cette page.",
     "forbiddenFrom": "Chemin demande",
     "goBack": "Retour",
-    "goHome": "Accueil"
+    "goHome": "Accueil",
+    "pricingInsights": {
+      "button": "Regle",
+      "title": "Regles de prix et de remise",
+      "description": "Plages de regles actives et limites de remise pour le stock selectionne",
+      "stock": "Stock",
+      "group": "Groupe",
+      "rules": "Plages de regles",
+      "noRule": "Aucune regle de prix correspondante pour ce stock.",
+      "range": "Quantite",
+      "fixedPrice": "Prix fixe",
+      "currency": "Devise",
+      "discountLimit": "Plage de limite de remise",
+      "noLimit": "Aucune limite de remise utilisateur pour ce groupe.",
+      "limitGroup": "Groupe de limite",
+      "discount1": "Remise 1",
+      "discount2": "Remise 2",
+      "discount3": "Remise 3",
+      "discount2And3": "Rem. 2/3"
+    }
   },
   "auth": {
     "login": {

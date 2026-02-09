@@ -37,7 +37,26 @@
     "forbiddenDescription": "Non hai i permessi per visualizzare questa pagina.",
     "forbiddenFrom": "Percorso richiesto",
     "goBack": "Indietro",
-    "goHome": "Home"
+    "goHome": "Home",
+    "pricingInsights": {
+      "button": "Regola",
+      "title": "Regole di prezzo e sconto",
+      "description": "Intervalli regole attive e limiti sconto per lo stock selezionato",
+      "stock": "Stock",
+      "group": "Gruppo",
+      "rules": "Intervalli regola",
+      "noRule": "Nessuna regola prezzo corrispondente per questo stock.",
+      "range": "Quantita",
+      "fixedPrice": "Prezzo fisso",
+      "currency": "Valuta",
+      "discountLimit": "Intervallo limite sconto",
+      "noLimit": "Nessun limite sconto utente trovato per questo gruppo.",
+      "limitGroup": "Gruppo limite",
+      "discount1": "Sconto 1",
+      "discount2": "Sconto 2",
+      "discount3": "Sconto 3",
+      "discount2And3": "Scont. 2/3"
+    }
   },
   "auth": {
     "login": {

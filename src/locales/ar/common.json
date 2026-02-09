@@ -37,7 +37,26 @@
     "forbiddenDescription": "ليست لديك صلاحية لعرض هذه الصفحة.",
     "forbiddenFrom": "المسار المطلوب",
     "goBack": "رجوع",
-    "goHome": "الصفحة الرئيسية"
+    "goHome": "الصفحة الرئيسية",
+    "pricingInsights": {
+      "button": "قاعدة",
+      "title": "قواعد السعر والخصم",
+      "description": "نطاقات القواعد النشطة وحدود الخصم للمخزون المحدد",
+      "stock": "المخزون",
+      "group": "المجموعة",
+      "rules": "نطاقات القواعد",
+      "noRule": "لا توجد قاعدة سعر مطابقة لهذا المخزون.",
+      "range": "الكمية",
+      "fixedPrice": "سعر ثابت",
+      "currency": "العملة",
+      "discountLimit": "نطاق حد الخصم",
+      "noLimit": "لا يوجد حد خصم مستخدم لهذه المجموعة.",
+      "limitGroup": "مجموعة الحد",
+      "discount1": "خصم 1",
+      "discount2": "خصم 2",
+      "discount3": "خصم 3",
+      "discount2And3": "خصم 2/3"
+    }
   },
   "auth": {
     "login": {

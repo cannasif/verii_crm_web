@@ -37,7 +37,26 @@
     "forbiddenDescription": "You do not have permission to view this page.",
     "forbiddenFrom": "Requested path",
     "goBack": "Go back",
-    "goHome": "Go home"
+    "goHome": "Go home",
+    "pricingInsights": {
+      "button": "Rule",
+      "title": "Pricing and Discount Rules",
+      "description": "Active rule ranges and discount limits for the selected stock",
+      "stock": "Stock",
+      "group": "Group",
+      "rules": "Rule Ranges",
+      "noRule": "No matching pricing rule was found for this stock.",
+      "range": "Quantity",
+      "fixedPrice": "Fixed Price",
+      "currency": "Currency",
+      "discountLimit": "Discount Limit Range",
+      "noLimit": "No user discount limit was found for this group.",
+      "limitGroup": "Limit Group",
+      "discount1": "Discount 1",
+      "discount2": "Discount 2",
+      "discount3": "Discount 3",
+      "discount2And3": "Disc. 2/3"
+    }
   },
   "auth": {
     "login": {
