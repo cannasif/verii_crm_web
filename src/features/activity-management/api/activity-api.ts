@@ -9,7 +9,11 @@ export const activityApi = {
     if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params.filters) {
+    if (Array.isArray(params.filters)) {
+      if (params.filters.length > 0) {
+        queryParams.append('filters', JSON.stringify(params.filters));
+      }
+    } else if (params.filters && Object.keys(params.filters).length > 0) {
       queryParams.append('filters', JSON.stringify(params.filters));
     }
 
