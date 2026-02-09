@@ -71,16 +71,16 @@ interface ContactTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ContactDto>[] => [
-    { key: 'id', label: t('contactManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[80px]' },
-    { key: 'fullName', label: t('contactManagement.table.fullName', 'Ad Soyad'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[200px]' },
-    { key: 'email', label: t('contactManagement.table.email', 'E-posta'), type: 'email', className: 'min-w-[200px] break-all' },
+    { key: 'id', label: t('contactManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[60px] md:w-[80px]' },
+    { key: 'fullName', label: t('contactManagement.table.fullName', 'Ad Soyad'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
+    { key: 'email', label: t('contactManagement.table.email', 'E-posta'), type: 'email', className: 'min-w-[160px] md:min-w-[200px] break-all' },
     { key: 'phone', label: t('contactManagement.table.phone', 'Telefon'), type: 'phone', className: 'whitespace-nowrap' },
     { key: 'mobile', label: t('contactManagement.table.mobile', 'Mobil'), type: 'mobile', className: 'whitespace-nowrap' },
-    { key: 'customerName', label: t('contactManagement.table.customer', 'Müşteri'), type: 'customer', className: 'min-w-[200px]' },
-    { key: 'titleName', label: t('contactManagement.table.title', 'Ünvan'), type: 'title', className: 'min-w-[150px]' },
+    { key: 'customerName', label: t('contactManagement.table.customer', 'Müşteri'), type: 'customer', className: 'min-w-[160px] md:min-w-[200px]' },
+    { key: 'titleName', label: t('contactManagement.table.title', 'Ünvan'), type: 'title', className: 'min-w-[120px] md:min-w-[150px]' },
     { key: 'createdDate', label: t('contactManagement.table.createdDate', 'Oluşturulma'), type: 'date', className: 'whitespace-nowrap' },
     { key: 'createdByFullUser', label: t('contactManagement.table.createdBy', 'Oluşturan'), type: 'user', className: 'whitespace-nowrap' },
-    { key: 'status', label: t('contactManagement.table.status', 'Durum'), type: 'status', className: 'w-[100px]' },
+    { key: 'status', label: t('contactManagement.table.status', 'Durum'), type: 'status', className: 'w-[84px] md:w-[100px]' },
 ];
 
 interface DraggableTableHeadProps extends React.ComponentProps<typeof TableHead> {
@@ -308,7 +308,8 @@ export function ContactTable({
           collisionDetection={closestCenter} 
           onDragEnd={handleDragEnd}
         >
-        <Table>
+        <div className="overflow-x-auto">
+        <Table className="min-w-[900px] lg:min-w-[1100px]">
             <TableHeader className="bg-slate-50/50 dark:bg-white/5">
               <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
                 <SortableContext 
@@ -329,7 +330,7 @@ export function ContactTable({
                       </DraggableTableHead>
                   ))}
                 </SortableContext>
-                <TableHead className={`${headStyle} text-right w-[100px]`}>
+                <TableHead className={`${headStyle} text-right w-[84px] md:w-[100px]`}>
                   {t('contactManagement.actions', 'İşlemler')}
                 </TableHead>
               </TableRow>
@@ -357,6 +358,7 @@ export function ContactTable({
               ))}
             </TableBody>
           </Table>
+        </div>
         </DndContext>
       </div>
 

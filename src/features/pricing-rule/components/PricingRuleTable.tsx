@@ -64,13 +64,13 @@ interface PricingRuleTableProps {
 }
 
 const getColumnsConfig = (t: TFunction): ColumnDef<PricingRuleHeaderGetDto>[] => [
-    { key: 'ruleCode', label: t('pricingRule.table.ruleCode', 'Kural Kodu'), type: 'code', className: 'w-[120px]' },
-    { key: 'ruleName', label: t('pricingRule.table.ruleName', 'Kural Adı'), type: 'text', className: 'min-w-[200px] font-medium' },
-    { key: 'ruleType', label: t('pricingRule.table.ruleType', 'Kural Tipi'), type: 'ruleType', className: 'w-[140px]' },
-    { key: 'validFrom', label: t('pricingRule.table.validFrom', 'Başlangıç'), type: 'date', className: 'w-[140px]' },
-    { key: 'validTo', label: t('pricingRule.table.validTo', 'Bitiş'), type: 'date', className: 'w-[140px]' },
-    { key: 'customerName', label: t('pricingRule.table.customer', 'Müşteri'), type: 'customer', className: 'min-w-[180px]' },
-    { key: 'isActive', label: t('pricingRule.table.status', 'Durum'), type: 'status', className: 'w-[120px]' },
+    { key: 'ruleCode', label: t('pricingRule.table.ruleCode', 'Kural Kodu'), type: 'code', className: 'w-[96px] md:w-[120px]' },
+    { key: 'ruleName', label: t('pricingRule.table.ruleName', 'Kural Adı'), type: 'text', className: 'min-w-[160px] md:min-w-[200px] font-medium' },
+    { key: 'ruleType', label: t('pricingRule.table.ruleType', 'Kural Tipi'), type: 'ruleType', className: 'w-[110px] md:w-[140px]' },
+    { key: 'validFrom', label: t('pricingRule.table.validFrom', 'Başlangıç'), type: 'date', className: 'w-[110px] md:w-[140px]' },
+    { key: 'validTo', label: t('pricingRule.table.validTo', 'Bitiş'), type: 'date', className: 'w-[110px] md:w-[140px]' },
+    { key: 'customerName', label: t('pricingRule.table.customer', 'Müşteri'), type: 'customer', className: 'min-w-[150px] md:min-w-[180px]' },
+    { key: 'isActive', label: t('pricingRule.table.status', 'Durum'), type: 'status', className: 'w-[96px] md:w-[120px]' },
 ];
 
 export function PricingRuleTable({
@@ -310,7 +310,8 @@ export function PricingRuleTable({
       </div>
 
       <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-transparent">
-        <Table>
+        <div className="overflow-x-auto">
+        <Table className="min-w-[900px] lg:min-w-[1100px]">
             <TableHeader className="bg-slate-50/50 dark:bg-white/5">
               <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
                 {tableColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (
@@ -325,7 +326,7 @@ export function PricingRuleTable({
                         </div>
                     </TableHead>
                 ))}
-                <TableHead className={`${headStyle} text-right w-[100px]`}>
+                <TableHead className={`${headStyle} text-right w-[84px] md:w-[100px]`}>
                   {t('pricingRule.actions', 'İşlemler')}
                 </TableHead>
               </TableRow>
@@ -352,6 +353,7 @@ export function PricingRuleTable({
               ))}
             </TableBody>
           </Table>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">

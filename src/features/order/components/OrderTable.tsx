@@ -111,7 +111,8 @@ export function OrderTable({
   return (
     <>
       <div className="rounded-md border border-zinc-300 dark:border-zinc-700/80 overflow-hidden bg-white/50 dark:bg-card/50">
-        <Table>
+        <div className="overflow-x-auto">
+        <Table className="min-w-[920px] lg:min-w-[1100px]">
           <TableHeader>
             <TableRow className="bg-muted/50">
               <TableHead
@@ -233,6 +234,7 @@ export function OrderTable({
             ))}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       <div className="flex items-center justify-between py-4">

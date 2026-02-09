@@ -28,14 +28,14 @@ export const getColumnsConfig = (t: TFunction) => [
     { key: 'branchCode', label: t('table.branchCode', 'Şube'), className: 'font-medium whitespace-nowrap' },
     { key: 'businessUnit', label: t('table.businessUnitCode', 'İş Birimi'), className: 'whitespace-nowrap' },
     { key: 'customerCode', label: t('table.customerCode', 'Müşteri Kodu'), className: 'font-semibold text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors whitespace-nowrap' },
-    { key: 'customerName', label: t('table.customerName', 'Müşteri Adı'), className: 'text-slate-800 dark:text-slate-200 font-medium min-w-[200px]' },
+    { key: 'customerName', label: t('table.customerName', 'Müşteri Adı'), className: 'text-slate-800 dark:text-slate-200 font-medium min-w-[160px] md:min-w-[200px]' },
     { key: 'phone', label: t('table.phone', 'Telefon'), className: 'whitespace-nowrap' },
-    { key: 'email', label: t('table.email', 'E-posta'), className: 'min-w-[200px] break-all' },
+    { key: 'email', label: t('table.email', 'E-posta'), className: 'min-w-[160px] md:min-w-[200px] break-all' },
     { key: 'city', label: t('table.city', 'Şehir'), className: 'whitespace-nowrap' },
     { key: 'district', label: t('table.district', 'İlçe'), className: 'whitespace-nowrap' },
-    { key: 'address', label: t('table.address', 'Adres'), className: 'min-w-[300px] leading-relaxed' },
+    { key: 'address', label: t('table.address', 'Adres'), className: 'min-w-[220px] md:min-w-[300px] leading-relaxed' },
     { key: 'countryCode', label: t('table.countryCode', 'Ülke'), className: '' },
-    { key: 'website', label: t('table.website', 'Web Sitesi'), className: 'text-blue-500 hover:underline min-w-[150px] break-all', isLink: true },
+    { key: 'website', label: t('table.website', 'Web Sitesi'), className: 'text-blue-500 hover:underline min-w-[120px] md:min-w-[150px] break-all', isLink: true },
     { key: 'taxNumber', label: t('table.taxNumber', 'Vergi No'), className: 'font-mono text-xs whitespace-nowrap' },
     { key: 'taxOffice', label: t('table.taxOffice', 'Vergi Dairesi'), className: 'whitespace-nowrap' },
     { key: 'tckn', label: t('table.tcknNumber', 'TCKN'), className: 'font-mono text-xs whitespace-nowrap' },
@@ -88,7 +88,7 @@ export function ErpCustomerTable({ customers, isLoading, visibleColumns, sortCon
   }
 
   return (
-    <table className="w-full min-w-[1200px] caption-bottom text-sm relative">
+    <table className="w-full min-w-[820px] md:min-w-[900px] lg:min-w-[1200px] caption-bottom text-sm relative">
         <TableHeader className="bg-[#151025] sticky top-0 z-10 shadow-sm">
             <TableRow className="h-10 hover:bg-transparent border-b border-slate-200 dark:border-white/10">
                 {allColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (

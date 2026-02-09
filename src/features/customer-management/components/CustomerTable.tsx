@@ -54,13 +54,13 @@ export interface CustomerTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerDto>[] => [
-    { key: 'id', label: t('customerManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[60px]' },
+    { key: 'id', label: t('customerManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[48px] md:w-[60px]' },
     { key: 'customerCode', label: t('customerManagement.table.customerCode', 'Kod'), type: 'code', className: 'font-mono text-xs' },
-    { key: 'name', label: t('customerManagement.table.name', 'Müşteri Adı'), type: 'text', className: 'font-bold text-slate-900 dark:text-white min-w-[200px]' },
-    { key: 'customerTypeName', label: t('customerManagement.table.customerType', 'Müşteri Tipi'), type: 'badge', className: 'min-w-[140px]' },
-    { key: 'email', label: t('customerManagement.table.email', 'E-posta'), type: 'email', className: 'min-w-[180px]' },
+    { key: 'name', label: t('customerManagement.table.name', 'Müşteri Adı'), type: 'text', className: 'font-bold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
+    { key: 'customerTypeName', label: t('customerManagement.table.customerType', 'Müşteri Tipi'), type: 'badge', className: 'min-w-[120px] md:min-w-[140px]' },
+    { key: 'email', label: t('customerManagement.table.email', 'E-posta'), type: 'email', className: 'min-w-[150px] md:min-w-[180px]' },
     { key: 'phone', label: t('customerManagement.table.phone', 'Telefon'), type: 'phone', className: 'whitespace-nowrap' },
-    { key: 'cityName', label: t('customerManagement.table.city', 'Şehir'), type: 'location', className: 'min-w-[120px]' },
+    { key: 'cityName', label: t('customerManagement.table.city', 'Şehir'), type: 'location', className: 'min-w-[96px] md:min-w-[120px]' },
     { key: 'districtName', label: t('customerManagement.table.district', 'İlçe'), type: 'text', className: 'text-slate-500' },
     { key: 'countryName', label: t('customerManagement.table.country', 'Ülke'), type: 'text', className: 'text-slate-500' },
     { key: 'creditLimit', label: t('customerManagement.table.creditLimit', 'Kredi Limiti'), type: 'money', className: 'font-medium' },
@@ -245,7 +245,7 @@ export function CustomerTable({
           onMouseUp={handleMouseUpOrLeave}
           onMouseMove={handleMouseMove}
         >
-          <table className="w-full min-w-[1200px] caption-bottom text-sm">
+          <table className="w-full min-w-[820px] md:min-w-[900px] lg:min-w-[1200px] caption-bottom text-sm">
             <TableHeader className="bg-slate-50 dark:bg-[#151025] sticky top-0 z-10 shadow-sm">
               <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
                 {tableColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (
@@ -260,7 +260,7 @@ export function CustomerTable({
                         </div>
                     </TableHead>
                 ))}
-                <TableHead className={`${headStyle} text-right w-[100px]`}>
+                <TableHead className={`${headStyle} text-right w-[84px] md:w-[100px]`}>
                   {t('customerManagement.actions', 'İşlemler')}
                 </TableHead>
               </TableRow>

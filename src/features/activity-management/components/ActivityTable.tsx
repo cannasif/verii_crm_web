@@ -72,13 +72,13 @@ interface ActivityTableProps {
 }
 
 const getColumnsConfig = (t: TFunction): ColumnDef<ActivityDto>[] => [
-    { key: 'id', label: t('activityManagement.id', 'ID'), type: 'text', className: 'font-medium w-[60px]' },
-    { key: 'subject', label: t('activityManagement.subject', 'Konu'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[200px]' },
+    { key: 'id', label: t('activityManagement.id', 'ID'), type: 'text', className: 'font-medium w-[48px] md:w-[60px]' },
+    { key: 'subject', label: t('activityManagement.subject', 'Konu'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
     { key: 'activityType', label: t('activityManagement.activityType', 'Tip'), type: 'text', className: 'whitespace-nowrap' },
     { key: 'status', label: t('activityManagement.status', 'Durum'), type: 'status', className: 'whitespace-nowrap' },
     { key: 'priority', label: t('activityManagement.priority', 'Öncelik'), type: 'priority', className: 'whitespace-nowrap' },
-    { key: 'potentialCustomer', label: t('activityManagement.customer', 'Müşteri'), type: 'customer', className: 'min-w-[150px]' },
-    { key: 'contact', label: t('activityManagement.contact', 'Kişi'), type: 'contact', className: 'min-w-[150px]' },
+    { key: 'potentialCustomer', label: t('activityManagement.customer', 'Müşteri'), type: 'customer', className: 'min-w-[120px] md:min-w-[150px]' },
+    { key: 'contact', label: t('activityManagement.contact', 'Kişi'), type: 'contact', className: 'min-w-[120px] md:min-w-[150px]' },
     { key: 'assignedUser', label: t('activityManagement.assignedUser', 'Sorumlu'), type: 'user', className: 'whitespace-nowrap' },
     { key: 'activityDate', label: t('activityManagement.activityDate', 'Tarih'), type: 'date', className: 'whitespace-nowrap' },
 ];
@@ -263,7 +263,8 @@ export function ActivityTable({
       </div>
 
       <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-transparent">
-        <Table>
+        <div className="overflow-x-auto">
+        <Table className="min-w-[900px] lg:min-w-[1100px]">
             <TableHeader className="bg-slate-50/50 dark:bg-white/5">
               <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
                 {tableColumns.filter(col => visibleColumns.includes(col.key as string)).map((col) => (
@@ -274,7 +275,7 @@ export function ActivityTable({
                         </div>
                     </TableHead>
                 ))}
-                <TableHead className={`${headStyle} text-right w-[140px]`}>
+                <TableHead className={`${headStyle} text-right w-[110px] md:w-[140px]`}>
                   {t('common.actions', 'İşlemler')}
                 </TableHead>
               </TableRow>
@@ -317,6 +318,7 @@ export function ActivityTable({
               ))}
             </TableBody>
           </Table>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
