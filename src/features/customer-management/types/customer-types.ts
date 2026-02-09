@@ -25,6 +25,7 @@ export interface CustomerDto {
   salesRepCode?: string;
   groupCode?: string;
   creditLimit?: number | null;
+  defaultShippingAddressId?: number | null;
   branchCode: number;
   businessUnitCode: number;
   createdDate: string;
@@ -54,6 +55,7 @@ export interface CreateCustomerDto {
   salesRepCode?: string;
   groupCode?: string;
   creditLimit?: number | null;
+  defaultShippingAddressId?: number | null;
   branchCode: number;
   businessUnitCode: number;
   isCompleted?: boolean;
@@ -78,6 +80,7 @@ export interface UpdateCustomerDto {
   salesRepCode?: string;
   groupCode?: string;
   creditLimit?: number | null;
+  defaultShippingAddressId?: number | null;
   branchCode: number;
   businessUnitCode: number;
   completedDate?: string;
@@ -113,6 +116,7 @@ export interface CustomerFormData {
   salesRepCode?: string;
   groupCode?: string;
   creditLimit?: number | null;
+  defaultShippingAddressId?: number | null;
   branchCode: number;
   businessUnitCode: number;
   isCompleted?: boolean;
@@ -203,6 +207,10 @@ export const customerFormSchema = z.object({
   creditLimit: z
     .number()
     .min(0, 'customerManagement.form.creditLimit.min')
+    .optional()
+    .nullable(),
+  defaultShippingAddressId: z
+    .number()
     .optional()
     .nullable(),
   branchCode: z

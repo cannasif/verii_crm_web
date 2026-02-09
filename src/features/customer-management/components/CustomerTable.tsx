@@ -64,6 +64,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerDto>[] => [
     { key: 'districtName', label: t('customerManagement.table.district', 'İlçe'), type: 'text', className: 'text-slate-500' },
     { key: 'countryName', label: t('customerManagement.table.country', 'Ülke'), type: 'text', className: 'text-slate-500' },
     { key: 'creditLimit', label: t('customerManagement.table.creditLimit', 'Kredi Limiti'), type: 'money', className: 'font-medium' },
+    { key: 'defaultShippingAddressId', label: t('customerManagement.table.defaultShippingAddressId', 'Varsayılan Sevk Adresi'), type: 'code', className: 'font-mono text-xs' },
     { key: 'salesRepCode', label: t('customerManagement.table.salesRep', 'Temsilci'), type: 'user', className: 'whitespace-nowrap' },
     { key: 'tcknNumber', label: t('customerManagement.table.tckn', 'TCKN'), type: 'code', className: 'font-mono text-xs' },
     { key: 'taxNumber', label: t('customerManagement.table.tax', 'Vergi No'), type: 'code', className: 'font-mono text-xs' },

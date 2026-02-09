@@ -49,6 +49,7 @@ export function ShippingAddressManagementPage(): ReactElement {
       const lowerTerm = searchTerm.toLowerCase();
       result = result.filter(
         (d) =>
+          (d.name && d.name.toLowerCase().includes(lowerTerm)) ||
           (d.address && d.address.toLowerCase().includes(lowerTerm)) ||
           (d.customerName && d.customerName.toLowerCase().includes(lowerTerm)) ||
           (d.contactPerson && d.contactPerson.toLowerCase().includes(lowerTerm)) ||
@@ -79,6 +80,7 @@ export function ShippingAddressManagementPage(): ReactElement {
   const handleFormSubmit = async (data: ShippingAddressFormSchema): Promise<void> => {
     const processedData = {
       ...data,
+      name: data.name ?? undefined,
       postalCode: data.postalCode ?? undefined,
       contactPerson: data.contactPerson ?? undefined,
       phone: data.phone ?? undefined,
@@ -86,6 +88,7 @@ export function ShippingAddressManagementPage(): ReactElement {
       countryId: data.countryId ?? undefined,
       cityId: data.cityId ?? undefined,
       districtId: data.districtId ?? undefined,
+      isDefault: data.isDefault,
     };
     if (selectedShippingAddress) {
       await updateShippingAddress.mutateAsync({

@@ -37,6 +37,8 @@ const EMPTY_CONTACTS: ContactDto[] = [];
 
 interface ContactFilterState {
   fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   mobile: string;
@@ -59,6 +61,8 @@ export function ContactManagementPage(): ReactElement {
 
   const initialFilters: ContactFilterState = {
     fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     mobile: '',
@@ -104,6 +108,8 @@ export function ContactManagementPage(): ReactElement {
       const lowerSearch = searchTerm.toLowerCase();
       result = result.filter((c) => 
         (c.fullName && c.fullName.toLowerCase().includes(lowerSearch)) ||
+        (c.firstName && c.firstName.toLowerCase().includes(lowerSearch)) ||
+        (c.lastName && c.lastName.toLowerCase().includes(lowerSearch)) ||
         (c.email && c.email.toLowerCase().includes(lowerSearch)) ||
         (c.phone && c.phone.includes(lowerSearch)) ||
         (c.customerName && c.customerName.toLowerCase().includes(lowerSearch))
@@ -112,6 +118,12 @@ export function ContactManagementPage(): ReactElement {
 
     if (appliedFilters.fullName) {
       result = result.filter(c => c.fullName?.toLowerCase().includes(appliedFilters.fullName.toLowerCase()));
+    }
+    if (appliedFilters.firstName) {
+      result = result.filter(c => c.firstName?.toLowerCase().includes(appliedFilters.firstName.toLowerCase()));
+    }
+    if (appliedFilters.lastName) {
+      result = result.filter(c => c.lastName?.toLowerCase().includes(appliedFilters.lastName.toLowerCase()));
     }
     if (appliedFilters.email) {
       result = result.filter(c => c.email?.toLowerCase().includes(appliedFilters.email.toLowerCase()));
@@ -165,14 +177,23 @@ export function ContactManagementPage(): ReactElement {
   };
 
   const handleFormSubmit = async (data: ContactFormSchema) => {
+    const fullName = [data.firstName, data.middleName, data.lastName]
+      .map((part) => (part || '').trim())
+      .filter(Boolean)
+      .join(' ');
+
     const cleanData = {
-      fullName: data.fullName,
+      salutation: data.salutation,
+      firstName: data.firstName.trim(),
+      middleName: data.middleName?.trim() || undefined,
+      lastName: data.lastName.trim(),
+      fullName,
       email: data.email || undefined,
       phone: data.phone || undefined,
       mobile: data.mobile || undefined,
       notes: data.notes || undefined,
       customerId: data.customerId,
-      titleId: data.titleId,
+      titleId: data.titleId || null,
     };
 
     if (editingContact) {

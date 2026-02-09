@@ -14,6 +14,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Form,
   FormControl,
   FormField,
@@ -22,6 +29,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { customerFormSchema, type CustomerFormData, type CustomerDto } from '../types/customer-types';
+import { useShippingAddressesByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesByCustomer';
 import { 
   Building2, 
   Hash, 
@@ -68,6 +76,7 @@ export function CustomerForm({
   isLoading = false,
 }: CustomerFormProps): ReactElement {
   const { t } = useTranslation();
+  const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
@@ -86,6 +95,7 @@ export function CustomerForm({
       salesRepCode: '',
       groupCode: '',
       creditLimit: 0,
+      defaultShippingAddressId: null,
       branchCode: 0,
       businessUnitCode: 0,
       countryId: undefined,
@@ -113,6 +123,7 @@ export function CustomerForm({
         salesRepCode: customer.salesRepCode ?? '',
         groupCode: customer.groupCode ?? '',
         creditLimit: customer.creditLimit ?? 0,
+        defaultShippingAddressId: customer.defaultShippingAddressId ?? null,
         branchCode: customer.branchCode ?? 0,
         businessUnitCode: customer.businessUnitCode ?? 0,
         countryId: customer.countryId ?? undefined,
@@ -137,6 +148,7 @@ export function CustomerForm({
         salesRepCode: '',
         groupCode: '',
         creditLimit: 0,
+        defaultShippingAddressId: null,
         branchCode: 0,
         businessUnitCode: 0,
         countryId: undefined,
@@ -310,6 +322,44 @@ export function CustomerForm({
                             className={INPUT_STYLE} 
                         />
                       </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="defaultShippingAddressId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <MapPin size={16} className="text-pink-500" />
+                        {t('customerManagement.form.defaultShippingAddress', 'Varsayılan Sevk Adresi')}
+                      </FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          const numericValue = Number(value);
+                          field.onChange(numericValue > 0 ? numericValue : null);
+                        }}
+                        value={field.value ? String(field.value) : ''}
+                        disabled={!customer?.id}
+                      >
+                        <FormControl>
+                          <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
+                            <SelectValue placeholder={t('customerManagement.form.selectDefaultShippingAddress', 'Sevk adresi seçin')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="0">
+                            {t('customerManagement.form.none', 'Yok')}
+                          </SelectItem>
+                          {shippingAddresses.map((address) => (
+                            <SelectItem key={address.id} value={String(address.id)}>
+                              {address.name || address.address}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-xs" />
                     </FormItem>
                   )}

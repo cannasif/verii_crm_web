@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -71,6 +72,7 @@ export function ShippingAddressForm({
   const form = useForm<ShippingAddressFormSchema>({
     resolver: zodResolver(shippingAddressFormSchema),
     defaultValues: {
+      name: '',
       address: '',
       postalCode: '',
       contactPerson: '',
@@ -80,6 +82,7 @@ export function ShippingAddressForm({
       countryId: undefined,
       cityId: undefined,
       districtId: undefined,
+      isDefault: false,
     },
   });
 
@@ -97,6 +100,7 @@ export function ShippingAddressForm({
   useEffect(() => {
     if (shippingAddress) {
       form.reset({
+        name: shippingAddress.name || '',
         address: shippingAddress.address,
         postalCode: shippingAddress.postalCode || '',
         contactPerson: shippingAddress.contactPerson || '',
@@ -106,9 +110,11 @@ export function ShippingAddressForm({
         countryId: shippingAddress.countryId || undefined,
         cityId: shippingAddress.cityId || undefined,
         districtId: shippingAddress.districtId || undefined,
+        isDefault: shippingAddress.isDefault || false,
       });
     } else {
       form.reset({
+        name: '',
         address: '',
         postalCode: '',
         contactPerson: '',
@@ -118,6 +124,7 @@ export function ShippingAddressForm({
         countryId: undefined,
         cityId: undefined,
         districtId: undefined,
+        isDefault: false,
       });
     }
   }, [shippingAddress, form]);
@@ -210,6 +217,28 @@ export function ShippingAddressForm({
 
               <FormField
                 control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LABEL_STYLE}>
+                      <FileText size={12} className="text-pink-500" />
+                      {t('shippingAddressManagement.name', 'Adres Adı')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('shippingAddressManagement.namePlaceholder', 'Örn: Merkez Depo')}
+                        className={INPUT_STYLE}
+                        {...field}
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="address"
                 render={({ field }) => (
                   <FormItem>
@@ -292,6 +321,27 @@ export function ShippingAddressForm({
                         value={field.value || ''}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="isDefault"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] px-4 py-3">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(checked === true)}
+                      />
+                    </FormControl>
+                    <div className="space-y-1">
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                        {t('shippingAddressManagement.isDefault', 'Varsayılan sevk adresi')}
+                      </FormLabel>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -58,7 +58,7 @@ import { Alert02Icon } from 'hugeicons-react';
 export interface ColumnDef<T> {
   key: keyof T;
   label: string;
-  type: 'text' | 'email' | 'phone' | 'mobile' | 'date' | 'user' | 'customer' | 'title' | 'status';
+  type: 'text' | 'email' | 'phone' | 'mobile' | 'date' | 'user' | 'customer' | 'title' | 'status' | 'salutation';
   className?: string;
 }
 
@@ -72,6 +72,7 @@ interface ContactTableProps {
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ContactDto>[] => [
     { key: 'id', label: t('contactManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[60px] md:w-[80px]' },
+    { key: 'salutation', label: t('contactManagement.table.salutation', 'Hitap'), type: 'salutation', className: 'w-[96px] md:w-[120px]' },
     { key: 'fullName', label: t('contactManagement.table.fullName', 'Ad Soyad'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
     { key: 'email', label: t('contactManagement.table.email', 'E-posta'), type: 'email', className: 'min-w-[160px] md:min-w-[200px] break-all' },
     { key: 'phone', label: t('contactManagement.table.phone', 'Telefon'), type: 'phone', className: 'whitespace-nowrap' },
@@ -233,6 +234,12 @@ export function ContactTable({
 
   const renderCellContent = (item: ContactDto, column: ColumnDef<ContactDto>) => {
     const value = item[column.key];
+    if (column.key === 'fullName') {
+      const composedFullName = [item.firstName, item.middleName, item.lastName].filter(Boolean).join(' ').trim();
+      if (composedFullName) {
+        return composedFullName;
+      }
+    }
     
     if (!value && value !== 0) return '-';
 
@@ -257,6 +264,24 @@ export function ContactTable({
                     {value ? String(value) : t('common.active', 'Aktif')}
                 </Badge>
             );
+        case 'salutation': {
+            const salutationValue = Number(value);
+            const salutationText =
+              salutationValue === 1
+                ? t('contactManagement.form.salutationMr', 'Bay')
+                : salutationValue === 2
+                  ? t('contactManagement.form.salutationMs', 'Bayan')
+                  : salutationValue === 3
+                    ? t('contactManagement.form.salutationMrs', 'Sayın')
+                    : salutationValue === 4
+                      ? t('contactManagement.form.salutationDr', 'Dr.')
+                      : t('contactManagement.form.salutationNone', 'Yok');
+            return (
+              <Badge variant="outline" className="text-xs font-medium">
+                {salutationText}
+              </Badge>
+            );
+        }
         default:
             return String(value);
     }

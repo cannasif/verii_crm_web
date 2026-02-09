@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export interface ShippingAddressDto {
   id: number;
+  name?: string;
   address: string;
   postalCode?: string;
   contactPerson?: string;
@@ -15,6 +16,7 @@ export interface ShippingAddressDto {
   cityName?: string;
   districtId?: number;
   districtName?: string;
+  isDefault: boolean;
   isActive: boolean;
   createdDate: string;
   updatedDate?: string;
@@ -29,6 +31,7 @@ export interface ShippingAddressDto {
 }
 
 export interface CreateShippingAddressDto {
+  name?: string;
   address: string;
   postalCode?: string;
   contactPerson?: string;
@@ -38,9 +41,11 @@ export interface CreateShippingAddressDto {
   countryId?: number;
   cityId?: number;
   districtId?: number;
+  isDefault?: boolean;
 }
 
 export interface UpdateShippingAddressDto {
+  name?: string;
   address: string;
   postalCode?: string;
   contactPerson?: string;
@@ -50,6 +55,7 @@ export interface UpdateShippingAddressDto {
   countryId?: number;
   cityId?: number;
   districtId?: number;
+  isDefault?: boolean;
 }
 
 export interface ShippingAddressListFilters {
@@ -61,6 +67,7 @@ export interface ShippingAddressListFilters {
 }
 
 export interface ShippingAddressFormData {
+  name?: string;
   address: string;
   postalCode?: string;
   contactPerson?: string;
@@ -70,9 +77,15 @@ export interface ShippingAddressFormData {
   countryId?: number;
   cityId?: number;
   districtId?: number;
+  isDefault: boolean;
 }
 
 export const shippingAddressFormSchema = z.object({
+  name: z
+    .string()
+    .max(150, 'shippingAddressManagement.nameMaxLength')
+    .optional()
+    .nullable(),
   address: z
     .string()
     .min(1, 'shippingAddressManagement.addressRequired')
@@ -112,6 +125,7 @@ export const shippingAddressFormSchema = z.object({
     .number()
     .optional()
     .nullable(),
+  isDefault: z.boolean(),
 });
 
 export type ShippingAddressFormSchema = z.infer<typeof shippingAddressFormSchema>;

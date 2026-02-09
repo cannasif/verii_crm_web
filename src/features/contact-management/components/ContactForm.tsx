@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { contactFormSchema, type ContactFormSchema } from '../types/contact-types';
+import { contactFormSchema, SALUTATION_TYPE, type ContactFormSchema } from '../types/contact-types';
 import type { ContactDto } from '../types/contact-types';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useTitleOptions } from '@/features/title-management/hooks/useTitleOptions';
@@ -98,6 +98,10 @@ export function ContactForm({
   const form = useForm<ContactFormSchema>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
+      salutation: SALUTATION_TYPE.None,
+      firstName: '',
+      middleName: '',
+      lastName: '',
       fullName: '',
       email: '',
       phone: '',
@@ -111,16 +115,24 @@ export function ContactForm({
   useEffect(() => {
     if (contact) {
       form.reset({
+        salutation: contact.salutation ?? SALUTATION_TYPE.None,
+        firstName: contact.firstName || '',
+        middleName: contact.middleName || '',
+        lastName: contact.lastName || '',
         fullName: contact.fullName,
         email: contact.email || '',
         phone: contact.phone || '',
         mobile: contact.mobile || '',
         notes: contact.notes || '',
         customerId: contact.customerId,
-        titleId: contact.titleId,
+        titleId: contact.titleId ?? 0,
       });
     } else {
       form.reset({
+        salutation: SALUTATION_TYPE.None,
+        firstName: '',
+        middleName: '',
+        lastName: '',
         fullName: '',
         email: '',
         phone: '',
@@ -171,18 +183,83 @@ export function ContactForm({
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                   
+                  <FormField
+                    control={form.control}
+                    name="salutation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}>
+                          <UserCircleIcon size={16} className="text-pink-500" />
+                          {t('contactManagement.form.salutation', 'Hitap')}
+                        </FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))}
+                          value={String(field.value)}
+                        >
+                          <FormControl>
+                            <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
+                              <SelectValue placeholder={t('contactManagement.form.selectSalutation', 'Hitap seçiniz...')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className={DROPDOWN_CONTENT_STYLE}>
+                            <SelectItem value={String(SALUTATION_TYPE.None)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationNone', 'Yok')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.Mr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMr', 'Bay')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.Ms)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMs', 'Bayan')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.Mrs)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMrs', 'Sayın')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.Dr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationDr', 'Dr.')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}>
+                          <UserCircleIcon size={16} className="text-pink-500" />
+                          {t('contactManagement.form.firstName', 'Ad')} <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder', 'Örn: Ali')} maxLength={100} />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="middleName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}>
+                          <UserCircleIcon size={16} className="text-pink-500" />
+                          {t('contactManagement.form.middleName', 'İkinci Ad')}
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.middleNamePlaceholder', 'Örn: Kemal')} maxLength={100} />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="col-span-1 md:col-span-2">
                     <FormField
                       control={form.control}
-                      name="fullName"
+                      name="lastName"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LABEL_STYLE}>
                             <UserCircleIcon size={16} className="text-pink-500" />
-                            {t('contactManagement.form.fullName', 'Ad Soyad')} <span className="text-red-500">*</span>
+                            {t('contactManagement.form.lastName', 'Soyad')} <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.fullNamePlaceholder', 'Örn: Ali Yılmaz')} maxLength={100} />
+                            <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder', 'Örn: Yılmaz')} maxLength={100} />
                           </FormControl>
                           <FormMessage className="text-xs" />
                         </FormItem>
@@ -233,15 +310,18 @@ export function ContactForm({
                         </FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))}
-                          value={field.value && field.value !== 0 ? field.value.toString() : ""}
+                          value={field.value !== undefined && field.value !== null ? field.value.toString() : "0"}
                           disabled={titlesLoading}
                         >
                           <FormControl>
                             <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                              <SelectValue placeholder={t('contactManagement.form.selectTitle', 'Ünvan seçiniz...')} />
+                              <SelectValue placeholder={t('contactManagement.form.selectTitle', 'Ünvan seçiniz (opsiyonel)...')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className={DROPDOWN_CONTENT_STYLE}>
+                            <SelectItem value="0" className={DROPDOWN_ITEM_STYLE}>
+                              {t('contactManagement.form.titleNone', 'Ünvan yok')}
+                            </SelectItem>
                             {titles?.map((title) => (
                               <SelectItem key={title.id} value={title.id.toString()} className={DROPDOWN_ITEM_STYLE}>
                                 {title.titleName}

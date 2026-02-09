@@ -66,7 +66,7 @@ export function ShippingAddressTable({
   const pageSize = 10;
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'id', direction: 'desc' });
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
-    'customerName', 'address', 'contactPerson', 'phone', 'isActive', 'createdDate'
+    'customerName', 'name', 'address', 'contactPerson', 'phone', 'isDefault', 'isActive', 'createdDate'
   ]);
 
   const deleteShippingAddress = useDeleteShippingAddress();
@@ -74,11 +74,13 @@ export function ShippingAddressTable({
   const getColumnsConfig = useCallback(
     (): ColumnConfig[] => [
       { key: 'customerName', label: t('shippingAddressManagement.customerName', 'Müşteri'), visible: true },
+      { key: 'name', label: t('shippingAddressManagement.name', 'Adres Adı'), visible: true },
       { key: 'address', label: t('shippingAddressManagement.address', 'Adres'), visible: true },
       { key: 'postalCode', label: t('shippingAddressManagement.postalCode', 'Posta Kodu'), visible: false },
       { key: 'contactPerson', label: t('shippingAddressManagement.contactPerson', 'Yetkili Kişi'), visible: true },
       { key: 'phone', label: t('shippingAddressManagement.phone', 'Telefon'), visible: true },
       { key: 'location', label: t('shippingAddressManagement.location', 'Konum'), visible: false }, // Composite column
+      { key: 'isDefault', label: t('shippingAddressManagement.isDefaultShort', 'Varsayılan'), visible: true },
       { key: 'isActive', label: t('common.status', 'Durum'), visible: true },
       { key: 'createdDate', label: t('shippingAddressManagement.createdDate', 'Oluşturulma Tarihi'), visible: true },
     ],
@@ -251,6 +253,11 @@ export function ShippingAddressTable({
                     {row.customerName || '-'}
                   </TableCell>
                 )}
+                {visibleColumns.includes('name') && (
+                  <TableCell className={cellStyle}>
+                    {row.name || '-'}
+                  </TableCell>
+                )}
                 {visibleColumns.includes('address') && (
                   <TableCell className={cellStyle + " max-w-xs truncate"} title={row.address}>
                     {row.address}
@@ -278,6 +285,17 @@ export function ShippingAddressTable({
                       row.cityName,
                       row.districtName,
                     ].filter(Boolean).join(' / ')}
+                  </TableCell>
+                )}
+                {visibleColumns.includes('isDefault') && (
+                  <TableCell className={cellStyle}>
+                    {row.isDefault ? (
+                      <Badge variant="secondary" className="bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300">
+                        {t('shippingAddressManagement.defaultBadge', 'Evet')}
+                      </Badge>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                 )}
                 {visibleColumns.includes('isActive') && (
