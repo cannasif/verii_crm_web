@@ -78,6 +78,7 @@ const PermissionDefinitionsPage = lazyImport(() => import('@/features/access-con
 const PermissionGroupsPage = lazyImport(() => import('@/features/access-control'), 'PermissionGroupsPage');
 const UserGroupAssignmentsPage = lazyImport(() => import('@/features/access-control'), 'UserGroupAssignmentsPage');
 const HangfireMonitoringPage = lazyImport(() => import('@/features/hangfire-monitoring'), 'HangfireMonitoringPage');
+const ProfilePage = lazyImport(() => import('@/features/user-detail-management'), 'ProfilePage');
 
 export const router = createBrowserRouter([
   {
@@ -152,6 +153,7 @@ export const router = createBrowserRouter([
       { path: 'access-control/permission-groups', element: <PermissionGroupsPage /> },
       { path: 'access-control/user-group-assignments', element: <UserGroupAssignmentsPage /> },
       { path: 'hangfire-monitoring', element: <HangfireMonitoringPage /> },
+      { path: 'profile', element: <ProfilePage /> },
     ],
   },
   {

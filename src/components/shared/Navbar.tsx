@@ -1,11 +1,11 @@
 import { type ReactElement, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Menu, Search, X, Command } from 'lucide-react';
 
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
-import { UserDetailDialog } from '@/features/user-detail-management/components/UserDetailDialog';
 import { UserProfileModal } from '@/features/user-detail-management/components/UserProfileModal';
 import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/useUserDetailByUserId';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
@@ -13,11 +13,11 @@ import { cn } from '@/lib/utils';
 
 export function Navbar(): ReactElement {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuthStore();
-  const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen } = useUIStore(); 
-  const [userDetailDialogOpen, setUserDetailDialogOpen] = useState(false);
+  const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen } = useUIStore();
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
   const { data: userDetail } = useUserDetailByUserId(user?.id || 0);
 
@@ -61,7 +61,7 @@ export function Navbar(): ReactElement {
           </button>
 
           <div className="relative hidden md:block w-full max-w-md group">
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-linear-to-r from-pink-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <div className="relative flex items-center">
               <Search className="absolute left-4 text-slate-400 w-5 h-5 group-focus-within:text-pink-500 transition-colors duration-300" />
               <input
@@ -105,7 +105,7 @@ export function Navbar(): ReactElement {
           </div>
 
           {user && (
-            <div className="hidden sm:block h-6 w-[1px] bg-slate-200 dark:bg-white/10 shrink-0" />
+            <div className="hidden sm:block h-6 w-px bg-slate-200 dark:bg-white/10 shrink-0" />
           )}
 
           {user && (
@@ -123,7 +123,7 @@ export function Navbar(): ReactElement {
               </div>
               
               <div className="relative shrink-0">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-gradient-to-tr from-pink-500 via-orange-500 to-yellow-500 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all duration-300">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-linear-to-tr from-pink-500 via-orange-500 to-yellow-500 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all duration-300">
                   <div className="w-full h-full rounded-full bg-white dark:bg-[#0c0516] flex items-center justify-center overflow-hidden border-2 border-white dark:border-[#0c0516]">
                     {userDetail?.profilePictureUrl ? (
                       <img
@@ -144,17 +144,12 @@ export function Navbar(): ReactElement {
         </div>
       </header>
 
-      <UserDetailDialog 
-        open={userDetailDialogOpen} 
-        onOpenChange={setUserDetailDialogOpen} 
-      />
-
       <UserProfileModal 
         open={userProfileModalOpen} 
         onOpenChange={setUserProfileModalOpen}
         onOpenProfileDetails={() => {
           setUserProfileModalOpen(false);
-          setUserDetailDialogOpen(true);
+          navigate('/profile');
         }}
       />
     </>

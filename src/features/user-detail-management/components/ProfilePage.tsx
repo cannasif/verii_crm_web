@@ -1,0 +1,537 @@
+import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { userDetailFormSchema, type UserDetailFormSchema, Gender, GENDER_OPTIONS } from '../types/user-detail-types';
+import { useUserDetailByUserId } from '../hooks/useUserDetailByUserId';
+import { useCreateUserDetail } from '../hooks/useCreateUserDetail';
+import { useUpdateUserDetail } from '../hooks/useUpdateUserDetail';
+import { useUploadProfilePicture } from '../hooks/useUploadProfilePicture';
+import { useAuthStore } from '@/stores/auth-store';
+import { useUIStore } from '@/stores/ui-store';
+import { toast } from 'sonner';
+import { getImageUrl } from '../utils/image-url';
+import { useChangePassword } from '@/features/auth/hooks/useChangePassword';
+import { changePasswordSchema, type ChangePasswordRequest } from '@/features/auth/types/auth';
+import {
+  User,
+  Shield,
+  Camera,
+  Save,
+  Ruler,
+  Weight,
+  FileText,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader2,
+  ArrowLeft,
+  Building2,
+  Briefcase,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+export function ProfilePage(): ReactElement {
+  const { t } = useTranslation();
+  const { setPageTitle } = useUIStore();
+  const { user, branch } = useAuthStore();
+  const userId = user?.id || 0;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] = useState(false);
+  const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
+
+  const { data: userDetail, isLoading: isLoadingDetail, refetch: refetchUserDetail } = useUserDetailByUserId(userId);
+  const createUserDetail = useCreateUserDetail();
+  const updateUserDetail = useUpdateUserDetail();
+  const uploadProfilePicture = useUploadProfilePicture();
+  const changePassword = useChangePassword();
+
+  const changePasswordForm = useForm<ChangePasswordRequest>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: { currentPassword: '', newPassword: '' },
+  });
+
+  const form = useForm<UserDetailFormSchema>({
+    resolver: zodResolver(userDetailFormSchema),
+    defaultValues: {
+      profilePictureUrl: '',
+      height: undefined,
+      weight: undefined,
+      description: '',
+      gender: undefined,
+    },
+  });
+
+  useEffect(() => {
+    setPageTitle(t('userDetailManagement.profilePageTitle', 'Profil'));
+    return () => setPageTitle(null);
+  }, [t, setPageTitle]);
+
+  useEffect(() => {
+    const u = new URL(window.location.href);
+    if (u.searchParams.has('currentPassword') || u.searchParams.has('newPassword')) {
+      u.searchParams.delete('currentPassword');
+      u.searchParams.delete('newPassword');
+      window.history.replaceState({}, '', u.pathname + u.search);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userDetail) {
+      form.reset({
+        profilePictureUrl: userDetail.profilePictureUrl || '',
+        height: userDetail.height || undefined,
+        weight: userDetail.weight || undefined,
+        description: userDetail.description || '',
+        gender: userDetail.gender || undefined,
+      });
+      setPreviewUrl(userDetail.profilePictureUrl ? getImageUrl(userDetail.profilePictureUrl) : null);
+    } else {
+      form.reset({
+        profilePictureUrl: '',
+        height: undefined,
+        weight: undefined,
+        description: '',
+        gender: undefined,
+      });
+      setPreviewUrl(null);
+    }
+  }, [userDetail, form]);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t('userDetailManagement.fileSizeError', 'Dosya boyutu 5MB\'dan büyük olamaz'));
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      toast.error(t('userDetailManagement.fileTypeError', 'Sadece resim dosyaları yüklenebilir'));
+      return;
+    }
+    const tempPreviewUrl = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setPreviewUrl(result);
+        resolve(result);
+      };
+      reader.readAsDataURL(file);
+    });
+    try {
+      const result = await uploadProfilePicture.mutateAsync({ userId, file });
+      const refetchedData = await refetchUserDetail();
+      if (result?.profilePictureUrl) {
+        setPreviewUrl(getImageUrl(result.profilePictureUrl));
+        form.setValue('profilePictureUrl', result.profilePictureUrl);
+      } else if (refetchedData.data?.profilePictureUrl) {
+        setPreviewUrl(getImageUrl(refetchedData.data.profilePictureUrl));
+        form.setValue('profilePictureUrl', refetchedData.data.profilePictureUrl);
+      } else if (tempPreviewUrl) {
+        setPreviewUrl(tempPreviewUrl);
+      }
+    } catch (error) {
+      if (tempPreviewUrl) setPreviewUrl(tempPreviewUrl);
+    }
+  };
+
+  const handleSubmit = async (data: UserDetailFormSchema): Promise<void> => {
+    if (userDetail) {
+      await updateUserDetail.mutateAsync({
+        id: userDetail.id,
+        data: {
+          profilePictureUrl: data.profilePictureUrl || undefined,
+          height: data.height || undefined,
+          weight: data.weight || undefined,
+          description: data.description || undefined,
+          gender: data.gender || undefined,
+        },
+      });
+    } else {
+      await createUserDetail.mutateAsync({
+        userId,
+        profilePictureUrl: data.profilePictureUrl || undefined,
+        height: data.height || undefined,
+        weight: data.weight || undefined,
+        description: data.description || undefined,
+        gender: data.gender || undefined,
+      });
+    }
+    toast.success(t('userDetailManagement.saveSuccess', 'Profil güncellendi'));
+  };
+
+  const handleChangePasswordSubmit = async (data: ChangePasswordRequest): Promise<void> => {
+    await changePassword.mutateAsync(data);
+    changePasswordForm.reset();
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('currentPassword') || url.searchParams.has('newPassword')) {
+      url.searchParams.delete('currentPassword');
+      url.searchParams.delete('newPassword');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  };
+
+  if (isLoadingDetail) {
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  const isSaving = createUserDetail.isPending || updateUserDetail.isPending;
+  const isChangingPassword = changePassword.isPending;
+  const displayName = user?.name || user?.email || 'Kullanıcı';
+
+  return (
+    <div className="w-full max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-10">
+      <Breadcrumb
+        items={[
+          { label: t('sidebar.home', 'Ana Sayfa') },
+          { label: t('userDetailManagement.profilePageTitle', 'Profil'), isActive: true },
+        ]}
+      />
+
+      <Link
+        to="/"
+        className={cn(
+          'inline-flex items-center gap-2 text-sm font-medium transition-colors',
+          'text-muted-foreground hover:text-foreground'
+        )}
+      >
+        <ArrowLeft size={16} />
+        {t('userDetailManagement.backToHome', 'Ana sayfaya dön')}
+      </Link>
+
+      <section className="rounded-2xl border bg-card p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-8">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="relative group shrink-0 self-center sm:self-auto"
+          >
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-border bg-muted overflow-hidden shadow-lg ring-2 ring-background transition-all group-hover:ring-primary/20">
+              {previewUrl ? (
+                <img src={previewUrl} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-bold text-white bg-linear-to-br from-pink-500 to-orange-500">
+                  {displayName[0]?.toUpperCase() || 'U'}
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full">
+                <Camera size={28} className="text-white" />
+              </div>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="sr-only"
+            />
+          </button>
+          <div className="flex-1 min-w-0 text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground truncate">
+              {displayName}
+            </h1>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-2 text-muted-foreground">
+              <span className="inline-flex items-center gap-2 text-sm">
+                <Mail size={14} />
+                <span className="break-all">{user?.email}</span>
+              </span>
+              {branch?.name && (
+                <span className="inline-flex items-center gap-2 text-sm">
+                  <Building2 size={14} />
+                  {branch.name}
+                </span>
+              )}
+              <span className="inline-flex items-center gap-2 text-sm">
+                <Briefcase size={14} />
+                {t('roles.admin', 'Yönetici')}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">{t('userDetailManagement.personalInfo', 'Kişisel Bilgiler')}</CardTitle>
+          <CardDescription>
+            {t('userDetailManagement.personalInfoDescription', 'Boy, kilo, cinsiyet ve biyografi bilgilerinizi güncelleyin.')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="height"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {t('userDetailManagement.height', 'Boy (cm)')}
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative group">
+                          <Ruler className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
+                          <Input
+                            type="number"
+                            step="0.01"
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                            value={field.value ?? ''}
+                            className="pl-10 h-11 rounded-xl"
+                            placeholder="Örn: 175"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-destructive text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="weight"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {t('userDetailManagement.weight', 'Kilo (kg)')}
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative group">
+                          <Weight className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
+                          <Input
+                            type="number"
+                            step="0.01"
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                            value={field.value ?? ''}
+                            className="pl-10 h-11 rounded-xl"
+                            placeholder="Örn: 70.5"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-destructive text-xs" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t('userDetailManagement.gender', 'Cinsiyet')}
+                    </FormLabel>
+                    <div className="relative group">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
+                      <Select
+                        onValueChange={(value) => field.onChange(value && value !== 'none' ? (parseInt(value, 10) as Gender) : undefined)}
+                        value={field.value !== undefined && field.value !== null ? String(field.value) : undefined}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="pl-10 h-11 rounded-xl w-full">
+                            <SelectValue placeholder={t('userDetailManagement.selectGender', 'Seçiniz')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">{t('userDetailManagement.noGenderSelected', 'Belirtilmemiş')}</SelectItem>
+                          {GENDER_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={String(option.value)}>
+                              {t(`userDetailManagement.gender${option.label}`, option.label)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <FormMessage className="text-destructive text-xs" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t('userDetailManagement.description', 'Biyografi')}
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative group">
+                        <FileText className="absolute left-3 top-3 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
+                        <Textarea
+                          {...field}
+                          value={field.value ?? ''}
+                          placeholder={t('userDetailManagement.enterDescription', 'Kendinizden kısaca bahsedin...')}
+                          rows={4}
+                          className="pl-10 rounded-xl min-h-[120px] resize-none"
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-destructive text-xs" />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end pt-2">
+                <Button type="submit" disabled={isSaving} className="min-w-[140px]">
+                  {isSaving ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin mr-2" />
+                      {t('userDetailManagement.saving', 'Kaydediliyor...')}
+                    </>
+                  ) : (
+                    <>
+                      <Save size={18} className="mr-2" />
+                      {t('userDetailManagement.save', 'Kaydet')}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Shield size={20} className="text-muted-foreground" />
+            {t('userDetailManagement.security', 'Güvenlik')}
+          </CardTitle>
+          <CardDescription>
+            {t('userDetailManagement.securityDescription', 'Hesap şifrenizi güvenli bir şekilde güncelleyin.')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="change-password" className="border-none">
+              <AccordionTrigger className="py-4 px-0 hover:no-underline [&[data-state=open]>div]:text-primary">
+                <div className="flex items-center gap-3 font-medium">
+                  <div className="p-2 rounded-lg bg-muted">
+                    <Lock size={18} className="text-muted-foreground" />
+                  </div>
+                  {t('userDetailManagement.changePassword', 'Şifre Değiştir')}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-2 pb-0 px-0">
+                <Form {...changePasswordForm}>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      changePasswordForm.handleSubmit(handleChangePasswordSubmit)(e);
+                    }}
+                    className="space-y-5"
+                  >
+                    <FormField
+                      control={changePasswordForm.control}
+                      name="currentPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('userDetailManagement.currentPassword', 'Mevcut Şifre')}</FormLabel>
+                          <FormControl>
+                            <div className="relative group">
+                              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+                              <Input
+                                {...field}
+                                type={isCurrentPasswordVisible ? 'text' : 'password'}
+                                className="pl-10 pr-10 h-11 rounded-xl"
+                                placeholder="••••••••"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setIsCurrentPasswordVisible((v) => !v)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                              >
+                                {isCurrentPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage className="text-destructive text-xs" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={changePasswordForm.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('userDetailManagement.newPassword', 'Yeni Şifre')}</FormLabel>
+                          <FormControl>
+                            <div className="relative group">
+                              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+                              <Input
+                                {...field}
+                                type={isNewPasswordVisible ? 'text' : 'password'}
+                                className="pl-10 pr-10 h-11 rounded-xl"
+                                placeholder={t('userDetailManagement.newPasswordPlaceholder', 'Yeni şifreniz')}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setIsNewPasswordVisible((v) => !v)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                              >
+                                {isNewPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage className="text-destructive text-xs" />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex justify-end">
+                      <Button type="submit" disabled={isChangingPassword} variant="outline" className="rounded-xl">
+                        {isChangingPassword ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin mr-2" />
+                            {t('userDetailManagement.changingPassword', 'İşleniyor...')}
+                          </>
+                        ) : (
+                          <>
+                            <Shield size={16} className="mr-2" />
+                            {t('userDetailManagement.changePasswordButton', 'Şifreyi Güncelle')}
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
