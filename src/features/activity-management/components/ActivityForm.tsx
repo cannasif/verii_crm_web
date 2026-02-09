@@ -47,6 +47,8 @@ interface ActivityFormProps {
   activity?: ActivityDto | null;
   isLoading?: boolean;
   initialDate?: string | null;
+  initialStartDateTime?: string | null;
+  initialEndDateTime?: string | null;
 }
 
 const INPUT_STYLE = `
@@ -97,13 +99,19 @@ function toDateTimeInputValue(value?: string | null): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-function toDefaultStartDateTime(initialDate?: string | null): string {
+function toDefaultStartDateTime(initialDate?: string | null, initialStart?: string | null): string {
+  if (initialStart && initialStart.length >= 16) return initialStart;
   if (initialDate && initialDate.length === 10) {
     return `${initialDate}T09:00`;
   }
   const now = new Date();
   now.setSeconds(0, 0);
   return toDateTimeInputValue(now.toISOString());
+}
+
+function toDefaultEndDateTime(initialEnd?: string | null): string | undefined {
+  if (initialEnd && initialEnd.length >= 16) return initialEnd;
+  return undefined;
 }
 
 const REMINDER_CHANNEL_OPTIONS = [
@@ -120,6 +128,8 @@ export function ActivityForm({
   activity,
   isLoading = false,
   initialDate,
+  initialStartDateTime,
+  initialEndDateTime,
 }: ActivityFormProps): ReactElement {
   const { t } = useTranslation();
   const { data: customerOptions = [] } = useCustomerOptions();
@@ -136,8 +146,8 @@ export function ActivityForm({
       activityType: '',
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
-      startDateTime: toDefaultStartDateTime(initialDate),
-      endDateTime: undefined,
+      startDateTime: toDefaultStartDateTime(initialDate, initialStartDateTime),
+      endDateTime: toDefaultEndDateTime(initialEndDateTime),
       isAllDay: false,
       reminders: [],
     },
@@ -182,10 +192,12 @@ export function ActivityForm({
   const contactOptions = contactData || [];
 
   useEffect(() => {
-    if (open && !activity && initialDate) {
-      form.setValue('startDateTime', toDefaultStartDateTime(initialDate));
+    if (open && !activity && (initialStartDateTime || initialDate)) {
+      form.setValue('startDateTime', toDefaultStartDateTime(initialDate, initialStartDateTime));
+      const end = toDefaultEndDateTime(initialEndDateTime);
+      if (end) form.setValue('endDateTime', end);
     }
-  }, [open, initialDate, activity, form]);
+  }, [open, initialDate, initialStartDateTime, initialEndDateTime, activity, form]);
 
   useEffect(() => {
     if (activity) {
@@ -221,13 +233,13 @@ export function ActivityForm({
       priority: ActivityPriority.Medium,
       contactId: undefined,
       assignedUserId: undefined,
-      startDateTime: toDefaultStartDateTime(initialDate),
-      endDateTime: undefined,
+      startDateTime: toDefaultStartDateTime(initialDate, initialStartDateTime),
+      endDateTime: toDefaultEndDateTime(initialEndDateTime),
       isAllDay: false,
       reminders: [],
     });
     setSelectedCustomerDisplayName(null);
-  }, [activity, form, initialDate]);
+  }, [activity, form, initialDate, initialStartDateTime, initialEndDateTime]);
 
   useEffect(() => {
     if (!watchedCustomerId) form.setValue('contactId', undefined);

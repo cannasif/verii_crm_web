@@ -53,7 +53,18 @@ export function DailyTasksPage(): ReactElement {
   const [assignedUserFilter, setAssignedUserFilter] = useState<number | undefined>(user?.id);
   const [formOpen, setFormOpen] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
+  const [calendarViewMode, setCalendarViewMode] = useState<'weekly' | 'monthly'>('monthly');
+  const [calendarWeekStart, setCalendarWeekStart] = useState<Date>(() => {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+    const mon = new Date(d.setDate(diff));
+    mon.setHours(0, 0, 0, 0);
+    return mon;
+  });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [slotStart, setSlotStart] = useState<string | null>(null);
+  const [slotEnd, setSlotEnd] = useState<string | null>(null);
   const [greeting, setGreeting] = useState('');
 
   const { data: userOptions = [] } = useUserOptions();
@@ -98,19 +109,30 @@ export function DailyTasksPage(): ReactElement {
     return { startDate: startDate.toISOString().split('T')[0], endDate: endDate.toISOString().split('T')[0] };
   };
 
+  const getWeeklyDateRange = (): { startDate: string; endDate: string } => {
+    const start = new Date(calendarWeekStart);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    return { startDate: start.toISOString().split('T')[0], endDate: end.toISOString().split('T')[0] };
+  };
+
   const weekDateRange = getWeekDateRange();
   const todayDate = getTodayDate();
   const calendarDateRange = getCalendarDateRange();
+  const weeklyDateRange = getWeeklyDateRange();
 
   // --- Filters ---
+  const calendarRange = activeTab === 'calendar' && calendarViewMode === 'weekly' ? weeklyDateRange : calendarDateRange;
   const filters: Array<{ column: string; operator: string; value: string }> = [
     statusFilter !== 'all' ? { column: 'Status', operator: 'eq', value: statusFilter } : undefined,
     assignedUserFilter ? { column: 'AssignedUserId', operator: 'eq', value: assignedUserFilter.toString() } : undefined,
     activeTab === 'tasks' ? { column: 'StartDateTime', operator: 'gte', value: weekDateRange.startDate } : undefined,
     activeTab === 'tasks' ? { column: 'StartDateTime', operator: 'lte', value: weekDateRange.endDate } : undefined,
     activeTab === 'list' ? { column: 'StartDateTime', operator: 'eq', value: todayDate } : undefined,
-    activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'gte', value: calendarDateRange.startDate } : undefined,
-    activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'lte', value: calendarDateRange.endDate } : undefined,
+    activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'gte', value: calendarRange.startDate } : undefined,
+    activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'lte', value: calendarRange.endDate } : undefined,
   ].filter((f): f is { column: string; operator: string; value: string } => f !== undefined);
 
   const { data, isLoading, refetch } = useActivities({
@@ -157,14 +179,15 @@ export function DailyTasksPage(): ReactElement {
       });
     }
     if (activeTab === 'calendar') {
+      const calRange = calendarViewMode === 'weekly' ? weeklyDateRange : calendarDateRange;
       filtered = filtered.filter((activity) => {
         if (!activity.activityDate) return false;
         const activityDate = new Date(activity.activityDate);
-        return activityDate >= new Date(calendarDateRange.startDate) && activityDate <= new Date(calendarDateRange.endDate);
+        return activityDate >= new Date(calRange.startDate) && activityDate <= new Date(calRange.endDate);
       });
     }
     return filtered;
-  }, [activities, statusFilter, assignedUserFilter, activeTab, weekDateRange, todayDate, calendarDateRange]);
+  }, [activities, statusFilter, assignedUserFilter, activeTab, weekDateRange, todayDate, calendarDateRange, calendarViewMode, weeklyDateRange]);
 
   // --- Handlers ---
   const handleToggleComplete = async (activity: ActivityDto) => {
@@ -192,6 +215,67 @@ export function DailyTasksPage(): ReactElement {
   const handlePreviousMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1));
   const handleNextMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1));
   const handleToday = () => setCalendarMonth(new Date());
+  const handlePreviousWeek = () => {
+    const next = new Date(calendarWeekStart);
+    next.setDate(next.getDate() - 7);
+    setCalendarWeekStart(next);
+  };
+  const handleNextWeek = () => {
+    const next = new Date(calendarWeekStart);
+    next.setDate(next.getDate() + 7);
+    setCalendarWeekStart(next);
+  };
+  const handleThisWeek = () => {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+    const mon = new Date(d);
+    mon.setDate(diff);
+    mon.setHours(0, 0, 0, 0);
+    setCalendarWeekStart(mon);
+  };
+
+  const formatSlotStart = (day: Date, hour: number): string => {
+    const y = day.getFullYear();
+    const m = String(day.getMonth() + 1).padStart(2, '0');
+    const d = String(day.getDate()).padStart(2, '0');
+    const h = String(hour).padStart(2, '0');
+    return `${y}-${m}-${d}T${h}:00`;
+  };
+  const formatSlotEnd = (day: Date, hour: number): string => {
+    if (hour === 23) {
+      const nextDay = new Date(day);
+      nextDay.setDate(nextDay.getDate() + 1);
+      return formatSlotStart(nextDay, 0);
+    }
+    const h = String(hour + 1).padStart(2, '0');
+    const y = day.getFullYear();
+    const m = String(day.getMonth() + 1).padStart(2, '0');
+    const dayStr = String(day.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dayStr}T${h}:00`;
+  };
+
+  const getWeekDays = (): Date[] => {
+    const days: Date[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(calendarWeekStart);
+      d.setDate(calendarWeekStart.getDate() + i);
+      d.setHours(0, 0, 0, 0);
+      days.push(d);
+    }
+    return days;
+  };
+
+  const getActivitiesForSlot = (day: Date, hour: number): ActivityDto[] => {
+    const slotStartMs = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hour, 0, 0, 0).getTime();
+    const slotEndMs = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hour + 1, 0, 0, 0).getTime();
+    return filteredActivities.filter((activity) => {
+      if (!activity.startDateTime) return false;
+      const start = new Date(activity.startDateTime).getTime();
+      const end = activity.endDateTime ? new Date(activity.endDateTime).getTime() : start;
+      return start < slotEndMs && end > slotStartMs;
+    });
+  };
 
   const getActivityTypeDisplay = (activityType: ActivityDto['activityType']): string => {
     if (activityType == null) return '';
@@ -530,101 +614,189 @@ export function DailyTasksPage(): ReactElement {
                 </div>
             </TabsContent>
 
-            {/* --- TAKVİM GÖRÜNÜMÜ (Masaüstünde Grid, Mobilde Scroll) --- */}
+            {/* --- TAKVİM GÖRÜNÜMÜ (Haftalık saatlik / Aylık) --- */}
             <TabsContent value="calendar" className="mt-0">
                 <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-4 md:p-6 overflow-hidden">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 rounded-lg p-1">
+                            <Button
+                              variant={calendarViewMode === 'weekly' ? 'secondary' : 'ghost'}
+                              size="sm"
+                              onClick={() => setCalendarViewMode('weekly')}
+                              className="rounded-md text-xs font-medium"
+                            >
+                              {t('dailyTasks.weekly', 'Haftalık')}
+                            </Button>
+                            <Button
+                              variant={calendarViewMode === 'monthly' ? 'secondary' : 'ghost'}
+                              size="sm"
+                              onClick={() => setCalendarViewMode('monthly')}
+                              className="rounded-md text-xs font-medium"
+                            >
+                              {t('dailyTasks.monthly', 'Aylık')}
+                            </Button>
+                        </div>
                         <div className="flex items-center gap-1 md:gap-2 bg-slate-100 dark:bg-white/5 rounded-lg p-1">
-                            <Button variant="ghost" size="icon" onClick={handlePreviousMonth} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronLeft size={16} /></Button>
-                            <Button variant="ghost" size="sm" onClick={handleToday} className="h-8 text-xs font-semibold px-2 md:px-3 hover:bg-white dark:hover:bg-white/10 shadow-sm">{t('dailyTasks.today', 'Bugün')}</Button>
-                            <Button variant="ghost" size="icon" onClick={handleNextMonth} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronRight size={16} /></Button>
+                          {calendarViewMode === 'weekly' ? (
+                            <>
+                              <Button variant="ghost" size="icon" onClick={handlePreviousWeek} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronLeft size={16} /></Button>
+                              <Button variant="ghost" size="sm" onClick={handleThisWeek} className="h-8 text-xs font-semibold px-2 md:px-3 hover:bg-white dark:hover:bg-white/10 shadow-sm">{t('dailyTasks.thisWeek', 'Bu Hafta')}</Button>
+                              <Button variant="ghost" size="icon" onClick={handleNextWeek} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronRight size={16} /></Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button variant="ghost" size="icon" onClick={handlePreviousMonth} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronLeft size={16} /></Button>
+                              <Button variant="ghost" size="sm" onClick={handleToday} className="h-8 text-xs font-semibold px-2 md:px-3 hover:bg-white dark:hover:bg-white/10 shadow-sm">{t('dailyTasks.today', 'Bugün')}</Button>
+                              <Button variant="ghost" size="icon" onClick={handleNextMonth} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronRight size={16} /></Button>
+                            </>
+                          )}
                         </div>
                         <h2 className="text-base md:text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
-                            {calendarMonth.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}
+                          {calendarViewMode === 'weekly'
+                            ? `${calendarWeekStart.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' })} – ${new Date(calendarWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })}`
+                            : calendarMonth.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}
                         </h2>
                     </div>
 
-                    {/* Responsive Scroll Wrapper for Calendar */}
-                    <div className="overflow-x-auto pb-2">
-                        <div className="min-w-[520px] sm:min-w-[600px]">
-                            {/* Grid */}
-                            <div className="grid grid-cols-7 gap-2 md:gap-4">
-                                {/* Gün İsimleri */}
-                                {[t('dailyTasks.days.mon','Pzt'), t('dailyTasks.days.tue','Sal'), t('dailyTasks.days.wed','Çar'), t('dailyTasks.days.thu','Per'), t('dailyTasks.days.fri','Cum'), t('dailyTasks.days.sat','Cmt'), t('dailyTasks.days.sun','Paz')].map((day) => (
-                                    <div key={day} className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest pb-4 border-b border-slate-100 dark:border-white/5">
-                                        {day}
+                    {calendarViewMode === 'weekly' ? (
+                      <div className="overflow-x-auto pb-2">
+                        <div className="min-w-[600px]">
+                          <div className="grid grid-cols-8 gap-px bg-slate-200 dark:bg-white/10 rounded-xl overflow-hidden">
+                            <div className="bg-slate-100 dark:bg-white/5 p-2 text-xs font-bold text-slate-500 dark:text-slate-400" />
+                            {getWeekDays().map((day) => (
+                              <div key={day.toISOString()} className="bg-slate-100 dark:bg-white/5 p-2 text-center text-xs font-bold text-slate-600 dark:text-slate-300">
+                                {day.toLocaleDateString(i18n.language, { weekday: 'short' })}
+                                <span className="block text-slate-500 dark:text-slate-400">{day.getDate()}</span>
+                              </div>
+                            ))}
+                            {Array.from({ length: 24 }, (_, hour) => (
+                              <div key={hour} className="contents">
+                                <div className="bg-slate-50 dark:bg-white/5 p-1.5 text-[10px] font-medium text-slate-500 dark:text-slate-400 text-right pr-2">
+                                  {String(hour).padStart(2, '0')}:00
+                                </div>
+                                {getWeekDays().map((day) => {
+                                  const slotActivities = getActivitiesForSlot(day, hour);
+                                  const isToday = day.toDateString() === new Date().toDateString();
+                                  return (
+                                    <div
+                                      key={`${day.toISOString()}-${hour}`}
+                                      onClick={() => {
+                                        setSlotStart(formatSlotStart(day, hour));
+                                        setSlotEnd(formatSlotEnd(day, hour));
+                                        setSelectedDate(null);
+                                        setFormOpen(true);
+                                      }}
+                                      className={`
+                                        min-h-[44px] md:min-h-[52px] p-1 cursor-pointer border border-transparent hover:border-pink-500/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all
+                                        ${isToday ? 'bg-pink-50/30 dark:bg-pink-500/5' : 'bg-white/60 dark:bg-white/5'}
+                                      `}
+                                    >
+                                      <div className="space-y-0.5 overflow-hidden">
+                                        {slotActivities.slice(0, 2).map((activity) => (
+                                          <div
+                                            key={activity.id}
+                                            className={`text-[9px] px-1 py-0.5 rounded truncate border font-medium
+                                              ${activity.isCompleted ? 'bg-green-100/80 dark:bg-green-900/30 text-green-700 dark:text-green-400 line-through' : 'bg-indigo-100/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-200/50'}`}
+                                            title={activity.subject}
+                                            onClick={(e) => e.stopPropagation()}
+                                          >
+                                            {activity.subject}
+                                          </div>
+                                        ))}
+                                        {slotActivities.length > 2 && (
+                                          <div className="text-[8px] text-slate-400 pl-1">+{slotActivities.length - 2}</div>
+                                        )}
+                                      </div>
                                     </div>
-                                ))}
-                                
-                                {/* Günler */}
-                                {getCalendarDays().map((dayData, index) => {
-                                    const isCurrentMonth = dayData.date.getMonth() === calendarMonth.getMonth();
-                                    const isToday = dayData.date.toDateString() === new Date().toDateString();
-                                    
-                                    return (
-                                        <div
-                                            key={index}
-                                            onClick={() => {
-                                                const dateString = dayData.date.toISOString().split('T')[0];
-                                                setSelectedDate(dateString);
-                                                setFormOpen(true);
-                                            }}
-                                            className={`
-                                                min-h-[80px] md:min-h-[120px] rounded-xl md:rounded-2xl p-2 md:p-3 cursor-pointer transition-all duration-200 border group
-                                                ${!isCurrentMonth ? 'opacity-30 bg-transparent border-transparent' : 'bg-white/40 dark:bg-white/5 border-slate-100 dark:border-white/10 hover:border-pink-500/50 hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-lg hover:-translate-y-1'}
-                                                ${isToday ? 'ring-2 ring-pink-500 ring-offset-2 dark:ring-offset-[#1a1025] bg-pink-50/50 dark:bg-pink-500/10' : ''}
-                                            `}
-                                        >
-                                            <div className="flex justify-between items-start mb-2">
-                                                <div className={`text-xs md:text-sm font-bold w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full ${isToday ? 'bg-pink-600 text-white shadow-lg shadow-pink-500/30' : 'text-slate-600 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-white/20'}`}>
-                                                    {dayData.date.getDate()}
-                                                </div>
-                                                <Plus size={14} className="opacity-0 group-hover:opacity-100 text-slate-400 transition-opacity hidden md:block" />
-                                            </div>
-                                            
-                                            <div className="space-y-1 md:space-y-1.5 overflow-hidden">
-                                                {dayData.activities.slice(0, 3).map((activity) => (
-                                                    <div
-                                                        key={activity.id}
-                                                        className={`text-[9px] md:text-[10px] px-1 md:px-2 py-0.5 md:py-1 rounded-md truncate flex items-center gap-1 border font-medium transition-all
-                                                        ${activity.isCompleted 
-                                                            ? 'bg-green-50/50 text-green-700 border-green-200/50 line-through opacity-70' 
-                                                            : 'bg-indigo-50/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-500/20 hover:scale-105'}`}
-                                                        title={activity.subject}
-                                                    >
-                                                        <div className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full shrink-0 ${activity.priority === 'High' ? 'bg-red-500' : activity.isCompleted ? 'bg-green-500' : 'bg-indigo-500'}`} />
-                                                        <span className="truncate">{activity.subject}</span>
-                                                    </div>
-                                                ))}
-                                                {dayData.activities.length > 3 && (
-                                                    <div className="text-[9px] md:text-[10px] font-semibold text-slate-400 pl-1">
-                                                        +{dayData.activities.length - 3} {t('dailyTasks.more', 'daha')}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
+                                  );
                                 })}
-                            </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto pb-2">
+                        <div className="min-w-[520px] sm:min-w-[600px]">
+                          <div className="grid grid-cols-7 gap-2 md:gap-4">
+                            {[t('dailyTasks.days.mon','Pzt'), t('dailyTasks.days.tue','Sal'), t('dailyTasks.days.wed','Çar'), t('dailyTasks.days.thu','Per'), t('dailyTasks.days.fri','Cum'), t('dailyTasks.days.sat','Cmt'), t('dailyTasks.days.sun','Paz')].map((day) => (
+                              <div key={day} className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest pb-4 border-b border-slate-100 dark:border-white/5">
+                                {day}
+                              </div>
+                            ))}
+                            {getCalendarDays().map((dayData, index) => {
+                              const isCurrentMonth = dayData.date.getMonth() === calendarMonth.getMonth();
+                              const isToday = dayData.date.toDateString() === new Date().toDateString();
+                              return (
+                                <div
+                                  key={index}
+                                  onClick={() => {
+                                    const dateString = dayData.date.toISOString().split('T')[0];
+                                    setSelectedDate(dateString);
+                                    setSlotStart(`${dateString}T09:00`);
+                                    setSlotEnd(`${dateString}T10:00`);
+                                    setFormOpen(true);
+                                  }}
+                                  className={`
+                                    min-h-[80px] md:min-h-[120px] rounded-xl md:rounded-2xl p-2 md:p-3 cursor-pointer transition-all duration-200 border group
+                                    ${!isCurrentMonth ? 'opacity-30 bg-transparent border-transparent' : 'bg-white/40 dark:bg-white/5 border-slate-100 dark:border-white/10 hover:border-pink-500/50 hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-lg hover:-translate-y-1'}
+                                    ${isToday ? 'ring-2 ring-pink-500 ring-offset-2 dark:ring-offset-[#1a1025] bg-pink-50/50 dark:bg-pink-500/10' : ''}
+                                  `}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <div className={`text-xs md:text-sm font-bold w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full ${isToday ? 'bg-pink-600 text-white shadow-lg shadow-pink-500/30' : 'text-slate-600 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-white/20'}`}>
+                                      {dayData.date.getDate()}
+                                    </div>
+                                    <Plus size={14} className="opacity-0 group-hover:opacity-100 text-slate-400 transition-opacity hidden md:block" />
+                                  </div>
+                                  <div className="space-y-1 md:space-y-1.5 overflow-hidden">
+                                    {dayData.activities.slice(0, 3).map((activity) => (
+                                      <div
+                                        key={activity.id}
+                                        className={`text-[9px] md:text-[10px] px-1 md:px-2 py-0.5 md:py-1 rounded-md truncate flex items-center gap-1 border font-medium transition-all
+                                          ${activity.isCompleted 
+                                            ? 'bg-green-50/50 text-green-700 border-green-200/50 line-through opacity-70' 
+                                            : 'bg-indigo-50/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-500/20 hover:scale-105'}`}
+                                        title={activity.subject}
+                                      >
+                                        <div className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full shrink-0 ${activity.priority === 'High' ? 'bg-red-500' : activity.isCompleted ? 'bg-green-500' : 'bg-indigo-500'}`} />
+                                        <span className="truncate">{activity.subject}</span>
+                                      </div>
+                                    ))}
+                                    {dayData.activities.length > 3 && (
+                                      <div className="text-[9px] md:text-[10px] font-semibold text-slate-400 pl-1">
+                                        +{dayData.activities.length - 3} {t('dailyTasks.more', 'daha')}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                 </div>
             </TabsContent>
         </div>
       </Tabs>
 
-      {/* Form Dialog */}
       <ActivityForm
         open={formOpen}
         onOpenChange={(open) => {
           setFormOpen(open);
-          if (!open) setSelectedDate(null);
+          if (!open) {
+            setSelectedDate(null);
+            setSlotStart(null);
+            setSlotEnd(null);
+          }
         }}
         onSubmit={handleFormSubmit}
         activity={null}
         isLoading={createActivity.isPending}
-        initialDate={selectedDate}
+        initialDate={slotStart ? null : selectedDate}
+        initialStartDateTime={slotStart ?? undefined}
+        initialEndDateTime={slotEnd ?? undefined}
       />
     </div>
   );
