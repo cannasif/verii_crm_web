@@ -88,7 +88,7 @@ export function ErpCustomerTable({ customers, isLoading, visibleColumns, sortCon
   }
 
   return (
-    <table className="w-full min-w-[820px] md:min-w-[900px] lg:min-w-[1200px] caption-bottom text-sm relative">
+    <table className="w-full min-w-[680px] sm:min-w-[820px] lg:min-w-[1100px] caption-bottom text-sm relative">
         <TableHeader className="bg-[#151025] sticky top-0 z-10 shadow-sm">
             <TableRow className="h-10 hover:bg-transparent border-b border-slate-200 dark:border-white/10">
                 {allColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (

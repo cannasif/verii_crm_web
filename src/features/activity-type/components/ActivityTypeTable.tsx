@@ -43,7 +43,6 @@ import {
 import { Alert02Icon } from 'hugeicons-react';
 import type { TFunction } from 'i18next';
 
-// Sütun yapılandırması için tip tanımı
 export interface ColumnDef<T> {
   key: keyof T;
   label: string;
@@ -52,12 +51,11 @@ export interface ColumnDef<T> {
 }
 
 interface ActivityTypeTableProps {
-  activityTypes: ActivityTypeDto[]; // Veriyi dışarıdan alıyoruz
+  activityTypes: ActivityTypeDto[];
   isLoading: boolean;
   onEdit: (activityType: ActivityTypeDto) => void;
 }
 
-// Kolon konfigürasyonu
 const getColumnsConfig = (t: TFunction): ColumnDef<ActivityTypeDto>[] => [
     { key: 'id', label: t('activityType.table.id', 'ID'), type: 'text', className: 'font-medium w-[80px]' },
     { key: 'name', label: t('activityType.table.name', 'Aktivite Tipi'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[200px]' },
@@ -75,27 +73,20 @@ export function ActivityTypeTable({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedActivityType, setSelectedActivityType] = useState<ActivityTypeDto | null>(null);
   
-  // Sayfalama State'i (Client-Side)
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  // Sıralama State'i
   const [sortConfig, setSortConfig] = useState<{ key: keyof ActivityTypeDto; direction: 'asc' | 'desc' } | null>(null);
 
-  // Kolon Tanımları
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   
-  // Görünür Kolonlar State'i
   const [visibleColumns, setVisibleColumns] = useState<Array<keyof ActivityTypeDto>>(
     tableColumns.map(col => col.key)
   );
 
   const deleteActivityType = useDeleteActivityType();
 
-  // Veri İşleme (Sıralama ve Güvenlik Kontrolü)
   const processedData = useMemo(() => {
-    // 🛡️ DÜZELTME: Gelen veri dizi değilse (null/undefined) boş dizi dön.
-    // Bu kontrol "activityTypes is not iterable" hatasını engeller.
     if (!Array.isArray(activityTypes)) {
         return [];
     }
@@ -104,7 +95,6 @@ export function ActivityTypeTable({
 
     if (sortConfig) {
       result.sort((a, b) => {
-        // null check yaparak string'e çeviriyoruz
         const aValue = a[sortConfig.key] ? String(a[sortConfig.key]).toLowerCase() : '';
         const bValue = b[sortConfig.key] ? String(b[sortConfig.key]).toLowerCase() : '';
 
@@ -116,11 +106,9 @@ export function ActivityTypeTable({
     return result;
   }, [activityTypes, sortConfig]);
 
-  // Sayfalama Hesaplamaları
   const totalPages = Math.ceil(processedData.length / pageSize);
   const paginatedData = processedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  // Silme İşlemleri
   const handleDeleteClick = (activityType: ActivityTypeDto): void => {
     setSelectedActivityType(activityType);
     setDeleteDialogOpen(true);
@@ -134,7 +122,6 @@ export function ActivityTypeTable({
     }
   };
 
-  // Sıralama İşlemi
   const handleSort = (key: keyof ActivityTypeDto) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -143,14 +130,12 @@ export function ActivityTypeTable({
     setSortConfig({ key, direction });
   };
 
-  // Kolon Görünürlüğü
   const toggleColumn = (key: keyof ActivityTypeDto) => {
     setVisibleColumns(prev => 
       prev.includes(key) ? prev.filter(c => c !== key) : [...prev, key]
     );
   };
 
-  // Hücre İçeriği Render Fonksiyonu
   const renderCellContent = (item: ActivityTypeDto, column: ColumnDef<ActivityTypeDto>) => {
     const value = item[column.key];
     
@@ -180,7 +165,6 @@ export function ActivityTypeTable({
             );
         case 'text':
         default:
-            // İsim alanı için özel stil
             if (column.key === 'name') {
                  return (
                     <div className="flex items-center gap-2">
@@ -204,7 +188,6 @@ export function ActivityTypeTable({
     );
   };
 
-  // Loading Durumu
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
@@ -218,7 +201,6 @@ export function ActivityTypeTable({
     );
   }
 
-  // Boş Veri Durumu (null check eklendi)
   if (!activityTypes || activityTypes.length === 0) {
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
@@ -235,7 +217,6 @@ export function ActivityTypeTable({
   return (
     <div className="flex flex-col gap-4">
       
-      {/* Sütun Göster/Gizle Menüsü */}
       <div className="flex justify-end p-2 sm:p-0">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -273,7 +254,6 @@ export function ActivityTypeTable({
             </DropdownMenu>
       </div>
 
-      {/* TABLO */}
       <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-transparent">
         <Table>
             <TableHeader className="bg-slate-50/50 dark:bg-white/5">
@@ -319,7 +299,6 @@ export function ActivityTypeTable({
           </Table>
       </div>
 
-      {/* SAYFALAMA */}
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
           {t('activityType.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
@@ -335,7 +314,6 @@ export function ActivityTypeTable({
         </div>
       </div>
 
-      {/* SİLME MODALI */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
           

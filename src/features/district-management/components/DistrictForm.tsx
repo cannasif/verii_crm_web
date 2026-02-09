@@ -93,14 +93,7 @@ export function DistrictForm({
 
   const handleSubmit = async (data: DistrictFormSchema): Promise<void> => {
     await onSubmit(data);
-    // Don't close immediately here, let the parent handle it via props or state updates if needed
-    // But typically we want to reset form only on success
-    // For now, keeping original behavior but ensuring it matches ContactForm flow
-    // In ContactForm, submission logic is handled in parent mostly.
-    // Here we just pass data up.
     if (!isLoading) {
-       // Only reset if successful (parent controls isLoading)
-       // This part is a bit tricky without knowing result, but assuming parent handles errors
        form.reset(); 
     }
   };

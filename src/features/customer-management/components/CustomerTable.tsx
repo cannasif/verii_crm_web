@@ -245,7 +245,7 @@ export function CustomerTable({
           onMouseUp={handleMouseUpOrLeave}
           onMouseMove={handleMouseMove}
         >
-          <table className="w-full min-w-[820px] md:min-w-[900px] lg:min-w-[1200px] caption-bottom text-sm">
+          <table className="w-full min-w-[680px] sm:min-w-[820px] lg:min-w-[1100px] caption-bottom text-sm">
             <TableHeader className="bg-slate-50 dark:bg-[#151025] sticky top-0 z-10 shadow-sm">
               <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
                 {tableColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (

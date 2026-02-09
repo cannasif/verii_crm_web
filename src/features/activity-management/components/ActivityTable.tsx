@@ -264,7 +264,7 @@ export function ActivityTable({
 
       <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-transparent">
         <div className="overflow-x-auto">
-        <Table className="min-w-[900px] lg:min-w-[1100px]">
+        <Table className="min-w-[760px] sm:min-w-[900px] lg:min-w-[1100px]">
             <TableHeader className="bg-slate-50/50 dark:bg-white/5">
               <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
                 {tableColumns.filter(col => visibleColumns.includes(col.key as string)).map((col) => (
