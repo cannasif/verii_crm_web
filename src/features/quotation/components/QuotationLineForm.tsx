@@ -140,6 +140,12 @@ export function QuotationLineForm({
     { val: discountRate3InputValue, setVal: setDiscountRate3InputValue, field: 'discountRate3', label: '3. İndirim' },
   ];
 
+  const getDiscountAmount = (field: DiscountField): number => {
+    if (field === 'discountRate1') return formData.discountAmount1 || 0;
+    if (field === 'discountRate2') return formData.discountAmount2 || 0;
+    return formData.discountAmount3 || 0;
+  };
+
   const mainStockData = useMemo(() => {
     return temporaryStockData.find((data) => data.productCode === formData.productCode);
   }, [temporaryStockData, formData.productCode]);
@@ -757,7 +763,7 @@ export function QuotationLineForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Layers className="h-4 w-4 text-blue-500" />
@@ -867,16 +873,24 @@ export function QuotationLineForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6 pt-4 border-t border-slate-200 dark:border-white/10">
-        <div className="col-span-7 space-y-4">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 pt-4 border-t border-slate-200 dark:border-white/10">
+        <div className="xl:col-span-7 space-y-4">
           <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <BadgePercent className="h-4 w-4 text-purple-500" />
             {t('quotation.lines.discounts', 'Satır İndirimleri')}
           </h5>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
 	            {discountInputs.map((item, idx) => (
-	              <div key={idx} className="space-y-1.5">
-	                <label className="text-xs font-medium text-slate-400 dark:text-slate-500 ml-1">{item.label}</label>
+	              <div key={idx} className="space-y-1.5 p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#0f0a18]">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                      {item.label}
+                    </label>
+                    <span className="text-xs font-semibold text-red-500 dark:text-red-400">
+                      {getDiscountAmount(item.field) > 0 ? '-' : ''}
+                      {formatCurrency(getDiscountAmount(item.field), currencyCode)}
+                    </span>
+                  </div>
 	                <Input
                   type="number"
                   step="0.01"
@@ -926,24 +940,24 @@ export function QuotationLineForm({
           )}
         </div>
 
-        <div className="col-span-5 flex flex-col gap-4">
+        <div className="xl:col-span-5 flex flex-col gap-4">
           <div className="bg-slate-50 dark:bg-[#1a1025]/50 rounded-2xl p-5 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
-            <div className="flex justify-between items-center text-sm">
+            <div className="flex justify-between items-center text-sm gap-4">
               <span className="text-slate-500 dark:text-slate-400 font-medium">Ara Toplam</span>
               <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(formData.lineTotal || 0, currencyCode)}</span>
             </div>
-            <div className="flex justify-between items-center text-sm">
+            <div className="flex justify-between items-center text-sm gap-4">
               <span className="text-slate-500 dark:text-slate-400 font-medium">Toplam İndirim</span>
               <span className="font-semibold text-red-500 dark:text-red-400">
                 {hasDiscount ? '-' : ''}{formatCurrency(totalDiscount, currencyCode)}
               </span>
             </div>
-            <div className="flex justify-between items-center text-sm">
+            <div className="flex justify-between items-center text-sm gap-4">
               <span className="text-slate-500 dark:text-slate-400 font-medium">KDV Tutarı</span>
               <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(formData.vatAmount || 0, currencyCode)}</span>
             </div>
             <div className="h-px bg-slate-200 dark:bg-white/10 my-2 border-dashed" />
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
               <span className="text-base font-bold text-slate-900 dark:text-white">Genel Toplam</span>
               <span className="text-2xl font-black tracking-tight text-orange-600 dark:text-orange-500">
                 {formatCurrency(formData.lineGrandTotal, currencyCode)}
@@ -951,13 +965,83 @@ export function QuotationLineForm({
             </div>
           </div>
 
+          {relatedLines.length > 0 && (
+            <div className="bg-slate-50 dark:bg-[#1a1025]/50 rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-purple-500" />
+                <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  {t('quotation.lines.relatedStocks', 'Bağlı Stoklar')} ({relatedLines.length})
+                </h5>
+              </div>
+              <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+                {relatedLines.map((relatedLine, index) => (
+                  <div
+                    key={`${relatedLine.productCode || 'related'}-${index}`}
+                    className="p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-[#0f0a18] shadow-sm"
+                  >
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mb-2">
+                      <div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                          {t('quotation.lines.productCode', 'Stok Kodu')}
+                        </div>
+                        <div className="font-mono text-sm font-semibold text-slate-800 dark:text-slate-100">
+                          {relatedLine.productCode || '-'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                          {t('quotation.lines.productName', 'Stok Adı')}
+                        </div>
+                        <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                          {relatedLine.productName || '-'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {t('quotation.lines.quantity', 'Miktar')}:
+                        </span>
+                        <span className="ml-2 font-semibold text-slate-800 dark:text-slate-200">{relatedLine.quantity}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {t('quotation.lines.unitPrice', 'Birim Fiyat')}:
+                        </span>
+                        <span className="ml-2 font-semibold text-slate-800 dark:text-slate-200">
+                          {formatCurrency(relatedLine.unitPrice, currencyCode)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {t('quotation.lines.netPrice', 'Net Fiyat')}:
+                        </span>
+                        <span className="ml-2 font-semibold text-emerald-600 dark:text-emerald-400">
+                          {formatCurrency(relatedLine.lineTotal || 0, currencyCode)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {t('quotation.lines.lineTotal', 'Toplam')}:
+                        </span>
+                        <span className="ml-2 font-semibold text-orange-600 dark:text-orange-400">
+                          {formatCurrency(relatedLine.lineGrandTotal || 0, currencyCode)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-end gap-3 mt-auto">
             <Button 
               type="button" 
               variant="ghost" 
               onClick={onCancel} 
               disabled={isSaving}
-              className="h-12 px-6 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium transition-all"
+              className="h-12 px-6 w-full sm:w-auto rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium transition-all"
             >
               {t('quotation.cancel', 'Vazgeç')}
             </Button>
@@ -965,7 +1049,7 @@ export function QuotationLineForm({
               type="button"
               onClick={handleSave}
               disabled={!formData.productCode || !formData.productName || isSaving}
-              className="h-12 px-8 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95"
+              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95"
             >
               {isSaving ? (
                 <>
