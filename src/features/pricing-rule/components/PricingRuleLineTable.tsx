@@ -258,7 +258,7 @@ export function PricingRuleLineTable({
   const headStyle = "cursor-pointer select-none text-slate-500 dark:text-slate-400 font-semibold py-3 text-xs uppercase tracking-wider";
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className="space-y-4">
       <div className="flex justify-between items-center px-1">
         <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
           <div className="bg-pink-50 dark:bg-pink-500/20 p-1.5 rounded-lg text-pink-600 dark:text-pink-400">
@@ -278,8 +278,8 @@ export function PricingRuleLineTable({
         </Button>
       </div>
 
-      <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-transparent flex-1 relative">
-        <div className="absolute inset-0 overflow-auto">
+      <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-transparent">
+        <div className="min-h-[220px] max-h-[52vh] overflow-auto">
             <Table>
             <TableHeader className="bg-slate-50/80 dark:bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
                 <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
