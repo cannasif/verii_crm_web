@@ -587,7 +587,7 @@ export function OrderHeaderForm({
       )}
 
       <Dialog open={currencyChangeDialogOpen} onOpenChange={setCurrencyChangeDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-pink-600">
               <ArrowRightLeft className="h-5 w-5" />

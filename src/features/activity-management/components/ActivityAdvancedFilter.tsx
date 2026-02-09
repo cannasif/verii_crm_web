@@ -69,11 +69,11 @@ export function ActivityAdvancedFilter({
 
   return (
     <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-card/50 p-4 space-y-4">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
           {t('advancedFilter.title', 'Advanced Filter')}
         </h3>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={addRow}>
             <Plus className="h-4 w-4 mr-1" />
             {t('advancedFilter.add', 'Add Filter')}
@@ -95,7 +95,7 @@ export function ActivityAdvancedFilter({
                 value={row.column}
                 onValueChange={(v) => updateRow(row.id, { column: v })}
               >
-                <SelectTrigger className="w-[160px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder={t('advancedFilter.column', 'Column')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -110,7 +110,7 @@ export function ActivityAdvancedFilter({
                 value={row.operator}
                 onValueChange={(v) => updateRow(row.id, { operator: v })}
               >
-                <SelectTrigger className="w-[130px]">
+                <SelectTrigger className="w-full sm:w-[130px]">
                   <SelectValue placeholder={t('advancedFilter.operator', 'Operator')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -137,7 +137,7 @@ export function ActivityAdvancedFilter({
                     })
                   }
                 >
-                  <SelectTrigger className="w-[120px]">
+                  <SelectTrigger className="w-full sm:w-[120px]">
                     <SelectValue placeholder={t('advancedFilter.value', 'Value')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -158,7 +158,7 @@ export function ActivityAdvancedFilter({
                   placeholder={t('advancedFilter.value', 'Value')}
                   value={row.value}
                   onChange={(e) => updateRow(row.id, { value: e.target.value })}
-                  className="w-[160px]"
+                  className="w-full sm:w-[160px]"
                 />
               )}
               <Button

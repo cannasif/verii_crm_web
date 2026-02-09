@@ -534,7 +534,7 @@ export function DailyTasksPage(): ReactElement {
 
                     {/* Responsive Scroll Wrapper for Calendar */}
                     <div className="overflow-x-auto pb-2">
-                        <div className="min-w-[600px]">
+                        <div className="min-w-[520px] sm:min-w-[600px]">
                             {/* Grid */}
                             <div className="grid grid-cols-7 gap-2 md:gap-4">
                                 {/* Gün İsimleri */}

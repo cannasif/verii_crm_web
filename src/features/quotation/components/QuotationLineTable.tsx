@@ -634,15 +634,15 @@ export function QuotationLineTable({
               <Table>
                 <TableHeader>
                   <TableRow className={styles.tableHeadRow}>
-                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[240px]")}>{t('quotation.lines.stock', 'Stok Bilgisi')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[140px]")}>{t('quotation.lines.unitPrice', 'Birim Fiyat')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[100px]")}>{t('quotation.lines.quantity', 'Miktar')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('quotation.lines.discount1', 'İnd.1')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('quotation.lines.discount2', 'İnd.2')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('quotation.lines.discount3', 'İnd.3')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px]")}>{t('quotation.lines.netPrice', 'Tutar')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('quotation.lines.stock', 'Stok Bilgisi')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px] md:min-w-[140px]")}>{t('quotation.lines.unitPrice', 'Birim Fiyat')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[90px] md:min-w-[100px]")}>{t('quotation.lines.quantity', 'Miktar')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('quotation.lines.discount1', 'İnd.1')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('quotation.lines.discount2', 'İnd.2')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('quotation.lines.discount3', 'İnd.3')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[110px] md:min-w-[120px]")}>{t('quotation.lines.netPrice', 'Tutar')}</TableHead>
                     {linesEditable && (
-                    <TableHead className={cn(styles.tableHead, "text-center w-[100px]")}>{t('quotation.actions', 'İşlem')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions', 'İşlem')}</TableHead>
                     )}
                   </TableRow>
                 </TableHeader>
@@ -861,7 +861,7 @@ export function QuotationLineTable({
           }
         }}
       >
-        <DialogContent className="bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 sm:max-w-[425px] p-0 overflow-hidden shadow-2xl">
+        <DialogContent className="bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] p-0 overflow-hidden shadow-2xl">
           <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
             <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
               <div className="bg-gradient-to-br from-red-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-red-500/20 text-white">

@@ -324,7 +324,7 @@ export function CustomerSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn("bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white sm:max-w-[800px] w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]", className)}>
+      <DialogContent className={cn("bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[800px] shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]", className)}>
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'erp' | 'potential' | 'all')} className="flex flex-col h-full">
           <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm shrink-0">
             <div className="flex items-center gap-4">

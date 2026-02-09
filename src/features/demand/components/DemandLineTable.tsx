@@ -501,15 +501,15 @@ export function DemandLineTable({
               <Table>
                 <TableHeader>
                   <TableRow className={styles.tableHeadRow}>
-                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[240px]")}>{t('demand.lines.stock', 'Stok Bilgisi')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[140px]")}>{t('demand.lines.unitPrice', 'Birim Fiyat')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[100px]")}>{t('demand.lines.quantity', 'Miktar')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('demand.lines.discount1', 'İnd.1')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('demand.lines.discount2', 'İnd.2')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('demand.lines.discount3', 'İnd.3')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px]")}>{t('demand.lines.netPrice', 'Tutar')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('demand.lines.stock', 'Stok Bilgisi')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px] md:min-w-[140px]")}>{t('demand.lines.unitPrice', 'Birim Fiyat')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[90px] md:min-w-[100px]")}>{t('demand.lines.quantity', 'Miktar')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount1', 'İnd.1')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount2', 'İnd.2')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount3', 'İnd.3')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[110px] md:min-w-[120px]")}>{t('demand.lines.netPrice', 'Tutar')}</TableHead>
                     {!linesEditable && (
-                    <TableHead className={cn(styles.tableHead, "text-center w-[100px]")}>{t('demand.actions', 'İşlem')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('demand.actions', 'İşlem')}</TableHead>
                     )}
                   </TableRow>
                 </TableHeader>

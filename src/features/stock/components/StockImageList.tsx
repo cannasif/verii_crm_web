@@ -184,7 +184,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
       </div>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px]">
           <DialogHeader>
             <div className="flex items-center gap-2 text-red-600 mb-2">
                 <div className="p-2 bg-red-100 rounded-full">

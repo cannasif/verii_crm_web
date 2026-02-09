@@ -84,7 +84,7 @@ export function PowerbiRlsForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
             {initial ? t('powerbiRls.edit', 'Eşleştirme Düzenle') : t('powerbiRls.new', 'Yeni Eşleştirme')}

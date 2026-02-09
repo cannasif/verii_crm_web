@@ -341,7 +341,7 @@ export function ApprovalUserRoleTable({
       </div>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="max-w-[400px] p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 overflow-hidden rounded-2xl">
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[400px] p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 overflow-hidden rounded-2xl">
           <div className="p-6 flex flex-col items-center text-center gap-4">
             <div className="h-16 w-16 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center text-red-500 mb-2">
                <Alert02Icon size={32} />

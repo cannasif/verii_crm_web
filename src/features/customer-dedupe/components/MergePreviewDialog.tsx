@@ -55,7 +55,7 @@ export function MergePreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-md">
         <DialogHeader>
           <DialogTitle>{t('confirmMergeTitle')}</DialogTitle>
           <DialogDescription>{t('confirmMergeDescription')}</DialogDescription>

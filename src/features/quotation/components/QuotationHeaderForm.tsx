@@ -905,7 +905,7 @@ export function QuotationHeaderForm({
       />
 
       <Dialog open={currencyChangeDialogOpen} onOpenChange={setCurrencyChangeDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 p-0 overflow-hidden shadow-2xl">
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 p-0 overflow-hidden shadow-2xl">
           <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
             <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
               <div className="bg-gradient-to-br from-pink-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
