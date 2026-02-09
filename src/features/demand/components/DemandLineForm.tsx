@@ -51,6 +51,23 @@ const areTemporaryStockDataEqual = (
   return true;
 };
 
+function normalizeGroupCode(code?: string | null): string {
+  return (code ?? '').trim().toUpperCase();
+}
+
+function toGroupRoot(code?: string | null): string {
+  const normalized = normalizeGroupCode(code);
+  return normalized.split('/')[0] ?? normalized;
+}
+
+function groupMatches(limitCode?: string | null, stockCode?: string | null): boolean {
+  const limitNormalized = normalizeGroupCode(limitCode);
+  const stockNormalized = normalizeGroupCode(stockCode);
+  if (!limitNormalized || !stockNormalized) return false;
+  if (limitNormalized === stockNormalized) return true;
+  return toGroupRoot(limitNormalized) === toGroupRoot(stockNormalized);
+}
+
 interface DemandLineFormProps {
   line: DemandLineFormState;
   onSave: (line: DemandLineFormState) => void;
@@ -103,8 +120,13 @@ export function DemandLineForm({
   }, [temporaryStockData, formData.productCode]);
 
 
+  const activeGroupCode = useMemo(
+    () => mainStockData?.groupCode || formData.groupCode || undefined,
+    [mainStockData?.groupCode, formData.groupCode]
+  );
+
   const discountValidation = useDiscountLimitValidation({
-    groupCode: mainStockData?.groupCode,
+    groupCode: activeGroupCode,
     discountRate1: formData.discountRate1,
     discountRate2: formData.discountRate2,
     discountRate3: formData.discountRate3,
@@ -575,17 +597,13 @@ export function DemandLineForm({
       }
     }
 
-    if ((field === 'discountRate1' || field === 'discountRate2' || field === 'discountRate3') && formData.productCode && mainStockData?.groupCode) {
+    if ((field === 'discountRate1' || field === 'discountRate2' || field === 'discountRate3') && formData.productCode && activeGroupCode) {
       const discountRate1 = field === 'discountRate1' ? (value as number) : calculated.discountRate1;
       const discountRate2 = field === 'discountRate2' ? (value as number) : calculated.discountRate2;
       const discountRate3 = field === 'discountRate3' ? (value as number) : calculated.discountRate3;
 
       const matchingLimit = userDiscountLimits.find(
-        (limit) => {
-          const limitGroupCode = limit.erpProductGroupCode?.trim() || '';
-          const stockGroupCode = mainStockData.groupCode?.trim() || '';
-          return limitGroupCode === stockGroupCode && limitGroupCode !== '';
-        }
+        (limit) => groupMatches(limit.erpProductGroupCode, activeGroupCode)
       );
 
       if (matchingLimit) {
@@ -609,7 +627,7 @@ export function DemandLineForm({
           approvalStatus: approvalStatus as ApprovalStatus,
         };
       }
-    } else if (mainStockData?.groupCode && userDiscountLimits.length > 0) {
+    } else if (activeGroupCode && userDiscountLimits.length > 0) {
       calculated = {
         ...calculated,
         approvalStatus: discountValidation.approvalStatus,

@@ -184,7 +184,58 @@ export const orderApi = {
       throw new Error('API\'den beklenmeyen veri formatı döndü');
     }
 
-    return response.data;
+    return response.data.map((item: unknown) => {
+      const value = item as Record<string, unknown>;
+      return {
+        erpProductGroupCode:
+          (value.erpProductGroupCode as string) ??
+          (value.ErpProductGroupCode as string) ??
+          '',
+        salespersonId:
+          (value.salespersonId as number) ??
+          (value.SalespersonId as number) ??
+          0,
+        salespersonName:
+          (value.salespersonName as string) ??
+          (value.SalespersonName as string) ??
+          '',
+        maxDiscount1:
+          Number((value.maxDiscount1 as number) ?? (value.MaxDiscount1 as number) ?? 0) || 0,
+        maxDiscount2:
+          value.maxDiscount2 != null || value.MaxDiscount2 != null
+            ? Number((value.maxDiscount2 as number) ?? (value.MaxDiscount2 as number))
+            : null,
+        maxDiscount3:
+          value.maxDiscount3 != null || value.MaxDiscount3 != null
+            ? Number((value.maxDiscount3 as number) ?? (value.MaxDiscount3 as number))
+            : null,
+        id: (value.id as number) ?? (value.Id as number) ?? undefined,
+        createdAt:
+          (value.createdAt as string) ??
+          (value.CreatedAt as string) ??
+          (value.createdDate as string) ??
+          (value.CreatedDate as string) ??
+          null,
+        updatedAt:
+          (value.updatedAt as string) ??
+          (value.UpdatedAt as string) ??
+          (value.updatedDate as string) ??
+          (value.UpdatedDate as string) ??
+          null,
+        createdBy:
+          (value.createdBy as number) ??
+          (value.CreatedBy as number) ??
+          null,
+        updatedBy:
+          (value.updatedBy as number) ??
+          (value.UpdatedBy as number) ??
+          null,
+        deletedBy:
+          (value.deletedBy as number) ??
+          (value.DeletedBy as number) ??
+          null,
+      };
+    });
   },
 
   startApprovalFlow: async (data: { entityId: number; documentType: number; totalAmount: number }): Promise<ApiResponse<boolean>> => {

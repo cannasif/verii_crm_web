@@ -15,6 +15,23 @@ interface UseDiscountLimitValidationReturn {
   exceedsLimit: boolean;
 }
 
+function normalizeGroupCode(code?: string | null): string {
+  return (code ?? '').trim().toUpperCase();
+}
+
+function toGroupRoot(code?: string | null): string {
+  const normalized = normalizeGroupCode(code);
+  return normalized.split('/')[0] ?? normalized;
+}
+
+function groupMatches(limitCode?: string | null, stockCode?: string | null): boolean {
+  const limitNormalized = normalizeGroupCode(limitCode);
+  const stockNormalized = normalizeGroupCode(stockCode);
+  if (!limitNormalized || !stockNormalized) return false;
+  if (limitNormalized === stockNormalized) return true;
+  return toGroupRoot(limitNormalized) === toGroupRoot(stockNormalized);
+}
+
 export function useDiscountLimitValidation({
   groupCode,
   discountRate1,
@@ -31,8 +48,8 @@ export function useDiscountLimitValidation({
       };
     }
 
-    const matchingLimit = userDiscountLimits.find(
-      (limit) => limit.erpProductGroupCode === groupCode
+    const matchingLimit = userDiscountLimits.find((limit) =>
+      groupMatches(limit.erpProductGroupCode, groupCode)
     );
 
     if (!matchingLimit) {
