@@ -26,49 +26,46 @@ export function QuotationSummaryCard({
     return found?.code || 'TRY';
   }, [currency, currencyOptions]);
 
-  const styles = {
-    glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/50 shadow-sm",
-    row: "flex items-center justify-between text-sm py-1",
-    label: "text-zinc-500 dark:text-zinc-400 font-medium",
-    value: "font-semibold text-zinc-900 dark:text-zinc-100 font-mono",
-  };
-
   return (
-    <div className={styles.glassCard}>
-      <div className="p-6">
-        <div className="flex items-center gap-2 mb-6 text-zinc-900 dark:text-white">
-          <div className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800">
-            <Calculator className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+    <div className="relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm">
+      <div className="p-5">
+        <div className="flex items-center gap-2 mb-5 text-zinc-900 dark:text-white">
+          <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40">
+            <Calculator className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <h3 className="font-bold text-base">{t('quotation.summary.title', 'Özet')}</h3>
+          <h3 className="font-bold text-sm">{t('quotation.summary.title', 'Özet')}</h3>
         </div>
 
-        {/* Hesaplamalar */}
-        <div className="space-y-3">
-          <div className={styles.row}>
-            <span className={styles.label}>{t('quotation.summary.subtotal', 'Ara Toplam')}</span>
-            <span className={styles.value}>{formatCurrency(totals.subtotal, currencyCode)}</span>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <span className="text-zinc-500 dark:text-zinc-400 font-medium shrink-0">
+              {t('quotation.summary.subtotal', 'Ara Toplam')}
+            </span>
+            <span className="font-semibold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right">
+              {formatCurrency(totals.subtotal, currencyCode)}
+            </span>
           </div>
-          
-          <div className={styles.row}>
-            <span className={styles.label}>{t('quotation.summary.totalVat', 'Toplam KDV')}</span>
-            <span className={styles.value}>{formatCurrency(totals.totalVat, currencyCode)}</span>
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <span className="text-zinc-500 dark:text-zinc-400 font-medium shrink-0">
+              {t('quotation.summary.totalVat', 'Toplam KDV')}
+            </span>
+            <span className="font-semibold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right">
+              {formatCurrency(totals.totalVat, currencyCode)}
+            </span>
           </div>
         </div>
 
-        {/* Genel Toplam */}
-        <div className="mt-6">
-          <div className="rounded-xl bg-gradient-to-r from-orange-600 to-pink-600 p-5 shadow-lg shadow-orange-500/30 text-white flex items-center justify-between transition-all hover:scale-[1.02] duration-300">
-            <span className="text-sm font-bold uppercase tracking-wider flex items-center gap-2 text-white/90">
-              <Wallet className="h-5 w-5" />
+        <div className="mt-5 pt-5 border-t border-zinc-200 dark:border-zinc-700 space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-zinc-700 dark:text-zinc-300 font-semibold shrink-0 flex items-center gap-2">
+              <Wallet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               {t('quotation.summary.grandTotal', 'Genel Toplam')}
             </span>
-            <span className="text-3xl font-black font-mono tracking-tight text-white drop-shadow-sm">
+            <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-base">
               {formatCurrency(totals.grandTotal, currencyCode)}
             </span>
           </div>
         </div>
-
       </div>
     </div>
   );

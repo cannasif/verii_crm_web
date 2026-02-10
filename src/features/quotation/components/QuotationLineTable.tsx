@@ -176,10 +176,12 @@ export function QuotationLineTable({
   });
 
   const styles = {
-    glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/50 backdrop-blur-xl shadow-lg shadow-zinc-200/50 dark:shadow-none",
+    glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm",
     tableHeadRow: "bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800",
     tableHead: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider",
+    tableHeadRight: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right",
     tableCell: "p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800",
+    tableCellRight: "p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800 text-right font-mono tabular-nums",
     tableRow: "group transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/40",
     actionButton: "h-8 w-8 p-0 rounded-lg hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm hover:scale-105 transition-all duration-200",
   };
@@ -549,7 +551,7 @@ export function QuotationLineTable({
       <div className={styles.glassCard}>
         <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/20 text-white">
+            <div className="p-2.5 rounded-xl bg-linear-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/20 text-white">
               <ShoppingCart className="h-5 w-5" />
             </div>
             <div>
@@ -572,7 +574,7 @@ export function QuotationLineTable({
               onClick={handleAddLine}
               disabled={!linesEditable}
               size="sm"
-              className="h-10 px-6 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
+              className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               {t('quotation.lines.add', 'Satır Ekle')}
@@ -635,12 +637,12 @@ export function QuotationLineTable({
                 <TableHeader>
                   <TableRow className={styles.tableHeadRow}>
                     <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('quotation.lines.stock', 'Stok Bilgisi')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px] md:min-w-[140px]")}>{t('quotation.lines.unitPrice', 'Birim Fiyat')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[90px] md:min-w-[100px]")}>{t('quotation.lines.quantity', 'Miktar')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('quotation.lines.discount1', 'İnd.1')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('quotation.lines.discount2', 'İnd.2')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('quotation.lines.discount3', 'İnd.3')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[110px] md:min-w-[120px]")}>{t('quotation.lines.netPrice', 'Tutar')}</TableHead>
+                    <TableHead className={cn(styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('quotation.lines.unitPrice', 'Birim Fiyat')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('quotation.lines.quantity', 'Miktar')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount1', 'İnd.1')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount2', 'İnd.2')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount3', 'İnd.3')}</TableHead>
+                    <TableHead className={cn(styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('quotation.lines.netPrice', 'Tutar')}</TableHead>
                     {linesEditable && (
                     <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions', 'İşlem')}</TableHead>
                     )}
@@ -697,15 +699,14 @@ export function QuotationLineTable({
                           </div>
                         </TableCell>
 
-                        <TableCell className={cn(styles.tableCell, "text-right")}>
-                          <div className="font-mono font-semibold text-zinc-700 dark:text-zinc-300 bg-zinc-100/50 dark:bg-zinc-800/50 px-2 py-1 rounded inline-block">
+                        <TableCell className={cn(styles.tableCellRight, "pr-4")}>
+                          <span className="font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm">
                             {formatCurrency(line.unitPrice, currencyCode)}
-                          </div>
+                          </span>
                         </TableCell>
 
-                        {/* MİKTAR */}
                         <TableCell className={cn(styles.tableCell, "text-center")}>
-                          <span className="inline-flex items-center justify-center min-w-[2.5rem] h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 shadow-sm">
+                          <span className="inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
                             {line.quantity}
                           </span>
                         </TableCell>
@@ -713,7 +714,7 @@ export function QuotationLineTable({
                         {[line.discountRate1, line.discountRate2, line.discountRate3].map((rate, i) => (
                           <TableCell key={i} className={cn(styles.tableCell, "text-center")}>
                             {rate > 0 ? (
-                              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-900/30 px-1.5 py-0.5 rounded shadow-sm">
+                              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-900/30 px-1.5 py-0.5 rounded">
                                 %{rate}
                               </span>
                             ) : (
@@ -722,11 +723,10 @@ export function QuotationLineTable({
                           </TableCell>
                         ))}
 
-                        {/* TUTAR */}
-                        <TableCell className={cn(styles.tableCell, "text-right")}>
-                          <div className="font-bold text-zinc-900 dark:text-white text-base">
+                        <TableCell className={cn(styles.tableCellRight, "pr-6")}>
+                          <span className="font-bold text-zinc-900 dark:text-white text-sm tabular-nums">
                             {formatCurrency(line.lineTotal, currencyCode)}
-                          </div>
+                          </span>
                         </TableCell>
 
                         {linesEditable && (
@@ -779,7 +779,7 @@ export function QuotationLineTable({
         <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1200px] max-h-[92vh] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
           <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
             <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+              <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
                 <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
                   <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
                 </div>
@@ -817,7 +817,7 @@ export function QuotationLineTable({
         <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1200px] max-h-[92vh] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
           <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
             <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 p-0.5 shadow-lg shadow-blue-500/20">
+              <div className="h-10 w-10 rounded-xl bg-linear-to-br from-blue-500 to-indigo-500 p-0.5 shadow-lg shadow-blue-500/20">
                 <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
                   <Edit className="h-5 w-5 text-blue-600 dark:text-blue-500" />
                 </div>
@@ -864,7 +864,7 @@ export function QuotationLineTable({
         <DialogContent className="bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] p-0 overflow-hidden shadow-2xl">
           <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
             <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
-              <div className="bg-gradient-to-br from-red-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-red-500/20 text-white">
+              <div className="bg-linear-to-br from-red-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-red-500/20 text-white">
                 <Trash2 className="h-5 w-5" />
               </div>
               {relatedLinesCount > 1
@@ -897,7 +897,7 @@ export function QuotationLineTable({
                 void handleDeleteConfirm();
               }}
               disabled={isDeleting}
-              className="h-11 px-6 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40 border-0 font-medium transition-all"
+              className="h-11 px-6 rounded-xl bg-linear-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40 border-0 font-medium transition-all"
             >
               {isDeleting ? (
                 <>
