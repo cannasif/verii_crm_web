@@ -437,93 +437,98 @@ export function DemandDetailPage(): ReactElement {
             </Alert>
           )}
           <FormProvider {...form}>
-            <form onSubmit={handleFormSubmit} className="space-y-6">
-              <div className="flex flex-col gap-6">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 pb-2 mb-4 border-b border-zinc-200 dark:border-white/5">
-                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/20 text-blue-600">
-                      <Layers className="h-5 w-5" />
+            <form onSubmit={handleFormSubmit} className="space-y-0">
+              <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
+                <div className="flex flex-col gap-6 min-w-0">
+                  <section className="space-y-1" aria-label={t('demand.sections.header', 'Müşteri ve belge bilgileri')}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                        1
+                      </span>
+                      <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                        {t('demand.sections.header', 'Müşteri & Belge')}
+                      </h3>
                     </div>
-                    <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                      {t('demand.header.title', 'Talep Bilgileri')}
-                    </h3>
-                  </div>
-                  <DemandHeaderForm 
-                    exchangeRates={exchangeRates}
-                    onExchangeRatesChange={setExchangeRates}
-                    lines={lines}
-                    onLinesChange={async () => {
+                    <DemandHeaderForm
+                      exchangeRates={exchangeRates}
+                      onExchangeRatesChange={setExchangeRates}
+                      lines={lines}
+                      onLinesChange={async () => {
                         const newCurrency = form.getValues('demand.currency');
                         if (newCurrency) {
-                            await handleCurrencyChange(newCurrency);
+                          await handleCurrencyChange(newCurrency);
                         }
-                    }}
-                    initialCurrency={demand?.currency}
-                    revisionNo={demand?.revisionNo}
-                    demandId={demandId}
-                    demandOfferNo={demand?.offerNo}
-                    readOnly={isReadOnly}
-                />
-            </div>
+                      }}
+                      initialCurrency={demand?.currency}
+                      revisionNo={demand?.revisionNo}
+                      demandId={demandId}
+                      demandOfferNo={demand?.offerNo}
+                      readOnly={isReadOnly}
+                    />
+                  </section>
 
-            <div className="space-y-1 pt-2">
-              <DemandLineTable
-                lines={lines}
-                setLines={setLines}
-                currency={watchedCurrency}
-                exchangeRates={exchangeRates}
-                pricingRules={pricingRules}
-                userDiscountLimits={temporarySallerData}
-                customerId={watchedCustomerId}
-                erpCustomerCode={watchedErpCustomerCode}
-                representativeId={watchedRepresentativeId}
-                demandId={demandId}
-                enabled={linesEnabled}
-              />
-            </div>
-
-            {/* 4. SECTION: SUMMARY */}
-            <div className="space-y-4 pt-4">
-                <div className="flex items-center gap-2 pb-2 border-b border-zinc-200 dark:border-white/5">
-                    <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-600">
-                        <Calculator className="h-5 w-5" />
+                  <section className="space-y-1 pt-2" aria-label={t('demand.sections.lines', 'Talep kalemleri')}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                        2
+                      </span>
+                      <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                        {t('demand.sections.lines', 'Talep Kalemleri')}
+                      </h3>
                     </div>
-                    <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                        {t('demand.summary.title', 'Teklif Özeti')}
+                    <DemandLineTable
+                      lines={lines}
+                      setLines={setLines}
+                      currency={watchedCurrency}
+                      exchangeRates={exchangeRates}
+                      pricingRules={pricingRules}
+                      userDiscountLimits={temporarySallerData}
+                      customerId={watchedCustomerId}
+                      erpCustomerCode={watchedErpCustomerCode}
+                      representativeId={watchedRepresentativeId}
+                      demandId={demandId}
+                      enabled={linesEnabled}
+                    />
+                  </section>
+                </div>
+
+                <aside className="xl:sticky xl:top-6">
+                  <div className="flex items-center gap-2 mb-3 xl:mb-4">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                      3
+                    </span>
+                    <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                      {t('demand.sections.summary', 'Özet & Toplamlar')}
                     </h3>
-                </div>
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className="hidden md:block"></div>
-                    <div className="bg-zinc-50/80 dark:bg-zinc-900/50 rounded-xl p-6 border border-zinc-200 dark:border-white/10 shadow-sm">
-                         <DemandSummaryCard lines={lines} currency={watchedCurrency} />
-                    </div>
-                </div>
-            </div>
+                  </div>
+                  <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
+                    <DemandSummaryCard lines={lines} currency={watchedCurrency} />
+                  </div>
+                </aside>
+              </div>
 
-            {/* ACTION BUTTONS */}
-            <div className="flex items-center justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-white/10">
-              {demand?.status === 0 && !isReadOnly && demandStatus !== 4 && (
-                <Button 
-                  type="button"
-                  variant="secondary"
-                  onClick={handleStartApprovalFlow}
-                  disabled={startApprovalFlow.isPending || !demand}
-                  className="h-10"
-                >
-                  {startApprovalFlow.isPending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {t('demand.approval.sending', 'Gönderiliyor...')}
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" />
-                      {t('demand.approval.sendForApproval', 'Onaya Gönder')}
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
+              <div className="flex items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+                {demand?.status === 0 && !isReadOnly && demandStatus !== 4 && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleStartApprovalFlow}
+                    disabled={startApprovalFlow.isPending || !demand}
+                    className="h-10"
+                  >
+                    {startApprovalFlow.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t('demand.approval.sending', 'Gönderiliyor...')}
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        {t('demand.approval.sendForApproval', 'Onaya Gönder')}
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             </form>
           </FormProvider>
