@@ -60,8 +60,8 @@ const PricingRuleManagementPage = lazyImport(() => import('@/features/pricing-ru
 const StockListPage = lazyImport(() => import('@/features/stock'), 'StockListPage');
 const StockDetailPage = lazyImport(() => import('@/features/stock'), 'StockDetailPage');
 const DocumentSerialTypeManagementPage = lazyImport(() => import('@/features/document-serial-type-management'), 'DocumentSerialTypeManagementPage');
-const ReportDesignerListPage = lazyImport(() => import('@/features/report-designer'), 'ReportDesignerListPage');
-const ReportDesignerCreatePage = lazyImport(() => import('@/features/report-designer'), 'ReportDesignerCreatePage');
+const ReportDesignerListPage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerListPage');
+const ReportDesignerCreatePage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerCreatePage');
 const ReportsListPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportsListPage');
 const ReportBuilderPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportBuilderPage');
 const ReportViewerPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportViewerPage');

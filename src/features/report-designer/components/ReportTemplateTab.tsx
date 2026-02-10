@@ -1,9 +1,8 @@
 import type { ReactElement } from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { useReportTemplateList } from '../hooks/useReportTemplateList';
-import { useGenerateReportPdf } from '../hooks/useGenerateReportPdf';
-import { DocumentRuleType } from '../types/report-template-types';
-import type { ReportTemplateGetDto } from '../types/report-template-types';
+import { usePdfReportTemplateList } from '@/features/pdf-report-designer/hooks/usePdfReportTemplateList';
+import { useGeneratePdfReportDocument } from '@/features/pdf-report-designer/hooks/useGeneratePdfReportDocument';
+import { DocumentRuleType, type ReportTemplateGetDto } from '@/features/pdf-report';
 import {
   Select,
   SelectContent,
@@ -32,8 +31,9 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
   const pdfBlobUrlRef = useRef<string | null>(null);
   pdfBlobUrlRef.current = pdfBlobUrl;
 
-  const { data: templates = [], isLoading: isLoadingTemplates } = useReportTemplateList();
-  const generatePdfMutation = useGenerateReportPdf();
+  const { data: listData, isLoading: isLoadingTemplates } = usePdfReportTemplateList();
+  const templates = listData?.items ?? [];
+  const generatePdfMutation = useGeneratePdfReportDocument();
 
   const filteredTemplates: ReportTemplateGetDto[] = templates.filter(
     (t) => Number(t.ruleType) === ruleType
@@ -85,7 +85,7 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
     return () => {
       cancelled = true;
     };
-  }, [selectedTemplateId, entityId, generatePdfMutation]);
+  }, [selectedTemplateId, entityId]);
 
   useEffect(() => {
     return () => {

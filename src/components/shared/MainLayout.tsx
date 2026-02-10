@@ -136,8 +136,8 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           {
             title: t('sidebar.pdfBuilder', 'PDF Builder'),
             children: [
-              { title: 'Listele', href: '/report-designer' },
-              { title: 'Oluştur', href: '/report-designer/create' },
+              { title: t('pdfReportDesigner.list', 'Listele'), href: '/report-designer' },
+              { title: t('pdfReportDesigner.create', 'Oluştur'), href: '/report-designer/create' },
             ],
           },
         ],

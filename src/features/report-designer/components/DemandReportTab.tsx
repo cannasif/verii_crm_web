@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { ReportTemplateTab } from './ReportTemplateTab';
-import { DocumentRuleType } from '../types/report-template-types';
+import { DocumentRuleType } from '@/features/pdf-report';
 
 interface DemandReportTabProps {
   demandId: number;
