@@ -59,6 +59,8 @@ export function QuotationCreateForm(): ReactElement {
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: user?.id || null,
+        generalDiscountRate: null,
+        generalDiscountAmount: null,
       },
     },
   });
@@ -164,6 +166,8 @@ export function QuotationCreateForm(): ReactElement {
         offerNo: data.quotation.offerNo || null,
         revisionNo: data.quotation.revisionNo || null,
         revisionId: (data.quotation.revisionId && data.quotation.revisionId > 0) ? data.quotation.revisionId : null,
+        generalDiscountRate: data.quotation.generalDiscountRate ?? null,
+        generalDiscountAmount: data.quotation.generalDiscountAmount ?? null,
       };
 
       const payload: QuotationBulkCreateDto = {

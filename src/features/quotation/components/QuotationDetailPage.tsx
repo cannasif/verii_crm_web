@@ -16,7 +16,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Calculator, Layers, Loader2, FileCheck, FileText, Share2, FileDown, MessageCircle, Mail, Save, X } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, Share2, FileDown, MessageCircle, Mail, Save, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -114,6 +114,8 @@ export function QuotationDetailPage(): ReactElement {
           offerNo: quotation.offerNo || null,
           revisionNo: quotation.revisionNo || null,
           revisionId: quotation.revisionId || null,
+          generalDiscountRate: quotation.generalDiscountRate ?? null,
+          generalDiscountAmount: quotation.generalDiscountAmount ?? null,
         },
       });
       formInitializedRef.current = true;
@@ -357,6 +359,8 @@ export function QuotationDetailPage(): ReactElement {
         offerNo: data.quotation.offerNo || null,
         revisionNo: data.quotation.revisionNo || null,
         revisionId: (data.quotation.revisionId && data.quotation.revisionId > 0) ? data.quotation.revisionId : null,
+        generalDiscountRate: data.quotation.generalDiscountRate ?? null,
+        generalDiscountAmount: data.quotation.generalDiscountAmount ?? null,
       };
 
       const payload: QuotationBulkCreateDto = {
@@ -475,6 +479,11 @@ export function QuotationDetailPage(): ReactElement {
           </h2>
           <p className="text-muted-foreground text-sm">
             {t('quotation.detail.subtitle', 'Teklif detaylarını görüntüleyin ve düzenleyin.')}
+            {quotation.revisionNo != null && quotation.revisionNo !== '' && (
+              <span className="block mt-1">
+                {t('quotation.detail.revisionNo', 'Revizyon No')}: {quotation.revisionNo}
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -547,6 +556,7 @@ export function QuotationDetailPage(): ReactElement {
                       quotationId={quotation?.id}
                       quotationOfferNo={quotation?.offerNo}
                       readOnly={isReadOnly}
+                      showDocumentSerialType={false}
                     />
                   </section>
 

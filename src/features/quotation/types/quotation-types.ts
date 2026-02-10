@@ -48,6 +48,17 @@ export interface CreateQuotationDto {
   revisionNo?: string | null;
   revisionId?: number | null;
   currency: string;
+  generalDiscountRate?: number | null;
+  generalDiscountAmount?: number | null;
+}
+
+export interface UpdateQuotationDto extends CreateQuotationDto {}
+
+export interface QuotationDto {
+  id: number;
+  generalDiscountRate?: number | null;
+  generalDiscountAmount?: number | null;
+  [key: string]: unknown;
 }
 
 export interface CreateQuotationLineDto {
@@ -168,6 +179,8 @@ export interface QuotationGetDto {
   validUntil?: string | null;
   contactId?: number | null;
   activityId?: number | null;
+  generalDiscountRate?: number | null;
+  generalDiscountAmount?: number | null;
   createdAt: string;
   updatedAt?: string | null;
   createdBy?: string | null;

@@ -75,6 +75,7 @@ interface QuotationHeaderFormProps {
   quotationId?: number | null;
   quotationOfferNo?: string | null;
   readOnly?: boolean;
+  showDocumentSerialType?: boolean;
 }
 
 export function QuotationHeaderForm({
@@ -86,6 +87,7 @@ export function QuotationHeaderForm({
   quotationId,
   quotationOfferNo,
   readOnly = false,
+  showDocumentSerialType = true,
 }: QuotationHeaderFormProps = {}): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<CreateQuotationSchema>();
@@ -295,35 +297,37 @@ export function QuotationHeaderForm({
               </div>
 
               <div className="grid grid-cols-1 gap-6">
-                 <div>
-                   <FormField
-                    control={form.control}
-                    name="quotation.documentSerialTypeId"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>Seri No</FormLabel>
-                        <div className="relative">
-                          <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
-                          <VoiceSearchCombobox
-                            className={styles.inputBase}
-                            value={field.value?.toString() || ''}
-                            onSelect={(value) => field.onChange(value ? Number(value) : null)}
-                            options={availableDocumentSerialTypes
-                              .filter((d) => d.serialPrefix?.trim() !== '')
-                              .map((d) => ({
-                                value: d.id.toString(),
-                                label: d.serialPrefix || ''
-                              }))}
-                            placeholder={t('quotation.select', 'Seç')}
-                            searchPlaceholder={t('common.search', 'Ara...')}
-                            disabled={readOnly || !watchedRepresentativeId}
-                          />
-                        </div>
-                        <FormMessage className="mt-1" />
-                      </FormItem>
-                    )}
-                  />
-                 </div>
+                 {showDocumentSerialType && (
+                   <div>
+                     <FormField
+                      control={form.control}
+                      name="quotation.documentSerialTypeId"
+                      render={({ field }) => (
+                        <FormItem className="space-y-0 relative group">
+                          <FormLabel className={styles.label}>Seri No <span className="text-pink-500">*</span></FormLabel>
+                          <div className="relative">
+                            <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
+                            <VoiceSearchCombobox
+                              className={styles.inputBase}
+                              value={field.value?.toString() || ''}
+                              onSelect={(value) => field.onChange(value ? Number(value) : null)}
+                              options={availableDocumentSerialTypes
+                                .filter((d) => d.serialPrefix?.trim() !== '')
+                                .map((d) => ({
+                                  value: d.id.toString(),
+                                  label: d.serialPrefix || ''
+                                }))}
+                              placeholder={t('quotation.select', 'Seç')}
+                              searchPlaceholder={t('common.search', 'Ara...')}
+                              disabled={readOnly || !watchedRepresentativeId}
+                            />
+                          </div>
+                          <FormMessage className="mt-1" />
+                        </FormItem>
+                      )}
+                    />
+                   </div>
+                 )}
 
                  <div>
                   <FormField
@@ -908,7 +912,7 @@ export function QuotationHeaderForm({
         <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 p-0 overflow-hidden shadow-2xl">
           <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
             <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
-              <div className="bg-gradient-to-br from-pink-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
+              <div className="bg-linear-to-br from-pink-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
                 <ArrowRightLeft className="h-5 w-5" />
               </div>
               {t('quotation.header.currencyChange.title', 'Kur Değişikliği')}
@@ -927,7 +931,7 @@ export function QuotationHeaderForm({
             </Button>
             <Button 
               onClick={handleCurrencyChangeConfirm} 
-              className="h-11 px-6 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 border-0 font-medium transition-all"
+              className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 border-0 font-medium transition-all"
             >
               {t('quotation.confirm', 'Onayla')}
             </Button>
