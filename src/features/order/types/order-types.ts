@@ -46,6 +46,8 @@ export interface CreateOrderDto {
   revisionNo?: string | null;
   revisionId?: number | null;
   currency: string;
+  generalDiscountRate?: number | null;
+  generalDiscountAmount?: number | null;
 }
 
 export interface CreateOrderLineDto {
@@ -163,6 +165,8 @@ export interface OrderGetDto {
   validUntil?: string | null;
   contactId?: number | null;
   activityId?: number | null;
+  generalDiscountRate?: number | null;
+  generalDiscountAmount?: number | null;
   createdAt: string;
   updatedAt?: string | null;
   createdBy?: string | null;

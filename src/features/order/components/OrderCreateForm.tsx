@@ -12,7 +12,7 @@ import { OrderHeaderForm } from './OrderHeaderForm';
 import { OrderLineTable } from './OrderLineTable';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calculator, Save, X, Layers } from 'lucide-react';
+import { ArrowLeft, Save, X } from 'lucide-react';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
 import { useUIStore } from '@/stores/ui-store';
@@ -50,6 +50,8 @@ export function OrderCreateForm(): ReactElement {
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: user?.id || null,
+        generalDiscountRate: null,
+        generalDiscountAmount: null,
       },
     },
   });
@@ -155,6 +157,8 @@ export function OrderCreateForm(): ReactElement {
         offerNo: data.order.offerNo || null,
         revisionNo: data.order.revisionNo || null,
         revisionId: (data.order.revisionId && data.order.revisionId > 0) ? data.order.revisionId : null,
+        generalDiscountRate: data.order.generalDiscountRate ?? null,
+        generalDiscountAmount: data.order.generalDiscountAmount ?? null,
       };
 
       const payload: OrderBulkCreateDto = {

@@ -16,7 +16,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Calculator, Layers, Loader2, FileCheck, FileText } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText } from 'lucide-react';
 import { OrderApprovalFlowTab } from './OrderApprovalFlowTab';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
@@ -107,6 +107,8 @@ export function OrderDetailPage(): ReactElement {
           offerNo: order.offerNo || null,
           revisionNo: order.revisionNo || null,
           revisionId: order.revisionId || null,
+          generalDiscountRate: order.generalDiscountRate ?? null,
+          generalDiscountAmount: order.generalDiscountAmount ?? null,
         },
       });
       formInitializedRef.current = true;
@@ -274,6 +276,8 @@ export function OrderDetailPage(): ReactElement {
         offerNo: data.order.offerNo || null,
         revisionNo: data.order.revisionNo || null,
         revisionId: (data.order.revisionId && data.order.revisionId > 0) ? data.order.revisionId : null,
+        generalDiscountRate: data.order.generalDiscountRate ?? null,
+        generalDiscountAmount: data.order.generalDiscountAmount ?? null,
       };
 
       const payload: OrderBulkCreateDto = {
@@ -391,6 +395,11 @@ export function OrderDetailPage(): ReactElement {
           </h2>
           <p className="text-muted-foreground text-sm">
             {t('order.detail.subtitle', 'Sipariş detaylarını görüntüleyin ve düzenleyin.')}
+            {order.revisionNo != null && order.revisionNo !== '' && (
+              <span className="block mt-1">
+                {t('order.detail.revisionNo', 'Revizyon No')}: {order.revisionNo}
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -463,6 +472,7 @@ export function OrderDetailPage(): ReactElement {
                       orderId={orderId}
                       orderOfferNo={order?.offerNo}
                       readOnly={isReadOnly}
+                      showDocumentSerialType={false}
                     />
                   </section>
 

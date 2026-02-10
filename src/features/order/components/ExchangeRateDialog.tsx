@@ -157,7 +157,7 @@ export function ExchangeRateDialog({
         {/* HEADER */}
         <DialogHeader className="p-6 pb-4 border-b border-zinc-200/50 dark:border-zinc-800/50 bg-zinc-50/30 dark:bg-zinc-900/10">
           <DialogTitle className="flex items-center gap-3 text-xl">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 text-white">
+            <div className="p-2 rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 text-white">
               <DollarSign className="h-5 w-5" />
             </div>
             <div className="flex flex-col gap-0.5">
@@ -315,7 +315,7 @@ export function ExchangeRateDialog({
             type="button"
             onClick={() => void handleSave()}
             disabled={readOnly || isLoading || isSaving}
-            className="rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md hover:shadow-lg transition-all border-0"
+            className="rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md hover:shadow-lg transition-all border-0"
           >
             {isSaving ? (
               <>

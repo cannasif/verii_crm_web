@@ -89,7 +89,7 @@ export function OrderExchangeRateForm({
       {/* HEADER & FORM SECTION */}
       <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/20">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 text-white">
+          <div className="p-2 rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 text-white">
             <DollarSign className="h-5 w-5" />
           </div>
           <div>
@@ -179,7 +179,7 @@ export function OrderExchangeRateForm({
               type="button" 
               onClick={handleAdd} 
               size="sm"
-              className="h-10 px-4 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all border-0 flex-1 font-bold"
+              className="h-10 px-4 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all border-0 flex-1 font-bold"
             >
               <Plus className="h-4 w-4 mr-1.5" />
               {t('order.add', 'Ekle')}

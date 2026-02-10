@@ -50,6 +50,7 @@ interface OrderHeaderFormProps {
   orderId?: number | null;
   orderOfferNo?: string | null;
   readOnly?: boolean;
+  showDocumentSerialType?: boolean;
 }
 
 export function OrderHeaderForm({
@@ -62,6 +63,7 @@ export function OrderHeaderForm({
   orderId,
   orderOfferNo,
   readOnly = false,
+  showDocumentSerialType = true,
 }: OrderHeaderFormProps = {}): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<CreateOrderSchema>();
@@ -193,7 +195,7 @@ export function OrderHeaderForm({
       <div className="absolute -top-10 -left-10 w-96 h-96 bg-pink-500/10 blur-[100px] pointer-events-none rounded-full" />
       <div className="absolute top-20 right-0 w-80 h-80 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
       <div className="relative z-10 flex items-center gap-3 mb-6 px-1">
-        <div className="p-2.5 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg shadow-pink-500/30 text-white">
+        <div className="p-2.5 bg-linear-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg shadow-pink-500/30 text-white">
            <Quote className="h-5 w-5" />
         </div>
         <div>
@@ -509,34 +511,36 @@ export function OrderHeaderForm({
               </div>
 
               <div className="space-y-4 flex-1">
-                 <FormField
-                  control={form.control}
-                  name="order.documentSerialTypeId"
-                  render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>Seri No</FormLabel>
-                      <div className="relative">
-                        <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
-                        <VoiceSearchCombobox
-                          className={styles.inputBase}
-                          value={field.value?.toString() || ''}
-                          onSelect={(value) => field.onChange(value ? Number(value) : null)}
-                          options={availableDocumentSerialTypes
-                            .filter((d) => d.serialPrefix?.trim() !== '')
-                            .map((d) => ({
-                              value: d.id.toString(),
-                              label: d.serialPrefix || ''
-                            }))}
-                          disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
-                          placeholder={t('order.select', 'Seç')}
-                          searchPlaceholder={t('common.search', 'Ara...')}
-                        />
-                      </div>
-                      <FormMessage className="mt-1" />
-                    </FormItem>
-                  )}
-                />
-                
+                 {showDocumentSerialType && (
+                  <FormField
+                    control={form.control}
+                    name="order.documentSerialTypeId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 relative group">
+                        <FormLabel className={styles.label}>Seri No <span className="text-pink-500">*</span></FormLabel>
+                        <div className="relative">
+                          <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
+                          <VoiceSearchCombobox
+                            className={styles.inputBase}
+                            value={field.value?.toString() || ''}
+                            onSelect={(value) => field.onChange(value ? Number(value) : null)}
+                            options={availableDocumentSerialTypes
+                              .filter((d) => d.serialPrefix?.trim() !== '')
+                              .map((d) => ({
+                                value: d.id.toString(),
+                                label: d.serialPrefix || ''
+                              }))}
+                            disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
+                            placeholder={t('order.select', 'Seç')}
+                            searchPlaceholder={t('common.search', 'Ara...')}
+                          />
+                        </div>
+                        <FormMessage className="mt-1" />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <FormField
                   control={form.control}
                   name="order.description"
