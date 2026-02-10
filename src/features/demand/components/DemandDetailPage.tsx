@@ -16,7 +16,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Calculator, Layers, Loader2, FileCheck, FileText } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText } from 'lucide-react';
 import { DemandApprovalFlowTab } from './DemandApprovalFlowTab';
 import { DemandReportTab } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
@@ -107,6 +107,8 @@ export function DemandDetailPage(): ReactElement {
           offerNo: demand.offerNo || null,
           revisionNo: demand.revisionNo || null,
           revisionId: demand.revisionId || null,
+          generalDiscountRate: demand.generalDiscountRate ?? null,
+          generalDiscountAmount: demand.generalDiscountAmount ?? null,
         },
       });
       formInitializedRef.current = true;
@@ -274,6 +276,8 @@ export function DemandDetailPage(): ReactElement {
         offerNo: data.demand.offerNo || null,
         revisionNo: data.demand.revisionNo || null,
         revisionId: (data.demand.revisionId && data.demand.revisionId > 0) ? data.demand.revisionId : null,
+        generalDiscountRate: data.demand.generalDiscountRate ?? null,
+        generalDiscountAmount: data.demand.generalDiscountAmount ?? null,
       };
 
       const payload: DemandBulkCreateDto = {
@@ -392,6 +396,11 @@ export function DemandDetailPage(): ReactElement {
           </h2>
           <p className="text-muted-foreground text-sm">
             {t('demand.detail.subtitle', 'Talep detaylarını görüntüleyin ve düzenleyin.')}
+            {demand.revisionNo != null && demand.revisionNo !== '' && (
+              <span className="block mt-1">
+                {t('demand.detail.revisionNo', 'Revizyon No')}: {demand.revisionNo}
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -464,6 +473,7 @@ export function DemandDetailPage(): ReactElement {
                       demandId={demandId}
                       demandOfferNo={demand?.offerNo}
                       readOnly={isReadOnly}
+                      showDocumentSerialType={false}
                     />
                   </section>
 

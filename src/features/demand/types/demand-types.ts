@@ -46,6 +46,8 @@ export interface CreateDemandDto {
   revisionNo?: string | null;
   revisionId?: number | null;
   currency: string;
+  generalDiscountRate?: number | null;
+  generalDiscountAmount?: number | null;
 }
 
 export interface CreateDemandLineDto {
@@ -163,6 +165,8 @@ export interface DemandGetDto {
   validUntil?: string | null;
   contactId?: number | null;
   activityId?: number | null;
+  generalDiscountRate?: number | null;
+  generalDiscountAmount?: number | null;
   createdAt: string;
   updatedAt?: string | null;
   createdBy?: string | null;

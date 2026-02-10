@@ -56,6 +56,7 @@ interface DemandHeaderFormProps {
   demandId?: number | null;
   demandOfferNo?: string | null;
   readOnly?: boolean;
+  showDocumentSerialType?: boolean;
 }
 
 export function DemandHeaderForm({
@@ -68,6 +69,7 @@ export function DemandHeaderForm({
   demandId,
   demandOfferNo,
   readOnly = false,
+  showDocumentSerialType = true,
 }: DemandHeaderFormProps = {}): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<CreateDemandSchema>();
@@ -199,7 +201,7 @@ export function DemandHeaderForm({
       <div className="absolute -top-10 -left-10 w-96 h-96 bg-pink-500/10 blur-[100px] pointer-events-none rounded-full" />
       <div className="absolute top-20 right-0 w-80 h-80 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
       <div className="relative z-10 flex items-center gap-3 mb-6 px-1">
-        <div className="p-2.5 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg shadow-pink-500/30 text-white">
+        <div className="p-2.5 bg-linear-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg shadow-pink-500/30 text-white">
            <Quote className="h-5 w-5" />
         </div>
         <div>
@@ -532,42 +534,44 @@ export function DemandHeaderForm({
               </div>
 
               <div className="space-y-4 flex-1">
-                 <FormField
-                  control={form.control}
-                  name="demand.documentSerialTypeId"
-                  render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>Seri No</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                        value={field.value?.toString() || ''}
-                        disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
-                      >
-                        <FormControl>
-                          <div className="relative">
-                            <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
-                            <SelectTrigger className={styles.inputBase}>
-                      <SelectValue placeholder={t('demand.select', 'Seç')} />
-                    </SelectTrigger>
-                          </div>
-                        </FormControl>
-                        <SelectContent>
-                          {availableDocumentSerialTypes.length === 0 ? (
-                            <div className="p-3 text-center text-xs text-muted-foreground">Uygun seri yok</div>
-                          ) : (
-                            availableDocumentSerialTypes
-                              .filter((d) => d.serialPrefix?.trim() !== '')
-                              .map((d) => (
-                                <SelectItem key={d.id} value={d.id.toString()}>{d.serialPrefix}</SelectItem>
-                              ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage className="mt-1" />
-                    </FormItem>
-                  )}
-                />
-                
+                 {showDocumentSerialType && (
+                  <FormField
+                    control={form.control}
+                    name="demand.documentSerialTypeId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 relative group">
+                        <FormLabel className={styles.label}>Seri No <span className="text-pink-500">*</span></FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                          value={field.value?.toString() || ''}
+                          disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
+                        >
+                          <FormControl>
+                            <div className="relative">
+                              <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
+                              <SelectTrigger className={styles.inputBase}>
+                                <SelectValue placeholder={t('demand.select', 'Seç')} />
+                              </SelectTrigger>
+                            </div>
+                          </FormControl>
+                          <SelectContent>
+                            {availableDocumentSerialTypes.length === 0 ? (
+                              <div className="p-3 text-center text-xs text-muted-foreground">Uygun seri yok</div>
+                            ) : (
+                              availableDocumentSerialTypes
+                                .filter((d) => d.serialPrefix?.trim() !== '')
+                                .map((d) => (
+                                  <SelectItem key={d.id} value={d.id.toString()}>{d.serialPrefix}</SelectItem>
+                                ))
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="mt-1" />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <FormField
                   control={form.control}
                   name="demand.description"

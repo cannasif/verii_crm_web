@@ -12,7 +12,7 @@ import { DemandHeaderForm } from './DemandHeaderForm';
 import { DemandLineTable } from './DemandLineTable';
 import { DemandSummaryCard } from './DemandSummaryCard';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calculator, Save, X, Layers } from 'lucide-react';
+import { ArrowLeft, Save, X } from 'lucide-react';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import type { DemandLineFormState, DemandExchangeRateFormState, DemandBulkCreateDto, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/demand-types';
 import { useUIStore } from '@/stores/ui-store';
@@ -50,6 +50,8 @@ export function DemandCreateForm(): ReactElement {
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: user?.id || null,
+        generalDiscountRate: null,
+        generalDiscountAmount: null,
       },
     },
   });
@@ -155,6 +157,8 @@ export function DemandCreateForm(): ReactElement {
         offerNo: data.demand.offerNo || null,
         revisionNo: data.demand.revisionNo || null,
         revisionId: (data.demand.revisionId && data.demand.revisionId > 0) ? data.demand.revisionId : null,
+        generalDiscountRate: data.demand.generalDiscountRate ?? null,
+        generalDiscountAmount: data.demand.generalDiscountAmount ?? null,
       };
 
       const payload: DemandBulkCreateDto = {
