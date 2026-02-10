@@ -244,10 +244,10 @@ export function OrderCreateForm(): ReactElement {
   };
 
   return (
-    <div className="w-full space-y-8 relative pb-10">
+    <div className="w-full max-w-[1600px] mx-auto relative pb-10">
       <FormProvider {...form}>
-        <form onSubmit={handleFormSubmit} className="space-y-6">
-          <div className="flex items-center gap-5">
+        <form onSubmit={handleFormSubmit} className="space-y-0">
+          <div className="flex items-center gap-5 mb-6">
             <Button
               type="button"
               variant="outline"
@@ -258,93 +258,98 @@ export function OrderCreateForm(): ReactElement {
               <ArrowLeft className="h-5 w-5 text-zinc-500 group-hover:text-pink-600 transition-colors" />
             </Button>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">{t('order.create.title', 'Yeni Sipariş Oluştur')}</h2>
-              <p className="text-muted-foreground text-sm">
+              <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                {t('order.create.title', 'Yeni Sipariş Oluştur')}
+              </h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
                 {t('order.create.subtitle', 'Müşteri için yeni bir satış siparişi oluşturun.')}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-6">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-zinc-200 dark:border-white/5">
-                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/20 text-blue-600">
-                  <Layers className="h-5 w-5" />
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
+            <div className="flex flex-col gap-6 min-w-0">
+              <section className="space-y-1" aria-label={t('order.sections.header', 'Müşteri ve belge bilgileri')}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                    1
+                  </span>
+                  <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                    {t('order.sections.header', 'Müşteri & Belge')}
+                  </h3>
                 </div>
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                  {t('order.header.title', 'Sipariş Bilgileri')}
+                <OrderHeaderForm
+                  exchangeRates={exchangeRates}
+                  onExchangeRatesChange={setExchangeRates}
+                  lines={lines}
+                  onLinesChange={async () => {
+                    const newCurrency = form.getValues('order.currency');
+                    if (newCurrency) {
+                      await handleCurrencyChange(newCurrency);
+                    }
+                  }}
+                />
+              </section>
+
+              <section className="space-y-1 pt-2" aria-label={t('order.sections.lines', 'Sipariş kalemleri')}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                    2
+                  </span>
+                  <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                    {t('order.sections.lines', 'Sipariş Kalemleri')}
+                  </h3>
+                </div>
+                <OrderLineTable
+                  lines={lines}
+                  setLines={setLines}
+                  currency={watchedCurrency}
+                  exchangeRates={exchangeRates}
+                  pricingRules={pricingRules}
+                  userDiscountLimits={temporarySallerData}
+                  customerId={watchedCustomerId}
+                  erpCustomerCode={watchedErpCustomerCode}
+                  representativeId={watchedRepresentativeId}
+                />
+              </section>
+            </div>
+
+            <aside className="xl:sticky xl:top-6">
+              <div className="flex items-center gap-2 mb-3 xl:mb-4">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                  3
+                </span>
+                <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                  {t('order.sections.summary', 'Özet & Toplamlar')}
                 </h3>
               </div>
-              
-              <OrderHeaderForm 
-                exchangeRates={exchangeRates}
-                onExchangeRatesChange={setExchangeRates}
-                lines={lines}
-                onLinesChange={async () => {
-                  const newCurrency = form.getValues('order.currency');
-                  if (newCurrency) {
-                    await handleCurrencyChange(newCurrency);
-                  }
-                }}
-              />
-            </div>
-
-            {/* 2. SECTION: LINE TABLE */}
-            <div className="space-y-1 pt-2">
-              <OrderLineTable
-                lines={lines}
-                setLines={setLines}
-                currency={watchedCurrency}
-                exchangeRates={exchangeRates}
-                pricingRules={pricingRules}
-                userDiscountLimits={temporarySallerData}
-                customerId={watchedCustomerId}
-                erpCustomerCode={watchedErpCustomerCode}
-                representativeId={watchedRepresentativeId}
-              />
-            </div>
-
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center gap-2 pb-2 border-b border-zinc-200 dark:border-white/5">
-                <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-600">
-                  <Calculator className="h-5 w-5" />
-                </div>
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                  {t('order.summary.title', 'Sipariş Özeti')}
-                </h3>
+              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
+                <OrderSummaryCard lines={lines} currency={watchedCurrency} />
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="hidden md:block">
-                  {/* Sol taraf notlar için ayrıldı */}
-                </div>
-                <div className="bg-zinc-50/80 dark:bg-zinc-900/50 rounded-xl p-6 border border-zinc-200 dark:border-white/10 shadow-sm">
-                  <OrderSummaryCard lines={lines} currency={watchedCurrency} />
-                </div>
-              </div>
-            </div>
+            </aside>
+          </div>
 
-            <div className="flex items-center justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-white/10">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate(-1)}
-                className="group"
-              >
-                <X className="mr-2 h-4 w-4" />
-                {t('order.cancel', 'İptal')}
-              </Button>
-              <Button
-                type="submit"
-                disabled={createMutation.isPending}
-                className="group bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white min-w-[140px]"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {createMutation.isPending 
-                  ? t('order.saving', 'Kaydediliyor...') 
-                  : t('order.save', 'Siparişi Kaydet')
-                }
-              </Button>
-            </div>
+          <div className="flex items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate(-1)}
+              className="group"
+            >
+              <X className="mr-2 h-4 w-4" />
+              {t('order.cancel', 'İptal')}
+            </Button>
+            <Button
+              type="submit"
+              disabled={createMutation.isPending}
+              className="group bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white min-w-[140px]"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {createMutation.isPending
+                ? t('order.saving', 'Kaydediliyor...')
+                : t('order.save', 'Siparişi Kaydet')
+              }
+            </Button>
           </div>
         </form>
       </FormProvider>

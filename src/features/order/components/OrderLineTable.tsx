@@ -29,7 +29,7 @@ import { useUpdateOrderLines } from '../hooks/useUpdateOrderLines';
 import { useDeleteOrderLine } from '../hooks/useDeleteOrderLine';
 import { orderApi } from '../api/order-api';
 import { formatCurrency } from '../utils/format-currency';
-import { Trash2, Edit, Plus, ShoppingCart, Box, AlertTriangle, Layers, Loader2 } from 'lucide-react';
+import { Trash2, Edit, Plus, ShoppingCart, Box, AlertTriangle, Layers, Loader2, X } from 'lucide-react';
 import type { OrderLineFormState, OrderExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, CreateOrderLineDto, OrderLineGetDto } from '../types/order-types';
 import { cn } from '@/lib/utils';
 
@@ -454,7 +454,7 @@ export function OrderLineTable({
       <div className={styles.glassCard}>
         <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/20 text-white">
+            <div className="p-2.5 rounded-xl bg-linear-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/20 text-white">
               <ShoppingCart className="h-5 w-5" />
             </div>
             <div>
@@ -474,7 +474,7 @@ export function OrderLineTable({
           <Button 
             onClick={handleAddLine} 
             size="sm"
-            className="h-10 px-6 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
+            className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             {t('order.lines.add', 'Satır Ekle')}
@@ -571,7 +571,7 @@ export function OrderLineTable({
 
                         {/* MİKTAR */}
                         <TableCell className={cn(styles.tableCell, "text-center")}>
-                          <span className="inline-flex items-center justify-center min-w-[2.5rem] h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 shadow-sm">
+                          <span className="inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 shadow-sm">
                             {line.quantity}
                           </span>
                         </TableCell>
@@ -640,48 +640,80 @@ export function OrderLineTable({
       />
 
       <Dialog open={addLineDialogOpen} onOpenChange={setAddLineDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{t('order.lines.addLine', 'Yeni Satır Ekle')}</DialogTitle>
-            <DialogDescription>{t('order.lines.addLineDescription', 'Sipariş satırı bilgilerini giriniz')}</DialogDescription>
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1200px] max-h-[92vh] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
+          <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+            <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
+                  <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
+                </div>
+              </div>
+              {t('order.lines.addLine', 'Yeni Satır Ekle')}
+            </DialogTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
+              onClick={() => setAddLineDialogOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </DialogHeader>
-          {newLine && (
-            <OrderLineForm
-              line={newLine}
-              onSave={handleSaveNewLine}
-              onSaveMultiple={handleSaveMultipleLines}
-              onCancel={handleCancelNewLine}
-              currency={currency}
-              exchangeRates={exchangeRates}
-              pricingRules={pricingRules}
-              userDiscountLimits={userDiscountLimits}
-            />
-          )}
+          <div className="px-3 sm:px-6 py-3 sm:py-4 overflow-y-auto max-h-[calc(90vh-76px)]">
+            {newLine && (
+              <OrderLineForm
+                line={newLine}
+                onSave={handleSaveNewLine}
+                onSaveMultiple={handleSaveMultipleLines}
+                onCancel={handleCancelNewLine}
+                currency={currency}
+                exchangeRates={exchangeRates}
+                pricingRules={pricingRules}
+                userDiscountLimits={userDiscountLimits}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={editLineDialogOpen} onOpenChange={setEditLineDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{t('order.lines.editLine', 'Satırı Düzenle')}</DialogTitle>
-            <DialogDescription>{t('order.lines.editLineDescription', 'Sipariş satırı bilgilerini düzenleyiniz')}</DialogDescription>
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1200px] max-h-[92vh] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
+          <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+            <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-linear-to-br from-blue-500 to-indigo-500 p-0.5 shadow-lg shadow-blue-500/20">
+                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
+                  <Edit className="h-5 w-5 text-blue-600 dark:text-blue-500" />
+                </div>
+              </div>
+              {t('order.lines.editLine', 'Satırı Düzenle')}
+            </DialogTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
+              onClick={() => setEditLineDialogOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </DialogHeader>
-          {lineToEdit && (
-            <OrderLineForm
-              line={lineToEdit}
-              onSave={(line) => handleSaveLine(line)}
-              onSaveMultiple={(lines) => {
-                if (lines.length > 0) {
-                  handleSaveLine(lines[0], lines.slice(1));
-                }
-              }}
-              onCancel={handleCancelEditLine}
-              currency={currency}
-              exchangeRates={exchangeRates}
-              pricingRules={pricingRules}
-              userDiscountLimits={userDiscountLimits}
-            />
-          )}
+          <div className="px-3 sm:px-6 py-3 sm:py-4 overflow-y-auto max-h-[calc(90vh-76px)]">
+            {lineToEdit && (
+              <OrderLineForm
+                line={lineToEdit}
+                onSave={(line) => handleSaveLine(line)}
+                onSaveMultiple={(lines) => {
+                  if (lines.length > 0) {
+                    handleSaveLine(lines[0], lines.slice(1));
+                  }
+                }}
+                onCancel={handleCancelEditLine}
+                currency={currency}
+                exchangeRates={exchangeRates}
+                pricingRules={pricingRules}
+                userDiscountLimits={userDiscountLimits}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 

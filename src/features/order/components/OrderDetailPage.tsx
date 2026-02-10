@@ -436,93 +436,98 @@ export function OrderDetailPage(): ReactElement {
             </Alert>
           )}
           <FormProvider {...form}>
-            <form onSubmit={handleFormSubmit} className="space-y-6">
-              <div className="flex flex-col gap-6">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 pb-2 mb-4 border-b border-zinc-200 dark:border-white/5">
-                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/20 text-blue-600">
-                      <Layers className="h-5 w-5" />
+            <form onSubmit={handleFormSubmit} className="space-y-0">
+              <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
+                <div className="flex flex-col gap-6 min-w-0">
+                  <section className="space-y-1" aria-label={t('order.sections.header', 'Müşteri ve belge bilgileri')}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                        1
+                      </span>
+                      <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                        {t('order.sections.header', 'Müşteri & Belge')}
+                      </h3>
                     </div>
-                    <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                      {t('order.header.title', 'Sipariş Bilgileri')}
-                    </h3>
-                  </div>
-                  <OrderHeaderForm 
-                    exchangeRates={exchangeRates}
-                    onExchangeRatesChange={setExchangeRates}
-                    lines={lines}
-                    onLinesChange={async () => {
+                    <OrderHeaderForm
+                      exchangeRates={exchangeRates}
+                      onExchangeRatesChange={setExchangeRates}
+                      lines={lines}
+                      onLinesChange={async () => {
                         const newCurrency = form.getValues('order.currency');
                         if (newCurrency) {
-                            await handleCurrencyChange(newCurrency);
+                          await handleCurrencyChange(newCurrency);
                         }
-                    }}
-                    initialCurrency={order?.currency}
-                    revisionNo={order?.revisionNo}
-                    orderId={orderId}
-                    orderOfferNo={order?.offerNo}
-                    readOnly={isReadOnly}
-                />
-            </div>
+                      }}
+                      initialCurrency={order?.currency}
+                      revisionNo={order?.revisionNo}
+                      orderId={orderId}
+                      orderOfferNo={order?.offerNo}
+                      readOnly={isReadOnly}
+                    />
+                  </section>
 
-            <div className="space-y-1 pt-2">
-              <OrderLineTable
-                lines={lines}
-                setLines={setLines}
-                currency={watchedCurrency}
-                exchangeRates={exchangeRates}
-                pricingRules={pricingRules}
-                userDiscountLimits={temporarySallerData}
-                customerId={watchedCustomerId}
-                erpCustomerCode={watchedErpCustomerCode}
-                representativeId={watchedRepresentativeId}
-                orderId={orderId}
-                enabled={linesEnabled}
-              />
-            </div>
-
-            {/* 4. SECTION: SUMMARY */}
-            <div className="space-y-4 pt-4">
-                <div className="flex items-center gap-2 pb-2 border-b border-zinc-200 dark:border-white/5">
-                    <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-600">
-                        <Calculator className="h-5 w-5" />
+                  <section className="space-y-1 pt-2" aria-label={t('order.sections.lines', 'Sipariş kalemleri')}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                        2
+                      </span>
+                      <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                        {t('order.sections.lines', 'Sipariş Kalemleri')}
+                      </h3>
                     </div>
-                    <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                        {t('order.summary.title', 'Sipariş Özeti')}
+                    <OrderLineTable
+                      lines={lines}
+                      setLines={setLines}
+                      currency={watchedCurrency}
+                      exchangeRates={exchangeRates}
+                      pricingRules={pricingRules}
+                      userDiscountLimits={temporarySallerData}
+                      customerId={watchedCustomerId}
+                      erpCustomerCode={watchedErpCustomerCode}
+                      representativeId={watchedRepresentativeId}
+                      orderId={orderId}
+                      enabled={linesEnabled}
+                    />
+                  </section>
+                </div>
+
+                <aside className="xl:sticky xl:top-6">
+                  <div className="flex items-center gap-2 mb-3 xl:mb-4">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                      3
+                    </span>
+                    <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                      {t('order.sections.summary', 'Özet & Toplamlar')}
                     </h3>
-                </div>
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className="hidden md:block"></div>
-                    <div className="bg-zinc-50/80 dark:bg-zinc-900/50 rounded-xl p-6 border border-zinc-200 dark:border-white/10 shadow-sm">
-                         <OrderSummaryCard lines={lines} currency={watchedCurrency} />
-                    </div>
-                </div>
-            </div>
+                  </div>
+                  <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
+                    <OrderSummaryCard lines={lines} currency={watchedCurrency} />
+                  </div>
+                </aside>
+              </div>
 
-            {/* ACTION BUTTONS */}
-            <div className="flex items-center justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-white/10">
-              {order?.status === 0 && !isReadOnly && orderStatus !== 4 && (
-                <Button 
-                  type="button"
-                  variant="secondary"
-                  onClick={handleStartApprovalFlow}
-                  disabled={startApprovalFlow.isPending || !order}
-                  className="h-10"
-                >
-                  {startApprovalFlow.isPending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {t('order.approval.sending', 'Gönderiliyor...')}
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" />
-                      {t('order.approval.sendForApproval', 'Onaya Gönder')}
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
+              <div className="flex items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+                {order?.status === 0 && !isReadOnly && orderStatus !== 4 && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleStartApprovalFlow}
+                    disabled={startApprovalFlow.isPending || !order}
+                    className="h-10"
+                  >
+                    {startApprovalFlow.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t('order.approval.sending', 'Gönderiliyor...')}
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        {t('order.approval.sendForApproval', 'Onaya Gönder')}
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             </form>
           </FormProvider>
