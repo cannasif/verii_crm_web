@@ -1086,7 +1086,7 @@ export function QuotationLineForm({
               type="button"
               onClick={handleSave}
               disabled={!formData.productCode || !formData.productName || isSaving}
-              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95"
+              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95"
             >
               {isSaving ? (
                 <>
@@ -1108,7 +1108,7 @@ export function QuotationLineForm({
         open={companyDialogOpen}
         onOpenChange={setCompanyDialogOpen}
         onSelect={handleCompanySelect}
-        className="z-[200]"
+        className="z-200"
       />
 
       <PricingRuleInsightDialog

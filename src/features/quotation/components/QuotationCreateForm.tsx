@@ -141,6 +141,7 @@ export function QuotationCreateForm(): ReactElement {
           description: cleanLineData.description || null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
+          erpProjectCode: cleanLineData.projectCode ?? null,
         };
       });
 
@@ -183,6 +184,8 @@ export function QuotationCreateForm(): ReactElement {
         revisionId: (data.quotation.revisionId && data.quotation.revisionId > 0) ? data.quotation.revisionId : null,
         generalDiscountRate: data.quotation.generalDiscountRate ?? null,
         generalDiscountAmount: data.quotation.generalDiscountAmount ?? null,
+        salesTypeDefinitionId: data.quotation.deliveryMethod ? Number(data.quotation.deliveryMethod) : null,
+        erpProjectCode: data.quotation.projectCode ?? null,
       };
 
       const mappedQuotationNotes = mapQuotationNotesToPayload(quotationNotes);

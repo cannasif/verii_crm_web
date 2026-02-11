@@ -81,6 +81,8 @@ export interface CreateQuotationDto {
   documentSerialTypeId?: number | null;
   offerType: string;
   deliveryMethod?: string | null;
+  salesTypeDefinitionId?: number | null;
+  erpProjectCode?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;
   revisionNo?: string | null;
@@ -120,6 +122,7 @@ export interface CreateQuotationLineDto {
   description?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
+  erpProjectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -146,6 +149,7 @@ export interface UpdateQuotationLineDto {
   description?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
+  erpProjectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -174,6 +178,7 @@ export interface QuotationLineGetDto {
   description?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
+  erpProjectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -207,6 +212,9 @@ export interface QuotationGetDto {
   documentSerialTypeId?: number | null;
   offerType: string;
   deliveryMethod?: string | null;
+  salesTypeDefinitionId?: number | null;
+  salesTypeDefinitionName?: string | null;
+  erpProjectCode?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;
   revisionNo?: string | null;

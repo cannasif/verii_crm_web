@@ -105,6 +105,15 @@ export function QuotationDetailPage(): ReactElement {
 
   useEffect(() => {
     if (quotation && !formInitializedRef.current) {
+      const raw = quotation as unknown as Record<string, unknown>;
+      const salesTypeId = quotation.salesTypeDefinitionId ?? raw.SalesTypeDefinitionId;
+      const deliveryMethodFromApi = quotation.deliveryMethod ?? raw.DeliveryMethod;
+      const deliveryMethodValue =
+        salesTypeId != null && salesTypeId !== ''
+          ? String(salesTypeId)
+          : deliveryMethodFromApi != null && deliveryMethodFromApi !== ''
+            ? String(deliveryMethodFromApi)
+            : null;
       form.reset({
         quotation: {
           offerType: normalizeOfferType(quotation.offerType),
@@ -124,7 +133,8 @@ export function QuotationDetailPage(): ReactElement {
           revisionId: quotation.revisionId || null,
           generalDiscountRate: quotation.generalDiscountRate ?? null,
           generalDiscountAmount: quotation.generalDiscountAmount ?? null,
-          deliveryMethod: quotation.deliveryMethod ?? null,
+          deliveryMethod: deliveryMethodValue,
+          projectCode: quotation.erpProjectCode ?? (raw.ErpProjectCode as string) ?? (raw.ProjectCode as string) ?? null,
         },
       });
       formInitializedRef.current = true;
@@ -347,6 +357,7 @@ export function QuotationDetailPage(): ReactElement {
           description: cleanLineData.description || null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
+          erpProjectCode: cleanLineData.projectCode ?? null,
         };
       });
 
@@ -388,6 +399,8 @@ export function QuotationDetailPage(): ReactElement {
         revisionId: (data.quotation.revisionId && data.quotation.revisionId > 0) ? data.quotation.revisionId : null,
         generalDiscountRate: data.quotation.generalDiscountRate ?? null,
         generalDiscountAmount: data.quotation.generalDiscountAmount ?? null,
+        salesTypeDefinitionId: data.quotation.deliveryMethod ? Number(data.quotation.deliveryMethod) : null,
+        erpProjectCode: data.quotation.projectCode ?? null,
       };
 
       const payload: QuotationBulkCreateDto = {
