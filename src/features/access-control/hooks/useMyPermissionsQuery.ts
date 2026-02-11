@@ -3,7 +3,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { authAccessApi } from '../api/authAccessApi';
 import { ACCESS_CONTROL_QUERY_KEYS } from '../utils/query-keys';
 
-const STALE_TIME_MS = 60_000;
+const STALE_TIME_MS = 5 * 60 * 1000;
 
 export const useMyPermissionsQuery = () => {
   const userId = useAuthStore((s) => s.user?.id ?? null);
@@ -14,8 +14,10 @@ export const useMyPermissionsQuery = () => {
     queryFn: () => authAccessApi.getMyPermissions(),
     enabled: !!token && !!userId,
     staleTime: STALE_TIME_MS,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: true,
-    retry: false,
+    gcTime: 10 * 60 * 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
   });
 };
