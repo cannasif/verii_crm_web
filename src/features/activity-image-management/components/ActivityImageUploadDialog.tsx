@@ -170,7 +170,7 @@ export function ActivityImageUploadDialog({
                       key={index}
                       className="flex items-start gap-3 p-3 border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/5"
                     >
-                      <div className="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+                      <div className="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
                         <img
                           src={fileItem.preview}
                           alt={fileItem.file.name}
