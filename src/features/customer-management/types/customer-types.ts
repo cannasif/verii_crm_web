@@ -144,7 +144,7 @@ export const customerFormSchema = z.object({
     .or(z.literal('')),
   tcknNumber: z
     .string()
-    .max(20, 'customerManagement.form.tcknNumberMaxLength')
+    .max(11, 'customerManagement.form.tcknNumberMaxLength')
     .optional()
     .or(z.literal('')),
   address: z
