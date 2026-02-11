@@ -2,10 +2,10 @@ import { type ReactElement, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -24,7 +24,6 @@ import {
 import { customerTypeFormSchema, type CustomerTypeFormSchema } from '../types/customer-type-types';
 import type { CustomerTypeDto } from '../types/customer-type-types';
 import { Tag, FileText } from 'lucide-react';
-import { Cancel01Icon } from 'hugeicons-react';
 
 interface CustomerTypeFormProps {
   open: boolean;
@@ -93,81 +92,86 @@ export function CustomerTypeForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-lg w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
         
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                 <Tag size={24} className="text-pink-600 dark:text-pink-500" />
+        <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
+                 <Tag size={20} className="text-pink-600 dark:text-pink-500" />
                </div>
              </div>
-             <div className="space-y-1">
-                <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {customerType
-                    ? t('customerTypeManagement.form.editCustomerType', 'Müşteri Tipi Düzenle')
-                    : t('customerTypeManagement.form.addCustomerType', 'Yeni Müşteri Tipi Ekle')}
-                </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
-                  {customerType
-                    ? t('customerTypeManagement.form.editDescription', 'Mevcut kaydı güncelleyin')
-                    : t('customerTypeManagement.form.addDescription', 'Yeni kayıt oluşturun')}
-                </DialogDescription>
-             </div>
+             <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
+               {customerType
+                 ? t('customerTypeManagement.form.editCustomerType', 'Müşteri Tipi Düzenle')
+                 : t('customerTypeManagement.form.addCustomerType', 'Yeni Müşteri Tipi Ekle')}
+             </DialogTitle>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full">
-            <Cancel01Icon size={20} />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => onOpenChange(false)} 
+            className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
+          >
+            <X className="h-4 w-4" />
           </Button>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 custom-scrollbar">
           <Form {...form}>
             <form id="customer-type-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
               
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LABEL_STYLE}>
-                      <Tag size={16} className="text-pink-500" />
-                      {t('customerTypeManagement.form.name', 'Müşteri Tipi Adı')} <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className={INPUT_STYLE}
-                        placeholder={t('customerTypeManagement.form.namePlaceholder', 'Örn: Kurumsal, Bireysel...')}
-                        maxLength={100}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                  
+                  <div className="col-span-1 md:col-span-2">
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className={LABEL_STYLE}>
+                            <Tag size={16} className="text-pink-500" />
+                            {t('customerTypeManagement.form.name', 'Müşteri Tipi Adı')} <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                            <Input
+                                {...field}
+                                className={INPUT_STYLE}
+                                placeholder={t('customerTypeManagement.form.namePlaceholder', 'Örn: Kurumsal, Bireysel...')}
+                                maxLength={100}
+                            />
+                            </FormControl>
+                            <FormMessage className="text-xs" />
+                        </FormItem>
+                        )}
+                    />
+                  </div>
 
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LABEL_STYLE}>
-                      <FileText size={16} className="text-pink-500" />
-                      {t('customerTypeManagement.form.description', 'Açıklama')}
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        className={`${INPUT_STYLE} min-h-[120px] h-auto py-3 resize-none`}
-                        placeholder={t('customerTypeManagement.form.descriptionPlaceholder', 'Varsa açıklama giriniz...')}
-                        maxLength={500}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
+                  <div className="col-span-1 md:col-span-2">
+                    <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className={LABEL_STYLE}>
+                            <FileText size={16} className="text-pink-500" />
+                            {t('customerTypeManagement.form.description', 'Açıklama')}
+                            </FormLabel>
+                            <FormControl>
+                            <Textarea
+                                {...field}
+                                className={`${INPUT_STYLE} min-h-[120px] h-auto py-3 resize-none`}
+                                placeholder={t('customerTypeManagement.form.descriptionPlaceholder', 'Varsa açıklama giriniz...')}
+                                maxLength={500}
+                            />
+                            </FormControl>
+                            <FormMessage className="text-xs" />
+                        </FormItem>
+                        )}
+                    />
+                  </div>
 
+              </div>
             </form>
           </Form>
         </div>
@@ -186,7 +190,7 @@ export function CustomerTypeForm({
             type="submit" 
             form="customer-type-form" 
             disabled={isLoading}
-            className="w-full sm:w-auto h-11 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+            className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {isLoading 
               ? t('customerTypeManagement.form.saving', 'Kaydediliyor...') 
