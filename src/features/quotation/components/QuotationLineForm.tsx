@@ -791,7 +791,7 @@ export function QuotationLineForm({
               onSelect={(value) => handleFieldChange('projectCode', value)}
               options={projects.map((p) => ({
                 value: p.projeKod,
-                label: p.projeKod + ' - ' + p.projeAciklama
+                label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
               }))}
               placeholder={t('quotation.header.projectCode', 'Proje Kodu')}
               searchPlaceholder={t('common.search', 'Ara...')}

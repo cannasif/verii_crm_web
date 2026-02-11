@@ -444,7 +444,7 @@ export function QuotationHeaderForm({
                           onSelect={(value) => field.onChange(value)}
                           options={projects.map((p) => ({
                             value: p.projeKod,
-                            label: p.projeKod + ' - ' + p.projeAciklama
+                            label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
                           }))}
                           placeholder={t('quotation.header.projectCodePlaceholder', 'Proje kodu seçiniz...')}
                           searchPlaceholder={t('common.search', 'Ara...')}
