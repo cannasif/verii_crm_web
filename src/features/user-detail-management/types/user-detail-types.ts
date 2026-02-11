@@ -17,6 +17,9 @@ export interface UserDetailDto {
   weight?: number;
   description?: string;
   gender?: Gender;
+  linkedinUrl?: string;
+  phoneNumber?: string;
+  email?: string;
   createdDate: string;
   updatedDate?: string;
   deletedDate?: string;
@@ -36,6 +39,9 @@ export interface CreateUserDetailDto {
   weight?: number;
   description?: string;
   gender?: Gender;
+  linkedinUrl?: string;
+  phoneNumber?: string;
+  email?: string;
 }
 
 export interface UpdateUserDetailDto {
@@ -44,6 +50,9 @@ export interface UpdateUserDetailDto {
   weight?: number;
   description?: string;
   gender?: Gender;
+  linkedinUrl?: string;
+  phoneNumber?: string;
+  email?: string;
 }
 
 export interface UserDetailFormData {
@@ -52,6 +61,9 @@ export interface UserDetailFormData {
   weight?: number;
   description?: string;
   gender?: Gender;
+  linkedinUrl?: string;
+  phoneNumber?: string;
+  email?: string;
 }
 
 export const userDetailFormSchema = z.object({
@@ -80,6 +92,23 @@ export const userDetailFormSchema = z.object({
   gender: z
     .nativeEnum(Gender)
     .optional()
+    .nullable(),
+  linkedinUrl: z
+    .string()
+    .url('userDetailManagement.invalidUrl')
+    .optional()
+    .or(z.literal(''))
+    .nullable(),
+  phoneNumber: z
+    .string()
+    .max(20, 'userDetailManagement.phoneNumberMaxLength')
+    .optional()
+    .nullable(),
+  email: z
+    .string()
+    .email('userDetailManagement.invalidEmail')
+    .optional()
+    .or(z.literal(''))
     .nullable(),
 });
 

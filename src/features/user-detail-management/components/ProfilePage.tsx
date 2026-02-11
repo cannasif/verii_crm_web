@@ -56,6 +56,8 @@ import {
   ArrowLeft,
   Building2,
   Briefcase,
+  Phone,
+  Linkedin,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -88,6 +90,9 @@ export function ProfilePage(): ReactElement {
       weight: undefined,
       description: '',
       gender: undefined,
+      linkedinUrl: '',
+      phoneNumber: '',
+      email: '',
     },
   });
 
@@ -113,6 +118,9 @@ export function ProfilePage(): ReactElement {
         weight: userDetail.weight || undefined,
         description: userDetail.description || '',
         gender: userDetail.gender || undefined,
+        linkedinUrl: userDetail.linkedinUrl || '',
+        phoneNumber: userDetail.phoneNumber || '',
+        email: userDetail.email || '',
       });
       setPreviewUrl(userDetail.profilePictureUrl ? getImageUrl(userDetail.profilePictureUrl) : null);
     } else {
@@ -122,6 +130,9 @@ export function ProfilePage(): ReactElement {
         weight: undefined,
         description: '',
         gender: undefined,
+        linkedinUrl: '',
+        phoneNumber: '',
+        email: '',
       });
       setPreviewUrl(null);
     }
@@ -174,6 +185,9 @@ export function ProfilePage(): ReactElement {
           weight: data.weight || undefined,
           description: data.description || undefined,
           gender: data.gender || undefined,
+          linkedinUrl: data.linkedinUrl || undefined,
+          phoneNumber: data.phoneNumber || undefined,
+          email: data.email || undefined,
         },
       });
     } else {
@@ -184,6 +198,9 @@ export function ProfilePage(): ReactElement {
         weight: data.weight || undefined,
         description: data.description || undefined,
         gender: data.gender || undefined,
+        linkedinUrl: data.linkedinUrl || undefined,
+        phoneNumber: data.phoneNumber || undefined,
+        email: data.email || undefined,
       });
     }
     toast.success(t('userDetailManagement.saveSuccess', 'Profil güncellendi'));
@@ -232,7 +249,7 @@ export function ProfilePage(): ReactElement {
         {t('userDetailManagement.backToHome', 'Ana sayfaya dön')}
       </Link>
 
-      <section className="rounded-2xl border bg-card p-6 sm:p-8 shadow-sm">
+      <section className="rounded-2xl border bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border-white/60 dark:border-white/5 p-6 sm:p-8 shadow-sm transition-all duration-300">
         <div className="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-8">
           <button
             type="button"
@@ -283,7 +300,7 @@ export function ProfilePage(): ReactElement {
         </div>
       </section>
 
-      <Card>
+      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-xl">{t('userDetailManagement.personalInfo', 'Kişisel Bilgiler')}</CardTitle>
           <CardDescription>
@@ -311,7 +328,7 @@ export function ProfilePage(): ReactElement {
                             {...field}
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value ?? ''}
-                            className="pl-10 h-11 rounded-xl"
+                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
                             placeholder="Örn: 175"
                           />
                         </div>
@@ -337,8 +354,8 @@ export function ProfilePage(): ReactElement {
                             {...field}
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value ?? ''}
-                            className="pl-10 h-11 rounded-xl"
-                            placeholder="Örn: 70.5"
+                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
+                            placeholder="Örn: 70"
                           />
                         </div>
                       </FormControl>
@@ -362,7 +379,7 @@ export function ProfilePage(): ReactElement {
                         value={field.value !== undefined && field.value !== null ? String(field.value) : undefined}
                       >
                         <FormControl>
-                          <SelectTrigger className="pl-10 h-11 rounded-xl w-full">
+                          <SelectTrigger className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:ring-0 focus:ring-offset-0 focus:border-pink-500 dark:focus:border-pink-500 rounded-xl transition-all w-full">
                             <SelectValue placeholder={t('userDetailManagement.selectGender', 'Seçiniz')} />
                           </SelectTrigger>
                         </FormControl>
@@ -380,6 +397,80 @@ export function ProfilePage(): ReactElement {
                   </FormItem>
                 )}
               />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {t('userDetailManagement.phoneNumber', 'Telefon Numarası')}
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative group">
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
+                          <Input
+                            type="text"
+                            {...field}
+                            value={field.value ?? ''}
+                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
+                            placeholder={t('userDetailManagement.enterPhoneNumber', '+90 5XX XXX XX XX')}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-destructive text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {t('userDetailManagement.email', 'E-posta Adresi')}
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative group">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
+                          <Input
+                            type="email"
+                            {...field}
+                            value={field.value ?? ''}
+                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
+                            placeholder={t('userDetailManagement.enterEmail', 'ornek@sirket.com')}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-destructive text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="linkedinUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {t('userDetailManagement.linkedinUrl', 'LinkedIn Profili')}
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative group">
+                          <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
+                          <Input
+                            type="url"
+                            {...field}
+                            value={field.value ?? ''}
+                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
+                            placeholder={t('userDetailManagement.enterLinkedinUrl', 'https://linkedin.com/in/...')}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-destructive text-xs" />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
                 name="description"
@@ -396,7 +487,7 @@ export function ProfilePage(): ReactElement {
                           value={field.value ?? ''}
                           placeholder={t('userDetailManagement.enterDescription', 'Kendinizden kısaca bahsedin...')}
                           rows={4}
-                          className="pl-10 rounded-xl min-h-[120px] resize-none"
+                          className="pl-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl min-h-[120px] resize-none transition-all"
                         />
                       </div>
                     </FormControl>
@@ -424,7 +515,7 @@ export function ProfilePage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">
             <Shield size={20} className="text-muted-foreground" />
@@ -466,7 +557,7 @@ export function ProfilePage(): ReactElement {
                               <Input
                                 {...field}
                                 type={isCurrentPasswordVisible ? 'text' : 'password'}
-                                className="pl-10 pr-10 h-11 rounded-xl"
+                                className="pl-10 pr-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
                                 placeholder="••••••••"
                               />
                               <button
@@ -494,7 +585,7 @@ export function ProfilePage(): ReactElement {
                               <Input
                                 {...field}
                                 type={isNewPasswordVisible ? 'text' : 'password'}
-                                className="pl-10 pr-10 h-11 rounded-xl"
+                                className="pl-10 pr-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
                                 placeholder={t('userDetailManagement.newPasswordPlaceholder', 'Yeni şifreniz')}
                               />
                               <button

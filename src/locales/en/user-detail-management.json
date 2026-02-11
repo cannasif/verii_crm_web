@@ -41,5 +41,16 @@
   "newPassword": "New Password",
   "enterNewPassword": "Enter your new password (min 6 chars)",
   "changingPassword": "Changing...",
-  "changePasswordButton": "Change Password"
+  "changePasswordButton": "Change Password",
+  "contactInfo": "Contact Information",
+  "contactInfoDescription": "Manage your email, phone, and social media accounts.",
+  "linkedinUrl": "LinkedIn Profile",
+  "phoneNumber": "Phone Number",
+  "email": "Email Address",
+  "enterLinkedinUrl": "https://linkedin.com/in/...",
+  "enterPhoneNumber": "+1 5XX XXX XX XX",
+  "enterEmail": "example@company.com",
+  "invalidUrl": "Please enter a valid URL",
+  "invalidEmail": "Please enter a valid email address",
+  "phoneNumberMaxLength": "Phone number can be at most 20 characters"
 }
