@@ -11,13 +11,15 @@ import { useOrderCalculations } from '../hooks/useOrderCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { useErpProjects } from '@/services/hooks/useErpProjects';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { orderApi } from '../api/order-api';
 import type { OrderLineFormState, OrderExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/order-types';
-import { X, Check, Package, Calculator, Percent, DollarSign, Info } from 'lucide-react';
+import { X, Check, Package, Calculator, Percent, DollarSign, Info, Folder } from 'lucide-react';
 
 interface TemporaryStockData {
   productCode: string;
@@ -95,6 +97,7 @@ export function OrderLineForm({
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
+  const { data: projects = [] } = useErpProjects();
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
     currency,
     exchangeRates,
@@ -773,6 +776,23 @@ export function OrderLineForm({
                 placeholder={t('order.lines.productName', 'Stok Adı')}
                 readOnly
                 className="bg-muted/50 text-sm h-9"
+              />
+            </div>
+            <div className="w-full">
+              <label className="text-sm font-medium flex items-center gap-2 mb-1.5">
+                <Folder className="h-3.5 w-3.5 text-slate-500" />
+                {t('quotation.header.projectCode', 'Proje Kodu')}
+              </label>
+              <VoiceSearchCombobox
+                className="h-11 bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 rounded-xl"
+                value={formData.projectCode || ''}
+                onSelect={(value) => handleFieldChange('projectCode', value)}
+                options={projects.map((p) => ({
+                  value: p.projeKod,
+                  label: p.projeKod + ' - ' + p.projeAciklama
+                }))}
+                placeholder={t('quotation.header.projectCodePlaceholder', 'Proje kodu seçiniz...')}
+                searchPlaceholder={t('common.search', 'Ara...')}
               />
             </div>
           </div>

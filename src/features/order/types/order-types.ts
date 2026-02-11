@@ -24,6 +24,30 @@ export const OfferType = {
 
 export type OfferType = typeof OfferType[keyof typeof OfferType];
 
+export interface OrderNotesGetDto {
+  id?: number;
+  orderId: number;
+  note1?: string | null;
+  note2?: string | null;
+  note3?: string | null;
+  note4?: string | null;
+  note5?: string | null;
+  note6?: string | null;
+  note7?: string | null;
+  note8?: string | null;
+  note9?: string | null;
+  note10?: string | null;
+  note11?: string | null;
+  note12?: string | null;
+  note13?: string | null;
+  note14?: string | null;
+  note15?: string | null;
+}
+
+export interface UpdateOrderNotesListDto {
+  notes?: string[];
+}
+
 export interface OrderBulkCreateDto {
   order: CreateOrderDto;
   lines: CreateOrderLineDto[];
@@ -36,6 +60,7 @@ export interface CreateOrderDto {
   deliveryDate?: string | null;
   shippingAddressId?: number | null;
   representativeId?: number | null;
+  projectCode?: string | null;
   status?: number | null;
   description?: string | null;
   paymentTypeId?: number | null;
@@ -70,6 +95,7 @@ export interface CreateOrderLineDto {
   lineGrandTotal: number;
   description?: string | null;
   pricingRuleHeaderId?: number | null;
+  projectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -95,6 +121,7 @@ export interface UpdateOrderLineDto {
   lineGrandTotal: number;
   description?: string | null;
   pricingRuleHeaderId?: number | null;
+  projectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -122,6 +149,7 @@ export interface OrderLineGetDto {
   lineGrandTotal: number;
   description?: string | null;
   pricingRuleHeaderId?: number | null;
+  projectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -148,6 +176,7 @@ export interface OrderGetDto {
   shippingAddressText?: string | null;
   representativeId?: number | null;
   representativeName?: string | null;
+  projectCode?: string | null;
   status?: number | null;
   description?: string | null;
   paymentTypeId?: number | null;

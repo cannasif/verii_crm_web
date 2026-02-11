@@ -14,6 +14,7 @@ export const QUOTATION_QUERY_KEYS = {
   WAITING_APPROVALS: 'order.waitingApprovals',
   QUOTATION_EXCHANGE_RATES: 'order.exchangeRates',
   QUOTATION_LINES: 'order.lines',
+  ORDER_NOTES: 'order.notes',
   RELATED_USERS: 'order.relatedUsers',
   APPROVAL_FLOW_REPORT: 'order.approvalFlowReport',
 } as const;
@@ -35,6 +36,7 @@ export const queryKeys = {
   waitingApprovals: () => [QUOTATION_QUERY_KEYS.WAITING_APPROVALS] as const,
   orderExchangeRates: (orderId: number) => [QUOTATION_QUERY_KEYS.QUOTATION_EXCHANGE_RATES, orderId] as const,
   orderLines: (orderId: number) => [QUOTATION_QUERY_KEYS.QUOTATION_LINES, orderId] as const,
+  orderNotes: (orderId: number) => [QUOTATION_QUERY_KEYS.ORDER_NOTES, orderId] as const,
   relatedUsers: (userId: number) => [QUOTATION_QUERY_KEYS.RELATED_USERS, userId] as const,
   approvalFlowReport: (orderId: number) => [QUOTATION_QUERY_KEYS.APPROVAL_FLOW_REPORT, orderId] as const,
 };

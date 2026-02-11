@@ -15,6 +15,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
+import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
+import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
+import { orderNotesDtoToNotesList } from '../utils/notes-mapper';
+import { orderApi } from '../api/order-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useOrderCalculations } from '../hooks/useOrderCalculations';
@@ -29,6 +33,7 @@ export function OrderCreateForm(): ReactElement {
   
   const [lines, setLines] = useState<OrderLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<OrderExchangeRateFormState[]>([]);
+  const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
   
@@ -106,6 +111,15 @@ export function OrderCreateForm(): ReactElement {
       return;
     }
 
+    const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
+    const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
+    if (overLimitNote) {
+      toast.error(t('order.create.error', 'Sipariş Oluşturulamadı'), {
+        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      });
+      return;
+    }
+
     try {
       const linesToSend = lines.map((line) => {
         const { id, isEditing, ...lineData } = line;
@@ -117,6 +131,7 @@ export function OrderCreateForm(): ReactElement {
           productId: 0,
           description: cleanLineData.description || null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
+          projectCode: cleanLineData.projectCode || null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
         };
       });
@@ -149,6 +164,7 @@ export function OrderCreateForm(): ReactElement {
         deliveryDate: data.order.deliveryDate || null,
         shippingAddressId: (data.order.shippingAddressId && data.order.shippingAddressId > 0) ? data.order.shippingAddressId : null,
         representativeId: (data.order.representativeId && data.order.representativeId > 0) ? data.order.representativeId : null,
+        projectCode: data.order.projectCode || null,
         status: (data.order.status && data.order.status > 0) ? data.order.status : null,
         description: data.order.description || null,
         paymentTypeId: (data.order.paymentTypeId && data.order.paymentTypeId > 0) ? data.order.paymentTypeId : null,
@@ -170,6 +186,10 @@ export function OrderCreateForm(): ReactElement {
       const result = await createMutation.mutateAsync(payload);
 
       if (result.success && result.data) {
+        const notesList = orderNotesDtoToNotesList(quotationNotes);
+        if (notesList.length > 0) {
+          await orderApi.updateNotesListByOrderId(result.data.id, { notes: notesList });
+        }
         toast.success(t('order.create.success', 'Sipariş Başarıyla Oluşturuldu'), {
           description: t('order.create.successMessage', 'Sipariş onay sürecine gönderildi.'),
         });
@@ -285,6 +305,8 @@ export function OrderCreateForm(): ReactElement {
                 <OrderHeaderForm
                   exchangeRates={exchangeRates}
                   onExchangeRatesChange={setExchangeRates}
+                  quotationNotes={quotationNotes}
+                  onQuotationNotesChange={setQuotationNotes}
                   lines={lines}
                   onLinesChange={async () => {
                     const newCurrency = form.getValues('order.currency');

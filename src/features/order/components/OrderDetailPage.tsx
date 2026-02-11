@@ -8,7 +8,9 @@ import { useOrder } from '../hooks/useOrder';
 import { useStartApprovalFlow } from '../hooks/useStartApprovalFlow';
 import { useOrderExchangeRates } from '../hooks/useOrderExchangeRates';
 import { useOrderLines } from '../hooks/useOrderLines';
+import { useOrderNotes } from '../hooks/useOrderNotes';
 import { useUpdateOrderBulk } from '../hooks/useUpdateOrderBulk';
+import { useUpdateOrderNotesList } from '../hooks/useUpdateOrderNotesList';
 import { usePriceRuleOfOrder } from '../hooks/usePriceRuleOfOrder';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
@@ -22,6 +24,9 @@ import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer'
 import { cn } from '@/lib/utils';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
+import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
+import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
+import { orderNotesGetDtoToDto, orderNotesDtoToNotesList } from '../utils/notes-mapper';
 import { OrderHeaderForm } from './OrderHeaderForm';
 import { OrderLineTable } from './OrderLineTable';
 import { OrderSummaryCard } from './OrderSummaryCard';
@@ -41,17 +46,20 @@ export function OrderDetailPage(): ReactElement {
   const { data: order, isLoading } = useOrder(orderId);
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useOrderExchangeRates(orderId);
   const { data: linesData = [], isLoading: isLoadingLines } = useOrderLines(orderId);
+  const { data: notesData, isLoading: isLoadingNotes } = useOrderNotes(orderId);
   const updateMutation = useUpdateOrderBulk();
+  const updateNotesMutation = useUpdateOrderNotesList(orderId);
   const startApprovalFlow = useStartApprovalFlow();
   const { data: customerOptions = [] } = useCustomerOptions();
 
-  // Local State
   const [lines, setLines] = useState<OrderLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<OrderExchangeRateFormState[]>([]);
+  const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
-  
+
   const linesInitializedRef = useRef(false);
+  const notesInitializedRef = useRef(false);
   const exchangeRatesInitializedRef = useRef(false);
   const formInitializedRef = useRef(false);
   const [activeTab, setActiveTab] = useState('detail');
@@ -100,6 +108,7 @@ export function OrderDetailPage(): ReactElement {
           deliveryDate: order.deliveryDate ? order.deliveryDate.split('T')[0] : null,
           shippingAddressId: order.shippingAddressId || null,
           representativeId: order.representativeId || null,
+          projectCode: order.projectCode || null,
           status: order.status || null,
           description: order.description || null,
           paymentTypeId: order.paymentTypeId || null,
@@ -117,7 +126,16 @@ export function OrderDetailPage(): ReactElement {
 
   useEffect(() => {
     linesInitializedRef.current = false;
+    notesInitializedRef.current = false;
   }, [orderId]);
+
+  useEffect(() => {
+    if (!orderId || orderId < 1) return;
+    if (notesInitializedRef.current) return;
+    if (notesData === undefined) return;
+    setQuotationNotes(orderNotesGetDtoToDto(notesData ?? null));
+    notesInitializedRef.current = true;
+  }, [orderId, notesData]);
 
   useEffect(() => {
     if (linesData && linesData.length > 0 && !linesInitializedRef.current) {
@@ -226,6 +244,15 @@ export function OrderDetailPage(): ReactElement {
       return;
     }
 
+    const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
+    const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
+    if (overLimitNote) {
+      toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
+        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      });
+      return;
+    }
+
     try {
       const linesToSend = lines.map((line) => {
         const { id, isEditing, ...lineData } = line;
@@ -268,6 +295,7 @@ export function OrderDetailPage(): ReactElement {
         deliveryDate: data.order.deliveryDate || null,
         shippingAddressId: (data.order.shippingAddressId && data.order.shippingAddressId > 0) ? data.order.shippingAddressId : null,
         representativeId: (data.order.representativeId && data.order.representativeId > 0) ? data.order.representativeId : null,
+        projectCode: data.order.projectCode || null,
         status: (data.order.status && data.order.status > 0) ? data.order.status : null,
         description: data.order.description || null,
         paymentTypeId: (data.order.paymentTypeId && data.order.paymentTypeId > 0) ? data.order.paymentTypeId : null,
@@ -287,6 +315,15 @@ export function OrderDetailPage(): ReactElement {
       };
 
       const result = await updateMutation.mutateAsync({ id: orderId, data: payload });
+
+      const notesList = orderNotesDtoToNotesList(quotationNotes);
+      if (notesList.length > 15) {
+        toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
+          description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+        });
+        return;
+      }
+      await updateNotesMutation.mutateAsync({ notes: notesList });
 
       if (result.success && result.data) {
         toast.success(t('order.update.success', 'Sipariş Başarıyla Güncellendi'), {
@@ -361,7 +398,7 @@ export function OrderDetailPage(): ReactElement {
     });
   };
 
-  if (isLoading || isLoadingExchangeRates || isLoadingLines) {
+  if (isLoading || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
@@ -460,6 +497,34 @@ export function OrderDetailPage(): ReactElement {
                     <OrderHeaderForm
                       exchangeRates={exchangeRates}
                       onExchangeRatesChange={setExchangeRates}
+                      quotationNotes={quotationNotes}
+                      onQuotationNotesChange={setQuotationNotes}
+                      onSaveNotes={async (notes) => {
+                        const list = orderNotesDtoToNotesList(notes);
+                        if (list.length > 15) {
+                          toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
+                            description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+                          });
+                          throw new Error('maxCount');
+                        }
+                        const overLimit = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).find((k) => (notes[k]?.length ?? 0) > 100);
+                        if (overLimit) {
+                          toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
+                            description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir.'),
+                          });
+                          throw new Error('maxLength');
+                        }
+                        try {
+                          await updateNotesMutation.mutateAsync({ notes: list });
+                          toast.success(t('quotation.notes.saved', 'Notlar kaydedildi.'));
+                        } catch (err) {
+                          toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
+                            description: err instanceof Error ? err.message : t('quotation.notes.saveError', 'Notlar kaydedilirken bir hata oluştu.'),
+                          });
+                          throw err;
+                        }
+                      }}
+                      isSavingNotes={updateNotesMutation.isPending}
                       lines={lines}
                       onLinesChange={async () => {
                         const newCurrency = form.getValues('order.currency');

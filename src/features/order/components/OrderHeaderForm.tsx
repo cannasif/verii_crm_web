@@ -26,15 +26,19 @@ import { useOrderRelatedUsers } from '../hooks/useOrderRelatedUsers';
 import { usePaymentTypes } from '../hooks/usePaymentTypes';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
+import { useErpProjects } from '@/services/hooks/useErpProjects';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
 import { ExchangeRateDialog } from './ExchangeRateDialog';
+import { QuotationNotesDialog } from '@/features/quotation/components/QuotationNotesDialog';
+import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { 
   DollarSign, Search, User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
-  Layers, Quote
+  Layers, Quote, Folder, ListPlus, X
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/stores/auth-store';
 import type { CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderExchangeRateFormState } from '../types/order-types';
@@ -43,6 +47,10 @@ import { cn } from '@/lib/utils';
 interface OrderHeaderFormProps {
   exchangeRates?: OrderExchangeRateFormState[];
   onExchangeRatesChange?: (rates: OrderExchangeRateFormState[]) => void;
+  quotationNotes?: QuotationNotesDto;
+  onQuotationNotesChange?: (notes: QuotationNotesDto) => void;
+  onSaveNotes?: (notes: QuotationNotesDto) => Promise<void>;
+  isSavingNotes?: boolean;
   lines?: Array<{ productCode?: string | null; productName?: string | null }>;
   onLinesChange?: (lines: Array<{ productCode?: string | null; productName?: string | null }>) => void;
   initialCurrency?: string | number | null;
@@ -56,6 +64,10 @@ interface OrderHeaderFormProps {
 export function OrderHeaderForm({
   exchangeRates = [],
   onExchangeRatesChange,
+  quotationNotes = {},
+  onQuotationNotesChange,
+  onSaveNotes,
+  isSavingNotes = false,
   lines = [],
   onLinesChange,
   initialCurrency,
@@ -69,12 +81,23 @@ export function OrderHeaderForm({
   const form = useFormContext<CreateOrderSchema>();
   const { data: erpRates = [] } = useExchangeRate();
   const user = useAuthStore((state) => state.user);
-  
+
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [exchangeRateDialogOpen, setExchangeRateDialogOpen] = useState(false);
   const [currencyChangeDialogOpen, setCurrencyChangeDialogOpen] = useState(false);
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
+  const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const isInitialLoadRef = useRef(true);
+
+  const filledNoteKeys = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).filter(
+    (k) => (quotationNotes[k] ?? '').trim().length > 0
+  );
+
+  const handleRemoveNote = (key: keyof QuotationNotesDto): void => {
+    if (onQuotationNotesChange) {
+      onQuotationNotesChange({ ...quotationNotes, [key]: '' });
+    }
+  };
 
   // Watchers
   const watchedCustomerId = form.watch('order.potentialCustomerId');
@@ -86,6 +109,7 @@ export function OrderHeaderForm({
   const { data: relatedUsers = [] } = useOrderRelatedUsers(user?.id);
   const { data: paymentTypes } = usePaymentTypes();
   const { data: customer } = useCustomer(watchedCustomerId ?? 0);
+  const { data: projects = [] } = useErpProjects();
   
   const customerTypeId = useMemo(() => {
     if (watchedErpCustomerCode) return 0;
@@ -541,22 +565,93 @@ export function OrderHeaderForm({
                   />
                 )}
 
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="order.projectCode"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 relative group">
+                        <FormLabel className={styles.label}>
+                          <Folder className="h-3.5 w-3.5" />
+                          {t('quotation.header.projectCode', 'Proje Kodu')}
+                        </FormLabel>
+                        <div className="relative">
+                          <div className={styles.iconWrapper}><Folder className="h-4 w-4" /></div>
+                          <VoiceSearchCombobox
+                            className={styles.inputBase}
+                            value={field.value || ''}
+                            onSelect={(value) => field.onChange(value)}
+                            options={projects.map((p) => ({
+                              value: p.projeKod,
+                              label: p.projeKod + ' - ' + p.projeAciklama
+                            }))}
+                            placeholder={t('quotation.header.projectCodePlaceholder', 'Proje kodu seçiniz...')}
+                            searchPlaceholder={t('common.search', 'Ara...')}
+                            disabled={readOnly}
+                          />
+                        </div>
+                        <FormMessage className="mt-1.5" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
                   name="order.description"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>
-                        Notlar
-                      </FormLabel>
+                      <div className="flex items-center justify-between mb-2">
+                        <FormLabel className={cn(styles.label, "mb-0")}>
+                          Notlar
+                        </FormLabel>
+                      </div>
+                      {filledNoteKeys.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-2.5">
+                          {filledNoteKeys.map((key, idx) => (
+                            <Badge
+                              key={key}
+                              variant="secondary"
+                              className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 h-6 text-xs border border-purple-200 dark:border-purple-500/20"
+                            >
+                              <span className="mr-1.5 truncate max-w-[200px]">
+                                {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel', 'Not')} ${idx + 1}`}
+                              </span>
+                              {!readOnly && onQuotationNotesChange && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveNote(key)}
+                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                       <FormControl>
-                        <Textarea
-                          {...field}
-                          value={field.value || ''}
-                          placeholder={t('order.header.descriptionPlaceholder', 'Özel koşullar...')}
-                          className="min-h-[80px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm"
-                          disabled={readOnly}
-                        />
+                        <div className="relative">
+                          <Textarea
+                            {...field}
+                            value={field.value || ''}
+                            placeholder={t('order.header.descriptionPlaceholder', 'Özel koşullar...')}
+                            className="min-h-[80px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10"
+                            disabled={readOnly}
+                          />
+                          {onQuotationNotesChange && (
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              className="absolute right-1 top-1 h-7 w-7 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+                              onClick={() => setNotesDialogOpen(true)}
+                              disabled={readOnly}
+                            >
+                              <ListPlus className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage className="mt-1" />
                     </FormItem>
@@ -587,6 +682,17 @@ export function OrderHeaderForm({
           orderId={orderId}
           orderOfferNo={orderOfferNo}
           readOnly={readOnly}
+        />
+      )}
+
+      {onQuotationNotesChange && (
+        <QuotationNotesDialog
+          open={notesDialogOpen}
+          onOpenChange={setNotesDialogOpen}
+          value={quotationNotes}
+          onChange={onQuotationNotesChange}
+          onSaveAsync={onSaveNotes}
+          isSaving={isSavingNotes}
         />
       )}
 

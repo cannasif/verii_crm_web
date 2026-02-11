@@ -13,6 +13,8 @@ import type {
   RejectActionDto,
   OrderExchangeRateGetDto,
   OrderLineGetDto,
+  OrderNotesGetDto,
+  UpdateOrderNotesListDto,
   ApprovalStatus,
   ApprovalScopeUserDto,
   OrderApprovalFlowReportDto,
@@ -358,6 +360,30 @@ export const orderApi = {
       })) as OrderLineGetDto[];
     }
     return [];
+  },
+
+  getOrderNotesByOrderId: async (orderId: number): Promise<OrderNotesGetDto | null> => {
+    const response = await api.get<ApiResponse<OrderNotesGetDto>>(
+      `/api/OrderNotes/by-order/${orderId}`
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    return null;
+  },
+
+  updateNotesListByOrderId: async (
+    orderId: number,
+    payload: UpdateOrderNotesListDto
+  ): Promise<ApiResponse<unknown>> => {
+    const response = await api.put<ApiResponse<unknown>>(
+      `/api/OrderNotes/by-order/${orderId}/notes-list`,
+      payload
+    );
+    if (!response.success) {
+      throw new Error(response.message || 'Notlar güncellenirken bir hata oluştu');
+    }
+    return response;
   },
 
   createOrderLines: async (dtos: CreateOrderLineDto[]): Promise<OrderLineGetDto[]> => {
