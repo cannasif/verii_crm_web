@@ -7,7 +7,8 @@ export const usePendingApprovals = () => {
   return useQuery<ApprovalQueueGetDto[]>({
     queryKey: queryKeys.pending(),
     queryFn: () => approvalApi.getPending(),
-    refetchInterval: 30000,
+    refetchInterval: 60000,
+    refetchIntervalInBackground: false,
     staleTime: 5 * 60 * 1000,
   });
 };

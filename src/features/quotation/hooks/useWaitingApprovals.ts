@@ -9,5 +9,6 @@ export const useWaitingApprovals = (): UseQueryResult<ApprovalActionGetDto[], Er
     queryFn: () => quotationApi.getWaitingApprovals(),
     staleTime: 30 * 1000,
     refetchInterval: 60 * 1000,
+    refetchIntervalInBackground: false,
   });
 };
