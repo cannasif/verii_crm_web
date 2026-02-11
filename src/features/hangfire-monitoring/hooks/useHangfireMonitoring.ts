@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { hangfireMonitoringApi } from '../api/hangfireMonitoring.api';
 
-const REFRESH_INTERVAL_MS = 15_000;
+const REFRESH_INTERVAL_MS = 60_000;
 
 export const HANGFIRE_QUERY_KEYS = {
   STATS: ['hangfire', 'stats'] as const,
@@ -14,7 +14,7 @@ export function useHangfireStatsQuery() {
     queryKey: HANGFIRE_QUERY_KEYS.STATS,
     queryFn: () => hangfireMonitoringApi.getStats(),
     refetchInterval: REFRESH_INTERVAL_MS,
-    refetchIntervalInBackground: true,
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -23,15 +23,15 @@ export function useHangfireFailedJobsQuery(from: number, count: number) {
     queryKey: HANGFIRE_QUERY_KEYS.FAILED(from, count),
     queryFn: () => hangfireMonitoringApi.getFailed(from, count),
     refetchInterval: REFRESH_INTERVAL_MS,
-    refetchIntervalInBackground: true,
+    refetchIntervalInBackground: false,
   });
 }
 
 export function useHangfireDeadLetterQuery(from: number, count: number) {
   return useQuery({
     queryKey: HANGFIRE_QUERY_KEYS.DEAD_LETTER(from, count),
-    queryFn: () => hangfireMonitoringApi.getDeadLetter(from, count),
     refetchInterval: REFRESH_INTERVAL_MS,
-    refetchIntervalInBackground: true,
+    queryFn: () => hangfireMonitoringApi.getDeadLetter(from, count),
+    refetchIntervalInBackground: false,
   });
 }
