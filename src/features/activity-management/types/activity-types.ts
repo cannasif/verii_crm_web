@@ -65,6 +65,15 @@ export interface CreateActivityReminderDto {
   channel: ReminderChannel;
 }
 
+export interface ActivityImageDto {
+  id: number;
+  activityId: number;
+  resimAciklama?: string;
+  resimUrl: string;
+  createdDate?: string;
+  updatedDate?: string;
+}
+
 export interface ActivityDto {
   id: number;
   subject: string;
@@ -97,6 +106,7 @@ export interface ActivityDto {
   };
   erpCustomerCode?: string;
   reminders: ActivityReminderDto[];
+  images?: ActivityImageDto[];
   activityDate?: string;
   isCompleted?: boolean;
   productCode?: string;

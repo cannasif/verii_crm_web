@@ -50,7 +50,7 @@ export function DailyTasksPage(): ReactElement {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('tasks');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [assignedUserFilter, setAssignedUserFilter] = useState<number | undefined>(user?.id);
+  const [assignedUserFilter, setAssignedUserFilter] = useState<number | undefined>(undefined);
   const [formOpen, setFormOpen] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [calendarViewMode, setCalendarViewMode] = useState<'weekly' | 'monthly'>('monthly');
@@ -78,10 +78,10 @@ export function DailyTasksPage(): ReactElement {
   }, [t]);
 
   useEffect(() => {
-    if (user?.id && !assignedUserFilter) {
+    if (user?.id && assignedUserFilter === undefined) {
       setAssignedUserFilter(user.id);
     }
-  }, [user, assignedUserFilter]);
+  }, [user]);
 
   // --- Date Helpers ---
   const getWeekDateRange = (): { startDate: string; endDate: string } => {

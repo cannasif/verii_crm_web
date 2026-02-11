@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Combobox } from '@/components/ui/combobox';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -38,7 +39,8 @@ import { useQuery } from '@tanstack/react-query';
 import { contactApi } from '@/features/contact-management/api/contact-api';
 import type { PagedFilter } from '@/types/api';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
-import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell, Plus, Trash2 } from 'lucide-react';
+import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell, Plus, Trash2, Image } from 'lucide-react';
+import { ActivityImageTab } from '@/features/activity-image-management';
 
 interface ActivityFormProps {
   open: boolean;
@@ -136,6 +138,7 @@ export function ActivityForm({
   const { data: userOptions = [] } = useUserOptions();
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [selectedCustomerDisplayName, setSelectedCustomerDisplayName] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('details');
 
   const form = useForm<ActivityFormSchema>({
     resolver: zodResolver(activityFormSchema),
@@ -192,10 +195,13 @@ export function ActivityForm({
   const contactOptions = contactData || [];
 
   useEffect(() => {
-    if (open && !activity && (initialStartDateTime || initialDate)) {
-      form.setValue('startDateTime', toDefaultStartDateTime(initialDate, initialStartDateTime));
-      const end = toDefaultEndDateTime(initialEndDateTime);
-      if (end) form.setValue('endDateTime', end);
+    if (open) {
+      setActiveTab('details');
+      if (!activity && (initialStartDateTime || initialDate)) {
+        form.setValue('startDateTime', toDefaultStartDateTime(initialDate, initialStartDateTime));
+        const end = toDefaultEndDateTime(initialEndDateTime);
+        if (end) form.setValue('endDateTime', end);
+      }
     }
   }, [open, initialDate, initialStartDateTime, initialEndDateTime, activity, form]);
 
@@ -261,7 +267,7 @@ export function ActivityForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95vw] sm:w-full max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-xl">
+      <DialogContent className="bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-4xl w-[95vw] sm:w-full max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-xl">
         <DialogHeader className="px-6 py-4 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
@@ -282,8 +288,21 @@ export function ActivityForm({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 min-h-0">
-          <Form {...form}>
-            <form id="activity-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="bg-muted/50 h-auto p-1 rounded-xl gap-1 mb-4">
+              <TabsTrigger value="details" className="rounded-lg px-4 py-2">
+                <FileText className="h-4 w-4 mr-2" />
+                {t('activityManagement.detailsTab', 'Detaylar')}
+              </TabsTrigger>
+              <TabsTrigger value="images" className="rounded-lg px-4 py-2">
+                <Image className="h-4 w-4 mr-2" />
+                {t('activityManagement.imagesTab', 'Resimler')}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="details" className="mt-0">
+              <Form {...form}>
+                <form id="activity-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
               <FormSection title={t('activityManagement.basicInfo', 'Temel bilgiler')}>
                 <FormField control={form.control} name="subject" render={({ field }) => (
                   <FormItem>
@@ -535,16 +554,33 @@ export function ActivityForm({
                 </div>
               </FormSection>
 
-              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2 border-t border-slate-100 dark:border-white/5">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="h-11 px-5 rounded-lg font-medium">
-                  {t('common.cancel', 'Vazgeç')}
-                </Button>
-                <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none">
-                  {isSubmitting ? t('common.saving', 'Kaydediliyor...') : activity ? t('common.update', 'Güncelle') : t('common.save', 'Kaydet')}
-                </Button>
-              </div>
-            </form>
-          </Form>
+                  <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2 border-t border-slate-100 dark:border-white/5">
+                    <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="h-11 px-5 rounded-lg font-medium">
+                      {t('common.cancel', 'Vazgeç')}
+                    </Button>
+                    <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none">
+                      {isSubmitting ? t('common.saving', 'Kaydediliyor...') : activity ? t('common.update', 'Güncelle') : t('common.save', 'Kaydet')}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </TabsContent>
+
+            <TabsContent value="images" className="mt-0">
+              <ActivityImageTab 
+                activityId={activity?.id}
+                onCreateActivity={async () => {
+                  const isValid = await form.trigger();
+                  if (!isValid) {
+                    throw new Error(t('activityManagement.validationError', 'Lütfen zorunlu alanları doldurun'));
+                  }
+                  const formData = form.getValues();
+                  await handleSubmit(formData);
+                  return activity?.id || 0;
+                }}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </DialogContent>
 
