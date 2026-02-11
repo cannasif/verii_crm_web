@@ -50,6 +50,7 @@ import { useCustomerOptions } from '@/features/customer-management/hooks/useCust
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
 import { useErpProjects } from '@/services/hooks/useErpProjects';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
+import { useSalesTypeList } from '@/features/sales-type-management/hooks/useSalesTypeList';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
 import { ExchangeRateDialog } from './ExchangeRateDialog';
@@ -129,6 +130,26 @@ export function QuotationHeaderForm({
   const watchedRepresentativeId = form.watch('quotation.representativeId');
   const watchedDocumentSerialTypeId = form.watch('quotation.documentSerialTypeId');
   const watchedOfferType = form.watch('quotation.offerType');
+
+  const { data: salesTypeListResponse } = useSalesTypeList({
+    pageNumber: 1,
+    pageSize: 500,
+    ...(watchedOfferType
+      ? { filters: [{ column: 'salesType', operator: 'equals', value: watchedOfferType }] }
+      : {}),
+  });
+  const salesTypesByOfferType = useMemo(() => {
+    const list = salesTypeListResponse?.data ?? [];
+    if (!watchedOfferType) return list;
+    return list.filter((item) => item.salesType === watchedOfferType);
+  }, [salesTypeListResponse?.data, watchedOfferType]);
+  const prevOfferTypeRef = useRef(watchedOfferType);
+  useEffect(() => {
+    if (prevOfferTypeRef.current !== watchedOfferType) {
+      prevOfferTypeRef.current = watchedOfferType;
+      form.setValue('quotation.deliveryMethod', null);
+    }
+  }, [watchedOfferType, form]);
 
   const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useQuotationRelatedUsers(user?.id);
@@ -677,7 +698,7 @@ export function QuotationHeaderForm({
               </div>
 
               <div className="space-y-4 flex-1">
-                <div className={cn("grid gap-4", watchedOfferType === OfferType.YURTDISI ? "grid-cols-2" : "grid-cols-1")}>
+                <div className={cn("grid gap-4", watchedOfferType ? "grid-cols-2" : "grid-cols-1")}>
                   <FormField
                     control={form.control}
                     name="quotation.offerType"
@@ -706,7 +727,7 @@ export function QuotationHeaderForm({
                     )}
                   />
 
-                  {watchedOfferType === OfferType.YURTDISI && (
+                  {watchedOfferType && (
                     <FormField
                       control={form.control}
                       name="quotation.deliveryMethod"
@@ -728,23 +749,11 @@ export function QuotationHeaderForm({
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="EXW">EXW - Ex Works</SelectItem>
-                                <SelectItem value="FCA">FCA - Free Carrier</SelectItem>
-                                <SelectItem value="CPT">CPT - Carriage Paid To</SelectItem>
-                                <SelectItem value="CIP">CIP - Carriage and Insurance Paid To</SelectItem>
-                                <SelectItem value="DAT">DAT - Delivered At Terminal</SelectItem>
-                                <SelectItem value="DAP">DAP - Delivered At Place</SelectItem>
-                                <SelectItem value="DDP">DDP - Delivered Duty Paid</SelectItem>
-                                <SelectItem value="FAS">FAS - Free Alongside Ship</SelectItem>
-                                <SelectItem value="FOB">FOB - Free On Board</SelectItem>
-                                <SelectItem value="CFR">CFR - Cost and Freight</SelectItem>
-                                <SelectItem value="CIF">CIF - Cost, Insurance and Freight</SelectItem>
-                                <SelectItem value="GEM">GEM - Gemi Yolu</SelectItem>
-                                <SelectItem value="UCA">UCA - Hava Yolu</SelectItem>
-                                <SelectItem value="KAR">KAR - Kara Yolu</SelectItem>
-                                <SelectItem value="DEM">DEM - Demir Yolu</SelectItem>
-                                <SelectItem value="ZZZ">ZZZ - Diğer</SelectItem>
-                                <SelectItem value="OZL">OZL - Özel Teslimat</SelectItem>
+                                {salesTypesByOfferType.map((item) => (
+                                  <SelectItem key={item.id} value={String(item.id)}>
+                                    {item.name}
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                           </div>

@@ -206,6 +206,7 @@ export interface QuotationGetDto {
   paymentTypeName?: string | null;
   documentSerialTypeId?: number | null;
   offerType: string;
+  deliveryMethod?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;
   revisionNo?: string | null;

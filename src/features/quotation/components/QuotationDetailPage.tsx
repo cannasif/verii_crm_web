@@ -124,6 +124,7 @@ export function QuotationDetailPage(): ReactElement {
           revisionId: quotation.revisionId || null,
           generalDiscountRate: quotation.generalDiscountRate ?? null,
           generalDiscountAmount: quotation.generalDiscountAmount ?? null,
+          deliveryMethod: quotation.deliveryMethod ?? null,
         },
       });
       formInitializedRef.current = true;
