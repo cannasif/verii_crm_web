@@ -176,6 +176,7 @@ export function DemandCreateForm(): ReactElement {
         revisionId: (data.demand.revisionId && data.demand.revisionId > 0) ? data.demand.revisionId : null,
         generalDiscountRate: data.demand.generalDiscountRate ?? null,
         generalDiscountAmount: data.demand.generalDiscountAmount ?? null,
+        deliveryMethod: data.demand.deliveryMethod ?? null,
       };
 
       const payload: DemandBulkCreateDto = {

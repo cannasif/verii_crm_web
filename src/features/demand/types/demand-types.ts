@@ -61,6 +61,7 @@ export interface CreateDemandDto {
   paymentTypeId?: number | null;
   documentSerialTypeId?: number | null;
   offerType: string;
+  deliveryMethod?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;
   revisionNo?: string | null;
@@ -178,6 +179,7 @@ export interface DemandGetDto {
   paymentTypeName?: string | null;
   documentSerialTypeId?: number | null;
   offerType: string;
+  deliveryMethod?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;
   revisionNo?: string | null;

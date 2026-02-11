@@ -176,6 +176,7 @@ export function OrderCreateForm(): ReactElement {
         revisionId: (data.order.revisionId && data.order.revisionId > 0) ? data.order.revisionId : null,
         generalDiscountRate: data.order.generalDiscountRate ?? null,
         generalDiscountAmount: data.order.generalDiscountAmount ?? null,
+        deliveryMethod: data.order.deliveryMethod ?? null,
       };
 
       const payload: OrderBulkCreateDto = {

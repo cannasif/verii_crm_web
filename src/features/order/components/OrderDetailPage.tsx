@@ -119,6 +119,7 @@ export function OrderDetailPage(): ReactElement {
           revisionId: order.revisionId || null,
           generalDiscountRate: order.generalDiscountRate ?? null,
           generalDiscountAmount: order.generalDiscountAmount ?? null,
+          deliveryMethod: order.deliveryMethod ?? null,
         },
       });
       formInitializedRef.current = true;
@@ -307,6 +308,7 @@ export function OrderDetailPage(): ReactElement {
         revisionId: (data.order.revisionId && data.order.revisionId > 0) ? data.order.revisionId : null,
         generalDiscountRate: data.order.generalDiscountRate ?? null,
         generalDiscountAmount: data.order.generalDiscountAmount ?? null,
+        deliveryMethod: data.order.deliveryMethod ?? null,
       };
 
       const payload: OrderBulkCreateDto = {

@@ -34,6 +34,7 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
 import { useErpProjects } from '@/services/hooks/useErpProjects';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
+import { useSalesTypeList } from '@/features/sales-type-management/hooks/useSalesTypeList';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
 import { ExchangeRateDialog } from './ExchangeRateDialog';
@@ -112,6 +113,27 @@ export function DemandHeaderForm({
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedCurrency = form.watch('demand.currency');
   const watchedRepresentativeId = form.watch('demand.representativeId');
+  const watchedOfferType = form.watch('demand.offerType');
+
+  const { data: salesTypeListResponse } = useSalesTypeList({
+    pageNumber: 1,
+    pageSize: 500,
+    ...(watchedOfferType
+      ? { filters: [{ column: 'salesType', operator: 'equals', value: watchedOfferType }] }
+      : {}),
+  });
+  const salesTypesByOfferType = useMemo(() => {
+    const list = salesTypeListResponse?.data ?? [];
+    if (!watchedOfferType) return list;
+    return list.filter((item) => item.salesType === watchedOfferType);
+  }, [salesTypeListResponse?.data, watchedOfferType]);
+  const prevOfferTypeRef = useRef(watchedOfferType);
+  useEffect(() => {
+    if (prevOfferTypeRef.current !== watchedOfferType) {
+      prevOfferTypeRef.current = watchedOfferType;
+      form.setValue('demand.deliveryMethod', null);
+    }
+  }, [watchedOfferType, form]);
 
   const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useDemandRelatedUsers(user?.id);
@@ -471,32 +493,70 @@ export function DemandHeaderForm({
             </div>
 
             <div className="space-y-4 flex-1">
-              <FormField
-                control={form.control}
-                name="demand.offerType"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label}>
-                      {t('common.offerType.label', 'Teklif Tipi')} <span className="text-pink-500 ml-0.5">*</span>
-                    </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || ''} disabled={readOnly}>
-                      <FormControl>
-                         <div className="relative">
-                            <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
-                            <SelectTrigger className={styles.inputBase}>
-                              <SelectValue placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')} />
-                            </SelectTrigger>
-                         </div>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={OfferType.YURTICI}>{t('common.offerType.yurtici', 'Yurtiçi')}</SelectItem>
-                        <SelectItem value={OfferType.YURTDISI}>{t('common.offerType.yurtdisi', 'Yurtdışı')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="mt-1" />
-                  </FormItem>
+              <div className={cn("grid gap-4", watchedOfferType ? "grid-cols-2" : "grid-cols-1")}>
+                <FormField
+                  control={form.control}
+                  name="demand.offerType"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0 relative group">
+                      <FormLabel className={styles.label}>
+                        {t('common.offerType.label', 'Teklif Tipi')} <span className="text-pink-500 ml-0.5">*</span>
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ''} disabled={readOnly}>
+                        <FormControl>
+                           <div className="relative">
+                              <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
+                              <SelectTrigger className={styles.inputBase}>
+                                <SelectValue placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')} />
+                              </SelectTrigger>
+                           </div>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={OfferType.YURTICI}>{t('common.offerType.yurtici', 'Yurtiçi')}</SelectItem>
+                          <SelectItem value={OfferType.YURTDISI}>{t('common.offerType.yurtdisi', 'Yurtdışı')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="mt-1" />
+                    </FormItem>
+                  )}
+                />
+
+                {watchedOfferType && (
+                  <FormField
+                    control={form.control}
+                    name="demand.deliveryMethod"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 relative group">
+                        <FormLabel className={styles.label}>
+                          Gönderim/Teslim Şekli
+                        </FormLabel>
+                        <div className="relative">
+                          <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
+                          <Select
+                            disabled={readOnly}
+                            onValueChange={field.onChange}
+                            value={field.value || ''}
+                          >
+                            <FormControl>
+                              <SelectTrigger className={cn(styles.inputBase, "pl-10")}>
+                                <SelectValue placeholder={t('quotation.select', 'Seçiniz')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {salesTypesByOfferType.map((item) => (
+                                <SelectItem key={item.id} value={String(item.id)}>
+                                  {item.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <FormMessage className="mt-1" />
+                      </FormItem>
+                    )}
+                  />
                 )}
-              />
+              </div>
 
               <div className="grid grid-cols-2 gap-3">
                  <FormField
