@@ -60,6 +60,7 @@ const PricingRuleManagementPage = lazyImport(() => import('@/features/pricing-ru
 const StockListPage = lazyImport(() => import('@/features/stock'), 'StockListPage');
 const StockDetailPage = lazyImport(() => import('@/features/stock'), 'StockDetailPage');
 const DocumentSerialTypeManagementPage = lazyImport(() => import('@/features/document-serial-type-management'), 'DocumentSerialTypeManagementPage');
+const SalesTypeManagementPage = lazyImport(() => import('@/features/sales-type-management'), 'SalesTypeManagementPage');
 const ReportDesignerListPage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerListPage');
 const ReportDesignerCreatePage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerCreatePage');
 const ReportsListPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportsListPage');
@@ -149,6 +150,7 @@ export const router = createBrowserRouter([
       { path: 'stocks', element: <StockListPage /> },
       { path: 'stocks/:id', element: <StockDetailPage /> },
       { path: 'document-serial-type-management', element: <DocumentSerialTypeManagementPage /> },
+      { path: 'definitions/sales-type-management', element: <SalesTypeManagementPage /> },
       { path: 'access-control/permission-definitions', element: <PermissionDefinitionsPage /> },
       { path: 'access-control/permission-groups', element: <PermissionGroupsPage /> },
       { path: 'access-control/user-group-assignments', element: <UserGroupAssignmentsPage /> },

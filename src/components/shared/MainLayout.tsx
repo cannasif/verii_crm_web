@@ -163,6 +163,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           { title: t('sidebar.titleManagement', 'Ünvan Yönetimi'), href: '/title-management' },
           { title: t('sidebar.paymentTypeManagement', 'Ödeme Tipi Yönetimi'), href: '/payment-type-management' },
           { title: t('sidebar.documentSerialTypeManagement', 'Dosya Tip Yönetimi'), href: '/document-serial-type-management' },
+          { title: t('sidebar.salesTypeManagement', 'Satış Tipi Yönetimi'), href: '/definitions/sales-type-management' },
         ],
       },
       {
