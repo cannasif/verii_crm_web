@@ -7,6 +7,7 @@ export const createDemandSchema = z.object({
     deliveryDate: z.string().nullable().optional(),
     shippingAddressId: z.number().nullable().optional(),
     representativeId: z.number().nullable().optional(),
+    projectCode: z.string().max(50, 'Proje kodu en fazla 50 karakter olabilir').nullable().optional(),
     status: z.number().nullable().optional(),
     description: z.string().max(500, 'Açıklama en fazla 500 karakter olabilir').nullable().optional(),
     paymentTypeId: z.number().nullable().optional(),
