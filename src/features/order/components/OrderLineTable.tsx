@@ -42,6 +42,7 @@ function toCreateDto(line: OrderLineFormState, orderId: number): CreateOrderLine
     productCode: line.productCode ?? '',
     productName: line.productName ?? '',
     approvalStatus: line.approvalStatus ?? 0,
+    erpProjectCode: line.projectCode ?? null,
   };
 }
 
@@ -83,7 +84,7 @@ function dtoToFormState(dto: OrderLineGetDto, index: number): OrderLineFormState
     lineGrandTotal: dto.lineGrandTotal,
     description: dto.description ?? null,
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
-    projectCode: dto.projectCode ?? null,
+    projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
     relatedStockId: dto.relatedStockId ?? null,
     relatedProductKey: dto.relatedProductKey ?? null,
     isMainRelatedProduct: dto.isMainRelatedProduct ?? false,
@@ -115,6 +116,7 @@ function toUpdateDto(line: OrderLineFormState, orderId: number): OrderLineGetDto
     description: line.description ?? null,
     pricingRuleHeaderId: line.pricingRuleHeaderId ?? null,
     projectCode: line.projectCode ?? null,
+    erpProjectCode: line.projectCode ?? null,
     relatedStockId: line.relatedStockId ?? null,
     relatedProductKey: line.relatedProductKey ?? null,
     isMainRelatedProduct: line.isMainRelatedProduct ?? false,

@@ -99,6 +99,16 @@ export function OrderDetailPage(): ReactElement {
 
   useEffect(() => {
     if (order && !formInitializedRef.current) {
+      const raw = order as unknown as Record<string, unknown>;
+      const salesTypeId = order.salesTypeDefinitionId ?? raw.SalesTypeDefinitionId;
+      const deliveryMethodFromApi = order.deliveryMethod ?? raw.DeliveryMethod;
+      const deliveryMethodValue =
+        salesTypeId != null && salesTypeId !== ''
+          ? String(salesTypeId)
+          : deliveryMethodFromApi != null && deliveryMethodFromApi !== ''
+            ? String(deliveryMethodFromApi)
+            : null;
+      const projectCodeValue = order.erpProjectCode ?? order.projectCode ?? (raw.ErpProjectCode as string) ?? (raw.ProjectCode as string) ?? null;
       form.reset({
         order: {
           offerType: normalizeOfferType(order.offerType),
@@ -109,7 +119,7 @@ export function OrderDetailPage(): ReactElement {
           deliveryDate: order.deliveryDate ? order.deliveryDate.split('T')[0] : null,
           shippingAddressId: order.shippingAddressId || null,
           representativeId: order.representativeId || null,
-          projectCode: order.projectCode || null,
+          projectCode: projectCodeValue,
           status: order.status || null,
           description: order.description || null,
           paymentTypeId: order.paymentTypeId || null,
@@ -119,7 +129,7 @@ export function OrderDetailPage(): ReactElement {
           revisionId: order.revisionId || null,
           generalDiscountRate: order.generalDiscountRate ?? null,
           generalDiscountAmount: order.generalDiscountAmount ?? null,
-          deliveryMethod: order.deliveryMethod ?? null,
+          deliveryMethod: deliveryMethodValue,
         },
       });
       formInitializedRef.current = true;
@@ -266,6 +276,7 @@ export function OrderDetailPage(): ReactElement {
           description: cleanLineData.description || null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
+          erpProjectCode: cleanLineData.projectCode ?? null,
         };
       });
 
@@ -308,7 +319,8 @@ export function OrderDetailPage(): ReactElement {
         revisionId: (data.order.revisionId && data.order.revisionId > 0) ? data.order.revisionId : null,
         generalDiscountRate: data.order.generalDiscountRate ?? null,
         generalDiscountAmount: data.order.generalDiscountAmount ?? null,
-        deliveryMethod: data.order.deliveryMethod ?? null,
+        salesTypeDefinitionId: data.order.deliveryMethod ? Number(data.order.deliveryMethod) : null,
+        erpProjectCode: data.order.projectCode ?? null,
       };
 
       const payload: OrderBulkCreateDto = {
