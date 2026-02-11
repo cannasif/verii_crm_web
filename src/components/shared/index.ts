@@ -7,4 +7,5 @@ export { CustomerSelectDialog } from './CustomerSelectDialog';
 export type { CustomerSelectionResult } from './CustomerSelectDialog';
 export { ProductSelectDialog } from './ProductSelectDialog';
 export type { ProductSelectionResult } from './ProductSelectDialog';
-
+export { NotesDialog } from './NotesDialog';
+export type { NoteLine } from './NotesDialog';
