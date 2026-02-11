@@ -110,7 +110,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://crmapi.v3rii.com';
     return `${baseUrl}${url}`;
   };
 
