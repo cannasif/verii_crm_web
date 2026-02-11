@@ -1,6 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse } from '@/types/api';
-import type { ErpCustomer, ErpProject, ErpWarehouse, ErpProduct, BranchErp, CariDto, KurDto, StokGroupDto } from './erp-types';
+import type { ErpCustomer, ErpProject, ProjeDto, ErpWarehouse, ErpProduct, BranchErp, CariDto, KurDto, StokGroupDto } from './erp-types';
 
 export const erpCommonApi = {
   getCustomers: async (): Promise<ErpCustomer[]> => {
@@ -30,6 +30,14 @@ export const erpCommonApi = {
       return response.data;
     }
     throw new Error(response.message || 'Projeler yüklenemedi');
+  },
+
+  getProjectCodes: async (): Promise<ProjeDto[]> => {
+    const response = await api.get<ApiResponse<ProjeDto[]>>('/api/Erp/getProjectCodes');
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Proje kodları yüklenemedi');
   },
 
   getWarehouses: async (depoKodu?: number): Promise<ErpWarehouse[]> => {

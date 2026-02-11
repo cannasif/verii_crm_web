@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { erpCommonApi } from '../erp-common-api';
-import type { ErpProject } from '../erp-types';
+import type { ProjeDto } from '../erp-types';
 
 export const useErpProjects = () => {
-  return useQuery<ErpProject[]>({
-    queryKey: ['erpProjects'],
-    queryFn: () => erpCommonApi.getProjects(),
+  return useQuery<ProjeDto[]>({
+    queryKey: ['erpProjectCodes'],
+    queryFn: () => erpCommonApi.getProjectCodes(),
     staleTime: 5 * 60 * 1000,
   });
 };

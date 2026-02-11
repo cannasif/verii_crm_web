@@ -49,6 +49,11 @@ export interface ErpProject {
   projeAciklama: string;
 }
 
+export interface ProjeDto {
+  projeKod: string;
+  projeAciklama: string | null;
+}
+
 export interface ErpWarehouse {
   depoKodu: number;
   depoIsmi: string;
