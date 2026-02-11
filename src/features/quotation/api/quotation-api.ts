@@ -16,6 +16,8 @@ import type {
   ApprovalStatus,
   ApprovalScopeUserDto,
   QuotationApprovalFlowReportDto,
+  QuotationNotesGetDto,
+  UpdateQuotationNotesListDto,
 } from '../types/quotation-types';
 
 export const quotationApi = {
@@ -368,6 +370,30 @@ export const quotationApi = {
       })) as QuotationLineGetDto[];
     }
     return [];
+  },
+
+  getQuotationNotesByQuotationId: async (quotationId: number): Promise<QuotationNotesGetDto | null> => {
+    const response = await api.get<ApiResponse<QuotationNotesGetDto>>(
+      `/api/QuotationNotes/by-quotation/${quotationId}`
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    return null;
+  },
+
+  updateNotesListByQuotationId: async (
+    quotationId: number,
+    payload: UpdateQuotationNotesListDto
+  ): Promise<ApiResponse<unknown>> => {
+    const response = await api.put<ApiResponse<unknown>>(
+      `/api/QuotationNotes/by-quotation/${quotationId}/notes-list`,
+      payload
+    );
+    if (!response.success) {
+      throw new Error(response.message || 'Notlar güncellenirken bir hata oluştu');
+    }
+    return response;
   },
 
   createQuotationLines: async (dtos: CreateQuotationLineDto[]): Promise<QuotationLineGetDto[]> => {

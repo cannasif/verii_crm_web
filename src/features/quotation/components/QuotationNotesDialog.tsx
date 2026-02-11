@@ -8,53 +8,79 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { FileText } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
+import type { QuotationNotesDto } from "../types/quotation-types";
 
-export interface NoteLine {
-  id: number;
-  text: string;
-  isSelected: boolean;
-}
+const NOTE_KEYS = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
+const MAX_NOTE_LENGTH = 100;
+
+export const createEmptyQuotationNotes = (): QuotationNotesDto => ({
+  note1: '',
+  note2: '',
+  note3: '',
+  note4: '',
+  note5: '',
+  note6: '',
+  note7: '',
+  note8: '',
+  note9: '',
+  note10: '',
+  note11: '',
+  note12: '',
+  note13: '',
+  note14: '',
+  note15: '',
+});
 
 interface QuotationNotesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialNotes: NoteLine[];
-  onSave: (notes: NoteLine[]) => void;
+  value: QuotationNotesDto;
+  onChange: (next: QuotationNotesDto) => void;
+  errors?: Partial<Record<keyof QuotationNotesDto, string>>;
+  onSaveAsync?: (notes: QuotationNotesDto) => Promise<void>;
+  isSaving?: boolean;
 }
 
 export function QuotationNotesDialog({
   open,
   onOpenChange,
-  initialNotes,
-  onSave,
-}: QuotationNotesDialogProps) {
+  value,
+  onChange,
+  errors = {},
+  onSaveAsync,
+  isSaving = false,
+}: QuotationNotesDialogProps): React.ReactElement {
   const { t } = useTranslation();
-  const [notes, setNotes] = useState<NoteLine[]>(initialNotes);
+  const [localValue, setLocalValue] = useState<QuotationNotesDto>(value);
 
   useEffect(() => {
-    setNotes(initialNotes);
-  }, [initialNotes, open]);
+    setLocalValue(value);
+  }, [value, open]);
 
-  const handleNoteChange = (id: number, text: string) => {
-    setNotes((prev) =>
-      prev.map((note) => (note.id === id ? { ...note, text } : note))
-    );
+  const handleNoteChange = (key: keyof QuotationNotesDto, text: string): void => {
+    const next = { ...localValue, [key]: text };
+    setLocalValue(next);
+    onChange(next);
   };
 
-  const handleSelectionChange = (id: number, isSelected: boolean) => {
-    setNotes((prev) =>
-      prev.map((note) => (note.id === id ? { ...note, isSelected } : note))
-    );
+  const handleSave = async (): Promise<void> => {
+    onChange(localValue);
+    if (onSaveAsync) {
+      await onSaveAsync(localValue);
+      onOpenChange(false);
+    } else {
+      onOpenChange(false);
+    }
   };
 
-  const handleSave = () => {
-    onSave(notes);
-    onOpenChange(false);
-  };
+  const hasErrors = Object.keys(errors).length > 0;
+  const hasLengthErrors = NOTE_KEYS.some(
+    (k) => (localValue[k]?.length ?? 0) > MAX_NOTE_LENGTH
+  );
+  const canSubmit = !hasErrors && !hasLengthErrors;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -69,7 +95,7 @@ export function QuotationNotesDialog({
             <div className="flex flex-col gap-0.5">
               <span>{t('quotation.notes.title', 'Ek Notlar ve Koşullar')}</span>
               <span className="text-xs font-normal text-slate-500 dark:text-slate-400">
-                {t('quotation.notes.description', 'Teklifinize eklemek istediğiniz notları düzenleyin ve seçin.')}
+                {t('quotation.notes.description', 'Teklifinize eklemek istediğiniz notları düzenleyin. Her not en fazla 100 karakter olabilir.')}
               </span>
             </div>
           </DialogTitle>
@@ -77,48 +103,58 @@ export function QuotationNotesDialog({
 
         <div className="p-6 max-h-[600px] overflow-y-auto custom-scrollbar bg-slate-50/30 dark:bg-[#0f0a18]/30">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-            {notes.map((note) => (
-              <div
-                key={note.id}
-                className={cn(
-                  "flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 group hover:shadow-sm",
-                  note.isSelected
-                    ? "bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-500/20"
-                    : "bg-white dark:bg-[#1a1025] border-slate-100 dark:border-white/5"
-                )}
-              >
-                <div className="flex-shrink-0 w-12 flex justify-center">
-                  <span className={cn(
-                    "text-xs font-semibold px-2 py-1 rounded-md transition-colors",
-                    note.isSelected 
-                      ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
-                      : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400"
-                  )}>
-                    #{note.id}
-                  </span>
+            {NOTE_KEYS.map((key, index) => {
+              const noteValue = localValue[key] ?? '';
+              const charCount = noteValue.length;
+              const isOverLimit = charCount > MAX_NOTE_LENGTH;
+              const fieldError = errors[key];
+              return (
+                <div
+                  key={key}
+                  className={cn(
+                    "flex flex-col gap-1 p-3 rounded-xl border transition-all duration-200",
+                    isOverLimit || fieldError
+                      ? "bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-500/20"
+                      : "bg-white dark:bg-[#1a1025] border-slate-100 dark:border-white/5"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-xs font-semibold px-2 py-1 rounded-md shrink-0",
+                      noteValue.trim()
+                        ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                        : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400"
+                    )}>
+                      #{index + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <Input
+                        value={noteValue}
+                        onChange={(e) => handleNoteChange(key, e.target.value)}
+                        className={cn(
+                          "h-9 text-sm border-slate-200 dark:border-white/10 focus-visible:ring-purple-500 transition-all",
+                          isOverLimit || fieldError ? "border-red-500 dark:border-red-500" : ""
+                        )}
+                        placeholder={t('quotation.notes.placeholder', 'Not içeriği...')}
+                      />
+                    </div>
+                    <span
+                      className={cn(
+                        "text-xs tabular-nums shrink-0 min-w-[3rem] text-right",
+                        isOverLimit ? "text-red-600 dark:text-red-400 font-semibold" : "text-slate-500 dark:text-slate-400"
+                      )}
+                    >
+                      {charCount}/{MAX_NOTE_LENGTH}
+                    </span>
+                  </div>
+                  {(fieldError || isOverLimit) && (
+                    <p className="text-xs text-red-600 dark:text-red-400">
+                      {fieldError ?? t('quotation.notes.maxLengthError', 'En fazla 100 karakter girilebilir')}
+                    </p>
+                  )}
                 </div>
-                
-                <div className="flex-1">
-                  <Input
-                    value={note.text}
-                    onChange={(e) => handleNoteChange(note.id, e.target.value)}
-                    className={cn(
-                      "h-9 text-sm border-slate-200 dark:border-white/10 focus-visible:ring-purple-500 transition-all",
-                      note.isSelected 
-                        ? "bg-white dark:bg-[#130822]" 
-                        : "bg-transparent"
-                    )}
-                    placeholder={t('quotation.notes.placeholder', 'Not içeriği...')}
-                  />
-                </div>
-
-                <Switch
-                  checked={note.isSelected}
-                  onCheckedChange={(checked) => handleSelectionChange(note.id, checked)}
-                  className="data-[state=checked]:bg-purple-600"
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -132,9 +168,17 @@ export function QuotationNotesDialog({
           </Button>
           <Button
             onClick={handleSave}
-            className="h-10 px-6 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            disabled={!canSubmit || isSaving}
+            className="h-10 px-6 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
           >
-            {t('common.save', 'Kaydet ve Uygula')}
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('quotation.notes.saving', 'Kaydediliyor...')}
+              </>
+            ) : (
+              t('common.save', 'Kaydet ve Uygula')
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -8,7 +8,9 @@ import { useQuotation } from '../hooks/useQuotation';
 import { useStartApprovalFlow } from '../hooks/useStartApprovalFlow';
 import { useQuotationExchangeRates } from '../hooks/useQuotationExchangeRates';
 import { useQuotationLines } from '../hooks/useQuotationLines';
+import { useQuotationNotes } from '../hooks/useQuotationNotes';
 import { useUpdateQuotationBulk } from '../hooks/useUpdateQuotationBulk';
+import { useUpdateQuotationNotesList } from '../hooks/useUpdateQuotationNotesList';
 import { usePriceRuleOfQuotation } from '../hooks/usePriceRuleOfQuotation';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
@@ -28,7 +30,9 @@ import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
-import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/quotation-types';
+import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto } from '../types/quotation-types';
+import { createEmptyQuotationNotes } from './QuotationNotesDialog';
+import { quotationNotesGetDtoToDto, quotationNotesDtoToNotesList } from '../utils/quotation-payload-mapper';
 import { QuotationHeaderForm } from './QuotationHeaderForm';
 import { QuotationLineTable } from './QuotationLineTable';
 import { QuotationSummaryCard } from './QuotationSummaryCard';
@@ -48,18 +52,21 @@ export function QuotationDetailPage(): ReactElement {
   const { data: quotation, isLoading } = useQuotation(quotationId);
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useQuotationExchangeRates(quotationId);
   const { data: linesData = [], isLoading: isLoadingLines } = useQuotationLines(quotationId);
+  const { data: notesData, isLoading: isLoadingNotes } = useQuotationNotes(quotationId);
   const updateMutation = useUpdateQuotationBulk();
+  const updateNotesMutation = useUpdateQuotationNotesList(quotationId);
   const startApprovalFlow = useStartApprovalFlow();
   const { data: customerOptions = [] } = useCustomerOptions();
 
-  // Local State
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<QuotationExchangeRateFormState[]>([]);
+  const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
-  
+
   const linesInitializedRef = useRef(false);
   const exchangeRatesInitializedRef = useRef(false);
+  const notesInitializedRef = useRef(false);
   const formInitializedRef = useRef(false);
   const [activeTab, setActiveTab] = useState('detail');
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
@@ -124,7 +131,16 @@ export function QuotationDetailPage(): ReactElement {
 
   useEffect(() => {
     linesInitializedRef.current = false;
+    notesInitializedRef.current = false;
   }, [quotationId]);
+
+  useEffect(() => {
+    if (!quotationId || quotationId < 1) return;
+    if (notesInitializedRef.current) return;
+    if (notesData === undefined) return;
+    setQuotationNotes(quotationNotesGetDtoToDto(notesData ?? null));
+    notesInitializedRef.current = true;
+  }, [quotationId, notesData]);
 
   useEffect(() => {
     if (!quotationId || quotationId < 1) return;
@@ -309,6 +325,15 @@ export function QuotationDetailPage(): ReactElement {
       return;
     }
 
+    const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
+    const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
+    if (overLimitNote) {
+      toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
+        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      });
+      return;
+    }
+
     try {
       const linesToSend = lines.map((line) => {
         const { id, isEditing, ...lineData } = line;
@@ -370,6 +395,15 @@ export function QuotationDetailPage(): ReactElement {
       };
 
       const result = await updateMutation.mutateAsync({ id: quotationId, data: payload });
+
+      const notesList = quotationNotesDtoToNotesList(quotationNotes);
+      if (notesList.length > 15) {
+        toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
+          description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+        });
+        return;
+      }
+      await updateNotesMutation.mutateAsync({ notes: notesList });
 
       if (result.success && result.data) {
         toast.success(t('quotation.update.success', 'Teklif Başarıyla Güncellendi'), {
@@ -445,7 +479,7 @@ export function QuotationDetailPage(): ReactElement {
     });
   };
 
-  if (isLoading || isLoadingExchangeRates || isLoadingLines) {
+  if (isLoading || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
@@ -544,6 +578,34 @@ export function QuotationDetailPage(): ReactElement {
                     <QuotationHeaderForm
                       exchangeRates={exchangeRates}
                       onExchangeRatesChange={setExchangeRates}
+                      quotationNotes={quotationNotes}
+                      onQuotationNotesChange={setQuotationNotes}
+                      onSaveNotes={async (notes) => {
+                        const list = quotationNotesDtoToNotesList(notes);
+                        if (list.length > 15) {
+                          toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
+                            description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+                          });
+                          throw new Error('maxCount');
+                        }
+                        const overLimit = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).find((k) => (notes[k]?.length ?? 0) > 100);
+                        if (overLimit) {
+                          toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
+                            description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir.'),
+                          });
+                          throw new Error('maxLength');
+                        }
+                        try {
+                          await updateNotesMutation.mutateAsync({ notes: list });
+                          toast.success(t('quotation.notes.saved', 'Notlar kaydedildi.'));
+                        } catch (err) {
+                          toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
+                            description: err instanceof Error ? err.message : t('quotation.notes.saveError', 'Notlar kaydedilirken bir hata oluştu.'),
+                          });
+                          throw err;
+                        }
+                      }}
+                      isSavingNotes={updateNotesMutation.isPending}
                       lines={lines}
                       onLinesChange={async () => {
                         const newCurrency = form.getValues('quotation.currency');

@@ -22,7 +22,10 @@ import {
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { formatCurrency } from '../utils/format-currency';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
-import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/quotation-types';
+import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto } from '../types/quotation-types';
+import { createEmptyQuotationNotes } from './QuotationNotesDialog';
+import { mapQuotationNotesToPayload, quotationNotesDtoToNotesList } from '../utils/quotation-payload-mapper';
+import { quotationApi } from '../api/quotation-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
@@ -37,6 +40,7 @@ export function QuotationCreateForm(): ReactElement {
   
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<QuotationExchangeRateFormState[]>([]);
+  const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
   
@@ -115,6 +119,15 @@ export function QuotationCreateForm(): ReactElement {
       return;
     }
 
+    const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
+    const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
+    if (overLimitNote) {
+      toast.error(t('quotation.create.error', 'Teklif Oluşturulamadı'), {
+        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      });
+      return;
+    }
+
     try {
       const linesToSend = lines.map((line) => {
         const { id, isEditing, ...lineData } = line;
@@ -158,6 +171,7 @@ export function QuotationCreateForm(): ReactElement {
         deliveryDate: data.quotation.deliveryDate || null,
         shippingAddressId: (data.quotation.shippingAddressId && data.quotation.shippingAddressId > 0) ? data.quotation.shippingAddressId : null,
         representativeId: (data.quotation.representativeId && data.quotation.representativeId > 0) ? data.quotation.representativeId : null,
+        projectCode: data.quotation.projectCode || null,
         status: (data.quotation.status && data.quotation.status > 0) ? data.quotation.status : null,
         description: data.quotation.description || null,
         paymentTypeId: (data.quotation.paymentTypeId && data.quotation.paymentTypeId > 0) ? data.quotation.paymentTypeId : null,
@@ -170,15 +184,22 @@ export function QuotationCreateForm(): ReactElement {
         generalDiscountAmount: data.quotation.generalDiscountAmount ?? null,
       };
 
+      const mappedQuotationNotes = mapQuotationNotesToPayload(quotationNotes);
+
       const payload: QuotationBulkCreateDto = {
         quotation: quotationData,
         lines: linesToSend,
         exchangeRates: exchangeRatesToSend,
+        ...(mappedQuotationNotes && { quotationNotes: mappedQuotationNotes }),
       };
 
       const result = await createMutation.mutateAsync(payload);
 
       if (result.success && result.data) {
+        const notesList = quotationNotesDtoToNotesList(quotationNotes);
+        if (notesList.length > 0) {
+          await quotationApi.updateNotesListByQuotationId(result.data.id, { notes: notesList });
+        }
         toast.success(t('quotation.create.success', 'Teklif Başarıyla Oluşturuldu'), {
           description: t('quotation.create.successMessage', 'Teklif onay sürecine gönderildi.'),
         });
@@ -337,6 +358,8 @@ export function QuotationCreateForm(): ReactElement {
                 <QuotationHeaderForm
                   exchangeRates={exchangeRates}
                   onExchangeRatesChange={setExchangeRates}
+                  quotationNotes={quotationNotes}
+                  onQuotationNotesChange={setQuotationNotes}
                   lines={lines}
                   onLinesChange={async () => {
                     const newCurrency = form.getValues('quotation.currency');

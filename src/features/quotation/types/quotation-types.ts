@@ -24,10 +24,53 @@ export const OfferType = {
 
 export type OfferType = typeof OfferType[keyof typeof OfferType];
 
+export interface QuotationNotesDto {
+  note1?: string;
+  note2?: string;
+  note3?: string;
+  note4?: string;
+  note5?: string;
+  note6?: string;
+  note7?: string;
+  note8?: string;
+  note9?: string;
+  note10?: string;
+  note11?: string;
+  note12?: string;
+  note13?: string;
+  note14?: string;
+  note15?: string;
+}
+
+export interface QuotationNotesGetDto {
+  id?: number;
+  quotationId: number;
+  note1?: string | null;
+  note2?: string | null;
+  note3?: string | null;
+  note4?: string | null;
+  note5?: string | null;
+  note6?: string | null;
+  note7?: string | null;
+  note8?: string | null;
+  note9?: string | null;
+  note10?: string | null;
+  note11?: string | null;
+  note12?: string | null;
+  note13?: string | null;
+  note14?: string | null;
+  note15?: string | null;
+}
+
+export interface UpdateQuotationNotesListDto {
+  notes?: string[];
+}
+
 export interface QuotationBulkCreateDto {
   quotation: CreateQuotationDto;
   lines: CreateQuotationLineDto[];
   exchangeRates?: QuotationExchangeRateCreateDto[];
+  quotationNotes?: QuotationNotesDto;
 }
 
 export interface CreateQuotationDto {

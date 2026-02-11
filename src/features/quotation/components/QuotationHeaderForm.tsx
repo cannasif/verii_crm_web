@@ -53,7 +53,8 @@ import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
 import { ExchangeRateDialog } from './ExchangeRateDialog';
-import { QuotationNotesDialog, type NoteLine } from './QuotationNotesDialog';
+import { QuotationNotesDialog } from './QuotationNotesDialog';
+import type { QuotationNotesDto } from '../types/quotation-types';
 import { 
   User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
@@ -68,6 +69,10 @@ import { cn } from '@/lib/utils';
 interface QuotationHeaderFormProps {
   exchangeRates?: QuotationExchangeRateFormState[];
   onExchangeRatesChange?: (rates: QuotationExchangeRateFormState[]) => void;
+  quotationNotes?: QuotationNotesDto;
+  onQuotationNotesChange?: (notes: QuotationNotesDto) => void;
+  onSaveNotes?: (notes: QuotationNotesDto) => Promise<void>;
+  isSavingNotes?: boolean;
   lines?: Array<{ productCode?: string | null; productName?: string | null }>;
   onLinesChange?: (lines: Array<{ productCode?: string | null; productName?: string | null }>) => void;
   initialCurrency?: string | number | null;
@@ -81,6 +86,10 @@ interface QuotationHeaderFormProps {
 export function QuotationHeaderForm({
   exchangeRates = [],
   onExchangeRatesChange,
+  quotationNotes = {},
+  onQuotationNotesChange,
+  onSaveNotes,
+  isSavingNotes = false,
   lines = [],
   onLinesChange,
   initialCurrency,
@@ -101,17 +110,16 @@ export function QuotationHeaderForm({
   const [customerComboboxOpen, setCustomerComboboxOpen] = useState(false);
   const [customerSearchQuery, setCustomerSearchQuery] = useState("");
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
-  const [noteLines, setNoteLines] = useState<NoteLine[]>(
-    Array.from({ length: 16 }, (_, i) => ({
-      id: i + 1,
-      text: "",
-      isSelected: false,
-    }))
-  );
   const isInitialLoadRef = useRef(true);
 
-  const handleRemoveNote = (id: number) => {
-    setNoteLines(prev => prev.map(n => n.id === id ? { ...n, isSelected: false } : n));
+  const filledNoteKeys = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).filter(
+    (k) => (quotationNotes[k] ?? '').trim().length > 0
+  );
+
+  const handleRemoveNote = (key: keyof QuotationNotesDto): void => {
+    if (onQuotationNotesChange) {
+      onQuotationNotesChange({ ...quotationNotes, [key]: '' });
+    }
   };
 
   const watchedCustomerId = form.watch('quotation.potentialCustomerId');
@@ -341,23 +349,26 @@ export function QuotationHeaderForm({
                           </FormLabel>
                         </div>
                         
-                        {/* Selected Notes Badges */}
-                        {noteLines.some(n => n.isSelected) && (
+                        {filledNoteKeys.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-2.5">
-                            {noteLines.filter(n => n.isSelected).map(note => (
+                            {filledNoteKeys.map((key, idx) => (
                               <Badge 
-                                key={note.id} 
+                                key={key} 
                                 variant="secondary" 
                                 className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 h-6 text-xs border border-purple-200 dark:border-purple-500/20"
                               >
-                                <span className="mr-1.5">{note.text || `${t('quotation.notes.noteLabel', 'Not')} ${note.id}`}</span>
-                                <button 
-                                  type="button"
-                                  onClick={() => handleRemoveNote(note.id)}
-                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
-                                >
-                                  <X className="h-3 w-3" />
-                                </button>
+                                <span className="mr-1.5 truncate max-w-[200px]">
+                                  {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel', 'Not')} ${idx + 1}`}
+                                </span>
+                                {!readOnly && onQuotationNotesChange && (
+                                  <button 
+                                    type="button"
+                                    onClick={() => handleRemoveNote(key)}
+                                    className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                )}
                               </Badge>
                             ))}
                           </div>
@@ -372,16 +383,18 @@ export function QuotationHeaderForm({
                               className="min-h-[46px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10"
                               disabled={readOnly}
                             />
-                            <Button 
-                              type="button"
-                              size="icon"
-                              variant="ghost"
-                              className="absolute right-1 top-1 h-7 w-7 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
-                              onClick={() => setNotesDialogOpen(true)}
-                              disabled={readOnly}
-                            >
-                              <ListPlus className="h-4 w-4" />
-                            </Button>
+                            {onQuotationNotesChange && (
+                              <Button 
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="absolute right-1 top-1 h-7 w-7 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+                                onClick={() => setNotesDialogOpen(true)}
+                                disabled={readOnly}
+                              >
+                                <ListPlus className="h-4 w-4" />
+                              </Button>
+                            )}
                           </div>
                         </FormControl>
                         <FormMessage className="mt-1" />
@@ -901,12 +914,16 @@ export function QuotationHeaderForm({
         />
       )}
 
-      <QuotationNotesDialog
-        open={notesDialogOpen}
-        onOpenChange={setNotesDialogOpen}
-        initialNotes={noteLines}
-        onSave={setNoteLines}
-      />
+      {onQuotationNotesChange && (
+        <QuotationNotesDialog
+          open={notesDialogOpen}
+          onOpenChange={setNotesDialogOpen}
+          value={quotationNotes}
+          onChange={onQuotationNotesChange}
+          onSaveAsync={onSaveNotes}
+          isSaving={isSavingNotes}
+        />
+      )}
 
       <Dialog open={currencyChangeDialogOpen} onOpenChange={setCurrencyChangeDialogOpen}>
         <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 p-0 overflow-hidden shadow-2xl">
