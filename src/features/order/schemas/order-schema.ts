@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { OfferType } from '@/types/offer-type';
 
 export const createOrderSchema = z.object({
   order: z.object({
@@ -15,9 +16,7 @@ export const createOrderSchema = z.object({
       .number()
       .nullable()
       .refine((v) => v != null && v >= 1, { message: 'Sipariş seri no seçilmelidir' }),
-    offerType: z.string({
-      message: 'Sipariş tipi seçilmelidir',
-    }),
+    offerType: z.enum([OfferType.YURTICI, OfferType.YURTDISI], { error: 'Teklif tipi seçilmelidir' }),
     offerDate: z.string().nullable().optional(),
     offerNo: z.string().max(50, 'Sipariş no en fazla 50 karakter olabilir').nullable().optional(),
     revisionNo: z.string().max(50, 'Revizyon no en fazla 50 karakter olabilir').nullable().optional(),

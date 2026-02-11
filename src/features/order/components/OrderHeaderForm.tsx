@@ -42,6 +42,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/stores/auth-store';
 import type { CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderExchangeRateFormState } from '../types/order-types';
+import { OfferType } from '@/types/offer-type';
 import { cn } from '@/lib/utils';
 
 interface OrderHeaderFormProps {
@@ -451,7 +452,7 @@ export function OrderHeaderForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>
-                      Sipariş Tipi <span className="text-pink-500 ml-0.5">*</span>
+                      {t('common.offerType.label', 'Teklif Tipi')} <span className="text-pink-500 ml-0.5">*</span>
                     </FormLabel>
                     <div className="relative">
                        <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
@@ -460,10 +461,10 @@ export function OrderHeaderForm({
                          value={field.value || ''}
                          onSelect={(value) => field.onChange(value)}
                          options={[
-                           { value: 'Domestic', label: t('order.offerType.domestic', 'Yurtiçi') },
-                           { value: 'Export', label: t('order.offerType.export', 'Yurtdışı') }
+                           { value: OfferType.YURTICI, label: t('common.offerType.yurtici', 'Yurtiçi') },
+                           { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi', 'Yurtdışı') }
                          ]}
-                         placeholder="Seçiniz"
+                         placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')}
                          searchPlaceholder={t('common.search', 'Ara...')}
                          disabled={readOnly}
                        />

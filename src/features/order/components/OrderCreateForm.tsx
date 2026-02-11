@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
+import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { orderNotesDtoToNotesList } from '../utils/notes-mapper';
@@ -51,7 +52,7 @@ export function OrderCreateForm(): ReactElement {
     resolver: zodResolver(createOrderSchema),
     defaultValues: {
       order: {
-        offerType: 'Domestic',
+        offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: user?.id || null,
@@ -157,7 +158,7 @@ export function OrderCreateForm(): ReactElement {
       }
 
       const orderData: CreateOrderDto = {
-        offerType: data.order.offerType,
+        offerType: normalizeOfferType(data.order.offerType),
         currency: currencyValue,
         potentialCustomerId: (data.order.potentialCustomerId && data.order.potentialCustomerId > 0) ? data.order.potentialCustomerId : null,
         erpCustomerCode: data.order.erpCustomerCode || null,

@@ -24,6 +24,7 @@ import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer'
 import { cn } from '@/lib/utils';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
+import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
 import { orderNotesGetDtoToDto, orderNotesDtoToNotesList } from '../utils/notes-mapper';
@@ -72,7 +73,7 @@ export function OrderDetailPage(): ReactElement {
     resolver: zodResolver(createOrderSchema),
     defaultValues: {
       order: {
-        offerType: 'Domestic',
+        offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: null,
@@ -100,7 +101,7 @@ export function OrderDetailPage(): ReactElement {
     if (order && !formInitializedRef.current) {
       form.reset({
         order: {
-          offerType: (order.offerType === 'Domestic' || order.offerType === 'Export' ? order.offerType : 'Domestic'),
+          offerType: normalizeOfferType(order.offerType),
           currency: order.currency || '',
           offerDate: order.offerDate ? order.offerDate.split('T')[0] : new Date().toISOString().split('T')[0],
           potentialCustomerId: order.potentialCustomerId || null,
