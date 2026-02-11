@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { OfferType } from '@/types/offer-type';
 
 export const createDemandSchema = z.object({
   demand: z.object({
@@ -15,9 +16,7 @@ export const createDemandSchema = z.object({
       .number()
       .nullable()
       .refine((v) => v != null && v >= 1, { message: 'Talep seri no seçilmelidir' }),
-    offerType: z.string({
-      message: 'Teklif tipi seçilmelidir',
-    }),
+    offerType: z.enum([OfferType.YURTICI, OfferType.YURTDISI], { error: 'Teklif tipi seçilmelidir' }),
     offerDate: z.string().nullable().optional(),
     offerNo: z.string().max(50, 'Teklif no en fazla 50 karakter olabilir').nullable().optional(),
     revisionNo: z.string().max(50, 'Revizyon no en fazla 50 karakter olabilir').nullable().optional(),

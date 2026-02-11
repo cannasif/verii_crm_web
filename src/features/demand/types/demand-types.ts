@@ -17,12 +17,7 @@ export const ApprovalStatus = {
 
 export type ApprovalStatus = typeof ApprovalStatus[keyof typeof ApprovalStatus];
 
-export const OfferType = {
-  Domestic: 'Domestic',
-  Export: 'Export',
-} as const;
-
-export type OfferType = typeof OfferType[keyof typeof OfferType];
+export { OfferType, type OfferTypeValue, DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 
 export interface DemandNotesGetDto {
   id?: number;

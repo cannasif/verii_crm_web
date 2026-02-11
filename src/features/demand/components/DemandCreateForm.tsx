@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import type { DemandLineFormState, DemandExchangeRateFormState, DemandBulkCreateDto, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/demand-types';
+import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { demandNotesDtoToNotesList } from '../utils/notes-mapper';
@@ -51,7 +52,7 @@ export function DemandCreateForm(): ReactElement {
     resolver: zodResolver(createDemandSchema),
     defaultValues: {
       demand: {
-        offerType: 'Domestic',
+        offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: user?.id || null,
@@ -157,7 +158,7 @@ export function DemandCreateForm(): ReactElement {
       }
 
       const demandData: CreateDemandDto = {
-        offerType: data.demand.offerType,
+        offerType: normalizeOfferType(data.demand.offerType),
         currency: currencyValue,
         potentialCustomerId: (data.demand.potentialCustomerId && data.demand.potentialCustomerId > 0) ? data.demand.potentialCustomerId : null,
         erpCustomerCode: data.demand.erpCustomerCode || null,

@@ -48,6 +48,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import type { CreateDemandSchema } from '../schemas/demand-schema';
+import { OfferType } from '@/types/offer-type';
 import type { DemandExchangeRateFormState } from '../types/demand-types';
 import { cn } from '@/lib/utils';
 
@@ -476,20 +477,20 @@ export function DemandHeaderForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>
-                      Teklif Tipi <span className="text-pink-500 ml-0.5">*</span>
+                      {t('common.offerType.label', 'Teklif Tipi')} <span className="text-pink-500 ml-0.5">*</span>
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value || ''} disabled={readOnly}>
                       <FormControl>
                          <div className="relative">
                             <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
                             <SelectTrigger className={styles.inputBase}>
-                              <SelectValue placeholder="Seçiniz" />
+                              <SelectValue placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')} />
                             </SelectTrigger>
                          </div>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Domestic">{t('demand.offerType.domestic', 'Yurtiçi')}</SelectItem>
-                        <SelectItem value="Export">{t('demand.offerType.export', 'Yurtdışı')}</SelectItem>
+                        <SelectItem value={OfferType.YURTICI}>{t('common.offerType.yurtici', 'Yurtiçi')}</SelectItem>
+                        <SelectItem value={OfferType.YURTDISI}>{t('common.offerType.yurtdisi', 'Yurtdışı')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage className="mt-1" />

@@ -24,6 +24,7 @@ import { DemandReportTab } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import type { DemandLineFormState, DemandExchangeRateFormState, DemandBulkCreateDto, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/demand-types';
+import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
 import { demandNotesGetDtoToDto, demandNotesDtoToNotesList } from '../utils/notes-mapper';
@@ -72,7 +73,7 @@ export function DemandDetailPage(): ReactElement {
     resolver: zodResolver(createDemandSchema),
     defaultValues: {
       demand: {
-        offerType: 'Domestic',
+        offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: null,
@@ -100,7 +101,7 @@ export function DemandDetailPage(): ReactElement {
     if (demand && !formInitializedRef.current) {
       form.reset({
         demand: {
-          offerType: (demand.offerType === 'Domestic' || demand.offerType === 'Export' ? demand.offerType : 'Domestic'),
+          offerType: normalizeOfferType(demand.offerType),
           currency: demand.currency || '',
           offerDate: demand.offerDate ? demand.offerDate.split('T')[0] : new Date().toISOString().split('T')[0],
           potentialCustomerId: demand.potentialCustomerId || null,
