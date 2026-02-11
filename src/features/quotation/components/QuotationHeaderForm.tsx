@@ -64,6 +64,7 @@ import {
 import { useAuthStore } from '@/stores/auth-store';
 import type { CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { QuotationExchangeRateFormState } from '../types/quotation-types';
+import { OfferType } from '@/types/offer-type';
 import { cn } from '@/lib/utils';
 
 interface QuotationHeaderFormProps {
@@ -676,14 +677,14 @@ export function QuotationHeaderForm({
               </div>
 
               <div className="space-y-4 flex-1">
-                <div className={cn("grid gap-4", watchedOfferType === 'Export' ? "grid-cols-2" : "grid-cols-1")}>
+                <div className={cn("grid gap-4", watchedOfferType === OfferType.YURTDISI ? "grid-cols-2" : "grid-cols-1")}>
                   <FormField
                     control={form.control}
                     name="quotation.offerType"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
-                          Teklif Tipi <span className="text-pink-500 ml-0.5">*</span>
+                          {t('common.offerType.label', 'Teklif Tipi')} <span className="text-pink-500 ml-0.5">*</span>
                         </FormLabel>
                         <div className="relative">
                            <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
@@ -692,10 +693,10 @@ export function QuotationHeaderForm({
                              value={field.value || ''}
                              onSelect={(value) => field.onChange(value)}
                              options={[
-                               { value: 'Domestic', label: t('quotation.offerType.domestic', 'Yurtiçi') },
-                               { value: 'Export', label: t('quotation.offerType.export', 'Yurtdışı') }
+                               { value: OfferType.YURTICI, label: t('common.offerType.yurtici', 'Yurtiçi') },
+                               { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi', 'Yurtdışı') }
                              ]}
-                             placeholder={t('quotation.select', 'Seçiniz')}
+                             placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')}
                              searchPlaceholder={t('common.search', 'Ara...')}
                              disabled={readOnly}
                            />
@@ -705,7 +706,7 @@ export function QuotationHeaderForm({
                     )}
                   />
 
-                  {watchedOfferType === 'Export' && (
+                  {watchedOfferType === OfferType.YURTDISI && (
                     <FormField
                       control={form.control}
                       name="quotation.deliveryMethod"

@@ -23,6 +23,7 @@ import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { formatCurrency } from '../utils/format-currency';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto } from '../types/quotation-types';
+import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import { createEmptyQuotationNotes } from './QuotationNotesDialog';
 import { mapQuotationNotesToPayload, quotationNotesDtoToNotesList } from '../utils/quotation-payload-mapper';
 import { quotationApi } from '../api/quotation-api';
@@ -59,7 +60,7 @@ export function QuotationCreateForm(): ReactElement {
     resolver: zodResolver(createQuotationSchema),
     defaultValues: {
       quotation: {
-        offerType: 'Domestic',
+        offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: user?.id || null,
@@ -164,7 +165,7 @@ export function QuotationCreateForm(): ReactElement {
       }
 
       const quotationData: CreateQuotationDto = {
-        offerType: data.quotation.offerType,
+        offerType: normalizeOfferType(data.quotation.offerType),
         currency: currencyValue,
         potentialCustomerId: (data.quotation.potentialCustomerId && data.quotation.potentialCustomerId > 0) ? data.quotation.potentialCustomerId : null,
         erpCustomerCode: data.quotation.erpCustomerCode || null,

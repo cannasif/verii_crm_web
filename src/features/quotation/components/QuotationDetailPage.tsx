@@ -31,6 +31,7 @@ import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer'
 import { cn } from '@/lib/utils';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto } from '../types/quotation-types';
+import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import { createEmptyQuotationNotes } from './QuotationNotesDialog';
 import { quotationNotesGetDtoToDto, quotationNotesDtoToNotesList } from '../utils/quotation-payload-mapper';
 import { QuotationHeaderForm } from './QuotationHeaderForm';
@@ -78,7 +79,7 @@ export function QuotationDetailPage(): ReactElement {
     resolver: zodResolver(createQuotationSchema),
     defaultValues: {
       quotation: {
-        offerType: 'Domestic',
+        offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
         representativeId: null,
@@ -106,7 +107,7 @@ export function QuotationDetailPage(): ReactElement {
     if (quotation && !formInitializedRef.current) {
       form.reset({
         quotation: {
-          offerType: (quotation.offerType === 'Domestic' || quotation.offerType === 'Export' ? quotation.offerType : 'Domestic'),
+          offerType: normalizeOfferType(quotation.offerType),
           currency: quotation.currency || '',
           offerDate: quotation.offerDate ? quotation.offerDate.split('T')[0] : new Date().toISOString().split('T')[0],
           potentialCustomerId: quotation.potentialCustomerId || null,
