@@ -67,6 +67,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/title-management': 'definitions.title-management.view',
   '/payment-type-management': 'definitions.payment-type-management.view',
   '/document-serial-type-management': 'definitions.document-serial-type-management.view',
+  '/definitions/sales-type-management': 'definitions.sales-type-management.view',
 
   '/user-management': 'admin-only',
   '/user-discount-limit-management': 'users.discount-limits.view',
@@ -133,6 +134,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/title-management(\/|$)/, permission: 'definitions.title-management.view' },
   { pattern: /^\/payment-type-management(\/|$)/, permission: 'definitions.payment-type-management.view' },
   { pattern: /^\/document-serial-type-management(\/|$)/, permission: 'definitions.document-serial-type-management.view' },
+  { pattern: /^\/definitions\/sales-type-management(\/|$)/, permission: 'definitions.sales-type-management.view' },
 
   { pattern: /^\/user-discount-limit-management(\/|$)/, permission: 'users.discount-limits.view' },
 ];
@@ -215,6 +217,7 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key: string; fallback: st
   'definitions.title-management.view': { key: 'sidebar.titleManagement', fallback: 'Unvan Yonetimi' },
   'definitions.payment-type-management.view': { key: 'sidebar.paymentTypeManagement', fallback: 'Odeme Tipi Yonetimi' },
   'definitions.document-serial-type-management.view': { key: 'sidebar.documentSerialTypeManagement', fallback: 'Dosya Tip Yonetimi' },
+  'definitions.sales-type-management.view': { key: 'sidebar.salesTypeManagement', fallback: 'Satis Tipi Yonetimi' },
 
   'users.discount-limits.view': { key: 'sidebar.userDiscountLimitManagement', fallback: 'Kullanici Iskonto Limit Yonetimi' },
 };
