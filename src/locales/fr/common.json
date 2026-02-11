@@ -17,6 +17,13 @@
     "back": "Retour",
     "optional": "Optionnel",
     "required": "Requis",
+    "offerType": {
+      "label": "Type d'offre",
+      "yurtici": "National",
+      "yurtdisi": "Export",
+      "selectPlaceholder": "Sélectionner le type d'offre",
+      "requiredMessage": "Le type d'offre est requis"
+    },
     "notFound": "Introuvable",
     "noData": "Aucune donnée",
     "noResults": "Aucun résultat trouvé",

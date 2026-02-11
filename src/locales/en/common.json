@@ -18,6 +18,13 @@
     "back": "Back",
     "optional": "Optional",
     "required": "Required",
+    "offerType": {
+      "label": "Offer Type",
+      "yurtici": "Domestic",
+      "yurtdisi": "Export",
+      "selectPlaceholder": "Select offer type",
+      "requiredMessage": "Offer type is required"
+    },
     "notFound": "Not Found",
     "noData": "No Data",
     "noResults": "No results found",

@@ -18,6 +18,13 @@
     "back": "Indietro",
     "optional": "Opzionale",
     "required": "Obbligatorio",
+    "offerType": {
+      "label": "Tipo di offerta",
+      "yurtici": "Nazionale",
+      "yurtdisi": "Export",
+      "selectPlaceholder": "Seleziona tipo di offerta",
+      "requiredMessage": "Il tipo di offerta è obbligatorio"
+    },
     "notFound": "Non trovato",
     "noData": "Nessun dato",
     "noResults": "Nessun risultato trovato",

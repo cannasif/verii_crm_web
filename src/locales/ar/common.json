@@ -18,6 +18,13 @@
     "back": "رجوع",
     "optional": "اختياري",
     "required": "مطلوب",
+    "offerType": {
+      "label": "نوع العرض",
+      "yurtici": "محلي",
+      "yurtdisi": "تصدير",
+      "selectPlaceholder": "اختر نوع العرض",
+      "requiredMessage": "نوع العرض مطلوب"
+    },
     "notFound": "غير موجود",
     "noData": "لا توجد بيانات",
     "noResults": "لم يتم العثور على نتائج",

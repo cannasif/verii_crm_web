@@ -18,6 +18,13 @@
     "back": "Geri",
     "optional": "Opsiyonel",
     "required": "Zorunlu",
+    "offerType": {
+      "label": "Teklif Tipi",
+      "yurtici": "Yurtiçi",
+      "yurtdisi": "Yurtdışı",
+      "selectPlaceholder": "Teklif tipi seçin",
+      "requiredMessage": "Teklif tipi seçilmelidir"
+    },
     "notFound": "Bulunamadı",
     "noData": "Veri yok",
     "noResults": "Sonuç bulunamadı",

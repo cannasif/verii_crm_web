@@ -17,6 +17,13 @@
     "back": "Back",
     "optional": "Optional",
     "required": "Erforderlich",
+    "offerType": {
+      "label": "Angebotstyp",
+      "yurtici": "Inland",
+      "yurtdisi": "Export",
+      "selectPlaceholder": "Angebotstyp auswählen",
+      "requiredMessage": "Angebotstyp ist erforderlich"
+    },
     "notFound": "Nicht gefunden",
     "noData": "Keine Daten",
     "noResults": "Keine Ergebnisse gefunden",
