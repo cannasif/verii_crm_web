@@ -62,6 +62,8 @@ export interface CreateDemandDto {
   documentSerialTypeId?: number | null;
   offerType: string;
   deliveryMethod?: string | null;
+  salesTypeDefinitionId?: number | null;
+  erpProjectCode?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;
   revisionNo?: string | null;
@@ -92,6 +94,7 @@ export interface CreateDemandLineDto {
   description?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
+  erpProjectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -118,6 +121,7 @@ export interface UpdateDemandLineDto {
   description?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
+  erpProjectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -146,6 +150,7 @@ export interface DemandLineGetDto {
   description?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
+  erpProjectCode?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -180,6 +185,9 @@ export interface DemandGetDto {
   documentSerialTypeId?: number | null;
   offerType: string;
   deliveryMethod?: string | null;
+  salesTypeDefinitionId?: number | null;
+  salesTypeDefinitionName?: string | null;
+  erpProjectCode?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;
   revisionNo?: string | null;

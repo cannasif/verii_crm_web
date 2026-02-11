@@ -134,6 +134,7 @@ export function DemandCreateForm(): ReactElement {
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
           projectCode: cleanLineData.projectCode || null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
+          erpProjectCode: cleanLineData.projectCode ?? null,
         };
       });
 
@@ -176,7 +177,8 @@ export function DemandCreateForm(): ReactElement {
         revisionId: (data.demand.revisionId && data.demand.revisionId > 0) ? data.demand.revisionId : null,
         generalDiscountRate: data.demand.generalDiscountRate ?? null,
         generalDiscountAmount: data.demand.generalDiscountAmount ?? null,
-        deliveryMethod: data.demand.deliveryMethod ?? null,
+        salesTypeDefinitionId: data.demand.deliveryMethod ? Number(data.demand.deliveryMethod) : null,
+        erpProjectCode: data.demand.projectCode ?? null,
       };
 
       const payload: DemandBulkCreateDto = {

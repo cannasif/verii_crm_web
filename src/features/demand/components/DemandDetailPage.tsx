@@ -99,6 +99,16 @@ export function DemandDetailPage(): ReactElement {
 
   useEffect(() => {
     if (demand && !formInitializedRef.current) {
+      const raw = demand as unknown as Record<string, unknown>;
+      const salesTypeId = demand.salesTypeDefinitionId ?? raw.SalesTypeDefinitionId;
+      const deliveryMethodFromApi = demand.deliveryMethod ?? raw.DeliveryMethod;
+      const deliveryMethodValue =
+        salesTypeId != null && salesTypeId !== ''
+          ? String(salesTypeId)
+          : deliveryMethodFromApi != null && deliveryMethodFromApi !== ''
+            ? String(deliveryMethodFromApi)
+            : null;
+      const projectCodeValue = demand.erpProjectCode ?? demand.projectCode ?? (raw.ErpProjectCode as string) ?? (raw.ProjectCode as string) ?? null;
       form.reset({
         demand: {
           offerType: normalizeOfferType(demand.offerType),
@@ -109,7 +119,7 @@ export function DemandDetailPage(): ReactElement {
           deliveryDate: demand.deliveryDate ? demand.deliveryDate.split('T')[0] : null,
           shippingAddressId: demand.shippingAddressId || null,
           representativeId: demand.representativeId || null,
-          projectCode: demand.projectCode || null,
+          projectCode: projectCodeValue,
           status: demand.status || null,
           description: demand.description || null,
           paymentTypeId: demand.paymentTypeId || null,
@@ -119,7 +129,7 @@ export function DemandDetailPage(): ReactElement {
           revisionId: demand.revisionId || null,
           generalDiscountRate: demand.generalDiscountRate ?? null,
           generalDiscountAmount: demand.generalDiscountAmount ?? null,
-          deliveryMethod: demand.deliveryMethod ?? null,
+          deliveryMethod: deliveryMethodValue,
         },
       });
       formInitializedRef.current = true;
@@ -266,6 +276,7 @@ export function DemandDetailPage(): ReactElement {
           description: cleanLineData.description || null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
+          erpProjectCode: cleanLineData.projectCode ?? null,
         };
       });
 
@@ -308,7 +319,8 @@ export function DemandDetailPage(): ReactElement {
         revisionId: (data.demand.revisionId && data.demand.revisionId > 0) ? data.demand.revisionId : null,
         generalDiscountRate: data.demand.generalDiscountRate ?? null,
         generalDiscountAmount: data.demand.generalDiscountAmount ?? null,
-        deliveryMethod: data.demand.deliveryMethod ?? null,
+        salesTypeDefinitionId: data.demand.deliveryMethod ? Number(data.demand.deliveryMethod) : null,
+        erpProjectCode: data.demand.projectCode ?? null,
       };
 
       const payload: DemandBulkCreateDto = {
