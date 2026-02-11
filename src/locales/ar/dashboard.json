@@ -1,6 +1,18 @@
 {
   "title": "لوحة التحكم",
   "loading": "جاري التحميل",
+  "refresh": "تحديث",
+  "refreshing": "جاري التحديث...",
+  "refreshed": "تم تحديث البيانات",
+  "refreshError": "فشل التحديث",
+  "user": "مستخدم",
+  "noSalesData": "لا توجد بيانات مبيعات بعد",
+  "noActivities": "لم يتم العثور على أنشطة بعد",
+  "greeting": {
+    "morning": "صباح الخير",
+    "afternoon": "طاب يومك",
+    "evening": "مساء الخير"
+  },
   "stats": {
     "totalRevenue": "إجمالي الإيرادات",
     "activeOpportunities": "الفرص النشطة",
@@ -41,6 +53,14 @@
     "criticalStock": "المخزون الحرج",
     "criticalStockDescription": "3 منتجات أقل من المستوى الحرج"
   },
-  "noDate": "No date",
-  "unnamedActivity": "Unnamed Activity"
+  "sidebar": {
+    "customers": "العملاء",
+    "customerManagement": "إدارة العملاء",
+    "salesManagement": "قمع المبيعات",
+    "demandCreateWizard": "إنشاء طلب جديد",
+    "quotationCreateWizard": "إنشاء عرض سعر جديد",
+    "orderCreateWizard": "إنشاء طلب جديد",
+    "activities": "التخطيط",
+    "activityManagement": "إدارة الأنشطة"
+  }
 }

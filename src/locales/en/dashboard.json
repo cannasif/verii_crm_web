@@ -1,6 +1,22 @@
 {
   "title": "Dashboard",
-  "loading": "Loading",
+  "loading": "Loading...",
+  "greeting": {
+    "morning": "Good Morning",
+    "afternoon": "Good Afternoon",
+    "evening": "Good Evening"
+  },
+  "refresh": "Refresh",
+  "refreshing": "Refreshing...",
+  "refreshed": "Data updated",
+  "refreshError": "Update failed",
+  "user": "User",
+  "noSalesData": "No sales data yet",
+  "noActivities": "No activities found yet",
+  "selectFormat": "Select Format",
+  "reportPreparing": "report is being prepared...",
+  "reportDownloaded": "report downloaded.",
+  "reportError": "Could not retrieve report.",
   "stats": {
     "totalRevenue": "Total Revenue",
     "activeOpportunities": "Active Opportunities",
@@ -37,10 +53,20 @@
   },
   "quickStats": {
     "pendingTasks": "Pending Tasks",
-    "pendingTasksDescription": "12 tasks to complete",
+    "checkTasks": "Check the task list",
     "openQuotations": "Open Quotations",
-    "openQuotationsDescription": "5 quotations pending approval",
+    "reviewQuotations": "Review quotations",
     "criticalStock": "Critical Stock",
-    "criticalStockDescription": "3 products below critical level"
+    "stockStatus": "See stock status"
+  },
+  "sidebar": {
+    "customers": "Customers",
+    "customerManagement": "Customer Management",
+    "salesManagement": "Sales Funnel",
+    "demandCreateWizard": "Create New Demand",
+    "quotationCreateWizard": "Create New Quotation",
+    "orderCreateWizard": "Create New Order",
+    "activities": "Planning",
+    "activityManagement": "Activity Management"
   }
 }

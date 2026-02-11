@@ -7,6 +7,7 @@ import i18n from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -21,10 +22,23 @@ import {
   MoreHorizontal,
   CalendarDays,
   Activity,
-  Download,
   RefreshCcw,
-  BarChart3
+  BarChart3,
+  UserPlus,
+  FilePlus,
+  ShoppingBag,
+  PlusCircle,
+  CalendarPlus
 } from 'lucide-react';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type CardWrapperProps = {
   children: ReactNode;
@@ -39,19 +53,19 @@ function CardWrapper({ children, className = '', noPadding = false, onClick, int
     <div
       onClick={onClick}
       className={cn(
-        "relative overflow-hidden bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-2xl shadow-sm",
-        "transition-all duration-300 ease-out transform-gpu backface-hidden will-change-transform",
+        "bg-white dark:bg-[#120c18] border border-slate-200 dark:border-white/5 rounded-xl shadow-sm",
+        "flex flex-col relative overflow-hidden",
         interactive && [
-            "cursor-pointer group",
-            "hover:border-pink-500/50 dark:hover:border-pink-500/50",
-            "hover:shadow-[0_0_20px_rgba(236,72,153,0.15)]",
+            "cursor-pointer transition-all duration-300 ease-out",
+            "hover:shadow-lg hover:shadow-pink-500/10 hover:-translate-y-0.5",
+            "hover:border-pink-500/30 dark:hover:border-pink-500/30",
             "active:scale-[0.99]",
         ],
         noPadding ? 'p-0' : 'p-6',
         className
       )}
     >
-      <div className="relative z-10 h-full">
+      <div className="relative z-10 h-full w-full">
         {children}
       </div>
     </div>
@@ -59,14 +73,14 @@ function CardWrapper({ children, className = '', noPadding = false, onClick, int
 }
 
 export function DashboardPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('dashboard');
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   
-  const { data, isLoading, refetch } = useDashboardQuery(); 
+  const { data, isLoading, refetch, isRefetching } = useDashboardQuery(); 
   
-  const [greeting, setGreeting] = useState('');
+  const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [chartMenuOpen, setChartMenuOpen] = useState(false);
   const chartMenuRef = useRef<HTMLDivElement>(null);
 
@@ -82,22 +96,25 @@ export function DashboardPage(): ReactElement {
 
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour < 12) setGreeting(t('dashboard.morning', 'Günaydın'));
-    else if (hour < 18) setGreeting(t('dashboard.afternoon', 'İyi Günler'));
-    else setGreeting(t('dashboard.evening', 'İyi Akşamlar'));
-  }, [t]);
+    if (hour < 12) setTimeOfDay('morning');
+    else if (hour < 18) setTimeOfDay('afternoon');
+    else setTimeOfDay('evening');
+  }, []);
 
   useEffect(() => {
-    setPageTitle(t('dashboard.title', 'Dashboard'));
+    setPageTitle(t('title'));
     return () => {
       setPageTitle(null);
     };
   }, [t, setPageTitle]);
 
   const getUserDisplayName = (): string => {
-    if (!user) return t('dashboard.user', 'Kullanıcı');
-    return user.name || user.email || t('dashboard.user', 'Kullanıcı');
+    if (!user) return t('user');
+    return user.name || user.email || t('user');
   };
+
+  const displayName = getUserDisplayName();
+  const firstName = displayName.trim().split(' ')[0];
 
   const formatCurrency = (amount: number | undefined | null): string => {
     const val = amount || 0;
@@ -113,12 +130,22 @@ export function DashboardPage(): ReactElement {
     return now.toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
   };
 
+  const handleRefresh = async () => {
+    const toastId = toast.loading(t('refreshing'));
+    try {
+        await refetch();
+        toast.success(t('refreshed'), { id: toastId });
+    } catch (error) {
+        toast.error(t('refreshError'), { id: toastId });
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex flex-col items-center gap-3">
-            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-pink-500" />
-            <p className="text-sm text-slate-500 dark:text-slate-400">{t('dashboard.loading', 'Yükleniyor...')}</p>
+      <div className="flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center gap-4">
+            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-pink-600" />
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('loading')}</p>
         </div>
       </div>
     );
@@ -129,40 +156,40 @@ export function DashboardPage(): ReactElement {
 
   const stats = [
     {
-      l: t('dashboard.stats.totalRevenue', 'Toplam Ciro'),
+      l: t('stats.totalRevenue'),
       v: formatCurrency(kpis?.monthlyRevenue),
       c: kpis?.monthlyRevenueChange ? `${kpis.monthlyRevenueChange}%` : '0%',
       p: (kpis?.monthlyRevenueChange ?? 0) >= 0 ? 1 : 0,
       i: Wallet,
       color: 'text-blue-600 dark:text-blue-400',
-      bg: 'bg-blue-50 dark:bg-blue-500/10',
+      bg: 'bg-blue-50 dark:bg-blue-500/20',
     },
     {
-      l: t('dashboard.stats.activeOpportunities', 'Aktif Fırsatlar'),
+      l: t('stats.activeOpportunities'),
       v: kpis?.activeAgreements ? String(kpis.activeAgreements) : '0',
       c: kpis?.activeAgreementsChange ? `${kpis.activeAgreementsChange}%` : '0%',
       p: (kpis?.activeAgreementsChange ?? 0) >= 0 ? 1 : 0,
       i: Users,
-      color: 'text-purple-600 dark:text-purple-400',
-      bg: 'bg-purple-50 dark:bg-purple-500/10',
+      color: 'text-violet-600 dark:text-violet-400',
+      bg: 'bg-violet-50 dark:bg-violet-500/20',
     },
     {
-      l: t('dashboard.stats.newLeads', 'Yeni Müşteriler'),
+      l: t('stats.newLeads'),
       v: kpis && 'newLeads' in kpis ? String(kpis.newLeads) : '0', 
       c: '0%', 
       p: 1,
       i: Users,
       color: 'text-pink-600 dark:text-pink-400',
-      bg: 'bg-pink-50 dark:bg-pink-500/10',
+      bg: 'bg-pink-50 dark:bg-pink-500/20',
     },
     {
-      l: t('dashboard.stats.pendingOrders', 'Bekleyen Sipariş'),
+      l: t('stats.pendingOrders'),
       v: kpis && 'pendingOrders' in kpis ? String(kpis.pendingOrders) : '0',
       c: '0%', 
       p: 0,
       i: ShoppingCart,
       color: 'text-orange-600 dark:text-orange-400',
-      bg: 'bg-orange-50 dark:bg-orange-500/10',
+      bg: 'bg-orange-50 dark:bg-orange-500/20',
     },
   ];
 
@@ -170,252 +197,324 @@ export function DashboardPage(): ReactElement {
 
   const deals = activities.slice(0, 5).map((activity) => {
     const title = typeof activity.title === 'string' ? activity.title : '';
-    const subject = typeof activity.subject === 'string' ? activity.subject : '';
-    const konu = typeof activity.konu === 'string' ? activity.konu : '';
     const description = typeof activity.description === 'string' ? activity.description : '';
     const type = typeof activity.type === 'string' ? activity.type : '';
     const timeAgo = typeof activity.timeAgo === 'string' ? activity.timeAgo : '';
     const createdAt = typeof activity.createdAt === 'string' ? activity.createdAt : '';
     const amount = typeof activity.amount === 'number' ? activity.amount : null;
     return {
-      c: title || subject || konu || description || t('dashboard.unnamedActivity', 'İsimsiz Aktivite'),
+      c: title || description || t('unnamedActivity'),
       a: amount !== null ? formatCurrency(amount) : '',
-      s: t(`dashboard.activityType.${type}`) || type || t('dashboard.activityType.general', 'Genel'),
-      d: timeAgo || (createdAt ? new Date(createdAt).toLocaleDateString(i18n.language) : t('dashboard.noDate', 'Tarih yok')),
+      s: t(`activityType.${type}`) || type || t('activityType.general'),
+      d: timeAgo || (createdAt ? new Date(createdAt).toLocaleDateString(i18n.language) : t('noDate')),
     };
   });
-
-  const handleDownloadReport = () => {
-  };
-
-  const handleQuickAction = () => {
-    navigate('/demands/create');
-  };
 
   const hasChartData = false; 
   const chartData = Array(12).fill(0);
 
   return (
-    <div className="flex flex-col h-full gap-4 overflow-hidden">
+    <div className="flex flex-col h-full gap-6 p-4 md:p-8 overflow-x-hidden overflow-y-auto w-full">
       
-      {/* Header - Fixed */}
-      <div className="flex-none flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors flex flex-col items-start sm:flex-row sm:items-center sm:gap-x-2">
-            <span>{greeting},</span>
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-orange-500">
-              {getUserDisplayName()}
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+            <span>{t(`greeting.${timeOfDay}`)},</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-orange-500">
+              <span className="md:hidden">{firstName}</span>
+              <span className="hidden md:inline">{displayName}</span>
             </span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors flex items-center gap-2">
-            <CalendarDays size={14} />
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium flex items-center gap-2">
+            <CalendarDays size={15} />
             {formatDate()}
           </p>
         </div>
         
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-3">
             <Button 
                 variant="outline"
-                size="sm"
-                onClick={handleDownloadReport}
-                className="bg-white/50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 shrink-0 hover:bg-white dark:hover:bg-white/10 hover:border-pink-200 dark:hover:border-pink-500/30 transition-all duration-300"
+                onClick={handleRefresh}
+                disabled={isRefetching}
+                className={cn(
+                  "bg-white dark:bg-[#120c18] border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 h-10 shadow-sm min-w-[100px] transition-all duration-300",
+                  "hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:border-pink-200 dark:hover:border-pink-500/30 hover:text-pink-600 dark:hover:text-pink-400",
+                  "group"
+                )}
             >
-                <Download size={14} className="mr-2" />
-                {t('dashboard.reportDownload', 'Rapor İndir')}
+                <RefreshCcw size={16} className={cn("mr-2 transition-colors group-hover:text-pink-600 dark:group-hover:text-pink-400", isRefetching && "animate-spin")} />
+                {isRefetching ? t('refreshing') : t('refresh')}
             </Button>
-            <Button 
-                size="sm"
-                onClick={handleQuickAction}
-                className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 shadow-md hover:shadow-lg hover:shadow-pink-500/20 active:scale-95 transition-all duration-300 shrink-0"
-            >
-                <Zap size={14} className="mr-2" />
-                {t('dashboard.quickAction', 'Hızlı İşlem')}
-            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                    className="bg-gradient-to-r from-pink-600 to-orange-600 text-white border-0 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 hover:scale-[1.02] transition-all h-10 px-6"
+                >
+                    <Zap size={16} className="mr-2" />
+                    {t('quickAction')}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-[#120c18] border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-1.5">
+                
+                <DropdownMenuLabel className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 opacity-70">
+                  {t('sidebar.customers')}
+                </DropdownMenuLabel>
+                
+                <DropdownMenuItem 
+                  onClick={() => navigate('/customer-management')} 
+                  className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-pink-50 dark:hover:bg-pink-500/10 focus:bg-pink-50 dark:focus:bg-pink-500/10 outline-none"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                        <UserPlus size={16} />
+                    </div>
+                    <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                        {t('sidebar.customerManagement')}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="bg-slate-100 dark:bg-white/5 my-1" />
+
+                <DropdownMenuLabel className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 opacity-70">
+                  {t('sidebar.salesManagement')}
+                </DropdownMenuLabel>
+
+                <DropdownMenuItem 
+                  onClick={() => navigate('/demands/create')} 
+                  className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-pink-50 dark:hover:bg-pink-500/10 focus:bg-pink-50 dark:focus:bg-pink-500/10 outline-none"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                        <PlusCircle size={16} />
+                    </div>
+                    <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                        {t('sidebar.demandCreateWizard')}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  onClick={() => navigate('/quotations/create')} 
+                  className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 focus:bg-pink-50 dark:focus:bg-pink-500/10 outline-none"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                        <FilePlus size={16} />
+                    </div>
+                    <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                        {t('sidebar.quotationCreateWizard')}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  onClick={() => navigate('/orders/create')} 
+                  className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 focus:bg-pink-50 dark:focus:bg-pink-500/10 outline-none"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                        <ShoppingBag size={16} />
+                    </div>
+                    <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                        {t('sidebar.orderCreateWizard')}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="bg-slate-100 dark:bg-white/5 my-1" />
+
+                <DropdownMenuLabel className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 opacity-70">
+                  {t('sidebar.activities')}
+                </DropdownMenuLabel>
+
+                <DropdownMenuItem 
+                  onClick={() => navigate('/activity-management')} 
+                  className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 focus:bg-pink-50 dark:focus:bg-pink-500/10 outline-none"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                        <CalendarPlus size={16} />
+                    </div>
+                    <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                        {t('sidebar.activityManagement')}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+
+              </DropdownMenuContent>
+            </DropdownMenu>
         </div>
       </div>
 
-      {/* KPI Cards - Fixed Height */}
-      <div className="flex-none grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 h-[140px] shrink-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 shrink-0">
         {stats.map((s, i) => (
           <CardWrapper 
             key={i} 
             interactive={false} 
-            className="flex flex-col justify-between h-full"
+            className="min-h-[180px]"
           >
-            <div className="flex justify-between items-start mb-3">
-              <div className={`p-3 rounded-xl ${s.bg} ${s.color} shadow-sm`}>
-                <s.i size={22} />
+            <div className="flex flex-col justify-between h-full">
+              <div className="flex justify-between items-start">
+                <div className={`p-3.5 rounded-xl ${s.bg} ${s.color}`}>
+                  <s.i size={24} />
+                </div>
+                {s.c !== '0%' && (
+                  <span className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border ${s.p ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' : 'bg-red-50 text-red-600 border-red-100 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'}`}>
+                    {s.p ? <ArrowUpRight size={12} strokeWidth={3} /> : <ArrowDownRight size={12} strokeWidth={3} />}
+                    {s.c}
+                  </span>
+                )}
               </div>
-              {s.c !== '0%' && (
-                <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${s.p ? 'bg-green-50 text-green-600 border-green-100 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20' : 'bg-red-50 text-red-600 border-red-100 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'}`}>
-                  {s.p ? <ArrowUpRight size={10} strokeWidth={3} /> : <ArrowDownRight size={10} strokeWidth={3} />}
-                  {s.c}
-                </span>
-              )}
-            </div>
-            <div>
-              <h3 className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">{s.l}</h3>
-              <p 
-                className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-white mt-1 tracking-tight truncate" 
-                title={s.v}
-              >
-                {s.v}
-              </p>
+              
+              <div>
+                <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wide">{s.l}</h3>
+                <p 
+                  className="text-3xl font-bold text-slate-900 dark:text-white mt-2 truncate font-sans" 
+                  title={s.v}
+                >
+                  {s.v}
+                </p>
+              </div>
             </div>
           </CardWrapper>
         ))}
       </div>
 
-      {/* Middle Section - Flex 1 to Fill Remaining Space */}
-      <div className="flex-1 min-h-0 grid grid-cols-12 gap-4">
+      <div className="grid grid-cols-12 gap-6 min-h-[400px]">
         
-        {/* Left: Sales Analysis (8 cols) */}
-        <CardWrapper className="col-span-12 lg:col-span-8 flex flex-col h-full p-0 overflow-hidden">
-            <div className="p-6 pb-0 flex justify-between items-center z-30 relative shrink-0">
+        <CardWrapper className="col-span-12 lg:col-span-8 p-0 overflow-hidden min-h-[400px]">
+            <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#120c18] shrink-0">
                 <div>
                     <h3 className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
-                        <TrendingUp size={18} className="text-pink-500" />
-                        {t('dashboard.salesAnalysis', 'Satış Analizi')}
+                        <TrendingUp size={20} className="text-pink-500" />
+                        {t('salesAnalysis')}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1">{t('dashboard.targetVsActual', 'Hedef ve Gerçekleşen')}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 ml-7">{t('targetVsActual')}</p>
                 </div>
                 
                 <div className="relative" ref={chartMenuRef}>
-                    <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-white"
-                        onClick={() => setChartMenuOpen(!chartMenuOpen)}
-                    >
-                        <MoreHorizontal size={16} />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-white" onClick={() => setChartMenuOpen(!chartMenuOpen)}>
+                        <MoreHorizontal size={18} />
                     </Button>
                     {chartMenuOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-[#1a1025] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-50 py-1">
-                            <button 
-                                onClick={() => { refetch(); setChartMenuOpen(false); }} 
-                                className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 flex items-center gap-2"
-                            >
-                                <RefreshCcw size={14} /> Yenile
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1a1025] border border-slate-200 dark:border-white/10 rounded-lg shadow-xl z-50 py-1">
+                            <button onClick={() => { refetch(); setChartMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 flex items-center gap-2">
+                                <RefreshCcw size={14} /> {t('refresh')}
                             </button>
                         </div>
                     )}
                 </div>
             </div>
             
-            <div className="flex-1 w-full relative min-h-0">
-                
-                {!hasChartData && (
-                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/60 dark:bg-[#0c0516]/60 backdrop-blur-sm pt-12 gap-6">
-                            <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-full shadow-sm border border-slate-100 dark:border-white/5">
-                            <BarChart3 size={32} className="text-slate-300 dark:text-slate-600" />
+            <div className="relative flex-1 w-full bg-white dark:bg-[#120c18] h-[340px] flex flex-col">
+                {!hasChartData ? (
+                    <div className="flex-1 w-full flex flex-col items-center justify-center gap-4">
+                            <div className="bg-slate-50 dark:bg-white/5 p-5 rounded-full border border-slate-100 dark:border-white/5">
+                                <BarChart3 size={36} className="text-slate-300 dark:text-slate-500" />
                             </div>
-                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Henüz satış verisi oluşmadı</p>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('noSalesData')}</p>
                     </div>
-                )}
-
-                <div className="w-full h-full overflow-hidden px-6 pb-4 pt-4">
-                    <div className="flex items-end justify-between gap-3 w-full h-full">
+                ) : (
+                    <div className="w-full h-full px-8 pb-6 pt-8 flex items-end justify-between gap-4">
                         {monthKeys.map((key, i) => {
                             const height = hasChartData ? chartData[i] : 0; 
-                            
                             return (
-                                <div key={i} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
-                                    <div className="w-full h-full flex items-end justify-center relative">
-                                        <div className="absolute bottom-0 w-full h-full bg-slate-100 dark:bg-white/5 rounded-t-sm mx-1" />
+                                <div key={i} className="flex-1 flex flex-col items-center gap-3 h-full justify-end group">
+                                    <div className="w-full h-full flex items-end justify-center relative bg-slate-50 dark:bg-white/5 rounded-t-lg transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10">
                                         <div
                                             style={{ height: `${height}%` }} 
-                                            className="w-full mx-1 bg-linear-to-t from-pink-600 to-orange-400 opacity-90 rounded-t-sm relative z-10"
+                                            className="w-full mx-1 bg-gradient-to-t from-pink-600 to-orange-400 opacity-90 rounded-t-md shadow-[0_0_15px_rgba(236,72,153,0.3)]"
                                         />
                                     </div>
-                                    <span className="text-[10px] font-medium text-slate-400 uppercase">
-                                        {t(`dashboard.monthsShort.${key}`).substring(0, 3)}
+                                    <span className="text-xs font-semibold text-slate-400 uppercase">
+                                        {t(`monthsShort.${key}`).substring(0, 3)}
                                     </span>
                                 </div>
                             );
                         })}
                     </div>
-                </div>
+                )}
             </div>
         </CardWrapper>
 
-        {/* Right: Latest Activities (4 cols) */}
-        <CardWrapper className="col-span-12 lg:col-span-4 h-full flex flex-col p-0 overflow-hidden">
-            <div className="p-5 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-slate-50/30 dark:bg-white/5 shrink-0">
-                <h3 className="text-md font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <Activity size={16} className="text-orange-500" />
-                    {t('dashboard.latestActivities', 'Son Aktiviteler')}
+        <CardWrapper className="col-span-12 lg:col-span-4 p-0 overflow-hidden min-h-[400px]">
+            <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#120c18] shrink-0">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <Activity size={20} className="text-orange-500" />
+                    {t('latestActivities')}
                 </h3>
                 <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={() => navigate('/activity-management')} 
-                    className="text-xs text-pink-600 h-7 px-2 hover:bg-pink-50 dark:hover:bg-pink-500/10"
+                    className="text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-500/10 px-3 py-1 h-auto"
                 >
-                    {t('dashboard.viewAll', 'Tümü')}
+                    {t('viewAll')}
                 </Button>
             </div>
             
-            <div className="flex-1 flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex-1 w-full bg-white dark:bg-[#120c18] h-[340px] overflow-y-auto flex flex-col">
                 {deals.length > 0 ? (
-                    <div className="p-4 space-y-3">
+                    <div className="p-4 space-y-2">
                         {deals.map((d, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent hover:border-slate-100 dark:hover:border-white/5 transition-all cursor-default">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-xs font-bold border ${
+                            <div key={i} className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-white/5 cursor-default group">
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-transform group-hover:scale-105 ${
                                         i % 2 === 0
                                             ? 'bg-pink-50 border-pink-100 text-pink-600 dark:bg-pink-500/10 dark:border-pink-500/20 dark:text-pink-400'
                                             : 'bg-orange-50 border-orange-100 text-orange-600 dark:bg-orange-500/10 dark:border-orange-500/20 dark:text-orange-400'
                                     }`}>
-                                        {d.c ? d.c.substring(0, 2).toUpperCase() : '??'}
+                                            {d.c ? d.c.substring(0, 2).toUpperCase() : '??'}
                                     </div>
                                     <div className="min-w-0">
-                                        <h4 className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[120px]">{d.c}</h4>
-                                        <p className="text-[10px] text-slate-400 truncate">{d.s}</p>
+                                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[150px]">{d.c}</h4>
+                                        <p className="text-xs text-slate-500 mt-0.5 truncate">{d.s}</p>
                                     </div>
                                 </div>
                                 <div className="text-right shrink-0">
-                                    <p className="text-xs font-bold text-slate-800 dark:text-white">{d.a || '-'}</p>
-                                    <span className="text-[9px] text-slate-400">{d.d}</span>
+                                    <p className="text-sm font-bold text-slate-900 dark:text-white">{d.a || '-'}</p>
+                                    <span className="text-[10px] text-slate-400 block mt-0.5">{d.d}</span>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-8 pt-20">
-                        <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-full">
+                    <div className="flex-1 w-full flex flex-col items-center justify-center gap-6">
+                        <div className="bg-slate-50 dark:bg-white/5 p-6 rounded-full">
                             <Package size={32} className="opacity-40" />
                         </div>
-                        <p className="text-xs">{t('dashboard.noActivities', 'Henüz aktivite yok')}</p>
+                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('noActivities')}</p>
                     </div>
                 )}
             </div>
         </CardWrapper>
       </div>
 
-      {/* Bottom Section - Fixed Height */}
-      <div className="flex-none grid grid-cols-1 md:grid-cols-3 gap-4 h-[140px] shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
         {[
             { 
-              t: t('dashboard.quickStats.pendingTasks', 'Bekleyen Görevler'), 
-              d: t('dashboard.quickStats.checkTasks', 'Görev listesini kontrol et'), 
+              t: t('quickStats.pendingTasks'), 
+              d: t('quickStats.checkTasks'), 
               i: Clock, 
-              c: 'text-orange-500', 
+              c: 'text-orange-600 dark:text-orange-400', 
               bg: 'bg-orange-50 dark:bg-orange-500/10',
               link: '/daily-tasks'
             },
             { 
-              t: t('dashboard.quickStats.openQuotations', 'Açık Teklifler'), 
-              d: t('dashboard.quickStats.reviewQuotations', 'Teklifleri incele'), 
+              t: t('quickStats.openQuotations'), 
+              d: t('quickStats.reviewQuotations'), 
               i: FileText, 
-              c: 'text-pink-500', 
+              c: 'text-pink-600 dark:text-pink-400', 
               bg: 'bg-pink-50 dark:bg-pink-500/10',
               link: '/quotations'
             },
             { 
-              t: t('dashboard.quickStats.criticalStock', 'Kritik Stok'), 
-              d: t('dashboard.quickStats.stockStatus', 'Stok durumunu gör'), 
+              t: t('quickStats.criticalStock'), 
+              d: t('quickStats.stockStatus'), 
               i: Package, 
-              c: 'text-purple-500', 
+              c: 'text-purple-600 dark:text-purple-400', 
               bg: 'bg-purple-50 dark:bg-purple-500/10',
               link: '/stocks'
             },
@@ -424,14 +523,16 @@ export function DashboardPage(): ReactElement {
                 key={k} 
                 onClick={() => navigate(x.link)}
                 interactive={true}
-                className="p-5 flex items-center gap-8 group h-full"
+                className="min-h-[140px]"
             >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${x.bg} ${x.c} transition-transform group-hover:scale-110 shrink-0`}>
-                    <x.i size={24} />
-                </div>
-                <div>
-                  <h4 className="text-slate-900 dark:text-white font-semibold text-lg">{x.t}</h4>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">{x.d}</p>
+                <div className="flex items-center gap-8 h-full px-2">
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${x.bg} ${x.c} shrink-0 transition-transform group-hover:scale-105`}>
+                        <x.i size={28} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-900 dark:text-white font-bold text-lg">{x.t}</h4>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{x.d}</p>
+                    </div>
                 </div>
             </CardWrapper>
         ))}

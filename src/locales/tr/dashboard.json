@@ -1,6 +1,22 @@
 {
   "title": "Dashboard",
-  "loading": "Yükleniyor",
+  "loading": "Yükleniyor...",
+  "greeting": {
+    "morning": "Günaydın",
+    "afternoon": "İyi Günler",
+    "evening": "İyi Akşamlar"
+  },
+  "refresh": "Yenile",
+  "refreshing": "Yenileniyor...",
+  "refreshed": "Veriler güncellendi",
+  "refreshError": "Güncelleme başarısız",
+  "user": "Kullanıcı",
+  "noSalesData": "Henüz satış verisi oluşmadı",
+  "noActivities": "Henüz aktivite bulunmuyor",
+  "selectFormat": "Format Seçiniz",
+  "reportPreparing": "raporu hazırlanıyor...",
+  "reportDownloaded": "raporu indirildi.",
+  "reportError": "Rapor alınamadı.",
   "stats": {
     "totalRevenue": "Toplam Ciro",
     "activeOpportunities": "Aktif Fırsatlar",
@@ -37,10 +53,20 @@
   },
   "quickStats": {
     "pendingTasks": "Bekleyen Görevler",
-    "pendingTasksDescription": "Tamamlanması gereken 12 görev",
+    "checkTasks": "Görev listesini kontrol et",
     "openQuotations": "Açık Teklifler",
-    "openQuotationsDescription": "Onay bekleyen 5 teklif",
+    "reviewQuotations": "Teklifleri incele",
     "criticalStock": "Kritik Stok",
-    "criticalStockDescription": "3 ürün kritik seviyenin altında"
+    "stockStatus": "Stok durumunu gör"
+  },
+  "sidebar": {
+    "customers": "Müşteriler",
+    "customerManagement": "Müşteri Yönetimi",
+    "salesManagement": "Satış Hunisi",
+    "demandCreateWizard": "Yeni Talep Oluştur",
+    "quotationCreateWizard": "Yeni Teklif Oluştur",
+    "orderCreateWizard": "Yeni Sipariş Oluştur",
+    "activities": "Planlama",
+    "activityManagement": "Aktivite Yönetimi"
   }
 }
