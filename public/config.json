@@ -1,3 +1,3 @@
 {
-  "apiUrl": "https://crmapi.v3rii.com"
+  "apiUrl": "http://localhost:5000"
 }
