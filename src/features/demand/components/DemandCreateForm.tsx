@@ -15,6 +15,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import type { DemandLineFormState, DemandExchangeRateFormState, DemandBulkCreateDto, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/demand-types';
+import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
+import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
+import { demandNotesDtoToNotesList } from '../utils/notes-mapper';
+import { demandApi } from '../api/demand-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
@@ -29,6 +33,7 @@ export function DemandCreateForm(): ReactElement {
   
   const [lines, setLines] = useState<DemandLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<DemandExchangeRateFormState[]>([]);
+  const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
   
@@ -106,6 +111,15 @@ export function DemandCreateForm(): ReactElement {
       return;
     }
 
+    const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
+    const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
+    if (overLimitNote) {
+      toast.error(t('demand.create.error', 'Teklif Oluşturulamadı'), {
+        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      });
+      return;
+    }
+
     try {
       const linesToSend = lines.map((line) => {
         const { id, isEditing, ...lineData } = line;
@@ -117,6 +131,7 @@ export function DemandCreateForm(): ReactElement {
           productId: 0,
           description: cleanLineData.description || null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
+          projectCode: cleanLineData.projectCode || null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
         };
       });
@@ -149,6 +164,7 @@ export function DemandCreateForm(): ReactElement {
         deliveryDate: data.demand.deliveryDate || null,
         shippingAddressId: (data.demand.shippingAddressId && data.demand.shippingAddressId > 0) ? data.demand.shippingAddressId : null,
         representativeId: (data.demand.representativeId && data.demand.representativeId > 0) ? data.demand.representativeId : null,
+        projectCode: data.demand.projectCode || null,
         status: (data.demand.status && data.demand.status > 0) ? data.demand.status : null,
         description: data.demand.description || null,
         paymentTypeId: (data.demand.paymentTypeId && data.demand.paymentTypeId > 0) ? data.demand.paymentTypeId : null,
@@ -170,6 +186,10 @@ export function DemandCreateForm(): ReactElement {
       const result = await createMutation.mutateAsync(payload);
 
       if (result.success && result.data) {
+        const notesList = demandNotesDtoToNotesList(quotationNotes);
+        if (notesList.length > 0) {
+          await demandApi.updateNotesListByDemandId(result.data.id, { notes: notesList });
+        }
         toast.success(t('demand.create.success', 'Teklif Başarıyla Oluşturuldu'), {
           description: t('demand.create.successMessage', 'Teklif onay sürecine gönderildi.'),
         });
@@ -285,6 +305,8 @@ export function DemandCreateForm(): ReactElement {
                 <DemandHeaderForm
                   exchangeRates={exchangeRates}
                   onExchangeRatesChange={setExchangeRates}
+                  quotationNotes={quotationNotes}
+                  onQuotationNotesChange={setQuotationNotes}
                   lines={lines}
                   onLinesChange={async () => {
                     const newCurrency = form.getValues('demand.currency');

@@ -13,6 +13,8 @@ import type {
   RejectActionDto,
   DemandExchangeRateGetDto,
   DemandLineGetDto,
+  DemandNotesGetDto,
+  UpdateDemandNotesListDto,
   ApprovalStatus,
   ApprovalScopeUserDto,
   DemandApprovalFlowReportDto,
@@ -368,6 +370,30 @@ export const demandApi = {
       })) as DemandLineGetDto[];
     }
     return [];
+  },
+
+  getDemandNotesByDemandId: async (demandId: number): Promise<DemandNotesGetDto | null> => {
+    const response = await api.get<ApiResponse<DemandNotesGetDto>>(
+      `/api/DemandNotes/by-demand/${demandId}`
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    return null;
+  },
+
+  updateNotesListByDemandId: async (
+    demandId: number,
+    payload: UpdateDemandNotesListDto
+  ): Promise<ApiResponse<unknown>> => {
+    const response = await api.put<ApiResponse<unknown>>(
+      `/api/DemandNotes/by-demand/${demandId}/notes-list`,
+      payload
+    );
+    if (!response.success) {
+      throw new Error(response.message || 'Notlar güncellenirken bir hata oluştu');
+    }
+    return response;
   },
 
   createDemandLines: async (dtos: CreateDemandLineDto[]): Promise<DemandLineGetDto[]> => {
