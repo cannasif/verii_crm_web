@@ -66,9 +66,9 @@ interface CustomerTypeTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerTypeDto>[] => [
-    { key: 'id', label: t('customerTypeManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[80px]' },
-    { key: 'name', label: t('customerTypeManagement.table.name', 'Müşteri Tipi Adı'), type: 'badge', className: 'font-semibold text-slate-900 dark:text-white min-w-[150px]' },
-    { key: 'description', label: t('customerTypeManagement.table.description', 'Açıklama'), type: 'description', className: 'min-w-[250px]' },
+    { key: 'id', label: t('customerTypeManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[50px] md:w-[70px]' },
+    { key: 'name', label: t('customerTypeManagement.table.name', 'Müşteri Tipi Adı'), type: 'badge', className: 'font-semibold text-slate-900 dark:text-white min-w-[140px] md:min-w-[180px]' },
+    { key: 'description', label: t('customerTypeManagement.table.description', 'Açıklama'), type: 'description', className: 'min-w-[180px] md:min-w-[220px]' },
     { key: 'createdDate', label: t('customerTypeManagement.table.createdDate', 'Oluşturulma'), type: 'date', className: 'whitespace-nowrap' },
     { key: 'createdByFullUser', label: t('customerTypeManagement.table.createdBy', 'Oluşturan'), type: 'user', className: 'whitespace-nowrap' },
 ];
