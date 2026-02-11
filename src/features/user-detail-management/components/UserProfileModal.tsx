@@ -8,17 +8,18 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 import { 
-  Mail, 
-  Moon, 
-  Globe, 
-  Bell, 
-  User, 
-  ChevronRight,
-  LogOut,
-  Briefcase,
-  Building2,
-} from 'lucide-react';
+  Mail02Icon, 
+  Moon02Icon, 
+  LanguageSquareIcon, 
+  UserIcon, 
+  ArrowRight01Icon,
+  Logout02Icon,
+  Sun01Icon,
+  ShieldEnergyIcon,
+  Cancel01Icon 
+} from 'hugeicons-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import * as DialogPrimitive from "@radix-ui/react-dialog"; 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -28,7 +29,6 @@ import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/u
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
 interface UserProfileModalProps {
   open: boolean;
@@ -51,7 +51,7 @@ export function UserProfileModal({
   onOpenChange,
   onOpenProfileDetails
 }: UserProfileModalProps): ReactElement {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
   const { user, logout, branch } = useAuthStore();
   const navigate = useNavigate();
@@ -60,16 +60,9 @@ export function UserProfileModal({
   const normalizedLang = i18n.language?.toLowerCase() === 'sa' ? 'ar' : i18n.language?.toLowerCase().split('-')[0] ?? 'tr';
   const currentLanguage = languages.find((lang) => lang.code === normalizedLang) || languages[0];
   const [isChangingLanguage, setIsChangingLanguage] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = window.localStorage.getItem('notificationsEnabled');
-      return saved !== null ? JSON.parse(saved) : true;
-    }
-    return true;
-  });
 
-  const displayName = user?.name || user?.email || 'Kullanıcı';
-  const displayInitials = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'MK';
+  const displayName = user?.name || user?.email || t('dashboard.user');
+  const displayInitials = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
 
   const handleLogout = () => {
     logout();
@@ -78,18 +71,6 @@ export function UserProfileModal({
   };
 
   const darkMode = theme === 'dark';
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-
-  const toggleNotifications = (enabled: boolean) => {
-    setNotificationsEnabled(enabled);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('notificationsEnabled', JSON.stringify(enabled));
-    }
-    toast.success(`Sistem bildirimleri ${enabled ? 'açıldı' : 'kapatıldı'}`);
-  };
 
   const handleLanguageChange = async (value: string): Promise<void> => {
     const target = value.toLowerCase() === 'sa' ? 'ar' : value.toLowerCase();
@@ -107,160 +88,175 @@ export function UserProfileModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
-        "p-0 gap-0 border-none shadow-2xl overflow-hidden flex flex-col w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] sm:max-w-[1000px] max-h-[90dvh] sm:max-h-[90vh] min-h-0 rounded-xl sm:rounded-2xl md:flex-row",
-        darkMode ? "bg-[#1a1025] text-white" : "bg-white text-slate-900"
+        "p-0 gap-0 border-none shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col w-[95vw] md:max-w-4xl lg:max-w-[1100px] max-h-[85dvh] md:max-h-[620px] rounded-[2.5rem] md:flex-row transition-all duration-500 [&>button:last-of-type]:hidden",
+        darkMode ? "bg-[#120c18] text-white" : "bg-white text-slate-900"
       )}>
-        <DialogTitle className="sr-only">Kullanıcı Ayarları</DialogTitle>
-
-        <div className={cn(
-          "w-full md:w-72 lg:w-80 p-4 sm:p-6 md:p-6 lg:p-8 flex flex-col items-center border-b md:border-b-0 md:border-r shrink-0 relative md:h-full",
-          darkMode ? "bg-[#150a1f]/60 border-white/10" : "bg-slate-50 border-slate-100"
+        
+        {/* SENİN ÖZEL MODERN ÇARPIM (KIRMIZI HOVER) */}
+        <DialogPrimitive.Close className={cn(
+          "absolute right-4 top-4 md:right-6 md:top-6 z-50 rounded-2xl p-2.5 transition-all duration-200",
+          "active:scale-90",
+          darkMode 
+            ? "bg-white/5 text-white/40 hover:bg-red-600 hover:text-white" 
+            : "bg-slate-100 text-slate-400 hover:bg-red-600 hover:text-white"
         )}>
-          <div className="relative mb-4 sm:mb-6">
+          <Cancel01Icon size={20} strokeWidth={2.5} />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+
+        <DialogTitle className="sr-only">{t('sidebar.settings')}</DialogTitle>
+
+        {/* SOL PANEL (PROFIL ÖZETİ) */}
+        <div className={cn(
+          "w-full md:w-[320px] lg:w-[380px] flex flex-col items-center justify-center md:justify-start md:pt-16 p-6 md:p-10 border-b md:border-b-0 md:border-r shrink-0 relative overflow-hidden transition-all duration-500",
+          darkMode ? "bg-linear-to-b from-[#1a1025] to-[#120c18] border-white/5" : "bg-slate-50/80 border-slate-100"
+        )}>
+          <div className="absolute top-[-20%] left-[-20%] w-64 h-64 bg-pink-500/10 rounded-full blur-[80px]" />
+          
+          <div className="relative group mb-4 md:mb-6">
             <div className={cn(
-              "w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden border-2 md:border-4 p-0.5 md:p-1 shadow-xl md:shadow-2xl",
+              "w-24 h-24 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-[2rem] overflow-hidden border-4 rotate-2 transition-transform group-hover:rotate-0 duration-500 p-1 shadow-2xl",
               darkMode ? "border-white/10 bg-white/5" : "border-white bg-white"
             )}>
               {userDetail?.profilePictureUrl ? (
                 <img
                   src={getImageUrl(userDetail.profilePictureUrl) || ''}
                   alt={displayName}
-                  className="w-full h-full rounded-full object-cover"
+                  className="w-full h-full rounded-[1.8rem] object-cover"
                 />
               ) : (
-                <div className="w-full h-full rounded-full bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center">
-                  <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                <div className="w-full h-full rounded-[1.8rem] bg-linear-to-br from-pink-500 via-purple-600 to-orange-500 flex items-center justify-center">
+                  <span className="text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg">
                     {displayInitials}
                   </span>
                 </div>
               )}
             </div>
-            <div className="absolute bottom-0.5 right-0.5 sm:bottom-2 sm:right-2 w-3 h-3 sm:w-5 sm:h-5 bg-emerald-500 rounded-full border-2 md:border-4 border-[#150a1f] shadow-sm" />
+            <div className="absolute -bottom-1 -right-1 w-7 h-7 md:w-9 md:h-9 bg-emerald-500 rounded-2xl border-4 border-[#120c18] flex items-center justify-center shadow-lg">
+                <ShieldEnergyIcon size={16} className="text-white" />
+            </div>
           </div>
 
-          <h2 className="text-base sm:text-lg md:text-xl font-bold text-center mb-0.5 sm:mb-1 truncate w-full px-2">{displayName}</h2>
-          <p className={cn("text-xs sm:text-sm text-center mb-4 sm:mb-6 md:mb-8 truncate w-full px-2", darkMode ? "text-slate-400" : "text-slate-500")}>
-            {user?.email}
-          </p>
+          <div className="text-center z-10 space-y-1">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-black tracking-tight truncate max-w-[250px] md:max-w-[320px]">{displayName}</h2>
+            <Badge variant="outline" className={cn(
+              "rounded-full font-bold py-1 px-5 text-[10px] md:text-xs",
+              darkMode ? "border-pink-500/30 bg-pink-500/5 text-pink-400" : "border-pink-200 bg-pink-50 text-pink-600"
+            )}>
+              {branch?.name || 'Administrator'}
+            </Badge>
+          </div>
 
-          <div className="w-full space-y-2 sm:space-y-4">
-            <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm min-w-0">
-              <div className={cn("p-1.5 sm:p-2 rounded-lg shrink-0", darkMode ? "bg-white/5 text-slate-400" : "bg-white text-slate-500 shadow-sm")}>
-                <Mail size={14} className="sm:w-4 sm:h-4" />
-              </div>
-              <span className={cn("truncate", darkMode ? "text-slate-300" : "text-slate-600")}>{user?.email}</span>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm min-w-0">
-              <div className={cn("p-1.5 sm:p-2 rounded-lg shrink-0", darkMode ? "bg-white/5 text-slate-400" : "bg-white text-slate-500 shadow-sm")}>
-                <Building2 size={14} className="sm:w-4 sm:h-4" />
-              </div>
-              <span className={cn("truncate", darkMode ? "text-slate-300" : "text-slate-600")}>{branch?.name || 'Merkez Ofis'}</span>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm min-w-0">
-              <div className={cn("p-1.5 sm:p-2 rounded-lg shrink-0", darkMode ? "bg-white/5 text-slate-400" : "bg-white text-slate-500 shadow-sm")}>
-                <Briefcase size={14} className="sm:w-4 sm:h-4" />
-              </div>
-              <span className={cn("truncate", darkMode ? "text-slate-300" : "text-slate-600")}>Yönetim</span>
+          <div className="w-full mt-6 md:mt-8 space-y-3 z-10 px-4 md:px-8">
+            <div className={cn("flex items-center gap-4 p-3 rounded-2xl transition-all", darkMode ? "bg-white/5" : "bg-white shadow-sm")}>
+              <Mail02Icon size={16} className="text-pink-500 shrink-0" />
+              <span className="text-xs font-semibold truncate opacity-70">{user?.email}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex-1 p-4 sm:p-6 flex flex-col min-h-0 overflow-y-auto">
-          <div className="flex items-center justify-between gap-2 mb-4 sm:mb-6 shrink-0">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold truncate min-w-0">Hesap Ayarları</h3>
-            <Badge variant="secondary" className="px-2 py-1 text-xs font-normal shrink-0">v3.2.0</Badge>
+        {/* SAĞ PANEL (AYARLAR) */}
+        <div className="flex-1 p-5 md:p-10 lg:p-12 flex flex-col min-h-0 relative">
+          <div className="flex items-center gap-3 mb-6 md:mb-8 shrink-0">
+            <div className="w-1.5 h-6 md:h-8 bg-linear-to-b from-pink-500 to-purple-600 rounded-full" />
+            <h3 className="text-xl md:text-3xl lg:text-4xl font-black tracking-tight uppercase">{t('sidebar.settings')}</h3>
           </div>
 
-          <div className="flex flex-col gap-3 sm:gap-4 flex-1 min-h-0">
-            <Button
-              variant="outline"
+          <div className="flex flex-col gap-3 md:gap-4 flex-none md:flex-1 overflow-y-auto md:overflow-visible pr-1 custom-scrollbar">
+            {/* Profil Bilgileri */}
+            <button
               className={cn(
-                "w-full min-h-[56px] sm:min-h-[64px] px-4 sm:px-6 justify-between border rounded-xl sm:rounded-2xl group hover:bg-accent/50",
-                darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
+                "group w-full p-4 md:p-5 lg:p-6 flex items-center justify-between border rounded-[1.8rem] md:rounded-[2rem] transition-all duration-300",
+                darkMode ? "border-white/5 bg-white/5 hover:bg-white/[0.08] hover:border-pink-500/30" : "border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:border-pink-200"
               )}
               onClick={onOpenProfileDetails}
             >
-              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                <div className={cn("p-2 sm:p-3 rounded-lg sm:rounded-xl shrink-0", darkMode ? "bg-purple-500/20 text-purple-400" : "bg-purple-50 text-purple-600")}>
-                  <User size={20} className="sm:w-6 sm:h-6" />
+              <div className="flex items-center gap-4">
+                <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", darkMode ? "bg-purple-500/20 text-purple-400" : "bg-purple-100 text-purple-600")}>
+                  <UserIcon size={20} className="md:w-6 md:h-6" />
                 </div>
-                <div className="text-left min-w-0">
-                  <div className="text-sm sm:text-base font-semibold truncate">Profil Bilgileri</div>
-                  <div className={cn("text-xs sm:text-sm font-normal mt-0.5 truncate", darkMode ? "text-slate-400" : "text-slate-500")}>
-                    Kişisel bilgilerinizi düzenleyin
-                  </div>
+                <div className="text-left">
+                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('profile.title', 'Profil Bilgileri')}</p>
+                  <p className="text-[10px] md:text-xs opacity-50">{t('customerManagement.form.editDescription')}</p>
                 </div>
               </div>
-              <ChevronRight size={18} className={cn("shrink-0 transition-transform group-hover:translate-x-1", darkMode ? "text-slate-500" : "text-slate-400")} />
-            </Button>
+              <ArrowRight01Icon size={18} className="opacity-30 group-hover:translate-x-1 transition-transform" />
+            </button>
 
-            <Select value={currentLanguage.code} onValueChange={handleLanguageChange} disabled={isChangingLanguage}>
-              <SelectTrigger className={cn(
-                "w-full min-h-[56px] sm:min-h-[64px] px-4 sm:px-6 border rounded-xl sm:rounded-2xl hover:bg-accent/50 [&>span]:w-full [&>span]:flex [&>span]:items-center [&>span]:justify-between",
-                darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
-              )}>
-                <div className="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className={cn("p-2 sm:p-3 rounded-lg sm:rounded-xl shrink-0", darkMode ? "bg-blue-500/20 text-blue-400" : "bg-blue-50 text-blue-600")}>
-                    <Globe size={20} className="sm:w-6 sm:h-6" />
-                  </div>
-                  <div className="text-left min-w-0">
-                    <div className="text-sm sm:text-base font-semibold truncate">Dil Seçeneği</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-md text-xs sm:text-sm">{currentLanguage.short}</Badge>
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {languages.map((language) => (
-                  <SelectItem key={language.code} value={language.code}>
-                    <div className="flex items-center gap-2">
-                      <span>{language.flag}</span>
-                      <span>{language.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
+            {/* Dil Seçeneği */}
             <div className={cn(
-              "w-full min-h-[56px] sm:min-h-[64px] px-4 sm:px-6 flex items-center justify-between gap-3 border rounded-xl sm:rounded-2xl",
-              darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
+              "group w-full p-4 md:p-5 lg:p-6 flex items-center justify-between border rounded-[1.8rem] md:rounded-[2rem] transition-all",
+              darkMode ? "border-white/5 bg-white/5" : "border-slate-100 bg-slate-50/50"
             )}>
-              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                <div className={cn("p-2 sm:p-3 rounded-lg sm:rounded-xl shrink-0", darkMode ? "bg-orange-500/20 text-orange-400" : "bg-orange-50 text-orange-600")}>
-                  <Moon size={20} className="sm:w-6 sm:h-6" />
+              <div className="flex items-center gap-4 flex-1">
+                <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", darkMode ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-600")}>
+                  <LanguageSquareIcon size={20} className="md:w-6 md:h-6" />
                 </div>
-                <div className="text-left min-w-0">
-                  <div className="text-sm sm:text-base font-semibold truncate">Görünüm Modu</div>
+                <div className="text-left">
+                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('language_choice', 'Dil Seçeneği')}</p>
                 </div>
               </div>
-              <Switch checked={darkMode} onCheckedChange={toggleTheme} className="shrink-0" />
+              <Select value={currentLanguage.code} onValueChange={handleLanguageChange} disabled={isChangingLanguage}>
+                <SelectTrigger className={cn(
+                  "w-20 md:w-24 lg:w-28 h-10 shadow-none focus:ring-0 font-black text-xs md:text-sm transition-all",
+                  darkMode 
+                    ? "bg-white/10 border-none hover:bg-white/20" 
+                    : "bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700"
+                )}>
+                  <span>{currentLanguage.short}</span>
+                </SelectTrigger>
+                <SelectContent className={cn(
+                  "rounded-2xl border shadow-2xl",
+                  darkMode ? "bg-[#1a1025] border-white/10 text-white" : "bg-white border-slate-200 text-slate-900"
+                )}>
+                  {languages.map((l) => (
+                    <SelectItem 
+                      key={l.code} 
+                      value={l.code}
+                      className={cn(
+                        "rounded-xl my-1 transition-colors focus:bg-pink-600 focus:text-white cursor-pointer",
+                        darkMode ? "hover:bg-white/5" : "hover:bg-slate-100"
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{l.flag}</span>
+                        <span className="font-medium">{l.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
+            {/* Görünüm Modu */}
             <div className={cn(
-              "w-full min-h-[56px] sm:min-h-[64px] px-4 sm:px-6 flex items-center justify-between gap-3 border rounded-xl sm:rounded-2xl",
-              darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
+              "group w-full p-4 md:p-5 lg:p-6 flex items-center justify-between border rounded-[1.8rem] md:rounded-[2rem] transition-all",
+              darkMode ? "border-white/5 bg-white/5" : "border-slate-100 bg-slate-50/50"
             )}>
-              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                <div className={cn("p-2 sm:p-3 rounded-lg sm:rounded-xl shrink-0", darkMode ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-50 text-emerald-600")}>
-                  <Bell size={20} className="sm:w-6 sm:h-6" />
+              <div className="flex items-center gap-4">
+                <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", darkMode ? "bg-orange-500/20 text-orange-400" : "bg-orange-100 text-orange-600")}>
+                  {darkMode ? <Moon02Icon size={20} className="md:w-6 md:h-6" /> : <Sun01Icon size={20} className="md:w-6 md:h-6" />}
                 </div>
-                <div className="text-left min-w-0">
-                  <div className="text-sm sm:text-base font-semibold truncate">Sistem Bildirimleri</div>
+                <div className="text-left">
+                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('appearance', 'Görünüm Modu')}</p>
                 </div>
               </div>
-              <Switch checked={notificationsEnabled} onCheckedChange={toggleNotifications} className="shrink-0" />
+              <Switch 
+                checked={darkMode} 
+                onCheckedChange={() => setTheme(darkMode ? 'light' : 'dark')} 
+                className="data-[state=checked]:bg-pink-600 scale-90 md:scale-100"
+              />
             </div>
           </div>
 
-          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-border shrink-0">
+          {/* ÇIKIŞ BUTONU ALANI */}
+          <div className="mt-6 pt-6 md:pt-10 border-t border-dashed border-slate-200 dark:border-white/10 shrink-0">
             <Button
-              className="w-full h-10 sm:h-12 rounded-xl text-white font-semibold text-sm sm:text-base bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 shadow-lg shadow-pink-900/20"
+              className="w-full h-12 md:h-14 lg:h-15 rounded-[1.5rem] md:rounded-[1.8rem] text-white font-black text-sm md:text-lg lg:text-xl bg-linear-to-r from-pink-600 to-orange-600 hover:scale-[1.01] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)]"
               onClick={handleLogout}
             >
-              <LogOut size={16} className="mr-2 shrink-0 sm:w-[18px] sm:h-[18px]" />
-              Çıkış Yap
+              <Logout02Icon size={18} className="mr-3 md:w-5 md:h-5" />
+              {t('logout', 'ÇIKIŞ YAP')}
             </Button>
           </div>
         </div>
