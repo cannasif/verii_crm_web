@@ -192,6 +192,7 @@
     "activityTypeManagement": "Aktivite Tipi Yönetimi",
     "pricingRuleManagement": "Fiyat Kuralı Yönetimi",
     "documentSerialTypeManagement": "Dosya Tip Yönetimi",
+    "salesTypeManagement": "Satış Tipi Yönetimi",
     "stockManagement": "Stok Yönetimi",
     "settings": "Ayarlar",
     "logout": "Çıkış Yap",
@@ -1492,6 +1493,39 @@
       "updateError": "Ünvan güncellenemedi",
       "deleteSuccess": "Ünvan başarıyla silindi",
       "deleteError": "Ünvan silinemedi"
+    }
+  },
+  "salesTypeManagement": {
+    "menu": "Satış Tipi Yönetimi",
+    "description": "Satış tiplerini yönetin ve düzenleyin",
+    "addButton": "Yeni Satış Tipi",
+    "searchPlaceholder": "Ad ile ara...",
+    "noData": "Kayıt bulunamadı",
+    "table": {
+      "salesType": "Satış Tipi",
+      "name": "Ad",
+      "createdDate": "Oluşturulma Tarihi"
+    },
+    "form": {
+      "addTitle": "Yeni Satış Tipi Ekle",
+      "editTitle": "Satış Tipi Düzenle",
+      "addDescription": "Yeni satış tipi bilgilerini girin",
+      "editDescription": "Satış tipi bilgilerini düzenleyin",
+      "salesType": "Satış Tipi",
+      "name": "Ad",
+      "namePlaceholder": "Ad girin"
+    },
+    "delete": {
+      "title": "Satış Tipini Sil",
+      "confirm": "{{name}} satış tipini silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+    },
+    "messages": {
+      "createSuccess": "Satış tipi başarıyla oluşturuldu",
+      "createError": "Satış tipi oluşturulamadı",
+      "updateSuccess": "Satış tipi başarıyla güncellendi",
+      "updateError": "Satış tipi güncellenemedi",
+      "deleteSuccess": "Satış tipi başarıyla silindi",
+      "deleteError": "Satış tipi silinemedi"
     }
   },
   "approvalRoleGroup": {

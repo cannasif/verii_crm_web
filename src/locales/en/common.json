@@ -192,6 +192,7 @@
     "activityTypeManagement": "Activity Type Management",
     "pricingRuleManagement": "Pricing Rule Management",
     "documentSerialTypeManagement": "Document Serial Type Management",
+    "salesTypeManagement": "Sales Type Management",
     "stockManagement": "Stock Management",
     "settings": "Settings",
     "logout": "Log Out",
@@ -1499,6 +1500,39 @@
       "updateError": "Failed to update title",
       "deleteSuccess": "Title deleted successfully",
       "deleteError": "Failed to delete title"
+    }
+  },
+  "salesTypeManagement": {
+    "menu": "Sales Type Management",
+    "description": "Manage and edit sales types",
+    "addButton": "New Sales Type",
+    "searchPlaceholder": "Search by name...",
+    "noData": "No records found",
+    "table": {
+      "salesType": "Sales Type",
+      "name": "Name",
+      "createdDate": "Created Date"
+    },
+    "form": {
+      "addTitle": "Add New Sales Type",
+      "editTitle": "Edit Sales Type",
+      "addDescription": "Enter new sales type details",
+      "editDescription": "Edit sales type details",
+      "salesType": "Sales Type",
+      "name": "Name",
+      "namePlaceholder": "Enter name"
+    },
+    "delete": {
+      "title": "Delete Sales Type",
+      "confirm": "Are you sure you want to delete {{name}}? This action cannot be undone."
+    },
+    "messages": {
+      "createSuccess": "Sales type created successfully",
+      "createError": "Failed to create sales type",
+      "updateSuccess": "Sales type updated successfully",
+      "updateError": "Failed to update sales type",
+      "deleteSuccess": "Sales type deleted successfully",
+      "deleteError": "Failed to delete sales type"
     }
   },
   "approvalRoleGroup": {

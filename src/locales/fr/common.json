@@ -194,7 +194,8 @@
     "powerbiConfiguration": "Power BI Configuration",
     "powerbiReportsView": "Power BI Reports (View)",
     "mailSettings": "Mail Settings",
-    "documentSerialTypeManagement": "Document Serial Type Management"
+    "documentSerialTypeManagement": "Document Serial Type Management",
+    "salesTypeManagement": "Gestion des types de vente"
   },
   "dashboard": {
     "title": "Tableau de bord",
