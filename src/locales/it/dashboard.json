@@ -1,5 +1,5 @@
 {
-  "title": "Dashboard",
+  "title": "Pannello di controllo",
   "loading": "Caricamento",
   "stats": {
     "totalRevenue": "Entrate Totali",
@@ -39,8 +39,37 @@
     "openQuotations": "Preventivi Aperti",
     "openQuotationsDescription": "5 preventivi in attesa di approvazione",
     "criticalStock": "Scorte Critiche",
-    "criticalStockDescription": "3 prodotti sotto il livello critico"
+    "criticalStockDescription": "3 prodotti sotto il livello critico",
+    "checkTasks": "Görev listesini kontrol et",
+    "reviewQuotations": "Teklifleri incele",
+    "stockStatus": "Stok durumunu gör"
   },
   "noDate": "No date",
-  "unnamedActivity": "Unnamed Activity"
+  "unnamedActivity": "Unnamed Activity",
+  "greeting": {
+    "morning": "Günaydın",
+    "afternoon": "İyi Günler",
+    "evening": "İyi Akşamlar"
+  },
+  "refresh": "Aggiorna",
+  "refreshing": "Yenileniyor...",
+  "refreshed": "Veriler güncellendi",
+  "refreshError": "Güncelleme başarısız",
+  "user": "Utente",
+  "noSalesData": "Henüz satış verisi oluşmadı",
+  "noActivities": "Nessuna attività",
+  "selectFormat": "Format Seçiniz",
+  "reportPreparing": "raporu hazırlanıyor...",
+  "reportDownloaded": "raporu indirildi.",
+  "reportError": "Rapor alınamadı.",
+  "sidebar": {
+    "customers": "Clienti",
+    "customerManagement": "Gestione Clienti",
+    "salesManagement": "Satış Hunisi",
+    "demandCreateWizard": "Yeni Talep Oluştur",
+    "quotationCreateWizard": "Crea Nuovo Preventivo",
+    "orderCreateWizard": "Crea Nuovo Preventivo",
+    "activities": "Planlama",
+    "activityManagement": "Gestione Attività"
+  }
 }

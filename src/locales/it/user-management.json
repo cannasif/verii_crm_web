@@ -81,5 +81,37 @@
   "delete": {
     "confirmTitle": "Elimina utente",
     "confirmMessage": "Sei sicuro di voler eliminare l'utente {{username}}?"
+  },
+  "userManagement": {
+    "form": {
+      "editUser": "Modifica Utente",
+      "addUser": "Aggiungi Nuovo Utente",
+      "editDescription": "Modifica informazioni utente",
+      "addDescription": "Inserisci informazioni nuovo utente",
+      "username": "Nome Utente",
+      "usernamePlaceholder": "Inserisci nome utente",
+      "email": "Email",
+      "emailPlaceholder": "Inserisci indirizzo email",
+      "password": "Password",
+      "passwordPlaceholder": "Lasciare vuoto per password temporanea",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Inserisci nome",
+      "lastName": "Cognome",
+      "lastNamePlaceholder": "Inserisci cognome",
+      "phoneNumber": "Numero Telefono",
+      "phoneNumberPlaceholder": "Inserisci numero telefono",
+      "role": "Ruolo",
+      "rolePlaceholder": "Seleziona ruolo",
+      "permissionGroups": "Permission Groups",
+      "isActive": "Active",
+      "cancel": "Annulla",
+      "saving": "Salvataggio...",
+      "save": "Salva",
+      "selectAll": "Select all",
+      "permissionGroupsNoData": "Nessun gruppo di permessi trovato"
+    },
+    "table": {
+      "loading": "Caricamento..."
+    }
   }
 }

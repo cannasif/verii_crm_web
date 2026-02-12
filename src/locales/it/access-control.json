@@ -35,7 +35,12 @@
       "namePlaceholder": "Display name",
       "description": "Description",
       "descriptionPlaceholder": "Optional description",
-      "isActive": "Active"
+      "isActive": "Active",
+      "codePlaceholder": "Kod seçin",
+      "affectedRoutes": "Etkilenen sayfalar",
+      "affectedRoutesNone": "Bu kod için eşleşen rota bulunamadı",
+      "codeSearchPlaceholder": "Cerca...",
+      "codeEmpty": "Sonuc bulunamadi"
     },
     "table": {
       "code": "Code",
@@ -47,7 +52,8 @@
     "delete": {
       "confirmTitle": "Delete Permission Definition",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
-    }
+    },
+    "syncFromRoutes": "Sincronizzazione dai percorsi"
   },
   "permissionGroups": {
     "title": "Permission Groups",
@@ -84,7 +90,8 @@
     "delete": {
       "confirmTitle": "Delete Permission Group",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
-    }
+    },
+    "search": "Cerca..."
   },
   "userGroupAssignments": {
     "title": "User Group Assignments",
@@ -96,5 +103,27 @@
     "noUsers": "No users found",
     "noGroups": "No permission groups available",
     "selectAll": "Select all"
+  },
+  "common": {
+    "cancel": "Annulla",
+    "saving": "Registrazione...",
+    "save": "Save and Apply",
+    "loading": "Caricamento...",
+    "search": "Cerca...",
+    "noData": "Nessun dato",
+    "actions": "Transazioni",
+    "yes": "SÌ",
+    "no": "No",
+    "edit": "Modificare",
+    "delete": "Eliminare",
+    "previous": "Ex",
+    "next": "Prossimo",
+    "processing": "Elaborazione..."
+  },
+  "sidebar": {
+    "accessControl": "Controllo Accessi",
+    "permissionDefinitions": "Permission Definitions",
+    "permissionGroups": "Permission Groups",
+    "userGroupAssignments": "User Group Assignments"
   }
 }

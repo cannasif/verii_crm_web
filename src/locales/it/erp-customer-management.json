@@ -44,6 +44,17 @@
     "filter": "Filtra",
     "all": "TUTTI",
     "active": "ATTIVO",
-    "passive": "PASSIVO"
+    "passive": "PASSIVO",
+    "apply": "SONUÇLARI LİSTELE"
+  },
+  "details": {
+    "title": "Müşteri Detayları",
+    "addressInfo": "Adres Bilgileri"
+  },
+  "common": {
+    "close": "Chiudi",
+    "selectAll": "Tümünü Seç",
+    "ok": "TAMAM",
+    "totalRecords": "Toplam Kayıt"
   }
 }

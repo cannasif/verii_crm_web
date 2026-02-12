@@ -63,5 +63,16 @@
   "newPassword": "Nuova password",
   "enterNewPassword": "Inserisci la nuova password (min 6 caratteri)",
   "changingPassword": "Modifica in corso...",
-  "changePasswordButton": "Cambia password"
+  "changePasswordButton": "Cambia password",
+  "contactInfo": "Informazioni Contatto",
+  "contactInfoDescription": "E-posta, telefon ve sosyal medya hesaplarınızı yönetin.",
+  "linkedinUrl": "LinkedIn Profili",
+  "phoneNumber": "Telefon Numarası",
+  "email": "Indirizzo Email",
+  "enterLinkedinUrl": "https://linkedin.com/in/...",
+  "enterPhoneNumber": "+90 5XX XXX XX XX",
+  "enterEmail": "ornek@sirket.com",
+  "invalidUrl": "Geçerli bir URL giriniz",
+  "invalidEmail": "Inserisci un indirizzo email valido",
+  "phoneNumberMaxLength": "Il numero di telefono deve avere al massimo 20 caratteri"
 }
