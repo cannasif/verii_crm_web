@@ -19,7 +19,7 @@ export function TitleStats(): ReactElement {
           <Card key={i}>
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('titleManagement.loading', 'Yükleniyor...')}
+                {t('titleManagement.loading')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -40,7 +40,7 @@ export function TitleStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('titleManagement.stats.totalTitles', 'Toplam Ünvan')}
+            {t('titleManagement.stats.totalTitles')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +68,7 @@ export function TitleStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('titleManagement.stats.activeTitles', 'Aktif Ünvan')}
+            {t('titleManagement.stats.activeTitles')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -94,7 +94,7 @@ export function TitleStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('titleManagement.stats.newThisMonth', 'Bu Ay Yeni')}
+            {t('titleManagement.stats.newThisMonth')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +128,7 @@ export function TitleStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('titleManagement.stats.totalContacts', 'Toplam İletişim')}
+            {t('titleManagement.stats.totalContacts')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"

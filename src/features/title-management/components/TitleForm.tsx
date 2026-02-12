@@ -106,13 +106,13 @@ export function TitleForm({
              <div>
                 <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
                   {title
-                    ? t('titleManagement.form.editTitle', 'Ünvan Düzenle')
-                    : t('titleManagement.form.addTitle', 'Yeni Ünvan Ekle')}
+                    ? t('titleManagement.form.editTitle')
+                    : t('titleManagement.form.addTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                   {title
-                    ? t('titleManagement.form.editDescription', 'Ünvan bilgilerini düzenleyin')
-                    : t('titleManagement.form.addDescription', 'Yeni ünvan bilgilerini girin')}
+                    ? t('titleManagement.form.editDescription')
+                    : t('titleManagement.form.addDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -127,12 +127,12 @@ export function TitleForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('titleManagement.form.titleName', 'Ünvan Adı')} *
+                      {t('titleManagement.form.titleName')} *
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('titleManagement.form.titleNamePlaceholder', 'Ünvan adını girin')}
+                        placeholder={t('titleManagement.form.titleNamePlaceholder')}
                         maxLength={100}
                         className={INPUT_STYLE}
                       />
@@ -148,13 +148,13 @@ export function TitleForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('titleManagement.form.code', 'Kod')}
+                      {t('titleManagement.form.code')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         value={field.value || ''}
-                        placeholder={t('titleManagement.form.codePlaceholder', 'Kod girin (opsiyonel)')}
+                        placeholder={t('titleManagement.form.codePlaceholder')}
                         maxLength={10}
                         className={INPUT_STYLE}
                       />
@@ -176,7 +176,7 @@ export function TitleForm({
               disabled={isLoading}
               className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
             >
-              {t('titleManagement.form.cancel', 'İptal')}
+              {t('titleManagement.form.cancel')}
             </Button>
             <Button 
               onClick={form.handleSubmit(handleSubmit)}
@@ -184,8 +184,8 @@ export function TitleForm({
               className="bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
             >
               {isLoading
-                ? t('titleManagement.saving', 'Kaydediliyor...')
-                : t('titleManagement.save', 'Kaydet')}
+                ? t('titleManagement.saving')
+                : t('titleManagement.save')}
             </Button>
           </div>
         </DialogFooter>

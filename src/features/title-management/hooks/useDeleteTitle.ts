@@ -20,10 +20,10 @@ export const useDeleteTitle = (): UseMutationResult<void, Error, number> => {
         queryKey: [TITLE_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('titleManagement.messages.deleteSuccess', 'Ünvan başarıyla silindi'));
+      toast.success(t('titleManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('titleManagement.messages.deleteError', 'Ünvan silinemedi'));
+      toast.error(error.message || t('titleManagement.messages.deleteError'));
     },
   });
 };

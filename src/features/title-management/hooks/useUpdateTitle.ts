@@ -23,10 +23,10 @@ export const useUpdateTitle = (): UseMutationResult<TitleDto, Error, { id: numbe
         queryKey: [TITLE_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('titleManagement.messages.updateSuccess', 'Ünvan başarıyla güncellendi'));
+      toast.success(t('titleManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('titleManagement.messages.updateError', 'Ünvan güncellenemedi'));
+      toast.error(error.message || t('titleManagement.messages.updateError'));
     },
   });
 };

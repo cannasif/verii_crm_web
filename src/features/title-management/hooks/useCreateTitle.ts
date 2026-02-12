@@ -21,10 +21,10 @@ export const useCreateTitle = (): UseMutationResult<TitleDto, Error, CreateTitle
         queryKey: [TITLE_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('titleManagement.messages.createSuccess', 'Ünvan başarıyla oluşturuldu'));
+      toast.success(t('titleManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('titleManagement.messages.createError', 'Ünvan oluşturulamadı'));
+      toast.error(error.message || t('titleManagement.messages.createError'));
     },
   });
 };
