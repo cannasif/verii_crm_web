@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
+import { type ReactElement, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -10,10 +10,19 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useCustomerList } from '@/features/customer-management/hooks/useCustomerList';
 import type { CustomerDto } from '@/features/customer-management/types/customer-types';
 import { cn } from '@/lib/utils';
-import { Phone, Mail, ChevronRight, Search, Mic, Building2, User, X, Users, LayoutGrid, List } from 'lucide-react';
+import { Phone, Mail, ChevronRight, Search, Mic, Building2, User, X, Users, LayoutGrid, List, AlertCircle } from 'lucide-react';
+import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
+import { dropdownApi } from '@/components/shared/dropdown/dropdown-api';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import {
+  DROPDOWN_DEBOUNCE_MS,
+  DROPDOWN_MIN_CHARS,
+  DROPDOWN_PAGE_SIZE,
+  DROPDOWN_SCROLL_THRESHOLD,
+} from '@/components/shared/dropdown/constants';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface CustomerSelectionResult {
   customerId?: number;
@@ -161,6 +170,7 @@ export function CustomerSelectDialog({
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const debouncedSearch = useDebouncedValue(searchQuery, DROPDOWN_DEBOUNCE_MS);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -223,33 +233,42 @@ export function CustomerSelectDialog({
     }
   }, [open]);
 
-  const { data: crmCustomersData, isLoading: crmLoading } = useCustomerList({
-    pageNumber: 1,
-    pageSize: 1000,
+  const {
+    items: customers,
+    isLoading: isCustomersLoading,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useDropdownInfiniteSearch<CustomerDto>({
+    entityKey: 'customers',
+    searchTerm: debouncedSearch,
+    enabled: open,
+    minChars: DROPDOWN_MIN_CHARS,
+    // Fetch in pages of 50 to avoid request spam while UI shows only a small visible window.
+    pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'asc',
+    buildFilters: (searchTerm) => [
+      { column: 'name', operator: 'contains', value: searchTerm },
+      { column: 'customerCode', operator: 'contains', value: searchTerm },
+    ],
+    fetchPage: dropdownApi.getCustomerPage,
+  });
+  const isThresholdInput = searchQuery.trim().length > 0 && searchQuery.trim().length < DROPDOWN_MIN_CHARS;
+  const minCharsHint = t('common.dropdown.minCharsHint', {
+    count: DROPDOWN_MIN_CHARS,
+    defaultValue: `Minimum ${DROPDOWN_MIN_CHARS} characters`,
   });
 
   const displayCustomers = useMemo(() => {
     const isErp = (c: CustomerDto): boolean =>
       c.isIntegrated === true ||
       (c.customerCode != null && String(c.customerCode).trim() !== '');
-    const list = (crmCustomersData?.data ?? []).map((c) => ({
+    return customers.map((c) => ({
       ...c,
       type: (isErp(c) ? 'erp' : 'crm') as 'erp' | 'crm',
     }));
-    if (!searchQuery.trim()) {
-      return list.sort((a, b) => a.name.localeCompare(b.name, i18n.language));
-    }
-    const query = searchQuery.toLowerCase().trim();
-    return list
-      .filter(
-        (c) =>
-          c.name?.toLowerCase().includes(query) ||
-          (c.customerCode != null && c.customerCode.toLowerCase().includes(query))
-      )
-      .sort((a, b) => a.name.localeCompare(b.name, i18n.language));
-  }, [crmCustomersData?.data, searchQuery, i18n.language]);
+  }, [customers]);
 
   const erpCustomers = useMemo(
     () => displayCustomers.filter((c) => c.type === 'erp'),
@@ -273,11 +292,30 @@ export function CustomerSelectDialog({
     onOpenChange(false);
   };
 
+  const handleListScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>): void => {
+      if (!hasNextPage || isFetchingNextPage) {
+        return;
+      }
+
+      const target = event.currentTarget;
+      if (target.scrollHeight <= 0) {
+        return;
+      }
+
+      const scrollProgress = (target.scrollTop + target.clientHeight) / target.scrollHeight;
+      if (scrollProgress >= DROPDOWN_SCROLL_THRESHOLD) {
+        void fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage]
+  );
+
   const renderCustomerList = (
     list: Array<CustomerDto & { type: 'erp' | 'crm' }>,
     emptyKey: string
   ): ReactElement => {
-    if (crmLoading) {
+    if (isCustomersLoading) {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-zinc-500">
@@ -300,24 +338,31 @@ export function CustomerSelectDialog({
     }
 
     return (
-      <div className={cn(
-        "grid gap-3",
-        viewMode === 'list' ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-      )}>
-        {list.map((customer) => (
-          <CustomerCard
-            key={`customer-${customer.id}`}
-            type={customer.type}
-            name={customer.name}
-            customerCode={customer.customerCode ?? undefined}
-            phone={customer.phone}
-            email={customer.email}
-            city={customer.cityName}
-            district={customer.districtName}
-            onClick={() => handleCustomerSelect(customer)}
-            viewMode={viewMode}
-          />
-        ))}
+      <div>
+        <div className={cn(
+          "grid gap-3",
+          viewMode === 'list' ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        )}>
+          {list.map((customer) => (
+            <CustomerCard
+              key={`customer-${customer.id}`}
+              type={customer.type}
+              name={customer.name}
+              customerCode={customer.customerCode ?? undefined}
+              phone={customer.phone}
+              email={customer.email}
+              city={customer.cityName}
+              district={customer.districtName}
+              onClick={() => handleCustomerSelect(customer)}
+              viewMode={viewMode}
+            />
+          ))}
+        </div>
+        {isFetchingNextPage ? (
+          <div className="flex items-center justify-center py-4 text-sm text-zinc-500">
+            {t('customerSelectDialog.loading')}
+          </div>
+        ) : null}
       </div>
     );
   };
@@ -355,8 +400,22 @@ export function CustomerSelectDialog({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('customerSelectDialog.searchPlaceholder')}
-                  className={cn(INPUT_STYLE, "pl-9")}
+                  className={cn(INPUT_STYLE, "pl-9 pr-20")}
                 />
+                {isThresholdInput ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label={minCharsHint}
+                        className="absolute right-10 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                      >
+                        <AlertCircle size={16} />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">{minCharsHint}</TooltipContent>
+                  </Tooltip>
+                ) : null}
                 {recognitionRef.current && (
                   <Button
                     type="button"
@@ -425,7 +484,10 @@ export function CustomerSelectDialog({
             </TabsList>
           </div>
 
-          <div className="flex-1 overflow-y-auto min-h-0 p-6 pt-4 bg-white dark:bg-[#130822] custom-scrollbar">
+          <div
+            onScroll={handleListScroll}
+            className="flex-1 overflow-y-auto min-h-0 max-h-[420px] p-6 pt-4 bg-white dark:bg-[#130822] custom-scrollbar"
+          >
             <TabsContent value="erp" className="mt-0 space-y-2 h-full">
               {renderCustomerList(erpCustomers, 'noErpCustomers')}
             </TabsContent>

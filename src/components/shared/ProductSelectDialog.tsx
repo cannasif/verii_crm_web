@@ -1,6 +1,6 @@
-import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
+import { type ReactElement, useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LayoutGrid, List as ListIcon, X } from 'lucide-react';
+import { LayoutGrid, List as ListIcon, X, AlertCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -12,16 +12,21 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { useStockList } from '@/features/stock/hooks/useStockList';
-import { useStockListWithImages } from '@/features/stock/hooks/useStockListWithImages';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getImageUrl } from '@/features/stock/utils/image-url';
 import { stockApi } from '@/features/stock/api/stock-api';
 import { RelatedStocksSelectionDialog } from './RelatedStocksSelectionDialog';
 import { cn } from '@/lib/utils';
 import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/features/stock/types';
-
-const EMPTY_STOCKS: StockGetDto[] = [];
-const EMPTY_STOCKS_WITH_IMAGES: StockGetWithMainImageDto[] = [];
+import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
+import { dropdownApi } from '@/components/shared/dropdown/dropdown-api';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import {
+  DROPDOWN_DEBOUNCE_MS,
+  DROPDOWN_MIN_CHARS,
+  DROPDOWN_PAGE_SIZE,
+  DROPDOWN_SCROLL_THRESHOLD,
+} from '@/components/shared/dropdown/constants';
 
 export interface ProductSelectionResult {
   id?: number;
@@ -689,6 +694,12 @@ export function ProductSelectDialog({
   const [selectedStock, setSelectedStock] = useState<StockGetDto | StockGetWithMainImageDto | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const debouncedSearch = useDebouncedValue(searchQuery, DROPDOWN_DEBOUNCE_MS);
+  const isThresholdInput = searchQuery.trim().length > 0 && searchQuery.trim().length < DROPDOWN_MIN_CHARS;
+  const minCharsHint = t('common.dropdown.minCharsHint', {
+    count: DROPDOWN_MIN_CHARS,
+    defaultValue: `Minimum ${DROPDOWN_MIN_CHARS} characters`,
+  });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -751,70 +762,36 @@ export function ProductSelectDialog({
     }
   }, [open]);
 
-  const stockFilters = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return {};
-    }
-    return {
-      filters: [
-        {
-          column: 'stockName',
-          operator: 'contains',
-          value: searchQuery.trim(),
-        },
-        {
-          column: 'erpStockCode',
-          operator: 'contains',
-          value: searchQuery.trim(),
-        },
-      ],
-    };
-  }, [searchQuery]);
-
-  const { data: stocksData, isLoading: stocksLoading } = useStockList({
-    pageNumber: 1,
-    pageSize: 100,
-    ...stockFilters,
+  const stocksDropdown = useDropdownInfiniteSearch<StockGetDto>({
+    entityKey: 'stocks',
+    searchTerm: debouncedSearch,
+    enabled: open && activeTab === 'stocks',
+    minChars: DROPDOWN_MIN_CHARS,
+    // Keep request size high enough for seamless infinite scroll while list UI stays compact.
+    pageSize: DROPDOWN_PAGE_SIZE,
+    sortBy: 'Id',
+    sortDirection: 'desc',
+    buildFilters: (searchTerm) => [
+      { column: 'stockName', operator: 'contains', value: searchTerm },
+      { column: 'erpStockCode', operator: 'contains', value: searchTerm },
+    ],
+    fetchPage: dropdownApi.getStockPage,
   });
 
-  const { data: stocksWithImagesData, isLoading: stocksWithImagesLoading } = useStockListWithImages({
-    pageNumber: 1,
-    pageSize: 100,
-    ...stockFilters,
+  const stocksWithImagesDropdown = useDropdownInfiniteSearch<StockGetWithMainImageDto>({
+    entityKey: 'stocks-with-images',
+    searchTerm: debouncedSearch,
+    enabled: open && activeTab === 'stocksWithImages',
+    minChars: DROPDOWN_MIN_CHARS,
+    pageSize: DROPDOWN_PAGE_SIZE,
+    sortBy: 'Id',
+    sortDirection: 'desc',
+    buildFilters: (searchTerm) => [
+      { column: 'stockName', operator: 'contains', value: searchTerm },
+      { column: 'erpStockCode', operator: 'contains', value: searchTerm },
+    ],
+    fetchPage: dropdownApi.getStockWithImagesPage,
   });
-
-  const stocks = useMemo<StockGetDto[]>(
-    () => stocksData?.data ?? EMPTY_STOCKS,
-    [stocksData?.data]
-  );
-  const stocksWithImages = useMemo<StockGetWithMainImageDto[]>(
-    () => stocksWithImagesData?.data ?? EMPTY_STOCKS_WITH_IMAGES,
-    [stocksWithImagesData?.data]
-  );
-
-  const filteredStocks = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return stocks;
-    }
-    const query = searchQuery.toLowerCase().trim();
-    return stocks.filter(
-      (stock) =>
-        stock.stockName?.toLowerCase().includes(query) ||
-        stock.erpStockCode?.toLowerCase().includes(query)
-    );
-  }, [stocks, searchQuery]);
-
-  const filteredStocksWithImages = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return stocksWithImages;
-    }
-    const query = searchQuery.toLowerCase().trim();
-    return stocksWithImages.filter(
-      (stock) =>
-        stock.stockName?.toLowerCase().includes(query) ||
-        stock.erpStockCode?.toLowerCase().includes(query)
-    );
-  }, [stocksWithImages, searchQuery]);
 
   const handleStockSelect = async (stock: StockGetDto | StockGetWithMainImageDto): Promise<void> => {
     const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
@@ -869,8 +846,28 @@ export function ProductSelectDialog({
     }
   };
 
+  const handleScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>): void => {
+      const activeDropdown = activeTab === 'stocks' ? stocksDropdown : stocksWithImagesDropdown;
+      if (!activeDropdown.hasNextPage || activeDropdown.isFetchingNextPage) {
+        return;
+      }
+
+      const target = event.currentTarget;
+      if (target.scrollHeight <= 0) {
+        return;
+      }
+
+      const scrollProgress = (target.scrollTop + target.clientHeight) / target.scrollHeight;
+      if (scrollProgress >= DROPDOWN_SCROLL_THRESHOLD) {
+        void activeDropdown.fetchNextPage();
+      }
+    },
+    [activeTab, stocksDropdown, stocksWithImagesDropdown]
+  );
+
   const renderStocks = (): ReactElement => {
-    if (stocksLoading) {
+    if (stocksDropdown.isLoading) {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
@@ -880,13 +877,11 @@ export function ProductSelectDialog({
       );
     }
 
-    if (filteredStocks.length === 0) {
+    if (stocksDropdown.items.length === 0) {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
-            {searchQuery.trim()
-              ? t('productSelectDialog.noResults')
-              : t('productSelectDialog.noProducts')}
+            {searchQuery.trim() ? t('productSelectDialog.noResults') : t('productSelectDialog.noProducts')}
           </div>
         </div>
       );
@@ -895,7 +890,7 @@ export function ProductSelectDialog({
     if (viewMode === 'list') {
       return (
         <div className="flex flex-col gap-2">
-          {filteredStocks.map((stock) => (
+          {stocksDropdown.items.map((stock) => (
             <StockListItem
               key={stock.id}
               stock={stock}
@@ -909,7 +904,7 @@ export function ProductSelectDialog({
 
     return (
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredStocks.map((stock) => (
+        {stocksDropdown.items.map((stock) => (
           <StockCard
             key={stock.id}
             stock={stock}
@@ -922,7 +917,7 @@ export function ProductSelectDialog({
   };
 
   const renderStocksWithImages = (): ReactElement => {
-    if (stocksWithImagesLoading) {
+    if (stocksWithImagesDropdown.isLoading) {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
@@ -932,13 +927,11 @@ export function ProductSelectDialog({
       );
     }
 
-    if (filteredStocksWithImages.length === 0) {
+    if (stocksWithImagesDropdown.items.length === 0) {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
-            {searchQuery.trim()
-              ? t('productSelectDialog.noResults')
-              : t('productSelectDialog.noProducts')}
+            {searchQuery.trim() ? t('productSelectDialog.noResults') : t('productSelectDialog.noProducts')}
           </div>
         </div>
       );
@@ -947,7 +940,7 @@ export function ProductSelectDialog({
     if (viewMode === 'list') {
       return (
         <div className="flex flex-col gap-2">
-          {filteredStocksWithImages.map((stock) => (
+          {stocksWithImagesDropdown.items.map((stock) => (
             <StockWithImageListItem
               key={stock.id}
               stock={stock}
@@ -961,7 +954,7 @@ export function ProductSelectDialog({
 
     return (
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredStocksWithImages.map((stock) => (
+        {stocksWithImagesDropdown.items.map((stock) => (
           <StockWithImageCard
             key={stock.id}
             stock={stock}
@@ -1014,9 +1007,23 @@ export function ProductSelectDialog({
                   placeholder={t('productSelectDialog.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-11 bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 focus:border-pink-500/50 dark:focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl transition-all shadow-sm"
+                  className="pl-10 pr-20 h-11 bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 focus:border-pink-500/50 dark:focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl transition-all shadow-sm"
                 />
               </div>
+              {isThresholdInput ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label={minCharsHint}
+                      className="absolute right-12 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                    >
+                      <AlertCircle className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">{minCharsHint}</TooltipContent>
+                </Tooltip>
+              ) : null}
               {recognitionRef.current && (
                 <Button
                   type="button"
@@ -1121,7 +1128,8 @@ export function ProductSelectDialog({
 
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-y-auto min-h-0 custom-scrollbar pb-6"
+            onScroll={handleScroll}
+            className="flex-1 overflow-y-auto min-h-0 max-h-[420px] custom-scrollbar pb-6"
           >
             <TabsContent value="stocks" className="mt-0">
               {renderStocks()}
@@ -1129,6 +1137,11 @@ export function ProductSelectDialog({
             <TabsContent value="stocksWithImages" className="mt-0">
               {renderStocksWithImages()}
             </TabsContent>
+            {(activeTab === 'stocks' ? stocksDropdown.isFetchingNextPage : stocksWithImagesDropdown.isFetchingNextPage) ? (
+              <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+                {t('productSelectDialog.loading')}
+              </div>
+            ) : null}
           </div>
         </Tabs>
       </DialogContent>

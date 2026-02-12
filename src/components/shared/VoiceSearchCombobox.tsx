@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Check, ChevronsUpDown, Mic, MicOff } from 'lucide-react';
+import { AlertCircle, Check, ChevronsUpDown, Loader2, Mic, MicOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -16,7 +16,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useTranslation } from 'react-i18next';
+import {
+  DROPDOWN_DEBOUNCE_MS,
+  DROPDOWN_MAX_VISIBLE_ITEMS_CLASS,
+  DROPDOWN_MIN_CHARS,
+  DROPDOWN_SCROLL_THRESHOLD,
+} from '@/components/shared/dropdown/constants';
 
 export interface ComboboxOption {
   value: string;
@@ -27,6 +34,12 @@ interface VoiceSearchComboboxProps {
   options: ComboboxOption[];
   value?: string | null;
   onSelect: (value: string | null) => void;
+  onDebouncedSearchChange?: (value: string) => void;
+  onFetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isLoading?: boolean;
+  isFetchingNextPage?: boolean;
+  minChars?: number;
   placeholder?: string;
   searchPlaceholder?: string;
   className?: string;
@@ -38,6 +51,12 @@ export function VoiceSearchCombobox({
   options,
   value,
   onSelect,
+  onDebouncedSearchChange,
+  onFetchNextPage,
+  hasNextPage = false,
+  isLoading = false,
+  isFetchingNextPage = false,
+  minChars = DROPDOWN_MIN_CHARS,
   placeholder,
   searchPlaceholder,
   className,
@@ -128,6 +147,44 @@ export function VoiceSearchCombobox({
     }
   }, [open]);
 
+  useEffect(() => {
+    if (!onDebouncedSearchChange) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      onDebouncedSearchChange(searchQuery);
+    }, DROPDOWN_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [onDebouncedSearchChange, searchQuery]);
+
+  const isAsyncMode = Boolean(onDebouncedSearchChange);
+  const trimmedSearchQuery = searchQuery.trim();
+  const isThresholdMode = isAsyncMode && trimmedSearchQuery.length > 0 && trimmedSearchQuery.length < minChars;
+  const minCharsHint = t('common.dropdown.minCharsHint', {
+    count: minChars,
+    defaultValue: `Minimum ${minChars} characters`,
+  });
+
+  const handleListScroll = (event: React.UIEvent<HTMLDivElement>): void => {
+    if (!onFetchNextPage || !hasNextPage || isFetchingNextPage) {
+      return;
+    }
+
+    const target = event.currentTarget;
+    if (target.scrollHeight <= 0) {
+      return;
+    }
+
+    const scrollProgress = (target.scrollTop + target.clientHeight) / target.scrollHeight;
+    if (scrollProgress >= DROPDOWN_SCROLL_THRESHOLD) {
+      void onFetchNextPage();
+    }
+  };
+
   const selectedLabel = value 
     ? options.find((option) => option.value === value)?.label 
     : null;
@@ -153,13 +210,29 @@ export function VoiceSearchCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl rounded-2xl" align="start">
-        <Command className="bg-transparent">
+        <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
           <CommandInput 
             placeholder={searchPlaceholder || t('common.search')} 
             value={searchQuery}
             onValueChange={setSearchQuery}
             className="border-b border-slate-100 dark:border-white/5 bg-transparent"
           >
+             {isThresholdMode ? (
+               <Tooltip>
+                 <TooltipTrigger asChild>
+                   <button
+                     type="button"
+                     aria-label={minCharsHint}
+                     className="h-8 w-8 mr-1 inline-flex items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                   >
+                     <AlertCircle className="h-4 w-4" />
+                   </button>
+                 </TooltipTrigger>
+                 <TooltipContent side="top">
+                   {minCharsHint}
+                 </TooltipContent>
+               </Tooltip>
+             ) : null}
              {recognitionRef.current && (
                <Button
                  type="button"
@@ -176,31 +249,50 @@ export function VoiceSearchCombobox({
                </Button>
              )}
           </CommandInput>
-          <CommandList className="max-h-[300px] overflow-y-auto p-2 custom-scrollbar space-y-1">
+          <CommandList
+            onScroll={handleListScroll}
+            className={cn(
+              DROPDOWN_MAX_VISIBLE_ITEMS_CLASS,
+              "overflow-y-auto p-2 custom-scrollbar space-y-1"
+            )}
+          >
             <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
-              {t('common.noResults')}
+              {isThresholdMode ? minCharsHint : t('common.noResults')}
             </CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.label} // Use label for filtering since users search by text
-                  onSelect={() => {
-                    onSelect(option.value === value ? null : option.value)
-                    setOpen(false)
-                  }}
-                  className="cursor-pointer rounded-xl px-3 py-2.5 data-[selected=true]:bg-slate-100 dark:data-[selected=true]:bg-white/10 data-[selected=true]:text-slate-900 dark:data-[selected=true]:text-white transition-colors"
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4 text-pink-500",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-6 text-sm text-slate-500 dark:text-slate-400">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('common.loading', { defaultValue: 'Loading...' })}
+              </div>
+            ) : (
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.label}
+                    onSelect={() => {
+                      onSelect(option.value === value ? null : option.value)
+                      setOpen(false)
+                    }}
+                    className="cursor-pointer rounded-xl px-3 py-2.5 data-[selected=true]:bg-slate-100 dark:data-[selected=true]:bg-white/10 data-[selected=true]:text-slate-900 dark:data-[selected=true]:text-white transition-colors"
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4 text-pink-500",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+            {isFetchingNextPage ? (
+              <div className="flex items-center justify-center py-2 text-xs text-slate-500 dark:text-slate-400">
+                <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                {t('common.loading', { defaultValue: 'Loading...' })}
+              </div>
+            ) : null}
           </CommandList>
         </Command>
       </PopoverContent>
