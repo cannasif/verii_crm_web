@@ -65,5 +65,37 @@
   "delete": {
     "confirmTitle": "Supprimer l'utilisateur",
     "confirmMessage": "Êtes-vous sûr de vouloir supprimer l'utilisateur {{username}} ?"
+  },
+  "userManagement": {
+    "form": {
+      "editUser": "Modifier l'utilisateur",
+      "addUser": "Ajouter un nouvel utilisateur",
+      "editDescription": "Modifier les informations de l'utilisateur",
+      "addDescription": "Entrer les informations du nouvel utilisateur",
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "Entrer le nom d'utilisateur",
+      "email": "E-mail",
+      "emailPlaceholder": "Entrer l'adresse e-mail",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Laisser vide pour mot de passe temporaire",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Entrer le prénom",
+      "lastName": "Nom de famille",
+      "lastNamePlaceholder": "Entrer le nom de famille",
+      "phoneNumber": "Numéro de téléphone",
+      "phoneNumberPlaceholder": "Entrer le numéro de téléphone",
+      "role": "Rôle",
+      "rolePlaceholder": "Sélectionner le rôle",
+      "permissionGroups": "Permission Groups",
+      "isActive": "Active",
+      "cancel": "Annuler",
+      "saving": "Enregistrement...",
+      "save": "Enregistrer",
+      "selectAll": "Select all",
+      "permissionGroupsNoData": "Aucun groupe de permissions trouvé"
+    },
+    "table": {
+      "loading": "Chargement..."
+    }
   }
 }

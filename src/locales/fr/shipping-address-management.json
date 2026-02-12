@@ -73,5 +73,11 @@
   "cancel": "Annuler",
   "save": "Enregistrer",
   "saving": "Enregistrement...",
-  "deleting": "Suppression..."
+  "deleting": "Suppression...",
+  "name": "Adres Adı",
+  "namePlaceholder": "Adres adını girin",
+  "isDefault": "Varsayılan Sevk Adresi",
+  "isDefaultShort": "Varsayılan",
+  "defaultBadge": "Varsayılan",
+  "nameMaxLength": "Adres adı en fazla 150 karakter olabilir"
 }

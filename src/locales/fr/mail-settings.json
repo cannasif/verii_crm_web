@@ -14,5 +14,10 @@
     "FromEmail": "E‑mail expéditeur",
     "FromName": "Nom de l’expéditeur",
     "Timeout": "Délai d’expiration (s)"
+  },
+  "TestMail": {
+    "Send": "Test Maili Gönder",
+    "Sending": "Test gönderiliyor...",
+    "Success": "Test maili gönderildi"
   }
 }

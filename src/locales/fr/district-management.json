@@ -10,10 +10,7 @@
   "previous": "Précédent",
   "next": "Suivant",
   "cancel": "Annuler",
-  "delete": {
-    "confirmTitle": "Supprimer le District",
-    "confirmMessage": "Êtes-vous sûr de vouloir supprimer le district {{name}} ?"
-  },
+  "delete": "Supprimer",
   "save": "Enregistrer",
   "saving": "Enregistrement...",
   "table": {
