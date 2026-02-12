@@ -13,6 +13,7 @@ export const salesTypeApi = {
     if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
     if (params.filters) {
       queryParams.append('filters', JSON.stringify(params.filters));
+      queryParams.append('filterLogic', params.filterLogic ?? 'and');
     }
 
     const response = await api.get<ApiResponse<PagedResponse<SalesTypeGetDto> & { items?: SalesTypeGetDto[] }>>(
