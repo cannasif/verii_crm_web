@@ -10,8 +10,8 @@
     "failed": "Fallidos"
   },
   "table": {
-    "jobId": "Job ID",
-    "jobName": "Job",
+    "jobId": "ID de trabajo",
+    "jobName": "trabajo",
     "state": "Estado",
     "time": "Hora",
     "reason": "Motivo"

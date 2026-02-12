@@ -16,8 +16,8 @@
     "Timeout": "Tiempo de espera (s)"
   },
   "TestMail": {
-    "Send": "Test Maili Gönder",
-    "Sending": "Test gönderiliyor...",
-    "Success": "Test maili gönderildi"
+    "Send": "Enviar correo electrónico de prueba",
+    "Sending": "Se está enviando la prueba...",
+    "Success": "Correo electrónico de prueba enviado"
   }
 }

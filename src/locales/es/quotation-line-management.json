@@ -107,7 +107,7 @@
   "vatApplied": "IVA Aplicado",
   "finalAmount": "Monto Final",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "quotationId": "ID de Cotización",
     "productCode": "Código de Producto",
     "productName": "Nombre de Producto",

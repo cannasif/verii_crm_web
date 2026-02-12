@@ -33,7 +33,7 @@
     "description": "Administre los productos sincronizados con el ERP",
     "syncedFromErp": "Sincronizado desde ERP",
     "search": "Buscar",
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "erpStockCode": "Código de stock ERP",
     "stockName": "Nombre del producto",
     "unit": "Unidad",
