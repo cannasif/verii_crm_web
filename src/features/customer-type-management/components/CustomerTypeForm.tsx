@@ -24,6 +24,7 @@ import {
 import { customerTypeFormSchema, type CustomerTypeFormSchema } from '../types/customer-type-types';
 import type { CustomerTypeDto } from '../types/customer-type-types';
 import { Tag, FileText } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface CustomerTypeFormProps {
   open: boolean;
@@ -129,9 +130,9 @@ export function CustomerTypeForm({
                         name="name"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel className={LABEL_STYLE}>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerTypeFormSchema, 'name')}>
                             <Tag size={16} className="text-pink-500" />
-                            {t('customerTypeManagement.form.name')} <span className="text-red-500">*</span>
+                            {t('customerTypeManagement.form.name')}
                             </FormLabel>
                             <FormControl>
                             <Input

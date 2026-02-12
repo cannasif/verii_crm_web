@@ -47,6 +47,7 @@ import { useCustomerTypeOptions } from '../hooks/useCustomerTypeOptions';
 import { useSalesRepOptions } from '../hooks/useSalesRepOptions';
 import { FileText, Check, ChevronsUpDown, Mic, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface DocumentSerialTypeFormProps {
   open: boolean;
@@ -277,8 +278,8 @@ export function DocumentSerialTypeForm({
                 name="ruleType"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                      {t('documentSerialTypeManagement.form.ruleType')} *
+                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300" required={isZodFieldRequired(documentSerialTypeFormSchema, 'ruleType')}>
+                      {t('documentSerialTypeManagement.form.ruleType')}
                     </FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(parseInt(value))}
@@ -359,8 +360,8 @@ export function DocumentSerialTypeForm({
                 name="serialPrefix"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                      {t('documentSerialTypeManagement.form.serialPrefix')} *
+                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300" required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialPrefix')}>
+                      {t('documentSerialTypeManagement.form.serialPrefix')}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -383,8 +384,8 @@ export function DocumentSerialTypeForm({
                 name="serialLength"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                      {t('documentSerialTypeManagement.form.serialLength')} *
+                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300" required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialLength')}>
+                      {t('documentSerialTypeManagement.form.serialLength')}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -409,8 +410,8 @@ export function DocumentSerialTypeForm({
                 name="serialIncrement"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                      {t('documentSerialTypeManagement.form.serialIncrement')} *
+                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300" required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialIncrement')}>
+                      {t('documentSerialTypeManagement.form.serialIncrement')}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -437,8 +438,8 @@ export function DocumentSerialTypeForm({
                 name="serialStart"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                      {t('documentSerialTypeManagement.form.serialStart')} *
+                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300" required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialStart')}>
+                      {t('documentSerialTypeManagement.form.serialStart')}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -462,8 +463,8 @@ export function DocumentSerialTypeForm({
                 name="serialCurrent"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                      {t('documentSerialType.form.serialCurrent')} *
+                    <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300" required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialCurrent')}>
+                      {t('documentSerialType.form.serialCurrent')}
                     </FormLabel>
                     <FormControl>
                       <Input

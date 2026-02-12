@@ -20,6 +20,7 @@ import {
   type SmtpSettingsDto,
 } from '../types/smtpSettings';
 import { useSendTestMailMutation } from '../hooks/useSendTestMailMutation';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface MailSettingsFormProps {
   data: SmtpSettingsDto | undefined;
@@ -96,7 +97,7 @@ export function MailSettingsForm({
               name="host"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Host')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(smtpSettingsFormSchema, 'host')}>{t('mailSettings.Fields.Host')}</FormLabel>
                   <FormControl>
                     <Input type="text" placeholder="smtp.gmail.com" {...field} />
                   </FormControl>
@@ -109,7 +110,7 @@ export function MailSettingsForm({
               name="port"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Port')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(smtpSettingsFormSchema, 'port')}>{t('mailSettings.Fields.Port')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -144,7 +145,7 @@ export function MailSettingsForm({
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Username')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(smtpSettingsFormSchema, 'username')}>{t('mailSettings.Fields.Username')}</FormLabel>
                   <FormControl>
                     <Input type="text" {...field} />
                   </FormControl>
@@ -174,7 +175,7 @@ export function MailSettingsForm({
               name="fromEmail"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.FromEmail')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(smtpSettingsFormSchema, 'fromEmail')}>{t('mailSettings.Fields.FromEmail')}</FormLabel>
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
@@ -187,7 +188,7 @@ export function MailSettingsForm({
               name="fromName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.FromName')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(smtpSettingsFormSchema, 'fromName')}>{t('mailSettings.Fields.FromName')}</FormLabel>
                   <FormControl>
                     <Input type="text" readOnly disabled {...field} />
                   </FormControl>
@@ -200,7 +201,7 @@ export function MailSettingsForm({
               name="timeout"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Timeout')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(smtpSettingsFormSchema, 'timeout')}>{t('mailSettings.Fields.Timeout')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
