@@ -18,10 +18,10 @@ export const useDeleteCountry = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('countryManagement.messages.deleteSuccess', 'Ülke başarıyla silindi'));
+      toast.success(t('countryManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('countryManagement.messages.deleteError', 'Ülke silinemedi'));
+      toast.error(error.message || t('countryManagement.messages.deleteError'));
     },
   });
 };

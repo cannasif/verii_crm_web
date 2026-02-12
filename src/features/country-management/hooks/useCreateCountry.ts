@@ -20,10 +20,10 @@ export const useCreateCountry = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('countryManagement.messages.createSuccess', 'Ülke başarıyla oluşturuldu'));
+      toast.success(t('countryManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('countryManagement.messages.createError', 'Ülke oluşturulamadı'));
+      toast.error(error.message || t('countryManagement.messages.createError'));
     },
   });
 };

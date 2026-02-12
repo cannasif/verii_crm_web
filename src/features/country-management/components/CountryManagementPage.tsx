@@ -57,7 +57,7 @@ export function CountryManagementPage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageTitle(t('countryManagement.menu', 'Ülke Yönetimi'));
+    setPageTitle(t('countryManagement.menu'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -117,10 +117,10 @@ export function CountryManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('countryManagement.menu', 'Ülke Yönetimi')}
+            {t('countryManagement.menu')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('countryManagement.description', 'Ülkeleri yönetin ve düzenleyin')}
+            {t('countryManagement.description')}
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export function CountryManagementPage(): ReactElement {
               className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
             >
           <Plus size={18} className="mr-2" />
-          {t('countryManagement.addButton', 'Yeni Ülke Ekle')}
+          {t('countryManagement.addButton')}
         </Button>
       </div>
 
@@ -140,7 +140,7 @@ export function CountryManagementPage(): ReactElement {
                 <div className="relative group w-full sm:w-72 lg:w-96">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
                     <Input
-                        placeholder={t('countryManagement.searchPlaceholder', 'Hızlı Ara...')}
+                        placeholder={t('countryManagement.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all w-full"
@@ -176,14 +176,14 @@ export function CountryManagementPage(): ReactElement {
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showColumns ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
                     >
                         <SlidersHorizontal size={16} />
-                        <span className="font-medium text-sm">{t('common.editColumns', 'Sütun Düzenle')}</span>
+                        <span className="font-medium text-sm">{t('common.editColumns')}</span>
                     </button>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                     
                     {/* Header */}
                     <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                        <h3 className="text-sm font-semibold text-gray-200">{t('common.columns', 'Görünür Sütunlar')}</h3>
+                        <h3 className="text-sm font-semibold text-gray-200">{t('common.columns')}</h3>
                         <button onClick={() => setShowColumns(false)} className="text-gray-500 hover:text-white transition-colors">
                             <X size={16} />
                         </button>
@@ -216,14 +216,14 @@ export function CountryManagementPage(): ReactElement {
                             className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-white transition-colors px-1"
                         >
                             <CheckSquare size={14} />
-                            <span>{t('common.selectAll', 'Tümünü Seç')}</span>
+                            <span>{t('common.selectAll')}</span>
                         </button>
                         
                         <button 
                             onClick={() => setShowColumns(false)}
                             className="bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2 px-6 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
                         >
-                            {t('common.ok', 'TAMAM')}
+                            {t('common.ok')}
                         </button>
                     </div>
                 </PopoverContent>

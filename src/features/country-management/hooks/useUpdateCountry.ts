@@ -21,10 +21,10 @@ export const useUpdateCountry = () => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedCountry.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('countryManagement.messages.updateSuccess', 'Ülke başarıyla güncellendi'));
+      toast.success(t('countryManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('countryManagement.messages.updateError', 'Ülke güncellenemedi'));
+      toast.error(error.message || t('countryManagement.messages.updateError'));
     },
   });
 };
