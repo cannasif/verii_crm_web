@@ -87,10 +87,10 @@ export function PowerbiRlsForm({
       <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {initial ? t('powerbiRls.edit', 'Eşleştirme Düzenle') : t('powerbiRls.new', 'Yeni Eşleştirme')}
+            {initial ? t('powerbiRls.edit') : t('powerbiRls.new')}
           </DialogTitle>
           <DialogDescription>
-            {t('powerbiRls.description', 'Rapor + kullanıcı rolü eşleştirip RLS rolleri tanımlayın.')}
+            {t('powerbiRls.description')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -100,14 +100,14 @@ export function PowerbiRlsForm({
               name="powerBIReportDefinitionId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbiRls.report', 'Rapor')}</FormLabel>
+                  <FormLabel>{t('powerbiRls.report')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('powerbiRls.report', 'Rapor seçin')} />
+                        <SelectValue placeholder={t('powerbiRls.report')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -127,14 +127,14 @@ export function PowerbiRlsForm({
               name="roleId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbiRls.role', 'Rol')}</FormLabel>
+                  <FormLabel>{t('powerbiRls.role')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('powerbiRls.role', 'Rol seçin')} />
+                        <SelectValue placeholder={t('powerbiRls.role')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -154,10 +154,10 @@ export function PowerbiRlsForm({
               name="rlsRoles"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbiRls.rlsRoles', 'RLS Rolleri')}</FormLabel>
+                  <FormLabel>{t('powerbiRls.rlsRoles')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('powerbiRls.rlsRolesPlaceholder', 'Sales, Finance, NorthRegion')}
+                      placeholder={t('powerbiRls.rlsRolesPlaceholder')}
                       {...field}
                     />
                   </FormControl>
@@ -167,11 +167,11 @@ export function PowerbiRlsForm({
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t('powerbiRls.cancel', 'İptal')}
+                {t('powerbiRls.cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('powerbiRls.save', 'Kaydet')}
+                {t('powerbiRls.save')}
               </Button>
             </DialogFooter>
           </form>

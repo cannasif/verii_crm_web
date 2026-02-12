@@ -13,7 +13,7 @@ export function PowerbiRlsPage(): ReactElement {
   const [editing, setEditing] = useState<PowerBIReportRoleMapping | null>(null);
 
   useEffect(() => {
-    setPageTitle(t('powerbiRls.title', 'PowerBI RLS Yönetimi'));
+    setPageTitle(t('powerbiRls.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -22,15 +22,15 @@ export function PowerbiRlsPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            {t('powerbiRls.title', 'PowerBI RLS Yönetimi')}
+            {t('powerbiRls.title')}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {t('powerbiRls.description', 'Rapor + kullanıcı rolü eşleştirip RLS rolleri tanımlayın.')}
+            {t('powerbiRls.description')}
           </p>
         </div>
         <Button onClick={() => { setEditing(null); setFormOpen(true); }}>
           <Plus className="mr-2 h-4 w-4" />
-          {t('powerbiRls.new', 'Yeni Eşleştirme')}
+          {t('powerbiRls.new')}
         </Button>
       </div>
       <PowerbiRlsList

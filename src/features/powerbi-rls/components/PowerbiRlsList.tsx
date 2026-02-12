@@ -92,12 +92,12 @@ export function PowerbiRlsList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('powerbiRls.report', 'Rapor')}</TableHead>
-              <TableHead>{t('powerbiRls.role', 'Rol')}</TableHead>
-              <TableHead>{t('powerbiRls.rlsRoles', 'RLS Rolleri')}</TableHead>
-              <TableHead>{t('powerbiRls.createdBy', 'Oluşturan')}</TableHead>
-              <TableHead>{t('powerbiRls.updatedBy', 'Güncelleyen')}</TableHead>
-              <TableHead className="text-right">{t('powerbiRls.actions', 'İşlemler')}</TableHead>
+              <TableHead>{t('powerbiRls.report')}</TableHead>
+              <TableHead>{t('powerbiRls.role')}</TableHead>
+              <TableHead>{t('powerbiRls.rlsRoles')}</TableHead>
+              <TableHead>{t('powerbiRls.createdBy')}</TableHead>
+              <TableHead>{t('powerbiRls.updatedBy')}</TableHead>
+              <TableHead className="text-right">{t('powerbiRls.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -110,7 +110,7 @@ export function PowerbiRlsList({
             ) : items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                  {t('common.noData', 'Kayıt bulunamadı')}
+                  {t('common.noData')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -152,14 +152,14 @@ export function PowerbiRlsList({
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('powerbiRls.delete', 'Sil')}</DialogTitle>
+            <DialogTitle>{t('powerbiRls.delete')}</DialogTitle>
             <DialogDescription>
-              {t('powerbiRls.confirmDelete', 'Bu eşleştirmeyi silmek istediğinize emin misiniz?')}
+              {t('powerbiRls.confirmDelete')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('powerbiRls.cancel', 'İptal')}
+              {t('powerbiRls.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -167,7 +167,7 @@ export function PowerbiRlsList({
               disabled={deleteMutation.isPending}
             >
               {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('powerbiRls.delete', 'Sil')}
+              {t('powerbiRls.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

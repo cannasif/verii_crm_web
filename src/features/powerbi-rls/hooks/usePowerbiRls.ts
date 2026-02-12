@@ -49,10 +49,10 @@ export function useCreatePowerbiRls() {
       powerbiRlsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiRlsQueryKeys.all });
-      toast.success(t('powerbiRls.successCreate', 'Eşleştirme oluşturuldu'));
+      toast.success(t('powerbiRls.successCreate'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbiRls.error', 'İşlem başarısız'));
+      toast.error(error.message ?? t('powerbiRls.error'));
     },
   });
 }
@@ -72,10 +72,10 @@ export function useUpdatePowerbiRls() {
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: powerbiRlsQueryKeys.all });
       queryClient.invalidateQueries({ queryKey: powerbiRlsQueryKeys.detail(updated.id) });
-      toast.success(t('powerbiRls.successUpdate', 'Eşleştirme güncellendi'));
+      toast.success(t('powerbiRls.successUpdate'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbiRls.error', 'İşlem başarısız'));
+      toast.error(error.message ?? t('powerbiRls.error'));
     },
   });
 }
@@ -88,10 +88,10 @@ export function useDeletePowerbiRls() {
     mutationFn: (id: number): Promise<void> => powerbiRlsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiRlsQueryKeys.all });
-      toast.success(t('powerbiRls.successDelete', 'Eşleştirme silindi'));
+      toast.success(t('powerbiRls.successDelete'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbiRls.error', 'İşlem başarısız'));
+      toast.error(error.message ?? t('powerbiRls.error'));
     },
   });
 }
