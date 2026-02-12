@@ -48,10 +48,11 @@ import {
   Layers, Quote, Folder, ListPlus, X
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
-import type { CreateDemandSchema } from '../schemas/demand-schema';
+import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import { OfferType } from '@/types/offer-type';
 import type { DemandExchangeRateFormState } from '../types/demand-types';
 import { cn } from '@/lib/utils';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface DemandHeaderFormProps {
   exchangeRates?: DemandExchangeRateFormState[];
@@ -280,7 +281,7 @@ export function DemandHeaderForm({
                 render={() => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>
-                      {t('demand.header.customer')} <span className="text-pink-500">*</span>
+                      {t('demand.header.customer')}
                     </FormLabel>
                     <div className="flex gap-2">
                       <div className="relative flex-1 group">
@@ -424,7 +425,7 @@ export function DemandHeaderForm({
                 name="demand.currency"
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label}>Para Birimi</FormLabel>
+                    <FormLabel className={styles.label} required={isZodFieldRequired(createDemandSchema, 'demand.currency')}>Para Birimi</FormLabel>
                     <Select
                       onValueChange={(value) => handleCurrencyChange(value)}
                       value={field.value ? String(field.value) : ''}
@@ -499,8 +500,8 @@ export function DemandHeaderForm({
                   name="demand.offerType"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>
-                        {t('common.offerType.label')} <span className="text-pink-500 ml-0.5">*</span>
+                      <FormLabel className={styles.label} required={isZodFieldRequired(createDemandSchema, 'demand.offerType')}>
+                        {t('common.offerType.label')}
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || ''} disabled={readOnly}>
                         <FormControl>
@@ -626,7 +627,7 @@ export function DemandHeaderForm({
                     name="demand.documentSerialTypeId"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>Seri No <span className="text-pink-500">*</span></FormLabel>
+                        <FormLabel className={styles.label} required={isZodFieldRequired(createDemandSchema, 'demand.documentSerialTypeId')}>Seri No</FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(value ? Number(value) : null)}
                           value={field.value?.toString() || ''}
