@@ -48,10 +48,11 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/stores/auth-store';
-import type { CreateOrderSchema } from '../schemas/order-schema';
+import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderExchangeRateFormState } from '../types/order-types';
 import { OfferType } from '@/types/offer-type';
 import { cn } from '@/lib/utils';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface OrderHeaderFormProps {
   exchangeRates?: OrderExchangeRateFormState[];
@@ -280,7 +281,7 @@ export function OrderHeaderForm({
                 render={() => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>
-                      {t('order.header.customer')} <span className="text-pink-500">*</span>
+                      {t('order.header.customer')}
                     </FormLabel>
                     <div className="flex gap-2">
                       <div className="relative flex-1 group">
@@ -413,7 +414,7 @@ export function OrderHeaderForm({
                 name="order.currency"
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label}>Para Birimi</FormLabel>
+                    <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.currency')}>Para Birimi</FormLabel>
                     <div className="relative">
                       <div className={styles.iconWrapper}><DollarSign className="h-4 w-4 text-emerald-600" /></div>
                       <VoiceSearchCombobox
@@ -481,8 +482,8 @@ export function OrderHeaderForm({
                   name="order.offerType"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>
-                        {t('common.offerType.label')} <span className="text-pink-500 ml-0.5">*</span>
+                      <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.offerType')}>
+                        {t('common.offerType.label')}
                       </FormLabel>
                       <div className="relative">
                          <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
@@ -609,7 +610,7 @@ export function OrderHeaderForm({
                     name="order.documentSerialTypeId"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>Seri No <span className="text-pink-500">*</span></FormLabel>
+                        <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.documentSerialTypeId')}>Seri No</FormLabel>
                         <div className="relative">
                           <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
                           <VoiceSearchCombobox
