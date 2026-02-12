@@ -138,7 +138,7 @@ export function UserDiscountLimitTable({
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-muted-foreground">
-          {t('userDiscountLimitManagement.loading', 'Yükleniyor...')}
+          {t('userDiscountLimitManagement.loading')}
         </div>
       </div>
     );
@@ -150,7 +150,7 @@ export function UserDiscountLimitTable({
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-muted-foreground">
-          {t('userDiscountLimitManagement.noData', 'Veri bulunamadı')}
+          {t('userDiscountLimitManagement.noData')}
         </div>
       </div>
     );
@@ -169,7 +169,7 @@ export function UserDiscountLimitTable({
                 onClick={() => handleSort('Id')}
               >
                 <div className="flex items-center">
-                  {t('userDiscountLimitManagement.table.id', 'ID')}
+                  {t('userDiscountLimitManagement.table.id')}
                   <SortIcon column="Id" />
                 </div>
               </TableHead>
@@ -178,7 +178,7 @@ export function UserDiscountLimitTable({
                 onClick={() => handleSort('SalespersonName')}
               >
                 <div className="flex items-center">
-                  {t('userDiscountLimitManagement.salespersonName', 'Satış Temsilcisi Adı')}
+                  {t('userDiscountLimitManagement.salespersonName')}
                   <SortIcon column="SalespersonName" />
                 </div>
               </TableHead>
@@ -187,7 +187,7 @@ export function UserDiscountLimitTable({
                 onClick={() => handleSort('ErpProductGroupCode')}
               >
                 <div className="flex items-center">
-                  {t('userDiscountLimitManagement.erpProductGroupCode', 'ERP Ürün Grubu Kodu')}
+                  {t('userDiscountLimitManagement.erpProductGroupCode')}
                   <SortIcon column="ErpProductGroupCode" />
                 </div>
               </TableHead>
@@ -196,7 +196,7 @@ export function UserDiscountLimitTable({
                 onClick={() => handleSort('MaxDiscount1')}
               >
                 <div className="flex items-center">
-                  {t('userDiscountLimitManagement.maxDiscount1', 'Maksimum İskonto 1')}
+                  {t('userDiscountLimitManagement.maxDiscount1')}
                   <SortIcon column="MaxDiscount1" />
                 </div>
               </TableHead>
@@ -205,7 +205,7 @@ export function UserDiscountLimitTable({
                 onClick={() => handleSort('MaxDiscount2')}
               >
                 <div className="flex items-center">
-                  {t('userDiscountLimitManagement.maxDiscount2', 'Maksimum İskonto 2')}
+                  {t('userDiscountLimitManagement.maxDiscount2')}
                   <SortIcon column="MaxDiscount2" />
                 </div>
               </TableHead>
@@ -214,7 +214,7 @@ export function UserDiscountLimitTable({
                 onClick={() => handleSort('MaxDiscount3')}
               >
                 <div className="flex items-center">
-                  {t('userDiscountLimitManagement.maxDiscount3', 'Maksimum İskonto 3')}
+                  {t('userDiscountLimitManagement.maxDiscount3')}
                   <SortIcon column="MaxDiscount3" />
                 </div>
               </TableHead>
@@ -223,7 +223,7 @@ export function UserDiscountLimitTable({
                 onClick={() => handleSort('CreatedDate')}
               >
                 <div className="flex items-center">
-                  {t('userDiscountLimitManagement.createdDate', 'Oluşturulma Tarihi')}
+                  {t('userDiscountLimitManagement.createdDate')}
                   <SortIcon column="CreatedDate" />
                 </div>
               </TableHead>
@@ -232,12 +232,12 @@ export function UserDiscountLimitTable({
                 onClick={() => handleSort('UpdatedDate')}
               >
                 <div className="flex items-center">
-                  {t('userDiscountLimitManagement.updatedDate', 'Güncellenme Tarihi')}
+                  {t('userDiscountLimitManagement.updatedDate')}
                   <SortIcon column="UpdatedDate" />
                 </div>
               </TableHead>
               <TableHead className="text-right">
-                {t('userDiscountLimitManagement.actions', 'İşlemler')}
+                {t('userDiscountLimitManagement.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -265,14 +265,14 @@ export function UserDiscountLimitTable({
                       size="sm"
                       onClick={() => onEdit(userDiscountLimit)}
                     >
-                      {t('userDiscountLimitManagement.edit', 'Düzenle')}
+                      {t('userDiscountLimitManagement.edit')}
                     </Button>
                     <Button
                       variant="destructive"
                       size="sm"
                       onClick={() => handleDeleteClick(userDiscountLimit)}
                     >
-                      {t('userDiscountLimitManagement.delete', 'Sil')}
+                      {t('userDiscountLimitManagement.delete')}
                     </Button>
                   </div>
                 </TableCell>
@@ -284,7 +284,7 @@ export function UserDiscountLimitTable({
 
       <div className="flex items-center justify-between py-4">
         <div className="text-sm text-muted-foreground">
-          {t('userDiscountLimitManagement.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('userDiscountLimitManagement.table.showing', {
             from: (pageNumber - 1) * pageSize + 1,
             to: Math.min(pageNumber * pageSize, data.totalCount || 0),
             total: data.totalCount || 0,
@@ -297,10 +297,10 @@ export function UserDiscountLimitTable({
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1}
           >
-            {t('userDiscountLimitManagement.previous', 'Önceki')}
+            {t('userDiscountLimitManagement.previous')}
           </Button>
           <div className="flex items-center px-4 text-sm">
-            {t('userDiscountLimitManagement.table.page', 'Sayfa {{current}} / {{total}}', {
+            {t('userDiscountLimitManagement.table.page', {
               current: pageNumber,
               total: totalPages,
             })}
@@ -311,7 +311,7 @@ export function UserDiscountLimitTable({
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
           >
-            {t('userDiscountLimitManagement.next', 'Sonraki')}
+            {t('userDiscountLimitManagement.next')}
           </Button>
         </div>
       </div>
@@ -320,10 +320,10 @@ export function UserDiscountLimitTable({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {t('userDiscountLimitManagement.deleteTitle', 'İskonto Limiti Sil')}
+              {t('userDiscountLimitManagement.deleteTitle')}
             </DialogTitle>
             <DialogDescription>
-              {t('userDiscountLimitManagement.confirmDelete', 'Bu iskonto limitini silmek istediğinizden emin misiniz?')}
+              {t('userDiscountLimitManagement.confirmDelete')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -332,7 +332,7 @@ export function UserDiscountLimitTable({
               onClick={() => setDeleteDialogOpen(false)}
               disabled={deleteUserDiscountLimit.isPending}
             >
-              {t('userDiscountLimitManagement.cancel', 'İptal')}
+              {t('userDiscountLimitManagement.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -340,8 +340,8 @@ export function UserDiscountLimitTable({
               disabled={deleteUserDiscountLimit.isPending}
             >
               {deleteUserDiscountLimit.isPending
-                ? t('userDiscountLimitManagement.loading', 'Yükleniyor...')
-                : t('userDiscountLimitManagement.delete', 'Sil')}
+                ? t('userDiscountLimitManagement.loading')
+                : t('userDiscountLimitManagement.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

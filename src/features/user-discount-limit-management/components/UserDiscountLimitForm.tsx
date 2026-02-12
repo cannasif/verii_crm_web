@@ -94,7 +94,7 @@ export function UserDiscountLimitForm({
       try {
         const existsResult = await userDiscountLimitApi.existsBySalespersonAndGroup(data.salespersonId, data.erpProductGroupCode);
         if (existsResult) {
-          toast.error(t('userDiscountLimitManagement.alreadyExists', 'Bu satış temsilcisi ve ürün grubu kombinasyonu için zaten bir iskonto limiti mevcut'));
+          toast.error(t('userDiscountLimitManagement.alreadyExists'));
           return;
         }
       } catch {
@@ -130,13 +130,13 @@ export function UserDiscountLimitForm({
         <DialogHeader>
           <DialogTitle>
             {userDiscountLimit
-              ? t('userDiscountLimitManagement.edit', 'İskonto Limiti Düzenle')
-              : t('userDiscountLimitManagement.create', 'Yeni İskonto Limiti')}
+              ? t('userDiscountLimitManagement.edit')
+              : t('userDiscountLimitManagement.create')}
           </DialogTitle>
           <DialogDescription>
             {userDiscountLimit
-              ? t('userDiscountLimitManagement.editDescription', 'İskonto limiti bilgilerini düzenleyin')
-              : t('userDiscountLimitManagement.createDescription', 'Yeni iskonto limiti bilgilerini girin')}
+              ? t('userDiscountLimitManagement.editDescription')
+              : t('userDiscountLimitManagement.createDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -148,7 +148,7 @@ export function UserDiscountLimitForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.salesperson', 'Satış Temsilcisi')} *
+                    {t('userDiscountLimitManagement.salesperson')} *
                   </FormLabel>
                   <VoiceSearchCombobox
                     options={userComboboxOptions}
@@ -156,8 +156,8 @@ export function UserDiscountLimitForm({
                     onSelect={(value) => {
                       field.onChange(value ? Number(value) : 0);
                     }}
-                    placeholder={t('userDiscountLimitManagement.selectSalesperson', 'Satış Temsilcisi Seçin')}
-                    searchPlaceholder={t('userDiscountLimitManagement.searchSalesperson', 'Satış Temsilcisi Ara...')}
+                    placeholder={t('userDiscountLimitManagement.selectSalesperson')}
+                    searchPlaceholder={t('userDiscountLimitManagement.searchSalesperson')}
                     className={INPUT_STYLE}
                     modal={true}
                     disabled={usersLoading}
@@ -173,7 +173,7 @@ export function UserDiscountLimitForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.erpProductGroupCode', 'ERP Ürün Grubu Kodu')} *
+                    {t('userDiscountLimitManagement.erpProductGroupCode')} *
                   </FormLabel>
                   <VoiceSearchCombobox
                     options={groupComboboxOptions}
@@ -181,8 +181,8 @@ export function UserDiscountLimitForm({
                     onSelect={(value) => {
                       field.onChange(value);
                     }}
-                    placeholder={t('userDiscountLimitManagement.selectErpProductGroupCode', 'Grup Seçin')}
-                    searchPlaceholder={t('userDiscountLimitManagement.searchGroup', 'Grup Ara...')}
+                    placeholder={t('userDiscountLimitManagement.selectErpProductGroupCode')}
+                    searchPlaceholder={t('userDiscountLimitManagement.searchGroup')}
                     className={INPUT_STYLE}
                     modal={true}
                     disabled={isLoadingGroups}
@@ -198,7 +198,7 @@ export function UserDiscountLimitForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.maxDiscount1', 'Maksimum İskonto 1')} *
+                    {t('userDiscountLimitManagement.maxDiscount1')} *
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -210,7 +210,7 @@ export function UserDiscountLimitForm({
                       {...field}
                       onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                       value={field.value || ''}
-                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount1', 'Maksimum İskonto 1 Girin (0-100)')}
+                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount1')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -224,7 +224,7 @@ export function UserDiscountLimitForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.maxDiscount2', 'Maksimum İskonto 2')}
+                    {t('userDiscountLimitManagement.maxDiscount2')}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -236,7 +236,7 @@ export function UserDiscountLimitForm({
                       {...field}
                       onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                       value={field.value || ''}
-                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount2', 'Maksimum İskonto 2 Girin (0-100, Opsiyonel)')}
+                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount2')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -250,7 +250,7 @@ export function UserDiscountLimitForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.maxDiscount3', 'Maksimum İskonto 3')}
+                    {t('userDiscountLimitManagement.maxDiscount3')}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -262,7 +262,7 @@ export function UserDiscountLimitForm({
                       {...field}
                       onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                       value={field.value || ''}
-                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount3', 'Maksimum İskonto 3 Girin (0-100, Opsiyonel)')}
+                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount3')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -277,12 +277,12 @@ export function UserDiscountLimitForm({
                 onClick={() => onOpenChange(false)}
                 disabled={isLoading}
               >
-                {t('userDiscountLimitManagement.cancel', 'İptal')}
+                {t('userDiscountLimitManagement.cancel')}
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading
-                  ? t('userDiscountLimitManagement.saving', 'Kaydediliyor...')
-                  : t('userDiscountLimitManagement.save', 'Kaydet')}
+                  ? t('userDiscountLimitManagement.saving')
+                  : t('userDiscountLimitManagement.save')}
               </Button>
             </DialogFooter>
           </form>

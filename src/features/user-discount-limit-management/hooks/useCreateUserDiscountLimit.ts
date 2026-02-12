@@ -19,10 +19,10 @@ export const useCreateUserDiscountLimit = (): UseMutationResult<UserDiscountLimi
         queryKey: [USER_DISCOUNT_LIMIT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('userDiscountLimitManagement.createSuccess', 'İskonto limiti başarıyla oluşturuldu'));
+      toast.success(t('userDiscountLimitManagement.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDiscountLimitManagement.createError', 'İskonto limiti oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('userDiscountLimitManagement.createError'));
     },
   });
 };

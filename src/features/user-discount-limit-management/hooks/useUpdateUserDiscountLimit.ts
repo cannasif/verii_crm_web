@@ -20,10 +20,10 @@ export const useUpdateUserDiscountLimit = (): UseMutationResult<UserDiscountLimi
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedUserDiscountLimit.id) });
-      toast.success(t('userDiscountLimitManagement.updateSuccess', 'İskonto limiti başarıyla güncellendi'));
+      toast.success(t('userDiscountLimitManagement.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDiscountLimitManagement.updateError', 'İskonto limiti güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('userDiscountLimitManagement.updateError'));
     },
   });
 };

@@ -24,7 +24,7 @@ export function UserDiscountLimitManagementPage(): ReactElement {
   const updateUserDiscountLimit = useUpdateUserDiscountLimit();
 
   useEffect(() => {
-    setPageTitle(t('userDiscountLimitManagement.title', 'Kullanıcı İskonto Limiti Yönetimi'));
+    setPageTitle(t('userDiscountLimitManagement.title'));
     return () => {
       setPageTitle(null);
     };
@@ -76,14 +76,14 @@ export function UserDiscountLimitManagementPage(): ReactElement {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {t('userDiscountLimitManagement.title', 'Kullanıcı İskonto Limiti Yönetimi')}
+            {t('userDiscountLimitManagement.title')}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            {t('userDiscountLimitManagement.description', 'Kullanıcı iskonto limitlerini yönetin ve düzenleyin')}
+            {t('userDiscountLimitManagement.description')}
           </p>
         </div>
         <Button onClick={handleAddClick}>
-          {t('userDiscountLimitManagement.create', 'Yeni İskonto Limiti')}
+          {t('userDiscountLimitManagement.create')}
         </Button>
       </div>
 

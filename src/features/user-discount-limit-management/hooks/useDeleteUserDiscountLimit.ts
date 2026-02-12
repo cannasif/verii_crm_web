@@ -17,10 +17,10 @@ export const useDeleteUserDiscountLimit = (): UseMutationResult<void, Error, num
         queryKey: [USER_DISCOUNT_LIMIT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('userDiscountLimitManagement.deleteSuccess', 'İskonto limiti başarıyla silindi'));
+      toast.success(t('userDiscountLimitManagement.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDiscountLimitManagement.deleteError', 'İskonto limiti silinirken bir hata oluştu'));
+      toast.error(error.message || t('userDiscountLimitManagement.deleteError'));
     },
   });
 };
