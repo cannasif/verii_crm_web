@@ -254,7 +254,7 @@ export function DemandHeaderForm({
         </div>
         <div>
           <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            {t('demand.header.title', 'Teklif Detayları')}
+            {t('demand.header.title')}
             {revisionNo && (
               <span className="px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-[10px] font-bold border border-pink-200 dark:border-pink-800">
                 REV-{revisionNo}
@@ -263,7 +263,7 @@ export function DemandHeaderForm({
           </h2>
           <p className="text-xs text-zinc-500 font-medium flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse shadow-[0_0_6px_rgba(236,72,153,0.8)]" />
-            {t('demand.header.subtitle', 'Müşteri ve finansal bilgileri buradan yönetebilirsiniz.')}
+            {t('demand.header.subtitle')}
           </p>
         </div>
       </div>
@@ -280,7 +280,7 @@ export function DemandHeaderForm({
                 render={() => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>
-                      {t('demand.header.customer', 'Müşteri Hesabı')} <span className="text-pink-500">*</span>
+                      {t('demand.header.customer')} <span className="text-pink-500">*</span>
                     </FormLabel>
                     <div className="flex gap-2">
                       <div className="relative flex-1 group">
@@ -291,7 +291,7 @@ export function DemandHeaderForm({
                           <Input
                             className={cn(styles.inputBase, "font-semibold text-zinc-800 dark:text-zinc-100")}
                             value={customerDisplayValue}
-                            placeholder={t('demand.header.selectCustomer', 'Müşteri seçiniz...')}
+                            placeholder={t('demand.header.selectCustomer')}
                             readOnly
                             onClick={() => !readOnly && setCustomerSelectDialogOpen(true)}
                             disabled={readOnly}
@@ -304,7 +304,7 @@ export function DemandHeaderForm({
                         className="h-11 px-6 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white shadow-md hover:shadow-lg transition-all border border-zinc-800 active:scale-95"
                       >
                         <Search className="h-4 w-4 mr-2" />
-                        {t('demand.select', 'Seç')}
+                        {t('demand.select')}
                       </Button>
                     </div>
                     <FormMessage className="mt-1.5" />
@@ -321,7 +321,7 @@ export function DemandHeaderForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>
-                      {t('demand.header.representative', 'Satış Temsilcisi')}
+                      {t('demand.header.representative')}
                     </FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(value ? Number(value) : null)}
@@ -332,7 +332,7 @@ export function DemandHeaderForm({
                         <div className="relative">
                            <div className={styles.iconWrapper}><Briefcase className="h-4 w-4" /></div>
                            <SelectTrigger className={styles.inputBase}>
-                             <SelectValue placeholder={t('demand.select', 'Seçiniz')} />
+                             <SelectValue placeholder={t('demand.select')} />
                            </SelectTrigger>
                         </div>
                       </FormControl>
@@ -359,7 +359,7 @@ export function DemandHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>
                          <Truck className="h-3.5 w-3.5 text-orange-500" />
-                        {t('demand.header.shippingAddress', 'Sevk Adresi')}
+                        {t('demand.header.shippingAddress')}
                       </FormLabel>
                       <Select
                         onValueChange={(value) => field.onChange(value ? Number(value) : null)}
@@ -369,7 +369,7 @@ export function DemandHeaderForm({
                           <div className="relative">
                              <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
                              <SelectTrigger className={cn(styles.inputBase, "bg-orange-50/30 dark:bg-orange-950/10 border-orange-100 dark:border-orange-900/30")}>
-                               <SelectValue placeholder={t('demand.header.selectShippingAddress', 'Sevk adresi seçin')} />
+                               <SelectValue placeholder={t('demand.header.selectShippingAddress')} />
                              </SelectTrigger>
                           </div>
                         </FormControl>
@@ -434,7 +434,7 @@ export function DemandHeaderForm({
                         <div className="relative">
                           <div className={styles.iconWrapper}><DollarSign className="h-4 w-4 text-emerald-600" /></div>
                           <SelectTrigger className={cn(styles.inputBase, "font-bold tracking-wide text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30")}>
-                            <SelectValue placeholder={t('demand.select', 'Seçiniz')} />
+                            <SelectValue placeholder={t('demand.select')} />
                           </SelectTrigger>
                         </div>
                       </FormControl>
@@ -465,7 +465,7 @@ export function DemandHeaderForm({
                         <div className="relative">
                            <div className={styles.iconWrapper}><CreditCard className="h-4 w-4" /></div>
                            <SelectTrigger className={styles.inputBase}>
-                             <SelectValue placeholder={t('demand.select', 'Seçiniz')} />
+                             <SelectValue placeholder={t('demand.select')} />
                            </SelectTrigger>
                         </div>
                       </FormControl>
@@ -500,20 +500,20 @@ export function DemandHeaderForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>
-                        {t('common.offerType.label', 'Teklif Tipi')} <span className="text-pink-500 ml-0.5">*</span>
+                        {t('common.offerType.label')} <span className="text-pink-500 ml-0.5">*</span>
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || ''} disabled={readOnly}>
                         <FormControl>
                            <div className="relative">
                               <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
                               <SelectTrigger className={styles.inputBase}>
-                                <SelectValue placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')} />
+                                <SelectValue placeholder={t('common.offerType.selectPlaceholder')} />
                               </SelectTrigger>
                            </div>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={OfferType.YURTICI}>{t('common.offerType.yurtici', 'Yurtiçi')}</SelectItem>
-                          <SelectItem value={OfferType.YURTDISI}>{t('common.offerType.yurtdisi', 'Yurtdışı')}</SelectItem>
+                          <SelectItem value={OfferType.YURTICI}>{t('common.offerType.yurtici')}</SelectItem>
+                          <SelectItem value={OfferType.YURTDISI}>{t('common.offerType.yurtdisi')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage className="mt-1" />
@@ -539,7 +539,7 @@ export function DemandHeaderForm({
                           >
                             <FormControl>
                               <SelectTrigger className={cn(styles.inputBase, "pl-10")}>
-                                <SelectValue placeholder={t('quotation.select', 'Seçiniz')} />
+                                <SelectValue placeholder={t('quotation.select')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -636,7 +636,7 @@ export function DemandHeaderForm({
                             <div className="relative">
                               <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
                               <SelectTrigger className={styles.inputBase}>
-                                <SelectValue placeholder={t('demand.select', 'Seç')} />
+                                <SelectValue placeholder={t('demand.select')} />
                               </SelectTrigger>
                             </div>
                           </FormControl>
@@ -666,7 +666,7 @@ export function DemandHeaderForm({
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
                           <Folder className="h-3.5 w-3.5" />
-                          {t('quotation.header.projectCode', 'Proje Kodu')}
+                          {t('quotation.header.projectCode')}
                         </FormLabel>
                         <div className="relative">
                           <div className={styles.iconWrapper}><Folder className="h-4 w-4" /></div>
@@ -678,8 +678,8 @@ export function DemandHeaderForm({
                               value: p.projeKod,
                               label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
                             }))}
-                            placeholder={t('quotation.header.projectCodePlaceholder', 'Proje kodu seçiniz...')}
-                            searchPlaceholder={t('common.search', 'Ara...')}
+                            placeholder={t('quotation.header.projectCodePlaceholder')}
+                            searchPlaceholder={t('common.search')}
                             disabled={readOnly}
                           />
                         </div>
@@ -708,7 +708,7 @@ export function DemandHeaderForm({
                               className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 h-6 text-xs border border-purple-200 dark:border-purple-500/20"
                             >
                               <span className="mr-1.5 truncate max-w-[200px]">
-                                {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel', 'Not')} ${idx + 1}`}
+                                {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel')} ${idx + 1}`}
                               </span>
                               {!readOnly && onQuotationNotesChange && (
                                 <button
@@ -728,7 +728,7 @@ export function DemandHeaderForm({
                           <Textarea
                             {...field}
                             value={field.value || ''}
-                            placeholder={t('demand.header.descriptionPlaceholder', 'Özel koşullar...')}
+                            placeholder={t('demand.header.descriptionPlaceholder')}
                             className="min-h-[80px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10"
                             disabled={readOnly}
                           />
@@ -794,18 +794,18 @@ export function DemandHeaderForm({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-pink-600">
               <ArrowRightLeft className="h-5 w-5" />
-              {t('demand.header.currencyChange.title', 'Kur Değişikliği')}
+              {t('demand.header.currencyChange.title')}
             </DialogTitle>
             <DialogDescription className="pt-2">
-              {t('demand.header.currencyChange.message', 'Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?')}
+              {t('demand.header.currencyChange.message')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
             <Button variant="outline" onClick={handleCurrencyChangeCancel} className="rounded-xl">
-              {t('demand.cancel', 'Vazgeç')}
+              {t('demand.cancel')}
             </Button>
             <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-pink-600 hover:bg-pink-700 text-white">
-              {t('demand.confirm', 'Onayla')}
+              {t('demand.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

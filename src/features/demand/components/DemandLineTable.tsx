@@ -193,8 +193,8 @@ export function DemandLineTable({
   const handleAddLine = (): void => {
     if (!linesEditable) return;
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('demand.error', 'Hata'), {
-        description: t('demand.lines.requiredFieldsMissing', 'Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.'),
+      toast.error(t('demand.error'), {
+        description: t('demand.lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -278,8 +278,8 @@ export function DemandLineTable({
 
   const handleProductSelect = async (product: ProductSelectionResult): Promise<void> => {
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('demand.error', 'Hata'), {
-        description: t('demand.lines.requiredFieldsMissing', 'Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.'),
+      toast.error(t('demand.error'), {
+        description: t('demand.lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -465,12 +465,12 @@ export function DemandLineTable({
             </div>
             <div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                {t('demand.lines.title', 'Teklif Kalemleri')}
+                {t('demand.lines.title')}
               </h3>
               <p className="text-xs text-zinc-500 font-medium">
                 {lines.length > 0 
-                  ? t('demand.lines.itemCount', '{count} kalem ürün listeleniyor', { count: lines.length })
-                  : t('demand.lines.noItems', 'Henüz ürün eklenmedi')
+                  ? t('demand.lines.itemCount', { count: lines.length })
+                  : t('demand.lines.noItems')
                 }
               </p>
             </div>
@@ -483,7 +483,7 @@ export function DemandLineTable({
             className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
-            {t('demand.lines.add', 'Satır Ekle')}
+            {t('demand.lines.add')}
           </Button>
           )}
         </div>
@@ -495,10 +495,10 @@ export function DemandLineTable({
                 <Box className="h-8 w-8 text-zinc-300 dark:text-zinc-600" />
               </div>
               <h4 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-                {t('demand.lines.empty', 'Sepetiniz Boş')}
+                {t('demand.lines.empty')}
               </h4>
               <p className="text-sm text-zinc-500 max-w-xs mx-auto">
-                {t('demand.lines.emptyDescription', 'Teklif oluşturmak için "Satır Ekle" butonunu kullanarak ürün eklemeye başlayın.')}
+                {t('demand.lines.emptyDescription')}
               </p>
             </div>
           ) : (
@@ -506,15 +506,15 @@ export function DemandLineTable({
               <Table>
                 <TableHeader>
                   <TableRow className={styles.tableHeadRow}>
-                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('demand.lines.stock', 'Stok Bilgisi')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px] md:min-w-[140px]")}>{t('demand.lines.unitPrice', 'Birim Fiyat')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[90px] md:min-w-[100px]")}>{t('demand.lines.quantity', 'Miktar')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount1', 'İnd.1')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount2', 'İnd.2')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount3', 'İnd.3')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[110px] md:min-w-[120px]")}>{t('demand.lines.netPrice', 'Tutar')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('demand.lines.stock')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px] md:min-w-[140px]")}>{t('demand.lines.unitPrice')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[90px] md:min-w-[100px]")}>{t('demand.lines.quantity')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount1')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount2')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount3')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[110px] md:min-w-[120px]")}>{t('demand.lines.netPrice')}</TableHead>
                     {!linesEditable && (
-                    <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('demand.actions', 'İşlem')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('demand.actions')}</TableHead>
                     )}
                   </TableRow>
                 </TableHeader>
@@ -654,7 +654,7 @@ export function DemandLineTable({
                   <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
                 </div>
               </div>
-              {t('demand.lines.addLine', 'Yeni Satır Ekle')}
+              {t('demand.lines.addLine')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -691,7 +691,7 @@ export function DemandLineTable({
                   <Edit className="h-5 w-5 text-blue-600 dark:text-blue-500" />
                 </div>
               </div>
-              {t('demand.lines.editLine', 'Satırı Düzenle')}
+              {t('demand.lines.editLine')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -729,20 +729,20 @@ export function DemandLineTable({
             <DialogTitle className="flex items-center gap-2 text-rose-600">
               <Trash2 className="h-5 w-5" />
               {relatedLinesCount > 1
-                ? t('demand.lines.delete.confirmTitleMultiple', 'Bağlı Stokları Sil')
-                : t('demand.lines.delete.confirmTitle', 'Satırı Sil')}
+                ? t('demand.lines.delete.confirmTitleMultiple')
+                : t('demand.lines.delete.confirmTitle')}
             </DialogTitle>
             <DialogDescription className="pt-2">
               {relatedLinesCount > 1 
-                ? t('demand.lines.delete.confirmMessageMultiple', 'Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.', { count: relatedLinesCount })
-                : t('demand.lines.delete.confirmMessage', 'Bu satırı silmek istediğinizden emin misiniz?')
+                ? t('demand.lines.delete.confirmMessageMultiple', { count: relatedLinesCount })
+                : t('demand.lines.delete.confirmMessage')
               }
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={handleDeleteCancel} disabled={isDeleting}>{t('demand.cancel', 'İptal')}</Button>
+            <Button variant="outline" onClick={handleDeleteCancel} disabled={isDeleting}>{t('demand.cancel')}</Button>
             <Button variant="destructive" onClick={() => void handleDeleteConfirm()} disabled={isDeleting}>
-              {isDeleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('demand.saving', 'Siliniyor...')}</> : t('demand.delete', 'Sil')}
+              {isDeleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('demand.saving')}</> : t('demand.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

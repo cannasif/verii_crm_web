@@ -14,10 +14,10 @@ export const useCreateRevisionOfDemand = (): UseMutationResult<ApiResponse<Deman
     mutationFn: (demandId: number) => demandApi.createRevisionOfDemand(demandId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.demands() });
-      toast.success(t('demand.revision.success', 'Teklif revizyonu başarıyla oluşturuldu'));
+      toast.success(t('demand.revision.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('demand.revision.error', 'Teklif revizyonu oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('demand.revision.error'));
     },
   });
 };

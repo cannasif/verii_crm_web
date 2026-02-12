@@ -708,17 +708,17 @@ export function DemandLineForm({
         <div className="flex items-center justify-between pb-2 border-b">
           <h4 className="text-base font-semibold flex items-center gap-2">
             <Package className="h-4 w-4 text-primary" />
-            {t('demand.lines.editLine', 'Satır Düzenle')}
+            {t('demand.lines.editLine')}
           </h4>
           <div className="flex items-center gap-2">
             {hasApprovalWarning && (
               <Badge variant="outline" className="text-red-600 border-red-600 bg-red-50 dark:bg-red-950/30 text-xs">
-                {t('demand.lines.approvalRequired', 'Onay Gerekli')}
+                {t('demand.lines.approvalRequired')}
               </Badge>
             )}
             {(!formData.productCode || !formData.productName) && (
               <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs">
-                {t('demand.lines.selectStockFirst', 'Stok seçilmedi')}
+                {t('demand.lines.selectStockFirst')}
               </Badge>
             )}
           </div>
@@ -729,7 +729,7 @@ export function DemandLineForm({
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium flex items-center gap-2">
                 <Package className="h-3.5 w-3.5" />
-                {t('demand.lines.stock', 'Stok')} *
+                {t('demand.lines.stock')} *
               </label>
               <Button
                 type="button"
@@ -739,7 +739,7 @@ export function DemandLineForm({
                 size="sm"
               >
                 <Package className="h-3.5 w-3.5" />
-                {t('demand.lines.selectStock', 'Stok Seç')}
+                {t('demand.lines.selectStock')}
               </Button>
               <Button
                 type="button"
@@ -750,7 +750,7 @@ export function DemandLineForm({
                 size="sm"
               >
                 <Info className="h-3.5 w-3.5" />
-                {t('common.pricingInsights.button', 'Kural')}
+                {t('common.pricingInsights.button')}
                 {ruleInsightCount > 0 && (
                   <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">
                     {ruleInsightCount}
@@ -761,19 +761,19 @@ export function DemandLineForm({
             <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
               <Input
                 value={formData.productCode || ''}
-                placeholder={t('demand.lines.productCode', 'Stok Kodu')}
+                placeholder={t('demand.lines.productCode')}
                 readOnly
                 className="bg-muted/50 font-mono text-sm h-9"
               />
               <Input
                 value={formData.groupCode || ''}
-                placeholder={t('demand.lines.groupCode', 'Grup Kodu')}
+                placeholder={t('demand.lines.groupCode')}
                 readOnly
                 className="bg-muted/50 font-mono text-sm h-9"
               />
               <Input
                 value={formData.productName || ''}
-                placeholder={t('demand.lines.productName', 'Stok Adı')}
+                placeholder={t('demand.lines.productName')}
                 readOnly
                 className="bg-muted/50 text-sm h-9"
               />
@@ -781,7 +781,7 @@ export function DemandLineForm({
             <div className="w-full">
               <label className="text-sm font-medium flex items-center gap-2 mb-1.5">
                 <Folder className="h-3.5 w-3.5 text-slate-500" />
-                {t('quotation.header.projectCode', 'Proje Kodu')}
+                {t('quotation.header.projectCode')}
               </label>
               <VoiceSearchCombobox
                 className="h-11 bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 rounded-xl"
@@ -791,8 +791,8 @@ export function DemandLineForm({
                   value: p.projeKod,
                   label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
                 }))}
-                placeholder={t('quotation.header.projectCodePlaceholder', 'Proje kodu seçiniz...')}
-                searchPlaceholder={t('common.search', 'Ara...')}
+                placeholder={t('quotation.header.projectCodePlaceholder')}
+                searchPlaceholder={t('common.search')}
               />
             </div>
           </div>
@@ -801,7 +801,7 @@ export function DemandLineForm({
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
                 <DollarSign className="h-3.5 w-3.5" />
-                {t('demand.lines.unitPrice', 'Birim Fiyat')} *
+                {t('demand.lines.unitPrice')} *
               </label>
               <Input
                 type="number"
@@ -813,7 +813,7 @@ export function DemandLineForm({
               />
               <div className="space-y-2">
                 <label className="text-sm font-medium">
-                  {t('demand.lines.quantity', 'Miktar')} *
+                  {t('demand.lines.quantity')} *
                 </label>
                 <Input
                   type="number"
@@ -849,7 +849,7 @@ export function DemandLineForm({
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                {t('demand.lines.vatRate', 'KDV Oranı %')}
+                {t('demand.lines.vatRate')}
               </label>
               <Input
                 type="number"
@@ -887,13 +887,13 @@ export function DemandLineForm({
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <Percent className="h-3.5 w-3.5" />
-              {t('demand.lines.discounts', 'İndirimler')}
+              {t('demand.lines.discounts')}
             </label>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div className="space-y-1.5 p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-medium text-muted-foreground">
-                    {t('demand.lines.discount1', 'İndirim 1 %')}
+                    {t('demand.lines.discount1')}
                   </label>
                   <span className="text-xs font-semibold text-red-600 dark:text-red-400">
                     {formData.discountAmount1 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount1 || 0, currencyCode)}
@@ -935,7 +935,7 @@ export function DemandLineForm({
               <div className="space-y-1.5 p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-medium text-muted-foreground">
-                    {t('demand.lines.discount2', 'İndirim 2 %')}
+                    {t('demand.lines.discount2')}
                   </label>
                   <span className="text-xs font-semibold text-red-600 dark:text-red-400">
                     {formData.discountAmount2 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount2 || 0, currencyCode)}
@@ -977,7 +977,7 @@ export function DemandLineForm({
               <div className="space-y-1.5 p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-medium text-muted-foreground">
-                    {t('demand.lines.discount3', 'İndirim 3 %')}
+                    {t('demand.lines.discount3')}
                   </label>
                   <span className="text-xs font-semibold text-red-600 dark:text-red-400">
                     {formData.discountAmount3 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount3 || 0, currencyCode)}
@@ -1024,13 +1024,13 @@ export function DemandLineForm({
           <div className="flex items-center gap-2 mb-2">
             <Calculator className="h-3.5 w-3.5 text-primary" />
             <span className="text-sm font-semibold">
-              {t('demand.lines.calculations', 'Hesaplamalar')}
+              {t('demand.lines.calculations')}
             </span>
           </div>
           <div className="grid grid-cols-1 gap-2 text-sm">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">
-                {t('demand.lines.discountAmount', 'Toplam İndirim')}:
+                {t('demand.lines.discountAmount')}:
               </span>
               <span className={`font-medium ${hasDiscount ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
                 {hasDiscount ? '-' : ''}{formatCurrency(totalDiscount, currencyCode)}
@@ -1038,7 +1038,7 @@ export function DemandLineForm({
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">
-                {t('demand.lines.netPrice', 'Net Fiyat')}:
+                {t('demand.lines.netPrice')}:
               </span>
               <span className="font-medium text-green-600 dark:text-green-400">
                 {formatCurrency(formData.lineTotal || 0, currencyCode)}
@@ -1046,7 +1046,7 @@ export function DemandLineForm({
             </div>
             <div className="flex justify-between items-center pt-2 border-t font-semibold">
               <span>
-                {t('demand.lines.lineTotal', 'Satır Toplamı (KDV Dahil)')}:
+                {t('demand.lines.lineTotal')}:
               </span>
               <span className="text-primary text-base">
                 {formatCurrency(formData.lineGrandTotal, currencyCode)}
@@ -1060,7 +1060,7 @@ export function DemandLineForm({
             <div className="flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" />
               <h5 className="text-sm font-semibold">
-                {t('demand.lines.relatedStocks', 'Bağlı Stoklar')} ({relatedLines.length})
+                {t('demand.lines.relatedStocks')} ({relatedLines.length})
               </h5>
             </div>
             <div className="space-y-3">
@@ -1069,7 +1069,7 @@ export function DemandLineForm({
                   <div className="grid grid-cols-1 gap-2 md:grid-cols-2 mb-2">
                     <div>
                       <div className="text-xs text-muted-foreground mb-1">
-                        {t('demand.lines.productCode', 'Stok Kodu')}
+                        {t('demand.lines.productCode')}
                       </div>
                       <div className="font-mono text-sm font-medium">
                         {relatedLine.productCode || '-'}
@@ -1077,7 +1077,7 @@ export function DemandLineForm({
                     </div>
                     <div>
                       <div className="text-xs text-muted-foreground mb-1">
-                        {t('demand.lines.productName', 'Stok Adı')}
+                        {t('demand.lines.productName')}
                       </div>
                       <div className="text-sm font-medium">
                         {relatedLine.productName || '-'}
@@ -1087,13 +1087,13 @@ export function DemandLineForm({
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
                       <span className="text-muted-foreground">
-                        {t('demand.lines.quantity', 'Miktar')}:
+                        {t('demand.lines.quantity')}:
                       </span>
                       <span className="ml-2 font-medium">{relatedLine.quantity}</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">
-                        {t('demand.lines.unitPrice', 'Birim Fiyat')}:
+                        {t('demand.lines.unitPrice')}:
                       </span>
                       <span className="ml-2 font-medium">
                         {formatCurrency(relatedLine.unitPrice, currencyCode)}
@@ -1101,7 +1101,7 @@ export function DemandLineForm({
                     </div>
                     <div>
                       <span className="text-muted-foreground">
-                        {t('demand.lines.netPrice', 'Net Fiyat')}:
+                        {t('demand.lines.netPrice')}:
                       </span>
                       <span className="ml-2 font-medium text-green-600 dark:text-green-400">
                         {formatCurrency(relatedLine.lineTotal || 0, currencyCode)}
@@ -1109,7 +1109,7 @@ export function DemandLineForm({
                     </div>
                     <div>
                       <span className="text-muted-foreground">
-                        {t('demand.lines.lineTotal', 'Toplam')}:
+                        {t('demand.lines.lineTotal')}:
                       </span>
                       <span className="ml-2 font-medium text-primary">
                         {formatCurrency(relatedLine.lineGrandTotal, currencyCode)}
@@ -1125,7 +1125,7 @@ export function DemandLineForm({
         <div className="flex justify-end gap-2 pt-2 border-t">
           <Button type="button" variant="outline" onClick={onCancel} size="sm" className="gap-2">
             <X className="h-4 w-4" />
-            {t('demand.cancel', 'İptal')}
+            {t('demand.cancel')}
           </Button>
           <Button 
             type="button" 
@@ -1135,7 +1135,7 @@ export function DemandLineForm({
             disabled={!formData.productCode || !formData.productName}
           >
             <Check className="h-4 w-4" />
-            {t('demand.save', 'Kaydet')}
+            {t('demand.save')}
           </Button>
         </div>
 

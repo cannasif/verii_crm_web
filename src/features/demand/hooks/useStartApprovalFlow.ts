@@ -19,10 +19,10 @@ export const useStartApprovalFlow = (): UseMutationResult<ApiResponse<boolean>, 
         refetchType: 'active',
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.waitingApprovals() });
-      toast.success(t('demand.approval.startSuccess', 'Onay akışı başarıyla başlatıldı'));
+      toast.success(t('demand.approval.startSuccess'));
     },
     onError: (error: Error) => {
-      let errorMessage = t('demand.approval.startError', 'Onay akışı başlatılamadı');
+      let errorMessage = t('demand.approval.startError');
       
       if (error.message) {
         try {

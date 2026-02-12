@@ -15,10 +15,10 @@ export const useCreateDemandLines = (
     mutationFn: (dtos: CreateDemandLineDto[]) => demandApi.createDemandLines(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.demandLines(demandId) });
-      toast.success(t('demand.lines.createSuccess', 'Satırlar eklendi'));
+      toast.success(t('demand.lines.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('demand.lines.createError', 'Satırlar eklenirken bir hata oluştu'));
+      toast.error(error.message ?? t('demand.lines.createError'));
     },
   });
 };

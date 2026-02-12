@@ -42,7 +42,7 @@ export function DemandCreateForm(): ReactElement {
   const { data: customerOptions = [] } = useCustomerOptions();
 
   useEffect(() => {
-    setPageTitle(t('demand.create.title', 'Yeni Teklif Oluştur'));
+    setPageTitle(t('demand.create.title'));
     return () => {
       setPageTitle(null);
     };
@@ -106,8 +106,8 @@ export function DemandCreateForm(): ReactElement {
 
   const onSubmit = async (data: CreateDemandSchema): Promise<void> => {
     if (lines.length === 0) {
-      toast.error(t('demand.create.error', 'Teklif Oluşturulamadı'), {
-        description: t('demand.lines.required', 'En az 1 satır eklenmelidir'),
+      toast.error(t('demand.create.error'), {
+        description: t('demand.lines.required'),
       });
       return;
     }
@@ -115,8 +115,8 @@ export function DemandCreateForm(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
     if (overLimitNote) {
-      toast.error(t('demand.create.error', 'Teklif Oluşturulamadı'), {
-        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      toast.error(t('demand.create.error'), {
+        description: t('quotation.notes.maxLengthError'),
       });
       return;
     }
@@ -155,7 +155,7 @@ export function DemandCreateForm(): ReactElement {
         : String(data.demand.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('demand.create.invalidCurrency', 'Geçerli bir para birimi seçilmelidir'));
+        throw new Error(t('demand.create.invalidCurrency'));
       }
 
       const demandData: CreateDemandDto = {
@@ -194,19 +194,19 @@ export function DemandCreateForm(): ReactElement {
         if (notesList.length > 0) {
           await demandApi.updateNotesListByDemandId(result.data.id, { notes: notesList });
         }
-        toast.success(t('demand.create.success', 'Teklif Başarıyla Oluşturuldu'), {
-          description: t('demand.create.successMessage', 'Teklif onay sürecine gönderildi.'),
+        toast.success(t('demand.create.success'), {
+          description: t('demand.create.successMessage'),
         });
         navigate(`/demands/${result.data.id}`);
       } else {
-        throw new Error(result.message || t('demand.create.errorMessage', 'Teklif oluşturulurken bir hata oluştu.'));
+        throw new Error(result.message || t('demand.create.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('demand.create.errorMessage', 'Teklif oluşturulurken bir hata oluştu.');
+      let errorMessage = t('demand.create.errorMessage');
       if (error instanceof Error) {
         errorMessage = error.message; 
       }
-      toast.error(t('demand.create.error', 'Teklif Oluşturulamadı'), {
+      toast.error(t('demand.create.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -247,23 +247,23 @@ export function DemandCreateForm(): ReactElement {
     const formData = form.getValues();
 
     if (!formData.demand.paymentTypeId) {
-      toast.error(t('demand.create.error', 'Teklif Oluşturulamadı'), {
-        description: t('demand.create.paymentTypeRequired', 'Ödeme tipi seçilmelidir'),
+      toast.error(t('demand.create.error'), {
+        description: t('demand.create.paymentTypeRequired'),
       });
       return;
     }
 
     if (!formData.demand.deliveryDate) {
-      toast.error(t('demand.create.error', 'Teklif Oluşturulamadı'), {
-        description: t('demand.create.deliveryDateRequired', 'Teslimat tarihi girilmelidir'),
+      toast.error(t('demand.create.error'), {
+        description: t('demand.create.deliveryDateRequired'),
       });
       return;
     }
     
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('demand.create.error', 'Teklif Oluşturulamadı'), {
-        description: t('demand.create.validationError', 'Lütfen form alanlarını kontrol ediniz.'),
+      toast.error(t('demand.create.error'), {
+        description: t('demand.create.validationError'),
       });
       return;
     }
@@ -287,23 +287,23 @@ export function DemandCreateForm(): ReactElement {
             </Button>
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                {t('demand.create.title', 'Yeni Talep Oluştur')}
+                {t('demand.create.title')}
               </h2>
               <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                {t('demand.create.subtitle', 'Müşteri için yeni bir satış talebi oluşturun.')}
+                {t('demand.create.subtitle')}
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
             <div className="flex flex-col gap-6 min-w-0">
-              <section className="space-y-1" aria-label={t('demand.sections.header', 'Müşteri ve belge bilgileri')}>
+              <section className="space-y-1" aria-label={t('demand.sections.header')}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                     1
                   </span>
                   <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                    {t('demand.sections.header', 'Müşteri & Belge')}
+                    {t('demand.sections.header')}
                   </h3>
                 </div>
                 <DemandHeaderForm
@@ -321,13 +321,13 @@ export function DemandCreateForm(): ReactElement {
                 />
               </section>
 
-              <section className="space-y-1 pt-2" aria-label={t('demand.sections.lines', 'Talep kalemleri')}>
+              <section className="space-y-1 pt-2" aria-label={t('demand.sections.lines')}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                     2
                   </span>
                   <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                    {t('demand.sections.lines', 'Talep Kalemleri')}
+                    {t('demand.sections.lines')}
                   </h3>
                 </div>
                 <DemandLineTable
@@ -350,7 +350,7 @@ export function DemandCreateForm(): ReactElement {
                   3
                 </span>
                 <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                  {t('demand.sections.summary', 'Özet & Toplamlar')}
+                  {t('demand.sections.summary')}
                 </h3>
               </div>
               <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
@@ -367,7 +367,7 @@ export function DemandCreateForm(): ReactElement {
               className="group"
             >
               <X className="mr-2 h-4 w-4" />
-              {t('demand.cancel', 'İptal')}
+              {t('demand.cancel')}
             </Button>
             <Button
               type="submit"
@@ -376,8 +376,8 @@ export function DemandCreateForm(): ReactElement {
             >
               <Save className="mr-2 h-4 w-4" />
               {createMutation.isPending
-                ? t('demand.saving', 'Kaydediliyor...')
-                : t('demand.save', 'Teklifi Kaydet')
+                ? t('demand.saving')
+                : t('demand.save')
               }
             </Button>
           </div>

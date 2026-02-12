@@ -48,12 +48,12 @@ function StepCard({ step, locale }: { step: ApprovalFlowStepReportDto; locale: s
   const { t } = useTranslation();
   const stepStatusLabel =
     step.stepStatus === 'Completed'
-      ? t('demand.approvalFlow.stepCompleted', 'Tamamlandı')
+      ? t('demand.approvalFlow.stepCompleted')
       : step.stepStatus === 'InProgress'
-        ? t('demand.approvalFlow.stepInProgress', 'Devam ediyor')
+        ? t('demand.approvalFlow.stepInProgress')
         : step.stepStatus === 'Rejected'
-          ? t('demand.approvalFlow.stepRejected', 'Reddedildi')
-          : t('demand.approvalFlow.stepNotStarted', 'Başlamadı');
+          ? t('demand.approvalFlow.stepRejected')
+          : t('demand.approvalFlow.stepNotStarted');
 
   return (
     <Card className="overflow-hidden">
@@ -102,7 +102,7 @@ export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps):
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
         <Loader2 className="h-10 w-10 animate-spin text-pink-500" />
-        <p className="text-sm text-muted-foreground">{t('demand.approvalFlow.loading', 'Onay akışı yükleniyor...')}</p>
+        <p className="text-sm text-muted-foreground">{t('demand.approvalFlow.loading')}</p>
       </div>
     );
   }
@@ -118,7 +118,7 @@ export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps):
 
   if (!report) {
     return (
-      <p className="text-muted-foreground py-8 text-center">{t('demand.approvalFlow.noData', 'Veri bulunamadı.')}</p>
+      <p className="text-muted-foreground py-8 text-center">{t('demand.approvalFlow.noData')}</p>
     );
   }
 
@@ -126,7 +126,7 @@ export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps):
     return (
       <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-zinc-900/30 p-8 text-center">
         <p className="text-muted-foreground">
-          {t('demand.approvalFlow.notStarted', 'Henüz onay süreci başlatılmamış.')}
+          {t('demand.approvalFlow.notStarted')}
         </p>
       </div>
     );

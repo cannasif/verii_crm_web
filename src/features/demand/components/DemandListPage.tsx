@@ -28,7 +28,7 @@ export function DemandListPage(): ReactElement {
   const [filters, setFilters] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
-    setPageTitle(t('demand.list.title', 'Teklif Listesi'));
+    setPageTitle(t('demand.list.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -70,12 +70,12 @@ export function DemandListPage(): ReactElement {
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-2">
           <div className="space-y-1">
             <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-              {t('demand.list.title', 'Teklif Listesi')}
+              {t('demand.list.title')}
             </h1>
             <div className="flex flex-col gap-1">
               <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-                {t('demand.list.description', 'Tüm teklifleri görüntüleyin ve yönetin')}
+                {t('demand.list.description')}
               </p>
             </div>
           </div>
@@ -85,7 +85,7 @@ export function DemandListPage(): ReactElement {
             className="h-11 px-6 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group"
           >
             <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-            {t('demand.list.createNew', 'Yeni Teklif Oluştur')}
+            {t('demand.list.createNew')}
           </Button>
         </div>
 
@@ -97,7 +97,7 @@ export function DemandListPage(): ReactElement {
             </div>
             <Input
               type="text"
-              placeholder={t('demand.list.searchPlaceholder', 'Teklif no veya müşteri adı ile ara...')}
+              placeholder={t('demand.list.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="
@@ -124,15 +124,15 @@ export function DemandListPage(): ReactElement {
 
           <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
             <SelectTrigger className="h-12 w-[200px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/50">
-              <SelectValue placeholder={t('approval.statusFilterLabel', 'Onay durumu')} />
+              <SelectValue placeholder={t('approval.statusFilterLabel')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('common.all', 'Tümü')}</SelectItem>
-              <SelectItem value="0">{t('approval.status.notRequired', 'Gerekli Değil')}</SelectItem>
-              <SelectItem value="1">{t('approval.status.waiting', 'Bekliyor')}</SelectItem>
-              <SelectItem value="2">{t('approval.status.approved', 'Onaylandı')}</SelectItem>
-              <SelectItem value="3">{t('approval.status.rejected', 'Reddedildi')}</SelectItem>
-              <SelectItem value="4">{t('approval.status.closed', 'Kapandı')}</SelectItem>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
+              <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+              <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+              <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+              <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+              <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
             </SelectContent>
           </Select>
           
@@ -145,7 +145,7 @@ export function DemandListPage(): ReactElement {
             className="h-12 px-6 rounded-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/50 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-400 gap-2 font-medium w-full md:w-auto shadow-sm"
           >
             <RefreshCw size={18} className="opacity-70" />
-            {t('demand.refresh', 'Yenile')}
+            {t('demand.refresh')}
           </Button>
         </div>
 

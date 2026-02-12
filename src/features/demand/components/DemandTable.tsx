@@ -85,7 +85,7 @@ export function DemandTable({
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
         <span className="text-muted-foreground animate-pulse text-sm font-medium">
-          {t('demand.loading', 'Yükleniyor...')}
+          {t('demand.loading')}
         </span>
       </div>
     );
@@ -96,7 +96,7 @@ export function DemandTable({
   if (!data || demands.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-muted-foreground border border-zinc-300 dark:border-zinc-700/80 border-dashed rounded-xl bg-white/50 dark:bg-card/50">
-        <p className="text-sm font-medium">{t('demand.noData', 'Veri yok')}</p>
+        <p className="text-sm font-medium">{t('demand.noData')}</p>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export function DemandTable({
                 onClick={() => handleSort('Id')}
               >
                 <div className="flex items-center">
-                  {t('demand.list.id', 'ID')}
+                  {t('demand.list.id')}
                   <SortIcon column="Id" />
                 </div>
               </TableHead>
@@ -129,7 +129,7 @@ export function DemandTable({
                 onClick={() => handleSort('OfferNo')}
               >
                 <div className="flex items-center">
-                  {t('demand.list.offerNo', 'Teklif No')}
+                  {t('demand.list.offerNo')}
                   <SortIcon column="OfferNo" />
                 </div>
               </TableHead>
@@ -138,7 +138,7 @@ export function DemandTable({
                 onClick={() => handleSort('PotentialCustomerName')}
               >
                 <div className="flex items-center">
-                  {t('demand.list.customer', 'Müşteri')}
+                  {t('demand.list.customer')}
                   <SortIcon column="PotentialCustomerName" />
                 </div>
               </TableHead>
@@ -147,7 +147,7 @@ export function DemandTable({
                 onClick={() => handleSort('RepresentativeName')}
               >
                 <div className="flex items-center">
-                  {t('demand.list.representative', 'Temsilci')}
+                  {t('demand.list.representative')}
                   <SortIcon column="RepresentativeName" />
                 </div>
               </TableHead>
@@ -156,7 +156,7 @@ export function DemandTable({
                 onClick={() => handleSort('OfferDate')}
               >
                 <div className="flex items-center">
-                  {t('demand.list.offerDate', 'Teklif Tarihi')}
+                  {t('demand.list.offerDate')}
                   <SortIcon column="OfferDate" />
                 </div>
               </TableHead>
@@ -165,7 +165,7 @@ export function DemandTable({
                 onClick={() => handleSort('Currency')}
               >
                 <div className="flex items-center">
-                  {t('demand.list.currency', 'Para Birimi')}
+                  {t('demand.list.currency')}
                   <SortIcon column="Currency" />
                 </div>
               </TableHead>
@@ -174,7 +174,7 @@ export function DemandTable({
                 onClick={() => handleSort('GrandTotal')}
               >
                 <div className="flex items-center justify-end">
-                  {t('demand.list.grandTotal', 'Genel Toplam')}
+                  {t('demand.list.grandTotal')}
                   <SortIcon column="GrandTotal" />
                 </div>
               </TableHead>
@@ -183,12 +183,12 @@ export function DemandTable({
                 onClick={() => handleSort('Status')}
               >
                 <div className="flex items-center">
-                  {t('demand.list.status', 'Durum')}
+                  {t('demand.list.status')}
                   <SortIcon column="Status" />
                 </div>
               </TableHead>
               <TableHead className="text-center">
-                {t('demand.list.actions', 'İşlemler')}
+                {t('demand.list.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -225,8 +225,8 @@ export function DemandTable({
                       className="w-full"
                     >
                       {createRevisionMutation.isPending
-                        ? t('demand.loading', 'Yükleniyor...')
-                        : t('demand.list.revise', 'Revize et')}
+                        ? t('demand.loading')
+                        : t('demand.list.revise')}
                     </Button>
                   )}
                 </TableCell>
@@ -239,7 +239,7 @@ export function DemandTable({
 
       <div className="flex items-center justify-between py-4">
         <div className="text-sm text-muted-foreground">
-          {t('demand.list.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('demand.list.showing', {
             from: (pageNumber - 1) * pageSize + 1,
             to: Math.min(pageNumber * pageSize, data.totalCount || 0),
             total: data.totalCount || 0,
@@ -252,10 +252,10 @@ export function DemandTable({
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1}
           >
-            {t('demand.previous', 'Önceki')}
+            {t('demand.previous')}
           </Button>
           <div className="flex items-center px-4 text-sm">
-            {t('demand.list.page', 'Sayfa {{current}} / {{total}}', {
+            {t('demand.list.page', {
               current: pageNumber,
               total: totalPages,
             })}
@@ -266,7 +266,7 @@ export function DemandTable({
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
           >
-            {t('demand.next', 'Sonraki')}
+            {t('demand.next')}
           </Button>
         </div>
       </div>

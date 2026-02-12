@@ -14,10 +14,10 @@ export const useUpdateDemandBulk = (): UseMutationResult<ApiResponse<DemandGetDt
     mutationFn: ({ id, data }: { id: number; data: DemandBulkCreateDto }) => demandApi.updateBulk(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.demands() });
-      toast.success(t('demand.update.success', 'Teklif başarıyla güncellendi'));
+      toast.success(t('demand.update.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('demand.update.error', 'Teklif güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('demand.update.error'));
     },
   });
 };

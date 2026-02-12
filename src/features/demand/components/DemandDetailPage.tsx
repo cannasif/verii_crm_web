@@ -85,12 +85,12 @@ export function DemandDetailPage(): ReactElement {
   useEffect(() => {
     if (demand) {
       setPageTitle(
-        t('demand.detail.title', 'Teklif Detayı: {{offerNo}}', {
+        t('demand.detail.title', {
           offerNo: demand.offerNo || `#${demand.id}`,
         })
       );
     } else {
-      setPageTitle(t('demand.detail.title', 'Teklif Detayı'));
+      setPageTitle(t('demand.detail.title'));
     }
     return () => {
       setPageTitle(null);
@@ -250,8 +250,8 @@ export function DemandDetailPage(): ReactElement {
   const onSubmit = async (data: CreateDemandSchema): Promise<void> => {
     if (isReadOnly) return;
     if (lines.length === 0) {
-      toast.error(t('demand.update.error', 'Teklif Güncellenemedi'), {
-        description: t('demand.lines.required', 'En az 1 satır eklenmelidir'),
+      toast.error(t('demand.update.error'), {
+        description: t('demand.lines.required'),
       });
       return;
     }
@@ -259,8 +259,8 @@ export function DemandDetailPage(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
     if (overLimitNote) {
-      toast.error(t('demand.update.error', 'Teklif Güncellenemedi'), {
-        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      toast.error(t('demand.update.error'), {
+        description: t('quotation.notes.maxLengthError'),
       });
       return;
     }
@@ -297,7 +297,7 @@ export function DemandDetailPage(): ReactElement {
         : String(data.demand.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('demand.update.invalidCurrency', 'Geçerli bir para birimi seçilmelidir'));
+        throw new Error(t('demand.update.invalidCurrency'));
       }
 
       const demandData: CreateDemandDto = {
@@ -333,22 +333,22 @@ export function DemandDetailPage(): ReactElement {
 
       const notesList = demandNotesDtoToNotesList(quotationNotes);
       if (notesList.length > 15) {
-        toast.error(t('demand.update.error', 'Teklif Güncellenemedi'), {
-          description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+        toast.error(t('demand.update.error'), {
+          description: t('quotation.notes.maxCountError'),
         });
         return;
       }
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
       if (result.success && result.data) {
-        toast.success(t('demand.update.success', 'Teklif Başarıyla Güncellendi'), {
-          description: t('demand.update.successMessage', 'Teklif başarıyla güncellendi.'),
+        toast.success(t('demand.update.success'), {
+          description: t('demand.update.successMessage'),
         });
       } else {
-        throw new Error(result.message || t('demand.update.errorMessage', 'Teklif güncellenirken bir hata oluştu.'));
+        throw new Error(result.message || t('demand.update.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('demand.update.errorMessage', 'Teklif güncellenirken bir hata oluştu.');
+      let errorMessage = t('demand.update.errorMessage');
       if (error instanceof Error) {
           try {
              const parsedError = JSON.parse(error.message);
@@ -359,7 +359,7 @@ export function DemandDetailPage(): ReactElement {
              errorMessage = error.message;
           }
       }
-      toast.error(t('demand.update.error', 'Teklif Güncellenemedi'), {
+      toast.error(t('demand.update.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -396,8 +396,8 @@ export function DemandDetailPage(): ReactElement {
     if (isReadOnly) return;
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('demand.update.error', 'Form Hatalı'), {
-        description: t('demand.update.validationError', 'Lütfen zorunlu alanları kontrol ediniz.'),
+      toast.error(t('demand.update.error'), {
+        description: t('demand.update.validationError'),
       });
       return;
     }
@@ -419,7 +419,7 @@ export function DemandDetailPage(): ReactElement {
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
         <span className="text-muted-foreground animate-pulse text-sm font-medium">
-          {t('demand.loading', 'Yükleniyor...')}
+          {t('demand.loading')}
         </span>
       </div>
     );
@@ -430,10 +430,10 @@ export function DemandDetailPage(): ReactElement {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <p className="text-lg font-medium text-muted-foreground mb-4">
-          {t('demand.detail.notFound', 'Teklif bulunamadı')}
+          {t('demand.detail.notFound')}
         </p>
         <Button variant="outline" onClick={() => navigate('/demands')}>
-          {t('demand.backToDemands', 'Tekliflere Dön')}
+          {t('demand.backToDemands')}
         </Button>
       </div>
     );
@@ -444,13 +444,13 @@ export function DemandDetailPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            {t('demand.detail.title', 'Talep Detayı: {{offerNo}}', { offerNo: demand.offerNo || `#${demand.id}` })}
+            {t('demand.detail.title', { offerNo: demand.offerNo || `#${demand.id}` })}
           </h2>
           <p className="text-muted-foreground text-sm">
-            {t('demand.detail.subtitle', 'Talep detaylarını görüntüleyin ve düzenleyin.')}
+            {t('demand.detail.subtitle')}
             {demand.revisionNo != null && demand.revisionNo !== '' && (
               <span className="block mt-1">
-                {t('demand.detail.revisionNo', 'Revizyon No')}: {demand.revisionNo}
+                {t('demand.detail.revisionNo')}: {demand.revisionNo}
               </span>
             )}
           </p>
@@ -467,7 +467,7 @@ export function DemandDetailPage(): ReactElement {
             )}
           >
             <Layers className="h-4 w-4 mr-2" />
-            {t('demand.detail.tabDetail', 'Talep Bilgileri')}
+            {t('demand.detail.tabDetail')}
           </TabsTrigger>
           <TabsTrigger
             value="approval-flow"
@@ -477,7 +477,7 @@ export function DemandDetailPage(): ReactElement {
             )}
           >
             <FileCheck className="h-4 w-4 mr-2" />
-            {t('demand.detail.tabApprovalFlow', 'Onay Akışı')}
+            {t('demand.detail.tabApprovalFlow')}
           </TabsTrigger>
           <TabsTrigger
             value="report"
@@ -487,7 +487,7 @@ export function DemandDetailPage(): ReactElement {
             )}
           >
             <FileText className="h-4 w-4 mr-2" />
-            {t('demand.detail.tabReport', 'Rapor')}
+            {t('demand.detail.tabReport')}
           </TabsTrigger>
         </TabsList>
 
@@ -501,13 +501,13 @@ export function DemandDetailPage(): ReactElement {
             <form onSubmit={handleFormSubmit} className="space-y-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
                 <div className="flex flex-col gap-6 min-w-0">
-                  <section className="space-y-1" aria-label={t('demand.sections.header', 'Müşteri ve belge bilgileri')}>
+                  <section className="space-y-1" aria-label={t('demand.sections.header')}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                         1
                       </span>
                       <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('demand.sections.header', 'Müşteri & Belge')}
+                        {t('demand.sections.header')}
                       </h3>
                     </div>
                     <DemandHeaderForm
@@ -518,24 +518,24 @@ export function DemandDetailPage(): ReactElement {
                       onSaveNotes={async (notes) => {
                         const list = demandNotesDtoToNotesList(notes);
                         if (list.length > 15) {
-                          toast.error(t('demand.update.error', 'Teklif Güncellenemedi'), {
-                            description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+                          toast.error(t('demand.update.error'), {
+                            description: t('quotation.notes.maxCountError'),
                           });
                           throw new Error('maxCount');
                         }
                         const overLimit = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).find((k) => (notes[k]?.length ?? 0) > 100);
                         if (overLimit) {
-                          toast.error(t('demand.update.error', 'Teklif Güncellenemedi'), {
-                            description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir.'),
+                          toast.error(t('demand.update.error'), {
+                            description: t('quotation.notes.maxLengthError'),
                           });
                           throw new Error('maxLength');
                         }
                         try {
                           await updateNotesMutation.mutateAsync({ notes: list });
-                          toast.success(t('quotation.notes.saved', 'Notlar kaydedildi.'));
+                          toast.success(t('quotation.notes.saved'));
                         } catch (err) {
-                          toast.error(t('demand.update.error', 'Teklif Güncellenemedi'), {
-                            description: err instanceof Error ? err.message : t('quotation.notes.saveError', 'Notlar kaydedilirken bir hata oluştu.'),
+                          toast.error(t('demand.update.error'), {
+                            description: err instanceof Error ? err.message : t('quotation.notes.saveError'),
                           });
                           throw err;
                         }
@@ -557,13 +557,13 @@ export function DemandDetailPage(): ReactElement {
                     />
                   </section>
 
-                  <section className="space-y-1 pt-2" aria-label={t('demand.sections.lines', 'Talep kalemleri')}>
+                  <section className="space-y-1 pt-2" aria-label={t('demand.sections.lines')}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                         2
                       </span>
                       <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('demand.sections.lines', 'Talep Kalemleri')}
+                        {t('demand.sections.lines')}
                       </h3>
                     </div>
                     <DemandLineTable
@@ -588,7 +588,7 @@ export function DemandDetailPage(): ReactElement {
                       3
                     </span>
                     <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                      {t('demand.sections.summary', 'Özet & Toplamlar')}
+                      {t('demand.sections.summary')}
                     </h3>
                   </div>
                   <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
@@ -609,12 +609,12 @@ export function DemandDetailPage(): ReactElement {
                     {startApprovalFlow.isPending ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        {t('demand.approval.sending', 'Gönderiliyor...')}
+                        {t('demand.approval.sending')}
                       </>
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        {t('demand.approval.sendForApproval', 'Onaya Gönder')}
+                        {t('demand.approval.sendForApproval')}
                       </>
                     )}
                   </Button>
