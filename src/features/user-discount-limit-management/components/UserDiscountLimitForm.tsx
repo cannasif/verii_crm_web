@@ -27,6 +27,7 @@ import { useUserOptions } from '../hooks/useUserOptions';
 import { useStokGroup } from '@/services/hooks/useStokGroup';
 import { toast } from 'sonner';
 import { userDiscountLimitApi } from '../api/user-discount-limit-api';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 const INPUT_STYLE = `
   h-11 rounded-lg
@@ -147,8 +148,8 @@ export function UserDiscountLimitForm({
               name="salespersonId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.salesperson')} *
+                  <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'salespersonId')}>
+                    {t('userDiscountLimitManagement.salesperson')}
                   </FormLabel>
                   <VoiceSearchCombobox
                     options={userComboboxOptions}
@@ -172,8 +173,8 @@ export function UserDiscountLimitForm({
               name="erpProductGroupCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.erpProductGroupCode')} *
+                  <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'erpProductGroupCode')}>
+                    {t('userDiscountLimitManagement.erpProductGroupCode')}
                   </FormLabel>
                   <VoiceSearchCombobox
                     options={groupComboboxOptions}
@@ -197,8 +198,8 @@ export function UserDiscountLimitForm({
               name="maxDiscount1"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.maxDiscount1')} *
+                  <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'maxDiscount1')}>
+                    {t('userDiscountLimitManagement.maxDiscount1')}
                   </FormLabel>
                   <FormControl>
                     <Input

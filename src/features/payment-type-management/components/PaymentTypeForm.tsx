@@ -24,6 +24,7 @@ import { paymentTypeFormSchema, type PaymentTypeFormSchema } from '../types/paym
 import type { PaymentTypeDto } from '../types/payment-type-types';
 import { CreditCard, Loader2 } from 'lucide-react';
 import { Cancel01Icon } from 'hugeicons-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface PaymentTypeFormProps {
   open: boolean;
@@ -130,8 +131,8 @@ export function PaymentTypeForm({
                 name="name"
                 render={({ field }) => (
                   <FormItem className="space-y-0">
-                    <FormLabel className={LABEL_STYLE}>
-                      {t('paymentTypeManagement.name')} *
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(paymentTypeFormSchema, 'name')}>
+                      {t('paymentTypeManagement.name')}
                     </FormLabel>
                     <FormControl>
                       <Input

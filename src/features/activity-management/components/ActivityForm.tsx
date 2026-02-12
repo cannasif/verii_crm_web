@@ -41,6 +41,7 @@ import type { PagedFilter } from '@/types/api';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
 import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell, Plus, Trash2, Image } from 'lucide-react';
 import { ActivityImageTab } from '@/features/activity-image-management';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface ActivityFormProps {
   open: boolean;
@@ -306,7 +307,7 @@ export function ActivityForm({
               <FormSection title={t('activityManagement.basicInfo')}>
                 <FormField control={form.control} name="subject" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.subject')} <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'subject')}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.subject')}</FormLabel>
                     <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('activityManagement.enterSubject')} /></FormControl>
                     <FormMessage className="text-xs text-red-500" />
                   </FormItem>
@@ -314,7 +315,7 @@ export function ActivityForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="activityType" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType')} <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'activityType')}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType')}</FormLabel>
                       <FormControl>
                         <Combobox
                           options={activityTypes.map((type) => ({ value: String(type.id), label: type.name }))}
@@ -329,7 +330,7 @@ export function ActivityForm({
                   )} />
                   <FormField control={form.control} name="status" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.status')} <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'status')}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.status')}</FormLabel>
                       <FormControl>
                         <Combobox
                           options={ACTIVITY_STATUSES.map((statusOption) => ({ value: String(statusOption.value), label: t(statusOption.labelKey, statusOption.label) }))}
@@ -346,7 +347,7 @@ export function ActivityForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="startDateTime" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')} <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
                       <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>

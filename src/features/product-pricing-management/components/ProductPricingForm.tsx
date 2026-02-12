@@ -35,6 +35,7 @@ import {
   calculateProfitMargin, 
   formatPrice 
 } from '../types/product-pricing-types';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 import { ProductPricingStockSelectDialog } from './ProductPricingStockSelectDialog';
 
@@ -125,8 +126,8 @@ export function ProductPricingForm({
                 <div className="space-y-5">
                   <FormField control={form.control} name="erpProductCode" render={({ field }) => (
                     <FormItem className="space-y-0">
-                      <FormLabel className={LABEL_STYLE}>
-                        <Package size={12} className="text-pink-500" /> Stok Kodu *
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'erpProductCode')}>
+                        <Package size={12} className="text-pink-500" /> Stok Kodu
                       </FormLabel>
                       <div className="flex gap-2">
                         <FormControl>
@@ -158,8 +159,8 @@ export function ProductPricingForm({
 
                   <FormField control={form.control} name="currency" render={({ field }) => (
                     <FormItem className="space-y-0">
-                      <FormLabel className={LABEL_STYLE}>
-                        <Banknote size={12} className="text-pink-500" /> Para Birimi *
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'currency')}>
+                        <Banknote size={12} className="text-pink-500" /> Para Birimi
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
@@ -208,7 +209,7 @@ export function ProductPricingForm({
                   <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="listPrice" render={({ field }) => (
                       <FormItem className="space-y-0">
-                        <FormLabel className={LABEL_STYLE}>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'listPrice')}>
                           <Tag size={12} className="text-pink-500" /> Liste Fiyatı
                         </FormLabel>
                         <FormControl>
@@ -219,7 +220,7 @@ export function ProductPricingForm({
                     )} />
                     <FormField control={form.control} name="costPrice" render={({ field }) => (
                       <FormItem className="space-y-0">
-                        <FormLabel className={LABEL_STYLE}>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'costPrice')}>
                           <Coins size={12} className="text-pink-500" /> Maliyet
                         </FormLabel>
                         <FormControl>

@@ -32,6 +32,7 @@ import type { PowerBIReportRoleMapping } from '../types/powerbiRls.types';
 import { useUserAuthorityList } from '../hooks/usePowerbiRls';
 import { usePowerbiReportDefinitionList } from '@/features/powerbi/hooks/usePowerbiReportDefinition';
 import { Loader2 } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 const REPORT_LIST_PARAMS = { pageNumber: 1, pageSize: 500, sortBy: 'Id', sortDirection: 'desc' as const };
 const ROLE_LIST_PARAMS = { pageNumber: 1, pageSize: 500 };
@@ -100,7 +101,9 @@ export function PowerbiRlsForm({
               name="powerBIReportDefinitionId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbiRls.report')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiRlsFormSchema, 'powerBIReportDefinitionId')}>
+                    {t('powerbiRls.report')}
+                  </FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
@@ -127,7 +130,9 @@ export function PowerbiRlsForm({
               name="roleId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbiRls.role')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiRlsFormSchema, 'roleId')}>
+                    {t('powerbiRls.role')}
+                  </FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
@@ -154,7 +159,9 @@ export function PowerbiRlsForm({
               name="rlsRoles"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbiRls.rlsRoles')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiRlsFormSchema, 'rlsRoles')}>
+                    {t('powerbiRls.rlsRoles')}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder={t('powerbiRls.rlsRolesPlaceholder')}

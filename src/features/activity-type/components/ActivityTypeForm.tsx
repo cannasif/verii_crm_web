@@ -24,6 +24,7 @@ import {
 import { activityTypeFormSchema, type ActivityTypeFormSchema } from '../types/activity-type-types';
 import type { ActivityTypeDto } from '../types/activity-type-types';
 import { ListTodo, Type, FileText, X } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface ActivityTypeFormProps {
   open: boolean;
@@ -134,9 +135,9 @@ export function ActivityTypeForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityTypeFormSchema, 'name')}>
                         <Type size={16} className="text-pink-500" />
-                        {t('activityType.form.name')} <span className="text-red-500">*</span>
+                        {t('activityType.form.name')}
                       </FormLabel>
                       <FormControl>
                         <Input 

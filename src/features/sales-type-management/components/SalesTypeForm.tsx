@@ -31,6 +31,7 @@ import { salesTypeFormSchema, type SalesTypeFormSchema } from '../types/sales-ty
 import type { SalesTypeGetDto } from '../types/sales-type-types';
 import { OfferType } from '@/types/offer-type';
 import { Tag } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface SalesTypeFormProps {
   open: boolean;
@@ -127,8 +128,8 @@ export function SalesTypeForm({
                 name="salesType"
                 render={({ field }) => (
                   <FormItem className="space-y-0">
-                    <FormLabel className={LABEL_STYLE}>
-                      {t('salesTypeManagement.form.salesType')} *
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(salesTypeFormSchema, 'salesType')}>
+                      {t('salesTypeManagement.form.salesType')}
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
@@ -155,8 +156,8 @@ export function SalesTypeForm({
                 name="name"
                 render={({ field }) => (
                   <FormItem className="space-y-0">
-                    <FormLabel className={LABEL_STYLE}>
-                      {t('salesTypeManagement.form.name')} *
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(salesTypeFormSchema, 'name')}>
+                      {t('salesTypeManagement.form.name')}
                     </FormLabel>
                     <FormControl>
                       <Input
