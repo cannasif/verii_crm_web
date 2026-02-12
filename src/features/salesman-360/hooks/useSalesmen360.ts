@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
   executeSalesmenRecommendedAction,
   getSalesmenCohort,
@@ -67,18 +68,19 @@ export function useSalesmenCohortQuery(userId: number, months = 12) {
 }
 
 export function useExecuteSalesmenActionMutation(userId: number) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: ExecuteRecommendedActionDto) =>
       executeSalesmenRecommendedAction({ userId, payload }),
     onSuccess: () => {
-      toast.success('Action executed');
+      toast.success(t('common.actionExecuted'));
       queryClient.invalidateQueries({ queryKey: ['salesmen360', 'overview', userId] });
       queryClient.invalidateQueries({ queryKey: ['salesmen360', 'cohort', userId] });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Action execution failed');
+      toast.error(error.message || t('common.actionExecutionFailed'));
     },
   });
 }
