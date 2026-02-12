@@ -63,10 +63,11 @@ import {
   ListPlus, X
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
-import type { CreateQuotationSchema } from '../schemas/quotation-schema';
+import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { QuotationExchangeRateFormState } from '../types/quotation-types';
 import { OfferType } from '@/types/offer-type';
 import { cn } from '@/lib/utils';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface QuotationHeaderFormProps {
   exchangeRates?: QuotationExchangeRateFormState[];
@@ -334,7 +335,7 @@ export function QuotationHeaderForm({
                       name="quotation.documentSerialTypeId"
                       render={({ field }) => (
                         <FormItem className="space-y-0 relative group">
-                          <FormLabel className={styles.label}>Seri No <span className="text-pink-500">*</span></FormLabel>
+                          <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.documentSerialTypeId')}>Seri No</FormLabel>
                           <div className="relative">
                             <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
                             <VoiceSearchCombobox
@@ -479,7 +480,7 @@ export function QuotationHeaderForm({
                     render={() => (
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
-                          {t('quotation.header.customer')} <span className="text-pink-500">*</span>
+                          {t('quotation.header.customer')}
                         </FormLabel>
                         <div className="flex gap-2">
                           <div className="relative flex-1 group">
@@ -704,8 +705,8 @@ export function QuotationHeaderForm({
                     name="quotation.offerType"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>
-                          {t('common.offerType.label')} <span className="text-pink-500 ml-0.5">*</span>
+                        <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.offerType')}>
+                          {t('common.offerType.label')}
                         </FormLabel>
                         <div className="relative">
                            <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
@@ -795,7 +796,7 @@ export function QuotationHeaderForm({
                     name="quotation.deliveryDate"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>Teslim T.</FormLabel>
+                        <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.deliveryDate')}>Teslim T.</FormLabel>
                         <div className="relative">
                           <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
                           <FormControl>
@@ -849,7 +850,7 @@ export function QuotationHeaderForm({
                   name="quotation.currency"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>Para Birimi</FormLabel>
+                      <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.currency')}>Para Birimi</FormLabel>
                       <div className="relative">
                         <div className={styles.iconWrapper}><Coins className="h-4 w-4" /></div>
                         <VoiceSearchCombobox
@@ -875,7 +876,7 @@ export function QuotationHeaderForm({
                   name="quotation.paymentTypeId"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>Ödeme Planı</FormLabel>
+                      <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.paymentTypeId')}>Ödeme Planı</FormLabel>
                       <div className="relative">
                          <div className={styles.iconWrapper}><CreditCard className="h-4 w-4" /></div>
                          <VoiceSearchCombobox
