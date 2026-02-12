@@ -74,10 +74,10 @@
   "save": "حفظ",
   "saving": "جاري الحفظ...",
   "deleting": "جاري الحذف...",
-  "name": "Adres Adı",
-  "namePlaceholder": "Adres adını girin",
-  "isDefault": "Varsayılan Sevk Adresi",
-  "isDefaultShort": "Varsayılan",
-  "defaultBadge": "Varsayılan",
-  "nameMaxLength": "Adres adı en fazla 150 karakter olabilir"
+  "name": "اسم العنوان",
+  "namePlaceholder": "أدخل اسم العنوان",
+  "isDefault": "عنوان الشحن الافتراضي",
+  "isDefaultShort": "تقصير",
+  "defaultBadge": "تقصير",
+  "nameMaxLength": "يمكن أن يصل اسم العنوان إلى 150 حرفًا"
 }

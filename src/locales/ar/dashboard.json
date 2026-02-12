@@ -52,9 +52,9 @@
     "openQuotationsDescription": "5 عروض أسعار بانتظار الموافقة",
     "criticalStock": "المخزون الحرج",
     "criticalStockDescription": "3 منتجات أقل من المستوى الحرج",
-    "checkTasks": "Görev listesini kontrol et",
-    "reviewQuotations": "Teklifleri incele",
-    "stockStatus": "Stok durumunu gör"
+    "checkTasks": "تحقق من قائمة المهام",
+    "reviewQuotations": "تحقق من العروض",
+    "stockStatus": "انظر حالة المخزون"
   },
   "sidebar": {
     "customers": "العملاء",
@@ -66,10 +66,10 @@
     "activities": "التخطيط",
     "activityManagement": "إدارة الأنشطة"
   },
-  "selectFormat": "Format Seçiniz",
-  "reportPreparing": "raporu hazırlanıyor...",
-  "reportDownloaded": "raporu indirildi.",
-  "reportError": "Rapor alınamadı.",
-  "noDate": "Tarih yok",
-  "unnamedActivity": "İsimsiz Aktivite"
+  "selectFormat": "حدد التنسيق",
+  "reportPreparing": "جاري إعداد التقرير...",
+  "reportDownloaded": "تم تنزيل التقرير.",
+  "reportError": "لا يمكن استلام التقرير.",
+  "noDate": "لا يوجد تاريخ",
+  "unnamedActivity": "نشاط مجهول"
 }

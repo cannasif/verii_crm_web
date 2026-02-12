@@ -16,8 +16,8 @@
     "Timeout": "مهلة (ث)"
   },
   "TestMail": {
-    "Send": "Test Maili Gönder",
-    "Sending": "Test gönderiliyor...",
-    "Success": "Test maili gönderildi"
+    "Send": "إرسال البريد الإلكتروني للاختبار",
+    "Sending": "جاري ارسال الاختبار...",
+    "Success": "تم إرسال البريد الإلكتروني التجريبي"
   }
 }

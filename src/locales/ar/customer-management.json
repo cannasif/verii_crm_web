@@ -23,10 +23,10 @@
     "createdBy": "تم الإنشاء بواسطة",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
     "page": "صفحة {{current}} / {{total}}",
-    "phone2": "Telefon 2",
+    "phone2": "الهاتف 2",
     "salesRepCode": "Sales Representative",
     "branchCode": "رمز الفرع",
-    "defaultShippingAddressId": "Varsayılan Sevk Adresi"
+    "defaultShippingAddressId": "عنوان الشحن الافتراضي"
   },
   "form": {
     "addCustomer": "إضافة عميل جديد",
@@ -83,15 +83,15 @@
     "isApproved": "معتمد",
     "isCompleted": "مكتمل",
     "isERPIntegrated": "متكامل مع ERP",
-    "phone2": "Telefon 2",
-    "phone2Placeholder": "İkinci telefon numarasını girin (opsiyonel)",
-    "phone2MaxLength": "İkinci telefon numarası en fazla 100 karakter olabilir",
-    "salesRepCodeMaxLength": "Satış temsilcisi kodu en fazla 50 karakter olabilir",
-    "groupCodeMaxLength": "Grup kodu en fazla 50 karakter olabilir",
-    "isCompletedDescription": "Bu müşterinin tüm bilgileri eksiksiz dolduruldu mu?",
+    "phone2": "الهاتف 2",
+    "phone2Placeholder": "أدخل رقم الهاتف الثاني (اختياري)",
+    "phone2MaxLength": "يمكن أن يصل رقم الهاتف الثاني إلى 100 حرف",
+    "salesRepCodeMaxLength": "يمكن أن يصل رمز مندوب المبيعات إلى 50 حرفًا",
+    "groupCodeMaxLength": "يمكن أن يصل رمز المجموعة إلى 50 حرفًا",
+    "isCompletedDescription": "هل تم ملء جميع المعلومات الخاصة بهذا العميل بالكامل؟",
     "none": "لا يوجد",
-    "defaultShippingAddress": "Varsayılan Sevk Adresi",
-    "selectDefaultShippingAddress": "Varsayılan sevk adresi seçin"
+    "defaultShippingAddress": "عنوان الشحن الافتراضي",
+    "selectDefaultShippingAddress": "اختر عنوان الشحن الافتراضي"
   },
   "delete": {
     "action": "حذف",
