@@ -1,8 +1,8 @@
-import { type ReactElement, useEffect, useRef, useCallback, useState } from 'react';
+import { type ReactElement, useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { X } from 'lucide-react';
+import { X, Search } from 'lucide-react'; 
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import { notificationApi } from '../api/notification-api';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import { useNotificationStore } from '../stores/notification-store';
 import { NotificationItem } from './NotificationItem';
+import { cn } from '@/lib/utils';
 
 interface NotificationDropdownProps {
   children: ReactElement;
@@ -128,13 +129,20 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
       
       <DropdownMenuContent 
         align="end" 
-        className="w-80 p-0 bg-white/80 dark:bg-[#1a1025]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 text-slate-900 dark:text-slate-200" 
+        className={cn(
+          "w-80 p-0 border shadow-2xl overflow-hidden z-50 transition-all duration-300", // w-96'dan w-80'e düşürüldü
+          "bg-white/90 dark:bg-[#0c0516]/90 backdrop-blur-xl", // Opaklık azaltıldı
+          "border-slate-200/60 dark:border-white/10 rounded-2xl",
+          "animate-in fade-in zoom-in-95"
+        )}
       >
-        <div className="p-4 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
+        <div className="p-3.5 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-slate-900 dark:text-white">{t('notification.title')}</span>
+            <span className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider">
+              {t('notification.title')}
+            </span>
             {unreadCount > 0 && (
-              <span className="text-[10px] bg-pink-500/10 text-pink-400 px-1.5 py-0.5 rounded border border-pink-500/20">
+              <span className="text-[10px] font-bold bg-pink-500 text-white px-1.5 py-0.5 rounded-md leading-none">
                 {unreadCount}
               </span>
             )}
@@ -142,7 +150,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
           <button 
             type="button"
             onClick={handleClose}
-            className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all active:scale-90"
             aria-label={t('notification.close')}
           >
             <X size={16} />
@@ -151,18 +159,23 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
 
         <div
           ref={scrollContainerRef}
-          className="max-h-64 overflow-y-auto custom-scrollbar-lg"
+          className="max-h-[350px] overflow-y-auto custom-scrollbar"
         >
           {isLoadingInitial ? (
-            <div className="p-8 text-center text-xs text-slate-500">
-              {t('notification.loading')}...
+            <div className="p-10 text-center">
+              <div className="w-5 h-5 border-2 border-pink-500/20 border-t-pink-500 rounded-full animate-spin mx-auto" />
             </div>
           ) : notifications.length === 0 ? (
-            <div className="px-4 py-8 text-center text-slate-500 text-sm">
-              {t('notification.noNotifications')}
+            <div className="px-6 py-10 text-center">
+              <div className="w-12 h-12 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Search size={20} className="text-slate-300 dark:text-slate-600" />
+              </div>
+              <p className="text-slate-400 dark:text-slate-500 text-[13px] font-medium italic">
+                {t('notification.noNotifications')}
+              </p>
             </div>
           ) : (
-            <>
+            <div className="divide-y divide-slate-50 dark:divide-white/5">
               {notifications.map((notification) => (
                 <NotificationItem 
                   key={notification.id} 
@@ -171,20 +184,19 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
                 />
               ))}
               {hasNextPage && <div ref={loadMoreTriggerRef} className="h-4" />}
-              {isFetchingNextPage && (
-                <div className="p-2 text-center text-xs text-slate-500">
-                  {t('notification.loading')}...
-                </div>
-              )}
-            </>
+            </div>
           )}
         </div>
 
-        <div className="p-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400 bg-[#1a1025]">
+        <div className="p-2 border-t border-slate-100 dark:border-white/5 bg-slate-50/30 dark:bg-white/5">
           <button 
             type="button"
             onClick={handleMarkAllAsRead} 
-            className="hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-pink-500/50 rounded px-2 py-1"
+            className={cn(
+              "w-full py-2 text-[11px] font-bold uppercase tracking-widest transition-all rounded-lg",
+              "text-slate-500 hover:text-pink-500 dark:text-slate-400 dark:hover:text-pink-400",
+              "disabled:opacity-30 disabled:cursor-not-allowed"
+            )}
             disabled={unreadCount === 0 || markAllAsReadMutation.isPending}
           >
             {t('notification.markAllAsRead')}
