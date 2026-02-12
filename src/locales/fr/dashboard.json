@@ -40,36 +40,36 @@
     "openQuotationsDescription": "5 devis en attente d'approbation",
     "criticalStock": "Stock critique",
     "criticalStockDescription": "3 produits sous le niveau critique",
-    "checkTasks": "Görev listesini kontrol et",
-    "reviewQuotations": "Teklifleri incele",
-    "stockStatus": "Stok durumunu gör"
+    "checkTasks": "Consultez la liste des tâches",
+    "reviewQuotations": "Consultez les offres",
+    "stockStatus": "Voir l'état des stocks"
   },
   "noDate": "No date",
   "unnamedActivity": "Unnamed Activity",
   "greeting": {
-    "morning": "Günaydın",
-    "afternoon": "İyi Günler",
-    "evening": "İyi Akşamlar"
+    "morning": "Bonjour",
+    "afternoon": "Passe une bonne journée",
+    "evening": "Bonne soirée"
   },
   "refresh": "Actualiser",
-  "refreshing": "Yenileniyor...",
-  "refreshed": "Veriler güncellendi",
-  "refreshError": "Güncelleme başarısız",
+  "refreshing": "Il est en cours de renouvellement...",
+  "refreshed": "Données mises à jour",
+  "refreshError": "La mise à jour a échoué",
   "user": "Utilisateur",
-  "noSalesData": "Henüz satış verisi oluşmadı",
+  "noSalesData": "Aucune donnée de vente pour l'instant",
   "noActivities": "Aucune activité pour le moment",
-  "selectFormat": "Format Seçiniz",
-  "reportPreparing": "raporu hazırlanıyor...",
-  "reportDownloaded": "raporu indirildi.",
-  "reportError": "Rapor alınamadı.",
+  "selectFormat": "Sélectionnez le format",
+  "reportPreparing": "Le rapport est en préparation...",
+  "reportDownloaded": "Le rapport a été téléchargé.",
+  "reportError": "Le rapport n'a pas pu être reçu.",
   "sidebar": {
     "customers": "Clients",
     "customerManagement": "Gestion des clients",
-    "salesManagement": "Satış Hunisi",
-    "demandCreateWizard": "Yeni Talep Oluştur",
+    "salesManagement": "Entonnoir de vente",
+    "demandCreateWizard": "Créer une nouvelle demande",
     "quotationCreateWizard": "Créer un nouveau devis",
     "orderCreateWizard": "Créer Nouveau Devis",
-    "activities": "Planlama",
+    "activities": "Planification",
     "activityManagement": "Gestion des activités"
   }
 }
