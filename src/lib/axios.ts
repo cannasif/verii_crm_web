@@ -1,83 +1,28 @@
 import axios from 'axios';
 import i18n from './i18n';
 import { useAuthStore } from '@/stores/auth-store';
+import {
+  loadConfig,
+  getApiUrl,
+  getApiBaseUrl,
+} from './api-config';
 
-const API_BASE_URL = 'https://crmapi.v3rii.com';
-
-interface RuntimeConfig {
-  apiUrl?: string;
-}
-
-function isValidApiUrl(value: string | undefined | null): boolean {
-  if (!value || typeof value !== 'string') return false;
-  const trimmed = value.trim();
-  if (!trimmed) return false;
-  try {
-    const u = new URL(trimmed);
-    return u.protocol === 'http:' || u.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
-
-function normalizeBaseUrl(url: string): string {
-  return url.trim().replace(/\/$/, '');
-}
-
-let apiUrl = normalizeBaseUrl(API_BASE_URL);
-let configPromise: Promise<string> | null = null;
-
-async function fetchRuntimeConfig(): Promise<string> {
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (isValidApiUrl(envUrl)) return normalizeBaseUrl(envUrl);
-
-  try {
-    const response = await fetch('/config.json', {
-      cache: import.meta.env.PROD ? 'no-cache' : 'default',
-    });
-    if (!response.ok) return API_BASE_URL;
-    const config = (await response.json()) as RuntimeConfig;
-    if (isValidApiUrl(config?.apiUrl)) return normalizeBaseUrl(config.apiUrl!);
-  } catch (error) {
-    if (import.meta.env.DEV) {
-      console.warn('[axios] config.json yüklenemedi, fallback kullanılıyor:', error);
-    }
-  }
-  return normalizeBaseUrl(API_BASE_URL);
-}
-
-export function loadConfig(): Promise<string> {
-  if (!configPromise) {
-    configPromise = fetchRuntimeConfig();
-  }
-  return configPromise;
-}
+export { loadConfig, getApiUrl, getApiBaseUrl };
 
 export async function ensureApiReady(): Promise<void> {
   const base = await loadConfig();
-  apiUrl = base;
   api.defaults.baseURL = base;
 }
 
-export async function getApiUrl(): Promise<string> {
-  return loadConfig();
-}
-
-export function getApiBaseUrl(): string {
-  const env = import.meta.env.VITE_API_URL;
-  if (isValidApiUrl(env)) return normalizeBaseUrl(env);
-  return apiUrl || normalizeBaseUrl(API_BASE_URL);
-}
-
 export const api = axios.create({
-  baseURL: apiUrl,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 api.interceptors.request.use((config) => {
-  config.baseURL = config.baseURL || apiUrl || api.defaults.baseURL;
+  config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
 
   const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
   if (token) {
