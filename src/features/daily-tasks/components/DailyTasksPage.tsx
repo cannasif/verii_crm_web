@@ -72,9 +72,9 @@ export function DailyTasksPage(): ReactElement {
   // Dinamik Selamlama
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour < 12) setGreeting(t('dailyTasks.morning', 'Günaydın'));
-    else if (hour < 18) setGreeting(t('dailyTasks.afternoon', 'İyi Günler'));
-    else setGreeting(t('dailyTasks.evening', 'İyi Akşamlar'));
+    if (hour < 12) setGreeting(t('dailyTasks.morning'));
+    else if (hour < 18) setGreeting(t('dailyTasks.afternoon'));
+    else setGreeting(t('dailyTasks.evening'));
   }, [t]);
 
   useEffect(() => {
@@ -291,7 +291,7 @@ export function DailyTasksPage(): ReactElement {
       default: return 'border-slate-500 text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300';
     }
   };
-  const getAssignedUserName = (userId?: number) => userOptions.find((u) => u.id === userId)?.fullName || t('dailyTasks.unassigned', 'Atanmamış');
+  const getAssignedUserName = (userId?: number) => userOptions.find((u) => u.id === userId)?.fullName || t('dailyTasks.unassigned');
   
   const getActivitiesByDate = (): Record<string, ActivityDto[]> => {
     const grouped: Record<string, ActivityDto[]> = {};
@@ -348,7 +348,7 @@ export function DailyTasksPage(): ReactElement {
              <div className="absolute inset-0 h-12 w-12 md:h-16 md:w-16 animate-ping rounded-full border-pink-500 opacity-20" />
            </div>
            <div className="text-xs md:text-sm font-medium text-slate-500 animate-pulse">
-             {t('dailyTasks.loading', 'Yükleniyor...')}
+             {t('dailyTasks.loading')}
            </div>
         </div>
       </div>
@@ -368,7 +368,7 @@ export function DailyTasksPage(): ReactElement {
           <div className="space-y-2 w-full lg:w-auto">
             <div className="flex items-center gap-2 text-pink-300 font-medium text-xs md:text-sm uppercase tracking-wider">
               <Sparkles size={14} className="md:w-4 md:h-4" />
-              <span>{t('dailyTasks.dashboard', 'Günlük Kontrol Paneli')}</span>
+              <span>{t('dailyTasks.dashboard')}</span>
             </div>
             <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight">
               {greeting}, <br className="md:hidden" /> 
@@ -377,13 +377,13 @@ export function DailyTasksPage(): ReactElement {
               </span>
             </h1>
             <p className="text-slate-300 text-sm md:text-base max-w-lg">
-              {t('dailyTasks.summary', 'Bugün için planlanmış işlerinizi buradan takip edebilirsiniz.')}
+              {t('dailyTasks.summary')}
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto mt-2 lg:mt-0">
              <div className="flex items-center justify-between w-full sm:w-auto sm:flex-col sm:items-end sm:mr-4 sm:text-right bg-white/5 sm:bg-transparent p-3 sm:p-0 rounded-xl">
-                <span className="text-sm sm:text-xs text-slate-300 sm:text-slate-400 uppercase tracking-wide">{t('dailyTasks.totalTasks', 'Toplam Görev')}</span>
+                <span className="text-sm sm:text-xs text-slate-300 sm:text-slate-400 uppercase tracking-wide">{t('dailyTasks.totalTasks')}</span>
                 <span className="text-xl sm:text-2xl font-bold text-white">{filteredActivities.length}</span>
              </div>
              <Button 
@@ -391,7 +391,7 @@ export function DailyTasksPage(): ReactElement {
               className="w-full sm:w-auto h-12 px-6 bg-white text-purple-900 hover:bg-slate-100 font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 border-0"
             >
               <Plus size={20} className="mr-2 text-pink-600" />
-              {t('dailyTasks.newTask', 'Yeni Görev Oluştur')}
+              {t('dailyTasks.newTask')}
             </Button>
           </div>
         </div>
@@ -407,15 +407,15 @@ export function DailyTasksPage(): ReactElement {
                 <TabsList className="bg-slate-100 dark:bg-white/5 p-1 rounded-xl h-auto w-full xl:w-auto grid grid-cols-3 xl:flex gap-1">
                     <TabsTrigger value="tasks" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-[#2d1b4e] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md py-2 px-2 md:px-4 text-[10px] md:text-xs font-medium transition-all duration-300">
                         <LayoutGrid size={14} className="mr-1 md:mr-2 md:w-4 md:h-4" />
-                        <span className="truncate">{t('dailyTasks.weeklyTasks', 'Kartlar')}</span>
+                        <span className="truncate">{t('dailyTasks.weeklyTasks')}</span>
                     </TabsTrigger>
                     <TabsTrigger value="list" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-[#2d1b4e] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md py-2 px-2 md:px-4 text-[10px] md:text-xs font-medium transition-all duration-300">
                         <ListTodo size={14} className="mr-1 md:mr-2 md:w-4 md:h-4" />
-                        <span className="truncate">{t('dailyTasks.dailyList', 'Liste')}</span>
+                        <span className="truncate">{t('dailyTasks.dailyList')}</span>
                     </TabsTrigger>
                     <TabsTrigger value="calendar" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-[#2d1b4e] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md py-2 px-2 md:px-4 text-[10px] md:text-xs font-medium transition-all duration-300">
                         <CalendarIcon size={14} className="mr-1 md:mr-2 md:w-4 md:h-4" />
-                        <span className="truncate">{t('dailyTasks.calendar', 'Takvim')}</span>
+                        <span className="truncate">{t('dailyTasks.calendar')}</span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -426,16 +426,16 @@ export function DailyTasksPage(): ReactElement {
                     <div className="flex items-center p-1 bg-slate-100/50 dark:bg-white/5 rounded-xl border border-slate-200/50 dark:border-white/5 w-full sm:w-auto overflow-x-auto no-scrollbar">
                         <div className="flex gap-1 min-w-max">
                             <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className={filterButtonStyle(statusFilter === 'all')}>
-                                {t('dailyTasks.all', 'Tümü')}
+                                {t('dailyTasks.all')}
                             </Button>
                             <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Scheduled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Scheduled))}>
-                                <Clock size={12} className="mr-1" /> {t('dailyTasks.pending', 'Bekleyen')}
+                                <Clock size={12} className="mr-1" /> {t('dailyTasks.pending')}
                             </Button>
                             <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Cancelled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Cancelled))}>
-                                <PauseCircle size={12} className="mr-1" /> {t('activityManagement.statusCanceled', 'İptal Edildi')}
+                                <PauseCircle size={12} className="mr-1" /> {t('activityManagement.statusCanceled')}
                             </Button>
                             <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Completed))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Completed))}>
-                                <CheckCircle2 size={12} className="mr-1" /> {t('dailyTasks.completed', 'Biten')}
+                                <CheckCircle2 size={12} className="mr-1" /> {t('dailyTasks.completed')}
                             </Button>
                         </div>
                     </div>
@@ -448,11 +448,11 @@ export function DailyTasksPage(): ReactElement {
                         <SelectTrigger className="w-full sm:w-[160px] h-10 rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 focus:ring-pink-500">
                             <div className="flex items-center text-xs">
                                 <User size={14} className="mr-2 text-pink-500" />
-                                <SelectValue placeholder={t('dailyTasks.allEmployees', 'Personel')} />
+                                <SelectValue placeholder={t('dailyTasks.allEmployees')} />
                             </div>
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-slate-200 dark:border-white/10">
-                            <SelectItem value="all">{t('dailyTasks.allEmployees', 'Tüm Ekip')}</SelectItem>
+                            <SelectItem value="all">{t('dailyTasks.allEmployees')}</SelectItem>
                             {userOptions.map((u) => (
                                 <SelectItem key={u.id} value={u.id.toString()}>{u.fullName}</SelectItem>
                             ))}
@@ -473,8 +473,8 @@ export function DailyTasksPage(): ReactElement {
                     <div className="bg-slate-100 dark:bg-white/10 p-4 rounded-full mb-4">
                         <Target size={40} className="text-slate-400" />
                     </div>
-                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">{t('dailyTasks.noTasks', 'Görüntülenecek görev yok')}</p>
-                    <p className="text-sm text-slate-400">{t('dailyTasks.relax', 'Filtreleri değiştirmeyi veya yeni görev eklemeyi deneyin.')}</p>
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">{t('dailyTasks.noTasks')}</p>
+                    <p className="text-sm text-slate-400">{t('dailyTasks.relax')}</p>
                 </div>
                 ) : (
                 filteredActivities.map((activity) => (
@@ -567,7 +567,7 @@ export function DailyTasksPage(): ReactElement {
             <TabsContent value="list" className="mt-0">
                 <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl overflow-hidden">
                     {filteredActivities.length === 0 ? (
-                        <div className="py-20 text-center text-slate-400">{t('dailyTasks.noTasks', 'Görev bulunamadı')}</div>
+                        <div className="py-20 text-center text-slate-400">{t('dailyTasks.noTasks')}</div>
                     ) : (
                         <div className="divide-y divide-slate-100 dark:divide-white/5">
                             {filteredActivities.map((activity) => (
@@ -625,7 +625,7 @@ export function DailyTasksPage(): ReactElement {
                               onClick={() => setCalendarViewMode('weekly')}
                               className="rounded-md text-xs font-medium"
                             >
-                              {t('dailyTasks.weekly', 'Haftalık')}
+                              {t('dailyTasks.weekly')}
                             </Button>
                             <Button
                               variant={calendarViewMode === 'monthly' ? 'secondary' : 'ghost'}
@@ -633,20 +633,20 @@ export function DailyTasksPage(): ReactElement {
                               onClick={() => setCalendarViewMode('monthly')}
                               className="rounded-md text-xs font-medium"
                             >
-                              {t('dailyTasks.monthly', 'Aylık')}
+                              {t('dailyTasks.monthly')}
                             </Button>
                         </div>
                         <div className="flex items-center gap-1 md:gap-2 bg-slate-100 dark:bg-white/5 rounded-lg p-1">
                           {calendarViewMode === 'weekly' ? (
                             <>
                               <Button variant="ghost" size="icon" onClick={handlePreviousWeek} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronLeft size={16} /></Button>
-                              <Button variant="ghost" size="sm" onClick={handleThisWeek} className="h-8 text-xs font-semibold px-2 md:px-3 hover:bg-white dark:hover:bg-white/10 shadow-sm">{t('dailyTasks.thisWeek', 'Bu Hafta')}</Button>
+                              <Button variant="ghost" size="sm" onClick={handleThisWeek} className="h-8 text-xs font-semibold px-2 md:px-3 hover:bg-white dark:hover:bg-white/10 shadow-sm">{t('dailyTasks.thisWeek')}</Button>
                               <Button variant="ghost" size="icon" onClick={handleNextWeek} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronRight size={16} /></Button>
                             </>
                           ) : (
                             <>
                               <Button variant="ghost" size="icon" onClick={handlePreviousMonth} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronLeft size={16} /></Button>
-                              <Button variant="ghost" size="sm" onClick={handleToday} className="h-8 text-xs font-semibold px-2 md:px-3 hover:bg-white dark:hover:bg-white/10 shadow-sm">{t('dailyTasks.today', 'Bugün')}</Button>
+                              <Button variant="ghost" size="sm" onClick={handleToday} className="h-8 text-xs font-semibold px-2 md:px-3 hover:bg-white dark:hover:bg-white/10 shadow-sm">{t('dailyTasks.today')}</Button>
                               <Button variant="ghost" size="icon" onClick={handleNextMonth} className="h-8 w-8 rounded-md hover:bg-white dark:hover:bg-white/10 shadow-sm"><ChevronRight size={16} /></Button>
                             </>
                           )}
@@ -719,7 +719,7 @@ export function DailyTasksPage(): ReactElement {
                       <div className="overflow-x-auto pb-2">
                         <div className="min-w-[520px] sm:min-w-[600px]">
                           <div className="grid grid-cols-7 gap-2 md:gap-4">
-                            {[t('dailyTasks.days.mon','Pzt'), t('dailyTasks.days.tue','Sal'), t('dailyTasks.days.wed','Çar'), t('dailyTasks.days.thu','Per'), t('dailyTasks.days.fri','Cum'), t('dailyTasks.days.sat','Cmt'), t('dailyTasks.days.sun','Paz')].map((day) => (
+                            {[t('dailyTasks.days.mon'), t('dailyTasks.days.tue'), t('dailyTasks.days.wed'), t('dailyTasks.days.thu'), t('dailyTasks.days.fri'), t('dailyTasks.days.sat'), t('dailyTasks.days.sun')].map((day) => (
                               <div key={day} className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest pb-4 border-b border-slate-100 dark:border-white/5">
                                 {day}
                               </div>
@@ -765,7 +765,7 @@ export function DailyTasksPage(): ReactElement {
                                     ))}
                                     {dayData.activities.length > 3 && (
                                       <div className="text-[9px] md:text-[10px] font-semibold text-slate-400 pl-1">
-                                        +{dayData.activities.length - 3} {t('dailyTasks.more', 'daha')}
+                                        +{dayData.activities.length - 3} {t('dailyTasks.more')}
                                       </div>
                                     )}
                                   </div>
