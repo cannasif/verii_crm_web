@@ -71,19 +71,19 @@ export function ActivityAdvancedFilter({
     <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-card/50 p-4 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-          {t('advancedFilter.title', 'Advanced Filter')}
+          {t('advancedFilter.title')}
         </h3>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={addRow}>
             <Plus className="h-4 w-4 mr-1" />
-            {t('advancedFilter.add', 'Add Filter')}
+            {t('advancedFilter.add')}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={onClear}>
-            {t('advancedFilter.clear', 'Clear')}
+            {t('advancedFilter.clear')}
           </Button>
           <Button type="button" size="sm" onClick={onSearch}>
             <Search className="h-4 w-4 mr-1" />
-            {t('advancedFilter.search', 'Search')}
+            {t('advancedFilter.search')}
           </Button>
         </div>
       </div>
@@ -96,7 +96,7 @@ export function ActivityAdvancedFilter({
                 onValueChange={(v) => updateRow(row.id, { column: v })}
               >
                 <SelectTrigger className="w-full sm:w-[160px]">
-                  <SelectValue placeholder={t('advancedFilter.column', 'Column')} />
+                  <SelectValue placeholder={t('advancedFilter.column')} />
                 </SelectTrigger>
                 <SelectContent>
                   {ACTIVITY_FILTER_COLUMNS.map((c) => (
@@ -111,7 +111,7 @@ export function ActivityAdvancedFilter({
                 onValueChange={(v) => updateRow(row.id, { operator: v })}
               >
                 <SelectTrigger className="w-full sm:w-[130px]">
-                  <SelectValue placeholder={t('advancedFilter.operator', 'Operator')} />
+                  <SelectValue placeholder={t('advancedFilter.operator')} />
                 </SelectTrigger>
                 <SelectContent>
                   {getOperatorsForColumn(row.column).map((op) => (
@@ -138,24 +138,24 @@ export function ActivityAdvancedFilter({
                   }
                 >
                   <SelectTrigger className="w-full sm:w-[120px]">
-                    <SelectValue placeholder={t('advancedFilter.value', 'Value')} />
+                    <SelectValue placeholder={t('advancedFilter.value')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={BOOL_SELECT_VALUE_NONE}>
-                      {t('advancedFilter.value', 'Value')}
+                      {t('advancedFilter.value')}
                     </SelectItem>
                     <SelectItem value={BOOL_SELECT_VALUE_TRUE}>
-                      {t('advancedFilter.true', 'True')}
+                      {t('advancedFilter.true')}
                     </SelectItem>
                     <SelectItem value={BOOL_SELECT_VALUE_FALSE}>
-                      {t('advancedFilter.false', 'False')}
+                      {t('advancedFilter.false')}
                     </SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
                 <Input
                   type={row.column === 'StartDateTime' ? 'date' : 'text'}
-                  placeholder={t('advancedFilter.value', 'Value')}
+                  placeholder={t('advancedFilter.value')}
                   value={row.value}
                   onChange={(e) => updateRow(row.id, { value: e.target.value })}
                   className="w-full sm:w-[160px]"
@@ -167,7 +167,7 @@ export function ActivityAdvancedFilter({
                 size="icon"
                 className="shrink-0 text-slate-500 hover:text-destructive"
                 onClick={() => removeRow(row.id)}
-                aria-label={t('advancedFilter.remove', 'Remove row')}
+                aria-label={t('advancedFilter.remove')}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

@@ -72,15 +72,15 @@ interface ActivityTableProps {
 }
 
 const getColumnsConfig = (t: TFunction): ColumnDef<ActivityDto>[] => [
-  { key: 'id', label: t('activityManagement.id', 'ID'), type: 'text', className: 'font-medium w-[48px] md:w-[60px]' },
-  { key: 'subject', label: t('activityManagement.subject', 'Konu'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
-  { key: 'activityType', label: t('activityManagement.activityType', 'Tip'), type: 'text', className: 'whitespace-nowrap' },
-  { key: 'status', label: t('activityManagement.status', 'Durum'), type: 'status', className: 'whitespace-nowrap' },
-  { key: 'priority', label: t('activityManagement.priority', 'Öncelik'), type: 'priority', className: 'whitespace-nowrap' },
-  { key: 'potentialCustomer', label: t('activityManagement.customer', 'Müşteri'), type: 'customer', className: 'min-w-[120px] md:min-w-[150px]' },
-  { key: 'contact', label: t('activityManagement.contact', 'Kişi'), type: 'contact', className: 'min-w-[120px] md:min-w-[150px]' },
-  { key: 'assignedUser', label: t('activityManagement.assignedUser', 'Sorumlu'), type: 'user', className: 'whitespace-nowrap' },
-  { key: 'startDateTime', label: t('activityManagement.activityDate', 'Tarih'), type: 'date', className: 'whitespace-nowrap' },
+  { key: 'id', label: t('activityManagement.id'), type: 'text', className: 'font-medium w-[48px] md:w-[60px]' },
+  { key: 'subject', label: t('activityManagement.subject'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
+  { key: 'activityType', label: t('activityManagement.activityType'), type: 'text', className: 'whitespace-nowrap' },
+  { key: 'status', label: t('activityManagement.status'), type: 'status', className: 'whitespace-nowrap' },
+  { key: 'priority', label: t('activityManagement.priority'), type: 'priority', className: 'whitespace-nowrap' },
+  { key: 'potentialCustomer', label: t('activityManagement.customer'), type: 'customer', className: 'min-w-[120px] md:min-w-[150px]' },
+  { key: 'contact', label: t('activityManagement.contact'), type: 'contact', className: 'min-w-[120px] md:min-w-[150px]' },
+  { key: 'assignedUser', label: t('activityManagement.assignedUser'), type: 'user', className: 'whitespace-nowrap' },
+  { key: 'startDateTime', label: t('activityManagement.activityDate'), type: 'date', className: 'whitespace-nowrap' },
 ];
 
 function normalizeStatus(value: string | number): ActivityStatus | null {
@@ -226,7 +226,7 @@ export function ActivityTable({
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
-          <div className="text-sm text-muted-foreground animate-pulse">{t('common.loading', 'Yükleniyor...')}</div>
+          <div className="text-sm text-muted-foreground animate-pulse">{t('common.loading')}</div>
         </div>
       </div>
     );
@@ -236,7 +236,7 @@ export function ActivityTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('common.noData', 'Veri yok')}
+          {t('common.noData')}
         </div>
       </div>
     );
@@ -252,13 +252,13 @@ export function ActivityTable({
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm">
               <EyeOff className="mr-2 h-4 w-4" />
-              {t('common.editColumns', 'Sütunları Düzenle')}
+              {t('common.editColumns')}
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50">
             <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-              {t('common.visibleColumns', 'Görünür Sütunlar')}
+              {t('common.visibleColumns')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
             {tableColumns.map((column) => (
@@ -291,7 +291,7 @@ export function ActivityTable({
                   </TableHead>
                 ))}
                 <TableHead className={`${headStyle} text-right w-[110px] md:w-[140px]`}>
-                  {t('common.actions', 'İşlemler')}
+                  {t('common.actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -339,7 +339,7 @@ export function ActivityTable({
         {totalPages > 1 && (
           <div className="border-t border-slate-200 dark:border-white/10 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-xs text-slate-500 dark:text-slate-400 order-2 sm:order-1">
-              {t('common.paginationInfo', '{{start}}-{{end}} / {{total}} kayıt', {
+              {t('common.paginationInfo', {
                 start: (pageNumber - 1) * pageSize + 1,
                 end: Math.min(pageNumber * pageSize, totalCount),
                 total: totalCount,
@@ -347,11 +347,11 @@ export function ActivityTable({
             </div>
             <div className="flex items-center gap-2 order-1 sm:order-2">
               <Button variant="outline" size="sm" onClick={() => onPageChange(pageNumber - 1)} disabled={pageNumber <= 1} className="h-8 px-3 text-xs border-slate-300 dark:border-white/20">
-                {t('common.previous', 'Önceki')}
+                {t('common.previous')}
               </Button>
               <span className="text-xs text-slate-600 dark:text-slate-300 px-2">{pageNumber} / {totalPages}</span>
               <Button variant="outline" size="sm" onClick={() => onPageChange(pageNumber + 1)} disabled={pageNumber >= totalPages} className="h-8 px-3 text-xs border-slate-300 dark:border-white/20">
-                {t('common.next', 'Sonraki')}
+                {t('common.next')}
               </Button>
             </div>
           </div>
@@ -363,18 +363,18 @@ export function ActivityTable({
           <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/10">
             <DialogTitle className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"><Alert02Icon size={18} /></span>
-              {t('activityManagement.deleteActivity', 'Aktiviteyi Sil')}
+              {t('activityManagement.deleteActivity')}
             </DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-2">
-              {t('activityManagement.deleteConfirmation', 'Bu aktiviteyi silmek istediğinizden emin misiniz?')}
+              {t('activityManagement.deleteConfirmation')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/10 flex justify-end gap-2">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="h-9 px-4 rounded-lg text-sm">
-              {t('common.cancel', 'Vazgeç')}
+              {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deleteActivity.isPending} className="h-9 px-4 rounded-lg text-sm">
-              {deleteActivity.isPending ? t('common.deleting', 'Siliniyor...') : t('common.delete', 'Sil')}
+              {deleteActivity.isPending ? t('common.deleting') : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -88,7 +88,7 @@ export function ActivityManagementPage(): ReactElement {
   const totalCount = activitiesResponse?.totalCount || 0;
 
   useEffect(() => {
-    setPageTitle(t('activityManagement.title', 'Aktivite Yönetimi'));
+    setPageTitle(t('activityManagement.title'));
     return () => {
       setPageTitle(null);
     };
@@ -194,10 +194,10 @@ export function ActivityManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('activityManagement.title', 'Aktivite Yönetimi')}
+            {t('activityManagement.title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
-            {t('activityManagement.description', 'Aktiviteleri yönetin ve düzenleyin')}
+            {t('activityManagement.description')}
           </p>
         </div>
 
@@ -206,7 +206,7 @@ export function ActivityManagementPage(): ReactElement {
           className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
         >
           <Plus size={18} className="mr-2" />
-          {t('activityManagement.create', 'Yeni Aktivite')}
+          {t('activityManagement.create')}
         </Button>
       </div>
 
@@ -215,7 +215,7 @@ export function ActivityManagementPage(): ReactElement {
           <div className="relative group w-full md:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
             <Input
-              placeholder={t('common.search', 'Ara...')}
+              placeholder={t('common.search')}
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
               className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl transition-all"
@@ -252,7 +252,7 @@ export function ActivityManagementPage(): ReactElement {
                   : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white border border-transparent'}
               `}
             >
-              {filter === 'all' ? t('common.all', 'Tümü') : filter === 'active' ? t('status.active', 'Aktif') : t('status.inactive', 'Pasif')}
+              {filter === 'all' ? t('common.all') : filter === 'active' ? t('status.active') : t('status.inactive')}
             </Button>
           ))}
         </div>

@@ -20,10 +20,10 @@ export const useUpdateActivity = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedActivity.id) });
-      toast.success(t('activityManagement.updateSuccess', 'Aktivite başarıyla güncellendi'));
+      toast.success(t('activityManagement.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('activityManagement.updateError', 'Aktivite güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('activityManagement.updateError'));
     },
   });
 };

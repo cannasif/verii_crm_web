@@ -32,17 +32,17 @@ export function ActivityStatusBadge({
     scheduled: {
       icon: CalendarClock,
       className: 'bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-500/20 hover:bg-violet-100 dark:hover:bg-violet-500/20',
-      label: t('activityManagement.statusScheduled', 'Planlandı'),
+      label: t('activityManagement.statusScheduled'),
     },
     completed: {
       icon: CheckCircle2,
       className: 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20 hover:bg-green-100 dark:hover:bg-green-500/20',
-      label: t('activityManagement.statusCompleted', 'Tamamlandı'),
+      label: t('activityManagement.statusCompleted'),
     },
     cancelled: {
       icon: XCircle,
       className: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20 hover:bg-red-100 dark:hover:bg-red-500/20',
-      label: t('activityManagement.statusCanceled', 'İptal Edildi'),
+      label: t('activityManagement.statusCanceled'),
     },
     unknown: {
       icon: HelpCircle,

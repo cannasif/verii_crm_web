@@ -17,10 +17,10 @@ export const useDeleteActivity = () => {
         queryKey: [ACTIVITY_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('activityManagement.deleteSuccess', 'Aktivite başarıyla silindi'));
+      toast.success(t('activityManagement.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('activityManagement.deleteError', 'Aktivite silinirken bir hata oluştu'));
+      toast.error(error.message || t('activityManagement.deleteError'));
     },
   });
 };

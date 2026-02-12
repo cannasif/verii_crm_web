@@ -19,10 +19,10 @@ export const useCreateActivity = () => {
         queryKey: [ACTIVITY_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('activityManagement.createSuccess', 'Aktivite başarıyla oluşturuldu'));
+      toast.success(t('activityManagement.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('activityManagement.createError', 'Aktivite oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('activityManagement.createError'));
     },
   });
 };

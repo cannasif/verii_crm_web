@@ -275,14 +275,14 @@ export function ActivityForm({
             </div>
             <div className="min-w-0">
               <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white truncate">
-                {activity ? t('activityManagement.edit', 'Aktivite Düzenle') : t('activityManagement.create', 'Yeni Aktivite')}
+                {activity ? t('activityManagement.edit') : t('activityManagement.create')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm truncate">
-                {activity ? t('activityManagement.editDescription', 'Aktivite bilgilerini düzenleyin') : t('activityManagement.createDescription', 'Yeni aktivite bilgilerini girin')}
+                {activity ? t('activityManagement.editDescription') : t('activityManagement.createDescription')}
               </DialogDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="shrink-0 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white" aria-label={t('common.close', 'Kapat')}>
+          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="shrink-0 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white" aria-label={t('common.close')}>
             <X size={20} />
           </Button>
         </DialogHeader>
@@ -292,35 +292,35 @@ export function ActivityForm({
             <TabsList className="bg-muted/50 h-auto p-1 rounded-xl gap-1 mb-4">
               <TabsTrigger value="details" className="rounded-lg px-4 py-2">
                 <FileText className="h-4 w-4 mr-2" />
-                {t('activityManagement.detailsTab', 'Detaylar')}
+                {t('activityManagement.detailsTab')}
               </TabsTrigger>
               <TabsTrigger value="images" className="rounded-lg px-4 py-2">
                 <Image className="h-4 w-4 mr-2" />
-                {t('activityManagement.imagesTab', 'Resimler')}
+                {t('activityManagement.imagesTab')}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="mt-0">
               <Form {...form}>
                 <form id="activity-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-              <FormSection title={t('activityManagement.basicInfo', 'Temel bilgiler')}>
+              <FormSection title={t('activityManagement.basicInfo')}>
                 <FormField control={form.control} name="subject" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.subject', 'Konu')} <span className="text-red-500">*</span></FormLabel>
-                    <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('activityManagement.enterSubject', 'Örn: Proje Toplantısı')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.subject')} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('activityManagement.enterSubject')} /></FormControl>
                     <FormMessage className="text-xs text-red-500" />
                   </FormItem>
                 )} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="activityType" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType', 'Tip')} <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className={LABEL_STYLE}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType')} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Combobox
                           options={activityTypes.map((type) => ({ value: String(type.id), label: type.name }))}
                           value={field.value ? String(field.value) : ''}
                           onValueChange={field.onChange}
-                          placeholder={t('activityManagement.select', 'Seç')}
+                          placeholder={t('activityManagement.select')}
                           className={INPUT_STYLE}
                         />
                       </FormControl>
@@ -329,13 +329,13 @@ export function ActivityForm({
                   )} />
                   <FormField control={form.control} name="status" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.status', 'Durum')} <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className={LABEL_STYLE}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.status')} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Combobox
                           options={ACTIVITY_STATUSES.map((statusOption) => ({ value: String(statusOption.value), label: t(statusOption.labelKey, statusOption.label) }))}
                           value={String(field.value)}
                           onValueChange={(value) => field.onChange(Number(value))}
-                          placeholder={t('activityManagement.select', 'Seç')}
+                          placeholder={t('activityManagement.select')}
                           className={INPUT_STYLE}
                         />
                       </FormControl>
@@ -346,14 +346,14 @@ export function ActivityForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="startDateTime" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate', 'Başlangıç')} <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')} <span className="text-red-500">*</span></FormLabel>
                       <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="endDateTime" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate', 'Bitiş')}</FormLabel>
+                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
                       <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || undefined)} /></FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
@@ -362,13 +362,13 @@ export function ActivityForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="priority" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.priority', 'Öncelik')}</FormLabel>
+                      <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.priority')}</FormLabel>
                       <FormControl>
                         <Combobox
                           options={ACTIVITY_PRIORITIES.map((priorityOption) => ({ value: String(priorityOption.value), label: t(priorityOption.labelKey, priorityOption.label) }))}
                           value={String(field.value ?? ActivityPriority.Medium)}
                           onValueChange={(value) => field.onChange(Number(value))}
-                          placeholder={t('activityManagement.select', 'Seç')}
+                          placeholder={t('activityManagement.select')}
                           className={INPUT_STYLE}
                         />
                       </FormControl>
@@ -377,11 +377,11 @@ export function ActivityForm({
                   )} />
                   <FormField control={form.control} name="isAllDay" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.allDay', 'Tüm Gün')}</FormLabel>
+                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.allDay')}</FormLabel>
                       <FormControl>
                         <div className="h-11 px-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center gap-3">
                           <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
-                          <span className="text-sm text-slate-700 dark:text-slate-300">{t('activityManagement.allDay', 'Tüm Gün')}</span>
+                          <span className="text-sm text-slate-700 dark:text-slate-300">{t('activityManagement.allDay')}</span>
                         </div>
                       </FormControl>
                       <FormMessage className="text-xs text-red-500" />
@@ -390,7 +390,7 @@ export function ActivityForm({
                 </div>
               </FormSection>
 
-              <FormSection title={t('activityManagement.relations', 'Müşteri & ilişkiler')}>
+              <FormSection title={t('activityManagement.relations')}>
                 <FormField
                   control={form.control}
                   name="potentialCustomerId"
@@ -407,22 +407,22 @@ export function ActivityForm({
 
                     return (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.customer', 'Müşteri')}</FormLabel>
+                        <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.customer')}</FormLabel>
                         <div className="flex w-full items-center gap-2">
                           <FormControl>
                             <Input
                               readOnly
                               value={displayValue}
-                              placeholder={t('activityManagement.selectCustomer', 'Müşteri seçin')}
+                              placeholder={t('activityManagement.selectCustomer')}
                               className={`${INPUT_STYLE} flex-1 cursor-pointer`}
                               onClick={() => setCustomerSelectDialogOpen(true)}
                             />
                           </FormControl>
-                          <Button type="button" variant="outline" onClick={() => setCustomerSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10" aria-label={t('activityManagement.selectCustomer', 'Müşteri seçin')}>
+                          <Button type="button" variant="outline" onClick={() => setCustomerSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10" aria-label={t('activityManagement.selectCustomer')}>
                             <Search size={18} />
                           </Button>
                           {(field.value != null || watchedErpCode) && (
-                            <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(event) => { event.stopPropagation(); field.onChange(undefined); form.setValue('erpCustomerCode', ''); setSelectedCustomerDisplayName(null); }} aria-label={t('common.clear', 'Temizle')}>
+                            <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(event) => { event.stopPropagation(); field.onChange(undefined); form.setValue('erpCustomerCode', ''); setSelectedCustomerDisplayName(null); }} aria-label={t('common.clear')}>
                               <X size={18} />
                             </Button>
                           )}
@@ -435,13 +435,13 @@ export function ActivityForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="contactId" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.contactId', 'İletişim')}</FormLabel>
+                      <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.contactId')}</FormLabel>
                       <FormControl>
                         <Combobox
-                          options={[{ value: 'none', label: t('activityManagement.noContactSelected', 'Seçilmedi') }, ...contactOptions.map((contact) => ({ value: contact.id.toString(), label: contact.fullName }))]}
+                          options={[{ value: 'none', label: t('activityManagement.noContactSelected') }, ...contactOptions.map((contact) => ({ value: contact.id.toString(), label: contact.fullName }))]}
                           value={field.value && field.value !== 0 ? field.value.toString() : 'none'}
                           onValueChange={(value) => field.onChange(value && value !== 'none' ? Number(value) : undefined)}
-                          placeholder={watchedCustomerId ? t('activityManagement.select', 'Seç') : t('activityManagement.selectCustomerFirst', 'Önce Müşteri')}
+                          placeholder={watchedCustomerId ? t('activityManagement.select') : t('activityManagement.selectCustomerFirst')}
                           disabled={!watchedCustomerId}
                           className={INPUT_STYLE}
                         />
@@ -451,13 +451,13 @@ export function ActivityForm({
                   )} />
                   <FormField control={form.control} name="assignedUserId" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser', 'Atanan Kullanıcı')}</FormLabel>
+                      <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser')}</FormLabel>
                       <FormControl>
                         <Combobox
-                          options={[{ value: 'none', label: t('activityManagement.noUserSelected', 'Seçilmedi') }, ...userOptions.map((userOption) => ({ value: userOption.id.toString(), label: userOption.fullName }))]}
+                          options={[{ value: 'none', label: t('activityManagement.noUserSelected') }, ...userOptions.map((userOption) => ({ value: userOption.id.toString(), label: userOption.fullName }))]}
                           value={field.value && field.value !== 0 ? field.value.toString() : 'none'}
                           onValueChange={(value) => field.onChange(value && value !== 'none' ? Number(value) : undefined)}
-                          placeholder={t('activityManagement.select', 'Seç')}
+                          placeholder={t('activityManagement.select')}
                           className={INPUT_STYLE}
                         />
                       </FormControl>
@@ -467,20 +467,20 @@ export function ActivityForm({
                 </div>
               </FormSection>
 
-              <FormSection title={t('activityManagement.details', 'Detay')}>
+              <FormSection title={t('activityManagement.details')}>
                 <FormField control={form.control} name="description" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.description', 'Açıklama')}</FormLabel>
-                    <FormControl><Textarea {...field} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('activityManagement.enterDescription', 'Aktivite detaylarını girin...')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.description')}</FormLabel>
+                    <FormControl><Textarea {...field} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('activityManagement.enterDescription')} /></FormControl>
                     <FormMessage className="text-xs text-red-500" />
                   </FormItem>
                 )} />
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders', 'Hatırlatmalar')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders')}</FormLabel>
                     <Button type="button" variant="outline" size="sm" onClick={() => appendReminder({ offsetMinutes: 15, channel: ReminderChannel.InApp })}>
-                      <Plus size={14} className="mr-1" /> {t('common.add', 'Ekle')}
+                      <Plus size={14} className="mr-1" /> {t('common.add')}
                     </Button>
                   </div>
 
@@ -494,7 +494,7 @@ export function ActivityForm({
 
                   {reminderFields.length === 0 && (
                     <div className="text-xs text-slate-500 dark:text-slate-400 rounded-lg border border-dashed border-slate-200 dark:border-white/10 p-3">
-                      {t('activityManagement.noReminder', 'Hatırlatma eklenmedi')}
+                      {t('activityManagement.noReminder')}
                     </div>
                   )}
 
@@ -535,7 +535,7 @@ export function ActivityForm({
                                     }))}
                                     value={String(reminderChannelField.value ?? ReminderChannel.InApp)}
                                     onValueChange={(value) => reminderChannelField.onChange(Number(value))}
-                                    placeholder={t('activityManagement.select', 'Seç')}
+                                    placeholder={t('activityManagement.select')}
                                     className={INPUT_STYLE}
                                   />
                                 </FormControl>
@@ -556,10 +556,10 @@ export function ActivityForm({
 
                   <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2 border-t border-slate-100 dark:border-white/5">
                     <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="h-11 px-5 rounded-lg font-medium">
-                      {t('common.cancel', 'Vazgeç')}
+                      {t('common.cancel')}
                     </Button>
                     <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none">
-                      {isSubmitting ? t('common.saving', 'Kaydediliyor...') : activity ? t('common.update', 'Güncelle') : t('common.save', 'Kaydet')}
+                      {isSubmitting ? t('common.saving') : activity ? t('common.update') : t('common.save')}
                     </Button>
                   </div>
                 </form>
@@ -572,7 +572,7 @@ export function ActivityForm({
                 onCreateActivity={async () => {
                   const isValid = await form.trigger();
                   if (!isValid) {
-                    throw new Error(t('activityManagement.validationError', 'Lütfen zorunlu alanları doldurun'));
+                    throw new Error(t('activityManagement.validationError'));
                   }
                   const formData = form.getValues();
                   await handleSubmit(formData);
