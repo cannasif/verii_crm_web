@@ -281,7 +281,7 @@ export function CustomerSelectDialog({
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-zinc-500">
-            {t('customerSelectDialog.loading', 'Yükleniyor...')}
+            {t('customerSelectDialog.loading')}
           </div>
         </div>
       );
@@ -292,7 +292,7 @@ export function CustomerSelectDialog({
         <div className="flex items-center justify-center py-12">
           <div className="text-zinc-500">
             {searchQuery.trim()
-              ? t('customerSelectDialog.noResults', 'Arama sonucu bulunamadı')
+              ? t('customerSelectDialog.noResults')
               : t(emptyKey, { ns: 'customer-select-dialog', defaultValue: 'Müşteri bulunamadı' })}
           </div>
         </div>
@@ -335,10 +335,10 @@ export function CustomerSelectDialog({
                </div>
                <div className="space-y-1 text-left">
                   <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                    {t('customerSelectDialog.title', 'Müşteri Seç')}
+                    {t('customerSelectDialog.title')}
                   </DialogTitle>
                   <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
-                    {t('customerSelectDialog.description', 'İşlem yapmak istediğiniz müşteriyi seçin')}
+                    {t('customerSelectDialog.description')}
                   </DialogDescription>
                </div>
             </div>
@@ -354,7 +354,7 @@ export function CustomerSelectDialog({
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t('customerSelectDialog.searchPlaceholder', 'İsim, kod veya telefon ile ara...')}
+                  placeholder={t('customerSelectDialog.searchPlaceholder')}
                   className={cn(INPUT_STYLE, "pl-9")}
                 />
                 {recognitionRef.current && (
@@ -408,19 +408,19 @@ export function CustomerSelectDialog({
                 value="erp" 
                 className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
               >
-                {t('customerSelectDialog.erpCustomers', 'ERP')}
+                {t('customerSelectDialog.erpCustomers')}
               </TabsTrigger>
               <TabsTrigger 
                 value="potential"
                 className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
               >
-                {t('customerSelectDialog.potentialCustomers', 'Potansiyel')}
+                {t('customerSelectDialog.potentialCustomers')}
               </TabsTrigger>
               <TabsTrigger 
                 value="all"
                 className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
               >
-                {t('customerSelectDialog.allCustomers', 'Tümü')}
+                {t('customerSelectDialog.allCustomers')}
               </TabsTrigger>
             </TabsList>
           </div>

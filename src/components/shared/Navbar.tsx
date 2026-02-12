@@ -73,7 +73,7 @@ export function Navbar(): ReactElement {
                 type="text"
                 value={searchQuery} 
                 onChange={handleSearch} 
-                placeholder={t('navbar.search_placeholder', 'Hızlı arama yap...')}
+                placeholder={t('navbar.search_placeholder')}
                 className={cn(
                   "w-full py-3 pl-12 pr-24 text-sm font-medium transition-all duration-300 outline-none rounded-2xl border",
                   "bg-slate-100/50 border-slate-200 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-pink-500/30",
@@ -126,7 +126,7 @@ export function Navbar(): ReactElement {
                   {displayName}
                 </p>
                 <p className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
-                  {t('roles.admin', 'Yönetici')}
+                  {t('roles.admin')}
                 </p>
               </div>
               <div className="relative shrink-0">

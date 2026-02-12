@@ -88,7 +88,7 @@ function StockCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2 py-0.5 rounded-md text-xs font-bold whitespace-nowrap bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 border border-pink-200 dark:border-pink-800/50">
-                {t('productSelectDialog.stock', 'STOK')}
+                {t('productSelectDialog.stock')}
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">
                 {stock.erpStockCode}
@@ -97,7 +97,7 @@ function StockCard({
             <h3 className="font-semibold text-base mb-2 truncate text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">{stock.stockName}</h3>
             {(stock.grupKodu || stock.grupAdi) && (
               <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">
-                {t('productSelectDialog.group', 'Grup')}: {stock.grupKodu && (
+                {t('productSelectDialog.group')}: {stock.grupKodu && (
                   <span className="font-mono font-medium text-slate-700 dark:text-slate-300">{stock.grupKodu}</span>
                 )}
                 {stock.grupKodu && stock.grupAdi && ' - '}
@@ -106,7 +106,7 @@ function StockCard({
             )}
             {stock.unit && (
               <div className="text-sm text-slate-500 dark:text-slate-400">
-                {t('productSelectDialog.unit', 'Birim')}: <span className="font-medium text-slate-700 dark:text-slate-300">{stock.unit}</span>
+                {t('productSelectDialog.unit')}: <span className="font-medium text-slate-700 dark:text-slate-300">{stock.unit}</span>
               </div>
             )}
             {hasRelatedStocks && (
@@ -137,7 +137,7 @@ function StockCard({
                         <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                       </svg>
-                      {t('productSelectDialog.relatedStocks', 'Bağlı Stoklar')} 
+                      {t('productSelectDialog.relatedStocks')} 
                       <span className="ml-1 px-1.5 py-0.5 bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 rounded text-[10px] font-bold">
                         {stock.parentRelations?.length || 0}
                       </span>
@@ -146,7 +146,7 @@ function StockCard({
                   <PopoverContent className="w-80" onClick={(e) => e.stopPropagation()}>
                     <div className="space-y-2">
                       <h4 className="font-semibold text-sm">
-                        {t('productSelectDialog.relatedStocks', 'Bağlı Stoklar')}
+                        {t('productSelectDialog.relatedStocks')}
                       </h4>
                       <div className="max-h-60 overflow-y-auto space-y-2">
                         {stock.parentRelations?.map((relation) => (
@@ -158,7 +158,7 @@ function StockCard({
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
                                 <div className="font-medium text-sm truncate">
-                                  {relation.relatedStockName || t('productSelectDialog.unknownStock', 'Bilinmeyen Stok')}
+                                  {relation.relatedStockName || t('productSelectDialog.unknownStock')}
                                 </div>
                                 {relation.relatedStockCode && (
                                   <span className="text-xs text-muted-foreground font-mono">
@@ -167,10 +167,10 @@ function StockCard({
                                 )}
                               </div>
                               <div className="text-xs text-muted-foreground">
-                                {t('productSelectDialog.quantity', 'Miktar')}: {relation.quantity}
+                                {t('productSelectDialog.quantity')}: {relation.quantity}
                                 {relation.isMandatory && (
                                   <span className="ml-2 text-orange-600 dark:text-orange-400">
-                                    ({t('productSelectDialog.mandatory', 'Zorunlu')})
+                                    ({t('productSelectDialog.mandatory')})
                                   </span>
                                 )}
                               </div>
@@ -260,7 +260,7 @@ function StockWithImageCard({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <span className="px-2 py-0.5 rounded-md text-xs font-bold whitespace-nowrap bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 border border-pink-200 dark:border-pink-800/50">
-                  {t('productSelectDialog.stock', 'STOK')}
+                  {t('productSelectDialog.stock')}
                 </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">
                   {stock.erpStockCode}
@@ -269,7 +269,7 @@ function StockWithImageCard({
               <h3 className="font-semibold text-base mb-2 truncate text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">{stock.stockName}</h3>
               {(stock.grupKodu || stock.grupAdi) && (
                 <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">
-                  {t('productSelectDialog.group', 'Grup')}: {stock.grupKodu && (
+                  {t('productSelectDialog.group')}: {stock.grupKodu && (
                     <span className="font-mono font-medium text-slate-700 dark:text-slate-300">{stock.grupKodu}</span>
                   )}
                   {stock.grupKodu && stock.grupAdi && ' - '}
@@ -278,7 +278,7 @@ function StockWithImageCard({
               )}
               {stock.unit && (
                 <div className="text-sm text-slate-500 dark:text-slate-400">
-                  {t('productSelectDialog.unit', 'Birim')}: <span className="font-medium text-slate-700 dark:text-slate-300">{stock.unit}</span>
+                  {t('productSelectDialog.unit')}: <span className="font-medium text-slate-700 dark:text-slate-300">{stock.unit}</span>
                 </div>
               )}
               {hasRelatedStocks && (
@@ -309,7 +309,7 @@ function StockWithImageCard({
                           <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg>
-                        {t('productSelectDialog.relatedStocks', 'Bağlı Stoklar')} 
+                        {t('productSelectDialog.relatedStocks')} 
                         <span className="ml-1 px-1.5 py-0.5 bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 rounded text-[10px] font-bold">
                           {stock.parentRelations?.length || 0}
                         </span>
@@ -319,7 +319,7 @@ function StockWithImageCard({
                       <div className="flex flex-col max-h-[300px]">
                         <div className="p-3 border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                           <h4 className="font-semibold text-sm text-slate-900 dark:text-white">
-                            {t('productSelectDialog.relatedStocks', 'Bağlı Stoklar')}
+                            {t('productSelectDialog.relatedStocks')}
                           </h4>
                         </div>
                         <div className="overflow-y-auto p-2 space-y-2">
@@ -332,7 +332,7 @@ function StockWithImageCard({
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
                                   <div className="font-medium text-sm truncate text-slate-700 dark:text-slate-200 group-hover/item:text-pink-700 dark:group-hover/item:text-pink-300 transition-colors">
-                                    {relation.relatedStockName || t('productSelectDialog.unknownStock', 'Bilinmeyen Stok')}
+                                    {relation.relatedStockName || t('productSelectDialog.unknownStock')}
                                   </div>
                                   {relation.relatedStockCode && (
                                     <span className="text-xs text-slate-400 font-mono">
@@ -341,10 +341,10 @@ function StockWithImageCard({
                                   )}
                                 </div>
                                 <div className="text-xs text-slate-500 dark:text-slate-400">
-                                  {t('productSelectDialog.quantity', 'Miktar')}: <span className="font-medium text-slate-700 dark:text-slate-300">{relation.quantity}</span>
+                                  {t('productSelectDialog.quantity')}: <span className="font-medium text-slate-700 dark:text-slate-300">{relation.quantity}</span>
                                   {relation.isMandatory && (
                                     <span className="ml-2 text-orange-600 dark:text-orange-400 font-medium bg-orange-50 dark:bg-orange-900/20 px-1.5 py-0.5 rounded">
-                                      {t('productSelectDialog.mandatory', 'Zorunlu')}
+                                      {t('productSelectDialog.mandatory')}
                                     </span>
                                   )}
                                 </div>
@@ -421,7 +421,7 @@ function StockListItem({
          <div className="md:col-span-5 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-1">
                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 border border-pink-200 dark:border-pink-800/50 uppercase tracking-wider">
-                  {t('productSelectDialog.stock', 'STOK')}
+                  {t('productSelectDialog.stock')}
                </span>
                <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">
                  {stock.erpStockCode}
@@ -442,7 +442,7 @@ function StockListItem({
             )}
             {stock.unit && (
               <span className="text-xs opacity-80 mt-0.5">
-                {t('productSelectDialog.unit', 'Birim')}: {stock.unit}
+                {t('productSelectDialog.unit')}: {stock.unit}
               </span>
             )}
          </div>
@@ -458,7 +458,7 @@ function StockListItem({
                     className="h-8 text-xs border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:text-pink-600 dark:hover:text-pink-400 transition-all rounded-lg shrink-0"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {t('productSelectDialog.relatedStocks', 'Bağlı Stoklar')} 
+                    {t('productSelectDialog.relatedStocks')} 
                     <span className="ml-1 px-1.5 py-0.5 bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 rounded text-[10px] font-bold">
                       {stock.parentRelations?.length || 0}
                     </span>
@@ -468,7 +468,7 @@ function StockListItem({
                     <div className="flex flex-col max-h-[300px]">
                     <div className="p-3 border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                         <h4 className="font-semibold text-sm text-slate-900 dark:text-white">
-                        {t('productSelectDialog.relatedStocks', 'Bağlı Stoklar')}
+                        {t('productSelectDialog.relatedStocks')}
                         </h4>
                     </div>
                     <div className="overflow-y-auto p-2 space-y-2">
@@ -481,7 +481,7 @@ function StockListItem({
                             <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                                 <div className="font-medium text-sm truncate text-slate-700 dark:text-slate-200 group-hover/item:text-pink-700 dark:group-hover/item:text-pink-300 transition-colors">
-                                {relation.relatedStockName || t('productSelectDialog.unknownStock', 'Bilinmeyen Stok')}
+                                {relation.relatedStockName || t('productSelectDialog.unknownStock')}
                                 </div>
                                 {relation.relatedStockCode && (
                                 <span className="text-xs text-slate-400 font-mono">
@@ -490,10 +490,10 @@ function StockListItem({
                                 )}
                             </div>
                             <div className="text-xs text-slate-500 dark:text-slate-400">
-                                {t('productSelectDialog.quantity', 'Miktar')}: <span className="font-medium text-slate-700 dark:text-slate-300">{relation.quantity}</span>
+                                {t('productSelectDialog.quantity')}: <span className="font-medium text-slate-700 dark:text-slate-300">{relation.quantity}</span>
                                 {relation.isMandatory && (
                                 <span className="ml-2 text-orange-600 dark:text-orange-400 font-medium bg-orange-50 dark:bg-orange-900/20 px-1.5 py-0.5 rounded">
-                                    {t('productSelectDialog.mandatory', 'Zorunlu')}
+                                    {t('productSelectDialog.mandatory')}
                                 </span>
                                 )}
                             </div>
@@ -573,7 +573,7 @@ function StockWithImageListItem({
          <div className="md:col-span-5 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-1">
                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 border border-pink-200 dark:border-pink-800/50 uppercase tracking-wider">
-                  {t('productSelectDialog.stock', 'STOK')}
+                  {t('productSelectDialog.stock')}
                </span>
                <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">
                  {stock.erpStockCode}
@@ -594,7 +594,7 @@ function StockWithImageListItem({
             )}
             {stock.unit && (
               <span className="text-xs opacity-80 mt-0.5">
-                {t('productSelectDialog.unit', 'Birim')}: {stock.unit}
+                {t('productSelectDialog.unit')}: {stock.unit}
               </span>
             )}
          </div>
@@ -610,7 +610,7 @@ function StockWithImageListItem({
                     className="h-8 text-xs border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:text-pink-600 dark:hover:text-pink-400 transition-all rounded-lg shrink-0"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {t('productSelectDialog.relatedStocks', 'Bağlı Stoklar')} 
+                    {t('productSelectDialog.relatedStocks')} 
                     <span className="ml-1 px-1.5 py-0.5 bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 rounded text-[10px] font-bold">
                       {stock.parentRelations?.length || 0}
                     </span>
@@ -620,7 +620,7 @@ function StockWithImageListItem({
                     <div className="flex flex-col max-h-[300px]">
                     <div className="p-3 border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                         <h4 className="font-semibold text-sm text-slate-900 dark:text-white">
-                        {t('productSelectDialog.relatedStocks', 'Bağlı Stoklar')}
+                        {t('productSelectDialog.relatedStocks')}
                         </h4>
                     </div>
                     <div className="overflow-y-auto p-2 space-y-2">
@@ -633,7 +633,7 @@ function StockWithImageListItem({
                             <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                                 <div className="font-medium text-sm truncate text-slate-700 dark:text-slate-200 group-hover/item:text-pink-700 dark:group-hover/item:text-pink-300 transition-colors">
-                                {relation.relatedStockName || t('productSelectDialog.unknownStock', 'Bilinmeyen Stok')}
+                                {relation.relatedStockName || t('productSelectDialog.unknownStock')}
                                 </div>
                                 {relation.relatedStockCode && (
                                 <span className="text-xs text-slate-400 font-mono">
@@ -642,10 +642,10 @@ function StockWithImageListItem({
                                 )}
                             </div>
                             <div className="text-xs text-slate-500 dark:text-slate-400">
-                                {t('productSelectDialog.quantity', 'Miktar')}: <span className="font-medium text-slate-700 dark:text-slate-300">{relation.quantity}</span>
+                                {t('productSelectDialog.quantity')}: <span className="font-medium text-slate-700 dark:text-slate-300">{relation.quantity}</span>
                                 {relation.isMandatory && (
                                 <span className="ml-2 text-orange-600 dark:text-orange-400 font-medium bg-orange-50 dark:bg-orange-900/20 px-1.5 py-0.5 rounded">
-                                    {t('productSelectDialog.mandatory', 'Zorunlu')}
+                                    {t('productSelectDialog.mandatory')}
                                 </span>
                                 )}
                             </div>
@@ -874,7 +874,7 @@ export function ProductSelectDialog({
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
-            {t('productSelectDialog.loading', 'Yükleniyor...')}
+            {t('productSelectDialog.loading')}
           </div>
         </div>
       );
@@ -885,8 +885,8 @@ export function ProductSelectDialog({
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
             {searchQuery.trim()
-              ? t('productSelectDialog.noResults', 'Arama sonucu bulunamadı')
-              : t('productSelectDialog.noProducts', 'Stok bulunamadı')}
+              ? t('productSelectDialog.noResults')
+              : t('productSelectDialog.noProducts')}
           </div>
         </div>
       );
@@ -926,7 +926,7 @@ export function ProductSelectDialog({
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
-            {t('productSelectDialog.loading', 'Yükleniyor...')}
+            {t('productSelectDialog.loading')}
           </div>
         </div>
       );
@@ -937,8 +937,8 @@ export function ProductSelectDialog({
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
             {searchQuery.trim()
-              ? t('productSelectDialog.noResults', 'Arama sonucu bulunamadı')
-              : t('productSelectDialog.noProducts', 'Görselli stok bulunamadı')}
+              ? t('productSelectDialog.noResults')
+              : t('productSelectDialog.noProducts')}
           </div>
         </div>
       );
@@ -978,7 +978,7 @@ export function ProductSelectDialog({
       <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[750px] max-h-[85vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden">
         <DialogHeader className="px-6 py-3 flex-shrink-0 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
           <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
-            {t('productSelectDialog.title', 'Stok Seç')}
+            {t('productSelectDialog.title')}
           </DialogTitle>
           <Button
             variant="ghost"
@@ -1011,7 +1011,7 @@ export function ProductSelectDialog({
                 </svg>
                 <Input
                   type="text"
-                  placeholder={t('productSelectDialog.searchPlaceholder', 'Stok kodu veya adı ile ara...')}
+                  placeholder={t('productSelectDialog.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-11 bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 focus:border-pink-500/50 dark:focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl transition-all shadow-sm"
@@ -1029,7 +1029,7 @@ export function ProductSelectDialog({
                       ? 'animate-pulse bg-red-500 hover:bg-red-600 border-red-500 shadow-lg shadow-red-500/30' 
                       : 'bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400'
                   )}
-                  title={t('productSelectDialog.voiceSearch', 'Sesli arama')}
+                  title={t('productSelectDialog.voiceSearch')}
                 >
                   {isListening ? (
                     <svg
@@ -1080,7 +1080,7 @@ export function ProductSelectDialog({
                       ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 shadow-sm" 
                       : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                   )}
-                  title={t('productSelectDialog.cardView', 'Kart Görünümü')}
+                  title={t('productSelectDialog.cardView')}
                 >
                   <LayoutGrid size={18} />
                 </button>
@@ -1094,7 +1094,7 @@ export function ProductSelectDialog({
                       ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 shadow-sm" 
                       : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                   )}
-                  title={t('productSelectDialog.listView', 'Liste Görünümü')}
+                  title={t('productSelectDialog.listView')}
                 >
                   <ListIcon size={18} />
                 </button>
@@ -1109,13 +1109,13 @@ export function ProductSelectDialog({
               value="stocks"
               className="px-6 py-2.5 rounded-t-xl rounded-b-none border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-500/5 dark:data-[state=active]:bg-pink-500/10 data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 font-semibold transition-all"
             >
-              {t('productSelectDialog.stocks', 'Stoklar')}
+              {t('productSelectDialog.stocks')}
             </TabsTrigger>
             <TabsTrigger 
               value="stocksWithImages"
               className="px-6 py-2.5 rounded-t-xl rounded-b-none border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-500/5 dark:data-[state=active]:bg-pink-500/10 data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 font-semibold transition-all"
             >
-              {t('productSelectDialog.stocksWithImages', 'Görselli Stoklar')}
+              {t('productSelectDialog.stocksWithImages')}
             </TabsTrigger>
           </TabsList>
 

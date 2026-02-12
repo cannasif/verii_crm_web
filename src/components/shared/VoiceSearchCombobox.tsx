@@ -78,11 +78,11 @@ export function VoiceSearchCombobox({
           console.error('Speech recognition error', event.error);
           setIsListening(false);
           if (event.error === 'not-allowed') {
-            toast.error(t('common.voiceSearchPermissionDenied', 'Mikrofon izni reddedildi.'));
+            toast.error(t('common.voiceSearchPermissionDenied'));
           } else if (event.error === 'no-speech') {
             void 0;
           } else {
-            toast.error(t('common.voiceSearchError', 'Sesli arama sırasında bir hata oluştu.'));
+            toast.error(t('common.voiceSearchError'));
           }
         };
 
@@ -100,7 +100,7 @@ export function VoiceSearchCombobox({
     e.stopPropagation();
     
     if (!recognitionRef.current) {
-      toast.error(t('common.voiceSearchNotSupported', 'Tarayıcınız sesli aramayı desteklemiyor.'));
+      toast.error(t('common.voiceSearchNotSupported'));
       return;
     }
 
@@ -147,7 +147,7 @@ export function VoiceSearchCombobox({
           disabled={disabled}
         >
           <span className="truncate">
-            {selectedLabel || placeholder || t('common.select', 'Seçiniz')}
+            {selectedLabel || placeholder || t('common.select')}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -155,7 +155,7 @@ export function VoiceSearchCombobox({
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl rounded-2xl" align="start">
         <Command className="bg-transparent">
           <CommandInput 
-            placeholder={searchPlaceholder || t('common.search', 'Ara...')} 
+            placeholder={searchPlaceholder || t('common.search')} 
             value={searchQuery}
             onValueChange={setSearchQuery}
             className="border-b border-slate-100 dark:border-white/5 bg-transparent"
@@ -170,7 +170,7 @@ export function VoiceSearchCombobox({
                    isListening && "text-pink-500 animate-pulse bg-pink-50 dark:bg-pink-900/20"
                  )}
                  onClick={handleVoiceSearch}
-                 title={t('common.voiceSearch', 'Sesli Arama')}
+                 title={t('common.voiceSearch')}
                >
                  {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                </Button>
@@ -178,7 +178,7 @@ export function VoiceSearchCombobox({
           </CommandInput>
           <CommandList className="max-h-[300px] overflow-y-auto p-2 custom-scrollbar space-y-1">
             <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
-              {t('common.noResults', 'Sonuç bulunamadı.')}
+              {t('common.noResults')}
             </CommandEmpty>
             <CommandGroup>
               {options.map((option) => (

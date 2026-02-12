@@ -75,10 +75,10 @@ export function RelatedStocksSelectionDialog({
       <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-2xl rounded-2xl overflow-hidden">
         <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0 border-b border-slate-200/50 dark:border-white/5">
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-orange-600">
-            {t('relatedStocksSelectionDialog.title', 'Bağlı Stokları Seçin')}
+            {t('relatedStocksSelectionDialog.title')}
           </DialogTitle>
           <DialogDescription className="text-slate-500 dark:text-slate-400">
-            {t('relatedStocksSelectionDialog.description', 'Ana stok ile birlikte eklemek istediğiniz bağlı stokları seçin. Zorunlu stoklar otomatik olarak seçilidir.')}
+            {t('relatedStocksSelectionDialog.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -87,7 +87,7 @@ export function RelatedStocksSelectionDialog({
             <div className="space-y-3">
               <Label className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                 <span className="w-1 h-4 bg-orange-500 rounded-full inline-block"></span>
-                {t('relatedStocksSelectionDialog.mandatoryStocks', 'Zorunlu Stoklar')}
+                {t('relatedStocksSelectionDialog.mandatoryStocks')}
               </Label>
               <div className="space-y-2">
                 {mandatoryStocks.map((stock) => (
@@ -104,7 +104,7 @@ export function RelatedStocksSelectionDialog({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <div className="font-medium text-sm truncate text-slate-900 dark:text-white">
-                            {stock.relatedStockName || t('relatedStocksSelectionDialog.unknownStock', 'Bilinmeyen Stok')}
+                            {stock.relatedStockName || t('relatedStocksSelectionDialog.unknownStock')}
                           </div>
                           {stock.relatedStockCode && (
                             <span className="text-xs text-slate-500 dark:text-slate-400 font-mono bg-white/50 dark:bg-white/5 px-1.5 py-0.5 rounded">
@@ -113,7 +113,7 @@ export function RelatedStocksSelectionDialog({
                           )}
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-400">
-                          {t('relatedStocksSelectionDialog.quantity', 'Miktar')}: <span className="font-semibold text-slate-700 dark:text-slate-300">{stock.quantity}</span>
+                          {t('relatedStocksSelectionDialog.quantity')}: <span className="font-semibold text-slate-700 dark:text-slate-300">{stock.quantity}</span>
                         </div>
                         {stock.description && (
                           <div className="text-xs text-slate-400 mt-1 italic">
@@ -123,7 +123,7 @@ export function RelatedStocksSelectionDialog({
                       </div>
                     </div>
                     <Badge variant="outline" className="ml-2 shrink-0 border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20">
-                      {t('relatedStocksSelectionDialog.mandatory', 'Zorunlu')}
+                      {t('relatedStocksSelectionDialog.mandatory')}
                     </Badge>
                   </div>
                 ))}
@@ -135,7 +135,7 @@ export function RelatedStocksSelectionDialog({
             <div className="space-y-3">
               <Label className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                 <span className="w-1 h-4 bg-pink-500 rounded-full inline-block"></span>
-                {t('relatedStocksSelectionDialog.optionalStocks', 'Opsiyonel Stoklar')}
+                {t('relatedStocksSelectionDialog.optionalStocks')}
               </Label>
               <div className="space-y-2">
                 {optionalStocks.map((stock) => {
@@ -163,7 +163,7 @@ export function RelatedStocksSelectionDialog({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <div className={`font-medium text-sm truncate transition-colors ${isSelected ? 'text-pink-700 dark:text-pink-300' : 'text-slate-900 dark:text-white'}`}>
-                              {stock.relatedStockName || t('relatedStocksSelectionDialog.unknownStock', 'Bilinmeyen Stok')}
+                              {stock.relatedStockName || t('relatedStocksSelectionDialog.unknownStock')}
                             </div>
                             {stock.relatedStockCode && (
                               <span className="text-xs text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">
@@ -172,7 +172,7 @@ export function RelatedStocksSelectionDialog({
                             )}
                           </div>
                           <div className="text-xs text-slate-500 dark:text-slate-400">
-                            {t('relatedStocksSelectionDialog.quantity', 'Miktar')}: <span className="font-semibold text-slate-700 dark:text-slate-300">{stock.quantity}</span>
+                            {t('relatedStocksSelectionDialog.quantity')}: <span className="font-semibold text-slate-700 dark:text-slate-300">{stock.quantity}</span>
                           </div>
                           {stock.description && (
                             <div className="text-xs text-slate-400 mt-1 italic">
@@ -190,7 +190,7 @@ export function RelatedStocksSelectionDialog({
 
           {relatedStocks.length === 0 && (
             <div className="text-center py-12 text-slate-400">
-              {t('relatedStocksSelectionDialog.noRelatedStocks', 'Bağlı stok bulunamadı')}
+              {t('relatedStocksSelectionDialog.noRelatedStocks')}
             </div>
           )}
         </div>
@@ -202,7 +202,7 @@ export function RelatedStocksSelectionDialog({
             disabled={isLoading}
             className="border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10"
           >
-            {t('relatedStocksSelectionDialog.cancel', 'İptal')}
+            {t('relatedStocksSelectionDialog.cancel')}
           </Button>
           <Button 
             onClick={handleConfirm} 
@@ -212,10 +212,10 @@ export function RelatedStocksSelectionDialog({
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t('relatedStocksSelectionDialog.calculating', 'Hesaplanıyor...')}
+                {t('relatedStocksSelectionDialog.calculating')}
               </>
             ) : (
-              t('relatedStocksSelectionDialog.add', 'Ekle')
+              t('relatedStocksSelectionDialog.add')
             )}
           </Button>
         </DialogFooter>

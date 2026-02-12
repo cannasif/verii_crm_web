@@ -60,8 +60,8 @@ export function NotesDialog({
     onOpenChange(false);
   };
 
-  const dialogTitle = title ?? t('quotation.notes.title', 'Ek Notlar ve Koşullar');
-  const dialogDescription = description ?? t('quotation.notes.description', 'Belgenize eklemek istediğiniz notları düzenleyin ve seçin.');
+  const dialogTitle = title ?? t('quotation.notes.title');
+  const dialogDescription = description ?? t('quotation.notes.description');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -115,7 +115,7 @@ export function NotesDialog({
                         ? "bg-white dark:bg-[#130822]"
                         : "bg-transparent"
                     )}
-                    placeholder={t('quotation.notes.placeholder', 'Not içeriği...')}
+                    placeholder={t('quotation.notes.placeholder')}
                   />
                 </div>
 
@@ -135,13 +135,13 @@ export function NotesDialog({
             onClick={() => onOpenChange(false)}
             className="h-10 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
           >
-            {t('common.cancel', 'Vazgeç')}
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleSave}
             className="h-10 px-6 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            {t('common.save', 'Kaydet ve Uygula')}
+            {t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

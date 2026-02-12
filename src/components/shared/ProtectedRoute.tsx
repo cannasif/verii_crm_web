@@ -62,7 +62,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
     return (
       <div className="min-h-[60vh] w-full flex items-center justify-center">
         <div className="text-slate-500 dark:text-slate-400">
-          {t('common.loading', 'Loading...')}
+          {t('common.loading')}
         </div>
       </div>
     );
@@ -84,12 +84,12 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
       <div className="min-h-[60vh] w-full flex items-center justify-center p-6">
         <div className="w-full max-w-lg rounded-2xl border border-red-200/50 dark:border-red-500/20 bg-white dark:bg-[#0b0713] p-6">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-            {t('common.serverErrorTitle', 'Server error')}
+            {t('common.serverErrorTitle')}
           </h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
             {isAutoRetrying
-              ? t('common.serverErrorRetrying', 'Connection lost. Retrying automatically...')
-              : t('common.serverErrorDescription', 'Permissions could not be loaded. Please try again.')}
+              ? t('common.serverErrorRetrying')
+              : t('common.serverErrorDescription')}
           </p>
           <div className="mt-4 flex gap-2">
             <Button
@@ -99,10 +99,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
                 void myPermissionsQuery.refetch();
               }}
             >
-              {t('common.retry', 'Retry')}
+              {t('common.retry')}
             </Button>
             <Button onClick={() => window.location.reload()}>
-              {t('common.refreshPage', 'Refresh page')}
+              {t('common.refreshPage')}
             </Button>
           </div>
         </div>

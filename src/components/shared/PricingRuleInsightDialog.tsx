@@ -54,20 +54,18 @@ export function PricingRuleInsightDialog({
         <DialogHeader className="px-5 py-4 border-b bg-slate-50/60 dark:bg-slate-900/40">
           <DialogTitle className="flex items-center gap-2">
             <Tag className="h-4 w-4 text-pink-500" />
-            {t('common.pricingInsights.title', 'Fiyat ve Iskonto Kurallari')}
+            {t('common.pricingInsights.title')}
           </DialogTitle>
           <DialogDescription>
-            {t(
-              'common.pricingInsights.description',
-              'Secili stok icin aktif kural araliklari ve iskonto limitleri'
+            {t('common.pricingInsights.description'
             )}
           </DialogDescription>
           <div className="flex flex-wrap gap-2 pt-1">
             <Badge variant="outline">
-              {t('common.pricingInsights.stock', 'Stok')}: {productCode || '-'}
+              {t('common.pricingInsights.stock')}: {productCode || '-'}
             </Badge>
             <Badge variant="outline">
-              {t('common.pricingInsights.group', 'Grup')}: {activeGroupCode || '-'}
+              {t('common.pricingInsights.group')}: {activeGroupCode || '-'}
             </Badge>
           </div>
         </DialogHeader>
@@ -77,16 +75,14 @@ export function PricingRuleInsightDialog({
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-semibold flex items-center gap-2">
                 <Ruler className="h-4 w-4 text-blue-500" />
-                {t('common.pricingInsights.rules', 'Kural Araliklari')}
+                {t('common.pricingInsights.rules')}
               </h4>
               <Badge>{rules.length}</Badge>
             </div>
 
             {rules.length === 0 ? (
               <div className="text-sm text-muted-foreground border rounded-lg p-3">
-                {t(
-                  'common.pricingInsights.noRule',
-                  'Bu stok icin eslesen fiyat kurali bulunamadi.'
+                {t('common.pricingInsights.noRule'
                 )}
               </div>
             ) : (
@@ -96,24 +92,24 @@ export function PricingRuleInsightDialog({
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="secondary">#{rule.pricingRuleHeaderId ?? '-'}</Badge>
                       <Badge variant="outline">
-                        {t('common.pricingInsights.range', 'Miktar')}: {rule.minQuantity} - {rule.maxQuantity ?? 'inf'}
+                        {t('common.pricingInsights.range')}: {rule.minQuantity} - {rule.maxQuantity ?? 'inf'}
                       </Badge>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                       <div>
-                        <span className="text-muted-foreground">{t('common.pricingInsights.fixedPrice', 'Sabit Fiyat')}</span>
+                        <span className="text-muted-foreground">{t('common.pricingInsights.fixedPrice')}</span>
                         <div className="font-medium">{rule.fixedUnitPrice ?? '-'}</div>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">{t('common.pricingInsights.currency', 'Doviz')}</span>
+                        <span className="text-muted-foreground">{t('common.pricingInsights.currency')}</span>
                         <div className="font-medium">{rule.currencyCode ?? '-'}</div>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">{t('common.pricingInsights.discount1', 'Indirim 1')}</span>
+                        <span className="text-muted-foreground">{t('common.pricingInsights.discount1')}</span>
                         <div className="font-medium">%{rule.discountRate1}</div>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">{t('common.pricingInsights.discount2And3', 'Ind. 2/3')}</span>
+                        <span className="text-muted-foreground">{t('common.pricingInsights.discount2And3')}</span>
                         <div className="font-medium">%{rule.discountRate2} / %{rule.discountRate3}</div>
                       </div>
                     </div>
@@ -126,35 +122,33 @@ export function PricingRuleInsightDialog({
           <section className="space-y-3">
             <h4 className="text-sm font-semibold flex items-center gap-2">
               <Percent className="h-4 w-4 text-amber-500" />
-              {t('common.pricingInsights.discountLimit', 'Iskonto Limit Araligi')}
+              {t('common.pricingInsights.discountLimit')}
             </h4>
 
             {!discountLimit ? (
               <div className="text-sm text-muted-foreground border rounded-lg p-3">
-                {t(
-                  'common.pricingInsights.noLimit',
-                  'Bu grup icin tanimli kullanici iskonto limiti bulunamadi.'
+                {t('common.pricingInsights.noLimit'
                 )}
               </div>
             ) : (
               <div className="border rounded-lg p-3 space-y-2">
                 <div className="text-sm">
-                  <span className="text-muted-foreground">{t('common.pricingInsights.limitGroup', 'Limit Grubu')}:</span>{' '}
+                  <span className="text-muted-foreground">{t('common.pricingInsights.limitGroup')}:</span>{' '}
                   <span className="font-medium">{discountLimit.erpProductGroupCode || '-'}</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-sm">
                   <div className="rounded-md border p-2">
-                    <div className="text-muted-foreground">{t('common.pricingInsights.discount1', 'Indirim 1')}</div>
+                    <div className="text-muted-foreground">{t('common.pricingInsights.discount1')}</div>
                     <div className="font-semibold">%{discountLimit.maxDiscount1}</div>
                   </div>
                   <div className="rounded-md border p-2">
-                    <div className="text-muted-foreground">{t('common.pricingInsights.discount2', 'Indirim 2')}</div>
+                    <div className="text-muted-foreground">{t('common.pricingInsights.discount2')}</div>
                     <div className="font-semibold">
                       %{discountLimit.maxDiscount2 ?? 0}
                     </div>
                   </div>
                   <div className="rounded-md border p-2">
-                    <div className="text-muted-foreground">{t('common.pricingInsights.discount3', 'Indirim 3')}</div>
+                    <div className="text-muted-foreground">{t('common.pricingInsights.discount3')}</div>
                     <div className="font-semibold">
                       %{discountLimit.maxDiscount3 ?? 0}
                     </div>

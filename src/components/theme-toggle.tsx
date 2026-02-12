@@ -50,7 +50,7 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
           "hover:border-orange-500/30 hover:bg-zinc-800",
           "hover:shadow-[0_0_15px_rgba(249,115,22,0.3)]"
         )}
-        aria-label={t('theme.toggle', 'Tema değiştir')}
+        aria-label={t('theme.toggle')}
       >
         {isDark ? (
           <Sun className="h-5 w-5 text-slate-200 group-hover:text-orange-400 transition-colors" />
@@ -67,7 +67,7 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
       <Switch
         checked={isDark}
         onCheckedChange={handleToggle}
-        aria-label={t('theme.toggle', 'Tema değiştir')}
+        aria-label={t('theme.toggle')}
       />
       <Moon className="h-4 w-4 text-muted-foreground" />
     </div>

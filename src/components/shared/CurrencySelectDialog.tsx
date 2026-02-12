@@ -66,7 +66,7 @@ export function CurrencySelectDialog({
              <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-2.5 rounded-xl shadow-lg shadow-amber-500/20 text-white">
                <Coins size={20} />
              </div>
-            {t('currencySelectDialog.title', 'Para Birimi Seç')}
+            {t('currencySelectDialog.title')}
           </DialogTitle>
           
           <div className="flex items-center gap-2 mt-4">
@@ -76,7 +76,7 @@ export function CurrencySelectDialog({
                 size={16} 
               />
               <Input
-                placeholder={t('currencySelectDialog.searchPlaceholder', 'Döviz adı veya kodu ile ara...')}
+                placeholder={t('currencySelectDialog.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 h-11 rounded-xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all"
@@ -93,12 +93,12 @@ export function CurrencySelectDialog({
           {isLoading ? (
             <div className="flex items-center justify-center py-10 text-slate-500">
               <div className="animate-spin mr-2 h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full"></div>
-              {t('currencySelectDialog.loading', 'Yükleniyor...')}
+              {t('currencySelectDialog.loading')}
             </div>
           ) : filteredCurrencies.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-slate-500 dark:text-slate-400">
               <Coins size={48} className="opacity-20 mb-4" />
-              <p>{t('currencySelectDialog.noResults', 'Sonuç bulunamadı')}</p>
+              <p>{t('currencySelectDialog.noResults')}</p>
             </div>
           ) : (
             <div className="space-y-2">

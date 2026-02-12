@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface VoiceSearchButtonProps {
   onResult: (text: string) => void;
@@ -18,18 +19,19 @@ export function VoiceSearchButton({
   size = 'icon',
   variant = 'ghost',
 }: VoiceSearchButtonProps): ReactElement {
+  const { t } = useTranslation();
   const { isListening, error, isSupported, startListening, stopListening } = useVoiceSearch({
     onResult: (text) => {
       onResult(text);
       if (text.trim()) {
-        toast.success('Sesli arama tamamlandı');
+        toast.success(t('common.voiceSearchCompleted'));
       }
     },
   });
 
   const handleClick = (): void => {
     if (!isSupported) {
-      toast.error('Tarayıcınız sesli aramayı desteklemiyor');
+      toast.error(t('common.voiceSearchNotSupported'));
       return;
     }
 
@@ -56,7 +58,7 @@ export function VoiceSearchButton({
         className
       )}
       disabled={!isSupported}
-      title={isListening ? 'Dinlemeyi durdur' : 'Sesli arama'}
+      title={isListening ? t('common.voiceSearchStopListening') : t('common.voiceSearch')}
     >
       {isListening ? (
         <MicOff className="h-4 w-4" />
@@ -66,4 +68,3 @@ export function VoiceSearchButton({
     </Button>
   );
 }
-

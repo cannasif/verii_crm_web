@@ -79,7 +79,7 @@ export function StockGroupSelectDialog({
              <div className="bg-gradient-to-br from-indigo-500 to-violet-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20 text-white">
                <Layers size={20} />
              </div>
-            {t('stockGroupSelectDialog.title', 'Stok Grubu Seç')}
+            {t('stockGroupSelectDialog.title')}
           </DialogTitle>
           
           <div className="flex items-center gap-2 mt-4">
@@ -89,7 +89,7 @@ export function StockGroupSelectDialog({
                 size={16} 
               />
               <Input
-                placeholder={t('stockGroupSelectDialog.searchPlaceholder', 'Grup kodu veya adı ile ara...')}
+                placeholder={t('stockGroupSelectDialog.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 h-11 rounded-xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500 transition-all"
@@ -106,12 +106,12 @@ export function StockGroupSelectDialog({
           {isLoading ? (
             <div className="flex items-center justify-center py-10 text-slate-500">
               <div className="animate-spin mr-2 h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
-              {t('stockGroupSelectDialog.loading', 'Yükleniyor...')}
+              {t('stockGroupSelectDialog.loading')}
             </div>
           ) : filteredGroups.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-slate-500 dark:text-slate-400">
               <Layers size={48} className="opacity-20 mb-4" />
-              <p>{t('stockGroupSelectDialog.noResults', 'Sonuç bulunamadı')}</p>
+              <p>{t('stockGroupSelectDialog.noResults')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -142,7 +142,7 @@ export function StockGroupSelectDialog({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
                         <span className="font-semibold text-sm text-slate-900 dark:text-white truncate pr-2">
-                          {group.grupAdi || t('stockGroupSelectDialog.unnamedGroup', 'İsimsiz Grup')}
+                          {group.grupAdi || t('stockGroupSelectDialog.unnamedGroup')}
                         </span>
                         {isSelected && (
                           <Check size={16} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
