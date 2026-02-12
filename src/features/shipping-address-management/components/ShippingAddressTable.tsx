@@ -73,16 +73,16 @@ export function ShippingAddressTable({
 
   const getColumnsConfig = useCallback(
     (): ColumnConfig[] => [
-      { key: 'customerName', label: t('shippingAddressManagement.customerName', 'Müşteri'), visible: true },
-      { key: 'name', label: t('shippingAddressManagement.name', 'Adres Adı'), visible: true },
-      { key: 'address', label: t('shippingAddressManagement.address', 'Adres'), visible: true },
-      { key: 'postalCode', label: t('shippingAddressManagement.postalCode', 'Posta Kodu'), visible: false },
-      { key: 'contactPerson', label: t('shippingAddressManagement.contactPerson', 'Yetkili Kişi'), visible: true },
-      { key: 'phone', label: t('shippingAddressManagement.phone', 'Telefon'), visible: true },
-      { key: 'location', label: t('shippingAddressManagement.location', 'Konum'), visible: false }, // Composite column
-      { key: 'isDefault', label: t('shippingAddressManagement.isDefaultShort', 'Varsayılan'), visible: true },
-      { key: 'isActive', label: t('common.status', 'Durum'), visible: true },
-      { key: 'createdDate', label: t('shippingAddressManagement.createdDate', 'Oluşturulma Tarihi'), visible: true },
+      { key: 'customerName', label: t('shippingAddressManagement.customerName'), visible: true },
+      { key: 'name', label: t('shippingAddressManagement.name'), visible: true },
+      { key: 'address', label: t('shippingAddressManagement.address'), visible: true },
+      { key: 'postalCode', label: t('shippingAddressManagement.postalCode'), visible: false },
+      { key: 'contactPerson', label: t('shippingAddressManagement.contactPerson'), visible: true },
+      { key: 'phone', label: t('shippingAddressManagement.phone'), visible: true },
+      { key: 'location', label: t('shippingAddressManagement.location'), visible: false }, // Composite column
+      { key: 'isDefault', label: t('shippingAddressManagement.isDefaultShort'), visible: true },
+      { key: 'isActive', label: t('common.status'), visible: true },
+      { key: 'createdDate', label: t('shippingAddressManagement.createdDate'), visible: true },
     ],
     [t]
   );
@@ -98,11 +98,11 @@ export function ShippingAddressTable({
     if (selectedShippingAddress) {
       try {
         await deleteShippingAddress.mutateAsync(selectedShippingAddress.id);
-        toast.success(t('common.deleteSuccess', 'Silme işlemi başarılı'));
+        toast.success(t('common.deleteSuccess'));
         setDeleteDialogOpen(false);
         setSelectedShippingAddress(null);
       } catch {
-        toast.error(t('common.deleteError', 'Silme işlemi sırasında hata oluştu'));
+        toast.error(t('common.deleteError'));
       }
     }
   };
@@ -157,7 +157,7 @@ export function ShippingAddressTable({
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
           <div className="text-sm text-muted-foreground animate-pulse">
-            {t('common.loading', 'Yükleniyor...')}
+            {t('common.loading')}
           </div>
         </div>
       </div>
@@ -168,7 +168,7 @@ export function ShippingAddressTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('shippingAddressManagement.noData', 'Veri Bulunamadı')}
+          {t('shippingAddressManagement.noData')}
         </div>
       </div>
     );
@@ -185,7 +185,7 @@ export function ShippingAddressTable({
                 className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
             >
                 <EyeOff className="mr-2 h-4 w-4" />
-                {t('common.editColumns', 'Sütunları Düzenle')}
+                {t('common.editColumns')}
                 <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -194,7 +194,7 @@ export function ShippingAddressTable({
             className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
           >
             <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                {t('common.visibleColumns', 'Görünür Sütunlar')}
+                {t('common.visibleColumns')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
             
@@ -238,7 +238,7 @@ export function ShippingAddressTable({
                   </TableHead>
               ))}
               <TableHead className={`text-right ${headStyle} w-[100px]`}>
-                {t('common.actions', 'İşlemler')}
+                {t('common.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -291,7 +291,7 @@ export function ShippingAddressTable({
                   <TableCell className={cellStyle}>
                     {row.isDefault ? (
                       <Badge variant="secondary" className="bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300">
-                        {t('shippingAddressManagement.defaultBadge', 'Evet')}
+                        {t('shippingAddressManagement.defaultBadge')}
                       </Badge>
                     ) : (
                       '-'
@@ -309,7 +309,7 @@ export function ShippingAddressTable({
                       }`}
                     >
                         {row.isActive ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                        {row.isActive ? t('status.active', 'Aktif') : t('status.inactive', 'Pasif')}
+                        {row.isActive ? t('status.active') : t('status.inactive')}
                     </Badge>
                   </TableCell>
                 )}
@@ -383,10 +383,10 @@ export function ShippingAddressTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('common.deleteConfirmTitle', 'Silme İşlemi')}
+                {t('common.deleteConfirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('shippingAddressManagement.deleteConfirmDescription', 'Bu sevk adresini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')}
+                {t('shippingAddressManagement.deleteConfirmDescription')}
                 </DialogDescription>
             </div>
           </DialogHeader>
@@ -398,7 +398,7 @@ export function ShippingAddressTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             
             <Button
@@ -407,7 +407,7 @@ export function ShippingAddressTable({
               onClick={handleDeleteConfirm}
               className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
-              {t('common.delete', 'Sil')}
+              {t('common.delete')}
             </Button>
           </DialogFooter>
 

@@ -61,7 +61,7 @@ export function ShippingAddressManagementPage(): ReactElement {
   }, [allShippingAddresses, searchTerm, activeFilter]);
 
   useEffect(() => {
-    setPageTitle(t('shippingAddressManagement.title', 'Sevk Adresi Yönetimi'));
+    setPageTitle(t('shippingAddressManagement.title'));
     return () => {
       setPageTitle(null);
     };
@@ -117,10 +117,10 @@ export function ShippingAddressManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('shippingAddressManagement.title', 'Sevk Adresi Yönetimi')}
+            {t('shippingAddressManagement.title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('shippingAddressManagement.description', 'Sevk adreslerini yönetin ve düzenleyin')}
+            {t('shippingAddressManagement.description')}
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export function ShippingAddressManagementPage(): ReactElement {
           className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
         >
           <Plus size={18} className="mr-2" />
-          {t('shippingAddressManagement.create', 'Yeni Sevk Adresi')}
+          {t('shippingAddressManagement.create')}
         </Button>
       </div>
 
@@ -140,7 +140,7 @@ export function ShippingAddressManagementPage(): ReactElement {
                 <div className="relative group w-full sm:w-72 lg:w-96">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
                     <Input
-                        placeholder={t('shippingAddressManagement.search', 'Hızlı Ara...')}
+                        placeholder={t('shippingAddressManagement.search')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all w-full"
@@ -180,7 +180,7 @@ export function ShippingAddressManagementPage(): ReactElement {
                                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}
                         `}
                     >
-                        {filter === 'all' ? t('common.all', 'Tümü') : filter === 'active' ? t('status.active', 'Aktif') : t('status.inactive', 'Pasif')}
+                        {filter === 'all' ? t('common.all') : filter === 'active' ? t('status.active') : t('status.inactive')}
                     </button>
                 ))}
             </div>

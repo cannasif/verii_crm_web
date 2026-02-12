@@ -163,13 +163,13 @@ export function ShippingAddressForm({
              <div className="space-y-1">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   {shippingAddress
-                    ? t('shippingAddressManagement.edit', 'Sevk Adresi Düzenle')
-                    : t('shippingAddressManagement.create', 'Yeni Sevk Adresi')}
+                    ? t('shippingAddressManagement.edit')
+                    : t('shippingAddressManagement.create')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                   {shippingAddress
-                    ? t('shippingAddressManagement.editDescription', 'Sevk adresi bilgilerini düzenleyin')
-                    : t('shippingAddressManagement.createDescription', 'Yeni sevk adresi bilgilerini girin')}
+                    ? t('shippingAddressManagement.editDescription')
+                    : t('shippingAddressManagement.createDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -199,14 +199,14 @@ export function ShippingAddressForm({
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                       <User size={12} className="text-pink-500" />
-                      {t('shippingAddressManagement.customerId', 'Müşteri')} *
+                      {t('shippingAddressManagement.customerId')} *
                     </FormLabel>
                     <VoiceSearchCombobox
                       options={customerComboboxOptions}
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}
                       onSelect={(value) => field.onChange(value && value !== '' ? parseInt(value) : undefined)}
-                      placeholder={t('shippingAddressManagement.selectCustomer', 'Müşteri Seçin')}
-                      searchPlaceholder={t('shippingAddressManagement.searchCustomer', 'Müşteri Ara...')}
+                      placeholder={t('shippingAddressManagement.selectCustomer')}
+                      searchPlaceholder={t('shippingAddressManagement.searchCustomer')}
                       className={INPUT_STYLE}
                       modal={true}
                     />
@@ -222,11 +222,11 @@ export function ShippingAddressForm({
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                       <FileText size={12} className="text-pink-500" />
-                      {t('shippingAddressManagement.name', 'Adres Adı')}
+                      {t('shippingAddressManagement.name')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('shippingAddressManagement.namePlaceholder', 'Örn: Merkez Depo')}
+                        placeholder={t('shippingAddressManagement.namePlaceholder')}
                         className={INPUT_STYLE}
                         {...field}
                         value={field.value || ''}
@@ -244,11 +244,11 @@ export function ShippingAddressForm({
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                       <MapPin size={12} className="text-pink-500" />
-                      {t('shippingAddressManagement.address', 'Adres')} *
+                      {t('shippingAddressManagement.address')} *
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder={t('shippingAddressManagement.addressPlaceholder', 'Açık adres giriniz')}
+                        placeholder={t('shippingAddressManagement.addressPlaceholder')}
                         className={`${INPUT_STYLE} h-24 py-3 resize-none`}
                         {...field}
                       />
@@ -266,11 +266,11 @@ export function ShippingAddressForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <Hash size={12} className="text-pink-500" />
-                        {t('shippingAddressManagement.postalCode', 'Posta Kodu')}
+                        {t('shippingAddressManagement.postalCode')}
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t('shippingAddressManagement.postalCodePlaceholder', 'Örn: 34000')}
+                          placeholder={t('shippingAddressManagement.postalCodePlaceholder')}
                           className={INPUT_STYLE}
                           {...field}
                           value={field.value || ''}
@@ -288,11 +288,11 @@ export function ShippingAddressForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <Phone size={12} className="text-green-500" />
-                        {t('shippingAddressManagement.phone', 'Telefon')}
+                        {t('shippingAddressManagement.phone')}
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t('shippingAddressManagement.phonePlaceholder', 'Örn: 0555 555 55 55')}
+                          placeholder={t('shippingAddressManagement.phonePlaceholder')}
                           className={INPUT_STYLE}
                           {...field}
                           value={field.value || ''}
@@ -311,11 +311,11 @@ export function ShippingAddressForm({
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                       <User size={12} className="text-blue-500" />
-                      {t('shippingAddressManagement.contactPerson', 'Yetkili Kişi')}
+                      {t('shippingAddressManagement.contactPerson')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('shippingAddressManagement.contactPersonPlaceholder', 'İlgili kişi adı soyadı')}
+                        placeholder={t('shippingAddressManagement.contactPersonPlaceholder')}
                         className={INPUT_STYLE}
                         {...field}
                         value={field.value || ''}
@@ -339,7 +339,7 @@ export function ShippingAddressForm({
                     </FormControl>
                     <div className="space-y-1">
                       <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                        {t('shippingAddressManagement.isDefault', 'Varsayılan sevk adresi')}
+                        {t('shippingAddressManagement.isDefault')}
                       </FormLabel>
                     </div>
                     <FormMessage />
@@ -355,14 +355,14 @@ export function ShippingAddressForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <Globe size={12} className="text-purple-500" />
-                        {t('shippingAddressManagement.country', 'Ülke')}
+                        {t('shippingAddressManagement.country')}
                       </FormLabel>
                       <VoiceSearchCombobox
                         options={countryComboboxOptions}
                         value={field.value ? field.value.toString() : ''}
                         onSelect={(value) => field.onChange(value ? parseInt(value) : undefined)}
-                        placeholder={t('shippingAddressManagement.selectCountry', 'Seçiniz')}
-                        searchPlaceholder={t('shippingAddressManagement.searchCountry', 'Ara...')}
+                        placeholder={t('shippingAddressManagement.selectCountry')}
+                        searchPlaceholder={t('shippingAddressManagement.searchCountry')}
                         className={INPUT_STYLE}
                         modal={true}
                       />
@@ -378,14 +378,14 @@ export function ShippingAddressForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <Building size={12} className="text-orange-500" />
-                        {t('shippingAddressManagement.city', 'İl')}
+                        {t('shippingAddressManagement.city')}
                       </FormLabel>
                       <VoiceSearchCombobox
                         options={cityComboboxOptions}
                         value={field.value ? field.value.toString() : ''}
                         onSelect={(value) => field.onChange(value ? parseInt(value) : undefined)}
-                        placeholder={t('shippingAddressManagement.selectCity', 'Seçiniz')}
-                        searchPlaceholder={t('shippingAddressManagement.searchCity', 'Ara...')}
+                        placeholder={t('shippingAddressManagement.selectCity')}
+                        searchPlaceholder={t('shippingAddressManagement.searchCity')}
                         className={INPUT_STYLE}
                         disabled={!watchedCountryId}
                         modal={true}
@@ -402,14 +402,14 @@ export function ShippingAddressForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <MapPin size={12} className="text-red-500" />
-                        {t('shippingAddressManagement.district', 'İlçe')}
+                        {t('shippingAddressManagement.district')}
                       </FormLabel>
                       <VoiceSearchCombobox
                         options={districtComboboxOptions}
                         value={field.value ? field.value.toString() : ''}
                         onSelect={(value) => field.onChange(value ? parseInt(value) : undefined)}
-                        placeholder={t('shippingAddressManagement.selectDistrict', 'Seçiniz')}
-                        searchPlaceholder={t('shippingAddressManagement.searchDistrict', 'Ara...')}
+                        placeholder={t('shippingAddressManagement.selectDistrict')}
+                        searchPlaceholder={t('shippingAddressManagement.searchDistrict')}
                         className={INPUT_STYLE}
                         disabled={!watchedCityId}
                         modal={true}
@@ -427,11 +427,11 @@ export function ShippingAddressForm({
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                       <FileText size={12} className="text-slate-500" />
-                      {t('shippingAddressManagement.notes', 'Notlar')}
+                      {t('shippingAddressManagement.notes')}
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder={t('shippingAddressManagement.notesPlaceholder', 'Varsa ek notlar')}
+                        placeholder={t('shippingAddressManagement.notesPlaceholder')}
                         className={`${INPUT_STYLE} h-20 py-3 resize-none`}
                         {...field}
                         value={field.value || ''}
@@ -453,7 +453,7 @@ export function ShippingAddressForm({
                     disabled={isLoading}
                     className="h-11 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300"
                 >
-                    {t('common.cancel', 'İptal')}
+                    {t('common.cancel')}
                 </Button>
                 <Button 
                     type="submit"
@@ -462,8 +462,8 @@ export function ShippingAddressForm({
                 >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isLoading
-                    ? t('common.saving', 'Kaydediliyor...')
-                    : t('common.save', 'Kaydet')}
+                    ? t('common.saving')
+                    : t('common.save')}
                 </Button>
             </DialogFooter>
           </form>

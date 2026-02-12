@@ -21,10 +21,10 @@ export const useUpdateShippingAddress = (): UseMutationResult<ShippingAddressDto
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedShippingAddress.id) });
       queryClient.invalidateQueries({ queryKey: [SHIPPING_ADDRESS_QUERY_KEYS.BY_CUSTOMER_ID, updatedShippingAddress.customerId] });
-      toast.success(t('shippingAddressManagement.updateSuccess', 'Sevk adresi başarıyla güncellendi'));
+      toast.success(t('shippingAddressManagement.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('shippingAddressManagement.updateError', 'Sevk adresi güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('shippingAddressManagement.updateError'));
     },
   });
 };

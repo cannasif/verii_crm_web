@@ -20,10 +20,10 @@ export const useCreateShippingAddress = (): UseMutationResult<ShippingAddressDto
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: [SHIPPING_ADDRESS_QUERY_KEYS.BY_CUSTOMER_ID, newShippingAddress.customerId] });
-      toast.success(t('shippingAddressManagement.createSuccess', 'Sevk adresi başarıyla oluşturuldu'));
+      toast.success(t('shippingAddressManagement.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('shippingAddressManagement.createError', 'Sevk adresi oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('shippingAddressManagement.createError'));
     },
   });
 };

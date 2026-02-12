@@ -17,10 +17,10 @@ export const useDeleteShippingAddress = (): UseMutationResult<void, Error, numbe
         queryKey: [SHIPPING_ADDRESS_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('shippingAddressManagement.deleteSuccess', 'Sevk adresi başarıyla silindi'));
+      toast.success(t('shippingAddressManagement.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('shippingAddressManagement.deleteError', 'Sevk adresi silinirken bir hata oluştu'));
+      toast.error(error.message || t('shippingAddressManagement.deleteError'));
     },
   });
 };
