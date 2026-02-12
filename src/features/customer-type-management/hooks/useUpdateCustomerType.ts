@@ -21,10 +21,10 @@ export const useUpdateCustomerType = () => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedCustomerType.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('customerTypeManagement.messages.updateSuccess', 'Müşteri tipi başarıyla güncellendi'));
+      toast.success(t('customerTypeManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('customerTypeManagement.messages.updateError', 'Müşteri tipi güncellenemedi'));
+      toast.error(error.message || t('customerTypeManagement.messages.updateError'));
     },
   });
 };

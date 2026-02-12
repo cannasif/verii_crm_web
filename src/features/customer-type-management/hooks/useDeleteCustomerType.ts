@@ -18,10 +18,10 @@ export const useDeleteCustomerType = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('customerTypeManagement.messages.deleteSuccess', 'Müşteri tipi başarıyla silindi'));
+      toast.success(t('customerTypeManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('customerTypeManagement.messages.deleteError', 'Müşteri tipi silinemedi'));
+      toast.error(error.message || t('customerTypeManagement.messages.deleteError'));
     },
   });
 };

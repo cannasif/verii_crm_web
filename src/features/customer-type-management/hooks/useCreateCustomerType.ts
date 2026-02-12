@@ -20,10 +20,10 @@ export const useCreateCustomerType = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('customerTypeManagement.messages.createSuccess', 'Müşteri tipi başarıyla oluşturuldu'));
+      toast.success(t('customerTypeManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('customerTypeManagement.messages.createError', 'Müşteri tipi oluşturulamadı'));
+      toast.error(error.message || t('customerTypeManagement.messages.createError'));
     },
   });
 };

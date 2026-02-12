@@ -66,11 +66,11 @@ interface CustomerTypeTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerTypeDto>[] => [
-    { key: 'id', label: t('customerTypeManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[50px] md:w-[70px]' },
-    { key: 'name', label: t('customerTypeManagement.table.name', 'Müşteri Tipi Adı'), type: 'badge', className: 'font-semibold text-slate-900 dark:text-white min-w-[140px] md:min-w-[180px]' },
-    { key: 'description', label: t('customerTypeManagement.table.description', 'Açıklama'), type: 'description', className: 'min-w-[180px] md:min-w-[220px]' },
-    { key: 'createdDate', label: t('customerTypeManagement.table.createdDate', 'Oluşturulma'), type: 'date', className: 'whitespace-nowrap' },
-    { key: 'createdByFullUser', label: t('customerTypeManagement.table.createdBy', 'Oluşturan'), type: 'user', className: 'whitespace-nowrap' },
+    { key: 'id', label: t('customerTypeManagement.table.id'), type: 'text', className: 'font-medium w-[50px] md:w-[70px]' },
+    { key: 'name', label: t('customerTypeManagement.table.name'), type: 'badge', className: 'font-semibold text-slate-900 dark:text-white min-w-[140px] md:min-w-[180px]' },
+    { key: 'description', label: t('customerTypeManagement.table.description'), type: 'description', className: 'min-w-[180px] md:min-w-[220px]' },
+    { key: 'createdDate', label: t('customerTypeManagement.table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
+    { key: 'createdByFullUser', label: t('customerTypeManagement.table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
 ];
 
 interface DraggableTableHeadProps extends React.ComponentProps<typeof TableHead> {
@@ -252,7 +252,7 @@ export function CustomerTypeTable({
         <div className="flex flex-col items-center gap-2">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <div className="text-sm text-muted-foreground animate-pulse">
-             {t('customerTypeManagement.loading', 'Yükleniyor...')}
+             {t('customerTypeManagement.loading')}
            </div>
         </div>
       </div>
@@ -263,7 +263,7 @@ export function CustomerTypeTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('customerTypeManagement.noData', 'Veri yok')}
+          {t('customerTypeManagement.noData')}
         </div>
       </div>
     );
@@ -304,7 +304,7 @@ export function CustomerTypeTable({
                       ))}
                     </SortableContext>
                     <TableHead className={`${headStyle} w-[100px] text-right pr-6`}>
-                        {t('common.actions', 'İşlemler')}
+                        {t('common.actions')}
                     </TableHead>
                 </TableRow>
             </TableHeader>
@@ -349,16 +349,16 @@ export function CustomerTypeTable({
       {/* SAYFALAMA KONTROLLERİ */}
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          {t('customerTypeManagement.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('customerTypeManagement.table.showing', {
             from: (currentPage - 1) * pageSize + 1,
             to: Math.min(currentPage * pageSize, processedData.length),
             total: processedData.length,
           })}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('customerTypeManagement.previous', 'Önceki')}</Button>
-          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('customerTypeManagement.table.page', 'Sayfa {{current}} / {{total}}', { current: currentPage, total: totalPages || 1 })}</div>
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('customerTypeManagement.next', 'Sonraki')}</Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('customerTypeManagement.previous')}</Button>
+          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('customerTypeManagement.table.page', { current: currentPage, total: totalPages || 1 })}</div>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('customerTypeManagement.next')}</Button>
         </div>
       </div>
 
@@ -370,10 +370,10 @@ export function CustomerTypeTable({
             </div>
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('customerTypeManagement.delete.confirmTitle', 'Müşteri Tipini Sil')}
+                {t('customerTypeManagement.delete.confirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('customerTypeManagement.delete.confirmMessage', '{{name}} müşteri tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', {
+                {t('customerTypeManagement.delete.confirmMessage', {
                     name: selectedCustomerType?.name || '',
                 })}
                 </DialogDescription>
@@ -387,7 +387,7 @@ export function CustomerTypeTable({
               disabled={deleteCustomerType.isPending}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('customerTypeManagement.form.cancel', 'Vazgeç')}
+              {t('customerTypeManagement.form.cancel')}
             </Button>
             <Button
               type="button"
@@ -397,8 +397,8 @@ export function CustomerTypeTable({
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteCustomerType.isPending
-                ? t('customerTypeManagement.delete.deleting', 'Siliniyor...')
-                : t('customerTypeManagement.delete.confirmButton', 'Evet, Sil')}
+                ? t('customerTypeManagement.delete.deleting')
+                : t('customerTypeManagement.delete.confirmButton')}
             </Button>
           </DialogFooter>
         </DialogContent>

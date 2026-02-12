@@ -103,8 +103,8 @@ export function CustomerTypeForm({
              </div>
              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
                {customerType
-                 ? t('customerTypeManagement.form.editCustomerType', 'Müşteri Tipi Düzenle')
-                 : t('customerTypeManagement.form.addCustomerType', 'Yeni Müşteri Tipi Ekle')}
+                 ? t('customerTypeManagement.form.editCustomerType')
+                 : t('customerTypeManagement.form.addCustomerType')}
              </DialogTitle>
           </div>
           <Button 
@@ -131,13 +131,13 @@ export function CustomerTypeForm({
                         <FormItem>
                             <FormLabel className={LABEL_STYLE}>
                             <Tag size={16} className="text-pink-500" />
-                            {t('customerTypeManagement.form.name', 'Müşteri Tipi Adı')} <span className="text-red-500">*</span>
+                            {t('customerTypeManagement.form.name')} <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
                             <Input
                                 {...field}
                                 className={INPUT_STYLE}
-                                placeholder={t('customerTypeManagement.form.namePlaceholder', 'Örn: Kurumsal, Bireysel...')}
+                                placeholder={t('customerTypeManagement.form.namePlaceholder')}
                                 maxLength={100}
                             />
                             </FormControl>
@@ -155,13 +155,13 @@ export function CustomerTypeForm({
                         <FormItem>
                             <FormLabel className={LABEL_STYLE}>
                             <FileText size={16} className="text-pink-500" />
-                            {t('customerTypeManagement.form.description', 'Açıklama')}
+                            {t('customerTypeManagement.form.description')}
                             </FormLabel>
                             <FormControl>
                             <Textarea
                                 {...field}
                                 className={`${INPUT_STYLE} min-h-[120px] h-auto py-3 resize-none`}
-                                placeholder={t('customerTypeManagement.form.descriptionPlaceholder', 'Varsa açıklama giriniz...')}
+                                placeholder={t('customerTypeManagement.form.descriptionPlaceholder')}
                                 maxLength={500}
                             />
                             </FormControl>
@@ -184,7 +184,7 @@ export function CustomerTypeForm({
             disabled={isLoading}
             className="w-full sm:w-auto h-11 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
           >
-            {t('customerTypeManagement.form.cancel', 'İptal')}
+            {t('customerTypeManagement.form.cancel')}
           </Button>
           <Button 
             type="submit" 
@@ -193,8 +193,8 @@ export function CustomerTypeForm({
             className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {isLoading 
-              ? t('customerTypeManagement.form.saving', 'Kaydediliyor...') 
-              : t('customerTypeManagement.form.save', 'Kaydet')}
+              ? t('customerTypeManagement.form.saving') 
+              : t('customerTypeManagement.form.save')}
           </Button>
         </DialogFooter>
 
