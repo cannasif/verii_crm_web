@@ -5,7 +5,7 @@
   "SavedSuccessfully": "Impostazioni email salvate con successo",
   "SaveFailed": "Impossibile salvare le impostazioni email",
   "Fields": {
-    "Host": "Host",
+    "Host": "Nome del server",
     "Port": "Porta",
     "EnableSsl": "Usa SSL",
     "Username": "Nome utente",
@@ -16,8 +16,8 @@
     "Timeout": "Timeout (s)"
   },
   "TestMail": {
-    "Send": "Test Maili Gönder",
-    "Sending": "Test gönderiliyor...",
-    "Success": "Test maili gönderildi"
+    "Send": "Invia e-mail di prova",
+    "Sending": "È in corso l'invio del test...",
+    "Success": "E-mail di prova inviata"
   }
 }

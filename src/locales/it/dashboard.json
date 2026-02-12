@@ -40,36 +40,36 @@
     "openQuotationsDescription": "5 preventivi in attesa di approvazione",
     "criticalStock": "Scorte Critiche",
     "criticalStockDescription": "3 prodotti sotto il livello critico",
-    "checkTasks": "Görev listesini kontrol et",
-    "reviewQuotations": "Teklifleri incele",
-    "stockStatus": "Stok durumunu gör"
+    "checkTasks": "Controlla l'elenco delle attività",
+    "reviewQuotations": "Scopri le offerte",
+    "stockStatus": "Vedi lo stato delle scorte"
   },
   "noDate": "No date",
   "unnamedActivity": "Unnamed Activity",
   "greeting": {
-    "morning": "Günaydın",
-    "afternoon": "İyi Günler",
-    "evening": "İyi Akşamlar"
+    "morning": "Buongiorno",
+    "afternoon": "Buona giornata",
+    "evening": "Buonasera"
   },
   "refresh": "Aggiorna",
-  "refreshing": "Yenileniyor...",
-  "refreshed": "Veriler güncellendi",
-  "refreshError": "Güncelleme başarısız",
+  "refreshing": "È in fase di rinnovo...",
+  "refreshed": "Dati aggiornati",
+  "refreshError": "Aggiornamento non riuscito",
   "user": "Utente",
-  "noSalesData": "Henüz satış verisi oluşmadı",
+  "noSalesData": "Nessun dato di vendita ancora",
   "noActivities": "Nessuna attività",
-  "selectFormat": "Format Seçiniz",
-  "reportPreparing": "raporu hazırlanıyor...",
-  "reportDownloaded": "raporu indirildi.",
-  "reportError": "Rapor alınamadı.",
+  "selectFormat": "Seleziona Formato",
+  "reportPreparing": "Il rapporto è in preparazione...",
+  "reportDownloaded": "Il rapporto è stato scaricato.",
+  "reportError": "Non è stato possibile ricevere il rapporto.",
   "sidebar": {
     "customers": "Clienti",
     "customerManagement": "Gestione Clienti",
-    "salesManagement": "Satış Hunisi",
-    "demandCreateWizard": "Yeni Talep Oluştur",
+    "salesManagement": "Imbuto di vendita",
+    "demandCreateWizard": "Crea nuova richiesta",
     "quotationCreateWizard": "Crea Nuovo Preventivo",
     "orderCreateWizard": "Crea Nuovo Preventivo",
-    "activities": "Planlama",
+    "activities": "Pianificazione",
     "activityManagement": "Gestione Attività"
   }
 }

@@ -78,6 +78,9 @@
     "voiceSearchNotSupported": "Tarayıcınız sesli aramayı desteklemiyor",
     "select": "Seçiniz",
     "voiceSearch": "Sesli Arama",
+    "dropdown": {
+      "minCharsHint": "En az {{count}} karakter"
+    },
     "update": "Güncelle",
     "deleting": "Siliniyor...",
     "uploading": "Yükleniyor...",

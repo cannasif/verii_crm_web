@@ -45,16 +45,16 @@
     "all": "TUTTI",
     "active": "ATTIVO",
     "passive": "PASSIVO",
-    "apply": "SONUÇLARI LİSTELE"
+    "apply": "ELENCO RISULTATI"
   },
   "details": {
-    "title": "Müşteri Detayları",
-    "addressInfo": "Adres Bilgileri"
+    "title": "Dettagli del cliente",
+    "addressInfo": "Informazioni sull'indirizzo"
   },
   "common": {
     "close": "Chiudi",
-    "selectAll": "Tümünü Seç",
-    "ok": "TAMAM",
-    "totalRecords": "Toplam Kayıt"
+    "selectAll": "Seleziona tutto",
+    "ok": "OK",
+    "totalRecords": "Registrazione totale"
   }
 }
