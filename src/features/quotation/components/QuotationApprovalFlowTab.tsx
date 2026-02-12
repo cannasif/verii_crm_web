@@ -48,12 +48,12 @@ function StepCard({ step, locale }: { step: ApprovalFlowStepReportDto; locale: s
   const { t } = useTranslation();
   const stepStatusLabel =
     step.stepStatus === 'Completed'
-      ? t('quotation.approvalFlow.stepCompleted', 'Tamamlandı')
+      ? t('quotation.approvalFlow.stepCompleted')
       : step.stepStatus === 'InProgress'
-        ? t('quotation.approvalFlow.stepInProgress', 'Devam ediyor')
+        ? t('quotation.approvalFlow.stepInProgress')
         : step.stepStatus === 'Rejected'
-          ? t('quotation.approvalFlow.stepRejected', 'Reddedildi')
-          : t('quotation.approvalFlow.stepNotStarted', 'Başlamadı');
+          ? t('quotation.approvalFlow.stepRejected')
+          : t('quotation.approvalFlow.stepNotStarted');
 
   return (
     <Card className="overflow-hidden">
@@ -102,7 +102,7 @@ export function QuotationApprovalFlowTab({ quotationId }: QuotationApprovalFlowT
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
         <Loader2 className="h-10 w-10 animate-spin text-pink-500" />
-        <p className="text-sm text-muted-foreground">{t('quotation.approvalFlow.loading', 'Onay akışı yükleniyor...')}</p>
+        <p className="text-sm text-muted-foreground">{t('quotation.approvalFlow.loading')}</p>
       </div>
     );
   }
@@ -118,7 +118,7 @@ export function QuotationApprovalFlowTab({ quotationId }: QuotationApprovalFlowT
 
   if (!report) {
     return (
-      <p className="text-muted-foreground py-8 text-center">{t('quotation.approvalFlow.noData', 'Veri bulunamadı.')}</p>
+      <p className="text-muted-foreground py-8 text-center">{t('quotation.approvalFlow.noData')}</p>
     );
   }
 
@@ -126,7 +126,7 @@ export function QuotationApprovalFlowTab({ quotationId }: QuotationApprovalFlowT
     return (
       <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-zinc-900/30 p-8 text-center">
         <p className="text-muted-foreground">
-          {t('quotation.approvalFlow.notStarted', 'Henüz onay süreci başlatılmamış.')}
+          {t('quotation.approvalFlow.notStarted')}
         </p>
       </div>
     );

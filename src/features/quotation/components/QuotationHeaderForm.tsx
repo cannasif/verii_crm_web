@@ -347,8 +347,8 @@ export function QuotationHeaderForm({
                                   value: d.id.toString(),
                                   label: d.serialPrefix || ''
                                 }))}
-                              placeholder={t('quotation.select', 'Seç')}
-                              searchPlaceholder={t('common.search', 'Ara...')}
+                              placeholder={t('quotation.select')}
+                              searchPlaceholder={t('common.search')}
                               disabled={readOnly || !watchedRepresentativeId}
                             />
                           </div>
@@ -380,7 +380,7 @@ export function QuotationHeaderForm({
                                 className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 h-6 text-xs border border-purple-200 dark:border-purple-500/20"
                               >
                                 <span className="mr-1.5 truncate max-w-[200px]">
-                                  {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel', 'Not')} ${idx + 1}`}
+                                  {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel')} ${idx + 1}`}
                                 </span>
                                 {!readOnly && onQuotationNotesChange && (
                                   <button 
@@ -401,7 +401,7 @@ export function QuotationHeaderForm({
                             <Textarea
                               {...field}
                               value={field.value || ''}
-                              placeholder={t('quotation.header.descriptionPlaceholder', 'Özel koşullar...')}
+                              placeholder={t('quotation.header.descriptionPlaceholder')}
                               className="min-h-[46px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10"
                               disabled={readOnly}
                             />
@@ -434,7 +434,7 @@ export function QuotationHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>
                         <Folder className="h-3.5 w-3.5" />
-                        {t('quotation.header.projectCode', 'Proje Kodu')}
+                        {t('quotation.header.projectCode')}
                       </FormLabel>
                       <div className="relative">
                         <div className={styles.iconWrapper}><Folder className="h-4 w-4" /></div>
@@ -446,8 +446,8 @@ export function QuotationHeaderForm({
                             value: p.projeKod,
                             label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
                           }))}
-                          placeholder={t('quotation.header.projectCodePlaceholder', 'Proje kodu seçiniz...')}
-                          searchPlaceholder={t('common.search', 'Ara...')}
+                          placeholder={t('quotation.header.projectCodePlaceholder')}
+                          searchPlaceholder={t('common.search')}
                           disabled={readOnly}
                         />
                       </div>
@@ -466,7 +466,7 @@ export function QuotationHeaderForm({
                   <User className="h-4 w-4" />
                 </div>
                 <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">
-                  {t('quotation.header.mainInfo', 'Müşteri & Satış Bilgileri')}
+                  {t('quotation.header.mainInfo')}
                 </h4>
               </div>
 
@@ -479,7 +479,7 @@ export function QuotationHeaderForm({
                     render={() => (
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
-                          {t('quotation.header.customer', 'Müşteri Hesabı')} <span className="text-pink-500">*</span>
+                          {t('quotation.header.customer')} <span className="text-pink-500">*</span>
                         </FormLabel>
                         <div className="flex gap-2">
                           <div className="relative flex-1 group">
@@ -508,7 +508,7 @@ export function QuotationHeaderForm({
                                     }
                                   }, 200);
                                 }}
-                                placeholder={t('quotation.header.selectCustomer', 'Müşteri ara veya seç...')}
+                                placeholder={t('quotation.header.selectCustomer')}
                                 disabled={readOnly}
                                 autoComplete="off"
                               />
@@ -532,10 +532,10 @@ export function QuotationHeaderForm({
                                         </div>
                                         <div className="flex flex-col gap-0.5">
                                           <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                            {t('common.noResults', 'Sonuç bulunamadı')}
+                                            {t('common.noResults')}
                                           </span>
                                           <span className="text-xs text-slate-500 dark:text-slate-400">
-                                            {t('quotation.header.tryDifferentSearch', 'Farklı bir arama terimi deneyin')}
+                                            {t('quotation.header.tryDifferentSearch')}
                                           </span>
                                         </div>
                                       </CommandEmpty>
@@ -604,7 +604,7 @@ export function QuotationHeaderForm({
                             onClick={() => setCustomerSelectDialogOpen(true)}
                             disabled={readOnly}
                             className="h-11 w-11 p-0 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white shadow-md hover:shadow-lg transition-all border border-zinc-800 active:scale-95 flex items-center justify-center"
-                            title={t('quotation.guide', 'Rehber')}
+                            title={t('quotation.guide')}
                           >
                             <BookUser className="h-5 w-5" />
                           </Button>
@@ -623,7 +623,7 @@ export function QuotationHeaderForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
-                          {t('quotation.header.representative', 'Satış Temsilcisi')}
+                          {t('quotation.header.representative')}
                         </FormLabel>
                         <div className="relative">
                             <div className={styles.iconWrapper}><Briefcase className="h-4 w-4" /></div>
@@ -635,8 +635,8 @@ export function QuotationHeaderForm({
                                value: u.userId.toString(),
                                label: [u.firstName, u.lastName].filter(Boolean).join(' ')
                               }))}
-                              placeholder={t('quotation.select', 'Seçiniz')}
-                              searchPlaceholder={t('common.search', 'Ara...')}
+                              placeholder={t('quotation.select')}
+                              searchPlaceholder={t('common.search')}
                               disabled={readOnly}
                             />
                         </div>
@@ -655,7 +655,7 @@ export function QuotationHeaderForm({
                         <FormItem className="space-y-0 relative group">
                           <FormLabel className={styles.label}>
                               <Truck className="h-3.5 w-3.5 text-orange-500" />
-                            {t('quotation.header.shippingAddress', 'Sevk Adresi')}
+                            {t('quotation.header.shippingAddress')}
                           </FormLabel>
                           <div className="relative">
                               <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
@@ -667,8 +667,8 @@ export function QuotationHeaderForm({
                                   value: address.id.toString(),
                                   label: address.addressText
                                 }))}
-                                placeholder={t('quotation.header.selectShippingAddress', 'Sevk adresi seçin')}
-                                searchPlaceholder={t('common.search', 'Ara...')}
+                                placeholder={t('quotation.header.selectShippingAddress')}
+                                searchPlaceholder={t('common.search')}
                                 disabled={readOnly}
                               />
                           </div>
@@ -705,7 +705,7 @@ export function QuotationHeaderForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
-                          {t('common.offerType.label', 'Teklif Tipi')} <span className="text-pink-500 ml-0.5">*</span>
+                          {t('common.offerType.label')} <span className="text-pink-500 ml-0.5">*</span>
                         </FormLabel>
                         <div className="relative">
                            <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
@@ -714,11 +714,11 @@ export function QuotationHeaderForm({
                              value={field.value || ''}
                              onSelect={(value) => field.onChange(value)}
                              options={[
-                               { value: OfferType.YURTICI, label: t('common.offerType.yurtici', 'Yurtiçi') },
-                               { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi', 'Yurtdışı') }
+                               { value: OfferType.YURTICI, label: t('common.offerType.yurtici') },
+                               { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi') }
                              ]}
-                             placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')}
-                             searchPlaceholder={t('common.search', 'Ara...')}
+                             placeholder={t('common.offerType.selectPlaceholder')}
+                             searchPlaceholder={t('common.search')}
                              disabled={readOnly}
                            />
                         </div>
@@ -745,7 +745,7 @@ export function QuotationHeaderForm({
                             >
                               <FormControl>
                                 <SelectTrigger className={cn(styles.inputBase, "pl-10")}>
-                                  <SelectValue placeholder={t('quotation.select', 'Seçiniz')} />
+                                  <SelectValue placeholder={t('quotation.select')} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -860,8 +860,8 @@ export function QuotationHeaderForm({
                             value: String(currency.dovizTipi),
                             label: currency.dovizIsmi || `Döviz ${currency.dovizTipi}`
                           }))}
-                          placeholder={t('quotation.select', 'Seçiniz')}
-                          searchPlaceholder={t('common.search', 'Ara...')}
+                          placeholder={t('quotation.select')}
+                          searchPlaceholder={t('common.search')}
                           disabled={readOnly}
                         />
                       </div>
@@ -886,8 +886,8 @@ export function QuotationHeaderForm({
                              value: pt.id.toString(),
                              label: pt.name
                            }))}
-                           placeholder={t('quotation.select', 'Seçiniz')}
-                           searchPlaceholder={t('common.search', 'Ara...')}
+                           placeholder={t('quotation.select')}
+                           searchPlaceholder={t('common.search')}
                            disabled={readOnly}
                          />
                       </div>
@@ -942,10 +942,10 @@ export function QuotationHeaderForm({
               <div className="bg-linear-to-br from-pink-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
                 <ArrowRightLeft className="h-5 w-5" />
               </div>
-              {t('quotation.header.currencyChange.title', 'Kur Değişikliği')}
+              {t('quotation.header.currencyChange.title')}
             </DialogTitle>
             <DialogDescription className="pt-2 text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-              {t('quotation.header.currencyChange.message', 'Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?')}
+              {t('quotation.header.currencyChange.message')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-3 p-6 bg-slate-50/30 dark:bg-black/20">
@@ -954,13 +954,13 @@ export function QuotationHeaderForm({
               onClick={handleCurrencyChangeCancel} 
               className="h-11 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 font-medium transition-all"
             >
-              {t('quotation.cancel', 'Vazgeç')}
+              {t('quotation.cancel')}
             </Button>
             <Button 
               onClick={handleCurrencyChangeConfirm} 
               className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 border-0 font-medium transition-all"
             >
-              {t('quotation.confirm', 'Onayla')}
+              {t('quotation.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

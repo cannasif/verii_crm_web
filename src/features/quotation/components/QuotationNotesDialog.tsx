@@ -93,9 +93,9 @@ export function QuotationNotesDialog({
               </div>
             </div>
             <div className="flex flex-col gap-0.5">
-              <span>{t('quotation.notes.title', 'Ek Notlar ve Koşullar')}</span>
+              <span>{t('quotation.notes.title')}</span>
               <span className="text-xs font-normal text-slate-500 dark:text-slate-400">
-                {t('quotation.notes.description', 'Teklifinize eklemek istediğiniz notları düzenleyin. Her not en fazla 100 karakter olabilir.')}
+                {t('quotation.notes.description')}
               </span>
             </div>
           </DialogTitle>
@@ -135,7 +135,7 @@ export function QuotationNotesDialog({
                           "h-9 text-sm border-slate-200 dark:border-white/10 focus-visible:ring-purple-500 transition-all",
                           isOverLimit || fieldError ? "border-red-500 dark:border-red-500" : ""
                         )}
-                        placeholder={t('quotation.notes.placeholder', 'Not içeriği...')}
+                        placeholder={t('quotation.notes.placeholder')}
                       />
                     </div>
                     <span
@@ -149,7 +149,7 @@ export function QuotationNotesDialog({
                   </div>
                   {(fieldError || isOverLimit) && (
                     <p className="text-xs text-red-600 dark:text-red-400">
-                      {fieldError ?? t('quotation.notes.maxLengthError', 'En fazla 100 karakter girilebilir')}
+                      {fieldError ?? t('quotation.notes.maxLengthError')}
                     </p>
                   )}
                 </div>
@@ -164,7 +164,7 @@ export function QuotationNotesDialog({
             onClick={() => onOpenChange(false)}
             className="h-10 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
           >
-            {t('common.cancel', 'Vazgeç')}
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleSave}
@@ -174,10 +174,10 @@ export function QuotationNotesDialog({
             {isSaving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('quotation.notes.saving', 'Kaydediliyor...')}
+                {t('quotation.notes.saving')}
               </>
             ) : (
-              t('common.save', 'Kaydet ve Uygula')
+              t('common.save')
             )}
           </Button>
         </DialogFooter>

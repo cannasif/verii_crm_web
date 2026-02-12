@@ -91,12 +91,12 @@ export function QuotationDetailPage(): ReactElement {
   useEffect(() => {
     if (quotation) {
       setPageTitle(
-        t('quotation.detail.title', 'Teklif Detayı: {{offerNo}}', {
+        t('quotation.detail.title', {
           offerNo: quotation.offerNo || `#${quotation.id}`,
         })
       );
     } else {
-      setPageTitle(t('quotation.detail.title', 'Teklif Detayı'));
+      setPageTitle(t('quotation.detail.title'));
     }
     return () => {
       setPageTitle(null);
@@ -210,18 +210,18 @@ export function QuotationDetailPage(): ReactElement {
     const doc = new JsPDF();
     
     doc.setFontSize(18);
-    doc.text(t('quotation.detail.title', 'Teklif Detayı'), 14, 20);
+    doc.text(t('quotation.detail.title'), 14, 20);
     doc.setFontSize(11);
-    doc.text(`${t('quotation.date', 'Tarih')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
-    doc.text(`${t('quotation.offerNo', 'Teklif No')}: ${quotation?.offerNo || ''}`, 14, 34);
+    doc.text(`${t('quotation.date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+    doc.text(`${t('quotation.offerNo')}: ${quotation?.offerNo || ''}`, 14, 34);
 
     const headers = [[
-      t('quotation.lines.productCode', 'Ürün Kodu'),
-      t('quotation.lines.productName', 'Ürün Adı'),
-      t('quotation.lines.quantity', 'Miktar'),
-      t('quotation.lines.unitPrice', 'Birim Fiyat'),
-      t('quotation.lines.vatRate', 'KDV'),
-      t('quotation.lines.total', 'Toplam')
+      t('quotation.lines.productCode'),
+      t('quotation.lines.productName'),
+      t('quotation.lines.quantity'),
+      t('quotation.lines.unitPrice'),
+      t('quotation.lines.vatRate'),
+      t('quotation.lines.total')
     ]];
 
     const data = lines.map(line => [
@@ -252,18 +252,18 @@ export function QuotationDetailPage(): ReactElement {
   const handleShareWhatsApp = async () => {
     const doc = await generatePDF();
     doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-    const text = encodeURIComponent(t('quotation.share.whatsappMessage', 'Merhaba, teklif dosyasını iletiyorum.'));
+    const text = encodeURIComponent(t('quotation.share.whatsappMessage'));
     window.open(`https://wa.me/?text=${text}`, '_blank');
-    toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen WhatsApp üzerinden paylaşınız.'));
+    toast.info(t('quotation.share.downloaded'));
   };
 
   const handleShareMail = async () => {
     const doc = await generatePDF();
     doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-    const subject = encodeURIComponent(t('quotation.share.mailSubject', 'Teklif Dosyası'));
-    const body = encodeURIComponent(t('quotation.share.mailBody', 'Merhaba, ekte teklif dosyasını bulabilirsiniz.'));
+    const subject = encodeURIComponent(t('quotation.share.mailSubject'));
+    const body = encodeURIComponent(t('quotation.share.mailBody'));
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
-    toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen e-posta ile paylaşınız.'));
+    toast.info(t('quotation.share.downloaded'));
   };
 
   useEffect(() => {
@@ -331,8 +331,8 @@ export function QuotationDetailPage(): ReactElement {
   const onSubmit = async (data: CreateQuotationSchema): Promise<void> => {
     if (isReadOnly) return;
     if (lines.length === 0) {
-      toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
-        description: t('quotation.lines.required', 'En az 1 satır eklenmelidir'),
+      toast.error(t('quotation.update.error'), {
+        description: t('quotation.lines.required'),
       });
       return;
     }
@@ -340,8 +340,8 @@ export function QuotationDetailPage(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
     if (overLimitNote) {
-      toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
-        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      toast.error(t('quotation.update.error'), {
+        description: t('quotation.notes.maxLengthError'),
       });
       return;
     }
@@ -378,7 +378,7 @@ export function QuotationDetailPage(): ReactElement {
         : String(data.quotation.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('quotation.update.invalidCurrency', 'Geçerli bir para birimi seçilmelidir'));
+        throw new Error(t('quotation.update.invalidCurrency'));
       }
 
       const quotationData: CreateQuotationDto = {
@@ -413,22 +413,22 @@ export function QuotationDetailPage(): ReactElement {
 
       const notesList = quotationNotesDtoToNotesList(quotationNotes);
       if (notesList.length > 15) {
-        toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
-          description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+        toast.error(t('quotation.update.error'), {
+          description: t('quotation.notes.maxCountError'),
         });
         return;
       }
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
       if (result.success && result.data) {
-        toast.success(t('quotation.update.success', 'Teklif Başarıyla Güncellendi'), {
-          description: t('quotation.update.successMessage', 'Teklif başarıyla güncellendi.'),
+        toast.success(t('quotation.update.success'), {
+          description: t('quotation.update.successMessage'),
         });
       } else {
-        throw new Error(result.message || t('quotation.update.errorMessage', 'Teklif güncellenirken bir hata oluştu.'));
+        throw new Error(result.message || t('quotation.update.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('quotation.update.errorMessage', 'Teklif güncellenirken bir hata oluştu.');
+      let errorMessage = t('quotation.update.errorMessage');
       if (error instanceof Error) {
           try {
              const parsedError = JSON.parse(error.message);
@@ -439,7 +439,7 @@ export function QuotationDetailPage(): ReactElement {
              errorMessage = error.message;
           }
       }
-      toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
+      toast.error(t('quotation.update.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -476,8 +476,8 @@ export function QuotationDetailPage(): ReactElement {
     if (isReadOnly) return;
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('quotation.update.error', 'Form Hatalı'), {
-        description: t('quotation.update.validationError', 'Lütfen zorunlu alanları kontrol ediniz.'),
+      toast.error(t('quotation.update.error'), {
+        description: t('quotation.update.validationError'),
       });
       return;
     }
@@ -499,7 +499,7 @@ export function QuotationDetailPage(): ReactElement {
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
         <span className="text-muted-foreground animate-pulse text-sm font-medium">
-          {t('quotation.loading', 'Yükleniyor...')}
+          {t('quotation.loading')}
         </span>
       </div>
     );
@@ -510,10 +510,10 @@ export function QuotationDetailPage(): ReactElement {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <p className="text-lg font-medium text-muted-foreground mb-4">
-          {t('quotation.detail.notFound', 'Teklif bulunamadı')}
+          {t('quotation.detail.notFound')}
         </p>
         <Button variant="outline" onClick={() => navigate('/quotations')}>
-          {t('quotation.backToQuotations', 'Tekliflere Dön')}
+          {t('quotation.backToQuotations')}
         </Button>
       </div>
     );
@@ -524,13 +524,13 @@ export function QuotationDetailPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            {t('quotation.detail.title', 'Teklif Detayı: {{offerNo}}', { offerNo: quotation.offerNo || `#${quotation.id}` })}
+            {t('quotation.detail.title', { offerNo: quotation.offerNo || `#${quotation.id}` })}
           </h2>
           <p className="text-muted-foreground text-sm">
-            {t('quotation.detail.subtitle', 'Teklif detaylarını görüntüleyin ve düzenleyin.')}
+            {t('quotation.detail.subtitle')}
             {quotation.revisionNo != null && quotation.revisionNo !== '' && (
               <span className="block mt-1">
-                {t('quotation.detail.revisionNo', 'Revizyon No')}: {quotation.revisionNo}
+                {t('quotation.detail.revisionNo')}: {quotation.revisionNo}
               </span>
             )}
           </p>
@@ -547,7 +547,7 @@ export function QuotationDetailPage(): ReactElement {
             )}
           >
             <Layers className="h-4 w-4 mr-2" />
-            {t('quotation.detail.tabDetail', 'Teklif Bilgileri')}
+            {t('quotation.detail.tabDetail')}
           </TabsTrigger>
           <TabsTrigger
             value="approval-flow"
@@ -557,7 +557,7 @@ export function QuotationDetailPage(): ReactElement {
             )}
           >
             <FileCheck className="h-4 w-4 mr-2" />
-            {t('quotation.detail.tabApprovalFlow', 'Onay Akışı')}
+            {t('quotation.detail.tabApprovalFlow')}
           </TabsTrigger>
           <TabsTrigger
             value="report"
@@ -567,7 +567,7 @@ export function QuotationDetailPage(): ReactElement {
             )}
           >
             <FileText className="h-4 w-4 mr-2" />
-            {t('quotation.detail.tabReport', 'Rapor')}
+            {t('quotation.detail.tabReport')}
           </TabsTrigger>
         </TabsList>
 
@@ -581,13 +581,13 @@ export function QuotationDetailPage(): ReactElement {
             <form onSubmit={handleFormSubmit} className="space-y-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
                 <div className="flex flex-col gap-6 min-w-0">
-                  <section className="space-y-1" aria-label={t('quotation.sections.header', 'Müşteri ve belge bilgileri')}>
+                  <section className="space-y-1" aria-label={t('quotation.sections.header')}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                         1
                       </span>
                       <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('quotation.sections.header', 'Müşteri & Belge')}
+                        {t('quotation.sections.header')}
                       </h3>
                     </div>
                     <QuotationHeaderForm
@@ -598,24 +598,24 @@ export function QuotationDetailPage(): ReactElement {
                       onSaveNotes={async (notes) => {
                         const list = quotationNotesDtoToNotesList(notes);
                         if (list.length > 15) {
-                          toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
-                            description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+                          toast.error(t('quotation.update.error'), {
+                            description: t('quotation.notes.maxCountError'),
                           });
                           throw new Error('maxCount');
                         }
                         const overLimit = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).find((k) => (notes[k]?.length ?? 0) > 100);
                         if (overLimit) {
-                          toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
-                            description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir.'),
+                          toast.error(t('quotation.update.error'), {
+                            description: t('quotation.notes.maxLengthError'),
                           });
                           throw new Error('maxLength');
                         }
                         try {
                           await updateNotesMutation.mutateAsync({ notes: list });
-                          toast.success(t('quotation.notes.saved', 'Notlar kaydedildi.'));
+                          toast.success(t('quotation.notes.saved'));
                         } catch (err) {
-                          toast.error(t('quotation.update.error', 'Teklif Güncellenemedi'), {
-                            description: err instanceof Error ? err.message : t('quotation.notes.saveError', 'Notlar kaydedilirken bir hata oluştu.'),
+                          toast.error(t('quotation.update.error'), {
+                            description: err instanceof Error ? err.message : t('quotation.notes.saveError'),
                           });
                           throw err;
                         }
@@ -637,13 +637,13 @@ export function QuotationDetailPage(): ReactElement {
                     />
                   </section>
 
-                  <section className="space-y-1 pt-2" aria-label={t('quotation.sections.lines', 'Teklif kalemleri')}>
+                  <section className="space-y-1 pt-2" aria-label={t('quotation.sections.lines')}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                         2
                       </span>
                       <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('quotation.sections.lines', 'Teklif Kalemleri')}
+                        {t('quotation.sections.lines')}
                       </h3>
                     </div>
                     <QuotationLineTable
@@ -668,7 +668,7 @@ export function QuotationDetailPage(): ReactElement {
                       3
                     </span>
                     <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                      {t('quotation.sections.summary', 'Özet & Toplamlar')}
+                      {t('quotation.sections.summary')}
                     </h3>
                   </div>
                   <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
@@ -685,28 +685,28 @@ export function QuotationDetailPage(): ReactElement {
                   className="group"
                 >
                   <X className="mr-2 h-4 w-4" />
-                  {t('quotation.cancel', 'İptal')}
+                  {t('quotation.cancel')}
                 </Button>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button type="button" variant="outline" className="group">
                       <Share2 className="mr-2 h-4 w-4" />
-                      {t('quotation.export', 'Dışa Aktar')}
+                      {t('quotation.export')}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#130822] border-slate-100 dark:border-white/10">
                     <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                       <FileDown className="mr-2 h-4 w-4 text-slate-500" />
-                      {t('quotation.exportPdf', 'PDF İndir')}
+                      {t('quotation.exportPdf')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                       <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
-                      {t('quotation.shareWhatsapp', 'WhatsApp ile Paylaş')}
+                      {t('quotation.shareWhatsapp')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleShareMail} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                       <Mail className="mr-2 h-4 w-4 text-blue-500" />
-                      {t('quotation.shareMail', 'E-posta ile Paylaş')}
+                      {t('quotation.shareMail')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -719,8 +719,8 @@ export function QuotationDetailPage(): ReactElement {
                   >
                     <Save className="mr-2 h-4 w-4" />
                     {updateMutation.isPending
-                      ? t('quotation.saving', 'Kaydediliyor...')
-                      : t('quotation.save', 'Değişiklikleri Kaydet')
+                      ? t('quotation.saving')
+                      : t('quotation.save')
                     }
                   </Button>
                 )}
@@ -736,12 +736,12 @@ export function QuotationDetailPage(): ReactElement {
                     {startApprovalFlow.isPending ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        {t('quotation.approval.sending', 'Gönderiliyor...')}
+                        {t('quotation.approval.sending')}
                       </>
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        {t('quotation.approval.sendForApproval', 'Onaya Gönder')}
+                        {t('quotation.approval.sendForApproval')}
                       </>
                     )}
                   </Button>

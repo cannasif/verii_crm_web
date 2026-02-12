@@ -15,10 +15,10 @@ export const useCreateQuotationLines = (
     mutationFn: (dtos: CreateQuotationLineDto[]) => quotationApi.createQuotationLines(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quotationLines(quotationId) });
-      toast.success(t('quotation.lines.createSuccess', 'Satırlar eklendi'));
+      toast.success(t('quotation.lines.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('quotation.lines.createError', 'Satırlar eklenirken bir hata oluştu'));
+      toast.error(error.message ?? t('quotation.lines.createError'));
     },
   });
 };

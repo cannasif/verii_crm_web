@@ -50,7 +50,7 @@ export function QuotationCreateForm(): ReactElement {
   const { currencyOptions } = useCurrencyOptions();
 
   useEffect(() => {
-    setPageTitle(t('quotation.create.title', 'Yeni Teklif Oluştur'));
+    setPageTitle(t('quotation.create.title'));
     return () => {
       setPageTitle(null);
     };
@@ -114,8 +114,8 @@ export function QuotationCreateForm(): ReactElement {
 
   const onSubmit = async (data: CreateQuotationSchema): Promise<void> => {
     if (lines.length === 0) {
-      toast.error(t('quotation.create.error', 'Teklif Oluşturulamadı'), {
-        description: t('quotation.lines.required', 'En az 1 satır eklenmelidir'),
+      toast.error(t('quotation.create.error'), {
+        description: t('quotation.lines.required'),
       });
       return;
     }
@@ -123,8 +123,8 @@ export function QuotationCreateForm(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
     if (overLimitNote) {
-      toast.error(t('quotation.create.error', 'Teklif Oluşturulamadı'), {
-        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      toast.error(t('quotation.create.error'), {
+        description: t('quotation.notes.maxLengthError'),
       });
       return;
     }
@@ -162,7 +162,7 @@ export function QuotationCreateForm(): ReactElement {
         : String(data.quotation.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('quotation.create.invalidCurrency', 'Geçerli bir para birimi seçilmelidir'));
+        throw new Error(t('quotation.create.invalidCurrency'));
       }
 
       const quotationData: CreateQuotationDto = {
@@ -204,19 +204,19 @@ export function QuotationCreateForm(): ReactElement {
         if (notesList.length > 0) {
           await quotationApi.updateNotesListByQuotationId(result.data.id, { notes: notesList });
         }
-        toast.success(t('quotation.create.success', 'Teklif Başarıyla Oluşturuldu'), {
-          description: t('quotation.create.successMessage', 'Teklif onay sürecine gönderildi.'),
+        toast.success(t('quotation.create.success'), {
+          description: t('quotation.create.successMessage'),
         });
         navigate(`/quotations/${result.data.id}`);
       } else {
-        throw new Error(result.message || t('quotation.create.errorMessage', 'Teklif oluşturulurken bir hata oluştu.'));
+        throw new Error(result.message || t('quotation.create.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('quotation.create.errorMessage', 'Teklif oluşturulurken bir hata oluştu.');
+      let errorMessage = t('quotation.create.errorMessage');
       if (error instanceof Error) {
         errorMessage = error.message; 
       }
-      toast.error(t('quotation.create.error', 'Teklif Oluşturulamadı'), {
+      toast.error(t('quotation.create.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -265,17 +265,17 @@ export function QuotationCreateForm(): ReactElement {
     const doc = new JsPDF();
     
     doc.setFontSize(18);
-    doc.text(t('quotation.create.title', 'Yeni Teklif'), 14, 20);
+    doc.text(t('quotation.create.title'), 14, 20);
     doc.setFontSize(11);
-    doc.text(`${t('quotation.date', 'Tarih')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+    doc.text(`${t('quotation.date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
 
     const headers = [[
-      t('quotation.lines.productCode', 'Ürün Kodu'),
-      t('quotation.lines.productName', 'Ürün Adı'),
-      t('quotation.lines.quantity', 'Miktar'),
-      t('quotation.lines.unitPrice', 'Birim Fiyat'),
-      t('quotation.lines.vatRate', 'KDV'),
-      t('quotation.lines.total', 'Toplam')
+      t('quotation.lines.productCode'),
+      t('quotation.lines.productName'),
+      t('quotation.lines.quantity'),
+      t('quotation.lines.unitPrice'),
+      t('quotation.lines.vatRate'),
+      t('quotation.lines.total')
     ]];
 
     const data = lines.map(line => [
@@ -306,18 +306,18 @@ export function QuotationCreateForm(): ReactElement {
   const handleShareWhatsApp = async () => {
     const doc = await generatePDF();
     doc.save("teklif.pdf");
-    const text = encodeURIComponent(t('quotation.share.whatsappMessage', 'Merhaba, teklif dosyasını iletiyorum.'));
+    const text = encodeURIComponent(t('quotation.share.whatsappMessage'));
     window.open(`https://wa.me/?text=${text}`, '_blank');
-    toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen WhatsApp üzerinden paylaşınız.'));
+    toast.info(t('quotation.share.downloaded'));
   };
 
   const handleShareMail = async () => {
     const doc = await generatePDF();
     doc.save("teklif.pdf");
-    const subject = encodeURIComponent(t('quotation.share.mailSubject', 'Teklif Dosyası'));
-    const body = encodeURIComponent(t('quotation.share.mailBody', 'Merhaba, ekte teklif dosyasını bulabilirsiniz.'));
+    const subject = encodeURIComponent(t('quotation.share.mailSubject'));
+    const body = encodeURIComponent(t('quotation.share.mailBody'));
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
-    toast.info(t('quotation.share.downloaded', 'PDF indirildi. Lütfen e-posta ile paylaşınız.'));
+    toast.info(t('quotation.share.downloaded'));
   };
 
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -326,8 +326,8 @@ export function QuotationCreateForm(): ReactElement {
     
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('quotation.create.error', 'Teklif Oluşturulamadı'), {
-        description: t('quotation.create.validationError', 'Lütfen form alanlarını kontrol ediniz.'),
+      toast.error(t('quotation.create.error'), {
+        description: t('quotation.create.validationError'),
       });
       return;
     }
@@ -341,22 +341,22 @@ export function QuotationCreateForm(): ReactElement {
         <form onSubmit={handleFormSubmit} className="space-y-0">
           <div className="mb-6">
             <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-              {t('quotation.create.title', 'Yeni Teklif Oluştur')}
+              {t('quotation.create.title')}
             </h2>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-              {t('quotation.create.subtitle', 'Müşteri ve kalem bilgilerini girerek teklifi oluşturun')}
+              {t('quotation.create.subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
             <div className="flex flex-col gap-6 min-w-0">
-              <section className="space-y-1" aria-label={t('quotation.sections.header', 'Müşteri ve belge bilgileri')}>
+              <section className="space-y-1" aria-label={t('quotation.sections.header')}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                     1
                   </span>
                   <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                    {t('quotation.sections.header', 'Müşteri & Belge')}
+                    {t('quotation.sections.header')}
                   </h3>
                 </div>
                 <QuotationHeaderForm
@@ -374,13 +374,13 @@ export function QuotationCreateForm(): ReactElement {
                 />
               </section>
 
-              <section className="space-y-1 pt-2" aria-label={t('quotation.sections.lines', 'Teklif kalemleri')}>
+              <section className="space-y-1 pt-2" aria-label={t('quotation.sections.lines')}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                     2
                   </span>
                   <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                    {t('quotation.sections.lines', 'Teklif Kalemleri')}
+                    {t('quotation.sections.lines')}
                   </h3>
                 </div>
                 <QuotationLineTable
@@ -403,7 +403,7 @@ export function QuotationCreateForm(): ReactElement {
                   3
                 </span>
                 <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                  {t('quotation.sections.summary', 'Özet & Toplamlar')}
+                  {t('quotation.sections.summary')}
                 </h3>
               </div>
               <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
@@ -420,28 +420,28 @@ export function QuotationCreateForm(): ReactElement {
                 className="group"
               >
                 <X className="mr-2 h-4 w-4" />
-                {t('quotation.cancel', 'İptal')}
+                {t('quotation.cancel')}
               </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button type="button" variant="outline" className="group">
                     <Share2 className="mr-2 h-4 w-4" />
-                    {t('quotation.export', 'Dışa Aktar')}
+                    {t('quotation.export')}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#130822] border-slate-100 dark:border-white/10">
                   <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                     <FileDown className="mr-2 h-4 w-4 text-slate-500" />
-                    {t('quotation.exportPdf', 'PDF İndir')}
+                    {t('quotation.exportPdf')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                     <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
-                    {t('quotation.shareWhatsapp', 'WhatsApp ile Paylaş')}
+                    {t('quotation.shareWhatsapp')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleShareMail} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                     <Mail className="mr-2 h-4 w-4 text-blue-500" />
-                    {t('quotation.shareMail', 'E-posta ile Paylaş')}
+                    {t('quotation.shareMail')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -453,8 +453,8 @@ export function QuotationCreateForm(): ReactElement {
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending 
-                  ? t('quotation.saving', 'Kaydediliyor...') 
-                  : t('quotation.save', 'Teklifi Kaydet')
+                  ? t('quotation.saving') 
+                  : t('quotation.save')
                 }
               </Button>
             </div>

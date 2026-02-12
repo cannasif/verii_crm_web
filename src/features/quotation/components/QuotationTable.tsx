@@ -85,7 +85,7 @@ export function QuotationTable({
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
         <span className="text-muted-foreground animate-pulse text-sm font-medium">
-          {t('quotation.loading', 'Yükleniyor...')}
+          {t('quotation.loading')}
         </span>
       </div>
     );
@@ -96,7 +96,7 @@ export function QuotationTable({
   if (!data || quotations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-muted-foreground border border-zinc-300 dark:border-zinc-700/80 border-dashed rounded-xl bg-white/50 dark:bg-card/50">
-        <p className="text-sm font-medium">{t('quotation.noData', 'Veri yok')}</p>
+        <p className="text-sm font-medium">{t('quotation.noData')}</p>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export function QuotationTable({
                 onClick={() => handleSort('Id')}
               >
                 <div className="flex items-center">
-                  {t('quotation.list.id', 'ID')}
+                  {t('quotation.list.id')}
                   <SortIcon column="Id" />
                 </div>
               </TableHead>
@@ -129,7 +129,7 @@ export function QuotationTable({
                 onClick={() => handleSort('OfferNo')}
               >
                 <div className="flex items-center">
-                  {t('quotation.list.offerNo', 'Teklif No')}
+                  {t('quotation.list.offerNo')}
                   <SortIcon column="OfferNo" />
                 </div>
               </TableHead>
@@ -138,7 +138,7 @@ export function QuotationTable({
                 onClick={() => handleSort('PotentialCustomerName')}
               >
                 <div className="flex items-center">
-                  {t('quotation.list.customer', 'Müşteri')}
+                  {t('quotation.list.customer')}
                   <SortIcon column="PotentialCustomerName" />
                 </div>
               </TableHead>
@@ -147,7 +147,7 @@ export function QuotationTable({
                 onClick={() => handleSort('RepresentativeName')}
               >
                 <div className="flex items-center">
-                  {t('quotation.list.representative', 'Temsilci')}
+                  {t('quotation.list.representative')}
                   <SortIcon column="RepresentativeName" />
                 </div>
               </TableHead>
@@ -156,7 +156,7 @@ export function QuotationTable({
                 onClick={() => handleSort('OfferDate')}
               >
                 <div className="flex items-center">
-                  {t('quotation.list.offerDate', 'Teklif Tarihi')}
+                  {t('quotation.list.offerDate')}
                   <SortIcon column="OfferDate" />
                 </div>
               </TableHead>
@@ -165,7 +165,7 @@ export function QuotationTable({
                 onClick={() => handleSort('Currency')}
               >
                 <div className="flex items-center">
-                  {t('quotation.list.currency', 'Para Birimi')}
+                  {t('quotation.list.currency')}
                   <SortIcon column="Currency" />
                 </div>
               </TableHead>
@@ -174,7 +174,7 @@ export function QuotationTable({
                 onClick={() => handleSort('GrandTotal')}
               >
                 <div className="flex items-center justify-end">
-                  {t('quotation.list.grandTotal', 'Genel Toplam')}
+                  {t('quotation.list.grandTotal')}
                   <SortIcon column="GrandTotal" />
                 </div>
               </TableHead>
@@ -183,12 +183,12 @@ export function QuotationTable({
                 onClick={() => handleSort('Status')}
               >
                 <div className="flex items-center">
-                  {t('quotation.list.status', 'Durum')}
+                  {t('quotation.list.status')}
                   <SortIcon column="Status" />
                 </div>
               </TableHead>
               <TableHead className="text-center">
-                {t('quotation.list.actions', 'İşlemler')}
+                {t('quotation.list.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -225,8 +225,8 @@ export function QuotationTable({
                       className="w-full"
                     >
                       {createRevisionMutation.isPending
-                        ? t('quotation.loading', 'Yükleniyor...')
-                        : t('quotation.list.revise', 'Revize et')}
+                        ? t('quotation.loading')
+                        : t('quotation.list.revise')}
                     </Button>
                   )}
                 </TableCell>
@@ -239,7 +239,7 @@ export function QuotationTable({
 
       <div className="flex items-center justify-between py-4">
         <div className="text-sm text-muted-foreground">
-          {t('quotation.list.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('quotation.list.showing', {
             from: (pageNumber - 1) * pageSize + 1,
             to: Math.min(pageNumber * pageSize, data.totalCount || 0),
             total: data.totalCount || 0,
@@ -252,10 +252,10 @@ export function QuotationTable({
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1}
           >
-            {t('quotation.previous', 'Önceki')}
+            {t('quotation.previous')}
           </Button>
           <div className="flex items-center px-4 text-sm">
-            {t('quotation.list.page', 'Sayfa {{current}} / {{total}}', {
+            {t('quotation.list.page', {
               current: pageNumber,
               total: totalPages,
             })}
@@ -266,7 +266,7 @@ export function QuotationTable({
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
           >
-            {t('quotation.next', 'Sonraki')}
+            {t('quotation.next')}
           </Button>
         </div>
       </div>

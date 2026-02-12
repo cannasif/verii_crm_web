@@ -199,13 +199,13 @@ export function QuotationLineTable({
 
   const handleExportExcel = async () => {
     const dataToExport = lines.map(line => ({
-      [t('quotation.lines.productCode', 'Ürün Kodu')]: line.productCode,
-      [t('quotation.lines.productName', 'Ürün Adı')]: line.productName,
-      [t('quotation.lines.quantity', 'Miktar')]: line.quantity,
-      [t('quotation.lines.unitPrice', 'Birim Fiyat')]: formatCurrency(line.unitPrice, currencyCode),
-      [t('quotation.lines.vatRate', 'KDV Oranı')]: `%${line.vatRate}`,
-      [t('quotation.lines.total', 'Toplam')]: formatCurrency(line.lineTotal, currencyCode),
-      [t('quotation.lines.description', 'Açıklama')]: line.description || '',
+      [t('quotation.lines.productCode')]: line.productCode,
+      [t('quotation.lines.productName')]: line.productName,
+      [t('quotation.lines.quantity')]: line.quantity,
+      [t('quotation.lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
+      [t('quotation.lines.vatRate')]: `%${line.vatRate}`,
+      [t('quotation.lines.total')]: formatCurrency(line.lineTotal, currencyCode),
+      [t('quotation.lines.description')]: line.description || '',
     }));
 
     const XLSX = await import('xlsx');
@@ -223,12 +223,12 @@ export function QuotationLineTable({
     const doc = new JsPDF();
     
     const headers = [[
-      t('quotation.lines.productCode', 'Ürün Kodu'),
-      t('quotation.lines.productName', 'Ürün Adı'),
-      t('quotation.lines.quantity', 'Miktar'),
-      t('quotation.lines.unitPrice', 'Birim Fiyat'),
-      t('quotation.lines.vatRate', 'KDV'),
-      t('quotation.lines.total', 'Toplam')
+      t('quotation.lines.productCode'),
+      t('quotation.lines.productName'),
+      t('quotation.lines.quantity'),
+      t('quotation.lines.unitPrice'),
+      t('quotation.lines.vatRate'),
+      t('quotation.lines.total')
     ]];
 
     const data = lines.map(line => [
@@ -258,12 +258,12 @@ export function QuotationLineTable({
     slide.addText("Teklif Kalemleri", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
 
     const headers = [
-      t('quotation.lines.productCode', 'Ürün Kodu'),
-      t('quotation.lines.productName', 'Ürün Adı'),
-      t('quotation.lines.quantity', 'Miktar'),
-      t('quotation.lines.unitPrice', 'Birim Fiyat'),
-      t('quotation.lines.vatRate', 'KDV'),
-      t('quotation.lines.total', 'Toplam')
+      t('quotation.lines.productCode'),
+      t('quotation.lines.productName'),
+      t('quotation.lines.quantity'),
+      t('quotation.lines.unitPrice'),
+      t('quotation.lines.vatRate'),
+      t('quotation.lines.total')
     ];
 
     const rows = lines.map(line => [
@@ -288,8 +288,8 @@ export function QuotationLineTable({
   const handleAddLine = (): void => {
     if (!linesEditable) return;
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('quotation.error', 'Hata'), {
-        description: t('quotation.lines.requiredFieldsMissing', 'Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.'),
+      toast.error(t('quotation.error'), {
+        description: t('quotation.lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -373,8 +373,8 @@ export function QuotationLineTable({
 
   const handleProductSelect = async (product: ProductSelectionResult): Promise<void> => {
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('quotation.error', 'Hata'), {
-        description: t('quotation.lines.requiredFieldsMissing', 'Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.'),
+      toast.error(t('quotation.error'), {
+        description: t('quotation.lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -560,12 +560,12 @@ export function QuotationLineTable({
             </div>
             <div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                {t('quotation.lines.title', 'Teklif Kalemleri')}
+                {t('quotation.lines.title')}
               </h3>
               <p className="text-xs text-zinc-500 font-medium">
                 {lines.length > 0 
-                  ? t('quotation.lines.itemCount', '{count} kalem ürün listeleniyor', { count: lines.length })
-                  : t('quotation.lines.noItems', 'Henüz ürün eklenmedi')
+                  ? t('quotation.lines.itemCount', { count: lines.length })
+                  : t('quotation.lines.noItems')
                 }
               </p>
             </div>
@@ -581,7 +581,7 @@ export function QuotationLineTable({
               className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
-              {t('quotation.lines.add', 'Satır Ekle')}
+              {t('quotation.lines.add')}
             </Button>
             )}
 
@@ -594,7 +594,7 @@ export function QuotationLineTable({
               <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
                 <div className="p-2">
                   <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {t('common.actions', 'İşlemler')}
+                    {t('common.actions')}
                   </div>
                 </div>
 
@@ -602,19 +602,19 @@ export function QuotationLineTable({
 
                 <div className="p-2">
                   <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {t('common.export', 'Dışa Aktar')}
+                    {t('common.export')}
                   </div>
                   <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                     <FileSpreadsheet size={16} className="text-emerald-500" />
-                    <span>{t('common.exportExcel', 'Excel İndir')}</span>
+                    <span>{t('common.exportExcel')}</span>
                   </button>
                   <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                     <FileText size={16} className="text-red-400" />
-                    <span>{t('common.exportPDF', 'PDF İndir')}</span>
+                    <span>{t('common.exportPDF')}</span>
                   </button>
                   <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                     <Presentation size={16} className="text-orange-400" />
-                    <span>{t('common.exportPPT', 'PowerPoint İndir')}</span>
+                    <span>{t('common.exportPPT')}</span>
                   </button>
                 </div>
               </DropdownMenuContent>
@@ -629,10 +629,10 @@ export function QuotationLineTable({
                 <Box className="h-8 w-8 text-zinc-300 dark:text-zinc-600" />
               </div>
               <h4 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-                {t('quotation.lines.empty', 'Sepetiniz Boş')}
+                {t('quotation.lines.empty')}
               </h4>
               <p className="text-sm text-zinc-500 max-w-xs mx-auto">
-                {t('quotation.lines.emptyDescription', 'Teklif oluşturmak için "Satır Ekle" butonunu kullanarak ürün eklemeye başlayın.')}
+                {t('quotation.lines.emptyDescription')}
               </p>
             </div>
           ) : (
@@ -640,15 +640,15 @@ export function QuotationLineTable({
               <Table>
                 <TableHeader>
                   <TableRow className={styles.tableHeadRow}>
-                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('quotation.lines.stock', 'Stok Bilgisi')}</TableHead>
-                    <TableHead className={cn(styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('quotation.lines.unitPrice', 'Birim Fiyat')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('quotation.lines.quantity', 'Miktar')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount1', 'İnd.1')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount2', 'İnd.2')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount3', 'İnd.3')}</TableHead>
-                    <TableHead className={cn(styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('quotation.lines.netPrice', 'Tutar')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('quotation.lines.stock')}</TableHead>
+                    <TableHead className={cn(styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('quotation.lines.unitPrice')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('quotation.lines.quantity')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount1')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount2')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount3')}</TableHead>
+                    <TableHead className={cn(styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('quotation.lines.netPrice')}</TableHead>
                     {linesEditable && (
-                    <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions', 'İşlem')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions')}</TableHead>
                     )}
                   </TableRow>
                 </TableHeader>
@@ -788,7 +788,7 @@ export function QuotationLineTable({
                   <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
                 </div>
               </div>
-              {t('quotation.lines.addTitle', 'Yeni Satır Ekle')}
+              {t('quotation.lines.addTitle')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -826,7 +826,7 @@ export function QuotationLineTable({
                   <Edit className="h-5 w-5 text-blue-600 dark:text-blue-500" />
                 </div>
               </div>
-              {t('quotation.lines.editTitle', 'Satır Düzenle')}
+              {t('quotation.lines.editTitle')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -872,13 +872,13 @@ export function QuotationLineTable({
                 <Trash2 className="h-5 w-5" />
               </div>
               {relatedLinesCount > 1
-                ? t('quotation.lines.delete.confirmTitleMultiple', 'Bağlı Stokları Sil')
-                : t('quotation.lines.delete.confirmTitle', 'Satırı Sil')}
+                ? t('quotation.lines.delete.confirmTitleMultiple')
+                : t('quotation.lines.delete.confirmTitle')}
             </DialogTitle>
             <DialogDescription className="pt-2 text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
               {relatedLinesCount > 1
-                ? t('quotation.lines.delete.confirmMessageMultiple', 'Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.', { count: relatedLinesCount })
-                : t('quotation.lines.delete.confirmMessage', 'Bu satırı silmek istediğinizden emin misiniz?')
+                ? t('quotation.lines.delete.confirmMessageMultiple', { count: relatedLinesCount })
+                : t('quotation.lines.delete.confirmMessage')
               }
             </DialogDescription>
           </DialogHeader>
@@ -890,7 +890,7 @@ export function QuotationLineTable({
               disabled={isDeleting}
               className="h-11 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 font-medium transition-all"
             >
-              {t('quotation.cancel', 'İptal')}
+              {t('quotation.cancel')}
             </Button>
             <Button
               type="button"
@@ -906,10 +906,10 @@ export function QuotationLineTable({
               {isDeleting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {t('quotation.saving', 'Siliniyor...')}
+                  {t('quotation.saving')}
                 </>
               ) : (
-                t('quotation.delete', 'Sil')
+                t('quotation.delete')
               )}
             </Button>
           </DialogFooter>

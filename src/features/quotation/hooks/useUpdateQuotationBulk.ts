@@ -14,10 +14,10 @@ export const useUpdateQuotationBulk = (): UseMutationResult<ApiResponse<Quotatio
     mutationFn: ({ id, data }: { id: number; data: QuotationBulkCreateDto }) => quotationApi.updateBulk(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quotations() });
-      toast.success(t('quotation.update.success', 'Teklif başarıyla güncellendi'));
+      toast.success(t('quotation.update.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('quotation.update.error', 'Teklif güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('quotation.update.error'));
     },
   });
 };

@@ -735,7 +735,7 @@ export function QuotationLineForm({
       <div className="space-y-4">
         <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
           <Package className="h-4 w-4 text-pink-500" />
-          {t('quotation.lines.stock', 'Stok Seçimi')} <span className="text-pink-500">*</span>
+          {t('quotation.lines.stock')} <span className="text-pink-500">*</span>
         </label>
         
         <div className="flex flex-col gap-3">
@@ -743,7 +743,7 @@ export function QuotationLineForm({
             <div className="relative flex-1">
               <Input
                 value={formData.productCode || ''}
-                placeholder={t('quotation.lines.productCode', 'Stok Kodu')}
+                placeholder={t('quotation.lines.productCode')}
                 readOnly
                 className="bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-mono text-sm h-11 rounded-xl"
               />
@@ -765,7 +765,7 @@ export function QuotationLineForm({
             >
               <Info className="h-4 w-4" />
               <span className="text-xs font-medium">
-                {t('common.pricingInsights.button', 'Kural')}
+                {t('common.pricingInsights.button')}
               </span>
               {ruleInsightCount > 0 && (
                 <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">
@@ -778,7 +778,7 @@ export function QuotationLineForm({
           <div className="w-full">
             <Input
               value={formData.productName || ''}
-              placeholder={t('quotation.lines.productName', 'Stok Adı')}
+              placeholder={t('quotation.lines.productName')}
               readOnly
               className="bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full"
             />
@@ -793,8 +793,8 @@ export function QuotationLineForm({
                 value: p.projeKod,
                 label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
               }))}
-              placeholder={t('quotation.header.projectCode', 'Proje Kodu')}
-              searchPlaceholder={t('common.search', 'Ara...')}
+              placeholder={t('quotation.header.projectCode')}
+              searchPlaceholder={t('common.search')}
             />
           </div>
         </div>
@@ -804,7 +804,7 @@ export function QuotationLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Layers className="h-4 w-4 text-blue-500" />
-            {t('quotation.lines.quantity', 'Miktar')}
+            {t('quotation.lines.quantity')}
           </label>
           <Input
             type="number"
@@ -841,7 +841,7 @@ export function QuotationLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Coins className="h-4 w-4 text-emerald-500" />
-            {t('quotation.lines.unitPrice', 'Birim Fiyat')}
+            {t('quotation.lines.unitPrice')}
           </label>
           <div className="relative">
             <Input
@@ -859,7 +859,7 @@ export function QuotationLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Package className="h-4 w-4 text-purple-500" />
-            {t('quotation.lines.unit', 'Birim')}
+            {t('quotation.lines.unit')}
           </label>
           <Input
             value="Adet"
@@ -871,7 +871,7 @@ export function QuotationLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Percent className="h-4 w-4 text-orange-500" />
-            {t('quotation.lines.vatRate', 'KDV Oranı')}
+            {t('quotation.lines.vatRate')}
           </label>
           <div className="relative">
             <Input
@@ -914,7 +914,7 @@ export function QuotationLineForm({
         <div className="xl:col-span-7 space-y-4">
           <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <BadgePercent className="h-4 w-4 text-purple-500" />
-            {t('quotation.lines.discounts', 'Satır İndirimleri')}
+            {t('quotation.lines.discounts')}
           </h5>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
 	            {discountInputs.map((item, idx) => (
@@ -1007,7 +1007,7 @@ export function QuotationLineForm({
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4 text-purple-500" />
                 <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  {t('quotation.lines.relatedStocks', 'Bağlı Stoklar')} ({relatedLines.length})
+                  {t('quotation.lines.relatedStocks')} ({relatedLines.length})
                 </h5>
               </div>
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
@@ -1019,7 +1019,7 @@ export function QuotationLineForm({
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mb-2">
                       <div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                          {t('quotation.lines.productCode', 'Stok Kodu')}
+                          {t('quotation.lines.productCode')}
                         </div>
                         <div className="font-mono text-sm font-semibold text-slate-800 dark:text-slate-100">
                           {relatedLine.productCode || '-'}
@@ -1027,7 +1027,7 @@ export function QuotationLineForm({
                       </div>
                       <div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                          {t('quotation.lines.productName', 'Stok Adı')}
+                          {t('quotation.lines.productName')}
                         </div>
                         <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                           {relatedLine.productName || '-'}
@@ -1037,13 +1037,13 @@ export function QuotationLineForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">
-                          {t('quotation.lines.quantity', 'Miktar')}:
+                          {t('quotation.lines.quantity')}:
                         </span>
                         <span className="ml-2 font-semibold text-slate-800 dark:text-slate-200">{relatedLine.quantity}</span>
                       </div>
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">
-                          {t('quotation.lines.unitPrice', 'Birim Fiyat')}:
+                          {t('quotation.lines.unitPrice')}:
                         </span>
                         <span className="ml-2 font-semibold text-slate-800 dark:text-slate-200">
                           {formatCurrency(relatedLine.unitPrice, currencyCode)}
@@ -1051,7 +1051,7 @@ export function QuotationLineForm({
                       </div>
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">
-                          {t('quotation.lines.netPrice', 'Net Fiyat')}:
+                          {t('quotation.lines.netPrice')}:
                         </span>
                         <span className="ml-2 font-semibold text-emerald-600 dark:text-emerald-400">
                           {formatCurrency(relatedLine.lineTotal || 0, currencyCode)}
@@ -1059,7 +1059,7 @@ export function QuotationLineForm({
                       </div>
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">
-                          {t('quotation.lines.lineTotal', 'Toplam')}:
+                          {t('quotation.lines.lineTotal')}:
                         </span>
                         <span className="ml-2 font-semibold text-orange-600 dark:text-orange-400">
                           {formatCurrency(relatedLine.lineGrandTotal || 0, currencyCode)}
@@ -1080,7 +1080,7 @@ export function QuotationLineForm({
               disabled={isSaving}
               className="h-12 px-6 w-full sm:w-auto rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium transition-all"
             >
-              {t('quotation.cancel', 'Vazgeç')}
+              {t('quotation.cancel')}
             </Button>
             <Button
               type="button"
@@ -1091,12 +1091,12 @@ export function QuotationLineForm({
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {t('quotation.saving', 'Kaydediliyor...')}
+                  {t('quotation.saving')}
                 </>
               ) : (
                 <>
                   <Check className="h-4 w-4 mr-2" />
-                  {t('quotation.save', 'Kaydet')}
+                  {t('quotation.save')}
                 </>
               )}
             </Button>

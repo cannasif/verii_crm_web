@@ -14,10 +14,10 @@ export const useCreateRevisionOfQuotation = (): UseMutationResult<ApiResponse<Qu
     mutationFn: (quotationId: number) => quotationApi.createRevisionOfQuotation(quotationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quotations() });
-      toast.success(t('quotation.revision.success', 'Teklif revizyonu başarıyla oluşturuldu'));
+      toast.success(t('quotation.revision.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('quotation.revision.error', 'Teklif revizyonu oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('quotation.revision.error'));
     },
   });
 };
