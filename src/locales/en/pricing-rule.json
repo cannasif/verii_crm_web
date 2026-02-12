@@ -136,8 +136,8 @@
   },
   "card": {
     "customer": "Customer",
-    "lines": "lines",
-    "salesmen": "salesmen",
+    "lines": "line",
+    "salesmen": "salesman",
     "vatIncluded": "VAT Included"
   },
   "status": {

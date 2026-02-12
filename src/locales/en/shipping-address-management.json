@@ -73,5 +73,11 @@
   "cancel": "Cancel",
   "save": "Save",
   "saving": "Saving...",
-  "deleting": "Deleting..."
+  "deleting": "Deleting...",
+  "name": "Address Name",
+  "namePlaceholder": "Enter the address name",
+  "isDefault": "Default Shipping Address",
+  "isDefaultShort": "Default",
+  "defaultBadge": "Default",
+  "nameMaxLength": "Address name can be up to 150 characters"
 }

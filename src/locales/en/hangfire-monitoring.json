@@ -11,7 +11,7 @@
   },
   "table": {
     "jobId": "Job ID",
-    "jobName": "Job",
+    "jobName": "job",
     "state": "State",
     "time": "Time",
     "reason": "Reason"

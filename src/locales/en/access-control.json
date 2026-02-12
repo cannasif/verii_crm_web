@@ -52,7 +52,8 @@
     "delete": {
       "confirmTitle": "Delete Permission Definition",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
-    }
+    },
+    "syncFromRoutes": "Sync from routes"
   },
   "permissionGroups": {
     "title": "Permission Groups",
@@ -102,5 +103,27 @@
     "noUsers": "No users found",
     "noGroups": "No permission groups available",
     "selectAll": "Select all"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save and Apply",
+    "loading": "Loading...",
+    "search": "Search...",
+    "noData": "No data",
+    "actions": "Transactions",
+    "yes": "Yes",
+    "no": "No",
+    "edit": "Edit",
+    "delete": "Delete",
+    "previous": "Former",
+    "next": "Next",
+    "processing": "Processing..."
+  },
+  "sidebar": {
+    "accessControl": "Access Control",
+    "permissionDefinitions": "Permission Definitions",
+    "permissionGroups": "Permission Groups",
+    "userGroupAssignments": "User Group Assignments"
   }
 }

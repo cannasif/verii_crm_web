@@ -65,5 +65,37 @@
   "delete": {
     "confirmTitle": "Delete User",
     "confirmMessage": "Are you sure you want to delete user {{username}}?"
+  },
+  "userManagement": {
+    "form": {
+      "editUser": "Edit User",
+      "addUser": "Add New User",
+      "editDescription": "Edit user information",
+      "addDescription": "Enter new user information",
+      "username": "User name",
+      "usernamePlaceholder": "Enter username",
+      "email": "Email",
+      "emailPlaceholder": "Enter email address",
+      "password": "Password",
+      "passwordPlaceholder": "If left blank, temporary password will be generated",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Enter first name",
+      "lastName": "Surname",
+      "lastNamePlaceholder": "Enter last name",
+      "phoneNumber": "Telephone",
+      "phoneNumberPlaceholder": "Enter phone number",
+      "role": "Role",
+      "rolePlaceholder": "Select role",
+      "permissionGroups": "Permission Groups",
+      "isActive": "Active",
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save",
+      "selectAll": "Select all",
+      "permissionGroupsNoData": "Permission group not found"
+    },
+    "table": {
+      "loading": "Loading..."
+    }
   }
 }

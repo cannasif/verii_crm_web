@@ -44,6 +44,17 @@
     "filter": "Filter",
     "all": "ALL",
     "active": "ACTIVE",
-    "passive": "PASSIVE"
+    "passive": "PASSIVE",
+    "apply": "LIST RESULTS"
+  },
+  "details": {
+    "title": "Customer Details",
+    "addressInfo": "Address Information"
+  },
+  "common": {
+    "ok": "OK",
+    "close": "Close",
+    "selectAll": "Select All",
+    "totalRecords": "Total Registration"
   }
 }

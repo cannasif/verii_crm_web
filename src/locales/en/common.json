@@ -8,7 +8,11 @@
     "close": "Close",
     "previous": "Previous",
     "next": "Next",
-    "delete": "Delete",
+    "delete": {
+      "confirmTitle": "Delete",
+      "confirmMessage": "Are you sure you want to delete this record?",
+      "action": "Delete"
+    },
     "edit": "Edit",
     "search": "Search",
     "filter": "Filter",
@@ -41,9 +45,9 @@
     "selectDate": "Select date",
     "UnexpectedError": "An unexpected error occurred",
     "forbiddenTitle": "Access denied",
-    "forbiddenDescription": "You do not have permission to view this page.",
-    "forbiddenFrom": "Requested path",
-    "goBack": "Go back",
+    "forbiddenDescription": "You are not authorized to view this page.",
+    "forbiddenFrom": "desired path",
+    "goBack": "come back",
     "goHome": "Go home",
     "pricingInsights": {
       "button": "Rule",
@@ -63,7 +67,68 @@
       "discount2": "Discount 2",
       "discount3": "Discount 3",
       "discount2And3": "Disc. 2/3"
-    }
+    },
+    "table": {
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "ok": "OK",
+    "imageUrlPlaceholder": "https://... veya /logo.png",
+    "serverErrorTitle": "Server error",
+    "serverErrorRetrying": "The connection is lost. Automatically retrying...",
+    "serverErrorDescription": "Could not load credentials. Please try again.",
+    "retry": "try again",
+    "refreshPage": "Refresh page",
+    "voiceSearchPermissionDenied": "Microphone permission denied.",
+    "voiceSearchError": "An error occurred during a voice call.",
+    "voiceSearchNotSupported": "Your browser does not support voice search",
+    "select": "Select",
+    "voiceSearch": "Voice Search",
+    "update": "Update",
+    "deleting": "Deleting...",
+    "uploading": "Loading...",
+    "clear": "clear",
+    "all": "All",
+    "editColumns": "Edit Columns",
+    "visibleColumns": "Visible Columns",
+    "paginationInfo": "{{start}}-{{end}} / {{total}} register",
+    "refresh": "Refresh",
+    "showing": "shown",
+    "filters": "Detailed Filter",
+    "selectAll": "Select All",
+    "export": "Export",
+    "exportExcel": "Download Excel",
+    "exportPDF": "Download PDF",
+    "exportPPT": "Download PowerPoint",
+    "active": "Active",
+    "columns": "Visible Columns",
+    "clearFilters": "clear",
+    "apply": "Apply",
+    "page": "Page {{current}} / {{total}}",
+    "status": "Situation",
+    "deleteSuccess": "Deletion successful",
+    "deleteError": "Error occurred during deletion",
+    "deleteConfirmTitle": "Deletion Process",
+    "voiceSearchCompleted": "Voice search completed",
+    "voiceSearchStopListening": "stop listening",
+    "actionExecuted": "The transaction was completed successfully",
+    "actionExecutionFailed": "The operation could not be performed",
+    "templateDeleted": "Template deleted",
+    "templateDeleteFailed": "Template could not be deleted",
+    "enterValidDocumentId": "Enter a valid document ID",
+    "pdfGenerated": "PDF created",
+    "pdfGenerateFailed": "Could not create PDF",
+    "updated": "Updated",
+    "saved": "saved",
+    "templateUpdatedWithTitle": "Template updated: {{title}}",
+    "templateSavedWithTitle": "Template saved: {{title}}",
+    "templateUpdateFailed": "Template could not be updated",
+    "templateSaveFailed": "Template could not be saved",
+    "imageMax2Mb": "The image can be up to 2 MB.",
+    "selectImage": "select image",
+    "imageSettings": "Image Properties",
+    "imageUrl": "Image URL",
+    "uploadFromFile": "Load from file"
   },
   "auth": {
     "login": {
@@ -92,11 +157,21 @@
       "animationOff": "Turn off animation",
       "animationOn": "Turn on animation"
     },
-    "logout": "Logout"
+    "logout": "Logout",
+    "changePassword": {
+      "error": "Password could not be changed",
+      "success": "Successful"
+    },
+    "resetPassword": {
+      "successRedirect": "Your password has been successfully reset. You are directed to the login page...",
+      "failed": "Password reset failed",
+      "error": "An error occurred during the password reset process"
+    }
   },
   "navbar": {
-    "VERII WMS": "VERII WMS",
-    "crm": "CRM"
+    "VERII WMS": "DATA WMS",
+    "crm": "CRM",
+    "search_placeholder": "Do a quick search..."
   },
   "nav": {
     "customersConflictInbox": "Conflict Inbox"
@@ -158,7 +233,7 @@
     "reports": "Reports",
     "salesKpi": "Sales KPI",
     "reportBuilder": "Report Builder",
-    "pdfBuilder": "PDF Builder",
+    "pdfBuilder": "PDF Creator",
     "powerbi": "Power BI",
     "powerbiReportDefinitions": "Power BI Reports",
     "powerbiGroups": "Power BI Groups",
@@ -196,17 +271,26 @@
     "stockManagement": "Stock Management",
     "settings": "Settings",
     "logout": "Log Out",
-    "productAndStock": "Products & Stock",
+    "productAndStock": "Products and Stock",
     "salesManagement": "Sales Management",
-    "proposals": "Proposals",
-    "quotationList": "Quotation List",
+    "proposals": "Offers",
+    "quotationList": "Offer List",
     "waitingApprovals": "Pending Approvals",
     "definitions": "Definitions",
     "users": "Users",
     "accessControl": "Access Control",
     "permissionDefinitions": "Permission Definitions",
     "permissionGroups": "Permission Groups",
-    "userGroupAssignments": "User Group Assignments"
+    "userGroupAssignments": "User Group Assignments",
+    "demands": "Requests",
+    "demandCreateWizard": "Create New Request",
+    "waitingApprovalDemands": "Requests Pending Approval",
+    "demandList": "Request List",
+    "orderCreateWizard": "Create New Order",
+    "waitingApprovalOrders": "Orders Pending Approval",
+    "orderList": "Order List",
+    "reportsList": "List",
+    "reportsCreate": "Create New"
   },
   "pdfReportDesigner": {
     "list": "List",
@@ -242,10 +326,16 @@
     "updateFailed": "Failed to update template",
     "saveFailed": "Failed to save template",
     "undo": "Undo",
-    "redo": "Redo"
+    "redo": "Redo",
+    "draftRestored": "Draft restored",
+    "draftRestoreFailed": "Draft could not be loaded",
+    "draftFound": "Draft found. You can restore or clear it.",
+    "restoreDraft": "restore",
+    "discardDraft": "clear",
+    "snapToGrid": "Align to grid"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "dashboard",
     "subtitle": "Welcome to the CRM system",
     "monthlyRevenue": "Monthly Revenue",
     "conversionRate": "Conversion Rate",
@@ -311,7 +401,8 @@
         "twoDaysAgo": "2 days ago",
         "threeDaysAgo": "3 days ago"
       }
-    }
+    },
+    "user": "User"
   },
   "customer360": {
     "title": "Customer 360",
@@ -395,10 +486,10 @@
     },
     "status": {
       "HavenotStarted": "Not Started",
-      "Waiting": "Waiting",
+      "Waiting": "Pending",
       "Approved": "Approved",
-      "Rejected": "Rejected",
-      "Completed": "Completed"
+      "Rejected": "rejected",
+      "Completed": "completed"
     },
     "explain": {
       "revenueQualityTitle": "Revenue quality scores are rule-based and calculated from the last 12 months of order/quotation/activity data, covering cohort, retention, RFM, LTV, churn, upsell and payment metrics.",
@@ -407,19 +498,19 @@
       "paymentBehavior": "Payment Behavior is currently a proxy score (order continuity, quotation rejection rate, last-order recency) instead of direct ERP collection history, calculated 0-100.",
       "rfmSegment": "RFM Segment assigns Champions/Loyal/AtRisk/Potential based on recency, frequency, and monetary rules.",
       "cohortRetentionTitle": "Cohort Retention uses first touch/order month as cohort; if there is an order in following months, it counts as retained and produces monthly retention percentage.",
-      "recommendedActionsTitle": "Recommended Actions are prioritized follow-up suggestions from a rule engine (e.g., long inactivity, open quotation, high churn). Each action is traceable with reason + source rule code.",
+      "recommendedActionsTitle": "Recommended Actions are priority follow-up suggestions produced by the rules engine (e.g. no activity for a long time, there is an open offer, churn is high). Each action can be tracked with justification + rule code.",
       "executeAction": "Execute converts this recommendation into an activity/task: backend calls `POST /api/customer360/{id}/actions/execute` and creates a new Activity record.",
       "noCohortData": "Cohort data is not available yet due to insufficient order history.",
       "modelNote": "Note: These scores are deterministic v1 and can be improved later with ERP collection data, quota/forecast signals, and ML models."
     }
   },
   "salesman360": {
-    "title": "Salesman 360",
+    "title": "Sales Representative 360",
     "subtitle": "Sales representative overview",
     "notFound": "User not found",
     "error": "An error occurred while loading the overview",
     "retry": "Retry",
-    "button": "Salesman 360",
+    "button": "Sales Representative 360",
     "currencyFilter": {
       "label": "Currency",
       "all": "All"
@@ -495,7 +586,7 @@
       "paymentBehavior": "Payment Behavior currently uses proxy metrics; it becomes more accurate once direct ERP collection history is integrated.",
       "rfmSegment": "RFM Segment classifies the portfolio by recency/frequency/monetary behavior.",
       "cohortRetentionTitle": "Cohort Retention cohorts customers by first order month within the rep portfolio and shows monthly retention rates.",
-      "recommendedActionsTitle": "Recommended Actions suggest prioritized actions such as pipeline cleanup, activity increase, and churn intervention. Each action is traceable with reason + source rule code.",
+      "recommendedActionsTitle": "Recommended Actions recommend priority actions such as pipeline cleaning, activity increase and churn intervention. Each action can be tracked with justification + rule code.",
       "executeAction": "Execute converts the recommendation into an activity/task: backend calls `POST /api/salesmen360/{userId}/actions/execute`.",
       "noCohortData": "Cohort data is not available yet due to insufficient order history.",
       "modelNote": "Note: Current scores are deterministic v1 and can be strengthened with quota/forecast/ML."
@@ -566,7 +657,7 @@
       "serialNoPlaceholder": "Enter serial number",
       "lotNo": "Lot No",
       "lotNoPlaceholder": "Enter lot number",
-      "batchNo": "Batch No",
+      "batchNo": "Batch No.",
       "batchNoPlaceholder": "Enter batch number",
       "configCode": "Config Code",
       "configCodePlaceholder": "Enter configuration code"
@@ -749,7 +840,7 @@
       "serialNoPlaceholder": "Enter serial number",
       "lotNo": "Lot No",
       "lotNoPlaceholder": "Enter lot number",
-      "batchNo": "Batch No",
+      "batchNo": "Batch No.",
       "batchNoPlaceholder": "Enter batch number",
       "configCode": "Config Code",
       "configCodePlaceholder": "Enter configuration code"
@@ -895,7 +986,7 @@
       "serialNo2Placeholder": "Enter serial number 2",
       "lotNo": "Lot No",
       "lotNoPlaceholder": "Enter lot number",
-      "batchNo": "Batch No",
+      "batchNo": "Batch No.",
       "batchNoPlaceholder": "Enter batch number",
       "configCode": "Config Code",
       "configCodePlaceholder": "Enter configuration code",
@@ -1422,24 +1513,24 @@
     },
     "cargoCompany": {
       "None": "None",
-      "YurtiçiKargo": "Yurtiçi Kargo",
-      "ArasKargo": "Aras Kargo",
-      "MNGKargo": "MNG Kargo",
-      "PTTKargo": "PTT Kargo",
-      "SüratKargo": "Sürat Kargo",
+      "YurtiçiKargo": "Domestic Cargo",
+      "ArasKargo": "Aras Cargo",
+      "MNGKargo": "MNG Cargo",
+      "PTTKargo": "PTT Cargo",
+      "SüratKargo": "Speedy Cargo",
       "UPS": "UPS",
       "DHL": "DHL",
       "FedEx": "FedEx",
       "TNT": "TNT",
       "HorozLojistik": "Horoz Logistics",
-      "CEVA": "CEVA",
-      "KargoTurk": "Kargo Türk",
+      "CEVA": "ANSWER",
+      "KargoTurk": "Cargo Turkish",
       "HepsiJET": "HepsiJET",
       "TrendyolExpress": "Trendyol Express",
       "AmazonLogistics": "Amazon Logistics",
       "Scotty": "Scotty",
-      "KolayGelsin": "Kolay Gelsin",
-      "BirGundeKargo": "Bir Günde Kargo"
+      "KolayGelsin": "Good luck",
+      "BirGundeKargo": "One Day Shipping"
     }
   },
   "notification": {
@@ -1453,7 +1544,9 @@
     "viewAll": "View all notifications",
     "loading": "Loading...",
     "disconnected": "Connection disconnected",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "close": "Close",
+    "unread": "Not read"
   },
   "titleManagement": {
     "menu": "Title Management",
@@ -1487,11 +1580,14 @@
       "titleName.maxLength": "Title name must be at most 100 characters",
       "code": "Code",
       "codePlaceholder": "Enter code (optional)",
-      "code.maxLength": "Code must be at most 10 characters"
+      "code.maxLength": "Code must be at most 10 characters",
+      "cancel": "Cancel"
     },
     "delete": {
       "confirmTitle": "Delete Title",
-      "confirmMessage": "Are you sure you want to delete the title {{titleName}}?"
+      "confirmMessage": "Are you sure you want to delete the title {{titleName}}?",
+      "title": "Delete Title",
+      "confirm": "Are you sure you want to delete the title {{name}}? This action cannot be undone."
     },
     "messages": {
       "createSuccess": "Title created successfully",
@@ -1500,7 +1596,12 @@
       "updateError": "Failed to update title",
       "deleteSuccess": "Title deleted successfully",
       "deleteError": "Failed to delete title"
-    }
+    },
+    "saving": "Recording...",
+    "save": "Save",
+    "search": "Quick Search...",
+    "loading": "Loading...",
+    "noData": "No Record Found"
   },
   "salesTypeManagement": {
     "menu": "Sales Type Management",
@@ -1545,7 +1646,8 @@
       "createdDate": "Created Date",
       "createdBy": "Created By",
       "showing": "Showing {{from}}-{{to}} of {{total}}",
-      "page": "Page {{current}} of {{total}}"
+      "page": "Page {{current}} of {{total}}",
+      "actions": "Transactions"
     },
     "form": {
       "addTitle": "Add New Approval Role Group",
@@ -1559,7 +1661,8 @@
     },
     "delete": {
       "confirmTitle": "Delete Approval Role Group",
-      "confirmMessage": "Are you sure you want to delete the approval role group {{name}}?"
+      "confirmMessage": "Are you sure you want to delete the approval role group {{name}}?",
+      "title": "Delete Role Group"
     },
     "messages": {
       "createSuccess": "Approval role group created successfully",
@@ -1568,7 +1671,13 @@
       "updateError": "Failed to update approval role group",
       "deleteSuccess": "Approval role group deleted successfully",
       "deleteError": "Failed to delete approval role group"
-    }
+    },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
+    "searchPlaceholder": "Search...",
+    "refresh": "Refresh",
+    "noData": "No Record Found"
   },
   "approvalUserRole": {
     "menu": "Approval User Role Management",
@@ -1581,7 +1690,8 @@
       "createdDate": "Created Date",
       "createdBy": "Created By",
       "showing": "Showing {{from}}-{{to}} of {{total}}",
-      "page": "Page {{current}} of {{total}}"
+      "page": "Page {{current}} of {{total}}",
+      "actions": "Transactions"
     },
     "form": {
       "addTitle": "Add New Approval User Role",
@@ -1595,11 +1705,15 @@
       "approvalRoleId": "Approval Role",
       "selectApprovalRole": "Select Approval Role",
       "noApprovalRoleSelected": "No approval role selected",
-      "approvalRoleId.required": "Approval role selection is required"
+      "approvalRoleId.required": "Approval role selection is required",
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save"
     },
     "delete": {
       "confirmTitle": "Delete Approval User Role",
-      "confirmMessage": "Are you sure you want to delete this approval user role?"
+      "confirmMessage": "Are you sure you want to delete this approval user role?",
+      "title": "Delete Role"
     },
     "messages": {
       "createSuccess": "Approval user role created successfully",
@@ -1608,7 +1722,10 @@
       "updateError": "Failed to update approval user role",
       "deleteSuccess": "Approval user role deleted successfully",
       "deleteError": "Failed to delete approval user role"
-    }
+    },
+    "searchPlaceholder": "Search...",
+    "refresh": "Refresh",
+    "noData": "No Record Found"
   },
   "approvalRole": {
     "menu": "Approval Role Management",
@@ -1621,7 +1738,12 @@
       "createdDate": "Created Date",
       "createdBy": "Created By",
       "showing": "Showing {{from}}-{{to}} of {{total}}",
-      "page": "Page {{current}} of {{total}}"
+      "page": "Page {{current}} of {{total}}",
+      "maxAmount": "Maximum Amount",
+      "actions": "Transactions",
+      "totalRecords": "Total <span class=",
+      "previous": "Former",
+      "next": "Next"
     },
     "form": {
       "addTitle": "Add New Approval Role",
@@ -1635,11 +1757,19 @@
       "name": "Role Name",
       "namePlaceholder": "Enter role name",
       "name.required": "Role name is required",
-      "name.maxLength": "Role name must be at most 100 characters"
+      "name.maxLength": "Role name must be at most 100 characters",
+      "maxAmount": "Maximum Amount",
+      "maxAmountPlaceholder": "Enter the maximum amount",
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save"
     },
     "delete": {
       "confirmTitle": "Delete Approval Role",
-      "confirmMessage": "Are you sure you want to delete the approval role {{name}}?"
+      "confirmMessage": "Are you sure you want to delete the approval role {{name}}?",
+      "cancelButton": "Cancel",
+      "deleting": "Deleting...",
+      "confirmButton": "Yes, Delete"
     },
     "messages": {
       "createSuccess": "Approval role created successfully",
@@ -1648,7 +1778,11 @@
       "updateError": "Failed to update approval role",
       "deleteSuccess": "Approval role deleted successfully",
       "deleteError": "Failed to delete approval role"
-    }
+    },
+    "searchPlaceholder": "Search...",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "noData": "No data"
   },
   "approvalFlow": {
     "menu": "Approval Flow Management",
@@ -1657,7 +1791,9 @@
     "documentType": {
       "offer": "Offer",
       "request": "Request",
-      "order": "Order"
+      "order": "Order",
+      "demand": "Request",
+      "quotation": "Offer"
     },
     "table": {
       "id": "ID",
@@ -1667,7 +1803,8 @@
       "createdDate": "Created Date",
       "createdBy": "Created By",
       "showing": "Showing {{from}}-{{to}} of {{total}}",
-      "page": "Page {{current}} of {{total}}"
+      "page": "Page {{current}} of {{total}}",
+      "actions": "Transactions"
     },
     "form": {
       "addTitle": "Add New Approval Flow",
@@ -1682,11 +1819,16 @@
       "descriptionPlaceholder": "Enter description (optional)",
       "description.maxLength": "Description must be at most 200 characters",
       "isActive": "Active",
-      "isActiveDescription": "Approval flow active status"
+      "isActiveDescription": "Approval flow active status",
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save"
     },
     "delete": {
       "confirmTitle": "Delete Approval Flow",
-      "confirmMessage": "Are you sure you want to delete this approval flow?"
+      "confirmMessage": "Are you sure you want to delete this approval flow?",
+      "title": "Delete Approval Flow",
+      "confirm": "Are you sure you want to delete this confirmation flow? This action cannot be undone."
     },
     "messages": {
       "createSuccess": "Approval flow created successfully",
@@ -1695,7 +1837,11 @@
       "updateError": "Failed to update approval flow",
       "deleteSuccess": "Approval flow deleted successfully",
       "deleteError": "Failed to delete approval flow"
-    }
+    },
+    "active": "Active",
+    "inactive": "Passive",
+    "loading": "Loading...",
+    "noData": "No Record Found"
   },
   "userManagement": {
     "menu": "User Management",
@@ -1705,7 +1851,8 @@
       "totalUsers": "Total Users",
       "activeUsers": "Active Users",
       "newThisMonth": "New This Month",
-      "confirmedUsers": "Confirmed Users"
+      "confirmedUsers": "Confirmed Users",
+      "loading": "Loading..."
     },
     "table": {
       "id": "ID",
@@ -1719,7 +1866,11 @@
       "inactive": "Inactive",
       "confirmed": "Confirmed",
       "showing": "Showing {{from}}-{{to}} of {{total}}",
-      "page": "Page {{current}} of {{total}}"
+      "page": "Page {{current}} of {{total}}",
+      "loading": "Loading...",
+      "noData": "No data",
+      "previous": "Former",
+      "next": "Next"
     },
     "form": {
       "addUser": "Add New User",
@@ -1827,34 +1978,31 @@
       "createdDate": "Created Date",
       "createdBy": "Created By",
       "showing": "{{from}}-{{to}} / {{total}} shown",
-      "page": "Page {{current}} / {{total}}"
+      "page": "Page {{current}} / {{total}}",
+      "noData": "No Record Found"
     },
     "form": {
       "addCountry": "Add New Country",
       "editCountry": "Edit Country",
       "addDescription": "Enter new country details",
       "editDescription": "Edit country details",
-      "name": {
-        "required": "Country name is required",
-        "maxLength": "Country name can be at most 100 characters"
-      },
+      "name": "Country Name",
       "namePlaceholder": "Enter country name",
-      "code": {
-        "required": "Country code is required",
-        "minLength": "Country code must be at least 2 characters",
-        "maxLength": "Country code can be at most 5 characters"
-      },
+      "code": "Country code",
       "codePlaceholder": "Enter country code (e.g., TR, US)",
-      "erpCode": {
-        "maxLength": "ERP code can be at most 10 characters"
-      },
+      "erpCode": "ERP Code",
       "erpCodePlaceholder": "Enter ERP code (optional)",
       "name.required": "Country name is required",
       "name.maxLength": "Country name must be at most 100 characters",
       "code.required": "Country code is required",
       "code.minLength": "Country code must be at least 2 characters",
       "code.maxLength": "Country code must be at most 5 characters",
-      "erpCode.maxLength": "ERP code must be at most 10 characters"
+      "erpCode.maxLength": "ERP code must be at most 10 characters",
+      "tabs": {
+        "header": "General Information"
+      },
+      "cancel": "Cancel",
+      "save": "Save"
     },
     "delete": {
       "confirmTitle": "Delete Country",
@@ -1867,7 +2015,11 @@
       "updateError": "Failed to update country",
       "deleteSuccess": "Country deleted successfully",
       "deleteError": "Failed to delete country"
-    }
+    },
+    "searchPlaceholder": "Quick Search...",
+    "loading": "Loading...",
+    "deleteTitle": "Delete Country",
+    "deleteConfirmation": "Are you sure you want to delete the country named {{name}}? This action cannot be undone."
   },
   "cityManagement": {
     "menu": "City Management",
@@ -1893,27 +2045,28 @@
       "editCity": "Edit City",
       "addDescription": "Enter new city details",
       "editDescription": "Edit city details",
-      "name": {
-        "required": "City name is required",
-        "maxLength": "City name can be at most 100 characters"
-      },
+      "name": "City Name",
       "namePlaceholder": "Enter city name",
-      "country": {
-        "required": "Country selection is required"
-      },
+      "country": "Country",
       "selectCountry": "Select a country",
-      "erpCode": {
-        "maxLength": "ERP code can be at most 10 characters"
-      },
+      "erpCode": "ERP Code",
       "erpCodePlaceholder": "Enter ERP code (optional)",
       "name.required": "City name is required",
       "name.maxLength": "City name must be at most 100 characters",
       "country.required": "Country selection is required",
-      "erpCode.maxLength": "ERP code must be at most 10 characters"
+      "erpCode.maxLength": "ERP code must be at most 10 characters",
+      "tabs": {
+        "header": "General Information"
+      },
+      "searchCountry": "Search for country...",
+      "cancel": "Cancel",
+      "save": "Save"
     },
     "delete": {
       "confirmTitle": "Delete City",
-      "confirmMessage": "Are you sure you want to delete city {{name}}?"
+      "confirmMessage": "Are you sure you want to delete city {{name}}?",
+      "success": "City successfully deleted",
+      "error": "An error occurred while deleting the city"
     },
     "messages": {
       "createSuccess": "City created successfully",
@@ -1922,7 +2075,11 @@
       "updateError": "Failed to update city",
       "deleteSuccess": "City deleted successfully",
       "deleteError": "Failed to delete city"
-    }
+    },
+    "searchPlaceholder": "Quick Search...",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Transactions"
   },
   "districtManagement": {
     "menu": "District Management",
@@ -1941,34 +2098,32 @@
       "createdDate": "Created Date",
       "createdBy": "Created By",
       "showing": "{{from}}-{{to}} / {{total}} shown",
-      "page": "Page {{current}} / {{total}}"
+      "page": "Page {{current}} / {{total}}",
+      "city": "City",
+      "status": "Situation"
     },
     "form": {
       "addDistrict": "Add New District",
       "editDistrict": "Edit District",
       "addDescription": "Enter new district details",
       "editDescription": "Edit district details",
-      "name": {
-        "required": "District name is required",
-        "maxLength": "District name can be at most 100 characters"
-      },
+      "name": "District Name",
       "namePlaceholder": "Enter district name",
-      "city": {
-        "required": "City selection is required"
-      },
+      "city": "City",
       "selectCity": "Select a city",
-      "erpCode": {
-        "maxLength": "ERP code can be at most 10 characters"
-      },
+      "erpCode": "ERP Code",
       "erpCodePlaceholder": "Enter ERP code (optional)",
       "name.required": "District name is required",
       "name.maxLength": "District name must be at most 100 characters",
       "city.required": "City selection is required",
-      "erpCode.maxLength": "ERP code must be at most 10 characters"
+      "erpCode.maxLength": "ERP code must be at most 10 characters",
+      "searchCity": "Search city..."
     },
     "delete": {
       "confirmTitle": "Delete District",
-      "confirmMessage": "Are you sure you want to delete district {{name}}?"
+      "confirmMessage": "Are you sure you want to delete district {{name}}?",
+      "success": "District successfully deleted",
+      "error": "An error occurred while deleting the district"
     },
     "messages": {
       "createSuccess": "District created successfully",
@@ -1977,6 +2132,1953 @@
       "updateError": "Failed to update district",
       "deleteSuccess": "District deleted successfully",
       "deleteError": "Failed to delete district"
+    },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save"
+  },
+  "reportDesigner": {
+    "ruleType": {
+      "demand": "Request",
+      "quotation": "Offer",
+      "order": "Order"
+    },
+    "palette": {
+      "title": "field palette",
+      "text": "Text",
+      "fields": "Fields",
+      "tableColumns": "Table columns",
+      "exchangeRates": "exchange rates",
+      "addTable": "Add table",
+      "images": "pictures",
+      "logoImage": "logo image"
+    },
+    "sections": {
+      "header": "Header",
+      "content": "Contents",
+      "footer": "Footer"
+    },
+    "properties": {
+      "imageUrlPlaceholder": "https://... veya /logo.png",
+      "colorPlaceholder": "#374151",
+      "textTitle": "Text features",
+      "fieldTitle": "Field features",
+      "imageTitle": "Picture features",
+      "textSettings": "Text settings",
+      "fieldSettings": "Field settings",
+      "imageSettings": "Picture settings",
+      "text": "Text",
+      "textPlaceholder": "Enter text...",
+      "fontSize": "Font size",
+      "fontFamily": "font",
+      "color": "Colour",
+      "valueLabel": "Value / Label",
+      "draggedFieldPlaceholder": "Dragged area from Palette",
+      "imageUrl": "Image URL",
+      "uploadFromFile": "Load from file",
+      "uploadFromFileMax2Mb": "Install from file (max 2 MB)",
+      "selectImageMax2Mb": "Select image (max 2 MB)",
+      "max2MbNote": "(max 2MB)",
+      "preview": "Preview"
+    },
+    "actions": {
+      "settings": "Settings",
+      "remove": "Remove"
+    },
+    "defaults": {
+      "doubleClickToEdit": "Double click to edit"
+    },
+    "list": {
+      "id": "ID",
+      "title": "Report templates",
+      "createNew": "Create new",
+      "noTemplates": "No template yet. You can add it with create new.",
+      "documentType": "Document type",
+      "active": "Active",
+      "default": "Default",
+      "defaultBadge": "Default",
+      "action": "Process"
+    },
+    "form": {
+      "editTemplate": "Edit template",
+      "newTemplate": "New report template",
+      "documentType": "Document type",
+      "title": "Title",
+      "titlePlaceholder": "Enter report title",
+      "setDefaultTemplate": "Make default template",
+      "selectPlaceholder": "Select",
+      "saveFailed": "Template could not be saved",
+      "updateFailed": "Template could not be updated",
+      "requiredDocumentType": "Select document type",
+      "requiredTitle": "Title required",
+      "documentIdPlaceholder": "Ex. 123"
+    },
+    "preview": {
+      "label": "Report template",
+      "selectPlaceholder": "Choose template",
+      "loading": "Loading...",
+      "defaultSuffix": "(Default)",
+      "generating": "Generating report...",
+      "iframeTitle": "Report preview",
+      "loadFailed": "PDF could not be loaded. Select the template again or refresh the page.",
+      "emptyDemand": "Request template not found",
+      "emptyQuotation": "Quote template not found",
+      "emptyOrder": "Order template not found"
+    },
+    "inspector": {
+      "title": "controller",
+      "selectHint": "Select item or if more than one is selected position/size will not be updated.",
+      "zIndex": "Z row",
+      "zIndexPlaceholder": "auto",
+      "rotation": "Rotation (°)",
+      "alignment": "Alignment",
+      "left": "Left",
+      "center": "Middle",
+      "right": "Right",
+      "background": "Background",
+      "backgroundPlaceholder": "transparent",
+      "opacity": "Opacity (0-1)"
+    },
+    "layers": {
+      "title": "layers",
+      "bringForward": "bring to front",
+      "sendBackward": "Send to the back",
+      "show": "Show",
+      "hide": "Hide",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "noItems": "No items yet. Drag from Palette.",
+      "tableLabel": "Table ({{count}} column)",
+      "textLabel": "Text",
+      "fieldLabel": "Area",
+      "imageLabel": "Picture"
+    },
+    "tableDropHint": "Drag from the palette to add a column",
+    "tableSettingsHint": "Drag the table columns from the left palette and drop them into this area."
+  },
+  "currencySelectDialog": {
+    "title": "Select Currency",
+    "searchPlaceholder": "Search by currency name or code...",
+    "loading": "Loading...",
+    "noResults": "No results found"
+  },
+  "customerSelectDialog": {
+    "erpCustomers": "ERP",
+    "loading": "Loading...",
+    "noResults": "Search results not found",
+    "title": "Select Customer",
+    "description": "Select the customer you want to transact with",
+    "searchPlaceholder": "Search by name, code or phone...",
+    "potentialCustomers": "Potential",
+    "allCustomers": "All"
+  },
+  "roles": {
+    "admin": "Executive"
+  },
+  "quotation": {
+    "notes": {
+      "title": "Additional Notes and Conditions",
+      "description": "Edit and select the notes you want to add to your document.",
+      "placeholder": "Note content...",
+      "maxLengthError": "Each note can be up to 100 characters. Please check.",
+      "maxCountError": "A maximum of 15 notes can be added.",
+      "saved": "Notes recorded.",
+      "saveError": "An error occurred while saving notes.",
+      "noteLabel": "Notes",
+      "saving": "Recording..."
+    },
+    "header": {
+      "currencyChange": {
+        "title": "Exchange Rate Change",
+        "message": "Currency change will affect all rows. Do you want to continue?"
+      },
+      "projectCode": "Project Code",
+      "projectCodePlaceholder": "Select project code...",
+      "descriptionPlaceholder": "Special conditions...",
+      "mainInfo": "Customer & Sales Information",
+      "customer": "Customer Account",
+      "selectCustomer": "Search or select a customer...",
+      "tryDifferentSearch": "Try a different search term",
+      "representative": "Sales Representative",
+      "shippingAddress": "Shipping Address",
+      "selectShippingAddress": "Choose shipping address"
+    },
+    "exchangeRates": {
+      "dialog": {
+        "title": "Exchange Rates",
+        "subtitle": "Manage current exchange rates",
+        "description": "View exchange rates and edit if necessary.",
+        "info": "Changes made here are valid only for this offer and do not affect the general system rates. Changed exchange rates"
+      },
+      "currency": "Currency",
+      "rate": "Exchange Value",
+      "status": "Situation",
+      "empty": "Rate not found",
+      "official": "Official",
+      "custom": "Special",
+      "cannotEditUsedCurrency": "The exchange rate in use cannot be changed",
+      "title": "Exchange Rates",
+      "date": "Exchange Rate Date",
+      "isOfficial": "Official",
+      "updateSuccess": "Exchange rates updated",
+      "updateError": "An error occurred while updating exchange rates"
+    },
+    "approvalFlow": {
+      "stepCompleted": "completed",
+      "stepInProgress": "in progress",
+      "stepRejected": "rejected",
+      "stepNotStarted": "Did not start",
+      "loading": "Loading approval flow...",
+      "noData": "No data found.",
+      "notStarted": "The approval process has not started yet."
+    },
+    "create": {
+      "title": "Create New Offer",
+      "error": "Couldn't Create Offer",
+      "invalidCurrency": "A valid currency must be selected",
+      "success": "Offer Created Successfully",
+      "successMessage": "The proposal has been sent to the approval process.",
+      "errorMessage": "An error occurred while creating the offer.",
+      "validationError": "Please check the form fields.",
+      "subtitle": "Create the quote by entering customer and item information"
+    },
+    "lines": {
+      "vatRate": "VAT",
+      "delete": {
+        "confirmTitleMultiple": "Delete Linked Stocks",
+        "confirmTitle": "Delete Row",
+        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
+        "confirmMessage": "Are you sure you want to delete this row?"
+      },
+      "required": "At least 1 line must be added",
+      "productCode": "Product Code",
+      "productName": "Product Name",
+      "quantity": "Amount",
+      "unitPrice": "Unit Price",
+      "total": "Total",
+      "stock": "Stock Selection",
+      "unit": "Unit",
+      "discounts": "Line Discounts",
+      "relatedStocks": "Tied Stocks",
+      "netPrice": "Net Price",
+      "lineTotal": "Total",
+      "description": "Explanation",
+      "requiredFieldsMissing": "Please select customer, representative and currency.",
+      "title": "Offer Items",
+      "itemCount": "{count} items are listed",
+      "noItems": "No products added yet",
+      "add": "Add Row",
+      "empty": "Your Cart is Empty",
+      "emptyDescription": "To create an offer",
+      "discount1": "Ind.1",
+      "discount2": "Ind.2",
+      "discount3": "Ind.3",
+      "addTitle": "Add New Line",
+      "editTitle": "Edit Row",
+      "createSuccess": "Rows added",
+      "createError": "An error occurred while adding rows",
+      "deleteSuccess": "Row deleted",
+      "deleteError": "An error occurred while deleting the row",
+      "updateSuccess": "Rows updated",
+      "updateError": "An error occurred while updating rows"
+    },
+    "share": {
+      "whatsappMessage": "Hello, I am sending you the offer file.",
+      "downloaded": "PDF downloaded. Please share via WhatsApp.",
+      "mailSubject": "Offer File",
+      "mailBody": "Hello, you can find the offer file attached."
+    },
+    "sections": {
+      "header": "Customer and document information",
+      "lines": "Quotation items",
+      "summary": "Summary & Totals"
+    },
+    "detail": {
+      "title": "Offer Detail: {{offerNo}}",
+      "notFound": "No offer found",
+      "subtitle": "View and edit quote details.",
+      "revisionNo": "Revision Number",
+      "tabDetail": "Offer Information",
+      "tabApprovalFlow": "Approval Flow",
+      "tabReport": "Report"
+    },
+    "update": {
+      "error": "Offer Failed to Update",
+      "invalidCurrency": "A valid currency must be selected",
+      "success": "Offer Updated Successfully",
+      "successMessage": "The quote has been updated successfully.",
+      "errorMessage": "An error occurred while updating the offer.",
+      "validationError": "Please check the required fields."
+    },
+    "approval": {
+      "sending": "Sending...",
+      "sendForApproval": "Submit for Approval",
+      "approve": "Confirm",
+      "reject": "reject",
+      "rejectTitle": "Decline Offer",
+      "rejectDescription": "State the reason for rejection (optional)",
+      "rejectReasonPlaceholder": "Reason for rejection...",
+      "approveSuccess": "The approval process was completed successfully",
+      "approveError": "Confirmation could not be completed",
+      "rejectSuccess": "The rejection process was completed successfully",
+      "rejectError": "Rejection operation could not be performed",
+      "startSuccess": "Approval flow started successfully",
+      "startError": "Approval flow failed to initialize"
+    },
+    "list": {
+      "id": "ID",
+      "title": "Offer List",
+      "description": "View and manage all offers",
+      "createNew": "Create New Offer",
+      "searchPlaceholder": "Search by quote number or customer name...",
+      "offerNo": "Offer No.",
+      "customer": "Customer",
+      "representative": "Representative",
+      "offerDate": "Offer Date",
+      "currency": "Currency",
+      "grandTotal": "Grand Total",
+      "status": "Situation",
+      "actions": "Transactions",
+      "revise": "Revise",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "summary": {
+      "title": "Summary",
+      "generalDiscountRate": "General Discount Rate (%)",
+      "generalDiscountAmount": "General Discount Amount",
+      "generalDiscountHelp": "Totals are automatically updated when the rate or amount is entered.",
+      "subtotal": "Subtotal",
+      "generalDiscount": "General Discount",
+      "totalVat": "Total VAT",
+      "grandTotal": "Grand Total"
+    },
+    "waitingApprovals": {
+      "title": "Offers Pending Approval",
+      "list": "List of Offers Pending Approval",
+      "noApprovals": "There are no offers awaiting approval.",
+      "requestId": "Request ID",
+      "description": "Explanation",
+      "stepOrder": "My name",
+      "approvedBy": "Approved by",
+      "actionDate": "History",
+      "status": "Situation",
+      "waiting": "waiting"
+    },
+    "revision": {
+      "success": "Quote revision created successfully",
+      "error": "An error occurred while creating the quote revision"
+    },
+    "select": "Select",
+    "loading": "Rates are loading...",
+    "actions": "Transactions",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "saveAndApply": "Save and Apply",
+    "date": "History",
+    "export": "Export",
+    "exportPdf": "Download PDF",
+    "shareWhatsapp": "Share via WhatsApp",
+    "shareMail": "Share via Email",
+    "save": "Save Offer",
+    "offerNo": "Offer No.",
+    "backToQuotations": "Return to Offers",
+    "add": "Add",
+    "guide": "Directory",
+    "confirm": "Confirm",
+    "error": "Mistake",
+    "delete": "Delete",
+    "refresh": "Refresh",
+    "noData": "No data",
+    "previous": "Former",
+    "next": "Next",
+    "back": "Back"
+  },
+  "productSelectDialog": {
+    "stock": "STOCK",
+    "group": "Group",
+    "unit": "Unit",
+    "relatedStocks": "Tied Stocks",
+    "unknownStock": "Unknown Stock",
+    "quantity": "Amount",
+    "mandatory": "Compulsory",
+    "loading": "Loading...",
+    "noResults": "Search results not found",
+    "noProducts": "Stock not found",
+    "title": "Select Stock",
+    "searchPlaceholder": "Search by stock code or name...",
+    "voiceSearch": "voice search",
+    "cardView": "Card View",
+    "listView": "List View",
+    "stocks": "stocks",
+    "stocksWithImages": "Stocks with Images"
+  },
+  "relatedStocksSelectionDialog": {
+    "title": "Select Affiliated Stocks",
+    "description": "Select the subsidiary stocks you want to add along with the master stock. Mandatory stocks are automatically selected.",
+    "mandatoryStocks": "Mandatory Stocks",
+    "unknownStock": "Unknown Stock",
+    "quantity": "Amount",
+    "mandatory": "Compulsory",
+    "optionalStocks": "Optional Stocks",
+    "noRelatedStocks": "Linked stock not found",
+    "cancel": "Cancel",
+    "calculating": "Calculating...",
+    "add": "Add"
+  },
+  "stockGroupSelectDialog": {
+    "title": "Select Stock Group",
+    "searchPlaceholder": "Search by group code or name...",
+    "loading": "Loading...",
+    "noResults": "No results found",
+    "unnamedGroup": "Anonymous Group"
+  },
+  "activityManagement": {
+    "id": "ID",
+    "edit": "Edit Activity",
+    "create": "New Activity",
+    "editDescription": "Edit activity information",
+    "createDescription": "Enter new activity information",
+    "detailsTab": "Detail",
+    "imagesTab": "pictures",
+    "basicInfo": "Basic information",
+    "subject": "Subject",
+    "enterSubject": "Ex: Project Meeting",
+    "activityType": "Medicine",
+    "select": "Select",
+    "status": "Situation",
+    "activityDate": "Beginning",
+    "endDate": "Finish",
+    "priority": "Priority",
+    "allDay": "All Day",
+    "relations": "Customer & relationships",
+    "customer": "Customer",
+    "selectCustomer": "Select customer",
+    "contactId": "Communication",
+    "noContactSelected": "Not Selected",
+    "selectCustomerFirst": "Select customer first",
+    "assignedUser": "Assigned User",
+    "noUserSelected": "Not Selected",
+    "details": "Detail",
+    "description": "Explanation",
+    "enterDescription": "Enter activity details...",
+    "reminders": "Reminders",
+    "noReminder": "No reminder added",
+    "validationError": "Please fill in the required fields",
+    "title": "Activity Management",
+    "priorityLow": "Low",
+    "priorityMedium": "Middle",
+    "priorityHigh": "High",
+    "statusScheduled": "planned",
+    "statusCompleted": "completed",
+    "statusCanceled": "Canceled",
+    "contact": "Person",
+    "deleteActivity": "Delete Activity",
+    "deleteConfirmation": "Are you sure you want to delete this activity?",
+    "createSuccess": "Activity created successfully",
+    "createError": "An error occurred while creating the activity",
+    "deleteSuccess": "Activity deleted successfully",
+    "deleteError": "An error occurred while deleting the activity",
+    "updateSuccess": "Activity updated successfully",
+    "updateError": "An error occurred while updating the activity"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Passive"
+  },
+  "activityType": {
+    "form": {
+      "editTitle": "Activity Type Edit",
+      "addTitle": "Add New Activity Type",
+      "editDescription": "Update activity type information",
+      "addDescription": "Create new activity type record",
+      "name": "Activity Type Name",
+      "namePlaceholder": "For example: Meeting, Visit...",
+      "description": "Explanation",
+      "descriptionPlaceholder": "Enter a description (optional)"
+    },
+    "management": {
+      "title": "Activity Type Management",
+      "description": "Manage and edit activity types"
+    },
+    "stats": {
+      "totalActivityTypes": "Total Activity Type",
+      "activeActivityTypes": "Active Activity Type",
+      "newThisMonth": "New This Month"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Activity Type",
+      "description": "Explanation",
+      "createdDate": "Creation",
+      "createdBy": "Created by",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "delete": {
+      "confirmTitle": "Delete Activity Type",
+      "confirmMessage": "Are you sure you want to delete activity type {{name}}? This action cannot be undone.",
+      "action": "Yes, Delete"
+    },
+    "messages": {
+      "createSuccess": "Activity type created successfully",
+      "createError": "Activity type could not be created",
+      "deleteSuccess": "Activity type deleted successfully",
+      "deleteError": "Activity type could not be deleted",
+      "updateSuccess": "Activity type updated successfully",
+      "updateError": "Activity type could not be updated"
+    },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
+    "create": "New Activity Type",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Transactions",
+    "previous": "Former",
+    "next": "Next"
+  },
+  "approval": {
+    "approve": {
+      "success": "Approved",
+      "successMessage": "Offer approved successfully",
+      "errorMessage": "An error occurred while approving the offer",
+      "error": "Assertion Error"
+    },
+    "reject": {
+      "success": "rejected",
+      "successMessage": "offer rejected",
+      "errorMessage": "An error occurred while rejecting the offer",
+      "error": "Rejection Error"
+    },
+    "note": {
+      "label": "Notes",
+      "placeholder": "You can add an approval/rejection note (optional)"
+    },
+    "actions": {
+      "reject": "reject",
+      "approve": "Confirm",
+      "view": "View"
+    },
+    "detail": {
+      "tabs": {
+        "detail": "Detail",
+        "history": "Past",
+        "action": "Process"
+      },
+      "title": "Offer Detail",
+      "subtitle": "View offer details and take action",
+      "notFound": "No offer found",
+      "quotationInfo": "Offer Information",
+      "offerNo": "Offer No.",
+      "customer": "Customer",
+      "representative": "Representative",
+      "currency": "Currency",
+      "offerDate": "Offer Date",
+      "deliveryDate": "Delivery Date",
+      "total": "Total",
+      "grandTotal": "Grand Total",
+      "description": "Explanation",
+      "lines": "Quote Lines",
+      "productCode": "Product Code",
+      "productName": "Product Name",
+      "quantity": "Amount",
+      "unitPrice": "Unit Price",
+      "lineTotal": "Row Total",
+      "lineGrandTotal": "Row Grand Total",
+      "exchangeRates": "Exchange Rates",
+      "exchangeRate": "Cure",
+      "exchangeRateDate": "Exchange Rate Date",
+      "isOfficial": "Install Official"
+    },
+    "level": {
+      "salesManager": "Sales Manager",
+      "regionalManager": "Regional Manager",
+      "finance": "Finance",
+      "generalManager": "General manager",
+      "unknown": "unknown"
+    },
+    "history": {
+      "empty": "There is no approval history",
+      "approvedBy": "Approved by"
+    },
+    "list": {
+      "title": "Pending Approvals",
+      "error": "An error occurred while loading confirmations",
+      "empty": "There are no pending approvals",
+      "description": "You can view and approve or reject offers assigned to you"
+    },
+    "status": {
+      "notRequired": "Not Required",
+      "waiting": "waiting",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "closed": "Closed"
+    },
+    "processing": "Processing...",
+    "assignedTo": "Assigned User",
+    "yes": "Yes",
+    "no": "No",
+    "closedReason": "Reason for Closing",
+    "statusFilterLabel": "Approval status"
+  },
+  "approvalFlowStep": {
+    "messages": {
+      "deleteConfirm": "Are you sure you want to delete this step?",
+      "createSuccess": "Flow step added successfully",
+      "createError": "Failed to add flow step",
+      "deleteSuccess": "Flow step deleted successfully",
+      "deleteError": "Failed to delete flow step",
+      "updateSuccess": "Flow step updated successfully",
+      "updateError": "Failed to update flow step"
+    },
+    "form": {
+      "editTitle": "Edit Step",
+      "addTitle": "Add New Step",
+      "editDescription": "Edit flow step information",
+      "addDescription": "Add new flow step",
+      "approvalRoleGroup": "Role Group",
+      "selectRoleGroup": "Select role group",
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save"
+    },
+    "title": "Flow Steps",
+    "addButton": "Add Step",
+    "empty": "No steps added yet",
+    "unknownRoleGroup": "No Role Group",
+    "stepDescription": "Approval Order: {order}"
+  },
+  "contactManagement": {
+    "form": {
+      "editContact": "Contact Edit",
+      "addContact": "Add New Contact",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Ex: Ali",
+      "salutation": "address",
+      "selectSalutation": "Choose your address...",
+      "salutationNone": "None",
+      "salutationMr": "Mr",
+      "salutationMs": "Woman",
+      "salutationMrs": "Dear",
+      "salutationDr": "Dr.",
+      "lastName": "Surname",
+      "lastNamePlaceholder": "Ex: Yilmaz",
+      "middleName": "Middle name",
+      "middleNamePlaceholder": "Ex: Kemal",
+      "title": "Title",
+      "selectTitle": "Select title (optional)...",
+      "titleNone": "no title",
+      "customer": "Customer",
+      "selectCustomer": "Select customer...",
+      "mobile": "mobile",
+      "phone": "Telephone",
+      "email": "Email",
+      "notes": "Notes",
+      "notesPlaceholder": "Add your notes here if you have any..."
+    },
+    "stats": {
+      "totalContacts": "Total Communication",
+      "activeContacts": "Active Communication",
+      "newThisMonth": "New This Month"
+    },
+    "table": {
+      "id": "ID",
+      "salutation": "address",
+      "fullName": "Name Surname",
+      "email": "Email",
+      "phone": "Telephone",
+      "mobile": "mobile",
+      "customer": "Customer",
+      "title": "Title",
+      "createdDate": "Creation",
+      "createdBy": "Created by",
+      "status": "Situation",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "delete": {
+      "confirmTitle": "Delete Contact",
+      "confirmMessage": "Are you sure you want to delete the {{name}} communication? This action cannot be undone.",
+      "action": "Yes, Delete"
+    },
+    "messages": {
+      "createSuccess": "Contact created successfully",
+      "createError": "Communication could not be established",
+      "deleteSuccess": "Contact successfully deleted",
+      "deleteError": "Contact could not be deleted",
+      "updateSuccess": "Contact updated successfully",
+      "updateError": "Contact could not be updated"
+    },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
+    "menu": "Communication Management",
+    "description": "Manage and organize communications",
+    "addButton": "Add New Contact",
+    "columns": "Edit Column",
+    "visibleColumns": "Visible Columns",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Transactions",
+    "previous": "Former",
+    "next": "Next"
+  },
+  "customerManagement": {
+    "form": {
+      "tcknNumber": "TR ID number",
+      "branchCode": {
+        "label": "Branch Code"
+      },
+      "businessUnitCode": {
+        "label": "Business Code"
+      },
+      "editCustomer": "Edit Customer",
+      "addCustomer": "Add New Customer",
+      "editDescription": "Update customer information",
+      "addDescription": "Create new customer record",
+      "name": "Customer Name",
+      "code": "Customer Code",
+      "customerType": "Customer Type",
+      "customerTypePlaceholder": "Select customer type",
+      "taxNumber": "Tax Number",
+      "taxOffice": "Tax Office",
+      "email": "Email",
+      "website": "Website",
+      "phone": "Telephone",
+      "phone2": "phone 2",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "city": "City",
+      "cityPlaceholder": "Select city",
+      "district": "District",
+      "districtPlaceholder": "Select district",
+      "creditLimit": "Credit Limit",
+      "salesRepCode": "Sales Representative Code",
+      "groupCode": "Group Code",
+      "defaultShippingAddress": "Default Shipping Address",
+      "selectDefaultShippingAddress": "Choose shipping address",
+      "none": "None",
+      "address": "Address",
+      "notes": "Notes",
+      "notesPlaceholder": "Add note...",
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save"
+    },
+    "filter": {
+      "name": "Search by Customer Name...",
+      "email": "Email",
+      "phone": "Telephone",
+      "customerCode": "Customer Code",
+      "taxNumber": "Tax Number",
+      "city": "City"
+    },
+    "stats": {
+      "totalCustomers": "Total Customers",
+      "approvedCustomers": "Approved Customer",
+      "newThisMonth": "New This Month"
+    },
+    "table": {
+      "id": "ID",
+      "tckn": "TR ID number",
+      "customerCode": "Code",
+      "name": "Customer Name",
+      "customerType": "Customer Type",
+      "email": "Email",
+      "phone": "Telephone",
+      "city": "City",
+      "district": "District",
+      "country": "Country",
+      "creditLimit": "Credit Limit",
+      "defaultShippingAddressId": "Default Shipping Address",
+      "salesRep": "Representative",
+      "tax": "Tax Number",
+      "website": "web",
+      "createdDate": "Creation",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "delete": {
+      "confirmTitle": "Delete Customer",
+      "confirmMessage": "Are you sure you want to delete customer {{name}}? This action cannot be undone.",
+      "action": "Yes, Delete"
+    },
+    "messages": {
+      "createSuccess": "Customer created successfully",
+      "createError": "Failed to create customer",
+      "deleteSuccess": "Customer successfully deleted",
+      "deleteError": "Failed to delete customer",
+      "updateSuccess": "Client updated successfully",
+      "updateError": "Failed to update client"
+    },
+    "menu": "Customer Management",
+    "description": "Manage and organize your customers",
+    "addButton": "Add New Customer",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Transactions",
+    "previous": "Former",
+    "next": "Next",
+    "cancel": "Cancel"
+  },
+  "customerTypeManagement": {
+    "form": {
+      "editCustomerType": "Customer Type Edit",
+      "addCustomerType": "Add New Customer Type",
+      "name": "Customer Type Name",
+      "namePlaceholder": "For example: Corporate, Individual...",
+      "description": "Explanation",
+      "descriptionPlaceholder": "Please enter a description if any...",
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Customer Type Name",
+      "description": "Explanation",
+      "createdDate": "Creation",
+      "createdBy": "Created by",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalCustomerTypes": "Total Customer Type",
+      "activeCustomerTypes": "Active Types",
+      "newThisMonth": "New This Month"
+    },
+    "delete": {
+      "confirmTitle": "Delete Customer Type",
+      "confirmMessage": "Are you sure you want to delete customer type {{name}}? This action cannot be undone.",
+      "deleting": "Deleting...",
+      "confirmButton": "Yes, Delete"
+    },
+    "messages": {
+      "createSuccess": "Customer type created successfully",
+      "createError": "Could not create customer type",
+      "deleteSuccess": "Customer type deleted successfully",
+      "deleteError": "Could not delete customer type",
+      "updateSuccess": "Customer type updated successfully",
+      "updateError": "Failed to update customer type"
+    },
+    "menu": "Customer Type Management",
+    "description": "Manage and edit customer types",
+    "addButton": "Add New Type",
+    "loading": "Loading...",
+    "noData": "No data",
+    "previous": "Former",
+    "next": "Next"
+  },
+  "dailyTasks": {
+    "days": {
+      "mon": "mon",
+      "tue": "Shawl",
+      "wed": "Tsar",
+      "thu": "thu",
+      "fri": "cum",
+      "sat": "Sat",
+      "sun": "sun"
+    },
+    "morning": "Good morning",
+    "afternoon": "Have a nice day",
+    "evening": "Good evening",
+    "unassigned": "Unassigned",
+    "loading": "Loading...",
+    "dashboard": "Daily Dashboard",
+    "summary": "You can follow your work planned for today here.",
+    "totalTasks": "Total Mission",
+    "newTask": "Create New Task",
+    "weeklyTasks": "cards",
+    "dailyList": "List",
+    "calendar": "Calendar",
+    "all": "All",
+    "pending": "waiting",
+    "completed": "ending",
+    "allEmployees": "Employee",
+    "noTasks": "There are no tasks to view",
+    "relax": "Try changing filters or adding new tasks.",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "thisWeek": "This week",
+    "today": "Today",
+    "more": "more"
+  },
+  "demand": {
+    "approvalFlow": {
+      "stepCompleted": "completed",
+      "stepInProgress": "in progress",
+      "stepRejected": "rejected",
+      "stepNotStarted": "Did not start",
+      "loading": "Loading approval flow...",
+      "noData": "No data found.",
+      "notStarted": "The approval process has not started yet."
+    },
+    "create": {
+      "title": "Create New Offer",
+      "error": "Couldn't Create Offer",
+      "invalidCurrency": "A valid currency must be selected",
+      "success": "Offer Created Successfully",
+      "successMessage": "The proposal has been sent to the approval process.",
+      "errorMessage": "An error occurred while creating the offer.",
+      "paymentTypeRequired": "Payment type must be selected",
+      "deliveryDateRequired": "Delivery date must be entered",
+      "validationError": "Please check the form fields.",
+      "subtitle": "Create a new sales request for the customer."
+    },
+    "lines": {
+      "delete": {
+        "confirmTitleMultiple": "Delete Linked Stocks",
+        "confirmTitle": "Delete Row",
+        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
+        "confirmMessage": "Are you sure you want to delete this row?"
+      },
+      "required": "At least 1 line must be added",
+      "editLine": "Edit Row",
+      "approvalRequired": "Approval Required",
+      "selectStockFirst": "Stock not selected",
+      "stock": "Stock",
+      "selectStock": "Select Stock",
+      "productCode": "Stock Code",
+      "groupCode": "Group Code",
+      "productName": "Stock Name",
+      "unitPrice": "Unit Price",
+      "quantity": "Amount",
+      "vatRate": "VAT Rate %",
+      "discounts": "Discounts",
+      "discount1": "Discount 1%",
+      "discount2": "Discount 2%",
+      "discount3": "Discount 3%",
+      "calculations": "Calculations",
+      "discountAmount": "Total Discount",
+      "netPrice": "Net Price",
+      "lineTotal": "Line Total (VAT included)",
+      "relatedStocks": "Tied Stocks",
+      "requiredFieldsMissing": "Please select customer, representative and currency.",
+      "title": "Offer Items",
+      "itemCount": "{count} items are listed",
+      "noItems": "No products added yet",
+      "add": "Add Row",
+      "empty": "Your Cart is Empty",
+      "emptyDescription": "To create an offer",
+      "addLine": "Add New Line",
+      "createSuccess": "Rows added",
+      "createError": "An error occurred while adding rows",
+      "deleteSuccess": "Row deleted",
+      "deleteError": "An error occurred while deleting the row",
+      "updateSuccess": "Rows updated",
+      "updateError": "An error occurred while updating rows"
+    },
+    "sections": {
+      "header": "Customer and document information",
+      "lines": "Demand items",
+      "summary": "Summary & Totals"
+    },
+    "detail": {
+      "title": "Offer Detail: {{offerNo}}",
+      "notFound": "No offer found",
+      "subtitle": "View and edit request details.",
+      "revisionNo": "Revision Number",
+      "tabDetail": "Request Information",
+      "tabApprovalFlow": "Approval Flow",
+      "tabReport": "Report"
+    },
+    "update": {
+      "error": "Offer Failed to Update",
+      "invalidCurrency": "A valid currency must be selected",
+      "success": "Offer Updated Successfully",
+      "successMessage": "The quote has been updated successfully.",
+      "errorMessage": "An error occurred while updating the offer.",
+      "validationError": "Please check the required fields."
+    },
+    "approval": {
+      "sending": "Sending...",
+      "sendForApproval": "Submit for Approval",
+      "approve": "Confirm",
+      "reject": "reject",
+      "rejectTitle": "Decline Offer",
+      "rejectDescription": "State the reason for rejection (optional)",
+      "rejectReasonPlaceholder": "Reason for rejection...",
+      "approveSuccess": "The approval process was completed successfully",
+      "approveError": "Confirmation could not be completed",
+      "rejectSuccess": "The rejection process was completed successfully",
+      "rejectError": "Rejection operation could not be performed",
+      "startSuccess": "Approval flow started successfully",
+      "startError": "Approval flow failed to initialize"
+    },
+    "exchangeRates": {
+      "dialog": {
+        "title": "Exchange Rates",
+        "subtitle": "Manage current exchange rates",
+        "description": "View exchange rates and edit if necessary.",
+        "info": "Changes made here are valid only for this offer and do not affect the general system rates. Changed exchange rates"
+      },
+      "title": "Exchange Rates",
+      "currency": "Currency",
+      "rate": "Exchange Value",
+      "date": "Exchange Rate Date",
+      "isOfficial": "Official",
+      "official": "Official",
+      "custom": "Special",
+      "empty": "There are no special rates added yet.",
+      "status": "Situation",
+      "cannotEditUsedCurrency": "The exchange rate in use cannot be changed",
+      "updateSuccess": "Exchange rates updated",
+      "updateError": "An error occurred while updating exchange rates"
+    },
+    "header": {
+      "currencyChange": {
+        "title": "Exchange Rate Change",
+        "message": "Currency change will affect all rows. Do you want to continue?"
+      },
+      "title": "Offer Details",
+      "subtitle": "You can manage customer and financial information here.",
+      "customer": "Customer Account",
+      "selectCustomer": "Select customer...",
+      "representative": "Sales Representative",
+      "shippingAddress": "Shipping Address",
+      "selectShippingAddress": "Choose shipping address",
+      "descriptionPlaceholder": "Special conditions..."
+    },
+    "list": {
+      "id": "ID",
+      "title": "Offer List",
+      "description": "View and manage all offers",
+      "createNew": "Create New Offer",
+      "searchPlaceholder": "Search by quote number or customer name...",
+      "offerNo": "Offer No.",
+      "customer": "Customer",
+      "representative": "Representative",
+      "offerDate": "Offer Date",
+      "currency": "Currency",
+      "grandTotal": "Grand Total",
+      "status": "Situation",
+      "actions": "Transactions",
+      "revise": "Revise",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "summary": {
+      "title": "Summary",
+      "generalDiscountRate": "General Discount Rate (%)",
+      "generalDiscountAmount": "General Discount Amount",
+      "generalDiscountHelp": "Totals are automatically updated when the rate or amount is entered.",
+      "subtotal": "Subtotal",
+      "generalDiscount": "General Discount",
+      "totalVat": "Total VAT",
+      "grandTotal": "Grand Total"
+    },
+    "waitingApprovals": {
+      "title": "Offers Pending Approval",
+      "list": "List of Offers Pending Approval",
+      "noApprovals": "There are no offers awaiting approval.",
+      "requestId": "Request ID",
+      "description": "Explanation",
+      "stepOrder": "My name",
+      "approvedBy": "Approved by",
+      "actionDate": "History",
+      "status": "Situation",
+      "waiting": "waiting"
+    },
+    "revision": {
+      "success": "Quote revision created successfully",
+      "error": "An error occurred while creating the quote revision"
+    },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save Offer",
+    "loading": "Loading...",
+    "backToDemands": "Return to Offers",
+    "select": "Select",
+    "add": "Add",
+    "actions": "Process",
+    "confirm": "Confirm",
+    "error": "Mistake",
+    "delete": "Delete",
+    "refresh": "Refresh",
+    "noData": "No data",
+    "previous": "Former",
+    "next": "Next",
+    "edit": "Edit",
+    "saveAndApply": "Save and Apply",
+    "back": "Back"
+  },
+  "documentSerialTypeManagement": {
+    "form": {
+      "editTitle": "Edit File Type",
+      "addTitle": "Add New File Type",
+      "editDescription": "Edit file type information",
+      "addDescription": "Enter new file type information",
+      "ruleType": "Rule Type",
+      "selectRuleType": "Select rule type",
+      "customerType": "Customer Type",
+      "selectCustomerType": "Select customer type (optional)",
+      "searchCustomerType": "Search for customer type...",
+      "noCustomerTypeFound": "Customer type not found.",
+      "salesRep": "Sales Representative",
+      "selectSalesRep": "Select sales representative (optional)",
+      "searchSalesRep": "Looking for a sales representative...",
+      "noSalesRepFound": "No sales representative found.",
+      "serialPrefix": "Serial Prefix",
+      "serialPrefixPlaceholder": "Enter serial prefix",
+      "serialLength": "Series Length",
+      "serialLengthPlaceholder": "Enter series length",
+      "serialIncrement": "Serial Increase",
+      "serialIncrementPlaceholder": "Enter serial increment value",
+      "serialStart": "Series Start",
+      "serialStartPlaceholder": "Enter the series starting value"
+    },
+    "table": {
+      "id": "ID",
+      "ruleType": "Rule Type",
+      "customerType": "Customer Type",
+      "salesRep": "Sales Representative",
+      "serialPrefix": "Serial Prefix",
+      "serialLength": "Series Length",
+      "createdDate": "Creation Date"
+    },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
+    "menu": "File Type Management",
+    "description": "Manage and organize file types",
+    "search": "Search...",
+    "refresh": "Refresh",
+    "addButton": "Add New File Type",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Transactions",
+    "totalRecords": "Total Registration",
+    "previous": "Former",
+    "next": "Next",
+    "deleteConfirmTitle": "Deletion Process",
+    "deleteConfirmDescription": "Are you sure you want to delete this record? This action cannot be undone.",
+    "deleting": "Deleting...",
+    "delete": "Delete"
+  },
+  "pricingRule": {
+    "ruleType": {
+      "demand": "Request",
+      "quotation": "Offer",
+      "order": "Order",
+      "unknown": "unknown"
+    },
+    "form": {
+      "lines": {
+        "required": "At least 1 line must be added",
+        "requiredMessage": "Please add at least one line",
+        "minQuantityInvalid": "Invalid Min Quantity",
+        "minQuantityInvalidMessage": "Minimum quantity 0\\",
+        "currencyCodeRequired": "Currency Type Required",
+        "currencyCodeRequiredMessage": "Currency type must be selected in all lines"
+      },
+      "tabs": {
+        "header": "General Information",
+        "lines": "rows",
+        "salesmen": "salespeople"
+      },
+      "updateSuccess": "Price Rule Updated",
+      "updateSuccessMessage": "Price rule updated successfully",
+      "createSuccess": "Price Rule Created",
+      "createSuccessMessage": "Price rule created successfully",
+      "error": "An error occurred",
+      "edit": "Edit Price Rule",
+      "create": "New Price Rule",
+      "editDescription": "Edit price rule information",
+      "createDescription": "Enter new price rule information",
+      "cancel": "Cancel",
+      "save": "Save",
+      "confirm": "Confirm"
+    },
+    "header": {
+      "ruleType": "Rule Type",
+      "ruleTypePlaceholder": "Select rule type",
+      "searchRuleType": "Search for rule type...",
+      "ruleCode": "Rule Code",
+      "ruleCodePlaceholder": "Enter rule code",
+      "ruleName": "Rule Name",
+      "ruleNamePlaceholder": "Enter rule name",
+      "validFrom": "Validity From",
+      "validTo": "Expires",
+      "customer": "Customer",
+      "customerPlaceholder": "Select customer (Optional)",
+      "selectCustomer": "Select Customer",
+      "clearCustomer": "Clear Customer"
+    },
+    "lines": {
+      "stokCode": "Stock Code",
+      "stokCodePlaceholder": "Product code",
+      "selectProduct": "Select Product",
+      "minQuantity": "Min Quantity",
+      "maxQuantity": "Max Quantity",
+      "currencyCode": "Currency Type",
+      "selectCurrency": "Select currency",
+      "searchCurrency": "Search for foreign currency...",
+      "fixedUnitPrice": "List price",
+      "discount1Rate": "Discount 1 (%)",
+      "discount1Amount": "Amount 1",
+      "discount2Rate": "Discount 2 (%)",
+      "discount3Rate": "Discount 3 (%)",
+      "addSuccess": "Row Added",
+      "addSuccessMessage": "Row added successfully",
+      "addError": "An error occurred while adding a row",
+      "deleteSuccess": "Row Removed",
+      "deleteSuccessMessage": "Row deleted successfully",
+      "deleteError": "An error occurred while removing the row",
+      "title": "Price Rule Rows",
+      "selectStock": "Add Stock",
+      "discount1": "Ind. 1%",
+      "discount2": "Ind. 2 %",
+      "discount3": "Ind. 3%",
+      "empty": "No rows added yet",
+      "addFirst": "Add First Row",
+      "stokCodeRequired": "Stock code is required",
+      "addConfirmTitle": "Add Row",
+      "addConfirmMessage": "The stock code {{code}} will be added to the price rule. Do you approve?",
+      "deleteConfirmTitle": "Remove Row",
+      "deleteConfirmMessage": "The line with stock code {{code}} will be removed from the price rule. Do you approve?"
+    },
+    "table": {
+      "actions": "Transactions",
+      "ruleCode": "Rule Code",
+      "ruleName": "Rule Name",
+      "ruleType": "Rule Type",
+      "validFrom": "Beginning",
+      "validTo": "Finish",
+      "customer": "Customer",
+      "status": "Situation",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "list": {
+      "title": "Price Rules",
+      "description": "Manage and edit price rules",
+      "add": "Add New Rule"
+    },
+    "salesmen": {
+      "addSuccess": "Salesperson Added",
+      "addSuccessMessage": "Sales representative added successfully",
+      "addError": "An error occurred while adding a salesperson",
+      "deleteSuccess": "Salesperson Removed",
+      "deleteSuccessMessage": "Sales representative successfully deleted",
+      "deleteError": "An error occurred while removing salesperson",
+      "title": "salespeople",
+      "add": "Add Salesperson",
+      "search": "Search for a salesperson...",
+      "empty": "No salesperson added yet",
+      "emptyDescription": "This rule will apply to all salespeople",
+      "salesman": "Salesman Name",
+      "addConfirmTitle": "Add Salesperson",
+      "addConfirmMessage": "Salesperson {{name}} will be added to the price rule. Do you approve?",
+      "deleteConfirmTitle": "Remove Salesperson",
+      "deleteConfirmMessage": "Salesperson {{name}} will be removed from the price rule. Do you approve?"
+    },
+    "delete": {
+      "success": "The rule was deleted successfully",
+      "error": "An error occurred while deleting the rule",
+      "confirmTitle": "Delete Rule",
+      "confirmMessage": "Are you sure you want to delete the {{name}} rule? This action cannot be undone.",
+      "action": "Yes, Delete"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Passive"
+    },
+    "loadingDescription": "Loading data...",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Transactions",
+    "previous": "Former",
+    "next": "Next",
+    "cancel": "Cancel"
+  },
+  "documentSerialType": {
+    "form": {
+      "serialCurrent": "Series Available",
+      "serialCurrentPlaceholder": "Enter current serial value"
     }
-  }
+  },
+  "mailSettings": {
+    "Fields": {
+      "Host": "Presenter",
+      "Port": "Connection Port",
+      "EnableSsl": "Use SSL",
+      "Username": "User name",
+      "Password": "Password",
+      "PasswordPlaceholder": "Enter new password to change",
+      "FromEmail": "From Email",
+      "FromName": "Sender Name",
+      "Timeout": "Timeout (sec)"
+    },
+    "TestMail": {
+      "Sending": "Test is being sent...",
+      "Send": "Send Test Email",
+      "Success": "Test email sent"
+    },
+    "PageTitle": "Mail Settings",
+    "PageDescription": "Configure SMTP server settings",
+    "Save": "Save",
+    "SavedSuccessfully": "Settings saved successfully"
+  },
+  "order": {
+    "exchangeRates": {
+      "dialog": {
+        "title": "Exchange Rates",
+        "subtitle": "Manage current exchange rates",
+        "description": "View exchange rates and edit if necessary.",
+        "info": "Changes made here are valid only for this order and do not affect the general system rates. Changed exchange rates"
+      },
+      "currency": "Currency",
+      "rate": "Exchange Value",
+      "status": "Situation",
+      "empty": "Rate not found",
+      "official": "Official",
+      "custom": "Special",
+      "cannotEditUsedCurrency": "The exchange rate in use cannot be changed",
+      "title": "Exchange Rates",
+      "date": "Exchange Rate Date",
+      "isOfficial": "Official",
+      "updateSuccess": "Exchange rates updated",
+      "updateError": "An error occurred while updating exchange rates"
+    },
+    "approvalFlow": {
+      "stepCompleted": "completed",
+      "stepInProgress": "in progress",
+      "stepRejected": "rejected",
+      "stepNotStarted": "Did not start",
+      "loading": "Loading approval flow...",
+      "noData": "No data found.",
+      "notStarted": "The approval process has not started yet."
+    },
+    "create": {
+      "title": "Create New Order",
+      "error": "Order Could Not Be Created",
+      "invalidCurrency": "A valid currency must be selected",
+      "success": "Order Created Successfully",
+      "successMessage": "The order has been sent to the approval process.",
+      "errorMessage": "An error occurred while creating the order.",
+      "paymentTypeRequired": "Payment type must be selected",
+      "deliveryDateRequired": "Delivery date must be entered",
+      "validationError": "Please check the form fields.",
+      "subtitle": "Create a new sales order for the customer."
+    },
+    "lines": {
+      "delete": {
+        "confirmTitleMultiple": "Delete Linked Stocks",
+        "confirmTitle": "Delete Row",
+        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
+        "confirmMessage": "Are you sure you want to delete this row?"
+      },
+      "required": "At least 1 line must be added",
+      "editLine": "Edit Row",
+      "approvalRequired": "Approval Required",
+      "selectStockFirst": "Stock not selected",
+      "stock": "Stock",
+      "selectStock": "Select Stock",
+      "productCode": "Stock Code",
+      "groupCode": "Group Code",
+      "productName": "Stock Name",
+      "unitPrice": "Unit Price",
+      "quantity": "Amount",
+      "vatRate": "VAT Rate %",
+      "discounts": "Discounts",
+      "discount1": "Discount 1%",
+      "discount2": "Discount 2%",
+      "discount3": "Discount 3%",
+      "calculations": "Calculations",
+      "discountAmount": "Total Discount",
+      "netPrice": "Net Price",
+      "lineTotal": "Line Total (VAT included)",
+      "relatedStocks": "Tied Stocks",
+      "requiredFieldsMissing": "Please select customer, representative and currency.",
+      "title": "Order Items",
+      "itemCount": "{count} items are listed",
+      "noItems": "No products added yet",
+      "add": "Add Row",
+      "empty": "Your Cart is Empty",
+      "emptyDescription": "To create an order",
+      "addLine": "Add New Line",
+      "createSuccess": "Rows added",
+      "createError": "An error occurred while adding rows",
+      "deleteSuccess": "Row deleted",
+      "deleteError": "An error occurred while deleting the row",
+      "updateSuccess": "Rows updated",
+      "updateError": "An error occurred while updating rows"
+    },
+    "sections": {
+      "header": "Customer and document information",
+      "lines": "Order items",
+      "summary": "Summary & Totals"
+    },
+    "detail": {
+      "title": "Order Detail: {{offerNo}}",
+      "notFound": "Order not found",
+      "subtitle": "View and edit order details.",
+      "revisionNo": "Revision Number",
+      "tabDetail": "Order Information",
+      "tabApprovalFlow": "Approval Flow",
+      "tabReport": "Report"
+    },
+    "update": {
+      "error": "Order Failed to Update",
+      "invalidCurrency": "A valid currency must be selected",
+      "success": "Order Updated Successfully",
+      "successMessage": "The order has been updated successfully.",
+      "errorMessage": "An error occurred while updating the order.",
+      "validationError": "Please check the required fields."
+    },
+    "approval": {
+      "sending": "Sending...",
+      "sendForApproval": "Submit for Approval",
+      "approve": "Confirm",
+      "reject": "reject",
+      "rejectTitle": "Reject Order",
+      "rejectDescription": "State the reason for rejection (optional)",
+      "rejectReasonPlaceholder": "Reason for rejection...",
+      "approveSuccess": "The approval process was completed successfully",
+      "approveError": "Confirmation could not be completed",
+      "rejectSuccess": "The rejection process was completed successfully",
+      "rejectError": "Rejection operation could not be performed",
+      "startSuccess": "Approval flow started successfully",
+      "startError": "Approval flow failed to initialize"
+    },
+    "header": {
+      "currencyChange": {
+        "title": "Exchange Rate Change",
+        "message": "Currency change will affect all rows. Do you want to continue?"
+      },
+      "title": "Order Details",
+      "subtitle": "You can manage customer and financial information here.",
+      "customer": "Customer Account",
+      "selectCustomer": "Select customer...",
+      "representative": "Sales Representative",
+      "shippingAddress": "Shipping Address",
+      "selectShippingAddress": "Choose shipping address",
+      "descriptionPlaceholder": "Special conditions..."
+    },
+    "list": {
+      "id": "ID",
+      "title": "Order List",
+      "description": "View and manage all orders",
+      "createNew": "Create New Order",
+      "searchPlaceholder": "Search by order number or customer name...",
+      "offerNo": "Order No.",
+      "customer": "Customer",
+      "representative": "Representative",
+      "offerDate": "Order Date",
+      "currency": "Currency",
+      "grandTotal": "Grand Total",
+      "status": "Situation",
+      "actions": "Transactions",
+      "revise": "Revise",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "summary": {
+      "title": "Summary",
+      "generalDiscountRate": "General Discount Rate (%)",
+      "generalDiscountAmount": "General Discount Amount",
+      "generalDiscountHelp": "Totals are automatically updated when the rate or amount is entered.",
+      "subtotal": "Subtotal",
+      "generalDiscount": "General Discount",
+      "totalVat": "Total VAT",
+      "grandTotal": "Grand Total"
+    },
+    "waitingApprovals": {
+      "title": "Orders Pending Approval",
+      "list": "List of Orders Pending Approval",
+      "noApprovals": "There are no orders pending approval",
+      "requestId": "Request ID",
+      "description": "Explanation",
+      "stepOrder": "My name",
+      "approvedBy": "Approved by",
+      "actionDate": "History",
+      "status": "Situation",
+      "waiting": "waiting"
+    },
+    "revision": {
+      "success": "Order revision created successfully",
+      "error": "An error occurred while creating the order revision"
+    },
+    "loading": "Rates are loading...",
+    "actions": "Transactions",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "saveAndApply": "Save and Apply",
+    "save": "Save Order",
+    "backToOrders": "Return to Orders",
+    "select": "Select",
+    "add": "Add",
+    "confirm": "Confirm",
+    "error": "Mistake",
+    "delete": "Delete",
+    "refresh": "Refresh",
+    "noData": "No data",
+    "previous": "Former",
+    "next": "Next",
+    "back": "Back"
+  },
+  "paymentTypeManagement": {
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "description": "Explanation",
+      "status": "Situation",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "delete": {
+      "success": "Payment type successfully deleted",
+      "error": "An error occurred while deleting the payment type",
+      "confirmTitle": "Delete Payment Type",
+      "confirmMessage": "Are you sure you want to delete payment type {{name}}? This action cannot be undone."
+    },
+    "edit": "Edit Payment Type",
+    "create": "New Payment Type",
+    "editDescription": "Edit payment type information",
+    "createDescription": "Enter new payment type information",
+    "name": "Name",
+    "namePlaceholder": "Enter payment type name",
+    "description": "Explanation",
+    "descriptionPlaceholder": "Enter a description (optional)",
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
+    "title": "Payment Type Management",
+    "createdDate": "Creation Date",
+    "updatedDate": "Updated Date",
+    "noData": "No data found",
+    "createSuccess": "Payment type created successfully",
+    "createError": "An error occurred while creating the payment type",
+    "deleteSuccess": "Payment type successfully deleted",
+    "deleteError": "An error occurred while deleting the payment type",
+    "updateSuccess": "Payment type updated successfully",
+    "updateError": "An error occurred while updating the payment type"
+  },
+  "powerbi": {
+    "group": {
+      "edit": "Edit Group",
+      "add": "New Group",
+      "editDescription": "Update group information",
+      "createDescription": "Enter new group information",
+      "name": "Name",
+      "namePlaceholder": "Group name",
+      "description": "Explanation",
+      "isActive": "Active",
+      "title": "PowerBI Groups",
+      "createSuccess": "Group created",
+      "createError": "Failed to create",
+      "updateSuccess": "Group updated",
+      "updateError": "Failed to update",
+      "deleteSuccess": "Group deleted",
+      "deleteError": "Could not be deleted"
+    },
+    "groupReportDefinition": {
+      "edit": "Edit Matching",
+      "add": "New Matching",
+      "editDescription": "Update group-to-report mapping",
+      "createDescription": "Select group and report definition",
+      "groupId": "Group",
+      "selectGroup": "Select group",
+      "reportDefinitionId": "Report Description",
+      "selectReport": "Select report",
+      "title": "PowerBI Group-Report Mapping",
+      "groupName": "Group",
+      "reportDefinitionName": "Report Description",
+      "createSuccess": "Group-report mapping created",
+      "createError": "Failed to create",
+      "updateSuccess": "Updated group-report mapping",
+      "updateError": "Failed to update",
+      "deleteSuccess": "Group-report mapping deleted",
+      "deleteError": "Could not be deleted"
+    },
+    "reportDefinition": {
+      "edit": "Edit Report Description",
+      "add": "New Report Definition",
+      "editDescription": "Update report definition information",
+      "createDescription": "Enter new report definition information",
+      "name": "Name",
+      "namePlaceholder": "Report name",
+      "description": "Explanation",
+      "workspaceId": "Workspace ID (GUID)",
+      "reportId": "Report ID (GUID)",
+      "datasetId": "Dataset ID (optional)",
+      "embedUrl": "Embed URL (optional)",
+      "isActive": "Active",
+      "rlsRoles": "RLS Roles (optional)",
+      "allowedUserIds": "Permitted User ID (optional)",
+      "allowedRoleIds": "Permissioned Role ID (optional)",
+      "title": "PowerBI Report Definitions",
+      "createSuccess": "Report definition created",
+      "createError": "Failed to create",
+      "updateSuccess": "Report definition updated",
+      "updateError": "Failed to update",
+      "deleteSuccess": "Report definition deleted",
+      "deleteError": "Could not be deleted"
+    },
+    "userGroup": {
+      "edit": "Edit Matching",
+      "add": "New Matching",
+      "editDescription": "Update user-group mapping",
+      "createDescription": "Select user and group",
+      "userId": "User",
+      "selectUser": "Select user",
+      "groupId": "Group",
+      "selectGroup": "Select group",
+      "title": "PowerBI User-Group Mapping",
+      "userName": "User",
+      "groupName": "Group",
+      "createSuccess": "User-group mapping created",
+      "createError": "Failed to create",
+      "updateSuccess": "User-group mapping updated",
+      "updateError": "Failed to update",
+      "deleteSuccess": "User-group mapping deleted",
+      "deleteError": "Could not be deleted"
+    },
+    "filterPlaceholder": "Filter (query param)"
+  },
+  "powerbiConfiguration": {
+    "title": "PowerBI Configuration",
+    "editDescription": "Edit existing configuration",
+    "createDescription": "Enter PowerBI connection information",
+    "tenantId": "Tenant ID",
+    "clientId": "Client ID",
+    "workspaceId": "Workspace ID (GUID)",
+    "apiBaseUrl": "API Base URL",
+    "scope": "scope",
+    "clientSecretInfo": "ClientSecret is only read from the server environment variable for security reasons.",
+    "update": "Update",
+    "create": "Save",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete Configuration",
+    "deleteConfirmDescription": "Are you sure you want to delete this configuration?",
+    "pageTitle": "PowerBI Configuration",
+    "pageDescription": "Manage PowerBI API connection settings",
+    "createSuccess": "Configuration created",
+    "createError": "Failed to create",
+    "updateSuccess": "Configuration updated",
+    "updateError": "Failed to update",
+    "deleteSuccess": "Configuration deleted",
+    "deleteError": "Could not be deleted"
+  },
+  "powerbiViewer": {
+    "invalidId": "invalid report",
+    "backToList": "Return to List",
+    "loadError": "Failed to load report",
+    "loadingReport": "Report loading...",
+    "listTitle": "PowerBI Reports",
+    "listDescription": "You can view the reports by clicking",
+    "name": "Name",
+    "description": "Explanation",
+    "isActive": "Situation",
+    "view": "View"
+  },
+  "productPricingGroupByManagement": {
+    "edit": "Edit Pricing Group",
+    "create": "New Pricing Group",
+    "editDescription": "Edit pricing group information",
+    "createDescription": "Enter new pricing group information",
+    "erpGroupCode": "ERP Product Group Code",
+    "selectErpGroupCode": "Select Group",
+    "currency": "Currency",
+    "selectCurrency": "Please select currency",
+    "listPrice": "List price",
+    "enterListPrice": "Enter List Price",
+    "costPrice": "Cost price",
+    "enterCostPrice": "Enter Cost Price",
+    "discount1": "Discount 1",
+    "enterDiscount1": "Discount 1 (Opt.)",
+    "discount2": "Discount 2",
+    "enterDiscount2": "Discount 2 (Opt.)",
+    "discount3": "discount 3",
+    "enterDiscount3": "Discount 3 (Opt.)",
+    "priceCalculation": "Price Calculation",
+    "finalPriceAfterDiscounts": "Final Price After Discounts",
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
+    "title": "Product Pricing Group Management",
+    "description": "Manage product pricing groups",
+    "add": "Add New Group",
+    "createSuccess": "Pricing group created successfully",
+    "createError": "An error occurred while creating the pricing group",
+    "deleteSuccess": "Pricing group successfully deleted",
+    "deleteError": "An error occurred while deleting the pricing group",
+    "updateSuccess": "Pricing group updated successfully",
+    "updateError": "An error occurred while updating the pricing group"
+  },
+  "productPricingManagement": {
+    "table": {
+      "showing": "{{from}}-{{to}} / {{total}} register"
+    },
+    "title": "Product Pricing Management",
+    "description": "Manage product prices, costs and discounts",
+    "create": "New Pricing",
+    "searchPlaceholder": "Search for product code or group...",
+    "selectStok": "Select Stock",
+    "searchStockPlaceholder": "Search by stock code or name...",
+    "noStocksAvailable": "No unlisted stock found",
+    "unnamedStock": "Anonymous Stock",
+    "loading": "Loading...",
+    "noData": "No data found",
+    "productInfo": "PRODUCT INFORMATION",
+    "category": "CATEGORY",
+    "priceAndDiscount": "PRICE & DISCOUNT",
+    "actions": "TRANSACTIONS",
+    "previous": "Former",
+    "next": "Next",
+    "deleteTitle": "Clear Pricing",
+    "confirmDelete": "Are you sure you want to delete this pricing?",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "createSuccess": "Pricing created successfully",
+    "createError": "An error occurred while creating pricing",
+    "deleteSuccess": "Pricing successfully deleted",
+    "deleteError": "An error occurred while deleting pricing",
+    "updateSuccess": "Pricing updated successfully",
+    "updateError": "An error occurred while updating pricing"
+  },
+  "shippingAddressManagement": {
+    "edit": "Edit Shipping Address",
+    "create": "New Shipping Address",
+    "editDescription": "Edit shipping address information",
+    "createDescription": "Enter new shipping address information",
+    "customerId": "Customer",
+    "selectCustomer": "Select Customer",
+    "searchCustomer": "Search for Customers...",
+    "name": "Address Name",
+    "namePlaceholder": "Ex: Central Warehouse",
+    "address": "Address",
+    "addressPlaceholder": "Enter full address",
+    "postalCode": "Postal code",
+    "postalCodePlaceholder": "Ex: 34000",
+    "phone": "Telephone",
+    "phonePlaceholder": "Ex: 0555 555 55 55",
+    "contactPerson": "Authorized Person",
+    "contactPersonPlaceholder": "Contact person name and surname",
+    "isDefault": "Default shipping address",
+    "country": "Country",
+    "selectCountry": "Select",
+    "searchCountry": "Search...",
+    "city": "Province",
+    "selectCity": "Select",
+    "searchCity": "Search...",
+    "district": "District",
+    "selectDistrict": "Select",
+    "searchDistrict": "Search...",
+    "notes": "Notes",
+    "notesPlaceholder": "Additional notes if any",
+    "title": "Shipping Address Management",
+    "description": "Manage and edit shipping addresses",
+    "search": "Quick Search...",
+    "customerName": "Customer",
+    "location": "Location",
+    "isDefaultShort": "Default",
+    "createdDate": "Creation Date",
+    "noData": "No Data Found",
+    "defaultBadge": "Yes",
+    "deleteConfirmDescription": "Are you sure you want to delete this shipping address? This action cannot be undone.",
+    "createSuccess": "Shipping address created successfully",
+    "createError": "An error occurred while creating the shipping address",
+    "deleteSuccess": "Shipping address deleted successfully",
+    "deleteError": "An error occurred while deleting the shipping address",
+    "updateSuccess": "Shipping address updated successfully",
+    "updateError": "An error occurred while updating the shipping address"
+  },
+  "stock": {
+    "detail": {
+      "basicInfoReadonly": "This data is synchronized from the ERP system and cannot be changed manually.",
+      "mainInfo": "Basic Data",
+      "erpStockCode": "ERP Stock Code",
+      "stockName": "Stock Name",
+      "unit": "Unit",
+      "ureticiKodu": "Manufacturer Code",
+      "groupInfo": "Grouping and Location",
+      "grup": "Group Information",
+      "branchCode": "Branch Code",
+      "specialCodes": "Special Codes",
+      "created": "Created",
+      "updated": "Updated",
+      "copied": "copied",
+      "copy": "copy",
+      "htmlDescription": "Product Description (HTML)",
+      "htmlDescriptionDesc": "Edit the detailed description and formatted text that will appear on the product card here.",
+      "htmlDescriptionPlaceholder": "Enter detailed product description...",
+      "saving": "Recording...",
+      "save": "Save",
+      "title": "Stock Detail",
+      "notFound": "No Stock Found",
+      "notFoundDesc": "The inventory record you are looking for may have been deleted or never been created.",
+      "backToStockList": "Return to List",
+      "subtitle": "Stock Detail Management",
+      "basicInfo": "Basic Information",
+      "images": "Images",
+      "relations": "Tied Stocks",
+      "summary": "Quick Look",
+      "gallery": "Gallery",
+      "addRelation": "Add Link"
+    },
+    "images": {
+      "noImages": "No images uploaded yet",
+      "noImagesDesc": "You can add new images using the area above.",
+      "primary": "Main Image",
+      "altText": "No subtext",
+      "setPrimary": "Make Main",
+      "isPrimary": "selected",
+      "deleteConfirm": "Delete Image",
+      "deleteConfirmMessage": "Are you sure you want to delete this image? This action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "confirmDelete": "Yes, Delete",
+      "upload": "Drag or click images here",
+      "uploadHint": "JPG, PNG, WEBP (Max. 5MB)",
+      "selectedFiles": "Files to Upload",
+      "uploading": "Loading...",
+      "uploadButton": "Upload Selected"
+    },
+    "list": {
+      "id": "ID",
+      "title": "Stock Management",
+      "description": "Track inventory and stock status.",
+      "search": "Search for stock name or ERP code...",
+      "syncedFromErp": "ERP Synchronization Active",
+      "noData": "No Record Found",
+      "erpStockCode": "ERP Code",
+      "stockName": "Stock Name",
+      "unit": "Unit",
+      "actions": "Detail",
+      "total": "Total",
+      "recordsListed": "{{count}} record is listed",
+      "previous": "Former",
+      "next": "Next"
+    },
+    "relations": {
+      "relatedStock": "Tied Stock Selection",
+      "selectStock": "Select a stock from the list...",
+      "search": "Search for stock name or code...",
+      "noStockFound": "Stock not found.",
+      "quantity": "Quantity / Coefficient",
+      "description": "Description/Note",
+      "descriptionPlaceholder": "Add an optional note about the relationship...",
+      "isMandatory": "Forced Relationship",
+      "saving": "Processing...",
+      "add": "Add Relationship",
+      "noRelations": "No tied stock added yet",
+      "noRelationsDesc": "You can define new relationships using the form on the left.",
+      "stockCode": "Stock Code",
+      "stockName": "Stock Name",
+      "actions": "Transactions",
+      "mandatory": "Compulsory",
+      "optional": "optional",
+      "delete": "Delete",
+      "deleteConfirm": "Delete Link",
+      "deleteConfirmMessage": "Are you sure you want to delete the association with {{name}}? This action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "confirmDelete": "Yes, Delete"
+    },
+    "messages": {
+      "detailCreateSuccess": "Stock detail created successfully",
+      "error": "An error occurred",
+      "detailUpdateSuccess": "Stock detail updated successfully",
+      "deleteSuccess": "Image deleted successfully",
+      "setPrimarySuccess": "Main image set successfully",
+      "uploadSuccess": "Images uploaded successfully",
+      "relationCreateSuccess": "Linked stock added successfully"
+    }
+  },
+  "userDetailManagement": {
+    "enterLinkedinUrl": "https://linkedin.com/in/...",
+    "profilePageTitle": "Profile",
+    "fileSizeError": "File size 5MB\\",
+    "fileTypeError": "Only image files can be uploaded",
+    "saveSuccess": "Profile updated",
+    "backToHome": "Return to home page",
+    "personalInfo": "Personal Information",
+    "personalInfoDescription": "Update your height, weight, gender and biography information.",
+    "height": "Height (cm)",
+    "weight": "Weight (kg)",
+    "gender": "Gender",
+    "selectGender": "Select",
+    "noGenderSelected": "Unspecified",
+    "phoneNumber": "Phone Number",
+    "enterPhoneNumber": "+1 5XX XXX XX XX",
+    "email": "Email Address",
+    "enterEmail": "example@company.com",
+    "linkedinUrl": "LinkedIn Profile",
+    "description": "Biography",
+    "enterDescription": "Tell us briefly about yourself...",
+    "saving": "Recording...",
+    "save": "Save",
+    "security": "Security",
+    "securityDescription": "Update your account password securely.",
+    "changePassword": "Change password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Your new password",
+    "changingPassword": "Processing...",
+    "changePasswordButton": "Update Password",
+    "cancel": "Cancel and Close",
+    "createSuccess": "User detail created successfully",
+    "createError": "An error occurred while creating the user detail",
+    "updateSuccess": "User detail updated successfully",
+    "updateError": "An error occurred while updating user detail",
+    "uploadProfilePictureSuccess": "Profile picture uploaded successfully",
+    "uploadProfilePictureError": "An error occurred while loading the profile picture"
+  },
+  "profile": {
+    "title": "Profile Information"
+  },
+  "userDiscountLimitManagement": {
+    "table": {
+      "id": "ID",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "alreadyExists": "A discount limit already exists for this sales representative and product group combination",
+    "edit": "Edit Discount Limit",
+    "create": "New Discount Limit",
+    "editDescription": "Edit discount limit information",
+    "createDescription": "Enter new discount limit information",
+    "salesperson": "Sales Representative",
+    "selectSalesperson": "Select a Sales Representative",
+    "searchSalesperson": "Search for a Sales Representative...",
+    "erpProductGroupCode": "ERP Product Group Code",
+    "selectErpProductGroupCode": "Select Group",
+    "searchGroup": "Group Search...",
+    "maxDiscount1": "Maximum Discount 1",
+    "enterMaxDiscount1": "Enter Maximum Discount 1 (0-100)",
+    "maxDiscount2": "Maximum Discount 2",
+    "enterMaxDiscount2": "Enter Maximum Discount 2 (0-100, Optional)",
+    "maxDiscount3": "Maximum Discount 3",
+    "enterMaxDiscount3": "Enter Maximum Discount 3 (0-100, Optional)",
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
+    "title": "User Discount Limit Management",
+    "description": "Manage and edit user discount limits",
+    "loading": "Loading...",
+    "noData": "No data found",
+    "salespersonName": "Sales Representative Name",
+    "createdDate": "Creation Date",
+    "updatedDate": "Updated Date",
+    "actions": "Transactions",
+    "delete": "Delete",
+    "previous": "Former",
+    "next": "Next",
+    "deleteTitle": "Delete Discount Limit",
+    "confirmDelete": "Are you sure you want to delete this discount limit?",
+    "createSuccess": "Discount limit created successfully",
+    "createError": "An error occurred while creating the discount limit",
+    "deleteSuccess": "Discount limit successfully deleted",
+    "deleteError": "An error occurred while deleting the discount limit",
+    "updateSuccess": "Discount limit updated successfully",
+    "updateError": "An error occurred while updating the discount limit"
+  },
+  "menu": "Hangfire Monitoring",
+  "language_choice": "Language Option",
+  "appearance": "View Mode",
+  "logout": "LOG OUT"
 }

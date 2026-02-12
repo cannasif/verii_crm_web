@@ -5,14 +5,19 @@
   "SavedSuccessfully": "Mail settings saved successfully",
   "SaveFailed": "Failed to save mail settings",
   "Fields": {
-    "Host": "Host",
-    "Port": "Port",
+    "Host": "Server Name",
+    "Port": "Connection Port",
     "EnableSsl": "Enable SSL",
-    "Username": "Username",
+    "Username": "User name",
     "Password": "Password",
     "PasswordPlaceholder": "Enter new password to change",
     "FromEmail": "From Email",
     "FromName": "From Name",
     "Timeout": "Timeout (sec)"
+  },
+  "TestMail": {
+    "Send": "Send Test Email",
+    "Sending": "Test is being sent...",
+    "Success": "Test email sent"
   }
 }

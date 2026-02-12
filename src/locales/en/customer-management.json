@@ -23,9 +23,10 @@
     "createdBy": "Created By",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "phone2": "Telefon 2",
-    "salesRepCode": "Satış Temsilcisi",
-    "branchCode": "Şube Kodu"
+    "phone2": "phone 2",
+    "salesRepCode": "Sales Representative",
+    "branchCode": "Branch Code",
+    "defaultShippingAddressId": "Default Shipping Address"
   },
   "form": {
     "addCustomer": "Add New Customer",
@@ -82,13 +83,15 @@
     "isApproved": "Approved",
     "isCompleted": "Completed",
     "isERPIntegrated": "ERP Integrated",
-    "phone2": "Telefon 2",
-    "phone2Placeholder": "İkinci telefon numarasını girin (opsiyonel)",
-    "phone2MaxLength": "İkinci telefon numarası en fazla 100 karakter olabilir",
-    "salesRepCodeMaxLength": "Satış temsilcisi kodu en fazla 50 karakter olabilir",
-    "groupCodeMaxLength": "Grup kodu en fazla 50 karakter olabilir",
-    "isCompletedDescription": "Bu müşterinin tüm bilgileri eksiksiz dolduruldu mu?",
-    "none": "Yok"
+    "phone2": "phone 2",
+    "phone2Placeholder": "Enter second phone number (optional)",
+    "phone2MaxLength": "The second phone number can be up to 100 characters",
+    "salesRepCodeMaxLength": "Sales representative code can be up to 50 characters",
+    "groupCodeMaxLength": "Group code can be up to 50 characters",
+    "isCompletedDescription": "Have all the information for this customer been filled in completely?",
+    "none": "None",
+    "defaultShippingAddress": "Default Shipping Address",
+    "selectDefaultShippingAddress": "Choose default shipping address"
   },
   "delete": {
     "action": "Delete",

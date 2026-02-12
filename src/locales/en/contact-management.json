@@ -21,7 +21,8 @@
     "updatedDate": "Updated Date",
     "updatedBy": "Updated By",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}"
+    "page": "Page {{current}} / {{total}}",
+    "salutation": "address"
   },
   "form": {
     "addContact": "Add New Contact",
@@ -50,7 +51,24 @@
     "customerRequired": "Customer selection is required",
     "title": "Title",
     "selectTitle": "Select title",
-    "titleRequired": "Title selection is required"
+    "titleRequired": "Title selection is required",
+    "salutation": "address",
+    "selectSalutation": "Choose address",
+    "salutationNone": "None",
+    "salutationMr": "Mr",
+    "salutationMs": "Woman",
+    "salutationMrs": "Dear",
+    "salutationDr": "Dr.",
+    "firstName": "Name",
+    "firstNamePlaceholder": "Enter name",
+    "lastName": "Surname",
+    "lastNamePlaceholder": "Enter last name",
+    "middleName": "Middle name",
+    "middleNamePlaceholder": "Enter middle name (optional)",
+    "firstNameRequired": "Name is required",
+    "lastNameRequired": "Surname is required",
+    "middleNameMaxLength": "Middle name can be up to 100 characters",
+    "titleNone": "no title"
   },
   "delete": {
     "action": "Delete",
