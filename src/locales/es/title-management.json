@@ -16,7 +16,7 @@
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
     "page": "Página {{current}} / {{total}}",
     "rowsPerPage": "Filas por página",
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "createdDate": "Fecha de creación",
     "createdBy": "Creado por"
   },

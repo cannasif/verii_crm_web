@@ -16,7 +16,7 @@
     "showing": "Mostrando {{from}}-{{to}} de {{total}}",
     "page": "Página {{current}} de {{total}}",
     "rowsPerPage": "Filas por página",
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "salespersonName": "Salesperson Name",
     "erpProductGroupCode": "ERP Product Group Code",
     "maxDiscount1": "Max Discount 1",
