@@ -26,7 +26,7 @@ export function UserManagementPage(): ReactElement {
   const updateUser = useUpdateUser();
 
   useEffect(() => {
-    setPageTitle(t('userManagement.menu', 'Kullanıcı Yönetimi'));
+    setPageTitle(t('userManagement.menu'));
     return () => {
       setPageTitle(null);
     };
@@ -82,14 +82,14 @@ export function UserManagementPage(): ReactElement {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {t('userManagement.menu', 'Kullanıcı Yönetimi')}
+            {t('userManagement.menu')}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            {t('userManagement.description', 'Kullanıcıları yönetin ve düzenleyin')}
+            {t('userManagement.description')}
           </p>
         </div>
         <Button onClick={handleAddClick}>
-          {t('userManagement.addButton', 'Yeni Kullanıcı Ekle')}
+          {t('userManagement.addButton')}
         </Button>
       </div>
 

@@ -36,7 +36,7 @@ export function UserFormPermissionGroupSelect({
   if (isLoading) {
     return (
       <div className="text-sm text-muted-foreground py-4">
-        {t('userManagement.table.loading', 'Yükleniyor...')}
+        {t('userManagement.table.loading')}
       </div>
     );
   }
@@ -54,13 +54,13 @@ export function UserFormPermissionGroupSelect({
           htmlFor="user-form-select-all-groups"
           className="text-sm font-medium cursor-pointer"
         >
-          {t('userManagement.form.selectAll', 'Tümünü seç')}
+          {t('userManagement.form.selectAll')}
         </label>
       </div>
       <div className="max-h-[200px] overflow-y-auto border rounded-lg p-2 space-y-2">
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground py-2">
-            {t('userManagement.form.permissionGroupsNoData', 'İzin grubu bulunamadı')}
+            {t('userManagement.form.permissionGroupsNoData')}
           </p>
         ) : (
           items.map((item) => (

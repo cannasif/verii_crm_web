@@ -17,10 +17,10 @@ export const useUpdateUser = (): UseMutationResult<UserDto, Error, { id: number;
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedUser.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
       queryClient.invalidateQueries({ queryKey: ['users', updatedUser.id, 'permission-groups'] });
-      toast.success(t('userManagement.messages.updateSuccess', 'Kullanıcı başarıyla güncellendi'));
+      toast.success(t('userManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userManagement.messages.updateError', 'Kullanıcı güncellenemedi'));
+      toast.error(error.message || t('userManagement.messages.updateError'));
     },
   });
 };

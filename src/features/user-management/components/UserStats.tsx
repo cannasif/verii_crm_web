@@ -19,7 +19,7 @@ export function UserStats(): ReactElement {
           <Card key={i}>
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('userManagement.stats.loading', 'Yükleniyor...')}
+                {t('userManagement.stats.loading')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -40,7 +40,7 @@ export function UserStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('userManagement.stats.totalUsers', 'Toplam Kullanıcı')}
+            {t('userManagement.stats.totalUsers')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +68,7 @@ export function UserStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('userManagement.stats.activeUsers', 'Aktif Kullanıcı')}
+            {t('userManagement.stats.activeUsers')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -94,7 +94,7 @@ export function UserStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('userManagement.stats.newThisMonth', 'Bu Ay Yeni')}
+            {t('userManagement.stats.newThisMonth')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +128,7 @@ export function UserStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('userManagement.stats.confirmedUsers', 'Onaylı Kullanıcı')}
+            {t('userManagement.stats.confirmedUsers')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"

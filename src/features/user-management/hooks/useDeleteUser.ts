@@ -13,10 +13,10 @@ export const useDeleteUser = (): UseMutationResult<void, Error, number> => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('userManagement.messages.deleteSuccess', 'Kullanıcı başarıyla silindi'));
+      toast.success(t('userManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userManagement.messages.deleteError', 'Kullanıcı silinemedi'));
+      toast.error(error.message || t('userManagement.messages.deleteError'));
     },
   });
 };

@@ -14,10 +14,10 @@ export const useCreateUser = (): UseMutationResult<UserDto, Error, CreateUserDto
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('userManagement.messages.createSuccess', 'Kullanıcı başarıyla oluşturuldu'));
+      toast.success(t('userManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userManagement.messages.createError', 'Kullanıcı oluşturulamadı'));
+      toast.error(error.message || t('userManagement.messages.createError'));
     },
   });
 };

@@ -119,7 +119,7 @@ export function UserTable({
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-muted-foreground">
-          {t('userManagement.table.loading', 'Yükleniyor...')}
+          {t('userManagement.table.loading')}
         </div>
       </div>
     );
@@ -131,7 +131,7 @@ export function UserTable({
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-muted-foreground">
-          {t('userManagement.table.noData', 'Veri yok')}
+          {t('userManagement.table.noData')}
         </div>
       </div>
     );
@@ -150,7 +150,7 @@ export function UserTable({
                 onClick={() => handleSort('Id')}
               >
                 <div className="flex items-center">
-                  {t('userManagement.table.id', 'ID')}
+                  {t('userManagement.table.id')}
                   <SortIcon column="Id" />
                 </div>
               </TableHead>
@@ -159,7 +159,7 @@ export function UserTable({
                 onClick={() => handleSort('Username')}
               >
                 <div className="flex items-center">
-                  {t('userManagement.table.username', 'Kullanıcı Adı')}
+                  {t('userManagement.table.username')}
                   <SortIcon column="Username" />
                 </div>
               </TableHead>
@@ -168,25 +168,25 @@ export function UserTable({
                 onClick={() => handleSort('Email')}
               >
                 <div className="flex items-center">
-                  {t('userManagement.table.email', 'E-posta')}
+                  {t('userManagement.table.email')}
                   <SortIcon column="Email" />
                 </div>
               </TableHead>
               <TableHead>
-                {t('userManagement.table.fullName', 'Ad Soyad')}
+                {t('userManagement.table.fullName')}
               </TableHead>
               <TableHead>
-                {t('userManagement.table.role', 'Rol')}
+                {t('userManagement.table.role')}
               </TableHead>
               <TableHead>
-                {t('userManagement.table.status', 'Durum')}
+                {t('userManagement.table.status')}
               </TableHead>
               <TableHead>
-                {t('userManagement.table.createdDate', 'Oluşturulma Tarihi')}
+                {t('userManagement.table.createdDate')}
               </TableHead>
               {onEdit && (
                 <TableHead className="w-[80px]">
-                  {t('common.actions', 'İşlemler')}
+                  {t('common.actions')}
                 </TableHead>
               )}
             </TableRow>
@@ -210,12 +210,12 @@ export function UserTable({
                     />
                     <span className="text-sm text-muted-foreground">
                         {user.isActive
-                            ? t('userManagement.table.active', 'Aktif')
-                            : t('userManagement.table.inactive', 'Pasif')}
+                            ? t('userManagement.table.active')
+                            : t('userManagement.table.inactive')}
                     </span>
                     {user.isEmailConfirmed && (
                       <Badge variant="outline" className="text-xs">
-                        {t('userManagement.table.confirmed', 'Onaylı')}
+                        {t('userManagement.table.confirmed')}
                       </Badge>
                     )}
                   </div>
@@ -232,7 +232,7 @@ export function UserTable({
                       size="sm"
                       onClick={() => onEdit(user)}
                     >
-                      {t('common.edit', 'Düzenle')}
+                      {t('common.edit')}
                     </Button>
                   </TableCell>
                 )}
@@ -244,7 +244,7 @@ export function UserTable({
 
       <div className="flex items-center justify-between py-4">
         <div className="text-sm text-muted-foreground">
-          {t('userManagement.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('userManagement.table.showing', {
             from: (pageNumber - 1) * pageSize + 1,
             to: Math.min(pageNumber * pageSize, data.totalCount || 0),
             total: data.totalCount || 0,
@@ -257,10 +257,10 @@ export function UserTable({
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1}
           >
-            {t('userManagement.table.previous', 'Önceki')}
+            {t('userManagement.table.previous')}
           </Button>
           <div className="flex items-center px-4 text-sm">
-            {t('userManagement.table.page', 'Sayfa {{current}} / {{total}}', {
+            {t('userManagement.table.page', {
               current: pageNumber,
               total: totalPages,
             })}
@@ -271,7 +271,7 @@ export function UserTable({
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
           >
-            {t('userManagement.table.next', 'Sonraki')}
+            {t('userManagement.table.next')}
           </Button>
         </div>
       </div>

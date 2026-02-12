@@ -192,13 +192,13 @@ export function UserForm({
         <DialogHeader>
           <DialogTitle>
             {user
-              ? t('userManagement.form.editUser', 'Kullanıcı Düzenle')
-              : t('userManagement.form.addUser', 'Yeni Kullanıcı Ekle')}
+              ? t('userManagement.form.editUser')
+              : t('userManagement.form.addUser')}
           </DialogTitle>
           <DialogDescription>
             {user
-              ? t('userManagement.form.editDescription', 'Kullanıcı bilgilerini düzenleyin')
-              : t('userManagement.form.addDescription', 'Yeni kullanıcı bilgilerini girin')}
+              ? t('userManagement.form.editDescription')
+              : t('userManagement.form.addDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -211,12 +211,12 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('userManagement.form.username', 'Kullanıcı Adı')}
+                      {t('userManagement.form.username')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('userManagement.form.usernamePlaceholder', 'Kullanıcı adını girin')}
+                        placeholder={t('userManagement.form.usernamePlaceholder')}
                         maxLength={50}
                         disabled={isEditMode}
                       />
@@ -232,13 +232,13 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('userManagement.form.email', 'E-posta')}
+                      {t('userManagement.form.email')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="email"
-                        placeholder={t('userManagement.form.emailPlaceholder', 'E-posta adresini girin')}
+                        placeholder={t('userManagement.form.emailPlaceholder')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -254,13 +254,13 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('userManagement.form.password', 'Şifre')}
+                      {t('userManagement.form.password')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="password"
-                        placeholder={t('userManagement.form.passwordPlaceholder', 'Boş bırakılırsa geçici şifre oluşturulur')}
+                        placeholder={t('userManagement.form.passwordPlaceholder')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -276,12 +276,12 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('userManagement.form.firstName', 'Ad')}
+                      {t('userManagement.form.firstName')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('userManagement.form.firstNamePlaceholder', 'Adı girin')}
+                        placeholder={t('userManagement.form.firstNamePlaceholder')}
                         maxLength={50}
                       />
                     </FormControl>
@@ -296,12 +296,12 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('userManagement.form.lastName', 'Soyad')}
+                      {t('userManagement.form.lastName')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('userManagement.form.lastNamePlaceholder', 'Soyadı girin')}
+                        placeholder={t('userManagement.form.lastNamePlaceholder')}
                         maxLength={50}
                       />
                     </FormControl>
@@ -318,12 +318,12 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('userManagement.form.phoneNumber', 'Telefon')}
+                      {t('userManagement.form.phoneNumber')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('userManagement.form.phoneNumberPlaceholder', 'Telefon numarasını girin')}
+                        placeholder={t('userManagement.form.phoneNumberPlaceholder')}
                         maxLength={20}
                       />
                     </FormControl>
@@ -338,7 +338,7 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('userManagement.form.role', 'Rol')}
+                      {t('userManagement.form.role')}
                       {!isEditMode && <span className="text-destructive ml-1">*</span>}
                     </FormLabel>
                     <Select
@@ -349,7 +349,7 @@ export function UserForm({
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue
-                            placeholder={t('userManagement.form.rolePlaceholder', 'Rol seçin')}
+                            placeholder={t('userManagement.form.rolePlaceholder')}
                           />
                         </SelectTrigger>
                       </FormControl>
@@ -373,7 +373,7 @@ export function UserForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t('userManagement.form.permissionGroups', 'İzin Grupları')}
+                    {t('userManagement.form.permissionGroups')}
                   </FormLabel>
                   <FormControl>
                     <UserFormPermissionGroupSelect
@@ -393,7 +393,7 @@ export function UserForm({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <FormLabel>
-                    {t('userManagement.form.isActive', 'Aktif')}
+                    {t('userManagement.form.isActive')}
                   </FormLabel>
                   <FormControl>
                     <Switch
@@ -413,12 +413,12 @@ export function UserForm({
                 onClick={() => onOpenChange(false)}
                 disabled={isLoading}
               >
-                {t('userManagement.form.cancel', 'İptal')}
+                {t('userManagement.form.cancel')}
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading
-                  ? t('userManagement.form.saving', 'Kaydediliyor...')
-                  : t('userManagement.form.save', 'Kaydet')}
+                  ? t('userManagement.form.saving')
+                  : t('userManagement.form.save')}
               </Button>
             </DialogFooter>
           </form>
