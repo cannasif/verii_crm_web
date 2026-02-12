@@ -109,13 +109,13 @@ export function ApprovalUserRoleForm({
              <div>
                 <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
                   {userRole
-                    ? t('approvalUserRole.form.editTitle', 'Onay Kullanıcı Rolü Düzenle')
-                    : t('approvalUserRole.form.addTitle', 'Yeni Onay Kullanıcı Rolü Ekle')}
+                    ? t('approvalUserRole.form.editTitle')
+                    : t('approvalUserRole.form.addTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                   {userRole
-                    ? t('approvalUserRole.form.editDescription', 'Onay kullanıcı rolü bilgilerini düzenleyin')
-                    : t('approvalUserRole.form.addDescription', 'Yeni onay kullanıcı rolü bilgilerini girin')}
+                    ? t('approvalUserRole.form.editDescription')
+                    : t('approvalUserRole.form.addDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -130,7 +130,7 @@ export function ApprovalUserRoleForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('approvalUserRole.form.userId', 'Kullanıcı')} *
+                      {t('approvalUserRole.form.userId')} *
                     </FormLabel>
                     <VoiceSearchCombobox
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}
@@ -139,8 +139,8 @@ export function ApprovalUserRoleForm({
                         value: user.id.toString(),
                         label: user.fullName || user.username || ''
                       }))}
-                      placeholder={t('approvalUserRole.form.selectUser', 'Kullanıcı Seçin')}
-                      searchPlaceholder={t('common.search', 'Ara...')}
+                      placeholder={t('approvalUserRole.form.selectUser')}
+                      searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -154,7 +154,7 @@ export function ApprovalUserRoleForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('approvalUserRole.form.approvalRoleId', 'Onay Rolü')} *
+                      {t('approvalUserRole.form.approvalRoleId')} *
                     </FormLabel>
                     <VoiceSearchCombobox
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}
@@ -163,8 +163,8 @@ export function ApprovalUserRoleForm({
                         value: role.id.toString(),
                         label: `${role.name} ${role.approvalRoleGroupName ? `(${role.approvalRoleGroupName})` : ''}`
                       }))}
-                      placeholder={t('approvalUserRole.form.selectApprovalRole', 'Onay Rolü Seçin')}
-                      searchPlaceholder={t('common.search', 'Ara...')}
+                      placeholder={t('approvalUserRole.form.selectApprovalRole')}
+                      searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -184,7 +184,7 @@ export function ApprovalUserRoleForm({
               disabled={isLoading}
               className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
             >
-              {t('approvalUserRole.form.cancel', 'İptal')}
+              {t('approvalUserRole.form.cancel')}
             </Button>
             <Button 
               onClick={form.handleSubmit(handleSubmit)}
@@ -192,8 +192,8 @@ export function ApprovalUserRoleForm({
               className="bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
             >
               {isLoading
-                ? t('approvalUserRole.form.saving', 'Kaydediliyor...')
-                : t('approvalUserRole.form.save', 'Kaydet')}
+                ? t('approvalUserRole.form.saving')
+                : t('approvalUserRole.form.save')}
             </Button>
           </div>
         </DialogFooter>

@@ -68,11 +68,11 @@ export function ApprovalUserRoleTable({
   const deleteUserRole = useDeleteApprovalUserRole();
 
   const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalUserRoleDto>[] => [
-    { key: 'id', label: t('approvalUserRole.table.id', 'ID'), className: 'w-[100px]' },
-    { key: 'userFullName', label: t('approvalUserRole.table.userFullName', 'Kullanıcı'), className: 'min-w-[200px]' },
-    { key: 'approvalRoleName', label: t('approvalUserRole.table.approvalRoleName', 'Onay Rolü'), className: 'min-w-[200px]' },
-    { key: 'createdDate', label: t('approvalUserRole.table.createdDate', 'Oluşturulma Tarihi'), className: 'w-[160px]' },
-    { key: 'createdByFullUser', label: t('approvalUserRole.table.createdBy', 'Oluşturan'), className: 'w-[160px]' },
+    { key: 'id', label: t('approvalUserRole.table.id'), className: 'w-[100px]' },
+    { key: 'userFullName', label: t('approvalUserRole.table.userFullName'), className: 'min-w-[200px]' },
+    { key: 'approvalRoleName', label: t('approvalUserRole.table.approvalRoleName'), className: 'min-w-[200px]' },
+    { key: 'createdDate', label: t('approvalUserRole.table.createdDate'), className: 'w-[160px]' },
+    { key: 'createdByFullUser', label: t('approvalUserRole.table.createdBy'), className: 'w-[160px]' },
   ];
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
@@ -150,7 +150,7 @@ export function ApprovalUserRoleTable({
         <div className="flex flex-col items-center gap-2">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <div className="text-sm text-muted-foreground animate-pulse">
-             {t('common.loading', 'Yükleniyor...')}
+             {t('common.loading')}
            </div>
         </div>
       </div>
@@ -161,7 +161,7 @@ export function ApprovalUserRoleTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('approvalUserRole.noData', 'Kayıt Bulunamadı')}
+          {t('approvalUserRole.noData')}
         </div>
       </div>
     );
@@ -178,7 +178,7 @@ export function ApprovalUserRoleTable({
                 className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
             >
               <EyeOff className="mr-2 h-4 w-4" />
-              {t('common.editColumns', 'Sütunları Düzenle')}
+              {t('common.editColumns')}
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -187,7 +187,7 @@ export function ApprovalUserRoleTable({
             className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
           >
             <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                {t('common.visibleColumns', 'Görünür Sütunlar')}
+                {t('common.visibleColumns')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
             {tableColumns.map((column) => (
@@ -224,7 +224,7 @@ export function ApprovalUserRoleTable({
                 )
               ))}
               <TableHead className={`${headStyle} text-right w-[100px]`}>
-                {t('approvalUserRole.table.actions', 'İşlemler')}
+                {t('approvalUserRole.table.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -269,7 +269,7 @@ export function ApprovalUserRoleTable({
                       size="icon"
                       onClick={() => onEdit(userRole)}
                       className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-colors"
-                      title={t('common.edit', 'Düzenle')}
+                      title={t('common.edit')}
                     >
                       <Edit2 size={15} />
                     </Button>
@@ -278,7 +278,7 @@ export function ApprovalUserRoleTable({
                       size="icon"
                       onClick={() => handleDeleteClick(userRole)}
                       className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
-                      title={t('common.delete', 'Sil')}
+                      title={t('common.delete')}
                     >
                       <Trash2 size={15} />
                     </Button>
@@ -293,7 +293,7 @@ export function ApprovalUserRoleTable({
       {/* Pagination Controls */}
       <div className="flex items-center justify-between px-2">
         <div className="text-sm text-slate-500 dark:text-slate-400 hidden sm:block">
-            {t('common.showing', 'Gösterilen')}: <span className="font-medium text-slate-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</span> - <span className="font-medium text-slate-900 dark:text-white">{Math.min(currentPage * pageSize, processedUserRoles.length)}</span> / <span className="font-medium text-slate-900 dark:text-white">{processedUserRoles.length}</span>
+            {t('common.showing')}: <span className="font-medium text-slate-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</span> - <span className="font-medium text-slate-900 dark:text-white">{Math.min(currentPage * pageSize, processedUserRoles.length)}</span> / <span className="font-medium text-slate-900 dark:text-white">{processedUserRoles.length}</span>
         </div>
 
         <div className="flex items-center gap-2 ml-auto">
@@ -349,10 +349,10 @@ export function ApprovalUserRoleTable({
             
             <div className="space-y-2">
               <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
-                {t('approvalUserRole.delete.title', 'Rolü Sil')}
+                {t('approvalUserRole.delete.title')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400">
-                {t('approvalUserRole.delete.confirmMessage', 'Bu kullanıcı rolünü silmek istediğinizden emin misiniz?')}
+                {t('approvalUserRole.delete.confirmMessage')}
               </DialogDescription>
             </div>
 
@@ -374,14 +374,14 @@ export function ApprovalUserRoleTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-11 rounded-xl border-slate-200 dark:border-white/10"
             >
-              {t('common.cancel', 'Vazgeç')}
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
               className="flex-1 h-11 rounded-xl bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
             >
-              {t('common.delete', 'Sil')}
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

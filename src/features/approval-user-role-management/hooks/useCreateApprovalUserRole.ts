@@ -20,10 +20,10 @@ export const useCreateApprovalUserRole = () => {
         queryKey: [APPROVAL_USER_ROLE_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalUserRole.messages.createSuccess', 'Onay kullanıcı rolü başarıyla oluşturuldu'));
+      toast.success(t('approvalUserRole.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalUserRole.messages.createError', 'Onay kullanıcı rolü oluşturulamadı'));
+      toast.error(error.message || t('approvalUserRole.messages.createError'));
     },
   });
 };

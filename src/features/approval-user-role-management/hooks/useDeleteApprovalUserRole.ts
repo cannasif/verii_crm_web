@@ -19,10 +19,10 @@ export const useDeleteApprovalUserRole = () => {
         queryKey: [APPROVAL_USER_ROLE_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalUserRole.messages.deleteSuccess', 'Onay kullanıcı rolü başarıyla silindi'));
+      toast.success(t('approvalUserRole.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalUserRole.messages.deleteError', 'Onay kullanıcı rolü silinemedi'));
+      toast.error(error.message || t('approvalUserRole.messages.deleteError'));
     },
   });
 };

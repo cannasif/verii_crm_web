@@ -22,10 +22,10 @@ export const useUpdateApprovalUserRole = () => {
         queryKey: [APPROVAL_USER_ROLE_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalUserRole.messages.updateSuccess', 'Onay kullanıcı rolü başarıyla güncellendi'));
+      toast.success(t('approvalUserRole.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalUserRole.messages.updateError', 'Onay kullanıcı rolü güncellenemedi'));
+      toast.error(error.message || t('approvalUserRole.messages.updateError'));
     },
   });
 };
