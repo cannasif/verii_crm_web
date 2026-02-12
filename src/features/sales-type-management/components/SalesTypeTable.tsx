@@ -64,8 +64,8 @@ export function SalesTypeTable({
   };
 
   const salesTypeLabel = (value: string): string => {
-    if (value === OfferType.YURTICI) return t('common.offerType.yurtici', 'Yurtiçi');
-    if (value === OfferType.YURTDISI) return t('common.offerType.yurtdisi', 'Yurtdışı');
+    if (value === OfferType.YURTICI) return t('common.offerType.yurtici');
+    if (value === OfferType.YURTDISI) return t('common.offerType.yurtdisi');
     return value;
   };
 
@@ -75,7 +75,7 @@ export function SalesTypeTable({
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
           <div className="text-sm text-muted-foreground animate-pulse">
-            {t('common.loading', 'Yükleniyor...')}
+            {t('common.loading')}
           </div>
         </div>
       </div>
@@ -86,7 +86,7 @@ export function SalesTypeTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('salesTypeManagement.noData', 'Kayıt bulunamadı')}
+          {t('salesTypeManagement.noData')}
         </div>
       </div>
     );
@@ -104,16 +104,16 @@ export function SalesTypeTable({
           <TableHeader className="bg-slate-50/50 dark:bg-white/5">
             <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
               <TableHead className={`${headStyle} w-[140px]`}>
-                {t('salesTypeManagement.table.salesType', 'Satış Tipi')}
+                {t('salesTypeManagement.table.salesType')}
               </TableHead>
               <TableHead className={`${headStyle} min-w-[200px]`}>
-                {t('salesTypeManagement.table.name', 'Ad')}
+                {t('salesTypeManagement.table.name')}
               </TableHead>
               <TableHead className={`${headStyle} w-[180px]`}>
-                {t('salesTypeManagement.table.createdDate', 'Oluşturulma Tarihi')}
+                {t('salesTypeManagement.table.createdDate')}
               </TableHead>
               <TableHead className={`${headStyle} text-right w-[120px]`}>
-                {t('common.actions', 'İşlemler')}
+                {t('common.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -161,7 +161,7 @@ export function SalesTypeTable({
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          {t('common.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('common.table.showing', {
             from: (pageNumber - 1) * pageSize + 1,
             to: Math.min(pageNumber * pageSize, totalCount),
             total: totalCount,
@@ -175,10 +175,10 @@ export function SalesTypeTable({
             disabled={pageNumber <= 1}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
           >
-            {t('common.previous', 'Önceki')}
+            {t('common.previous')}
           </Button>
           <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">
-            {t('common.table.page', 'Sayfa {{current}} / {{total}}', {
+            {t('common.table.page', {
               current: pageNumber,
               total: totalPages,
             })}
@@ -190,7 +190,7 @@ export function SalesTypeTable({
             disabled={pageNumber >= totalPages}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
           >
-            {t('common.next', 'Sonraki')}
+            {t('common.next')}
           </Button>
         </div>
       </div>
@@ -203,10 +203,10 @@ export function SalesTypeTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('salesTypeManagement.delete.title', 'Satış Tipini Sil')}
+                {t('salesTypeManagement.delete.title')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('salesTypeManagement.delete.confirm', '{{name}} satış tipini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.', {
+                {t('salesTypeManagement.delete.confirm', {
                   name: selectedItem?.name ?? '',
                 })}
               </DialogDescription>
@@ -219,7 +219,7 @@ export function SalesTypeTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('common.cancel', 'Vazgeç')}
+              {t('common.cancel')}
             </Button>
             <Button
               type="button"
@@ -229,7 +229,7 @@ export function SalesTypeTable({
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteSalesType.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('common.delete', 'Sil')}
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

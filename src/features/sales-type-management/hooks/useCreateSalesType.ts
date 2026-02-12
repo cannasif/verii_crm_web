@@ -17,10 +17,10 @@ export const useCreateSalesType = (): UseMutationResult<
     mutationFn: (data: SalesTypeCreateDto) => salesTypeApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [SALES_TYPE_QUERY_KEYS.LIST], exact: false });
-      toast.success(t('salesTypeManagement.messages.createSuccess', 'Satış tipi başarıyla oluşturuldu'));
+      toast.success(t('salesTypeManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('salesTypeManagement.messages.createError', 'Satış tipi oluşturulamadı'));
+      toast.error(error.message || t('salesTypeManagement.messages.createError'));
     },
   });
 };

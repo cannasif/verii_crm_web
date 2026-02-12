@@ -12,10 +12,10 @@ export const useDeleteSalesType = (): UseMutationResult<void, Error, number> => 
     mutationFn: (id: number) => salesTypeApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [SALES_TYPE_QUERY_KEYS.LIST], exact: false });
-      toast.success(t('salesTypeManagement.messages.deleteSuccess', 'Satış tipi başarıyla silindi'));
+      toast.success(t('salesTypeManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('salesTypeManagement.messages.deleteError', 'Satış tipi silinemedi'));
+      toast.error(error.message || t('salesTypeManagement.messages.deleteError'));
     },
   });
 };

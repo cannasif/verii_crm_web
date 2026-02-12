@@ -38,7 +38,7 @@ export function SalesTypeManagementPage(): ReactElement {
   const totalCount = apiResponse?.totalCount ?? 0;
 
   useEffect(() => {
-    setPageTitle(t('salesTypeManagement.menu', 'Satış Tipi Yönetimi'));
+    setPageTitle(t('salesTypeManagement.menu'));
     return () => {
       setPageTitle(null);
     };
@@ -83,10 +83,10 @@ export function SalesTypeManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('salesTypeManagement.menu', 'Satış Tipi Yönetimi')}
+            {t('salesTypeManagement.menu')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('salesTypeManagement.description', 'Satış tiplerini yönetin ve düzenleyin')}
+            {t('salesTypeManagement.description')}
           </p>
         </div>
         <Button
@@ -94,7 +94,7 @@ export function SalesTypeManagementPage(): ReactElement {
           className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
         >
           <Plus size={18} className="mr-2" />
-          {t('salesTypeManagement.addButton', 'Yeni Satış Tipi')}
+          {t('salesTypeManagement.addButton')}
         </Button>
       </div>
 
@@ -104,7 +104,7 @@ export function SalesTypeManagementPage(): ReactElement {
             <div className="relative group w-full sm:w-72 lg:w-96">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
               <Input
-                placeholder={t('salesTypeManagement.searchPlaceholder', 'Ad ile ara...')}
+                placeholder={t('salesTypeManagement.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);

@@ -107,13 +107,13 @@ export function SalesTypeForm({
             <div>
               <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
                 {salesType
-                  ? t('salesTypeManagement.form.editTitle', 'Satış Tipi Düzenle')
-                  : t('salesTypeManagement.form.addTitle', 'Yeni Satış Tipi Ekle')}
+                  ? t('salesTypeManagement.form.editTitle')
+                  : t('salesTypeManagement.form.addTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                 {salesType
-                  ? t('salesTypeManagement.form.editDescription', 'Satış tipi bilgilerini düzenleyin')
-                  : t('salesTypeManagement.form.addDescription', 'Yeni satış tipi bilgilerini girin')}
+                  ? t('salesTypeManagement.form.editDescription')
+                  : t('salesTypeManagement.form.addDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -128,20 +128,20 @@ export function SalesTypeForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('salesTypeManagement.form.salesType', 'Satış Tipi')} *
+                      {t('salesTypeManagement.form.salesType')} *
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className={INPUT_STYLE}>
-                          <SelectValue placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')} />
+                          <SelectValue placeholder={t('common.offerType.selectPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value={OfferType.YURTICI}>
-                          {t('common.offerType.yurtici', 'Yurtiçi')}
+                          {t('common.offerType.yurtici')}
                         </SelectItem>
                         <SelectItem value={OfferType.YURTDISI}>
-                          {t('common.offerType.yurtdisi', 'Yurtdışı')}
+                          {t('common.offerType.yurtdisi')}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -156,12 +156,12 @@ export function SalesTypeForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('salesTypeManagement.form.name', 'Ad')} *
+                      {t('salesTypeManagement.form.name')} *
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('salesTypeManagement.form.namePlaceholder', 'Ad girin')}
+                        placeholder={t('salesTypeManagement.form.namePlaceholder')}
                         className={INPUT_STYLE}
                       />
                     </FormControl>
@@ -182,7 +182,7 @@ export function SalesTypeForm({
               disabled={isLoading}
               className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
             >
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={form.handleSubmit(handleSubmit)}
@@ -190,8 +190,8 @@ export function SalesTypeForm({
               className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
             >
               {isLoading
-                ? t('common.saving', 'Kaydediliyor...')
-                : t('common.save', 'Kaydet')}
+                ? t('common.saving')
+                : t('common.save')}
             </Button>
           </div>
         </DialogFooter>

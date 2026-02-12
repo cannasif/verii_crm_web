@@ -22,10 +22,10 @@ export const useUpdateSalesType = (): UseMutationResult<
     mutationFn: ({ id, data }: UpdateSalesTypeVariables) => salesTypeApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [SALES_TYPE_QUERY_KEYS.LIST], exact: false });
-      toast.success(t('salesTypeManagement.messages.updateSuccess', 'Satış tipi başarıyla güncellendi'));
+      toast.success(t('salesTypeManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('salesTypeManagement.messages.updateError', 'Satış tipi güncellenemedi'));
+      toast.error(error.message || t('salesTypeManagement.messages.updateError'));
     },
   });
 };
