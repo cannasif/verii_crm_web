@@ -18,6 +18,7 @@ function buildQueryParams(params: PagedRequest): string {
   if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
   if (params.filters?.length) {
     queryParams.append('filters', JSON.stringify(params.filters));
+    queryParams.append('filterLogic', params.filterLogic ?? 'and');
   }
   return queryParams.toString();
 }
