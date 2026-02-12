@@ -34,6 +34,7 @@ import type { UserPowerBIGroupGetDto } from '../types/userPowerbiGroup.types';
 import { usePowerbiGroupList } from '../hooks/usePowerbiGroup';
 import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
 import { Loader2 } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 const GROUP_LIST_PARAMS = { pageNumber: 1, pageSize: 500 };
 
@@ -109,7 +110,7 @@ export function UserGroupForm({
               name="userId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.userGroup.userId')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(userPowerbiGroupFormSchema, 'userId')}>{t('powerbi.userGroup.userId')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
@@ -136,7 +137,7 @@ export function UserGroupForm({
               name="groupId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.userGroup.groupId')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(userPowerbiGroupFormSchema, 'groupId')}>{t('powerbi.userGroup.groupId')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}

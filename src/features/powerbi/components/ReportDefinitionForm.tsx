@@ -28,6 +28,7 @@ import {
 } from '../types/powerbiReportDefinition.types';
 import type { PowerBIReportDefinitionGetDto } from '../types/powerbiReportDefinition.types';
 import { Loader2 } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface ReportDefinitionFormProps {
   open: boolean;
@@ -121,7 +122,7 @@ export function ReportDefinitionForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.name')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiReportDefinitionFormSchema, 'name')}>{t('powerbi.reportDefinition.name')}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder={t('powerbi.reportDefinition.namePlaceholder')} />
                   </FormControl>
@@ -147,7 +148,7 @@ export function ReportDefinitionForm({
               name="workspaceId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.workspaceId')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiReportDefinitionFormSchema, 'workspaceId')}>{t('powerbi.reportDefinition.workspaceId')}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="00000000-0000-0000-0000-000000000000" />
                   </FormControl>
@@ -160,7 +161,7 @@ export function ReportDefinitionForm({
               name="reportId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.reportId')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiReportDefinitionFormSchema, 'reportId')}>{t('powerbi.reportDefinition.reportId')}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="00000000-0000-0000-0000-000000000000" />
                   </FormControl>

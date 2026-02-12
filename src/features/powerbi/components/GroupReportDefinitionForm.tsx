@@ -34,6 +34,7 @@ import type { PowerBIGroupReportDefinitionGetDto } from '../types/powerbiGroupRe
 import { usePowerbiGroupList } from '../hooks/usePowerbiGroup';
 import { usePowerbiReportDefinitionList } from '../hooks/usePowerbiReportDefinition';
 import { Loader2 } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 const GROUP_LIST_PARAMS = { pageNumber: 1, pageSize: 500 };
 const REPORT_LIST_PARAMS = { pageNumber: 1, pageSize: 500, sortBy: 'Id', sortDirection: 'desc' as const };
@@ -111,7 +112,7 @@ export function GroupReportDefinitionForm({
               name="groupId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.groupReportDefinition.groupId')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiGroupReportDefinitionFormSchema, 'groupId')}>{t('powerbi.groupReportDefinition.groupId')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
@@ -138,7 +139,7 @@ export function GroupReportDefinitionForm({
               name="reportDefinitionId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.groupReportDefinition.reportDefinitionId')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiGroupReportDefinitionFormSchema, 'reportDefinitionId')}>{t('powerbi.groupReportDefinition.reportDefinitionId')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}

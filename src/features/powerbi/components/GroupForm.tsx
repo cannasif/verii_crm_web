@@ -28,6 +28,7 @@ import {
 } from '../types/powerbiGroup.types';
 import type { PowerBIGroupGetDto } from '../types/powerbiGroup.types';
 import { Loader2 } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface GroupFormProps {
   open: boolean;
@@ -100,7 +101,7 @@ export function GroupForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.group.name')}</FormLabel>
+                  <FormLabel required={isZodFieldRequired(powerbiGroupFormSchema, 'name')}>{t('powerbi.group.name')}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder={t('powerbi.group.namePlaceholder')} />
                   </FormControl>
