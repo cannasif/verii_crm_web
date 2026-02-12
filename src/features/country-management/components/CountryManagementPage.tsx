@@ -7,11 +7,19 @@ import {
   Plus, 
   Search, 
   RefreshCw, 
-  X
+  X,
+  SlidersHorizontal,
+  Check,
+  CheckSquare
 } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../utils/query-keys';
-import { CountryTable } from './CountryTable';
+import { CountryTable, getColumnsConfig } from './CountryTable';
 import { CountryForm } from './CountryForm';
 import type { CountryDto } from '../types/country-types';
 import { useCountryList } from '../hooks/useCountryList';
@@ -30,6 +38,12 @@ export function CountryManagementPage(): ReactElement {
   const [searchTerm, setSearchTerm] = useState('');
   
   const queryClient = useQueryClient();
+
+  const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+  const [showColumns, setShowColumns] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<Array<keyof CountryDto>>(
+    tableColumns.map(col => col.key)
+  );
 
   // Fetch all countries for client-side filtering
   const { data: apiResponse, isLoading } = useCountryList({
@@ -90,6 +104,14 @@ export function CountryManagementPage(): ReactElement {
 
   const clearSearch = () => setSearchTerm('');
 
+  const toggleColumn = (key: keyof CountryDto) => {
+    setVisibleColumns(prev => 
+      prev.includes(key) 
+        ? prev.filter(c => c !== key)
+        : [...prev, key]
+    );
+  };
+
   return (
     <div className="w-full space-y-6 relative">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
@@ -103,9 +125,9 @@ export function CountryManagementPage(): ReactElement {
         </div>
 
         <Button 
-          onClick={handleAddClick}
-          className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
-        >
+              onClick={handleAddClick}
+              className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+            >
           <Plus size={18} className="mr-2" />
           {t('countryManagement.addButton', 'Yeni Ülke Ekle')}
         </Button>
@@ -145,6 +167,68 @@ export function CountryManagementPage(): ReactElement {
                     </div>
                 </div>
             </div>
+            
+            <div className="flex items-center gap-2 w-full lg:w-auto justify-end">
+              <Popover open={showColumns} onOpenChange={setShowColumns}>
+                <PopoverTrigger asChild>
+                    <button 
+                        onClick={() => setShowColumns(!showColumns)} 
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showColumns ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
+                    >
+                        <SlidersHorizontal size={16} />
+                        <span className="font-medium text-sm">{t('common.editColumns', 'Sütun Düzenle')}</span>
+                    </button>
+                </PopoverTrigger>
+                <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
+                        <h3 className="text-sm font-semibold text-gray-200">{t('common.columns', 'Görünür Sütunlar')}</h3>
+                        <button onClick={() => setShowColumns(false)} className="text-gray-500 hover:text-white transition-colors">
+                            <X size={16} />
+                        </button>
+                    </div>
+
+                    {/* Checkbox Listesi (Scrollable + Grid) */}
+                    <div className="p-3 max-h-[300px] overflow-y-auto custom-scrollbar bg-[#151025]">
+                        <div className="grid grid-cols-2 gap-2">
+                            {tableColumns.map((col) => (
+                                <label 
+                                    key={col.key} 
+                                    className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-all border border-transparent ${visibleColumns.includes(col.key) ? 'bg-pink-500/10 border-pink-500/20' : 'hover:bg-white/5'}`}
+                                    onClick={(e) => { e.stopPropagation(); toggleColumn(col.key); }}
+                                >
+                                    <div className={`w-4 h-4 rounded flex items-center justify-center transition-colors border ${visibleColumns.includes(col.key) ? 'bg-pink-500 border-pink-500' : 'bg-transparent border-gray-600'}`}>
+                                        {visibleColumns.includes(col.key) && <Check size={10} className="text-white" />}
+                                    </div>
+                                    <span className={`text-xs font-medium ${visibleColumns.includes(col.key) ? 'text-white' : 'text-gray-400'} truncate`}>
+                                        {col.label}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="p-3 border-t border-white/5 bg-[#0b0818]/50 flex justify-between items-center gap-3">
+                        <button 
+                            onClick={() => setVisibleColumns(tableColumns.map(c => c.key))}
+                            className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-white transition-colors px-1"
+                        >
+                            <CheckSquare size={14} />
+                            <span>{t('common.selectAll', 'Tümünü Seç')}</span>
+                        </button>
+                        
+                        <button 
+                            onClick={() => setShowColumns(false)}
+                            className="bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2 px-6 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
+                        >
+                            {t('common.ok', 'TAMAM')}
+                        </button>
+                    </div>
+                </PopoverContent>
+              </Popover>
+            </div>
         </div>
       </div>
 
@@ -153,6 +237,7 @@ export function CountryManagementPage(): ReactElement {
           countries={filteredCountries}
           isLoading={isLoading}
           onEdit={handleEdit}
+          visibleColumns={visibleColumns}
         />
       </div>
 

@@ -263,9 +263,9 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl overflow-hidden transition-colors duration-300">
         
-        <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 flex-shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
+        <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+             <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
                  <Tag size={24} className="text-pink-600 dark:text-pink-500" />
                </div>
@@ -328,7 +328,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
               </Tabs>
             </div>
 
-            <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex-shrink-0 backdrop-blur-sm">
+            <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 shrink-0 backdrop-blur-sm">
               <Button
                 type="button"
                 variant="outline"
@@ -339,7 +339,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
               </Button>
               <Button
                 type="submit"
-                className="h-11 rounded-xl bg-gradient-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white shadow-lg shadow-pink-500/20 border-0"
+                className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white shadow-lg shadow-pink-500/20 border-0"
                 disabled={isSubmitting}
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

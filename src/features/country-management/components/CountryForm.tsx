@@ -124,13 +124,13 @@ export function CountryForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl overflow-hidden transition-colors duration-300">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl text-slate-900 dark:text-white sm:rounded-2xl transition-colors duration-300">
         
-        <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 flex-shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
+        <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                 <Globe size={24} className="text-pink-600 dark:text-pink-500" />
+             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
+                 <Globe size={20} className="text-pink-600 dark:text-pink-500" />
                </div>
              </div>
              <div className="space-y-1">
@@ -156,7 +156,7 @@ export function CountryForm({
             <div className="flex-1 flex flex-col min-h-0">
               <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'header')} className="w-full flex-1 flex flex-col min-h-0">
                 
-                <div className="px-6 pt-4 pb-2 bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-white/5">
+                <div className="px-6 pt-4 pb-2 bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-white/5 flex justify-center">
                   <TabsList className="bg-slate-200/50 dark:bg-white/10 p-1 rounded-lg h-auto grid grid-cols-1 w-full max-w-md">
                     <TabsTrigger value="header" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm py-2 text-xs font-medium transition-all">
                       <FileText size={14} className="mr-2" />
@@ -247,7 +247,7 @@ export function CountryForm({
               </Tabs>
             </div>
 
-            <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex-shrink-0 backdrop-blur-sm">
+            <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 shrink-0 backdrop-blur-sm">
               <Button
                 type="button"
                 variant="outline"
@@ -258,10 +258,10 @@ export function CountryForm({
                 {t('countryManagement.form.cancel', 'İptal')}
               </Button>
               <Button 
-                type="submit" 
-                disabled={isLoading}
-                className="h-11 rounded-xl bg-gradient-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white shadow-lg shadow-pink-500/20 border-0"
-              >
+              type="submit" 
+              disabled={isLoading}
+              className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-500/20 border-0"
+            >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('countryManagement.form.save', 'Kaydet')}
               </Button>
