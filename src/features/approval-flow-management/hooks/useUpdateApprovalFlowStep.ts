@@ -16,10 +16,10 @@ export const useUpdateApprovalFlowStep = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.steps(updatedStep.approvalFlowId),
       });
-      toast.success(t('approvalFlowStep.messages.updateSuccess', 'Akış adımı başarıyla güncellendi'));
+      toast.success(t('approvalFlowStep.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalFlowStep.messages.updateError', 'Akış adımı güncellenemedi'));
+      toast.error(error.message || t('approvalFlowStep.messages.updateError'));
     },
   });
 };

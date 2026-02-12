@@ -20,10 +20,10 @@ export const useCreateApprovalFlow = () => {
         queryKey: [APPROVAL_FLOW_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalFlow.messages.createSuccess', 'Onay akışı başarıyla oluşturuldu'));
+      toast.success(t('approvalFlow.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalFlow.messages.createError', 'Onay akışı oluşturulamadı'));
+      toast.error(error.message || t('approvalFlow.messages.createError'));
     },
   });
 };

@@ -15,10 +15,10 @@ export const useCreateApprovalFlowStep = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.steps(variables.approvalFlowId),
       });
-      toast.success(t('approvalFlowStep.messages.createSuccess', 'Akış adımı başarıyla eklendi'));
+      toast.success(t('approvalFlowStep.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalFlowStep.messages.createError', 'Akış adımı eklenemedi'));
+      toast.error(error.message || t('approvalFlowStep.messages.createError'));
     },
   });
 };

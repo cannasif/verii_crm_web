@@ -167,7 +167,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
   };
 
   const handleDeleteClick = (step: ApprovalFlowStepGetDto): void => {
-    if (confirm(t('approvalFlowStep.messages.deleteConfirm', 'Bu adımı silmek istediğinizden emin misiniz?'))) {
+    if (confirm(t('approvalFlowStep.messages.deleteConfirm'))) {
       deleteStep.mutate({ id: step.id, approvalFlowId: step.approvalFlowId });
     }
   };
@@ -204,7 +204,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
               <Layers size={18} />
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-              {t('approvalFlowStep.title', 'Akış Adımları')}
+              {t('approvalFlowStep.title')}
             </h3>
           </div>
           <Button 
@@ -213,18 +213,18 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
             className="px-4 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-xs font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
-            {t('approvalFlowStep.addButton', 'Adım Ekle')}
+            {t('approvalFlowStep.addButton')}
           </Button>
         </div>
 
         <div>
           {isLoading ? (
             <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
-              {t('approvalFlow.loading', 'Yükleniyor...')}
+              {t('approvalFlow.loading')}
             </div>
           ) : sortedSteps.length === 0 ? (
             <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-8 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl bg-slate-50/50 dark:bg-white/5">
-              {t('approvalFlowStep.empty', 'Henüz adım eklenmemiş')}
+              {t('approvalFlowStep.empty')}
             </div>
           ) : (
             <div className="space-y-3">
@@ -252,10 +252,10 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                     </div>
                     <div className="flex-1">
                       <div className="font-medium text-slate-900 dark:text-white text-sm">
-                        {step.approvalRoleGroupName || t('approvalFlowStep.unknownRoleGroup', 'Rol Grubu Yok')}
+                        {step.approvalRoleGroupName || t('approvalFlowStep.unknownRoleGroup')}
                       </div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {t('approvalFlowStep.stepDescription', 'Onay Sırası: {order}', { order: step.stepOrder })}
+                        {t('approvalFlowStep.stepDescription', { order: step.stepOrder })}
                       </div>
                     </div>
                   </div>
@@ -295,13 +295,13 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                <div>
                   <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
                     {editingStep
-                      ? t('approvalFlowStep.form.editTitle', 'Adım Düzenle')
-                      : t('approvalFlowStep.form.addTitle', 'Yeni Adım Ekle')}
+                      ? t('approvalFlowStep.form.editTitle')
+                      : t('approvalFlowStep.form.addTitle')}
                   </DialogTitle>
                   <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                     {editingStep
-                      ? t('approvalFlowStep.form.editDescription', 'Akış adımı bilgilerini düzenleyin')
-                      : t('approvalFlowStep.form.addDescription', 'Yeni akış adımı ekleyin')}
+                      ? t('approvalFlowStep.form.editDescription')
+                      : t('approvalFlowStep.form.addDescription')}
                   </DialogDescription>
                </div>
             </div>
@@ -316,7 +316,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE}>
-                        {t('approvalFlowStep.form.approvalRoleGroup', 'Rol Grubu')} *
+                        {t('approvalFlowStep.form.approvalRoleGroup')} *
                       </FormLabel>
                       <VoiceSearchCombobox
                         value={field.value && field.value !== 0 ? field.value.toString() : ''}
@@ -325,8 +325,8 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                           value: group.id.toString(),
                           label: group.name,
                         }))}
-                        placeholder={t('approvalFlowStep.form.selectRoleGroup', 'Rol grubu seçin')}
-                        searchPlaceholder={t('common.search', 'Ara...')}
+                        placeholder={t('approvalFlowStep.form.selectRoleGroup')}
+                        searchPlaceholder={t('common.search')}
                         className={INPUT_STYLE}
                       />
                       <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -342,7 +342,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                     disabled={createStep.isPending || updateStep.isPending}
                     className="h-10 px-4 rounded-lg border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300"
                   >
-                    {t('approvalFlowStep.form.cancel', 'İptal')}
+                    {t('approvalFlowStep.form.cancel')}
                   </Button>
                   <Button
                     type="submit"
@@ -350,8 +350,8 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                     className="h-10 px-6 rounded-lg bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-medium shadow-lg shadow-pink-500/20 border-0"
                   >
                     {createStep.isPending || updateStep.isPending
-                      ? t('approvalFlowStep.form.saving', 'Kaydediliyor...')
-                      : t('approvalFlowStep.form.save', 'Kaydet')}
+                      ? t('approvalFlowStep.form.saving')
+                      : t('approvalFlowStep.form.save')}
                   </Button>
                 </div>
               </form>

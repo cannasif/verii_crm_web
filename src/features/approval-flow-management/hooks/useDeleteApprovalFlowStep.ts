@@ -15,10 +15,10 @@ export const useDeleteApprovalFlowStep = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.steps(variables.approvalFlowId),
       });
-      toast.success(t('approvalFlowStep.messages.deleteSuccess', 'Akış adımı başarıyla silindi'));
+      toast.success(t('approvalFlowStep.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalFlowStep.messages.deleteError', 'Akış adımı silinemedi'));
+      toast.error(error.message || t('approvalFlowStep.messages.deleteError'));
     },
   });
 };

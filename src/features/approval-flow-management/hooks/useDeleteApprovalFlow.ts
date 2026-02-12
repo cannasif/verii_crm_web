@@ -19,10 +19,10 @@ export const useDeleteApprovalFlow = () => {
         queryKey: [APPROVAL_FLOW_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalFlow.messages.deleteSuccess', 'Onay akışı başarıyla silindi'));
+      toast.success(t('approvalFlow.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalFlow.messages.deleteError', 'Onay akışı silinemedi'));
+      toast.error(error.message || t('approvalFlow.messages.deleteError'));
     },
   });
 };

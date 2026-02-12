@@ -69,12 +69,12 @@ export function ApprovalFlowTable({
   const deleteApprovalFlow = useDeleteApprovalFlow();
 
   const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalFlowDto>[] => [
-    { key: 'id', label: t('approvalFlow.table.id', 'ID'), className: 'w-[100px]' },
-    { key: 'documentType', label: t('approvalFlow.table.documentType', 'Belge Tipi'), className: 'min-w-[150px]' },
-    { key: 'description', label: t('approvalFlow.table.description', 'Açıklama'), className: 'min-w-[200px]' },
-    { key: 'isActive', label: t('approvalFlow.table.isActive', 'Durum'), className: 'w-[120px]' },
-    { key: 'createdDate', label: t('approvalFlow.table.createdDate', 'Oluşturulma Tarihi'), className: 'w-[160px]' },
-    { key: 'createdByFullUser', label: t('approvalFlow.table.createdBy', 'Oluşturan'), className: 'w-[160px]' },
+    { key: 'id', label: t('approvalFlow.table.id'), className: 'w-[100px]' },
+    { key: 'documentType', label: t('approvalFlow.table.documentType'), className: 'min-w-[150px]' },
+    { key: 'description', label: t('approvalFlow.table.description'), className: 'min-w-[200px]' },
+    { key: 'isActive', label: t('approvalFlow.table.isActive'), className: 'w-[120px]' },
+    { key: 'createdDate', label: t('approvalFlow.table.createdDate'), className: 'w-[160px]' },
+    { key: 'createdByFullUser', label: t('approvalFlow.table.createdBy'), className: 'w-[160px]' },
   ];
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
@@ -127,11 +127,11 @@ export function ApprovalFlowTable({
   const getDocumentTypeLabel = (type: number): string => {
     switch (type) {
       case 1:
-        return t('approvalFlow.documentType.demand', 'Talep');
+        return t('approvalFlow.documentType.demand');
       case 2:
-        return t('approvalFlow.documentType.quotation', 'Teklif');
+        return t('approvalFlow.documentType.quotation');
       case 3:
-        return t('approvalFlow.documentType.order', 'Sipariş');
+        return t('approvalFlow.documentType.order');
       default:
         return '-';
     }
@@ -165,7 +165,7 @@ export function ApprovalFlowTable({
         <div className="flex flex-col items-center gap-2">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <div className="text-sm text-muted-foreground animate-pulse">
-             {t('common.loading', 'Yükleniyor...')}
+             {t('common.loading')}
            </div>
         </div>
       </div>
@@ -176,7 +176,7 @@ export function ApprovalFlowTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('approvalFlow.noData', 'Kayıt Bulunamadı')}
+          {t('approvalFlow.noData')}
         </div>
       </div>
     );
@@ -193,7 +193,7 @@ export function ApprovalFlowTable({
                 className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
             >
               <EyeOff className="mr-2 h-4 w-4" />
-              {t('common.editColumns', 'Sütunları Düzenle')}
+              {t('common.editColumns')}
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -202,7 +202,7 @@ export function ApprovalFlowTable({
             className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
           >
             <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                {t('common.visibleColumns', 'Görünür Sütunlar')}
+                {t('common.visibleColumns')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
             {tableColumns.map((column) => (
@@ -239,7 +239,7 @@ export function ApprovalFlowTable({
                 )
               ))}
               <TableHead className={`${headStyle} text-right w-[100px]`}>
-                {t('approvalFlow.table.actions', 'İşlemler')}
+                {t('approvalFlow.table.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -273,8 +273,8 @@ export function ApprovalFlowTable({
                             className={`${approvalFlow.isActive ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200 dark:bg-slate-500/20 dark:text-slate-400 dark:border-slate-500/30'} border shadow-sm`}
                         >
                             {approvalFlow.isActive
-                            ? t('approvalFlow.active', 'Aktif')
-                            : t('approvalFlow.inactive', 'Pasif')}
+                            ? t('approvalFlow.active')
+                            : t('approvalFlow.inactive')}
                         </Badge>
                     </TableCell>
                 )}
@@ -296,7 +296,7 @@ export function ApprovalFlowTable({
                       size="icon"
                       onClick={() => onEdit(approvalFlow)}
                       className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-colors"
-                      title={t('common.edit', 'Düzenle')}
+                      title={t('common.edit')}
                     >
                       <Edit2 size={15} />
                     </Button>
@@ -305,7 +305,7 @@ export function ApprovalFlowTable({
                       size="icon"
                       onClick={() => handleDeleteClick(approvalFlow)}
                       className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
-                      title={t('common.delete', 'Sil')}
+                      title={t('common.delete')}
                     >
                       <Trash2 size={15} />
                     </Button>
@@ -320,7 +320,7 @@ export function ApprovalFlowTable({
       {/* Pagination Controls */}
       <div className="flex items-center justify-between px-2">
         <div className="text-sm text-slate-500 dark:text-slate-400 hidden sm:block">
-            {t('common.showing', 'Gösterilen')}: <span className="font-medium text-slate-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</span> - <span className="font-medium text-slate-900 dark:text-white">{Math.min(currentPage * pageSize, processedApprovalFlows.length)}</span> / <span className="font-medium text-slate-900 dark:text-white">{processedApprovalFlows.length}</span>
+            {t('common.showing')}: <span className="font-medium text-slate-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</span> - <span className="font-medium text-slate-900 dark:text-white">{Math.min(currentPage * pageSize, processedApprovalFlows.length)}</span> / <span className="font-medium text-slate-900 dark:text-white">{processedApprovalFlows.length}</span>
         </div>
 
         <div className="flex items-center gap-2 ml-auto">
@@ -376,10 +376,10 @@ export function ApprovalFlowTable({
             
             <div className="space-y-2">
               <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
-                {t('approvalFlow.delete.title', 'Onay Akışını Sil')}
+                {t('approvalFlow.delete.title')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400">
-                {t('approvalFlow.delete.confirm', 'Bu onay akışını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')}
+                {t('approvalFlow.delete.confirm')}
               </DialogDescription>
             </div>
 
@@ -401,14 +401,14 @@ export function ApprovalFlowTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-11 rounded-xl border-slate-200 dark:border-white/10"
             >
-              {t('common.cancel', 'Vazgeç')}
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
               className="flex-1 h-11 rounded-xl bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
             >
-              {t('common.delete', 'Sil')}
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

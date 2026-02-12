@@ -103,11 +103,11 @@ export function ApprovalFlowForm({
   const getDocumentTypeLabel = (type: number): string => {
     switch (type) {
       case PricingRuleType.Demand:
-        return t('approvalFlow.documentType.demand', 'Talep');
+        return t('approvalFlow.documentType.demand');
       case PricingRuleType.Quotation:
-        return t('approvalFlow.documentType.quotation', 'Teklif');
+        return t('approvalFlow.documentType.quotation');
       case PricingRuleType.Order:
-        return t('approvalFlow.documentType.order', 'Sipariş');
+        return t('approvalFlow.documentType.order');
       default:
         return '';
     }
@@ -127,13 +127,13 @@ export function ApprovalFlowForm({
              <div>
                 <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
                   {approvalFlow
-                    ? t('approvalFlow.form.editTitle', 'Onay Akışı Düzenle')
-                    : t('approvalFlow.form.addTitle', 'Yeni Onay Akışı Ekle')}
+                    ? t('approvalFlow.form.editTitle')
+                    : t('approvalFlow.form.addTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                   {approvalFlow
-                    ? t('approvalFlow.form.editDescription', 'Onay akışı bilgilerini düzenleyin')
-                    : t('approvalFlow.form.addDescription', 'Yeni onay akışı bilgilerini girin')}
+                    ? t('approvalFlow.form.editDescription')
+                    : t('approvalFlow.form.addDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -148,7 +148,7 @@ export function ApprovalFlowForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('approvalFlow.form.documentType', 'Belge Tipi')} *
+                      {t('approvalFlow.form.documentType')} *
                     </FormLabel>
                     <VoiceSearchCombobox
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}
@@ -161,8 +161,8 @@ export function ApprovalFlowForm({
                         value: type.toString(),
                         label: getDocumentTypeLabel(type),
                       }))}
-                      placeholder={t('approvalFlow.form.selectDocumentType', 'Belge tipi seçin')}
-                      searchPlaceholder={t('common.search', 'Ara...')}
+                      placeholder={t('approvalFlow.form.selectDocumentType')}
+                      searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -176,13 +176,13 @@ export function ApprovalFlowForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('approvalFlow.form.description', 'Açıklama')}
+                      {t('approvalFlow.form.description')}
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
                         value={field.value || ''}
-                        placeholder={t('approvalFlow.form.descriptionPlaceholder', 'Açıklama girin (opsiyonel)')}
+                        placeholder={t('approvalFlow.form.descriptionPlaceholder')}
                         maxLength={200}
                         rows={3}
                         className={`${INPUT_STYLE} h-auto min-h-[100px] py-2`}
@@ -200,10 +200,10 @@ export function ApprovalFlowForm({
                   <FormItem className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0c0516] p-4">
                     <div className="space-y-0.5">
                       <FormLabel className={LABEL_STYLE}>
-                        {t('approvalFlow.form.isActive', 'Aktif')}
+                        {t('approvalFlow.form.isActive')}
                       </FormLabel>
                       <div className="text-xs text-slate-500 dark:text-slate-400">
-                        {t('approvalFlow.form.isActiveDescription', 'Onay akışının aktif durumu')}
+                        {t('approvalFlow.form.isActiveDescription')}
                       </div>
                     </div>
                     <FormControl>
@@ -235,7 +235,7 @@ export function ApprovalFlowForm({
               disabled={isLoading}
               className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
             >
-              {t('approvalFlow.form.cancel', 'İptal')}
+              {t('approvalFlow.form.cancel')}
             </Button>
             <Button 
               onClick={form.handleSubmit(handleSubmit)}
@@ -243,8 +243,8 @@ export function ApprovalFlowForm({
               className="bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
             >
               {isLoading
-                ? t('approvalFlow.form.saving', 'Kaydediliyor...')
-                : t('approvalFlow.form.save', 'Kaydet')}
+                ? t('approvalFlow.form.saving')
+                : t('approvalFlow.form.save')}
             </Button>
           </div>
         </DialogFooter>

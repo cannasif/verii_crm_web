@@ -22,10 +22,10 @@ export const useUpdateApprovalFlow = () => {
         queryKey: [APPROVAL_FLOW_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalFlow.messages.updateSuccess', 'Onay akışı başarıyla güncellendi'));
+      toast.success(t('approvalFlow.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalFlow.messages.updateError', 'Onay akışı güncellenemedi'));
+      toast.error(error.message || t('approvalFlow.messages.updateError'));
     },
   });
 };
