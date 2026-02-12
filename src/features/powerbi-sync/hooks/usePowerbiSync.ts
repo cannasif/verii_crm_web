@@ -12,10 +12,10 @@ export function usePowerbiReportSyncMutation() {
     mutationFn: (workspaceId?: string | null) => powerbiSyncApi.sync(workspaceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.reportDefinitions.all });
-      toast.success(t('powerbiSync.success', 'Senkronizasyon başarılı'));
+      toast.success(t('powerbiSync.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbiSync.error', 'Senkronizasyon başarısız'));
+      toast.error(error.message ?? t('powerbiSync.error'));
     },
   });
 }
