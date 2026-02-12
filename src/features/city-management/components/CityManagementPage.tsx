@@ -15,7 +15,11 @@ import {
   Trash2,
   Map,
   Hash,
-  Globe
+  Globe,
+  Menu,
+  FileSpreadsheet,
+  FileText,
+  Presentation
 } from 'lucide-react';
 import {
   Popover,
@@ -64,7 +68,7 @@ export function CityManagementPage(): ReactElement {
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   const [showColumns, setShowColumns] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState<Array<keyof CityDto | 'actions'>>(
+  const [visibleColumns, setVisibleColumns] = useState<Array<keyof CityDto>>(
     tableColumns.map(col => col.key)
   );
 
@@ -131,6 +135,85 @@ export function CityManagementPage(): ReactElement {
     setActiveFilters(empty);
   };
 
+  const handleExportExcel = async () => {
+    const dataToExport = filteredCities.map(city => {
+        const row: Record<string, string | number | boolean | null | undefined> = {};
+        visibleColumns.forEach(key => {
+            const col = tableColumns.find(c => c.key === key);
+            if (col) {
+                const value = city[col.key];
+                row[col.label] = (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
+                  ? value
+                  : value ?? '';
+            }
+        });
+        return row;
+    });
+
+    const XLSX = await import('xlsx');
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Cities");
+    XLSX.writeFile(wb, "cities.xlsx");
+  };
+
+  const handleExportPDF = async () => {
+    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable'),
+    ]);
+    const doc = new JsPDF();
+    
+    const tableColumn = tableColumns
+        .filter(col => visibleColumns.includes(col.key))
+        .map(col => col.label);
+
+    const tableRows = filteredCities.map(city => {
+        return tableColumns
+            .filter(col => visibleColumns.includes(col.key))
+            .map(col => city[col.key] || '');
+    });
+
+    // @ts-ignore
+    autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+    });
+
+    doc.save("cities.pdf");
+  };
+
+  type PptxTableRow = Array<{ text: string }>;
+
+  const handleExportPowerPoint = async () => {
+    const { default: PptxGenJS } = await import('pptxgenjs');
+    const pptx = new PptxGenJS();
+    const slide = pptx.addSlide();
+    
+    // Add Title
+    slide.addText("City Report", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
+
+    // Prepare Table Data
+    const headers = tableColumns
+        .filter(col => visibleColumns.includes(col.key))
+        .map(col => col.label);
+
+    const rows = filteredCities.map(city => {
+        return tableColumns
+            .filter(col => visibleColumns.includes(col.key))
+            .map(col => String(city[col.key] || ''));
+    });
+
+    const tableData: PptxTableRow[] = [
+      headers.map(text => ({ text })),
+      ...rows.map(row => row.map(text => ({ text }))),
+    ];
+
+    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
+
+    pptx.writeFile({ fileName: "cities.pptx" });
+  };
+
   const handleAddClick = (): void => {
     setEditingCity(null);
     setFormOpen(true);
@@ -156,7 +239,7 @@ export function CityManagementPage(): ReactElement {
 
   const clearSearch = () => setSearchTerm('');
 
-  const toggleColumn = (key: keyof CityDto | 'actions') => {
+  const toggleColumn = (key: keyof CityDto) => {
     setVisibleColumns(prev => 
       prev.includes(key) 
         ? prev.filter(c => c !== key)
@@ -379,7 +462,42 @@ export function CityManagementPage(): ReactElement {
                         </button>
                     </div>
                 </PopoverContent>
-            </Popover>
+              </Popover>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
+                    <Menu size={18} className="text-slate-500 dark:text-slate-400" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {t('common.actions')}
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-white/5 my-1"></div>
+
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {t('common.export')}
+                    </div>
+                    <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <FileSpreadsheet size={16} className="text-emerald-500" />
+                      <span>{t('common.exportExcel')}</span>
+                    </button>
+                    <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <FileText size={16} className="text-red-400" />
+                      <span>{t('common.exportPDF')}</span>
+                    </button>
+                    <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <Presentation size={16} className="text-orange-400" />
+                      <span>{t('common.exportPPT')}</span>
+                    </button>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
         </div>
       </div>

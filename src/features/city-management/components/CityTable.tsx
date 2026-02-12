@@ -1,6 +1,23 @@
-import { type ReactElement, useState, useMemo } from 'react';
+import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import {
   Table,
   TableBody,
@@ -29,38 +46,78 @@ import {
   ArrowDown, 
   Calendar,
   Map,
-  Loader2
+  Loader2,
+  GripVertical
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 
 export interface ColumnDef<T> {
-  key: keyof T | 'actions';
+  key: keyof T;
   label: string;
   type: 'text' | 'date' | 'user' | 'id' | 'country';
   className?: string;
 }
 
-interface CityTableProps {
-  cities: CityDto[];
-  isLoading: boolean;
-  onEdit: (city: CityDto) => void;
+export const getColumnsConfig = (t: TFunction): ColumnDef<CityDto>[] => [
+    { key: 'id', label: t('cityManagement.table.id'), type: 'id', className: 'w-[60px] md:w-[80px]' },
+    { key: 'name', label: t('cityManagement.table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
+    { key: 'erpCode', label: t('cityManagement.table.erpCode'), type: 'text', className: 'w-[100px] md:w-[140px]' },
+    { key: 'countryName', label: t('cityManagement.table.countryName'), type: 'country', className: 'min-w-[140px] md:min-w-[180px]' },
+    { key: 'createdDate', label: t('cityManagement.table.createdDate'), type: 'date', className: 'w-[140px] md:w-[160px]' },
+    { key: 'createdByFullUser', label: t('cityManagement.table.createdBy'), type: 'user', className: 'w-[140px] md:w-[160px]' },
+];
+
+interface DraggableTableHeadProps extends React.ComponentProps<typeof TableHead> {
+  id: string;
 }
 
-export const getColumnsConfig = (t: TFunction): ColumnDef<CityDto>[] => [
-    { key: 'id', label: t('cityManagement.table.id'), type: 'id', className: 'w-[100px]' },
-    { key: 'name', label: t('cityManagement.table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
-    { key: 'erpCode', label: t('cityManagement.table.erpCode'), type: 'text', className: 'w-[140px]' },
-    { key: 'countryName', label: t('cityManagement.table.countryName'), type: 'country', className: 'min-w-[180px]' },
-    { key: 'createdDate', label: t('cityManagement.table.createdDate'), type: 'date', className: 'w-[160px]' },
-    { key: 'createdByFullUser', label: t('cityManagement.table.createdBy'), type: 'user', className: 'w-[160px]' },
-];
+const DraggableTableHead = ({ id, children, className, ...props }: DraggableTableHeadProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 1 : 'auto',
+    backgroundColor: isDragging ? 'var(--accent)' : undefined,
+  };
+
+  return (
+    <TableHead
+      ref={setNodeRef}
+      style={style}
+      className={`${className} ${isDragging ? 'bg-accent/20' : ''}`}
+      {...props}
+    >
+      <div className="flex items-center gap-1">
+        <button 
+          {...attributes} 
+          {...listeners} 
+          className="cursor-grab active:cursor-grabbing hover:bg-slate-100 dark:hover:bg-white/10 p-1 rounded transition-colors touch-none"
+        >
+            <GripVertical size={14} className="text-slate-400/50 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300" />
+        </button>
+        <div className="flex-1">
+            {children}
+        </div>
+      </div>
+    </TableHead>
+  );
+};
 
 interface CityTableProps {
   cities: CityDto[];
   isLoading: boolean;
   onEdit: (city: CityDto) => void;
   pageSize?: number;
-  visibleColumns?: Array<keyof CityDto | 'actions'>;
+  visibleColumns?: Array<keyof CityDto>;
 }
 
 export function CityTable({
@@ -81,9 +138,50 @@ export function CityTable({
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (tableColumns.length > 0 && columnOrder.length === 0) {
+      setColumnOrder(tableColumns.map(col => col.key as string));
+    }
+  }, [tableColumns, columnOrder.length]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+        activationConstraint: {
+            distance: 8,
+        },
+    }),
+    useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+        setColumnOrder((items) => {
+            const oldIndex = items.indexOf(active.id as string);
+            const newIndex = items.indexOf(over?.id as string);
+            return arrayMove(items, oldIndex, newIndex);
+        });
+    }
+  };
+  
   const visibleColumns = useMemo(() => {
     return propVisibleColumns || tableColumns.map(col => col.key);
   }, [propVisibleColumns, tableColumns]);
+
+  const orderedColumns = useMemo(() => {
+    if (columnOrder.length === 0) return tableColumns;
+    
+    return columnOrder
+        .map(key => tableColumns.find(col => col.key === key))
+        .filter((col): col is ColumnDef<CityDto> => 
+            col !== undefined && visibleColumns.includes(col.key as keyof CityDto)
+        );
+  }, [columnOrder, tableColumns, visibleColumns]);
 
   const processedCities = useMemo(() => {
     const result = [...cities];
@@ -133,7 +231,6 @@ export function CityTable({
   };
 
   const renderCellContent = (item: CityDto, column: ColumnDef<CityDto>) => {
-    if (column.key === 'actions') return '-';
     const value = item[column.key];
 
     if (!value && value !== 0) return '-';
@@ -200,55 +297,69 @@ export function CityTable({
     );
   }
 
-  const headStyle = "cursor-pointer select-none text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors py-4 font-bold text-xs uppercase tracking-wider whitespace-nowrap";
-  const cellStyle = "text-slate-600 dark:text-slate-400 text-sm py-4 border-b border-slate-100 dark:border-white/5 align-middle";
+  const headStyle = "cursor-pointer select-none text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors py-1.5 font-bold text-xs uppercase tracking-wider whitespace-nowrap";
+  const cellStyle = "text-slate-600 dark:text-slate-400 text-sm py-1.5 border-b border-slate-100 dark:border-white/5 align-middle";
 
   return (
     <div className="flex flex-col gap-4">
       
       <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-transparent">
-        <Table>
-            <TableHeader className="bg-slate-50/50 dark:bg-white/5">
-              <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
-                {tableColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (
-                    <TableHead 
-                        key={col.key} 
-                        onClick={() => handleSort(col.key as keyof CityDto)} 
-                        className={headStyle}
-                    >
-                        <div className="flex items-center gap-2">
-                            {col.label}
-                            <SortIcon column={col.key as keyof CityDto} />
-                        </div>
-                    </TableHead>
-                ))}
-                <TableHead className={`${headStyle} text-right w-[100px]`}>
-                  {t('cityManagement.actions')}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedCities.map((city: CityDto, index: number) => (
-                <TableRow 
-                  key={city.id || `city-${index}`}
-                  className="border-b border-slate-100 dark:border-white/5 transition-colors duration-200 hover:bg-pink-50/40 dark:hover:bg-pink-500/5 group last:border-0"
-                >
-                  {tableColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (
-                      <TableCell key={`${city.id}-${col.key}`} className={`${cellStyle} ${col.className || ''}`}>
-                          {renderCellContent(city, col)}
-                      </TableCell>
-                  ))}
+        <DndContext 
+            sensors={sensors} 
+            collisionDetection={closestCenter} 
+            onDragEnd={handleDragEnd}
+        >
+            <div className="w-full overflow-x-auto">
+                <Table>
+                    <TableHeader className="bg-slate-50/50 dark:bg-white/5">
+                    <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
+                        <SortableContext 
+                            items={orderedColumns.map(col => col.key as string)}
+                            strategy={horizontalListSortingStrategy}
+                        >
+                            {orderedColumns.map((col) => (
+                                <DraggableTableHead 
+                                    key={col.key} 
+                                    id={col.key as string}
+                                    onClick={() => handleSort(col.key as keyof CityDto)} 
+                                    className={headStyle}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        {col.label}
+                                        <SortIcon column={col.key as keyof CityDto} />
+                                    </div>
+                                </DraggableTableHead>
+                            ))}
+                        </SortableContext>
+                        <TableHead className={`${headStyle} text-right w-[100px]`}>
+                        {t('cityManagement.actions')}
+                        </TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {paginatedCities.map((city: CityDto, index: number) => (
+                        <TableRow 
+                        key={city.id || `city-${index}`}
+                        className="border-b border-slate-100 dark:border-white/5 transition-colors duration-200 hover:bg-pink-50/40 dark:hover:bg-pink-500/5 group last:border-0"
+                        >
+                        {orderedColumns.map((col) => (
+                            <TableCell key={`${city.id}-${col.key}`} className={`${cellStyle} ${col.className || ''}`}>
+                                {renderCellContent(city, col)}
+                            </TableCell>
+                        ))}
 
-                  <TableCell className={`${cellStyle} text-right`}>
-                    <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10" onClick={() => onEdit(city)}><Edit2 size={16} /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10" onClick={() => handleDeleteClick(city)}><Trash2 size={16} /></Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                        <TableCell className={`${cellStyle} text-right`}>
+                            <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10" onClick={() => onEdit(city)}><Edit2 size={16} /></Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10" onClick={() => handleDeleteClick(city)}><Trash2 size={16} /></Button>
+                            </div>
+                        </TableCell>
+                        </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+            </div>
+        </DndContext>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
@@ -307,7 +418,6 @@ export function CityTable({
               {t('common.delete.action')}
             </Button>
           </DialogFooter>
-
         </DialogContent>
       </Dialog>
     </div>
