@@ -31,6 +31,7 @@ import type { PermissionDefinitionDto } from '../types/access-control.types';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayMeta } from '../utils/permission-config';
 import { Badge } from '@/components/ui/badge';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface PermissionDefinitionFormProps {
   open: boolean;
@@ -119,7 +120,7 @@ export function PermissionDefinitionForm({
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="inline-flex items-center">
+                    <FormLabel className="inline-flex items-center" required={isZodFieldRequired(createPermissionDefinitionSchema, 'code')}>
                       {t('permissionDefinitions.form.code')}
                       <FieldHelpTooltip text={t('help.permissionDefinition.code')} />
                     </FormLabel>
@@ -175,7 +176,7 @@ export function PermissionDefinitionForm({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="inline-flex items-center">
+                    <FormLabel className="inline-flex items-center" required={isZodFieldRequired(createPermissionDefinitionSchema, 'name')}>
                       {t('permissionDefinitions.form.name')}
                       <FieldHelpTooltip text={t('help.permissionDefinition.name')} />
                     </FormLabel>

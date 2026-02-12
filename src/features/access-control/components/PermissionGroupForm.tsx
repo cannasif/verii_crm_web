@@ -26,6 +26,7 @@ import { PermissionDefinitionMultiSelect } from './PermissionDefinitionMultiSele
 import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { createPermissionGroupSchema, type CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
 import type { PermissionGroupDto } from '../types/access-control.types';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface PermissionGroupFormProps {
   open: boolean;
@@ -107,7 +108,7 @@ export function PermissionGroupForm({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="inline-flex items-center">
+                    <FormLabel className="inline-flex items-center" required={isZodFieldRequired(createPermissionGroupSchema, 'name')}>
                       {t('permissionGroups.form.name')}
                       <FieldHelpTooltip text={t('help.permissionGroup.name')} />
                     </FormLabel>
