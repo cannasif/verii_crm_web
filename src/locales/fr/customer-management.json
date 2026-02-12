@@ -8,7 +8,7 @@
     "newThisMonth": "Nouveaux ce Mois"
   },
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "customerCode": "Code Client",
     "name": "Nom du Client",
     "customerType": "Type de Client",
@@ -23,10 +23,10 @@
     "createdBy": "Créé Par",
     "showing": "Affichage de {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "phone2": "Telefon 2",
+    "phone2": "téléphone 2",
     "salesRepCode": "Sales Representative",
     "branchCode": "Code succursale",
-    "defaultShippingAddressId": "Varsayılan Sevk Adresi"
+    "defaultShippingAddressId": "Adresse de livraison par défaut"
   },
   "form": {
     "addCustomer": "Ajouter un Nouveau Client",
@@ -84,14 +84,14 @@
     "isCompletedDescription": "Toutes les informations pour ce client sont-elles complètes ?",
     "isERPIntegrated": "Intégré ERP",
     "none": "Aucun",
-    "phone2": "Telefon 2",
-    "phone2Placeholder": "İkinci telefon numarasını girin (opsiyonel)",
-    "phone2MaxLength": "İkinci telefon numarası en fazla 100 karakter olabilir",
+    "phone2": "téléphone 2",
+    "phone2Placeholder": "Entrez le deuxième numéro de téléphone (facultatif)",
+    "phone2MaxLength": "Le deuxième numéro de téléphone peut contenir jusqu'à 100 caractères",
     "notesMaxLength": "Notes must be at most 250 characters",
-    "salesRepCodeMaxLength": "Satış temsilcisi kodu en fazla 50 karakter olabilir",
-    "groupCodeMaxLength": "Grup kodu en fazla 50 karakter olabilir",
-    "defaultShippingAddress": "Varsayılan Sevk Adresi",
-    "selectDefaultShippingAddress": "Varsayılan sevk adresi seçin"
+    "salesRepCodeMaxLength": "Le code du représentant commercial peut contenir jusqu'à 50 caractères",
+    "groupCodeMaxLength": "Le code de groupe peut contenir jusqu'à 50 caractères",
+    "defaultShippingAddress": "Adresse de livraison par défaut",
+    "selectDefaultShippingAddress": "Choisissez l'adresse de livraison par défaut"
   },
   "delete": {
     "action": "Supprimer",
