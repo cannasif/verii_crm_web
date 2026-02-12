@@ -21,10 +21,10 @@ export const useCreateDistrict = () => {
         queryKey: [DISTRICT_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('districtManagement.messages.createSuccess', 'İlçe başarıyla oluşturuldu'));
+      toast.success(t('districtManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('districtManagement.messages.createError', 'İlçe oluşturulamadı'));
+      toast.error(error.message || t('districtManagement.messages.createError'));
     },
   });
 };

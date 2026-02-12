@@ -111,13 +111,13 @@ export function DistrictForm({
              <div className="space-y-1">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   {district
-                    ? t('districtManagement.form.editDistrict', 'İlçe Düzenle')
-                    : t('districtManagement.form.addDistrict', 'Yeni İlçe Ekle')}
+                    ? t('districtManagement.form.editDistrict')
+                    : t('districtManagement.form.addDistrict')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                   {district
-                    ? t('districtManagement.form.editDescription', 'İlçe bilgilerini düzenleyin')
-                    : t('districtManagement.form.addDescription', 'Yeni ilçe bilgilerini girin')}
+                    ? t('districtManagement.form.editDescription')
+                    : t('districtManagement.form.addDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -132,12 +132,12 @@ export function DistrictForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('districtManagement.form.name', 'İlçe Adı')} *
+                      {t('districtManagement.form.name')} *
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('districtManagement.form.namePlaceholder', 'İlçe adını girin')}
+                        placeholder={t('districtManagement.form.namePlaceholder')}
                         maxLength={100}
                         className={INPUT_STYLE}
                       />
@@ -153,14 +153,14 @@ export function DistrictForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('districtManagement.form.city', 'Şehir')} *
+                      {t('districtManagement.form.city')} *
                     </FormLabel>
                     <VoiceSearchCombobox
                       options={cityOptions}
                       value={field.value?.toString()}
                       onSelect={(value) => field.onChange(value ? Number(value) : 0)}
-                      placeholder={t('districtManagement.form.selectCity', 'Şehir seçin')}
-                      searchPlaceholder={t('districtManagement.form.searchCity', 'Şehir ara...')}
+                      placeholder={t('districtManagement.form.selectCity')}
+                      searchPlaceholder={t('districtManagement.form.searchCity')}
                       className={INPUT_STYLE}
                       modal={true}
                       disabled={citiesLoading}
@@ -176,12 +176,12 @@ export function DistrictForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('districtManagement.form.erpCode', 'ERP Kodu')}
+                      {t('districtManagement.form.erpCode')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('districtManagement.form.erpCodePlaceholder', 'ERP kodunu girin (opsiyonel)')}
+                        placeholder={t('districtManagement.form.erpCodePlaceholder')}
                         maxLength={10}
                         className={INPUT_STYLE}
                       />
@@ -199,7 +199,7 @@ export function DistrictForm({
                   disabled={isLoading}
                   className="h-12 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 font-semibold"
                 >
-                  {t('districtManagement.cancel', 'İptal')}
+                  {t('districtManagement.cancel')}
                 </Button>
                 <Button 
                   type="submit" 
@@ -207,8 +207,8 @@ export function DistrictForm({
                   className="h-12 px-8 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-bold shadow-lg shadow-pink-500/20 border-0 transition-all hover:scale-[1.02]"
                 >
                   {isLoading
-                    ? t('districtManagement.saving', 'Kaydediliyor...')
-                    : t('districtManagement.save', 'Kaydet')}
+                    ? t('districtManagement.saving')
+                    : t('districtManagement.save')}
                 </Button>
               </div>
             </form>

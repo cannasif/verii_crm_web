@@ -23,10 +23,10 @@ export const useUpdateDistrict = () => {
         queryKey: [DISTRICT_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('districtManagement.messages.updateSuccess', 'İlçe başarıyla güncellendi'));
+      toast.success(t('districtManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('districtManagement.messages.updateError', 'İlçe güncellenemedi'));
+      toast.error(error.message || t('districtManagement.messages.updateError'));
     },
   });
 };

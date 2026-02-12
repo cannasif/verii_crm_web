@@ -61,7 +61,7 @@ export function DistrictManagementPage(): ReactElement {
   }, [allDistricts, searchTerm, activeFilter]);
 
   useEffect(() => {
-    setPageTitle(t('districtManagement.menu', 'İlçe Yönetimi'));
+    setPageTitle(t('districtManagement.menu'));
     return () => {
       setPageTitle(null);
     };
@@ -113,10 +113,10 @@ export function DistrictManagementPage(): ReactElement {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {t('districtManagement.menu', 'İlçe Yönetimi')}
+            {t('districtManagement.menu')}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            {t('districtManagement.description', 'İlçeleri yönetin ve düzenleyin')}
+            {t('districtManagement.description')}
           </p>
         </div>
         <Button 
@@ -124,7 +124,7 @@ export function DistrictManagementPage(): ReactElement {
           className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
         >
           <Plus size={18} className="mr-2" />
-          {t('districtManagement.addButton', 'Yeni İlçe Ekle')}
+          {t('districtManagement.addButton')}
         </Button>
       </div>
 
@@ -137,7 +137,7 @@ export function DistrictManagementPage(): ReactElement {
                 <div className="relative group w-full sm:w-72 lg:w-96">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
                     <Input
-                        placeholder={t('common.search', 'Hızlı Ara...')}
+                        placeholder={t('common.search')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all w-full"
@@ -177,7 +177,7 @@ export function DistrictManagementPage(): ReactElement {
                                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}
                         `}
                     >
-                        {filter === 'all' ? t('common.all', 'Tümü') : filter === 'active' ? t('status.active', 'Aktif') : t('status.inactive', 'Pasif')}
+                        {filter === 'all' ? t('common.all') : filter === 'active' ? t('status.active') : t('status.inactive')}
                     </button>
                 ))}
             </div>

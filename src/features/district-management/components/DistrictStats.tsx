@@ -46,19 +46,19 @@ export function DistrictStats(): ReactElement {
 
   const stats = [
     {
-      title: t('districtManagement.stats.totalDistricts', 'Total Districts'),
+      title: t('districtManagement.stats.totalDistricts'),
       value: statsData?.totalDistricts ?? '-',
       icon: MapPin,
       iconContainerClass: 'bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400 border-pink-100 dark:border-pink-500/20',
     },
     {
-      title: t('districtManagement.stats.activeDistricts', 'Active Districts'),
+      title: t('districtManagement.stats.activeDistricts'),
       value: statsData?.activeDistricts ?? '-',
       icon: Activity,
       iconContainerClass: 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border-orange-100 dark:border-orange-500/20',
     },
     {
-      title: t('districtManagement.stats.newThisMonth', 'New This Month'),
+      title: t('districtManagement.stats.newThisMonth'),
       value: statsData?.newThisMonth ?? '-',
       icon: Calendar,
       iconContainerClass: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border-blue-100 dark:border-blue-500/20',

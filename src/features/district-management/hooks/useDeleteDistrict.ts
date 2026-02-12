@@ -20,10 +20,10 @@ export const useDeleteDistrict = () => {
         queryKey: [DISTRICT_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('districtManagement.messages.deleteSuccess', 'İlçe başarıyla silindi'));
+      toast.success(t('districtManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('districtManagement.messages.deleteError', 'İlçe silinemedi'));
+      toast.error(error.message || t('districtManagement.messages.deleteError'));
     },
   });
 };
