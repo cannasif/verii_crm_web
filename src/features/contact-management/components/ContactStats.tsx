@@ -21,7 +21,7 @@ export function ContactStats(): ReactElement {
           <Card key={i} className="bg-white/50 dark:bg-[#1a1025]/40 border border-slate-200 dark:border-white/5 shadow-sm">
             <CardHeader>
               <CardTitle className="text-sm font-medium text-slate-400">
-                {t('contactManagement.loading', 'Yükleniyor...')}
+                {t('contactManagement.loading')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -60,7 +60,7 @@ export function ContactStats(): ReactElement {
         <div className={glowStyle} />
         <div className="flex justify-between items-start relative z-10">
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('contactManagement.stats.totalContacts', 'Toplam İletişim')}
+            {t('contactManagement.stats.totalContacts')}
           </span>
           <div className="p-2 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 rounded-lg shadow-sm border border-blue-100 dark:border-blue-500/20">
              <Users size={18} />
@@ -76,7 +76,7 @@ export function ContactStats(): ReactElement {
         <div className={glowStyle} />
         <div className="flex justify-between items-start relative z-10">
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('contactManagement.stats.activeContacts', 'Aktif İletişim')}
+            {t('contactManagement.stats.activeContacts')}
           </span>
           <div className="p-2 bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400 rounded-lg shadow-sm border border-green-100 dark:border-green-500/20">
              <CheckCircle2 size={18} />
@@ -92,7 +92,7 @@ export function ContactStats(): ReactElement {
         <div className={glowStyle} />
         <div className="flex justify-between items-start relative z-10">
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('contactManagement.stats.newThisMonth', 'Bu Ay Yeni')}
+            {t('contactManagement.stats.newThisMonth')}
           </span>
           <div className="p-2 bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 rounded-lg shadow-sm border border-orange-100 dark:border-orange-500/20">
              <Zap size={18} />

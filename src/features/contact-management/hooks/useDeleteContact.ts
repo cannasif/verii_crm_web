@@ -18,10 +18,10 @@ export const useDeleteContact = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('contactManagement.messages.deleteSuccess', 'İletişim başarıyla silindi'));
+      toast.success(t('contactManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('contactManagement.messages.deleteError', 'İletişim silinemedi'));
+      toast.error(error.message || t('contactManagement.messages.deleteError'));
     },
   });
 };

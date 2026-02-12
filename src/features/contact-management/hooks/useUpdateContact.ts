@@ -21,10 +21,10 @@ export const useUpdateContact = () => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedContact.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('contactManagement.messages.updateSuccess', 'İletişim başarıyla güncellendi'));
+      toast.success(t('contactManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('contactManagement.messages.updateError', 'İletişim güncellenemedi'));
+      toast.error(error.message || t('contactManagement.messages.updateError'));
     },
   });
 };

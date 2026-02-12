@@ -71,17 +71,17 @@ interface ContactTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ContactDto>[] => [
-    { key: 'id', label: t('contactManagement.table.id', 'ID'), type: 'text', className: 'font-medium w-[60px] md:w-[80px]' },
-    { key: 'salutation', label: t('contactManagement.table.salutation', 'Hitap'), type: 'salutation', className: 'w-[96px] md:w-[120px]' },
-    { key: 'fullName', label: t('contactManagement.table.fullName', 'Ad Soyad'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
-    { key: 'email', label: t('contactManagement.table.email', 'E-posta'), type: 'email', className: 'min-w-[160px] md:min-w-[200px] break-all' },
-    { key: 'phone', label: t('contactManagement.table.phone', 'Telefon'), type: 'phone', className: 'whitespace-nowrap' },
-    { key: 'mobile', label: t('contactManagement.table.mobile', 'Mobil'), type: 'mobile', className: 'whitespace-nowrap' },
-    { key: 'customerName', label: t('contactManagement.table.customer', 'Müşteri'), type: 'customer', className: 'min-w-[160px] md:min-w-[200px]' },
-    { key: 'titleName', label: t('contactManagement.table.title', 'Ünvan'), type: 'title', className: 'min-w-[120px] md:min-w-[150px]' },
-    { key: 'createdDate', label: t('contactManagement.table.createdDate', 'Oluşturulma'), type: 'date', className: 'whitespace-nowrap' },
-    { key: 'createdByFullUser', label: t('contactManagement.table.createdBy', 'Oluşturan'), type: 'user', className: 'whitespace-nowrap' },
-    { key: 'status', label: t('contactManagement.table.status', 'Durum'), type: 'status', className: 'w-[84px] md:w-[100px]' },
+    { key: 'id', label: t('contactManagement.table.id'), type: 'text', className: 'font-medium w-[60px] md:w-[80px]' },
+    { key: 'salutation', label: t('contactManagement.table.salutation'), type: 'salutation', className: 'w-[96px] md:w-[120px]' },
+    { key: 'fullName', label: t('contactManagement.table.fullName'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
+    { key: 'email', label: t('contactManagement.table.email'), type: 'email', className: 'min-w-[160px] md:min-w-[200px] break-all' },
+    { key: 'phone', label: t('contactManagement.table.phone'), type: 'phone', className: 'whitespace-nowrap' },
+    { key: 'mobile', label: t('contactManagement.table.mobile'), type: 'mobile', className: 'whitespace-nowrap' },
+    { key: 'customerName', label: t('contactManagement.table.customer'), type: 'customer', className: 'min-w-[160px] md:min-w-[200px]' },
+    { key: 'titleName', label: t('contactManagement.table.title'), type: 'title', className: 'min-w-[120px] md:min-w-[150px]' },
+    { key: 'createdDate', label: t('contactManagement.table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
+    { key: 'createdByFullUser', label: t('contactManagement.table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
+    { key: 'status', label: t('contactManagement.table.status'), type: 'status', className: 'w-[84px] md:w-[100px]' },
 ];
 
 interface DraggableTableHeadProps extends React.ComponentProps<typeof TableHead> {
@@ -261,21 +261,21 @@ export function ContactTable({
         case 'status':
             return (
                 <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 shadow-none font-medium">
-                    {value ? String(value) : t('common.active', 'Aktif')}
+                    {value ? String(value) : t('common.active')}
                 </Badge>
             );
         case 'salutation': {
             const salutationValue = Number(value);
             const salutationText =
               salutationValue === 1
-                ? t('contactManagement.form.salutationMr', 'Bay')
+                ? t('contactManagement.form.salutationMr')
                 : salutationValue === 2
-                  ? t('contactManagement.form.salutationMs', 'Bayan')
+                  ? t('contactManagement.form.salutationMs')
                   : salutationValue === 3
-                    ? t('contactManagement.form.salutationMrs', 'Sayın')
+                    ? t('contactManagement.form.salutationMrs')
                     : salutationValue === 4
-                      ? t('contactManagement.form.salutationDr', 'Dr.')
-                      : t('contactManagement.form.salutationNone', 'Yok');
+                      ? t('contactManagement.form.salutationDr')
+                      : t('contactManagement.form.salutationNone');
             return (
               <Badge variant="outline" className="text-xs font-medium">
                 {salutationText}
@@ -304,7 +304,7 @@ export function ContactTable({
         <div className="flex flex-col items-center gap-2">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <div className="text-sm text-muted-foreground animate-pulse">
-             {t('contactManagement.loading', 'Yükleniyor...')}
+             {t('contactManagement.loading')}
            </div>
         </div>
       </div>
@@ -315,7 +315,7 @@ export function ContactTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('contactManagement.noData', 'Veri yok')}
+          {t('contactManagement.noData')}
         </div>
       </div>
     );
@@ -356,7 +356,7 @@ export function ContactTable({
                   ))}
                 </SortableContext>
                 <TableHead className={`${headStyle} text-right w-[84px] md:w-[100px]`}>
-                  {t('contactManagement.actions', 'İşlemler')}
+                  {t('contactManagement.actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -389,16 +389,16 @@ export function ContactTable({
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          {t('contactManagement.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('contactManagement.table.showing', {
             from: (currentPage - 1) * pageSize + 1,
             to: Math.min(currentPage * pageSize, processedContacts.length),
             total: processedContacts.length,
           })}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('contactManagement.previous', 'Önceki')}</Button>
-          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('contactManagement.table.page', 'Sayfa {{current}} / {{total}}', { current: currentPage, total: totalPages || 1 })}</div>
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('contactManagement.next', 'Sonraki')}</Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('contactManagement.previous')}</Button>
+          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('contactManagement.table.page', { current: currentPage, total: totalPages || 1 })}</div>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('contactManagement.next')}</Button>
         </div>
       </div>
 
@@ -412,10 +412,10 @@ export function ContactTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('contactManagement.delete.confirmTitle', 'İletişimi Sil')}
+                {t('contactManagement.delete.confirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('contactManagement.delete.confirmMessage', '{{name}} iletişimini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', {
+                {t('contactManagement.delete.confirmMessage', {
                     name: selectedContact?.fullName || '',
                 })}
                 </DialogDescription>
@@ -430,7 +430,7 @@ export function ContactTable({
               disabled={deleteContact.isPending}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('contactManagement.cancel', 'Vazgeç')}
+              {t('contactManagement.cancel')}
             </Button>
             
             <Button
@@ -441,8 +441,8 @@ export function ContactTable({
               className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteContact.isPending
-                ? t('contactManagement.loading', 'Siliniyor...')
-                : t('contactManagement.delete.action', 'Evet, Sil')}
+                ? t('contactManagement.loading')
+                : t('contactManagement.delete.action')}
             </Button>
           </DialogFooter>
 

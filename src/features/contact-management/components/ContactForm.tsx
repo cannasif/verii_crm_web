@@ -164,7 +164,7 @@ export function ContactForm({
                </div>
              </div>
              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
-               {contact ? t('contactManagement.form.editContact', 'İletişim Düzenle') : t('contactManagement.form.addContact', 'Yeni İletişim Ekle')}
+               {contact ? t('contactManagement.form.editContact') : t('contactManagement.form.addContact')}
              </DialogTitle>
           </div>
           <Button 
@@ -190,10 +190,10 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.firstName', 'Ad')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.firstName')} <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder', 'Örn: Ali')} maxLength={100} />
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder')} maxLength={100} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
@@ -207,7 +207,7 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.salutation', 'Hitap')}
+                          {t('contactManagement.form.salutation')}
                         </FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))}
@@ -215,15 +215,15 @@ export function ContactForm({
                         >
                           <FormControl>
                             <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                              <SelectValue placeholder={t('contactManagement.form.selectSalutation', 'Hitap seçiniz...')} />
+                              <SelectValue placeholder={t('contactManagement.form.selectSalutation')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className={DROPDOWN_CONTENT_STYLE}>
-                            <SelectItem value={String(SALUTATION_TYPE.None)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationNone', 'Yok')}</SelectItem>
-                            <SelectItem value={String(SALUTATION_TYPE.Mr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMr', 'Bay')}</SelectItem>
-                            <SelectItem value={String(SALUTATION_TYPE.Ms)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMs', 'Bayan')}</SelectItem>
-                            <SelectItem value={String(SALUTATION_TYPE.Mrs)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMrs', 'Sayın')}</SelectItem>
-                            <SelectItem value={String(SALUTATION_TYPE.Dr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationDr', 'Dr.')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.None)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationNone')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.Mr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMr')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.Ms)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMs')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.Mrs)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMrs')}</SelectItem>
+                            <SelectItem value={String(SALUTATION_TYPE.Dr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationDr')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage className="text-xs" />
@@ -238,10 +238,10 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.lastName', 'Soyad')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.lastName')} <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder', 'Örn: Yılmaz')} maxLength={100} />
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder')} maxLength={100} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
@@ -255,10 +255,10 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.middleName', 'İkinci Ad')}
+                          {t('contactManagement.form.middleName')}
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.middleNamePlaceholder', 'Örn: Kemal')} maxLength={100} />
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.middleNamePlaceholder')} maxLength={100} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
@@ -272,7 +272,7 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <Briefcase01Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.title', 'Ünvan')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.title')} <span className="text-red-500">*</span>
                         </FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))}
@@ -281,12 +281,12 @@ export function ContactForm({
                         >
                           <FormControl>
                             <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                              <SelectValue placeholder={t('contactManagement.form.selectTitle', 'Ünvan seçiniz (opsiyonel)...')} />
+                              <SelectValue placeholder={t('contactManagement.form.selectTitle')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className={DROPDOWN_CONTENT_STYLE}>
                             <SelectItem value="0" className={DROPDOWN_ITEM_STYLE}>
-                              {t('contactManagement.form.titleNone', 'Ünvan yok')}
+                              {t('contactManagement.form.titleNone')}
                             </SelectItem>
                             {titles?.map((title) => (
                               <SelectItem key={title.id} value={title.id.toString()} className={DROPDOWN_ITEM_STYLE}>
@@ -307,7 +307,7 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <Building03Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.customer', 'Müşteri')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.customer')} <span className="text-red-500">*</span>
                         </FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))}
@@ -316,7 +316,7 @@ export function ContactForm({
                         >
                           <FormControl>
                             <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                              <SelectValue placeholder={t('contactManagement.form.selectCustomer', 'Müşteri seçiniz...')} />
+                              <SelectValue placeholder={t('contactManagement.form.selectCustomer')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className={DROPDOWN_CONTENT_STYLE}>
@@ -339,7 +339,7 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <SmartPhone01Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.mobile', 'Mobil')}
+                          {t('contactManagement.form.mobile')}
                         </FormLabel>
                         <FormControl>
                           <Input {...field} className={INPUT_STYLE} placeholder="05XX..." maxLength={20} />
@@ -356,7 +356,7 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <Call02Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.phone', 'Telefon')}
+                          {t('contactManagement.form.phone')}
                         </FormLabel>
                         <FormControl>
                           <Input {...field} className={INPUT_STYLE} placeholder="0212..." maxLength={20} />
@@ -374,7 +374,7 @@ export function ContactForm({
                         <FormItem>
                           <FormLabel className={LABEL_STYLE}>
                             <Mail01Icon size={16} className="text-pink-500" />
-                            {t('contactManagement.form.email', 'E-posta')}
+                            {t('contactManagement.form.email')}
                           </FormLabel>
                           <FormControl>
                             <Input {...field} type="email" className={INPUT_STYLE} placeholder="ornek@email.com" maxLength={100} />
@@ -393,13 +393,13 @@ export function ContactForm({
                         <FormItem>
                           <FormLabel className={LABEL_STYLE}>
                             <Note01Icon size={16} className="text-pink-500" />
-                            {t('contactManagement.form.notes', 'Notlar')}
+                            {t('contactManagement.form.notes')}
                           </FormLabel>
                           <FormControl>
                             <Textarea
                               {...field}
                               className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`}
-                              placeholder={t('contactManagement.form.notesPlaceholder', 'Varsa notlarınızı buraya ekleyin...')}
+                              placeholder={t('contactManagement.form.notesPlaceholder')}
                               maxLength={250}
                             />
                           </FormControl>
@@ -422,7 +422,7 @@ export function ContactForm({
             disabled={isLoading}
             className="w-full sm:w-auto h-11 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
           >
-            {t('contactManagement.cancel', 'İptal')}
+            {t('contactManagement.cancel')}
           </Button>
           <Button 
             type="submit" 
@@ -430,7 +430,7 @@ export function ContactForm({
             disabled={isLoading}
             className="w-full sm:w-auto h-11 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
-            {isLoading ? t('contactManagement.saving', 'Kaydediliyor...') : t('contactManagement.save', 'Kaydet')}
+            {isLoading ? t('contactManagement.saving') : t('contactManagement.save')}
           </Button>
         </DialogFooter>
 

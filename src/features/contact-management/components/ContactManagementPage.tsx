@@ -93,7 +93,7 @@ export function ContactManagementPage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageTitle(t('contactManagement.menu', 'İletişim Yönetimi'));
+    setPageTitle(t('contactManagement.menu'));
     return () => {
       setPageTitle(null);
     };
@@ -298,10 +298,10 @@ export function ContactManagementPage(): ReactElement {
       <div className="flex-none flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('contactManagement.menu', 'İletişim Yönetimi')}
+            {t('contactManagement.menu')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
-            {t('contactManagement.description', 'İletişimleri yönetin ve düzenleyin')}
+            {t('contactManagement.description')}
           </p>
         </div>
         
@@ -310,7 +310,7 @@ export function ContactManagementPage(): ReactElement {
           className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
         >
           <Plus size={18} className="mr-2" />
-          {t('contactManagement.addButton', 'Yeni İletişim Ekle')}
+          {t('contactManagement.addButton')}
         </Button>
       </div>
 
@@ -327,7 +327,7 @@ export function ContactManagementPage(): ReactElement {
                 <div className="relative group w-full sm:w-72 lg:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
                   <Input
-                    placeholder={t('common.search', 'Hızlı Ara...')}
+                    placeholder={t('common.search')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all w-full"
@@ -384,14 +384,14 @@ export function ContactManagementPage(): ReactElement {
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showFilters ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
                     >
                         <Filter size={16} />
-                        <span className="font-medium text-sm">{t('common.filters', 'Detaylı Filtre')}</span>
+                        <span className="font-medium text-sm">{t('common.filters')}</span>
                     </button>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" align="end" className="w-96 p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
                     
                     {/* Header */}
                     <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                      <h3 className="text-sm font-semibold text-gray-200">{t('common.filters', 'Filtreleme')}</h3>
+                      <h3 className="text-sm font-semibold text-gray-200">{t('common.filters')}</h3>
                       <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-white transition-colors">
                         <X size={16} />
                       </button>
@@ -514,14 +514,14 @@ export function ContactManagementPage(): ReactElement {
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showColumns ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
                     >
                         <SlidersHorizontal size={16} />
-                        <span className="font-medium text-sm">{t('contactManagement.columns', 'Sütun Düzenle')}</span>
+                        <span className="font-medium text-sm">{t('contactManagement.columns')}</span>
                     </button>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                     
                     {/* Header */}
                     <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                        <h3 className="text-sm font-semibold text-gray-200">{t('contactManagement.visibleColumns', 'Görünür Sütunlar')}</h3>
+                        <h3 className="text-sm font-semibold text-gray-200">{t('contactManagement.visibleColumns')}</h3>
                         <button onClick={() => setShowColumns(false)} className="text-gray-500 hover:text-white transition-colors">
                             <X size={16} />
                         </button>
@@ -554,7 +554,7 @@ export function ContactManagementPage(): ReactElement {
                             className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-white transition-colors px-1"
                         >
                             <CheckSquare size={14} />
-                            <span>{t('common.selectAll', 'Tümünü Seç')}</span>
+                            <span>{t('common.selectAll')}</span>
                         </button>
                         
                         <button 
@@ -575,7 +575,7 @@ export function ContactManagementPage(): ReactElement {
                 <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
                   <div className="p-2">
                     <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.actions', 'İşlemler')}
+                      {t('common.actions')}
                     </div>
                   </div>
 
@@ -583,19 +583,19 @@ export function ContactManagementPage(): ReactElement {
 
                   <div className="p-2">
                     <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.export', 'Dışa Aktar')}
+                      {t('common.export')}
                     </div>
                     <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <FileSpreadsheet size={16} className="text-emerald-500" />
-                      <span>{t('common.exportExcel', 'Excel İndir')}</span>
+                      <span>{t('common.exportExcel')}</span>
                     </button>
                     <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <FileText size={16} className="text-red-400" />
-                      <span>{t('common.exportPDF', 'PDF İndir')}</span>
+                      <span>{t('common.exportPDF')}</span>
                     </button>
                     <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <Presentation size={16} className="text-orange-400" />
-                      <span>{t('common.exportPPT', 'PowerPoint İndir')}</span>
+                      <span>{t('common.exportPPT')}</span>
                     </button>
                   </div>
                 </DropdownMenuContent>

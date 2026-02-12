@@ -20,10 +20,10 @@ export const useCreateContact = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('contactManagement.messages.createSuccess', 'İletişim başarıyla oluşturuldu'));
+      toast.success(t('contactManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('contactManagement.messages.createError', 'İletişim oluşturulamadı'));
+      toast.error(error.message || t('contactManagement.messages.createError'));
     },
   });
 };
