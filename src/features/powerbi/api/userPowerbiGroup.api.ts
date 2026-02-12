@@ -23,7 +23,10 @@ export const userPowerbiGroupApi = {
     if (params.pageSize != null) queryParams.append('pageSize', String(params.pageSize));
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params.filters) queryParams.append('filters', JSON.stringify(params.filters));
+    if (params.filters) {
+      queryParams.append('filters', JSON.stringify(params.filters));
+      queryParams.append('filterLogic', params.filterLogic ?? 'and');
+    }
 
     const response = await api.get<ApiResponse<PagedResponse<UserPowerBIGroupGetDto>>>(
       `/api/UserPowerBIGroup?${queryParams.toString()}`
