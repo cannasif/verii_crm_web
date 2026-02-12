@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Upload, Pencil, Trash2, ExternalLink, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { getApiBaseUrl } from '@/lib/axios';
 import { useActivityImages } from '../hooks/useActivityImages';
 import { useUploadActivityImages } from '../hooks/useUploadActivityImages';
 import { useUpdateActivityImage } from '../hooks/useUpdateActivityImage';
@@ -110,8 +111,8 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    const baseUrl = import.meta.env.VITE_API_URL || 'https://crmapi.v3rii.com';
-    return `${baseUrl}${url}`;
+    const baseUrl = getApiBaseUrl();
+    return `${baseUrl}${url.startsWith('/') ? url : `/${url}`}`;
   };
 
   if (!activityId) {
