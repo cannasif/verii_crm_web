@@ -208,23 +208,23 @@ function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | 
       </CardHeader>
       <CardContent className="space-y-2">
         <ScoreRow
-          label={t('customer360.revenueQuality.churnRisk', 'Churn Risk')}
+          label={t('customer360.revenueQuality.churnRisk')}
           value={quality?.churnRiskScore}
           explainKey="customer360.explain.churnRisk"
         />
         <ScoreRow
-          label={t('customer360.revenueQuality.upsell', 'Upsell Propensity')}
+          label={t('customer360.revenueQuality.upsell')}
           value={quality?.upsellPropensityScore}
           explainKey="customer360.explain.upsellPropensity"
         />
         <ScoreRow
-          label={t('customer360.revenueQuality.payment', 'Payment Behavior')}
+          label={t('customer360.revenueQuality.payment')}
           value={quality?.paymentBehaviorScore}
           explainKey="customer360.explain.paymentBehavior"
         />
         <div className="flex items-center justify-between text-sm py-1.5 pt-1">
           <span className="flex items-center gap-1 text-muted-foreground">
-            {t('customer360.revenueQuality.segment', 'RFM Segment')}:{' '}
+            {t('customer360.revenueQuality.segment')}:{' '}
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="inline-flex cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
@@ -239,7 +239,7 @@ function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | 
           <span className="font-medium">{quality?.rfmSegment ?? '-'}</span>
         </div>
         <div className="text-sm">
-          <span className="text-muted-foreground">{t('customer360.revenueQuality.ltv', 'LTV')}: </span>
+          <span className="text-muted-foreground">{t('customer360.revenueQuality.ltv')}: </span>
           <span className="font-medium">{quality?.ltv ?? 0}</span>
         </div>
         {quality?.dataQualityNote ? <p className="text-xs text-muted-foreground pt-2">{quality.dataQualityNote}</p> : null}
@@ -276,7 +276,7 @@ function CohortRetentionPanel({
         ) : (
           <div className="space-y-2">
             <div className="text-sm">
-              <span className="text-muted-foreground">{t('customer360.cohort.cohortKey', 'Cohort')}: </span>
+              <span className="text-muted-foreground">{t('customer360.cohort.cohortKey')}: </span>
               <span className="font-medium">{first.cohortKey}</span>
             </div>
             <div className="max-h-56 overflow-auto space-y-1">
@@ -316,7 +316,7 @@ function RecommendedActionsPanel({
       </CardHeader>
       <CardContent>
         {rows.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t('customer360.actions.empty', 'No recommended actions')}</p>
+          <p className="text-sm text-muted-foreground">{t('customer360.actions.empty')}</p>
         ) : (
           <div className="space-y-3">
             {rows.map((action) => {
@@ -334,7 +334,7 @@ function RecommendedActionsPanel({
                     <TooltipTrigger asChild>
                       <span className="inline-flex">
                         <Button size="sm" onClick={() => onExecute(action)} disabled={busy}>
-                          {t('customer360.actions.execute', 'Execute')}
+                          {t('customer360.actions.execute')}
                         </Button>
                       </span>
                     </TooltipTrigger>
