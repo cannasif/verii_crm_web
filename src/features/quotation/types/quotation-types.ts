@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export const ApprovalLevel = {
   SalesManager: 1,
   RegionalManager: 2,
@@ -264,6 +266,10 @@ export interface QuotationExchangeRateFormState {
   isOfficial?: boolean;
   dovizTipi?: number;
 }
+
+export const quotationLineRequiredSchema = z.object({
+  productCode: z.string().min(1),
+});
 
 export interface Customer {
   id: number;

@@ -17,8 +17,9 @@ import { useProductSelection } from '../hooks/useProductSelection';
 import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { quotationApi } from '../api/quotation-api';
-import type { QuotationLineFormState, QuotationExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/quotation-types';
+import { quotationLineRequiredSchema, type QuotationLineFormState, type QuotationExchangeRateFormState, type PricingRuleLineGetDto, type UserDiscountLimitDto, type ApprovalStatus } from '../types/quotation-types';
 import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface TemporaryStockData {
   productCode: string;
@@ -735,7 +736,8 @@ export function QuotationLineForm({
       <div className="space-y-4">
         <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
           <Package className="h-4 w-4 text-pink-500" />
-          {t('quotation.lines.stock')} <span className="text-pink-500">*</span>
+          {t('quotation.lines.stock')}
+          {isZodFieldRequired(quotationLineRequiredSchema, 'productCode') ? <span className="text-pink-500">*</span> : null}
         </label>
         
         <div className="flex flex-col gap-3">
