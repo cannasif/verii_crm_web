@@ -107,7 +107,7 @@
   "vatApplied": "TVA Appliquée",
   "finalAmount": "Montant Final",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "quotationId": "ID Devis",
     "productCode": "Code Produit",
     "productName": "Nom Produit",

@@ -4,7 +4,7 @@
     "description": "Afficher et gérer les stocks",
     "syncedFromErp": "Les stocks sont automatiquement synchronisés depuis le système ERP",
     "search": "Rechercher par nom de stock ou code ERP...",
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "erpStockCode": "Code stock ERP",
     "stockName": "Nom du stock",
     "unit": "Unité",

@@ -6,7 +6,7 @@
   "SaveFailed": "Impossible d’enregistrer les paramètres e-mail",
   "Fields": {
     "Host": "Hôte",
-    "Port": "Port",
+    "Port": "Port de connexion",
     "EnableSsl": "Utiliser SSL",
     "Username": "Nom d’utilisateur",
     "Password": "Mot de passe",
@@ -16,8 +16,8 @@
     "Timeout": "Délai d’expiration (s)"
   },
   "TestMail": {
-    "Send": "Test Maili Gönder",
-    "Sending": "Test gönderiliyor...",
-    "Success": "Test maili gönderildi"
+    "Send": "Envoyer un e-mail de test",
+    "Sending": "Le test est en cours d'envoi...",
+    "Success": "E-mail de test envoyé"
   }
 }
