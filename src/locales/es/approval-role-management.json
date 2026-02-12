@@ -8,7 +8,7 @@
     "loading": "Cargando...",
     "noData": "Sin datos",
     "table": {
-      "id": "ID",
+      "id": "IDENTIFICACIÓN",
       "approvalRoleGroupName": "Grupo de roles",
       "name": "Nombre del rol",
       "maxAmount": "Importe máximo",

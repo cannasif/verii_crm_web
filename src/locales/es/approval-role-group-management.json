@@ -8,7 +8,7 @@
   "noData": "No se encontraron datos",
   "noDataDescription": "No se encontraron registros que coincidan con su búsqueda o no hay registros aún.",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "name": "Nombre del Grupo",
     "createdDate": "Fecha Creación",
     "createdBy": "Creado Por",
