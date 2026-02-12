@@ -44,7 +44,7 @@ export function HangfireMonitoringPage(): ReactElement {
   const deadLetterQuery = useHangfireDeadLetterQuery(deadLetterFrom, PAGE_SIZE);
 
   useEffect(() => {
-    setPageTitle(t('title', 'Hangfire Monitoring'));
+    setPageTitle(t('title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -65,54 +65,54 @@ export function HangfireMonitoringPage(): ReactElement {
     <div className="w-full space-y-6">
       <Breadcrumb
         items={[
-          { label: t('common:sidebar.accessControl', 'Access Control') },
-          { label: t('menu', 'Hangfire Monitoring'), isActive: true },
+          { label: t('common:sidebar.accessControl') },
+          { label: t('menu'), isActive: true },
         ]}
       />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            {t('title', 'Hangfire Monitoring')}
+            {t('title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">
-            {t('description', 'Observe job health, failed jobs and dead-letter queue.')}
+            {t('description')}
           </p>
         </div>
         <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing}>
           <RefreshCw size={18} className={isRefreshing ? 'mr-2 animate-spin' : 'mr-2'} />
-          {t('refresh', 'Refresh')}
+          {t('refresh')}
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <Card><CardHeader><CardTitle>{t('stats.enqueued', 'Enqueued')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.enqueued ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.processing', 'Processing')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.processing ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.succeeded', 'Succeeded')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-emerald-500">{statsQuery.data?.succeeded ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.failed', 'Failed')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-red-500">{statsQuery.data?.failed ?? 0}</CardContent></Card>
+        <Card><CardHeader><CardTitle>{t('stats.enqueued')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.enqueued ?? 0}</CardContent></Card>
+        <Card><CardHeader><CardTitle>{t('stats.processing')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.processing ?? 0}</CardContent></Card>
+        <Card><CardHeader><CardTitle>{t('stats.succeeded')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-emerald-500">{statsQuery.data?.succeeded ?? 0}</CardContent></Card>
+        <Card><CardHeader><CardTitle>{t('stats.failed')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-red-500">{statsQuery.data?.failed ?? 0}</CardContent></Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('failed.title', 'Failed Jobs')}</CardTitle>
+          <CardTitle>{t('failed.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('table.jobId', 'Job ID')}</TableHead>
-                  <TableHead>{t('table.jobName', 'Job')}</TableHead>
-                  <TableHead>{t('table.state', 'State')}</TableHead>
-                  <TableHead>{t('table.time', 'Time')}</TableHead>
-                  <TableHead>{t('table.reason', 'Reason')}</TableHead>
+                  <TableHead>{t('table.jobId')}</TableHead>
+                  <TableHead>{t('table.jobName')}</TableHead>
+                  <TableHead>{t('table.state')}</TableHead>
+                  <TableHead>{t('table.time')}</TableHead>
+                  <TableHead>{t('table.reason')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {(failedQuery.data?.items ?? []).length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-slate-500 py-8">
-                      {t('failed.empty', 'No failed jobs found.')}
+                      {t('failed.empty')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -132,14 +132,14 @@ export function HangfireMonitoringPage(): ReactElement {
 
           <div className="mt-4 flex items-center justify-between">
             <span className="text-sm text-slate-500">
-              {t('failed.total', 'Total')}: {failedQuery.data?.total ?? 0}
+              {t('failed.total')}: {failedQuery.data?.total ?? 0}
             </span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled={failedPage <= 1} onClick={() => setFailedPage((p) => Math.max(1, p - 1))}>
-                {t('common:common.previous', 'Previous')}
+                {t('common:common.previous')}
               </Button>
               <Button variant="outline" size="sm" disabled={failedPage >= failedTotalPages} onClick={() => setFailedPage((p) => Math.min(failedTotalPages, p + 1))}>
-                {t('common:common.next', 'Next')}
+                {t('common:common.next')}
               </Button>
             </div>
           </div>
@@ -148,29 +148,29 @@ export function HangfireMonitoringPage(): ReactElement {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('deadLetter.title', 'Dead-Letter Queue')}</CardTitle>
+          <CardTitle>{t('deadLetter.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-3 text-sm text-slate-500">
-            {t('deadLetter.enqueued', 'Enqueued')}: {deadLetterQuery.data?.enqueued ?? 0}
+            {t('deadLetter.enqueued')}: {deadLetterQuery.data?.enqueued ?? 0}
           </div>
 
           <div className="rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('table.jobId', 'Job ID')}</TableHead>
-                  <TableHead>{t('table.jobName', 'Job')}</TableHead>
-                  <TableHead>{t('table.state', 'State')}</TableHead>
-                  <TableHead>{t('table.time', 'Time')}</TableHead>
-                  <TableHead>{t('table.reason', 'Reason')}</TableHead>
+                  <TableHead>{t('table.jobId')}</TableHead>
+                  <TableHead>{t('table.jobName')}</TableHead>
+                  <TableHead>{t('table.state')}</TableHead>
+                  <TableHead>{t('table.time')}</TableHead>
+                  <TableHead>{t('table.reason')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {(deadLetterQuery.data?.items ?? []).length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-slate-500 py-8">
-                      {t('deadLetter.empty', 'Dead-letter queue is empty.')}
+                      {t('deadLetter.empty')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -190,10 +190,10 @@ export function HangfireMonitoringPage(): ReactElement {
 
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="outline" size="sm" disabled={deadLetterPage <= 1} onClick={() => setDeadLetterPage((p) => Math.max(1, p - 1))}>
-              {t('common:common.previous', 'Previous')}
+              {t('common:common.previous')}
             </Button>
             <Button variant="outline" size="sm" disabled={!deadLetterHasNext} onClick={() => setDeadLetterPage((p) => p + 1)}>
-              {t('common:common.next', 'Next')}
+              {t('common:common.next')}
             </Button>
           </div>
         </CardContent>
