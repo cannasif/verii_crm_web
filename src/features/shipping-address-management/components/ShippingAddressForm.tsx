@@ -83,6 +83,7 @@ export function ShippingAddressForm({
       cityId: undefined,
       districtId: undefined,
       isDefault: false,
+      isActive: true,
     },
   });
 
@@ -111,6 +112,7 @@ export function ShippingAddressForm({
         cityId: shippingAddress.cityId || undefined,
         districtId: shippingAddress.districtId || undefined,
         isDefault: shippingAddress.isDefault || false,
+        isActive: shippingAddress.isActive ?? false,
       });
     } else {
       form.reset({
@@ -120,11 +122,12 @@ export function ShippingAddressForm({
         contactPerson: '',
         phone: '',
         notes: '',
-        customerId: 0,
+        customerId: undefined,
         countryId: undefined,
         cityId: undefined,
         districtId: undefined,
         isDefault: false,
+        isActive: true,
       });
     }
   }, [shippingAddress, form]);
@@ -152,10 +155,10 @@ export function ShippingAddressForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl overflow-hidden transition-colors duration-300">
-        <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 flex-shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
+      <DialogContent className="max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl overflow-hidden transition-colors duration-300">
+        <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+             <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
                  <MapPin size={24} className="text-pink-600 dark:text-pink-500" />
                </div>
@@ -326,26 +329,28 @@ export function ShippingAddressForm({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="isDefault"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] px-4 py-3">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => field.onChange(checked === true)}
-                      />
-                    </FormControl>
-                    <div className="space-y-1">
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                        {t('shippingAddressManagement.isDefault')}
-                      </FormLabel>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <FormField
+                  control={form.control}
+                  name="isDefault"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] px-4 py-3">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={(checked) => field.onChange(checked === true)}
+                        />
+                      </FormControl>
+                      <div className="space-y-1">
+                        <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer">
+                          {t('shippingAddressManagement.isDefault')}
+                        </FormLabel>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <FormField
@@ -445,7 +450,7 @@ export function ShippingAddressForm({
             </div>
             </div>
 
-            <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex-shrink-0 backdrop-blur-sm">
+            <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 shrink-0 backdrop-blur-sm">
                 <Button
                     type="button"
                     variant="outline"
@@ -458,7 +463,7 @@ export function ShippingAddressForm({
                 <Button 
                     type="submit"
                     disabled={isLoading}
-                    className="h-11 rounded-xl bg-gradient-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white font-medium shadow-lg shadow-pink-500/20 border-0"
+                    className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white font-medium shadow-lg shadow-pink-500/20 border-0"
                 >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isLoading

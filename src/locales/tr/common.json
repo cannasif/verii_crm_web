@@ -102,6 +102,7 @@
     "exportPDF": "PDF İndir",
     "exportPPT": "PowerPoint İndir",
     "active": "Aktif",
+    "inactive": "Pasif",
     "columns": "Görünür Sütunlar",
     "ok": "TAMAM",
     "clearFilters": "Temizle",

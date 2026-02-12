@@ -126,6 +126,7 @@ export const shippingAddressFormSchema = z.object({
     .optional()
     .nullable(),
   isDefault: z.boolean(),
+  isActive: z.boolean(),
 });
 
 export type ShippingAddressFormSchema = z.infer<typeof shippingAddressFormSchema>;

@@ -1,5 +1,22 @@
-import { type ReactElement, useCallback, useState, useMemo } from 'react';
+import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import {
   Table,
   TableBody,
@@ -9,14 +26,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -28,7 +37,20 @@ import {
 } from '@/components/ui/dialog';
 import { useDeleteShippingAddress } from '../hooks/useDeleteShippingAddress';
 import type { ShippingAddressDto } from '../types/shipping-address-types';
-import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, EyeOff, Calendar, CheckCircle2, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { 
+  Edit2, 
+  Trash2, 
+  ArrowUpDown, 
+  ArrowUp, 
+  ArrowDown, 
+  Calendar, 
+  CheckCircle2, 
+  XCircle, 
+  ChevronLeft, 
+  ChevronRight,
+  GripVertical,
+  Loader2
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -38,6 +60,8 @@ interface ShippingAddressTableProps {
   data: ShippingAddressDto[];
   isLoading: boolean;
   onEdit: (shippingAddress: ShippingAddressDto) => void;
+  pageSize: number;
+  visibleColumns: string[];
 }
 
 type SortConfig = {
@@ -45,17 +69,77 @@ type SortConfig = {
   direction: 'asc' | 'desc';
 };
 
-interface ColumnConfig {
+export interface ColumnConfig {
   key: string;
   label: string;
   className?: string;
   visible: boolean;
 }
 
+export const getColumnsConfig = (t: any): ColumnConfig[] => [
+  { key: 'customerName', label: t('shippingAddressManagement.customerName'), visible: true },
+  { key: 'name', label: t('shippingAddressManagement.name'), visible: true },
+  { key: 'address', label: t('shippingAddressManagement.address'), visible: true },
+  { key: 'postalCode', label: t('shippingAddressManagement.postalCode'), visible: false },
+  { key: 'contactPerson', label: t('shippingAddressManagement.contactPerson'), visible: true },
+  { key: 'phone', label: t('shippingAddressManagement.phone'), visible: true },
+  { key: 'location', label: t('shippingAddressManagement.location'), visible: false }, // Composite column
+  { key: 'isDefault', label: t('shippingAddressManagement.isDefaultShort'), visible: true },
+  { key: 'isActive', label: t('common.status'), visible: true },
+  { key: 'createdDate', label: t('shippingAddressManagement.createdDate'), visible: true },
+];
+
+interface DraggableTableHeadProps extends React.ComponentProps<typeof TableHead> {
+  id: string;
+}
+
+const DraggableTableHead = ({ id, children, className, ...props }: DraggableTableHeadProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 1 : 'auto',
+    backgroundColor: isDragging ? 'var(--accent)' : undefined,
+  };
+
+  return (
+    <TableHead
+      ref={setNodeRef}
+      style={style}
+      className={`${className} ${isDragging ? 'bg-accent/20' : ''}`}
+      {...props}
+    >
+      <div className="flex items-center gap-1">
+        <button 
+          {...attributes} 
+          {...listeners} 
+          className="cursor-grab active:cursor-grabbing hover:bg-slate-100 dark:hover:bg-white/10 p-1 rounded transition-colors touch-none"
+        >
+            <GripVertical size={14} className="text-slate-400/50 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300" />
+        </button>
+        <div className="flex-1">
+            {children}
+        </div>
+      </div>
+    </TableHead>
+  );
+};
+
 export function ShippingAddressTable({
   data,
   isLoading,
   onEdit,
+  pageSize,
+  visibleColumns,
 }: ShippingAddressTableProps): ReactElement {
   const { t } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -63,31 +147,51 @@ export function ShippingAddressTable({
   
   // Client-side pagination & sorting
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'id', direction: 'desc' });
-  const [visibleColumns, setVisibleColumns] = useState<string[]>([
-    'customerName', 'name', 'address', 'contactPerson', 'phone', 'isDefault', 'isActive', 'createdDate'
-  ]);
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
 
   const deleteShippingAddress = useDeleteShippingAddress();
 
-  const getColumnsConfig = useCallback(
-    (): ColumnConfig[] => [
-      { key: 'customerName', label: t('shippingAddressManagement.customerName'), visible: true },
-      { key: 'name', label: t('shippingAddressManagement.name'), visible: true },
-      { key: 'address', label: t('shippingAddressManagement.address'), visible: true },
-      { key: 'postalCode', label: t('shippingAddressManagement.postalCode'), visible: false },
-      { key: 'contactPerson', label: t('shippingAddressManagement.contactPerson'), visible: true },
-      { key: 'phone', label: t('shippingAddressManagement.phone'), visible: true },
-      { key: 'location', label: t('shippingAddressManagement.location'), visible: false }, // Composite column
-      { key: 'isDefault', label: t('shippingAddressManagement.isDefaultShort'), visible: true },
-      { key: 'isActive', label: t('common.status'), visible: true },
-      { key: 'createdDate', label: t('shippingAddressManagement.createdDate'), visible: true },
-    ],
-    [t]
+  const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+
+  useEffect(() => {
+    if (tableColumns.length > 0 && columnOrder.length === 0) {
+      setColumnOrder(tableColumns.map(col => col.key));
+    }
+  }, [tableColumns, columnOrder.length]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+        activationConstraint: {
+            distance: 8,
+        },
+    }),
+    useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
-  const tableColumns = useMemo(() => getColumnsConfig(), [getColumnsConfig]);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+        setColumnOrder((items) => {
+            const oldIndex = items.indexOf(active.id as string);
+            const newIndex = items.indexOf(over?.id as string);
+            return arrayMove(items, oldIndex, newIndex);
+        });
+    }
+  };
+
+  const orderedColumns = useMemo(() => {
+    if (columnOrder.length === 0) return tableColumns;
+    
+    return columnOrder
+        .map(key => tableColumns.find(col => col.key === key))
+        .filter((col): col is ColumnConfig => 
+            col !== undefined && visibleColumns.includes(col.key)
+        );
+  }, [columnOrder, tableColumns, visibleColumns]);
 
   const handleDeleteClick = (shippingAddress: ShippingAddressDto): void => {
     setSelectedShippingAddress(shippingAddress);
@@ -148,8 +252,56 @@ export function ShippingAddressTable({
     );
   };
 
-  const headStyle = "cursor-pointer select-none text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors py-4 font-bold text-xs uppercase tracking-wider whitespace-nowrap";
-  const cellStyle = "text-slate-600 dark:text-slate-400 text-sm py-4 border-b border-slate-100 dark:border-white/5 align-middle";
+  const headStyle = "cursor-pointer select-none text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors py-1.5 font-bold text-xs uppercase tracking-wider whitespace-nowrap";
+  const cellStyle = "text-slate-600 dark:text-slate-400 text-sm py-1.5 border-b border-slate-100 dark:border-white/5 align-middle";
+
+  const renderCellContent = (row: ShippingAddressDto, columnKey: string) => {
+    switch (columnKey) {
+      case 'customerName':
+        return <span className="font-medium text-slate-700 dark:text-slate-300">{row.customerName || '-'}</span>;
+      case 'name':
+        return row.name || '-';
+      case 'address':
+        return <div className="max-w-xs truncate" title={row.address}>{row.address}</div>;
+      case 'postalCode':
+        return row.postalCode || '-';
+      case 'contactPerson':
+        return row.contactPerson || '-';
+      case 'phone':
+        return row.phone || '-';
+      case 'location':
+        return [row.countryName, row.cityName, row.districtName].filter(Boolean).join(' / ');
+      case 'isDefault':
+        return row.isDefault ? (
+          <Badge variant="secondary" className="bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300">
+            {t('shippingAddressManagement.defaultBadge')}
+          </Badge>
+        ) : '-';
+      case 'isActive':
+        return (
+          <Badge
+            variant="outline"
+            className={`gap-1.5 pl-1.5 pr-2.5 py-0.5 border ${
+              row.isActive 
+                ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' 
+                : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20'
+            }`}
+          >
+              {row.isActive ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+              {row.isActive ? t('common.active') : t('common.inactive')}
+          </Badge>
+        );
+      case 'createdDate':
+        return (
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <Calendar size={14} className="text-slate-400" />
+            {row.createdDate ? format(new Date(row.createdDate), 'dd MMMM yyyy', { locale: tr }) : '-'}
+          </div>
+        );
+      default:
+        return (row as any)[columnKey];
+    }
+  };
 
   if (isLoading) {
     return (
@@ -176,175 +328,74 @@ export function ShippingAddressTable({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end p-2 sm:p-0">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-                variant="outline" 
-                size="sm" 
-                className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
-            >
-                <EyeOff className="mr-2 h-4 w-4" />
-                {t('common.editColumns')}
-                <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
-            className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
-          >
-            <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                {t('common.visibleColumns')}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
-            
-            {tableColumns.map((column) => (
-              <DropdownMenuCheckboxItem
-                key={column.key}
-                className="text-sm text-slate-700 dark:text-slate-200 focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400 cursor-pointer rounded-lg px-2 py-1.5 pl-8 relative"
-                checked={visibleColumns.includes(column.key)}
-                onSelect={(e) => e.preventDefault()}
-                onCheckedChange={(checked) => {
-                    if (checked) {
-                        setVisibleColumns([...visibleColumns, column.key]);
-                    } else {
-                        setVisibleColumns(visibleColumns.filter((col) => col !== column.key));
-                    }
-                }}
-              >
-                {column.label}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <div className="w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
-        <Table>
-          <TableHeader className="bg-slate-50/50 dark:bg-white/5">
-            <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
-              {tableColumns
-                .filter(col => visibleColumns.includes(col.key))
-                .map((column) => (
-                  <TableHead
-                    key={column.key}
-                    className={headStyle}
-                    onClick={() => handleSort(column.key)}
-                  >
-                    <div className="flex items-center gap-2 group">
-                      {column.label}
-                      <SortIcon column={column.key} />
+      <div className="w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-transparent">
+        <DndContext 
+            sensors={sensors} 
+            collisionDetection={closestCenter} 
+            onDragEnd={handleDragEnd}
+        >
+            <Table>
+            <TableHeader className="bg-slate-50/50 dark:bg-white/5">
+                <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
+                <SortableContext 
+                    items={orderedColumns.map(col => col.key)}
+                    strategy={horizontalListSortingStrategy}
+                >
+                    {orderedColumns.map((column) => (
+                    <DraggableTableHead
+                        key={column.key}
+                        id={column.key}
+                        className={headStyle}
+                        onClick={() => handleSort(column.key)}
+                    >
+                        <div className="flex items-center gap-2 group">
+                        {column.label}
+                        <SortIcon column={column.key} />
+                        </div>
+                    </DraggableTableHead>
+                    ))}
+                </SortableContext>
+                <TableHead className={`text-right ${headStyle} w-[100px]`}>
+                    {t('common.actions')}
+                </TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {paginatedData.map((row) => (
+                <TableRow
+                    key={row.id}
+                    className="border-b border-slate-100 dark:border-white/5 transition-colors duration-200 hover:bg-pink-50/40 dark:hover:bg-pink-500/5 group"
+                >
+                    {orderedColumns.map((column) => (
+                    <TableCell key={`${row.id}-${column.key}`} className={cellStyle}>
+                        {renderCellContent(row, column.key)}
+                    </TableCell>
+                    ))}
+                    <TableCell className={`text-right ${cellStyle}`}>
+                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                        onClick={() => onEdit(row)}
+                        >
+                        <Edit2 size={16} />
+                        </Button>
+                        <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                        onClick={() => handleDeleteClick(row)}
+                        >
+                        <Trash2 size={16} />
+                        </Button>
                     </div>
-                  </TableHead>
-              ))}
-              <TableHead className={`text-right ${headStyle} w-[100px]`}>
-                {t('common.actions')}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedData.map((row) => (
-              <TableRow
-                key={row.id}
-                className="border-b border-slate-100 dark:border-white/5 transition-colors duration-200 hover:bg-pink-50/40 dark:hover:bg-pink-500/5 group"
-              >
-                {visibleColumns.includes('customerName') && (
-                  <TableCell className={cellStyle + " font-medium text-slate-700 dark:text-slate-300"}>
-                    {row.customerName || '-'}
-                  </TableCell>
-                )}
-                {visibleColumns.includes('name') && (
-                  <TableCell className={cellStyle}>
-                    {row.name || '-'}
-                  </TableCell>
-                )}
-                {visibleColumns.includes('address') && (
-                  <TableCell className={cellStyle + " max-w-xs truncate"} title={row.address}>
-                    {row.address}
-                  </TableCell>
-                )}
-                {visibleColumns.includes('postalCode') && (
-                  <TableCell className={cellStyle}>
-                    {row.postalCode || '-'}
-                  </TableCell>
-                )}
-                {visibleColumns.includes('contactPerson') && (
-                  <TableCell className={cellStyle}>
-                    {row.contactPerson || '-'}
-                  </TableCell>
-                )}
-                {visibleColumns.includes('phone') && (
-                  <TableCell className={cellStyle}>
-                    {row.phone || '-'}
-                  </TableCell>
-                )}
-                {visibleColumns.includes('location') && (
-                  <TableCell className={cellStyle}>
-                    {[
-                      row.countryName,
-                      row.cityName,
-                      row.districtName,
-                    ].filter(Boolean).join(' / ')}
-                  </TableCell>
-                )}
-                {visibleColumns.includes('isDefault') && (
-                  <TableCell className={cellStyle}>
-                    {row.isDefault ? (
-                      <Badge variant="secondary" className="bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300">
-                        {t('shippingAddressManagement.defaultBadge')}
-                      </Badge>
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                )}
-                {visibleColumns.includes('isActive') && (
-                  <TableCell className={cellStyle}>
-                    <Badge
-                      variant="outline"
-                      className={`gap-1.5 pl-1.5 pr-2.5 py-0.5 border ${
-                        row.isActive 
-                          ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' 
-                          : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20'
-                      }`}
-                    >
-                        {row.isActive ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                        {row.isActive ? t('status.active') : t('status.inactive')}
-                    </Badge>
-                  </TableCell>
-                )}
-                {visibleColumns.includes('createdDate') && (
-                  <TableCell className={cellStyle}>
-                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                      <Calendar size={14} className="text-slate-400" />
-                      {row.createdDate ? format(new Date(row.createdDate), 'dd MMMM yyyy', { locale: tr }) : '-'}
-                    </div>
-                  </TableCell>
-                )}
-                <TableCell className={`text-right ${cellStyle}`}>
-                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-                      onClick={() => onEdit(row)}
-                    >
-                      <Edit2 size={16} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-                      onClick={() => handleDeleteClick(row)}
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                    </TableCell>
+                </TableRow>
+                ))}
+            </TableBody>
+            </Table>
+        </DndContext>
       </div>
 
       {totalPages > 1 && (
@@ -383,7 +434,7 @@ export function ShippingAddressTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('common.deleteConfirmTitle')}
+                {t('common.delete.confirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
                 {t('shippingAddressManagement.deleteConfirmDescription')}
@@ -405,9 +456,11 @@ export function ShippingAddressTable({
               type="button"
               variant="destructive"
               onClick={handleDeleteConfirm}
-              className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
+              disabled={deleteShippingAddress.isPending}
+              className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
-              {t('common.delete')}
+              {deleteShippingAddress.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {t('common.delete.action')}
             </Button>
           </DialogFooter>
 
