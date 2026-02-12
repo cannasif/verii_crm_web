@@ -52,7 +52,8 @@
     "delete": {
       "confirmTitle": "İzin Tanımını Sil",
       "confirmMessage": "\"{{name}}\" silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
-    }
+    },
+    "syncFromRoutes": "Sync From Routes"
   },
   "permissionGroups": {
     "title": "İzin Grupları",
@@ -102,5 +103,27 @@
     "noUsers": "Kullanıcı bulunamadı",
     "noGroups": "Kullanılabilir izin grubu yok",
     "selectAll": "Tümünü seç"
+  },
+  "common": {
+    "cancel": "Vazgeç",
+    "saving": "Saving...",
+    "save": "Kaydet ve Uygula",
+    "loading": "Loading...",
+    "search": "Ara...",
+    "noData": "No data",
+    "actions": "Actions",
+    "yes": "Yes",
+    "no": "Hayır",
+    "edit": "Edit",
+    "delete": "Delete",
+    "previous": "Previous",
+    "next": "Next",
+    "processing": "Processing..."
+  },
+  "sidebar": {
+    "accessControl": "Erişim Kontrolü",
+    "permissionDefinitions": "İzin Tanımları",
+    "permissionGroups": "İzin Grupları",
+    "userGroupAssignments": "Kullanıcı Grup Atamaları"
   }
 }

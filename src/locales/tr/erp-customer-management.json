@@ -44,6 +44,17 @@
     "filter": "Filtrele",
     "all": "TÜMÜ",
     "active": "AKTİF",
-    "passive": "PASİF"
+    "passive": "PASİF",
+    "apply": "SONUÇLARI LİSTELE"
+  },
+  "details": {
+    "title": "Müşteri Detayları",
+    "addressInfo": "Adres Bilgileri"
+  },
+  "common": {
+    "close": "Kapat",
+    "selectAll": "Tümünü Seç",
+    "ok": "TAMAM",
+    "totalRecords": "Toplam Kayıt"
   }
 }

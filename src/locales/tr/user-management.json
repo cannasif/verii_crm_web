@@ -65,5 +65,37 @@
   "delete": {
     "confirmTitle": "Kullanıcıyı Sil",
     "confirmMessage": "{{username}} kullanıcısını silmek istediğinizden emin misiniz?"
+  },
+  "userManagement": {
+    "form": {
+      "editUser": "Kullanıcı Düzenle",
+      "addUser": "Yeni Kullanıcı Ekle",
+      "editDescription": "Kullanıcı bilgilerini düzenleyin",
+      "addDescription": "Yeni kullanıcı bilgilerini girin",
+      "username": "Kullanıcı Adı",
+      "usernamePlaceholder": "Kullanıcı adını girin",
+      "email": "E-posta",
+      "emailPlaceholder": "E-posta adresini girin",
+      "password": "Şifre",
+      "passwordPlaceholder": "Boş bırakılırsa geçici şifre oluşturulur",
+      "firstName": "Ad",
+      "firstNamePlaceholder": "Adı girin",
+      "lastName": "Soyad",
+      "lastNamePlaceholder": "Soyadı girin",
+      "phoneNumber": "Telefon",
+      "phoneNumberPlaceholder": "Telefon numarasını girin",
+      "role": "Rol",
+      "rolePlaceholder": "Rol seçin",
+      "permissionGroups": "İzin Grupları",
+      "isActive": "Aktif",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet",
+      "selectAll": "Tümünü seç",
+      "permissionGroupsNoData": "İzin grubu bulunamadı"
+    },
+    "table": {
+      "loading": "Yükleniyor..."
+    }
   }
 }

@@ -5,8 +5,8 @@
   "SavedSuccessfully": "Mail ayarları başarıyla kaydedildi",
   "SaveFailed": "Mail ayarları kaydedilemedi",
   "Fields": {
-    "Host": "Host",
-    "Port": "Port",
+    "Host": "Sunucu Adı",
+    "Port": "Bağlantı Portu",
     "EnableSsl": "SSL Kullan",
     "Username": "Kullanıcı Adı",
     "Password": "Şifre",
