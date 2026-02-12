@@ -10,13 +10,29 @@ import {
   X,
   SlidersHorizontal,
   Check,
-  CheckSquare
+  CheckSquare,
+  ChevronDown,
+  Filter,
+  Trash2,
+  FileSpreadsheet,
+  FileText,
+  Presentation,
+  Menu,
+  Map,
+  Code,
+  Hash
 } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../utils/query-keys';
 import { CountryTable, getColumnsConfig } from './CountryTable';
@@ -36,6 +52,18 @@ export function CountryManagementPage(): ReactElement {
   // Client-side filtering state
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [pageSize, setPageSize] = useState(10);
+  const [showFilters, setShowFilters] = useState(false);
+  const [draftFilters, setDraftFilters] = useState({
+    name: '',
+    code: '',
+    erpCode: ''
+  });
+  const [activeFilters, setActiveFilters] = useState({
+    name: '',
+    code: '',
+    erpCode: ''
+  });
   
   const queryClient = useQueryClient();
 
@@ -76,8 +104,116 @@ export function CountryManagementPage(): ReactElement {
       );
     }
 
+    // Advanced Filters
+    if (activeFilters.name) {
+      const lower = activeFilters.name.toLowerCase();
+      result = result.filter(c => c.name?.toLowerCase().includes(lower));
+    }
+    if (activeFilters.code) {
+      const lower = activeFilters.code.toLowerCase();
+      result = result.filter(c => c.code?.toLowerCase().includes(lower));
+    }
+    if (activeFilters.erpCode) {
+      const lower = activeFilters.erpCode.toLowerCase();
+      result = result.filter(c => c.erpCode?.toLowerCase().includes(lower));
+    }
+
     return result;
-  }, [countries, searchTerm]);
+  }, [countries, searchTerm, activeFilters]);
+
+  const handleFilterChange = (key: keyof typeof draftFilters, value: string) => {
+    setDraftFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const applyAdvancedFilters = () => {
+    setActiveFilters(draftFilters);
+    setShowFilters(false);
+  };
+
+  const clearAdvancedFilters = () => {
+    const empty = { name: '', code: '', erpCode: '' };
+    setDraftFilters(empty);
+    setActiveFilters(empty);
+  };
+
+  const handleExportExcel = async () => {
+    const dataToExport = filteredCountries.map(country => {
+        const row: Record<string, string | number | boolean | null | undefined> = {};
+        visibleColumns.forEach(key => {
+            const col = tableColumns.find(c => c.key === key);
+            if (col) {
+                const value = country[key];
+                row[col.label] = (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
+                  ? value
+                  : value ?? '';
+            }
+        });
+        return row;
+    });
+
+    const XLSX = await import('xlsx');
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Countries");
+    XLSX.writeFile(wb, "countries.xlsx");
+  };
+
+  const handleExportPDF = async () => {
+    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable'),
+    ]);
+    const doc = new JsPDF();
+    
+    const tableColumn = tableColumns
+        .filter(col => visibleColumns.includes(col.key))
+        .map(col => col.label);
+
+    const tableRows = filteredCountries.map(country => {
+        return tableColumns
+            .filter(col => visibleColumns.includes(col.key))
+            .map(col => country[col.key] || '');
+    });
+
+    // @ts-ignore
+    autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+    });
+
+    doc.save("countries.pdf");
+  };
+
+  type PptxTableRow = Array<{ text: string }>;
+
+  const handleExportPowerPoint = async () => {
+    const { default: PptxGenJS } = await import('pptxgenjs');
+    const pptx = new PptxGenJS();
+    const slide = pptx.addSlide();
+    
+    // Add Title
+    slide.addText("Country Report", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
+
+    // Prepare Table Data
+    const headers = tableColumns
+        .filter(col => visibleColumns.includes(col.key))
+        .map(col => col.label);
+
+    const rows = filteredCountries.map(country => {
+        return tableColumns
+            .filter(col => visibleColumns.includes(col.key))
+            .map(col => String(country[col.key] || ''));
+    });
+
+    const tableData: PptxTableRow[] = [
+      headers.map(text => ({ text })),
+      ...rows.map(row => row.map(text => ({ text }))),
+    ];
+
+    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
+
+    pptx.writeFile({ fileName: "countries.pptx" });
+  };
 
   const handleAddClick = (): void => {
     setEditingCountry(null);
@@ -169,6 +305,114 @@ export function CountryManagementPage(): ReactElement {
             </div>
             
             <div className="flex items-center gap-2 w-full lg:w-auto justify-end">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button 
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white"
+                        >
+                            <span className="font-medium text-sm">{pageSize}</span>
+                            <ChevronDown size={16} />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-20 bg-[#151025] border border-white/10 shadow-2xl rounded-xl overflow-hidden p-1">
+                        {[10, 20, 50].map((size) => (
+                            <DropdownMenuItem 
+                                key={size} 
+                                onClick={() => setPageSize(size)}
+                                className={`flex items-center justify-center text-xs font-medium px-2 py-1.5 rounded-lg cursor-pointer transition-colors ${pageSize === size ? 'bg-pink-500/10 text-pink-500' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                            >
+                                {size}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Popover open={showFilters} onOpenChange={setShowFilters}>
+                <PopoverTrigger asChild>
+                    <button 
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showFilters ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
+                    >
+                        <Filter size={16} />
+                        <span className="font-medium text-sm">{t('common.filters')}</span>
+                    </button>
+                </PopoverTrigger>
+                <PopoverContent side="bottom" align="end" className="w-96 p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+                    
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
+                      <h3 className="text-sm font-semibold text-gray-200">{t('common.filters')}</h3>
+                      <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-white transition-colors">
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    {/* Scrollable Content */}
+                    <div className="p-3 overflow-y-auto custom-scrollbar max-h-[400px]">
+                        <div className="grid grid-cols-2 gap-3">
+                            
+                            {/* Name - Col Span 2 */}
+                            <div className="col-span-2">
+                                <div className="relative group">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
+                                        <Map size={14} />
+                                    </div>
+                                    <Input 
+                                        placeholder={t('countryManagement.form.namePlaceholder', 'Ülke adı ile ara...')}
+                                        value={draftFilters.name}
+                                        onChange={(e) => handleFilterChange('name', e.target.value)}
+                                        className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Code */}
+                            <div className="relative group">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
+                                    <Code size={14} />
+                                </div>
+                                <Input 
+                                    placeholder={t('countryManagement.form.codePlaceholder', 'Ülke Kodu')}
+                                    value={draftFilters.code}
+                                    onChange={(e) => handleFilterChange('code', e.target.value)}
+                                    className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
+                                />
+                            </div>
+
+                            {/* ERP Code */}
+                            <div className="relative group">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
+                                    <Hash size={14} />
+                                </div>
+                                <Input 
+                                    placeholder={t('countryManagement.form.erpCodePlaceholder', 'ERP Kodu')}
+                                    value={draftFilters.erpCode}
+                                    onChange={(e) => handleFilterChange('erpCode', e.target.value)}
+                                    className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="p-3 border-t border-white/5 bg-[#0b0818]/50 flex justify-between items-center gap-3">
+                        <button 
+                            onClick={clearAdvancedFilters}
+                            className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-red-400 transition-colors px-2 py-2"
+                        >
+                            <Trash2 size={14} />
+                            <span>{t('common.clear')}</span>
+                        </button>
+                        
+                        <button 
+                            onClick={applyAdvancedFilters}
+                            className="flex-1 bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2.5 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
+                        >
+                            {t('common.filter')}
+                        </button>
+                    </div>
+                </PopoverContent>
+            </Popover>
+
               <Popover open={showColumns} onOpenChange={setShowColumns}>
                 <PopoverTrigger asChild>
                     <button 
@@ -176,14 +420,14 @@ export function CountryManagementPage(): ReactElement {
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showColumns ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
                     >
                         <SlidersHorizontal size={16} />
-                        <span className="font-medium text-sm">{t('common.editColumns')}</span>
+                        <span className="font-medium text-sm">{t('common.columns')}</span>
                     </button>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                     
                     {/* Header */}
                     <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                        <h3 className="text-sm font-semibold text-gray-200">{t('common.columns')}</h3>
+                        <h3 className="text-sm font-semibold text-gray-200">{t('common.visibleColumns')}</h3>
                         <button onClick={() => setShowColumns(false)} className="text-gray-500 hover:text-white transition-colors">
                             <X size={16} />
                         </button>
@@ -228,6 +472,41 @@ export function CountryManagementPage(): ReactElement {
                     </div>
                 </PopoverContent>
               </Popover>
+
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
+                    <Menu size={18} className="text-slate-500 dark:text-slate-400" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {t('common.actions')}
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-white/5 my-1"></div>
+
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {t('common.export')}
+                    </div>
+                    <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <FileSpreadsheet size={16} className="text-emerald-500" />
+                      <span>{t('common.exportExcel')}</span>
+                    </button>
+                    <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <FileText size={16} className="text-red-400" />
+                      <span>{t('common.exportPDF')}</span>
+                    </button>
+                    <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
+                      <Presentation size={16} className="text-orange-400" />
+                      <span>{t('common.exportPPT')}</span>
+                    </button>
+                  </div>
+                </DropdownMenuContent>
+            </DropdownMenu>
             </div>
         </div>
       </div>
@@ -238,6 +517,7 @@ export function CountryManagementPage(): ReactElement {
           isLoading={isLoading}
           onEdit={handleEdit}
           visibleColumns={visibleColumns}
+          pageSize={pageSize}
         />
       </div>
 

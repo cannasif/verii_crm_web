@@ -63,6 +63,7 @@ interface CountryTableProps {
   isLoading: boolean;
   onEdit: (country: CountryDto) => void;
   visibleColumns: Array<keyof CountryDto>;
+  pageSize: number;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CountryDto>[] => [
@@ -185,25 +186,19 @@ export function CountryTable({
 
     if (sortConfig) {
       result.sort((a, b) => {
-        const aRaw = a[sortConfig.key];
-        const bRaw = b[sortConfig.key];
-        const aValue = aRaw != null ? String(aRaw).toLowerCase() : '';
-        const bValue = bRaw != null ? String(bRaw).toLowerCase() : '';
+        const aValue = a[sortConfig.key] ? String(a[sortConfig.key]).toLowerCase() : '';
+        const bValue = b[sortConfig.key] ? String(b[sortConfig.key]).toLowerCase() : '';
 
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
       });
     }
-
     return result;
   }, [countries, sortConfig]);
 
   const totalPages = Math.ceil(processedCountries.length / pageSize);
-  const paginatedCountries = processedCountries.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const paginatedCountries = processedCountries.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleDeleteClick = (country: CountryDto): void => {
     setSelectedCountry(country);
@@ -409,10 +404,10 @@ export function CountryTable({
                 </div>
                 <div className="space-y-2">
                     <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                        {t('countryManagement.deleteTitle')}
+                        {t('countryManagement.delete.confirmTitle')}
                     </DialogTitle>
                     <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                        {t('countryManagement.deleteConfirmation', { name: selectedCountry?.name })}
+                        {t('countryManagement.delete.confirmMessage', { name: selectedCountry?.name })}
                     </DialogDescription>
                 </div>
             </DialogHeader>
@@ -434,7 +429,7 @@ export function CountryTable({
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
                     {deleteCountry.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {t('common.delete')}
+                    {t('common.delete.action')}
                 </Button>
             </DialogFooter>
         </DialogContent>
