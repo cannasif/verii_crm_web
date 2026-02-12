@@ -193,8 +193,8 @@ export function OrderLineTable({
   const handleAddLine = (): void => {
     if (!linesEditable) return;
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('order.error', 'Hata'), {
-        description: t('order.lines.requiredFieldsMissing', 'Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.'),
+      toast.error(t('order.error'), {
+        description: t('order.lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -278,8 +278,8 @@ export function OrderLineTable({
 
   const handleProductSelect = async (product: ProductSelectionResult): Promise<void> => {
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('order.error', 'Hata'), {
-        description: t('order.lines.requiredFieldsMissing', 'Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.'),
+      toast.error(t('order.error'), {
+        description: t('order.lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -464,12 +464,12 @@ export function OrderLineTable({
             </div>
             <div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                {t('order.lines.title', 'Sipariş Kalemleri')}
+                {t('order.lines.title')}
               </h3>
               <p className="text-xs text-zinc-500 font-medium">
                 {lines.length > 0 
-                  ? t('order.lines.itemCount', '{count} kalem ürün listeleniyor', { count: lines.length })
-                  : t('order.lines.noItems', 'Henüz ürün eklenmedi')
+                  ? t('order.lines.itemCount', { count: lines.length })
+                  : t('order.lines.noItems')
                 }
               </p>
             </div>
@@ -482,7 +482,7 @@ export function OrderLineTable({
             className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
-            {t('order.lines.add', 'Satır Ekle')}
+            {t('order.lines.add')}
           </Button>
           )}
         </div>
@@ -494,10 +494,10 @@ export function OrderLineTable({
                 <Box className="h-8 w-8 text-zinc-300 dark:text-zinc-600" />
               </div>
               <h4 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-                {t('order.lines.empty', 'Sepetiniz Boş')}
+                {t('order.lines.empty')}
               </h4>
               <p className="text-sm text-zinc-500 max-w-xs mx-auto">
-                {t('order.lines.emptyDescription', 'Sipariş oluşturmak için "Satır Ekle" butonunu kullanarak ürün eklemeye başlayın.')}
+                {t('order.lines.emptyDescription')}
               </p>
             </div>
           ) : (
@@ -505,15 +505,15 @@ export function OrderLineTable({
               <Table>
                 <TableHeader>
                   <TableRow className={styles.tableHeadRow}>
-                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[240px]")}>{t('order.lines.stock', 'Stok Bilgisi')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[140px]")}>{t('order.lines.unitPrice', 'Birim Fiyat')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[100px]")}>{t('order.lines.quantity', 'Miktar')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount1', 'İnd.1')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount2', 'İnd.2')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount3', 'İnd.3')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px]")}>{t('order.lines.netPrice', 'Tutar')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[240px]")}>{t('order.lines.stock')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[140px]")}>{t('order.lines.unitPrice')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[100px]")}>{t('order.lines.quantity')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount1')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount2')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount3')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px]")}>{t('order.lines.netPrice')}</TableHead>
                     {!linesEditable && (
-                    <TableHead className={cn(styles.tableHead, "text-center w-[100px]")}>{t('order.actions', 'İşlem')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[100px]")}>{t('order.actions')}</TableHead>
                     )}
                   </TableRow>
                 </TableHeader>
@@ -653,7 +653,7 @@ export function OrderLineTable({
                   <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
                 </div>
               </div>
-              {t('order.lines.addLine', 'Yeni Satır Ekle')}
+              {t('order.lines.addLine')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -690,7 +690,7 @@ export function OrderLineTable({
                   <Edit className="h-5 w-5 text-blue-600 dark:text-blue-500" />
                 </div>
               </div>
-              {t('order.lines.editLine', 'Satırı Düzenle')}
+              {t('order.lines.editLine')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -728,20 +728,20 @@ export function OrderLineTable({
             <DialogTitle className="flex items-center gap-2 text-rose-600">
               <Trash2 className="h-5 w-5" />
               {relatedLinesCount > 1
-                ? t('order.lines.delete.confirmTitleMultiple', 'Bağlı Stokları Sil')
-                : t('order.lines.delete.confirmTitle', 'Satırı Sil')}
+                ? t('order.lines.delete.confirmTitleMultiple')
+                : t('order.lines.delete.confirmTitle')}
             </DialogTitle>
             <DialogDescription className="pt-2">
               {relatedLinesCount > 1 
-                ? t('order.lines.delete.confirmMessageMultiple', 'Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.', { count: relatedLinesCount })
-                : t('order.lines.delete.confirmMessage', 'Bu satırı silmek istediğinizden emin misiniz?')
+                ? t('order.lines.delete.confirmMessageMultiple', { count: relatedLinesCount })
+                : t('order.lines.delete.confirmMessage')
               }
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={handleDeleteCancel} disabled={isDeleting}>{t('order.cancel', 'İptal')}</Button>
+            <Button variant="outline" onClick={handleDeleteCancel} disabled={isDeleting}>{t('order.cancel')}</Button>
             <Button variant="destructive" onClick={() => void handleDeleteConfirm()} disabled={isDeleting}>
-              {isDeleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('order.saving', 'Siliniyor...')}</> : t('order.delete', 'Sil')}
+              {isDeleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('order.saving')}</> : t('order.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

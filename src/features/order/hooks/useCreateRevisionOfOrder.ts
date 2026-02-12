@@ -14,10 +14,10 @@ export const useCreateRevisionOfOrder = (): UseMutationResult<ApiResponse<OrderG
     mutationFn: (orderId: number) => orderApi.createRevisionOfOrder(orderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders() });
-      toast.success(t('order.revision.success', 'Sipariş revizyonu başarıyla oluşturuldu'));
+      toast.success(t('order.revision.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('order.revision.error', 'Sipariş revizyonu oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('order.revision.error'));
     },
   });
 };

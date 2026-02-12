@@ -42,7 +42,7 @@ export function WaitingApprovalsPage(): ReactElement {
   const [rejectReason, setRejectReason] = useState('');
 
   useEffect(() => {
-    setPageTitle(t('order.waitingApprovals.title', 'Onay Bekleyen Siparişler'));
+    setPageTitle(t('order.waitingApprovals.title'));
     return () => {
       setPageTitle(null);
     };
@@ -91,7 +91,7 @@ export function WaitingApprovalsPage(): ReactElement {
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={() => navigate('/orders/create')}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('order.back', 'Geri')}
+          {t('order.back')}
         </Button>
       </div>
 
@@ -105,7 +105,7 @@ export function WaitingApprovalsPage(): ReactElement {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                {t('order.waitingApprovals.list', 'Onay Bekleyen Siparişler Listesi')}
+                {t('order.waitingApprovals.list')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -119,7 +119,7 @@ export function WaitingApprovalsPage(): ReactElement {
                 <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                   <FileText className="h-12 w-12 mb-2 opacity-50" />
                   <p className="text-sm">
-                    {t('order.waitingApprovals.noApprovals', 'Onay bekleyen sipariş bulunmamaktadır')}
+                    {t('order.waitingApprovals.noApprovals')}
                   </p>
                 </div>
               ) : (
@@ -128,25 +128,25 @@ export function WaitingApprovalsPage(): ReactElement {
                     <TableHeader>
                       <TableRow>
                         <TableHead>
-                          {t('order.waitingApprovals.requestId', 'İstek ID')}
+                          {t('order.waitingApprovals.requestId')}
                         </TableHead>
                         <TableHead>
-                          {t('order.waitingApprovals.description', 'Açıklama')}
+                          {t('order.waitingApprovals.description')}
                         </TableHead>
                         <TableHead>
-                          {t('order.waitingApprovals.stepOrder', 'Adım')}
+                          {t('order.waitingApprovals.stepOrder')}
                         </TableHead>
                         <TableHead>
-                          {t('order.waitingApprovals.approvedBy', 'Onaylayan')}
+                          {t('order.waitingApprovals.approvedBy')}
                         </TableHead>
                         <TableHead>
-                          {t('order.waitingApprovals.actionDate', 'Tarih')}
+                          {t('order.waitingApprovals.actionDate')}
                         </TableHead>
                         <TableHead>
-                          {t('order.waitingApprovals.status', 'Durum')}
+                          {t('order.waitingApprovals.status')}
                         </TableHead>
                         <TableHead className="text-right">
-                          {t('order.actions', 'İşlemler')}
+                          {t('order.actions')}
                         </TableHead>
                       </TableRow>
                     </TableHeader>
@@ -195,7 +195,7 @@ export function WaitingApprovalsPage(): ReactElement {
                             <Badge
                               variant={approval.status === 1 ? 'default' : 'secondary'}
                             >
-                              {approval.statusName || t('order.waitingApprovals.waiting', 'Bekliyor')}
+                              {approval.statusName || t('order.waitingApprovals.waiting')}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
@@ -208,7 +208,7 @@ export function WaitingApprovalsPage(): ReactElement {
                                 className="gap-1"
                               >
                                 <Check className="h-4 w-4" />
-                                {t('order.approval.approve', 'Onayla')}
+                                {t('order.approval.approve')}
                               </Button>
                               <Button
                                 variant="destructive"
@@ -218,7 +218,7 @@ export function WaitingApprovalsPage(): ReactElement {
                                 className="gap-1"
                               >
                                 <X className="h-4 w-4" />
-                                {t('order.approval.reject', 'Reddet')}
+                                {t('order.approval.reject')}
                               </Button>
                             </div>
                           </TableCell>
@@ -237,15 +237,15 @@ export function WaitingApprovalsPage(): ReactElement {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {t('order.approval.rejectTitle', 'Siparişi Reddet')}
+              {t('order.approval.rejectTitle')}
             </DialogTitle>
             <DialogDescription>
-              {t('order.approval.rejectDescription', 'Red sebebini belirtiniz (opsiyonel)')}
+              {t('order.approval.rejectDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <Textarea
-              placeholder={t('order.approval.rejectReasonPlaceholder', 'Red sebebi...')}
+              placeholder={t('order.approval.rejectReasonPlaceholder')}
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               maxLength={500}
@@ -262,7 +262,7 @@ export function WaitingApprovalsPage(): ReactElement {
               }}
               disabled={rejectAction.isPending}
             >
-              {t('order.cancel', 'İptal')}
+              {t('order.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -270,8 +270,8 @@ export function WaitingApprovalsPage(): ReactElement {
               disabled={rejectAction.isPending}
             >
               {rejectAction.isPending
-                ? t('order.loading', 'Yükleniyor...')
-                : t('order.approval.reject', 'Reddet')}
+                ? t('order.loading')
+                : t('order.approval.reject')}
             </Button>
           </DialogFooter>
         </DialogContent>

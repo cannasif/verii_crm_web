@@ -17,10 +17,10 @@ export const useUpdateExchangeRateInOrder = (
       orderApi.updateExchangeRateInOrder(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orderExchangeRates(orderId) });
-      toast.success(t('order.exchangeRates.updateSuccess', 'Döviz kurları güncellendi'));
+      toast.success(t('order.exchangeRates.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('order.exchangeRates.updateError', 'Döviz kurları güncellenirken bir hata oluştu'));
+      toast.error(error.message ?? t('order.exchangeRates.updateError'));
     },
   });
 };

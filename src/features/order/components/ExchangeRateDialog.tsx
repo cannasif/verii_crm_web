@@ -161,12 +161,12 @@ export function ExchangeRateDialog({
               <DollarSign className="h-5 w-5" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className="text-zinc-900 dark:text-zinc-100">{t('order.exchangeRates.dialog.title', 'Döviz Kurları')}</span>
-              <span className="text-xs font-normal text-muted-foreground">{t('order.exchangeRates.dialog.subtitle', 'Güncel kur değerlerini yönetin')}</span>
+              <span className="text-zinc-900 dark:text-zinc-100">{t('order.exchangeRates.dialog.title')}</span>
+              <span className="text-xs font-normal text-muted-foreground">{t('order.exchangeRates.dialog.subtitle')}</span>
             </div>
           </DialogTitle>
           <DialogDescription className="hidden">
-            {t('order.exchangeRates.dialog.description', 'Kur değerlerini görüntüleyin ve gerekirse düzenleyin.')}
+            {t('order.exchangeRates.dialog.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -175,24 +175,24 @@ export function ExchangeRateDialog({
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
               <RefreshCw className="h-8 w-8 animate-spin text-zinc-300" />
-              <span className="text-sm font-medium">{t('order.loading', 'Kurlar yükleniyor...')}</span>
+              <span className="text-sm font-medium">{t('order.loading')}</span>
             </div>
           ) : (
             <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm bg-white dark:bg-zinc-900/20">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-0">
-                    <TableHead className={cn(styles.tableHead, "pl-6")}>{t('order.exchangeRates.currency', 'Para Birimi')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right")}>{t('order.exchangeRates.rate', 'Kur Değeri')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center")}>{t('order.exchangeRates.status', 'Durum')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center w-[100px]")}>{t('order.actions', 'İşlemler')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "pl-6")}>{t('order.exchangeRates.currency')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right")}>{t('order.exchangeRates.rate')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center")}>{t('order.exchangeRates.status')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[100px]")}>{t('order.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {localRates.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                        {t('order.exchangeRates.empty', 'Kur bulunamadı')}
+                        {t('order.exchangeRates.empty')}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -229,11 +229,11 @@ export function ExchangeRateDialog({
                           <TableCell className="text-center">
                             {rate.isOfficial ? (
                               <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800 text-[10px] px-2 h-5">
-                                {t('order.exchangeRates.official', 'Resmi')}
+                                {t('order.exchangeRates.official')}
                               </Badge>
                             ) : (
                               <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800 text-[10px] px-2 h-5">
-                                {t('order.exchangeRates.custom', 'Özel')}
+                                {t('order.exchangeRates.custom')}
                               </Badge>
                             )}
                           </TableCell>
@@ -272,7 +272,7 @@ export function ExchangeRateDialog({
                                 variant="ghost"
                                 onClick={() => {
                                   if (isUsed) {
-                                    toast.error(t('order.exchangeRates.cannotEditUsedCurrency', 'Kullanımda olan kur değiştirilemez'));
+                                    toast.error(t('order.exchangeRates.cannotEditUsedCurrency'));
                                     return;
                                   }
                                   setEditingId(rate.id);
@@ -296,7 +296,7 @@ export function ExchangeRateDialog({
           
           <div className="mt-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-lg p-3 text-xs text-blue-600 dark:text-blue-400 flex gap-2 items-start">
              <div className="mt-0.5 min-w-4"><DollarSign className="w-3.5 h-3.5" /></div>
-             <p>{t('order.exchangeRates.dialog.info', 'Burada yapılan değişiklikler sadece bu sipariş için geçerlidir ve genel sistem kurlarını etkilemez. Değiştirilen kurlar "Özel" olarak işaretlenir.')}</p>
+             <p>{t('order.exchangeRates.dialog.info')}</p>
           </div>
         </div>
 
@@ -309,7 +309,7 @@ export function ExchangeRateDialog({
             disabled={isSaving}
             className="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-700"
           >
-            {t('order.cancel', 'Vazgeç')}
+            {t('order.cancel')}
           </Button>
           <Button
             type="button"
@@ -320,10 +320,10 @@ export function ExchangeRateDialog({
             {isSaving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                {t('order.saving', 'Kaydediliyor...')}
+                {t('order.saving')}
               </>
             ) : (
-              t('order.saveAndApply', 'Kaydet ve Uygula')
+              t('order.saveAndApply')
             )}
           </Button>
         </DialogFooter>

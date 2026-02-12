@@ -14,10 +14,10 @@ export const useUpdateOrderBulk = (): UseMutationResult<ApiResponse<OrderGetDto>
     mutationFn: ({ id, data }: { id: number; data: OrderBulkCreateDto }) => orderApi.updateBulk(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders() });
-      toast.success(t('order.update.success', 'Sipariş başarıyla güncellendi'));
+      toast.success(t('order.update.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('order.update.error', 'Sipariş güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('order.update.error'));
     },
   });
 };

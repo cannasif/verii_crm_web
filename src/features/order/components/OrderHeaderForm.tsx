@@ -254,7 +254,7 @@ export function OrderHeaderForm({
         </div>
         <div>
           <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            {t('order.header.title', 'Sipariş Detayları')}
+            {t('order.header.title')}
             {revisionNo && (
               <span className="px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-[10px] font-bold border border-pink-200 dark:border-pink-800">
                 REV-{revisionNo}
@@ -263,7 +263,7 @@ export function OrderHeaderForm({
           </h2>
           <p className="text-xs text-zinc-500 font-medium flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse shadow-[0_0_6px_rgba(236,72,153,0.8)]" />
-            {t('order.header.subtitle', 'Müşteri ve finansal bilgileri buradan yönetebilirsiniz.')}
+            {t('order.header.subtitle')}
           </p>
         </div>
       </div>
@@ -280,7 +280,7 @@ export function OrderHeaderForm({
                 render={() => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>
-                      {t('order.header.customer', 'Müşteri Hesabı')} <span className="text-pink-500">*</span>
+                      {t('order.header.customer')} <span className="text-pink-500">*</span>
                     </FormLabel>
                     <div className="flex gap-2">
                       <div className="relative flex-1 group">
@@ -291,7 +291,7 @@ export function OrderHeaderForm({
                           <Input
                             className={cn(styles.inputBase, "font-semibold text-zinc-800 dark:text-zinc-100")}
                             value={customerDisplayValue}
-                            placeholder={t('order.header.selectCustomer', 'Müşteri seçiniz...')}
+                            placeholder={t('order.header.selectCustomer')}
                             readOnly
                             onClick={() => !readOnly && setCustomerSelectDialogOpen(true)}
                             disabled={readOnly}
@@ -305,7 +305,7 @@ export function OrderHeaderForm({
                         className="h-11 px-6 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white shadow-md hover:shadow-lg transition-all border border-zinc-800 active:scale-95"
                       >
                         <Search className="h-4 w-4 mr-2" />
-                        {t('order.select', 'Seç')}
+                        {t('order.select')}
                       </Button>
                     </div>
                     <FormMessage className="mt-1.5" />
@@ -322,7 +322,7 @@ export function OrderHeaderForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>
-                      {t('order.header.representative', 'Satış Temsilcisi')}
+                      {t('order.header.representative')}
                     </FormLabel>
                     <div className="relative">
                        <div className={styles.iconWrapper}><Briefcase className="h-4 w-4" /></div>
@@ -334,8 +334,8 @@ export function OrderHeaderForm({
                            value: u.userId.toString(),
                            label: [u.firstName, u.lastName].filter(Boolean).join(' ')
                          }))}
-                         placeholder={t('order.select', 'Seçiniz')}
-                         searchPlaceholder={t('common.search', 'Ara...')}
+                         placeholder={t('order.select')}
+                         searchPlaceholder={t('common.search')}
                        />
                     </div>
                     <FormMessage className="mt-1.5" />
@@ -353,7 +353,7 @@ export function OrderHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>
                          <Truck className="h-3.5 w-3.5 text-orange-500" />
-                        {t('order.header.shippingAddress', 'Sevk Adresi')}
+                        {t('order.header.shippingAddress')}
                       </FormLabel>
                       <div className="relative">
                          <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
@@ -365,8 +365,8 @@ export function OrderHeaderForm({
                              value: address.id.toString(),
                              label: address.addressText
                            }))}
-                           placeholder={t('order.header.selectShippingAddress', 'Sevk adresi seçin')}
-                           searchPlaceholder={t('common.search', 'Ara...')}
+                           placeholder={t('order.header.selectShippingAddress')}
+                           searchPlaceholder={t('common.search')}
                            disabled={readOnly}
                          />
                       </div>
@@ -426,8 +426,8 @@ export function OrderHeaderForm({
                           value: String(currency.dovizTipi),
                           label: currency.dovizIsmi || `Döviz ${currency.dovizTipi}`
                         }))}
-                        placeholder={t('order.select', 'Seçiniz')}
-                        searchPlaceholder={t('common.search', 'Ara...')}
+                        placeholder={t('order.select')}
+                        searchPlaceholder={t('common.search')}
                         disabled={readOnly}
                       />
                     </div>
@@ -452,8 +452,8 @@ export function OrderHeaderForm({
                            value: pt.id.toString(),
                            label: pt.name
                          })) || []}
-                         placeholder={t('order.select', 'Seçiniz')}
-                         searchPlaceholder={t('common.search', 'Ara...')}
+                         placeholder={t('order.select')}
+                         searchPlaceholder={t('common.search')}
                          disabled={readOnly}
                        />
                     </div>
@@ -482,7 +482,7 @@ export function OrderHeaderForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>
-                        {t('common.offerType.label', 'Teklif Tipi')} <span className="text-pink-500 ml-0.5">*</span>
+                        {t('common.offerType.label')} <span className="text-pink-500 ml-0.5">*</span>
                       </FormLabel>
                       <div className="relative">
                          <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
@@ -491,11 +491,11 @@ export function OrderHeaderForm({
                            value={field.value || ''}
                            onSelect={(value) => field.onChange(value)}
                            options={[
-                             { value: OfferType.YURTICI, label: t('common.offerType.yurtici', 'Yurtiçi') },
-                             { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi', 'Yurtdışı') }
+                             { value: OfferType.YURTICI, label: t('common.offerType.yurtici') },
+                             { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi') }
                            ]}
-                           placeholder={t('common.offerType.selectPlaceholder', 'Seçiniz')}
-                           searchPlaceholder={t('common.search', 'Ara...')}
+                           placeholder={t('common.offerType.selectPlaceholder')}
+                           searchPlaceholder={t('common.search')}
                            disabled={readOnly}
                          />
                       </div>
@@ -522,7 +522,7 @@ export function OrderHeaderForm({
                           >
                             <FormControl>
                               <SelectTrigger className={cn(styles.inputBase, "pl-10")}>
-                                <SelectValue placeholder={t('order.select', 'Seçiniz')} />
+                                <SelectValue placeholder={t('order.select')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -623,8 +623,8 @@ export function OrderHeaderForm({
                                 label: d.serialPrefix || ''
                               }))}
                             disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
-                            placeholder={t('order.select', 'Seç')}
-                            searchPlaceholder={t('common.search', 'Ara...')}
+                            placeholder={t('order.select')}
+                            searchPlaceholder={t('common.search')}
                           />
                         </div>
                         <FormMessage className="mt-1" />
@@ -641,7 +641,7 @@ export function OrderHeaderForm({
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
                           <Folder className="h-3.5 w-3.5" />
-                          {t('quotation.header.projectCode', 'Proje Kodu')}
+                          {t('quotation.header.projectCode')}
                         </FormLabel>
                         <div className="relative">
                           <div className={styles.iconWrapper}><Folder className="h-4 w-4" /></div>
@@ -653,8 +653,8 @@ export function OrderHeaderForm({
                               value: p.projeKod,
                               label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
                             }))}
-                            placeholder={t('quotation.header.projectCodePlaceholder', 'Proje kodu seçiniz...')}
-                            searchPlaceholder={t('common.search', 'Ara...')}
+                            placeholder={t('quotation.header.projectCodePlaceholder')}
+                            searchPlaceholder={t('common.search')}
                             disabled={readOnly}
                           />
                         </div>
@@ -683,7 +683,7 @@ export function OrderHeaderForm({
                               className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 h-6 text-xs border border-purple-200 dark:border-purple-500/20"
                             >
                               <span className="mr-1.5 truncate max-w-[200px]">
-                                {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel', 'Not')} ${idx + 1}`}
+                                {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel')} ${idx + 1}`}
                               </span>
                               {!readOnly && onQuotationNotesChange && (
                                 <button
@@ -703,7 +703,7 @@ export function OrderHeaderForm({
                           <Textarea
                             {...field}
                             value={field.value || ''}
-                            placeholder={t('order.header.descriptionPlaceholder', 'Özel koşullar...')}
+                            placeholder={t('order.header.descriptionPlaceholder')}
                             className="min-h-[80px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10"
                             disabled={readOnly}
                           />
@@ -769,18 +769,18 @@ export function OrderHeaderForm({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-pink-600">
               <ArrowRightLeft className="h-5 w-5" />
-              {t('order.header.currencyChange.title', 'Kur Değişikliği')}
+              {t('order.header.currencyChange.title')}
             </DialogTitle>
             <DialogDescription className="pt-2">
-              {t('order.header.currencyChange.message', 'Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?')}
+              {t('order.header.currencyChange.message')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
             <Button variant="outline" onClick={handleCurrencyChangeCancel} className="rounded-xl">
-              {t('order.cancel', 'Vazgeç')}
+              {t('order.cancel')}
             </Button>
             <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-pink-600 hover:bg-pink-700 text-white">
-              {t('order.confirm', 'Onayla')}
+              {t('order.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

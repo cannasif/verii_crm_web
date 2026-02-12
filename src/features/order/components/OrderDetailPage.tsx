@@ -85,12 +85,12 @@ export function OrderDetailPage(): ReactElement {
   useEffect(() => {
     if (order) {
       setPageTitle(
-        t('order.detail.title', 'Sipariş Detayı: {{offerNo}}', {
+        t('order.detail.title', {
           offerNo: order.offerNo || `#${order.id}`,
         })
       );
     } else {
-      setPageTitle(t('order.detail.title', 'Sipariş Detayı'));
+      setPageTitle(t('order.detail.title'));
     }
     return () => {
       setPageTitle(null);
@@ -250,8 +250,8 @@ export function OrderDetailPage(): ReactElement {
   const onSubmit = async (data: CreateOrderSchema): Promise<void> => {
     if (isReadOnly) return;
     if (lines.length === 0) {
-      toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
-        description: t('order.lines.required', 'En az 1 satır eklenmelidir'),
+      toast.error(t('order.update.error'), {
+        description: t('order.lines.required'),
       });
       return;
     }
@@ -259,8 +259,8 @@ export function OrderDetailPage(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
     if (overLimitNote) {
-      toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
-        description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.'),
+      toast.error(t('order.update.error'), {
+        description: t('quotation.notes.maxLengthError'),
       });
       return;
     }
@@ -297,7 +297,7 @@ export function OrderDetailPage(): ReactElement {
         : String(data.order.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('order.update.invalidCurrency', 'Geçerli bir para birimi seçilmelidir'));
+        throw new Error(t('order.update.invalidCurrency'));
       }
 
       const orderData: CreateOrderDto = {
@@ -333,22 +333,22 @@ export function OrderDetailPage(): ReactElement {
 
       const notesList = orderNotesDtoToNotesList(quotationNotes);
       if (notesList.length > 15) {
-        toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
-          description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+        toast.error(t('order.update.error'), {
+          description: t('quotation.notes.maxCountError'),
         });
         return;
       }
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
       if (result.success && result.data) {
-        toast.success(t('order.update.success', 'Sipariş Başarıyla Güncellendi'), {
-          description: t('order.update.successMessage', 'Sipariş başarıyla güncellendi.'),
+        toast.success(t('order.update.success'), {
+          description: t('order.update.successMessage'),
         });
       } else {
-        throw new Error(result.message || t('order.update.errorMessage', 'Sipariş güncellenirken bir hata oluştu.'));
+        throw new Error(result.message || t('order.update.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('order.update.errorMessage', 'Sipariş güncellenirken bir hata oluştu.');
+      let errorMessage = t('order.update.errorMessage');
       if (error instanceof Error) {
           try {
              const parsedError = JSON.parse(error.message);
@@ -359,7 +359,7 @@ export function OrderDetailPage(): ReactElement {
              errorMessage = error.message;
           }
       }
-      toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
+      toast.error(t('order.update.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -395,8 +395,8 @@ export function OrderDetailPage(): ReactElement {
     e.preventDefault();
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('order.update.error', 'Form Hatalı'), {
-        description: t('order.update.validationError', 'Lütfen zorunlu alanları kontrol ediniz.'),
+      toast.error(t('order.update.error'), {
+        description: t('order.update.validationError'),
       });
       return;
     }
@@ -418,7 +418,7 @@ export function OrderDetailPage(): ReactElement {
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
         <span className="text-muted-foreground animate-pulse text-sm font-medium">
-          {t('order.loading', 'Yükleniyor...')}
+          {t('order.loading')}
         </span>
       </div>
     );
@@ -429,10 +429,10 @@ export function OrderDetailPage(): ReactElement {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <p className="text-lg font-medium text-muted-foreground mb-4">
-          {t('order.detail.notFound', 'Sipariş bulunamadı')}
+          {t('order.detail.notFound')}
         </p>
         <Button variant="outline" onClick={() => navigate('/orders')}>
-          {t('order.backToOrders', 'Siparişlere Dön')}
+          {t('order.backToOrders')}
         </Button>
       </div>
     );
@@ -443,13 +443,13 @@ export function OrderDetailPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            {t('order.detail.title', 'Sipariş Detayı: {{offerNo}}', { offerNo: order.offerNo || `#${order.id}` })}
+            {t('order.detail.title', { offerNo: order.offerNo || `#${order.id}` })}
           </h2>
           <p className="text-muted-foreground text-sm">
-            {t('order.detail.subtitle', 'Sipariş detaylarını görüntüleyin ve düzenleyin.')}
+            {t('order.detail.subtitle')}
             {order.revisionNo != null && order.revisionNo !== '' && (
               <span className="block mt-1">
-                {t('order.detail.revisionNo', 'Revizyon No')}: {order.revisionNo}
+                {t('order.detail.revisionNo')}: {order.revisionNo}
               </span>
             )}
           </p>
@@ -466,7 +466,7 @@ export function OrderDetailPage(): ReactElement {
             )}
           >
             <Layers className="h-4 w-4 mr-2" />
-            {t('order.detail.tabDetail', 'Sipariş Bilgileri')}
+            {t('order.detail.tabDetail')}
           </TabsTrigger>
           <TabsTrigger
             value="approval-flow"
@@ -476,7 +476,7 @@ export function OrderDetailPage(): ReactElement {
             )}
           >
             <FileCheck className="h-4 w-4 mr-2" />
-            {t('order.detail.tabApprovalFlow', 'Onay Akışı')}
+            {t('order.detail.tabApprovalFlow')}
           </TabsTrigger>
           <TabsTrigger
             value="report"
@@ -486,7 +486,7 @@ export function OrderDetailPage(): ReactElement {
             )}
           >
             <FileText className="h-4 w-4 mr-2" />
-            {t('order.detail.tabReport', 'Rapor')}
+            {t('order.detail.tabReport')}
           </TabsTrigger>
         </TabsList>
 
@@ -500,13 +500,13 @@ export function OrderDetailPage(): ReactElement {
             <form onSubmit={handleFormSubmit} className="space-y-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
                 <div className="flex flex-col gap-6 min-w-0">
-                  <section className="space-y-1" aria-label={t('order.sections.header', 'Müşteri ve belge bilgileri')}>
+                  <section className="space-y-1" aria-label={t('order.sections.header')}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                         1
                       </span>
                       <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('order.sections.header', 'Müşteri & Belge')}
+                        {t('order.sections.header')}
                       </h3>
                     </div>
                     <OrderHeaderForm
@@ -517,24 +517,24 @@ export function OrderDetailPage(): ReactElement {
                       onSaveNotes={async (notes) => {
                         const list = orderNotesDtoToNotesList(notes);
                         if (list.length > 15) {
-                          toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
-                            description: t('quotation.notes.maxCountError', 'En fazla 15 not eklenebilir.'),
+                          toast.error(t('order.update.error'), {
+                            description: t('quotation.notes.maxCountError'),
                           });
                           throw new Error('maxCount');
                         }
                         const overLimit = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).find((k) => (notes[k]?.length ?? 0) > 100);
                         if (overLimit) {
-                          toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
-                            description: t('quotation.notes.maxLengthError', 'Her not en fazla 100 karakter olabilir.'),
+                          toast.error(t('order.update.error'), {
+                            description: t('quotation.notes.maxLengthError'),
                           });
                           throw new Error('maxLength');
                         }
                         try {
                           await updateNotesMutation.mutateAsync({ notes: list });
-                          toast.success(t('quotation.notes.saved', 'Notlar kaydedildi.'));
+                          toast.success(t('quotation.notes.saved'));
                         } catch (err) {
-                          toast.error(t('order.update.error', 'Sipariş Güncellenemedi'), {
-                            description: err instanceof Error ? err.message : t('quotation.notes.saveError', 'Notlar kaydedilirken bir hata oluştu.'),
+                          toast.error(t('order.update.error'), {
+                            description: err instanceof Error ? err.message : t('quotation.notes.saveError'),
                           });
                           throw err;
                         }
@@ -556,13 +556,13 @@ export function OrderDetailPage(): ReactElement {
                     />
                   </section>
 
-                  <section className="space-y-1 pt-2" aria-label={t('order.sections.lines', 'Sipariş kalemleri')}>
+                  <section className="space-y-1 pt-2" aria-label={t('order.sections.lines')}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
                         2
                       </span>
                       <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('order.sections.lines', 'Sipariş Kalemleri')}
+                        {t('order.sections.lines')}
                       </h3>
                     </div>
                     <OrderLineTable
@@ -587,7 +587,7 @@ export function OrderDetailPage(): ReactElement {
                       3
                     </span>
                     <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                      {t('order.sections.summary', 'Özet & Toplamlar')}
+                      {t('order.sections.summary')}
                     </h3>
                   </div>
                   <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
@@ -608,12 +608,12 @@ export function OrderDetailPage(): ReactElement {
                     {startApprovalFlow.isPending ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        {t('order.approval.sending', 'Gönderiliyor...')}
+                        {t('order.approval.sending')}
                       </>
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        {t('order.approval.sendForApproval', 'Onaya Gönder')}
+                        {t('order.approval.sendForApproval')}
                       </>
                     )}
                   </Button>

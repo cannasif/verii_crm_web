@@ -15,10 +15,10 @@ export const useCreateOrderLines = (
     mutationFn: (dtos: CreateOrderLineDto[]) => orderApi.createOrderLines(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orderLines(orderId) });
-      toast.success(t('order.lines.createSuccess', 'Satırlar eklendi'));
+      toast.success(t('order.lines.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('order.lines.createError', 'Satırlar eklenirken bir hata oluştu'));
+      toast.error(error.message ?? t('order.lines.createError'));
     },
   });
 };

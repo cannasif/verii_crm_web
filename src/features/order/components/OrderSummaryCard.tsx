@@ -98,7 +98,7 @@ export function OrderSummaryCard({
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800">
             <Calculator className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
           </div>
-          <h3 className="font-bold text-sm tracking-tight">{t('order.summary.title', 'Özet')}</h3>
+          <h3 className="font-bold text-sm tracking-tight">{t('order.summary.title')}</h3>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4 sm:gap-y-0 sm:items-start">
@@ -107,7 +107,7 @@ export function OrderSummaryCard({
               htmlFor="order-generalDiscountRate"
               className="text-sm font-medium text-zinc-700 dark:text-zinc-300 leading-tight"
             >
-              {t('order.summary.generalDiscountRate', 'Genel İskonto Oranı (%)')}
+              {t('order.summary.generalDiscountRate')}
             </Label>
             <div className="relative">
               <Input
@@ -132,7 +132,7 @@ export function OrderSummaryCard({
               htmlFor="order-generalDiscountAmount"
               className="text-sm font-medium text-zinc-700 dark:text-zinc-300 leading-tight"
             >
-              {t('order.summary.generalDiscountAmount', 'Genel İskonto Tutarı')}
+              {t('order.summary.generalDiscountAmount')}
             </Label>
             <Input
               id="order-generalDiscountAmount"
@@ -149,14 +149,14 @@ export function OrderSummaryCard({
         </div>
 
         <p className="mt-3 pl-3 border-l-2 border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-          {t('order.summary.generalDiscountHelp', 'Oran veya tutar girildiğinde toplamlar otomatik güncellenir.')}
+          {t('order.summary.generalDiscountHelp')}
         </p>
 
         <div className="mt-6 pt-5 border-t border-zinc-200 dark:border-zinc-700">
           <dl className="space-y-3.5">
             <div className="flex items-center justify-between gap-3 min-w-0">
               <dt className="text-sm text-zinc-500 dark:text-zinc-400 font-medium truncate">
-                {t('order.summary.subtotal', 'Ara Toplam')}
+                {t('order.summary.subtotal')}
               </dt>
               <dd className="font-semibold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-sm shrink-0 min-w-24">
                 {formatCurrency(totals.netTotal, currencyCode)}
@@ -165,7 +165,7 @@ export function OrderSummaryCard({
             {totals.generalDiscountAmount > 0 && (
               <div className="flex items-center justify-between gap-3 min-w-0">
                 <dt className="text-sm text-zinc-500 dark:text-zinc-400 font-medium truncate">
-                  {t('order.summary.generalDiscount', 'Genel İskonto')}
+                  {t('order.summary.generalDiscount')}
                 </dt>
                 <dd className="font-semibold text-red-600 dark:text-red-400 font-mono tabular-nums text-right text-sm shrink-0 min-w-24">
                   -{formatCurrency(totals.generalDiscountAmount, currencyCode)}
@@ -174,7 +174,7 @@ export function OrderSummaryCard({
             )}
             <div className="flex items-center justify-between gap-3 min-w-0">
               <dt className="text-sm text-zinc-500 dark:text-zinc-400 font-medium truncate">
-                {t('order.summary.totalVat', 'Toplam KDV')}
+                {t('order.summary.totalVat')}
               </dt>
               <dd className="font-semibold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-sm shrink-0 min-w-24">
                 {formatCurrency(totals.totalVatAfterDiscount, currencyCode)}
@@ -187,7 +187,7 @@ export function OrderSummaryCard({
           <div className="flex items-center justify-between gap-3 min-w-0">
             <span className="text-zinc-700 dark:text-zinc-300 font-semibold text-sm shrink-0 flex items-center gap-2 truncate">
               <Wallet className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" />
-              {t('order.summary.grandTotal', 'Genel Toplam')}
+              {t('order.summary.grandTotal')}
             </span>
             <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-base shrink-0 min-w-24">
               {formatCurrency(totals.grandTotalAfterDiscount, currencyCode)}

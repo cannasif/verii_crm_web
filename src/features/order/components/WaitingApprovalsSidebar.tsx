@@ -23,7 +23,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            {t('order.waitingApprovals.title', 'Onay Bekleyen Siparişler')}
+            {t('order.waitingApprovals.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -41,14 +41,14 @@ export function WaitingApprovalsSidebar(): ReactElement {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            {t('order.waitingApprovals.title', 'Onay Bekleyen Siparişler')}
+            {t('order.waitingApprovals.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <FileText className="h-12 w-12 mb-2 opacity-50" />
             <p className="text-sm">
-              {t('order.waitingApprovals.noApprovals', 'Onay bekleyen sipariş bulunmamaktadır')}
+              {t('order.waitingApprovals.noApprovals')}
             </p>
           </div>
         </CardContent>
@@ -61,7 +61,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          {t('order.waitingApprovals.title', 'Onay Bekleyen Siparişler')}
+          {t('order.waitingApprovals.title')}
           <Badge variant="secondary" className="ml-auto">
             {approvals.length}
           </Badge>
@@ -83,20 +83,20 @@ export function WaitingApprovalsSidebar(): ReactElement {
                 variant={approval.status === 1 ? 'default' : 'secondary'}
                 className="ml-2 shrink-0"
               >
-                {approval.statusName || t('order.waitingApprovals.waiting', 'Bekliyor')}
+                {approval.statusName || t('order.waitingApprovals.waiting')}
               </Badge>
             </div>
             <div className="text-xs text-muted-foreground w-full">
               <div>
-                {t('order.waitingApprovals.stepOrder', 'Adım')}: {approval.stepOrder}
+                {t('order.waitingApprovals.stepOrder')}: {approval.stepOrder}
               </div>
               {approval.approvedByUserFullName && (
                 <div>
-                  {t('order.waitingApprovals.approvedBy', 'Onaylayan')}: {approval.approvedByUserFullName}
+                  {t('order.waitingApprovals.approvedBy')}: {approval.approvedByUserFullName}
                 </div>
               )}
               <div>
-                {t('order.waitingApprovals.actionDate', 'Tarih')}: {new Date(approval.actionDate).toLocaleDateString(i18n.language)}
+                {t('order.waitingApprovals.actionDate')}: {new Date(approval.actionDate).toLocaleDateString(i18n.language)}
               </div>
             </div>
           </Button>

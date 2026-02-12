@@ -15,10 +15,10 @@ export const useUpdateOrderLines = (
     mutationFn: (dtos: OrderLineGetDto[]) => orderApi.updateOrderLines(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orderLines(orderId) });
-      toast.success(t('order.lines.updateSuccess', 'Satırlar güncellendi'));
+      toast.success(t('order.lines.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('order.lines.updateError', 'Satırlar güncellenirken bir hata oluştu'));
+      toast.error(error.message ?? t('order.lines.updateError'));
     },
   });
 };

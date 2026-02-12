@@ -14,10 +14,10 @@ export const useDeleteOrderLine = (
     mutationFn: (id: number) => orderApi.deleteOrderLine(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orderLines(orderId) });
-      toast.success(t('order.lines.deleteSuccess', 'Satır silindi'));
+      toast.success(t('order.lines.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('order.lines.deleteError', 'Satır silinirken bir hata oluştu'));
+      toast.error(error.message ?? t('order.lines.deleteError'));
     },
   });
 };

@@ -85,7 +85,7 @@ export function OrderTable({
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
         <span className="text-muted-foreground animate-pulse text-sm font-medium">
-          {t('order.loading', 'Yükleniyor...')}
+          {t('order.loading')}
         </span>
       </div>
     );
@@ -96,7 +96,7 @@ export function OrderTable({
   if (!data || orders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-muted-foreground border border-zinc-300 dark:border-zinc-700/80 border-dashed rounded-xl bg-white/50 dark:bg-card/50">
-        <p className="text-sm font-medium">{t('order.noData', 'Veri yok')}</p>
+        <p className="text-sm font-medium">{t('order.noData')}</p>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export function OrderTable({
                 onClick={() => handleSort('Id')}
               >
                 <div className="flex items-center">
-                  {t('order.list.id', 'ID')}
+                  {t('order.list.id')}
                   <SortIcon column="Id" />
                 </div>
               </TableHead>
@@ -129,7 +129,7 @@ export function OrderTable({
                 onClick={() => handleSort('OfferNo')}
               >
                 <div className="flex items-center">
-                  {t('order.list.offerNo', 'Sipariş No')}
+                  {t('order.list.offerNo')}
                   <SortIcon column="OfferNo" />
                 </div>
               </TableHead>
@@ -138,7 +138,7 @@ export function OrderTable({
                 onClick={() => handleSort('PotentialCustomerName')}
               >
                 <div className="flex items-center">
-                  {t('order.list.customer', 'Müşteri')}
+                  {t('order.list.customer')}
                   <SortIcon column="PotentialCustomerName" />
                 </div>
               </TableHead>
@@ -147,7 +147,7 @@ export function OrderTable({
                 onClick={() => handleSort('RepresentativeName')}
               >
                 <div className="flex items-center">
-                  {t('order.list.representative', 'Temsilci')}
+                  {t('order.list.representative')}
                   <SortIcon column="RepresentativeName" />
                 </div>
               </TableHead>
@@ -156,7 +156,7 @@ export function OrderTable({
                 onClick={() => handleSort('OfferDate')}
               >
                 <div className="flex items-center">
-                  {t('order.list.offerDate', 'Sipariş Tarihi')}
+                  {t('order.list.offerDate')}
                   <SortIcon column="OfferDate" />
                 </div>
               </TableHead>
@@ -165,7 +165,7 @@ export function OrderTable({
                 onClick={() => handleSort('Currency')}
               >
                 <div className="flex items-center">
-                  {t('order.list.currency', 'Para Birimi')}
+                  {t('order.list.currency')}
                   <SortIcon column="Currency" />
                 </div>
               </TableHead>
@@ -174,7 +174,7 @@ export function OrderTable({
                 onClick={() => handleSort('GrandTotal')}
               >
                 <div className="flex items-center justify-end">
-                  {t('order.list.grandTotal', 'Genel Toplam')}
+                  {t('order.list.grandTotal')}
                   <SortIcon column="GrandTotal" />
                 </div>
               </TableHead>
@@ -183,12 +183,12 @@ export function OrderTable({
                 onClick={() => handleSort('Status')}
               >
                 <div className="flex items-center">
-                  {t('order.list.status', 'Durum')}
+                  {t('order.list.status')}
                   <SortIcon column="Status" />
                 </div>
               </TableHead>
               <TableHead className="text-center">
-                {t('order.list.actions', 'İşlemler')}
+                {t('order.list.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -225,8 +225,8 @@ export function OrderTable({
                       className="w-full"
                     >
                       {createRevisionMutation.isPending
-                        ? t('order.loading', 'Yükleniyor...')
-                        : t('order.list.revise', 'Revize et')}
+                        ? t('order.loading')
+                        : t('order.list.revise')}
                     </Button>
                   )}
                 </TableCell>
@@ -239,7 +239,7 @@ export function OrderTable({
 
       <div className="flex items-center justify-between py-4">
         <div className="text-sm text-muted-foreground">
-          {t('order.list.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('order.list.showing', {
             from: (pageNumber - 1) * pageSize + 1,
             to: Math.min(pageNumber * pageSize, data.totalCount || 0),
             total: data.totalCount || 0,
@@ -252,10 +252,10 @@ export function OrderTable({
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1}
           >
-            {t('order.previous', 'Önceki')}
+            {t('order.previous')}
           </Button>
           <div className="flex items-center px-4 text-sm">
-            {t('order.list.page', 'Sayfa {{current}} / {{total}}', {
+            {t('order.list.page', {
               current: pageNumber,
               total: totalPages,
             })}
@@ -266,7 +266,7 @@ export function OrderTable({
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
           >
-            {t('order.next', 'Sonraki')}
+            {t('order.next')}
           </Button>
         </div>
       </div>
