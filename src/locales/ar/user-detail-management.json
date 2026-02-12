@@ -63,5 +63,16 @@
   "newPassword": "كلمة المرور الجديدة",
   "enterNewPassword": "أدخل كلمة المرور الجديدة (حد أدنى 6 أحرف)",
   "changingPassword": "جارٍ التغيير...",
-  "changePasswordButton": "تغيير كلمة المرور"
+  "changePasswordButton": "تغيير كلمة المرور",
+  "contactInfo": "معلومات جهة الاتصال",
+  "contactInfoDescription": "E-posta, telefon ve sosyal medya hesaplarınızı yönetin.",
+  "linkedinUrl": "LinkedIn Profili",
+  "phoneNumber": "Telefon Numarası",
+  "email": "عنوان البريد الإلكتروني",
+  "enterLinkedinUrl": "https://linkedin.com/in/...",
+  "enterPhoneNumber": "+90 5XX XXX XX XX",
+  "enterEmail": "ornek@sirket.com",
+  "invalidUrl": "Geçerli bir URL giriniz",
+  "invalidEmail": "الرجاء إدخال عنوان بريد إلكتروني صالح",
+  "phoneNumberMaxLength": "يجب أن يكون رقم الهاتف 20 حرف كحد أقصى"
 }

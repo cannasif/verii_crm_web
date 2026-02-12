@@ -16,7 +16,7 @@
     "showing": "عرض {{from}}-{{to}} من {{total}}",
     "page": "صفحة {{current}} من {{total}}",
     "rowsPerPage": "الصفوف لكل صفحة",
-    "id": "ID",
+    "id": "المعرف",
     "salespersonName": "Salesperson Name",
     "erpProductGroupCode": "ERP Product Group Code",
     "maxDiscount1": "Max Discount 1",

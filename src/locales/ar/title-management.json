@@ -16,7 +16,7 @@
     "showing": "عرض {{from}}-{{to}} من {{total}}",
     "page": "صفحة {{current}} من {{total}}",
     "rowsPerPage": "الصفوف لكل صفحة",
-    "id": "ID",
+    "id": "المعرف",
     "createdDate": "Created Date",
     "createdBy": "Created By"
   },

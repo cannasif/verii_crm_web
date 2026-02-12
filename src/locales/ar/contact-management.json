@@ -21,7 +21,8 @@
     "updatedDate": "تاريخ التحديث",
     "updatedBy": "تم التحديث بواسطة",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
-    "page": "صفحة {{current}} / {{total}}"
+    "page": "صفحة {{current}} / {{total}}",
+    "salutation": "Hitap"
   },
   "form": {
     "addContact": "إضافة جهة اتصال جديدة",
@@ -50,7 +51,24 @@
     "customerRequired": "اختيار العميل مطلوب",
     "title": "اللقب",
     "selectTitle": "اختر اللقب",
-    "titleRequired": "اختيار اللقب مطلوب"
+    "titleRequired": "اختيار اللقب مطلوب",
+    "salutation": "Hitap",
+    "selectSalutation": "Hitap seçin",
+    "salutationNone": "لا يوجد",
+    "salutationMr": "Bay",
+    "salutationMs": "Bayan",
+    "salutationMrs": "Sayın",
+    "salutationDr": "Dr.",
+    "firstName": "Name",
+    "firstNamePlaceholder": "Ad girin",
+    "lastName": "اسم العائلة",
+    "lastNamePlaceholder": "Soyad girin",
+    "middleName": "İkinci Ad",
+    "middleNamePlaceholder": "İkinci ad girin (opsiyonel)",
+    "firstNameRequired": "Ad gereklidir",
+    "lastNameRequired": "Soyad gereklidir",
+    "middleNameMaxLength": "İkinci ad en fazla 100 karakter olabilir",
+    "titleNone": "Ünvan yok"
   },
   "delete": {
     "action": "حذف",

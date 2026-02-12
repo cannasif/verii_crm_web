@@ -24,8 +24,9 @@
     "showing": "عرض {{from}}-{{to}} / {{total}}",
     "page": "صفحة {{current}} / {{total}}",
     "phone2": "Telefon 2",
-    "salesRepCode": "Satış Temsilcisi",
-    "branchCode": "Şube Kodu"
+    "salesRepCode": "Sales Representative",
+    "branchCode": "رمز الفرع",
+    "defaultShippingAddressId": "Varsayılan Sevk Adresi"
   },
   "form": {
     "addCustomer": "إضافة عميل جديد",
@@ -88,7 +89,9 @@
     "salesRepCodeMaxLength": "Satış temsilcisi kodu en fazla 50 karakter olabilir",
     "groupCodeMaxLength": "Grup kodu en fazla 50 karakter olabilir",
     "isCompletedDescription": "Bu müşterinin tüm bilgileri eksiksiz dolduruldu mu?",
-    "none": "Yok"
+    "none": "لا يوجد",
+    "defaultShippingAddress": "Varsayılan Sevk Adresi",
+    "selectDefaultShippingAddress": "Varsayılan sevk adresi seçin"
   },
   "delete": {
     "action": "حذف",

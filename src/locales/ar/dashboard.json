@@ -1,5 +1,5 @@
 {
-  "title": "لوحة التحكم",
+  "title": "لوحة القيادة",
   "loading": "جاري التحميل",
   "refresh": "تحديث",
   "refreshing": "جاري التحديث...",
@@ -51,7 +51,10 @@
     "openQuotations": "عروض الأسعار المفتوحة",
     "openQuotationsDescription": "5 عروض أسعار بانتظار الموافقة",
     "criticalStock": "المخزون الحرج",
-    "criticalStockDescription": "3 منتجات أقل من المستوى الحرج"
+    "criticalStockDescription": "3 منتجات أقل من المستوى الحرج",
+    "checkTasks": "Görev listesini kontrol et",
+    "reviewQuotations": "Teklifleri incele",
+    "stockStatus": "Stok durumunu gör"
   },
   "sidebar": {
     "customers": "العملاء",
@@ -62,5 +65,11 @@
     "orderCreateWizard": "إنشاء طلب جديد",
     "activities": "التخطيط",
     "activityManagement": "إدارة الأنشطة"
-  }
+  },
+  "selectFormat": "Format Seçiniz",
+  "reportPreparing": "raporu hazırlanıyor...",
+  "reportDownloaded": "raporu indirildi.",
+  "reportError": "Rapor alınamadı.",
+  "noDate": "Tarih yok",
+  "unnamedActivity": "İsimsiz Aktivite"
 }

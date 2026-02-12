@@ -35,7 +35,12 @@
       "namePlaceholder": "Display name",
       "description": "Description",
       "descriptionPlaceholder": "Optional description",
-      "isActive": "Active"
+      "isActive": "Active",
+      "codePlaceholder": "اختر الرمز",
+      "affectedRoutes": "الصفحات المتضررة",
+      "affectedRoutesNone": "لم يتم العثور على مسار مطابق لهذا الرمز",
+      "codeSearchPlaceholder": "بحث...",
+      "codeEmpty": "لم يتم العثور على نتائج"
     },
     "table": {
       "code": "Code",
@@ -47,7 +52,8 @@
     "delete": {
       "confirmTitle": "Delete Permission Definition",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
-    }
+    },
+    "syncFromRoutes": "المزامنة من الطرق"
   },
   "permissionGroups": {
     "title": "Permission Groups",
@@ -84,7 +90,8 @@
     "delete": {
       "confirmTitle": "Delete Permission Group",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
-    }
+    },
+    "search": "بحث..."
   },
   "userGroupAssignments": {
     "title": "User Group Assignments",
@@ -96,5 +103,27 @@
     "noUsers": "No users found",
     "noGroups": "No permission groups available",
     "selectAll": "Select all"
+  },
+  "common": {
+    "cancel": "إلغاء",
+    "saving": "تسجيل...",
+    "save": "Save and Apply",
+    "loading": "تحميل...",
+    "search": "بحث...",
+    "noData": "لا توجد بيانات",
+    "actions": "المعاملات",
+    "yes": "نعم",
+    "no": "لا",
+    "edit": "يحرر",
+    "delete": "يمسح",
+    "previous": "سابق",
+    "next": "التالي",
+    "processing": "يعالج..."
+  },
+  "sidebar": {
+    "accessControl": "التحكم في الوصول",
+    "permissionDefinitions": "Permission Definitions",
+    "permissionGroups": "Permission Groups",
+    "userGroupAssignments": "User Group Assignments"
   }
 }

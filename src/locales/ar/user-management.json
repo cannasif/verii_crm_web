@@ -16,7 +16,7 @@
     "showing": "عرض {{from}}-{{to}} من {{total}}",
     "page": "صفحة {{current}} من {{total}}",
     "rowsPerPage": "الصفوف لكل صفحة",
-    "id": "ID",
+    "id": "المعرف",
     "username": "Username",
     "fullName": "Full Name",
     "createdDate": "Created Date",
@@ -81,5 +81,37 @@
   "delete": {
     "confirmTitle": "حذف المستخدم",
     "confirmMessage": "هل أنت متأكد من حذف المستخدم {{username}}؟"
+  },
+  "userManagement": {
+    "form": {
+      "editUser": "تعديل المستخدم",
+      "addUser": "إضافة مستخدم جديد",
+      "editDescription": "تعديل معلومات المستخدم",
+      "addDescription": "أدخل معلومات المستخدم الجديد",
+      "username": "اسم المستخدم",
+      "usernamePlaceholder": "أدخل اسم المستخدم",
+      "email": "بريد إلكتروني",
+      "emailPlaceholder": "أدخل عنوان البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "Leave blank to generate temporary password",
+      "firstName": "Name",
+      "firstNamePlaceholder": "أدخل الاسم الأول",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "أدخل اسم العائلة",
+      "phoneNumber": "رقم الهاتف",
+      "phoneNumberPlaceholder": "أدخل رقم الهاتف",
+      "role": "الدور",
+      "rolePlaceholder": "Select role",
+      "permissionGroups": "Permission Groups",
+      "isActive": "Active",
+      "cancel": "إلغاء",
+      "saving": "جاري الحفظ...",
+      "save": "حفظ",
+      "selectAll": "Select all",
+      "permissionGroupsNoData": "No permission groups found"
+    },
+    "table": {
+      "loading": "جاري التحميل..."
+    }
   }
 }

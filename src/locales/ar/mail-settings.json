@@ -14,5 +14,10 @@
     "FromEmail": "بريد المرسل",
     "FromName": "اسم المرسل",
     "Timeout": "مهلة (ث)"
+  },
+  "TestMail": {
+    "Send": "Test Maili Gönder",
+    "Sending": "Test gönderiliyor...",
+    "Success": "Test maili gönderildi"
   }
 }
