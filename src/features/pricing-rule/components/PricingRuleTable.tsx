@@ -64,13 +64,13 @@ interface PricingRuleTableProps {
 }
 
 const getColumnsConfig = (t: TFunction): ColumnDef<PricingRuleHeaderGetDto>[] => [
-    { key: 'ruleCode', label: t('pricingRule.table.ruleCode', 'Kural Kodu'), type: 'code', className: 'w-[96px] md:w-[120px]' },
-    { key: 'ruleName', label: t('pricingRule.table.ruleName', 'Kural Adı'), type: 'text', className: 'min-w-[160px] md:min-w-[200px] font-medium' },
-    { key: 'ruleType', label: t('pricingRule.table.ruleType', 'Kural Tipi'), type: 'ruleType', className: 'w-[110px] md:w-[140px]' },
-    { key: 'validFrom', label: t('pricingRule.table.validFrom', 'Başlangıç'), type: 'date', className: 'w-[110px] md:w-[140px]' },
-    { key: 'validTo', label: t('pricingRule.table.validTo', 'Bitiş'), type: 'date', className: 'w-[110px] md:w-[140px]' },
-    { key: 'customerName', label: t('pricingRule.table.customer', 'Müşteri'), type: 'customer', className: 'min-w-[150px] md:min-w-[180px]' },
-    { key: 'isActive', label: t('pricingRule.table.status', 'Durum'), type: 'status', className: 'w-[96px] md:w-[120px]' },
+    { key: 'ruleCode', label: t('pricingRule.table.ruleCode'), type: 'code', className: 'w-[96px] md:w-[120px]' },
+    { key: 'ruleName', label: t('pricingRule.table.ruleName'), type: 'text', className: 'min-w-[160px] md:min-w-[200px] font-medium' },
+    { key: 'ruleType', label: t('pricingRule.table.ruleType'), type: 'ruleType', className: 'w-[110px] md:w-[140px]' },
+    { key: 'validFrom', label: t('pricingRule.table.validFrom'), type: 'date', className: 'w-[110px] md:w-[140px]' },
+    { key: 'validTo', label: t('pricingRule.table.validTo'), type: 'date', className: 'w-[110px] md:w-[140px]' },
+    { key: 'customerName', label: t('pricingRule.table.customer'), type: 'customer', className: 'min-w-[150px] md:min-w-[180px]' },
+    { key: 'isActive', label: t('pricingRule.table.status'), type: 'status', className: 'w-[96px] md:w-[120px]' },
 ];
 
 export function PricingRuleTable({
@@ -125,11 +125,11 @@ export function PricingRuleTable({
     if (selectedHeader) {
       try {
         await deleteHeader.mutateAsync(selectedHeader.id);
-        toast.success(t('pricingRule.delete.success', 'Kural başarıyla silindi'));
+        toast.success(t('pricingRule.delete.success'));
         setDeleteDialogOpen(false);
         setSelectedHeader(null);
       } catch {
-        toast.error(t('pricingRule.delete.error', 'Kural silinirken bir hata oluştu'));
+        toast.error(t('pricingRule.delete.error'));
       }
     }
   };
@@ -152,25 +152,25 @@ export function PricingRuleTable({
     switch (type) {
       case PricingRuleType.Demand:
         return { 
-          label: t('pricingRule.ruleType.demand', 'Talep'), 
+          label: t('pricingRule.ruleType.demand'), 
           className: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
           icon: List
         };
       case PricingRuleType.Quotation:
         return { 
-          label: t('pricingRule.ruleType.quotation', 'Teklif'), 
+          label: t('pricingRule.ruleType.quotation'), 
           className: 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20',
           icon: FileText
         };
       case PricingRuleType.Order:
         return { 
-          label: t('pricingRule.ruleType.order', 'Sipariş'), 
+          label: t('pricingRule.ruleType.order'), 
           className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20',
           icon: ShoppingCart
         };
       default:
         return { 
-          label: t('pricingRule.ruleType.unknown', 'Bilinmiyor'), 
+          label: t('pricingRule.ruleType.unknown'), 
           className: 'bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/20',
           icon: TrendingUp
         };
@@ -196,7 +196,7 @@ export function PricingRuleTable({
                 }`}
             >
                 {isRuleValid ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                {isRuleValid ? t('pricingRule.status.active', 'Aktif') : t('pricingRule.status.inactive', 'Pasif')}
+                {isRuleValid ? t('pricingRule.status.active') : t('pricingRule.status.inactive')}
             </Badge>
         );
     }
@@ -249,7 +249,7 @@ export function PricingRuleTable({
         <div className="flex flex-col items-center gap-2">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <div className="text-sm text-muted-foreground animate-pulse">
-             {t('pricingRule.loading', 'Yükleniyor...')}
+             {t('pricingRule.loading')}
            </div>
         </div>
       </div>
@@ -260,7 +260,7 @@ export function PricingRuleTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('pricingRule.noData', 'Veri yok')}
+          {t('pricingRule.noData')}
         </div>
       </div>
     );
@@ -281,7 +281,7 @@ export function PricingRuleTable({
                         className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
                     >
                         <EyeOff className="mr-2 h-4 w-4" />
-                        {t('common.editColumns', 'Sütunları Düzenle')}
+                        {t('common.editColumns')}
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -290,7 +290,7 @@ export function PricingRuleTable({
                     className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
                 >
                     <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                        {t('common.visibleColumns', 'Görünür Sütunlar')}
+                        {t('common.visibleColumns')}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
                     
@@ -327,7 +327,7 @@ export function PricingRuleTable({
                     </TableHead>
                 ))}
                 <TableHead className={`${headStyle} text-right w-[84px] md:w-[100px]`}>
-                  {t('pricingRule.actions', 'İşlemler')}
+                  {t('pricingRule.actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -358,16 +358,16 @@ export function PricingRuleTable({
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          {t('pricingRule.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('pricingRule.table.showing', {
             from: (currentPage - 1) * pageSize + 1,
             to: Math.min(currentPage * pageSize, processedHeaders.length),
             total: processedHeaders.length,
           })}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('pricingRule.previous', 'Önceki')}</Button>
-          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('pricingRule.table.page', 'Sayfa {{current}} / {{total}}', { current: currentPage, total: totalPages || 1 })}</div>
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('pricingRule.next', 'Sonraki')}</Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('pricingRule.previous')}</Button>
+          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('pricingRule.table.page', { current: currentPage, total: totalPages || 1 })}</div>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('pricingRule.next')}</Button>
         </div>
       </div>
 
@@ -381,10 +381,10 @@ export function PricingRuleTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('pricingRule.delete.confirmTitle', 'Kuralı Sil')}
+                {t('pricingRule.delete.confirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('pricingRule.delete.confirmMessage', '{{name}} kuralını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', {
+                {t('pricingRule.delete.confirmMessage', {
                     name: selectedHeader?.ruleName || '',
                 })}
                 </DialogDescription>
@@ -398,7 +398,7 @@ export function PricingRuleTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('pricingRule.cancel', 'Vazgeç')}
+              {t('pricingRule.cancel')}
             </Button>
             
             <Button
@@ -409,7 +409,7 @@ export function PricingRuleTable({
               className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteHeader.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('pricingRule.delete.action', 'Evet, Sil')}
+              {t('pricingRule.delete.action')}
             </Button>
           </DialogFooter>
 

@@ -96,11 +96,11 @@ export function PricingRuleSalesmanTable({
         append(newSalesman);
         setAddConfirmOpen(false);
         setSelectedSalesmanId(null);
-        toast.success(t('pricingRule.salesmen.addSuccess', 'Satışçı Eklendi'), { description: t('pricingRule.salesmen.addSuccessMessage', 'Satışçı fiyat kuralına başarıyla eklendi') });
+        toast.success(t('pricingRule.salesmen.addSuccess'), { description: t('pricingRule.salesmen.addSuccessMessage') });
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('pricingRule.salesmen.addError', 'Satışçı eklenirken bir hata oluştu');
-      toast.error(t('pricingRule.salesmen.addError', 'Hata'), { description: errorMessage });
+      const errorMessage = error instanceof Error ? error.message : t('pricingRule.salesmen.addError');
+      toast.error(t('pricingRule.salesmen.addError'), { description: errorMessage });
     }
   };
 
@@ -140,10 +140,10 @@ export function PricingRuleSalesmanTable({
       if (index !== -1) remove(index);
       setDeleteConfirmOpen(false);
       setSelectedSalesmanToDelete(null);
-      toast.success(t('pricingRule.salesmen.deleteSuccess', 'Satışçı Kaldırıldı'), { description: t('pricingRule.salesmen.deleteSuccessMessage', 'Satışçı fiyat kuralından başarıyla kaldırıldı') });
+      toast.success(t('pricingRule.salesmen.deleteSuccess'), { description: t('pricingRule.salesmen.deleteSuccessMessage') });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('pricingRule.salesmen.deleteError', 'Satışçı kaldırılırken bir hata oluştu');
-      toast.error(t('pricingRule.salesmen.deleteError', 'Hata'), { description: errorMessage });
+      const errorMessage = error instanceof Error ? error.message : t('pricingRule.salesmen.deleteError');
+      toast.error(t('pricingRule.salesmen.deleteError'), { description: errorMessage });
     }
   };
 
@@ -158,7 +158,7 @@ export function PricingRuleSalesmanTable({
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-400">
         <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="text-sm font-medium">{t('pricingRule.loading', 'Yükleniyor...')}</p>
+        <p className="text-sm font-medium">{t('pricingRule.loading')}</p>
       </div>
     );
   }
@@ -173,7 +173,7 @@ export function PricingRuleSalesmanTable({
           <div className="bg-purple-50 dark:bg-purple-500/20 p-1.5 rounded-lg text-purple-600 dark:text-purple-400">
             <User size={18} />
           </div>
-          {t('pricingRule.salesmen.title', 'Satışçılar')}
+          {t('pricingRule.salesmen.title')}
         </h3>
         
         {availableUsers.length > 0 && (
@@ -187,8 +187,8 @@ export function PricingRuleSalesmanTable({
                 onSelect={(value) => {
                     if (value) handleAddSalesman(parseInt(value));
                 }}
-                placeholder={t('pricingRule.salesmen.add', 'Satışçı Ekle')}
-                searchPlaceholder={t('pricingRule.salesmen.search', 'Satışçı ara...')}
+                placeholder={t('pricingRule.salesmen.add')}
+                searchPlaceholder={t('pricingRule.salesmen.search')}
                 className="w-[240px] h-9 bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-xs"
                 disabled={isLoadingAction}
                 modal={true}
@@ -205,16 +205,16 @@ export function PricingRuleSalesmanTable({
                         <User size={32} className="opacity-50" />
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{t('pricingRule.salesmen.empty', 'Henüz satışçı eklenmedi')}</p>
-                        <p className="text-xs mt-1 text-slate-400">{t('pricingRule.salesmen.emptyDescription', 'Bu kural tüm satışçılar için geçerli olacaktır')}</p>
+                        <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{t('pricingRule.salesmen.empty')}</p>
+                        <p className="text-xs mt-1 text-slate-400">{t('pricingRule.salesmen.emptyDescription')}</p>
                     </div>
                 </div>
             ) : (
                 <Table>
                 <TableHeader className="bg-slate-50/80 dark:bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
                     <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
-                    <TableHead className={headStyle}>{t('pricingRule.salesmen.salesman', 'Satışçı Adı')}</TableHead>
-                    <TableHead className={`text-right ${headStyle}`}>{t('pricingRule.table.actions', 'İşlemler')}</TableHead>
+                    <TableHead className={headStyle}>{t('pricingRule.salesmen.salesman')}</TableHead>
+                    <TableHead className={`text-right ${headStyle}`}>{t('pricingRule.table.actions')}</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -270,10 +270,10 @@ export function PricingRuleSalesmanTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('pricingRule.salesmen.addConfirmTitle', 'Satışçı Ekle')}
+                {t('pricingRule.salesmen.addConfirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                  {t('pricingRule.salesmen.addConfirmMessage', '{{name}} satışçısı fiyat kuralına eklenecektir. Onaylıyor musunuz?', {
+                  {t('pricingRule.salesmen.addConfirmMessage', {
                     name: selectedUser?.fullName || '',
                   })}
                 </DialogDescription>
@@ -291,7 +291,7 @@ export function PricingRuleSalesmanTable({
               disabled={isLoadingAction}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('pricingRule.form.cancel', 'İptal')}
+              {t('pricingRule.form.cancel')}
             </Button>
             
             <Button
@@ -300,7 +300,7 @@ export function PricingRuleSalesmanTable({
               disabled={isLoadingAction}
               className="flex-1 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-0 shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.02] font-bold"
             >
-              {t('pricingRule.form.confirm', 'Onayla')}
+              {t('pricingRule.form.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -317,10 +317,10 @@ export function PricingRuleSalesmanTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('pricingRule.salesmen.deleteConfirmTitle', 'Satışçı Kaldır')}
+                {t('pricingRule.salesmen.deleteConfirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('pricingRule.salesmen.deleteConfirmMessage', '{{name}} satışçısı fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?', {
+                {t('pricingRule.salesmen.deleteConfirmMessage', {
                     name: userToDelete?.fullName || '',
                 })}
                 </DialogDescription>
@@ -338,7 +338,7 @@ export function PricingRuleSalesmanTable({
               disabled={isLoadingAction}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('pricingRule.form.cancel', 'İptal')}
+              {t('pricingRule.form.cancel')}
             </Button>
             
             <Button
@@ -351,10 +351,10 @@ export function PricingRuleSalesmanTable({
               {isLoadingAction ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t('pricingRule.loading', 'Yükleniyor...')}
+                  {t('pricingRule.loading')}
                 </>
               ) : (
-                t('pricingRule.form.confirm', 'Onayla')
+                t('pricingRule.form.confirm')
               )}
             </Button>
           </DialogFooter>

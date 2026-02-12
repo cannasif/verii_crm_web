@@ -155,14 +155,14 @@ export function PricingRuleLineForm({
               <FormItem className="col-span-1 md:col-span-2 lg:col-span-1">
                 <FormLabel className={LABEL_STYLE}>
                   <Box size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.stokCode', 'Stok Kodu')} *
+                  {t('pricingRule.lines.stokCode')} *
                 </FormLabel>
                 <div className="flex gap-2">
                   <FormControl>
                     <Input
                       {...field}
                       readOnly
-                      placeholder={t('pricingRule.lines.stokCodePlaceholder', 'Ürün kodu')}
+                      placeholder={t('pricingRule.lines.stokCodePlaceholder')}
                       className={`${INPUT_STYLE} flex-1`}
                     />
                   </FormControl>
@@ -171,7 +171,7 @@ export function PricingRuleLineForm({
                     variant="outline"
                     size="icon"
                     onClick={() => setProductDialogOpen(true)}
-                    title={t('pricingRule.lines.selectProduct', 'Ürün Seç')}
+                    title={t('pricingRule.lines.selectProduct')}
                     className="h-11 w-11 shrink-0 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
                   >
                     <Search className="h-4 w-4" />
@@ -203,7 +203,7 @@ export function PricingRuleLineForm({
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
                   <Hash size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.minQuantity', 'Min Miktar')} *
+                  {t('pricingRule.lines.minQuantity')} *
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -228,7 +228,7 @@ export function PricingRuleLineForm({
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
                   <Hash size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.maxQuantity', 'Max Miktar')} *
+                  {t('pricingRule.lines.maxQuantity')} *
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -253,7 +253,7 @@ export function PricingRuleLineForm({
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
                   <Coins size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.currencyCode', 'Döviz Tipi')} *
+                  {t('pricingRule.lines.currencyCode')} *
                 </FormLabel>
                 <VoiceSearchCombobox
                   options={exchangeRates.map((currency: KurDto) => ({
@@ -262,8 +262,8 @@ export function PricingRuleLineForm({
                   }))}
                   value={field.value !== undefined && field.value !== null ? String(field.value) : ''}
                   onSelect={(value) => field.onChange(value ? Number(value) : undefined)}
-                  placeholder={isLoadingRates ? t('pricingRule.loading', 'Yükleniyor...') : t('pricingRule.lines.selectCurrency', 'Seçiniz')}
-                  searchPlaceholder={t('pricingRule.lines.searchCurrency', 'Döviz ara...')}
+                  placeholder={isLoadingRates ? t('pricingRule.loading') : t('pricingRule.lines.selectCurrency')}
+                  searchPlaceholder={t('pricingRule.lines.searchCurrency')}
                   className={INPUT_STYLE}
                   disabled={isLoadingRates}
                   modal={true}
@@ -286,7 +286,7 @@ export function PricingRuleLineForm({
                 <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                     <DollarSign size={12} className="text-pink-500" />
-                    {t('pricingRule.lines.fixedUnitPrice', 'Liste Fiyatı')} *
+                    {t('pricingRule.lines.fixedUnitPrice')} *
                     </FormLabel>
                     <FormControl>
                     <Input
@@ -313,7 +313,7 @@ export function PricingRuleLineForm({
                     <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                         <Percent size={12} className="text-blue-500" />
-                        {t('pricingRule.lines.discount1Rate', 'İndirim 1 (%)')}
+                        {t('pricingRule.lines.discount1Rate')}
                         </FormLabel>
                         <FormControl>
                         <Input
@@ -337,7 +337,7 @@ export function PricingRuleLineForm({
                     <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                         <ArrowRight size={12} className="text-slate-400" />
-                        {t('pricingRule.lines.discount1Amount', 'Tutar 1')}
+                        {t('pricingRule.lines.discount1Amount')}
                         </FormLabel>
                         <FormControl>
                         <Input
@@ -361,7 +361,7 @@ export function PricingRuleLineForm({
                 <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                     <Percent size={12} className="text-indigo-500" />
-                    {t('pricingRule.lines.discount2Rate', 'İndirim 2 (%)')}
+                    {t('pricingRule.lines.discount2Rate')}
                     </FormLabel>
                     <FormControl>
                     <Input
@@ -386,7 +386,7 @@ export function PricingRuleLineForm({
                 <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                     <Percent size={12} className="text-purple-500" />
-                    {t('pricingRule.lines.discount3Rate', 'İndirim 3 (%)')}
+                    {t('pricingRule.lines.discount3Rate')}
                     </FormLabel>
                     <FormControl>
                     <Input
@@ -413,14 +413,14 @@ export function PricingRuleLineForm({
             onClick={onCancel}
             className="w-full sm:w-auto bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
           >
-            {t('pricingRule.form.cancel', 'İptal')}
+            {t('pricingRule.form.cancel')}
           </Button>
           <Button 
             type="submit"
             disabled={!form.watch('stokCode') || form.watch('stokCode').trim() === ''}
             className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-orange-600 text-white font-bold border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"
           >
-            {t('pricingRule.form.save', 'Kaydet')}
+            {t('pricingRule.form.save')}
           </Button>
         </div>
       </form>

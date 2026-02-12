@@ -169,11 +169,11 @@ export function PricingRuleLineTable({
             };
             update(index, savedLine);
             setEditingLineId(null);
-            toast.success(t('pricingRule.lines.addSuccess', 'Satır Eklendi'), { description: t('pricingRule.lines.addSuccessMessage', 'Satır fiyat kuralına başarıyla eklendi') });
+            toast.success(t('pricingRule.lines.addSuccess'), { description: t('pricingRule.lines.addSuccessMessage') });
           }
         } catch (error: unknown) {
-          const errorMessage = error instanceof Error ? error.message : t('pricingRule.lines.addError', 'Satır eklenirken bir hata oluştu');
-          toast.error(t('pricingRule.lines.addError', 'Hata'), { description: errorMessage });
+          const errorMessage = error instanceof Error ? error.message : t('pricingRule.lines.addError');
+          toast.error(t('pricingRule.lines.addError'), { description: errorMessage });
         }
       } else {
         update(index, { ...updatedLine, isEditing: false });
@@ -222,10 +222,10 @@ export function PricingRuleLineTable({
       if (index !== -1) remove(index);
       setDeleteConfirmOpen(false);
       setSelectedLineToDelete(null);
-      toast.success(t('pricingRule.lines.deleteSuccess', 'Satır Kaldırıldı'), { description: t('pricingRule.lines.deleteSuccessMessage', 'Satır fiyat kuralından başarıyla kaldırıldı') });
+      toast.success(t('pricingRule.lines.deleteSuccess'), { description: t('pricingRule.lines.deleteSuccessMessage') });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('pricingRule.lines.deleteError', 'Satır kaldırılırken bir hata oluştu');
-      toast.error(t('pricingRule.lines.deleteError', 'Hata'), { description: errorMessage });
+      const errorMessage = error instanceof Error ? error.message : t('pricingRule.lines.deleteError');
+      toast.error(t('pricingRule.lines.deleteError'), { description: errorMessage });
     }
   };
 
@@ -264,7 +264,7 @@ export function PricingRuleLineTable({
           <div className="bg-pink-50 dark:bg-pink-500/20 p-1.5 rounded-lg text-pink-600 dark:text-pink-400">
             <Package size={18} />
           </div>
-          {t('pricingRule.lines.title', 'Fiyat Kuralı Satırları')}
+          {t('pricingRule.lines.title')}
         </h3>
         <Button
           type="button"
@@ -274,7 +274,7 @@ export function PricingRuleLineTable({
           disabled={isLoadingAction}
         >
           <Plus className="h-4 w-4 mr-2" />
-          {t('pricingRule.lines.selectStock', 'Stok Ekle')}
+          {t('pricingRule.lines.selectStock')}
         </Button>
       </div>
 
@@ -283,15 +283,15 @@ export function PricingRuleLineTable({
             <Table>
             <TableHeader className="bg-slate-50/80 dark:bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
                 <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
-                <TableHead className={headStyle}>{t('pricingRule.lines.stokCode', 'Stok Kodu')}</TableHead>
-                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.minQuantity', 'Min Miktar')}</TableHead>
-                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.maxQuantity', 'Max Miktar')}</TableHead>
-                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.fixedUnitPrice', 'Sabit Fiyat')}</TableHead>
-                <TableHead className={headStyle}>{t('pricingRule.lines.currencyCode', 'Para Birimi')}</TableHead>
-                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.discount1', 'İnd. 1 %')}</TableHead>
-                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.discount2', 'İnd. 2 %')}</TableHead>
-                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.discount3', 'İnd. 3 %')}</TableHead>
-                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.table.actions', 'İşlemler')}</TableHead>
+                <TableHead className={headStyle}>{t('pricingRule.lines.stokCode')}</TableHead>
+                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.minQuantity')}</TableHead>
+                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.maxQuantity')}</TableHead>
+                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.fixedUnitPrice')}</TableHead>
+                <TableHead className={headStyle}>{t('pricingRule.lines.currencyCode')}</TableHead>
+                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.discount1')}</TableHead>
+                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.discount2')}</TableHead>
+                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.lines.discount3')}</TableHead>
+                <TableHead className={`${headStyle} text-right`}>{t('pricingRule.table.actions')}</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -302,7 +302,7 @@ export function PricingRuleLineTable({
                             <div className="bg-slate-100 dark:bg-white/5 p-4 rounded-full">
                                 <Package size={32} className="opacity-50" />
                             </div>
-                            <p className="text-sm font-medium">{t('pricingRule.lines.empty', 'Henüz satır eklenmedi')}</p>
+                            <p className="text-sm font-medium">{t('pricingRule.lines.empty')}</p>
                             <Button 
                                 variant="outline" 
                                 size="sm" 
@@ -310,7 +310,7 @@ export function PricingRuleLineTable({
                                 className="mt-2 border-dashed border-slate-300 dark:border-white/20 hover:border-blue-500 hover:text-blue-500"
                             >
                                 <Plus size={14} className="mr-2" />
-                                {t('pricingRule.lines.addFirst', 'İlk Satırı Ekle')}
+                                {t('pricingRule.lines.addFirst')}
                             </Button>
                         </div>
                     </TableCell>
@@ -341,7 +341,7 @@ export function PricingRuleLineTable({
                         <TableCell>
                             <div className="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
                                 <Box size={14} className="text-slate-400" />
-                                {line.stokCode || <span className="text-red-500 text-xs italic">{t('pricingRule.lines.stokCodeRequired', 'Stok kodu zorunludur')}</span>}
+                                {line.stokCode || <span className="text-red-500 text-xs italic">{t('pricingRule.lines.stokCodeRequired')}</span>}
                             </div>
                         </TableCell>
                         <TableCell className="text-right text-slate-600 dark:text-slate-400">{line.minQuantity ?? 0}</TableCell>
@@ -419,10 +419,10 @@ export function PricingRuleLineTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('pricingRule.lines.addConfirmTitle', 'Satır Ekle')}
+                {t('pricingRule.lines.addConfirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                  {t('pricingRule.lines.addConfirmMessage', '{{code}} stok kodu fiyat kuralına eklenecektir. Onaylıyor musunuz?', {
+                  {t('pricingRule.lines.addConfirmMessage', {
                     code: selectedProduct?.code || '',
                   })}
                 </DialogDescription>
@@ -440,7 +440,7 @@ export function PricingRuleLineTable({
               disabled={isLoadingAction}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('pricingRule.form.cancel', 'İptal')}
+              {t('pricingRule.form.cancel')}
             </Button>
             
             <Button
@@ -449,7 +449,7 @@ export function PricingRuleLineTable({
               disabled={isLoadingAction}
               className="flex-1 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] font-bold"
             >
-              {t('pricingRule.form.confirm', 'Onayla')}
+              {t('pricingRule.form.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -466,10 +466,10 @@ export function PricingRuleLineTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('pricingRule.lines.deleteConfirmTitle', 'Satır Kaldır')}
+                {t('pricingRule.lines.deleteConfirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('pricingRule.lines.deleteConfirmMessage', '{{code}} stok kodlu satır fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?', {
+                {t('pricingRule.lines.deleteConfirmMessage', {
                     code: lineToDelete?.stokCode || '',
                 })}
                 </DialogDescription>
@@ -487,7 +487,7 @@ export function PricingRuleLineTable({
               disabled={isLoadingAction}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('pricingRule.form.cancel', 'İptal')}
+              {t('pricingRule.form.cancel')}
             </Button>
             
             <Button
@@ -500,10 +500,10 @@ export function PricingRuleLineTable({
               {isLoadingAction ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t('pricingRule.loading', 'Yükleniyor...')}
+                  {t('pricingRule.loading')}
                 </>
               ) : (
-                t('pricingRule.form.confirm', 'Onayla')
+                t('pricingRule.form.confirm')
               )}
             </Button>
           </DialogFooter>

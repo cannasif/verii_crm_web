@@ -140,9 +140,9 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
 
     if (validLines.length === 0) {
       toast.error(
-        t('pricingRule.form.lines.required', 'En az 1 satır eklenmelidir'),
+        t('pricingRule.form.lines.required'),
         {
-          description: t('pricingRule.form.lines.requiredMessage', 'Lütfen en az bir satır ekleyin'),
+          description: t('pricingRule.form.lines.requiredMessage'),
         }
       );
       setActiveTab('lines');
@@ -158,9 +158,9 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
     
     if (linesWithInvalidMinQuantity.length > 0) {
       toast.error(
-        t('pricingRule.form.lines.minQuantityInvalid', 'Geçersiz Min Miktar'),
+        t('pricingRule.form.lines.minQuantityInvalid'),
         {
-          description: t('pricingRule.form.lines.minQuantityInvalidMessage', 'Minimum miktar 0\'dan küçük olamaz'),
+          description: t('pricingRule.form.lines.minQuantityInvalidMessage'),
         }
       );
       setActiveTab('lines');
@@ -175,9 +175,9 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
     
     if (linesWithInvalidCurrency.length > 0) {
       toast.error(
-        t('pricingRule.form.lines.currencyCodeRequired', 'Döviz Tipi Zorunlu'),
+        t('pricingRule.form.lines.currencyCodeRequired'),
         {
-          description: t('pricingRule.form.lines.currencyCodeRequiredMessage', 'Tüm satırlarda döviz tipi seçilmelidir'),
+          description: t('pricingRule.form.lines.currencyCodeRequiredMessage'),
         }
       );
       setActiveTab('lines');
@@ -209,9 +209,9 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
         const result = await updateMutation.mutateAsync({ id: header.id, data: payload });
         if (result) {
           toast.success(
-            t('pricingRule.form.updateSuccess', 'Fiyat Kuralı Güncellendi'),
+            t('pricingRule.form.updateSuccess'),
             {
-              description: t('pricingRule.form.updateSuccessMessage', 'Fiyat kuralı başarıyla güncellendi'),
+              description: t('pricingRule.form.updateSuccessMessage'),
             }
           );
           onOpenChange(false);
@@ -220,18 +220,18 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
         const result = await createMutation.mutateAsync(payload);
         if (result) {
           toast.success(
-            t('pricingRule.form.createSuccess', 'Fiyat Kuralı Oluşturuldu'),
+            t('pricingRule.form.createSuccess'),
             {
-              description: t('pricingRule.form.createSuccessMessage', 'Fiyat kuralı başarıyla oluşturuldu'),
+              description: t('pricingRule.form.createSuccessMessage'),
             }
           );
           onOpenChange(false);
         }
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('pricingRule.form.error', 'Bir hata oluştu');
+      const errorMessage = error instanceof Error ? error.message : t('pricingRule.form.error');
       toast.error(
-        t('pricingRule.form.error', 'Hata'),
+        t('pricingRule.form.error'),
         {
           description: errorMessage,
         }
@@ -251,7 +251,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
                <div className="absolute inset-0 h-12 w-12 animate-ping rounded-full border-pink-500 opacity-20" />
              </div>
              <div className="text-sm font-medium text-slate-500 animate-pulse">
-               {t('pricingRule.loadingDescription', 'Veriler yükleniyor...')}
+               {t('pricingRule.loadingDescription')}
              </div>
           </div>
         </DialogContent>
@@ -273,13 +273,13 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
              <div className="space-y-1">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   {header?.id
-                    ? t('pricingRule.form.edit', 'Fiyat Kuralı Düzenle')
-                    : t('pricingRule.form.create', 'Yeni Fiyat Kuralı')}
+                    ? t('pricingRule.form.edit')
+                    : t('pricingRule.form.create')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                   {header?.id
-                    ? t('pricingRule.form.editDescription', 'Fiyat kuralı bilgilerini düzenleyin')
-                    : t('pricingRule.form.createDescription', 'Yeni fiyat kuralı bilgilerini girin')}
+                    ? t('pricingRule.form.editDescription')
+                    : t('pricingRule.form.createDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -297,16 +297,16 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
                     <TabsList className="bg-slate-200/50 dark:bg-white/10 p-1 rounded-lg h-auto grid grid-cols-3 w-full max-w-md">
                       <TabsTrigger value="header" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm py-2 text-xs font-medium transition-all">
                         <FileText size={14} className="mr-2" />
-                        {t('pricingRule.form.tabs.header', 'Genel Bilgiler')}
+                        {t('pricingRule.form.tabs.header')}
                       </TabsTrigger>
                       <TabsTrigger value="lines" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm py-2 text-xs font-medium transition-all">
                         <List size={14} className="mr-2" />
-                        {t('pricingRule.form.tabs.lines', 'Satırlar')} 
+                        {t('pricingRule.form.tabs.lines')} 
                         <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-[10px]">{watchedLines?.length || 0}</span>
                       </TabsTrigger>
                       <TabsTrigger value="salesmen" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm py-2 text-xs font-medium transition-all">
                         <Users size={14} className="mr-2" />
-                        {t('pricingRule.form.tabs.salesmen', 'Satışçılar')}
+                        {t('pricingRule.form.tabs.salesmen')}
                         <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-[10px]">{watchedSalesmen?.length || 0}</span>
                       </TabsTrigger>
                     </TabsList>
@@ -335,7 +335,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
                 onClick={() => onOpenChange(false)}
                 className="h-11 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
               >
-                {t('pricingRule.form.cancel', 'İptal')}
+                {t('pricingRule.form.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -343,7 +343,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
                 disabled={isSubmitting}
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('pricingRule.form.save', 'Kaydet')}
+                {t('pricingRule.form.save')}
               </Button>
             </DialogFooter>
           </form>

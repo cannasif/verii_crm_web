@@ -67,9 +67,9 @@ export function PricingRuleHeaderForm(): ReactElement {
       : '';
 
   const ruleTypeOptions: ComboboxOption[] = [
-    { value: PricingRuleType.Demand.toString(), label: t('pricingRule.ruleType.demand', 'Talep') },
-    { value: PricingRuleType.Quotation.toString(), label: t('pricingRule.ruleType.quotation', 'Teklif') },
-    { value: PricingRuleType.Order.toString(), label: t('pricingRule.ruleType.order', 'Sipariş') },
+    { value: PricingRuleType.Demand.toString(), label: t('pricingRule.ruleType.demand') },
+    { value: PricingRuleType.Quotation.toString(), label: t('pricingRule.ruleType.quotation') },
+    { value: PricingRuleType.Order.toString(), label: t('pricingRule.ruleType.order') },
   ];
 
   return (
@@ -84,15 +84,15 @@ export function PricingRuleHeaderForm(): ReactElement {
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
                 <List size={12} className="text-pink-500" />
-                {t('pricingRule.header.ruleType', 'Kural Tipi')} *
+                {t('pricingRule.header.ruleType')} *
               </FormLabel>
               <FormControl>
                 <VoiceSearchCombobox
                   options={ruleTypeOptions}
                   value={field.value?.toString()}
                   onSelect={(value) => field.onChange(value ? parseInt(value) as PricingRuleType : null)}
-                  placeholder={t('pricingRule.header.ruleTypePlaceholder', 'Kural tipi seçin')}
-                  searchPlaceholder={t('pricingRule.header.searchRuleType', 'Kural tipi ara...')}
+                  placeholder={t('pricingRule.header.ruleTypePlaceholder')}
+                  searchPlaceholder={t('pricingRule.header.searchRuleType')}
                   className={INPUT_STYLE}
                   modal={true}
                 />
@@ -109,12 +109,12 @@ export function PricingRuleHeaderForm(): ReactElement {
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
                 <Hash size={12} className="text-pink-500" />
-                {t('pricingRule.header.ruleCode', 'Kural Kodu')} *
+                {t('pricingRule.header.ruleCode')} *
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder={t('pricingRule.header.ruleCodePlaceholder', 'Kural kodu girin')}
+                  placeholder={t('pricingRule.header.ruleCodePlaceholder')}
                   maxLength={50}
                   className={INPUT_STYLE}
                 />
@@ -132,12 +132,12 @@ export function PricingRuleHeaderForm(): ReactElement {
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
                   <Type size={12} className="text-pink-500" />
-                  {t('pricingRule.header.ruleName', 'Kural Adı')} *
+                  {t('pricingRule.header.ruleName')} *
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder={t('pricingRule.header.ruleNamePlaceholder', 'Kural adı girin')}
+                    placeholder={t('pricingRule.header.ruleNamePlaceholder')}
                     maxLength={250}
                     className={INPUT_STYLE}
                   />
@@ -158,7 +158,7 @@ export function PricingRuleHeaderForm(): ReactElement {
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
                 <Calendar size={12} className="text-pink-500" />
-                {t('pricingRule.header.validFrom', 'Geçerlilik Başlangıç')} *
+                {t('pricingRule.header.validFrom')} *
               </FormLabel>
               <FormControl>
                 <Input
@@ -179,7 +179,7 @@ export function PricingRuleHeaderForm(): ReactElement {
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
                 <Calendar size={12} className="text-pink-500" />
-                {t('pricingRule.header.validTo', 'Geçerlilik Bitiş')} *
+                {t('pricingRule.header.validTo')} *
               </FormLabel>
               <FormControl>
                 <Input
@@ -197,13 +197,13 @@ export function PricingRuleHeaderForm(): ReactElement {
           <FormItem>
             <FormLabel className={LABEL_STYLE}>
               <Building2 size={12} className="text-pink-500" />
-              {t('pricingRule.header.customer', 'Müşteri')}
+              {t('pricingRule.header.customer')}
             </FormLabel>
             <div className="flex gap-2">
               <Input
                 readOnly
                 value={displayValue}
-                placeholder={t('pricingRule.header.customerPlaceholder', 'Müşteri seçin (Opsiyonel)')}
+                placeholder={t('pricingRule.header.customerPlaceholder')}
                 className={`${INPUT_STYLE} flex-1`}
               />
               <Button
@@ -212,7 +212,7 @@ export function PricingRuleHeaderForm(): ReactElement {
                 size="icon"
                 className="h-11 w-11 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
                 onClick={() => setCustomerDialogOpen(true)}
-                title={t('pricingRule.header.selectCustomer', 'Müşteri Seç')}
+                title={t('pricingRule.header.selectCustomer')}
               >
                 <Search className="h-4 w-4" />
               </Button>
@@ -226,7 +226,7 @@ export function PricingRuleHeaderForm(): ReactElement {
                     form.setValue('customerId', null);
                     form.setValue('erpCustomerCode', null);
                   }}
-                  title={t('pricingRule.header.clearCustomer', 'Müşteri Temizle')}
+                  title={t('pricingRule.header.clearCustomer')}
                 >
                   <Search className="h-4 w-4 rotate-45" />
                 </Button>
