@@ -1,7 +1,7 @@
 import { type ReactElement, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Search, X, Command } from 'lucide-react';
+import { Menu, Search, X, Mic } from 'lucide-react';
 
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -10,6 +10,7 @@ import { UserProfileModal } from '@/features/user-detail-management/components/U
 import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/useUserDetailByUserId';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
 import { cn } from '@/lib/utils';
+import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 
 export function Navbar(): ReactElement {
   const { t } = useTranslation();
@@ -20,6 +21,15 @@ export function Navbar(): ReactElement {
   const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen } = useUIStore();
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
   const { data: userDetail } = useUserDetailByUserId(user?.id || 0);
+
+  const { isListening, isSupported, startListening } = useVoiceSearch({
+    onResult: (text) => {
+      setSearchQuery(text);
+      if (text.trim().length > 0) {
+        setSidebarOpen(true);
+      }
+    },
+  });
 
   const displayName = user?.name || user?.email || 'Kullanıcı';
   const displayInitials = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'MK';
@@ -38,7 +48,6 @@ export function Navbar(): ReactElement {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const val = e.target.value;
     setSearchQuery(val);
-    
     if (val.trim().length > 0) {
       setSidebarOpen(true);
     }
@@ -46,12 +55,7 @@ export function Navbar(): ReactElement {
 
   return (
     <>
-      <header 
-        className={cn(
-          "h-20 px-4 sm:px-8 flex items-center justify-between border-b transition-all sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-slate-200 dark:border-white/5 dark:bg-[#0c0516]/80"
-        )}
-      >
-        
+      <header className="h-20 px-4 sm:px-8 flex items-center justify-between border-b transition-all sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-slate-200 dark:border-white/5 dark:bg-[#0c0516]/80">
         <div className="flex items-center gap-4 shrink-0">
           <button 
             onClick={toggleSidebar} 
@@ -78,18 +82,28 @@ export function Navbar(): ReactElement {
                 )}
               />
               <div className="absolute right-3 flex items-center gap-2">
-                {searchQuery ? (
+                {isSupported && (
+                  <button
+                    onClick={(e) => { e.preventDefault(); startListening(); }}
+                    className={cn(
+                      "p-2 rounded-xl transition-all duration-300",
+                      isListening 
+                        ? "text-pink-500 bg-pink-500/10 animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.3)]" 
+                        : "text-slate-400 hover:text-pink-500 hover:bg-slate-100 dark:hover:bg-white/10"
+                    )}
+                    title="Sesli Ara"
+                  >
+                    <Mic size={18} />
+                  </button>
+                )}
+
+                {searchQuery && (
                   <button 
                     onClick={() => setSearchQuery('')}
                     className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
                   >
                     <X size={14} />
                   </button>
-                ) : (
-                  <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-lg bg-white/50 border border-slate-200 dark:bg-white/5 dark:border-white/10">
-                    <Command size={10} className="text-slate-400" />
-                    <span className="text-[10px] font-bold text-slate-400 font-mono">K</span>
-                  </div>
                 )}
               </div>
             </div>
@@ -97,22 +111,16 @@ export function Navbar(): ReactElement {
         </div>
         
         <div className="flex items-center justify-end shrink-0 gap-4 sm:gap-8">
-          
           <div className="flex items-center gap-4 sm:gap-8 shrink-0">
             <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer text-slate-500 hover:text-pink-500 dark:text-slate-400 dark:hover:text-pink-400 flex items-center justify-center group shrink-0">
-               <NotificationIcon />
+                <NotificationIcon />
             </div>
           </div>
 
-          {user && (
-            <div className="hidden sm:block h-6 w-px bg-slate-200 dark:bg-white/10 shrink-0" />
-          )}
+          {user && <div className="hidden sm:block h-6 w-px bg-slate-200 dark:bg-white/10 shrink-0" />}
 
           {user && (
-            <div 
-              onClick={() => setUserProfileModalOpen(true)} 
-              className="flex items-center gap-3 cursor-pointer group shrink-0"
-            >
+            <div onClick={() => setUserProfileModalOpen(true)} className="flex items-center gap-3 cursor-pointer group shrink-0">
               <div className="text-right hidden lg:block">
                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-pink-500 transition-colors truncate max-w-[150px]">
                   {displayName}
@@ -121,20 +129,13 @@ export function Navbar(): ReactElement {
                   {t('roles.admin', 'Yönetici')}
                 </p>
               </div>
-              
               <div className="relative shrink-0">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-linear-to-tr from-pink-500 via-orange-500 to-yellow-500 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all duration-300">
                   <div className="w-full h-full rounded-full bg-white dark:bg-[#0c0516] flex items-center justify-center overflow-hidden border-2 border-white dark:border-[#0c0516]">
                     {userDetail?.profilePictureUrl ? (
-                      <img
-                        src={getImageUrl(userDetail.profilePictureUrl) || ''}
-                        alt={displayName}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={getImageUrl(userDetail.profilePictureUrl) || ''} alt={displayName} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-xs font-bold text-orange-500">
-                        {displayInitials}
-                      </span>
+                      <span className="text-xs font-bold text-orange-500">{displayInitials}</span>
                     )}
                   </div>
                 </div>
