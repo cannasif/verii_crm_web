@@ -36,11 +36,11 @@
       "description": "Description",
       "descriptionPlaceholder": "Optional description",
       "isActive": "Active",
-      "codePlaceholder": "Kod seçin",
-      "affectedRoutes": "Etkilenen sayfalar",
-      "affectedRoutesNone": "Bu kod için eşleşen rota bulunamadı",
+      "codePlaceholder": "Scegli il codice",
+      "affectedRoutes": "Pagine interessate",
+      "affectedRoutesNone": "Nessun percorso corrispondente trovato per questo codice",
       "codeSearchPlaceholder": "Cerca...",
-      "codeEmpty": "Sonuc bulunamadi"
+      "codeEmpty": "Nessun risultato trovato"
     },
     "table": {
       "code": "Code",
