@@ -8,6 +8,7 @@ export const normalizeQueryParams = (
   sortBy?: string;
   sortDirection?: string;
   filters?: Record<string, unknown>;
+  filterLogic?: 'and' | 'or';
 } => {
   return {
     pageNumber: params.pageNumber,
@@ -17,5 +18,6 @@ export const normalizeQueryParams = (
     filters: params.filters && Array.isArray(params.filters)
       ? {}
       : (params.filters as Record<string, unknown> | undefined),
+    filterLogic: params.filterLogic,
   };
 };
