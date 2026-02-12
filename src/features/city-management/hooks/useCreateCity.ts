@@ -21,10 +21,10 @@ export const useCreateCity = () => {
         queryKey: [CITY_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('cityManagement.messages.createSuccess', 'Şehir başarıyla oluşturuldu'));
+      toast.success(t('cityManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('cityManagement.messages.createError', 'Şehir oluşturulamadı'));
+      toast.error(error.message || t('cityManagement.messages.createError'));
     },
   });
 };

@@ -57,12 +57,12 @@ interface CityTableProps {
 }
 
 const getColumnsConfig = (t: TFunction): ColumnDef<CityDto>[] => [
-    { key: 'id', label: t('cityManagement.table.id', 'ID'), type: 'id', className: 'w-[100px]' },
-    { key: 'name', label: t('cityManagement.table.name', 'Şehir Adı'), type: 'text', className: 'min-w-[200px] font-medium' },
-    { key: 'erpCode', label: t('cityManagement.table.erpCode', 'ERP Kodu'), type: 'text', className: 'w-[140px]' },
-    { key: 'countryName', label: t('cityManagement.table.countryName', 'Ülke Adı'), type: 'country', className: 'min-w-[180px]' },
-    { key: 'createdDate', label: t('cityManagement.table.createdDate', 'Oluşturulma Tarihi'), type: 'date', className: 'w-[160px]' },
-    { key: 'createdByFullUser', label: t('cityManagement.table.createdBy', 'Oluşturan'), type: 'user', className: 'w-[160px]' },
+    { key: 'id', label: t('cityManagement.table.id'), type: 'id', className: 'w-[100px]' },
+    { key: 'name', label: t('cityManagement.table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
+    { key: 'erpCode', label: t('cityManagement.table.erpCode'), type: 'text', className: 'w-[140px]' },
+    { key: 'countryName', label: t('cityManagement.table.countryName'), type: 'country', className: 'min-w-[180px]' },
+    { key: 'createdDate', label: t('cityManagement.table.createdDate'), type: 'date', className: 'w-[160px]' },
+    { key: 'createdByFullUser', label: t('cityManagement.table.createdBy'), type: 'user', className: 'w-[160px]' },
 ];
 
 export function CityTable({
@@ -116,11 +116,11 @@ export function CityTable({
     if (selectedCity) {
       try {
         await deleteCity.mutateAsync(selectedCity.id);
-        toast.success(t('cityManagement.delete.success', 'Şehir başarıyla silindi'));
+        toast.success(t('cityManagement.delete.success'));
         setDeleteDialogOpen(false);
         setSelectedCity(null);
       } catch {
-        toast.error(t('cityManagement.delete.error', 'Şehir silinirken bir hata oluştu'));
+        toast.error(t('cityManagement.delete.error'));
       }
     }
   };
@@ -190,7 +190,7 @@ export function CityTable({
         <div className="flex flex-col items-center gap-2">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <div className="text-sm text-muted-foreground animate-pulse">
-             {t('cityManagement.loading', 'Yükleniyor...')}
+             {t('cityManagement.loading')}
            </div>
         </div>
       </div>
@@ -201,7 +201,7 @@ export function CityTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('cityManagement.noData', 'Veri yok')}
+          {t('cityManagement.noData')}
         </div>
       </div>
     );
@@ -222,7 +222,7 @@ export function CityTable({
                         className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
                     >
                         <EyeOff className="mr-2 h-4 w-4" />
-                        {t('common.editColumns', 'Sütunları Düzenle')}
+                        {t('common.editColumns')}
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -231,7 +231,7 @@ export function CityTable({
                     className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
                 >
                     <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                        {t('common.visibleColumns', 'Görünür Sütunlar')}
+                        {t('common.visibleColumns')}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
                     
@@ -267,7 +267,7 @@ export function CityTable({
                     </TableHead>
                 ))}
                 <TableHead className={`${headStyle} text-right w-[100px]`}>
-                  {t('cityManagement.actions', 'İşlemler')}
+                  {t('cityManagement.actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -297,16 +297,16 @@ export function CityTable({
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          {t('cityManagement.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('cityManagement.table.showing', {
             from: (currentPage - 1) * pageSize + 1,
             to: Math.min(currentPage * pageSize, processedCities.length),
             total: processedCities.length,
           })}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.previous', 'Önceki')}</Button>
-          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('cityManagement.table.page', 'Sayfa {{current}} / {{total}}', { current: currentPage, total: totalPages || 1 })}</div>
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.next', 'Sonraki')}</Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.previous')}</Button>
+          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('cityManagement.table.page', { current: currentPage, total: totalPages || 1 })}</div>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.next')}</Button>
         </div>
       </div>
 
@@ -320,10 +320,10 @@ export function CityTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('cityManagement.delete.confirmTitle', 'Şehri Sil')}
+                {t('cityManagement.delete.confirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('cityManagement.delete.confirmMessage', '{{name}} şehrini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', {
+                {t('cityManagement.delete.confirmMessage', {
                     name: selectedCity?.name || '',
                 })}
                 </DialogDescription>
@@ -337,7 +337,7 @@ export function CityTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('common.cancel', 'Vazgeç')}
+              {t('common.cancel')}
             </Button>
             
             <Button
@@ -348,7 +348,7 @@ export function CityTable({
               className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteCity.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('common.delete', 'Evet, Sil')}
+              {t('common.delete')}
             </Button>
           </DialogFooter>
 

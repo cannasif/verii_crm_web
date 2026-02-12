@@ -23,10 +23,10 @@ export const useUpdateCity = () => {
         queryKey: [CITY_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('cityManagement.messages.updateSuccess', 'Şehir başarıyla güncellendi'));
+      toast.success(t('cityManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('cityManagement.messages.updateError', 'Şehir güncellenemedi'));
+      toast.error(error.message || t('cityManagement.messages.updateError'));
     },
   });
 };

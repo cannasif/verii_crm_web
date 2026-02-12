@@ -134,13 +134,13 @@ export function CityForm({
              <div className="space-y-1">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   {city
-                    ? t('cityManagement.form.editCity', 'Şehri Düzenle')
-                    : t('cityManagement.form.addCity', 'Yeni Şehir Ekle')}
+                    ? t('cityManagement.form.editCity')
+                    : t('cityManagement.form.addCity')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                   {city
-                    ? t('cityManagement.form.editDescription', 'Şehir bilgilerini düzenleyin')
-                    : t('cityManagement.form.addDescription', 'Yeni şehir bilgilerini girin')}
+                    ? t('cityManagement.form.editDescription')
+                    : t('cityManagement.form.addDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -158,7 +158,7 @@ export function CityForm({
                   <TabsList className="bg-slate-200/50 dark:bg-white/10 p-1 rounded-lg h-auto grid grid-cols-1 w-full max-w-md">
                     <TabsTrigger value="header" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm py-2 text-xs font-medium transition-all">
                       <FileText size={14} className="mr-2" />
-                      {t('cityManagement.form.tabs.header', 'Genel Bilgiler')}
+                      {t('cityManagement.form.tabs.header')}
                     </TabsTrigger>
                   </TabsList>
                 </div>
@@ -175,12 +175,12 @@ export function CityForm({
                             <FormItem>
                               <FormLabel className={LABEL_STYLE}>
                                 <Map size={12} className="text-pink-500" />
-                                {t('cityManagement.form.name', 'Şehir Adı')} *
+                                {t('cityManagement.form.name')} *
                               </FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
-                                  placeholder={t('cityManagement.form.namePlaceholder', 'Şehir adını girin')}
+                                  placeholder={t('cityManagement.form.namePlaceholder')}
                                   maxLength={100}
                                   className={INPUT_STYLE}
                                 />
@@ -197,7 +197,7 @@ export function CityForm({
                             <FormItem>
                               <FormLabel className={LABEL_STYLE}>
                                 <Globe size={12} className="text-pink-500" />
-                                {t('cityManagement.form.country', 'Ülke')} *
+                                {t('cityManagement.form.country')} *
                               </FormLabel>
                               <VoiceSearchCombobox
                                 options={countryOptions}
@@ -205,8 +205,8 @@ export function CityForm({
                                 onSelect={(value) => {
                                   field.onChange(value ? Number(value) : 0);
                                 }}
-                                placeholder={t('cityManagement.form.selectCountry', 'Ülke seçin')}
-                                searchPlaceholder={t('cityManagement.form.searchCountry', 'Ülke ara...')}
+                                placeholder={t('cityManagement.form.selectCountry')}
+                                searchPlaceholder={t('cityManagement.form.searchCountry')}
                                 className={INPUT_STYLE}
                                 modal={true}
                                 disabled={countriesLoading}
@@ -224,13 +224,13 @@ export function CityForm({
                           <FormItem>
                             <FormLabel className={LABEL_STYLE}>
                               <Hash size={12} className="text-pink-500" />
-                              {t('cityManagement.form.erpCode', 'ERP Kodu')}
+                              {t('cityManagement.form.erpCode')}
                             </FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
                                 value={field.value || ''}
-                                placeholder={t('cityManagement.form.erpCodePlaceholder', 'ERP kodunu girin (opsiyonel)')}
+                                placeholder={t('cityManagement.form.erpCodePlaceholder')}
                                 maxLength={10}
                                 className={INPUT_STYLE}
                               />
@@ -254,7 +254,7 @@ export function CityForm({
                 disabled={isLoading}
                 className="h-11 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
               >
-                {t('cityManagement.form.cancel', 'İptal')}
+                {t('cityManagement.form.cancel')}
               </Button>
               <Button 
                 type="submit" 
@@ -262,7 +262,7 @@ export function CityForm({
                 className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white shadow-lg shadow-pink-500/20 border-0"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('cityManagement.form.save', 'Kaydet')}
+                {t('cityManagement.form.save')}
               </Button>
             </DialogFooter>
           </form>

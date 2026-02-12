@@ -20,10 +20,10 @@ export const useDeleteCity = () => {
         queryKey: [CITY_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('cityManagement.messages.deleteSuccess', 'Şehir başarıyla silindi'));
+      toast.success(t('cityManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('cityManagement.messages.deleteError', 'Şehir silinemedi'));
+      toast.error(error.message || t('cityManagement.messages.deleteError'));
     },
   });
 };

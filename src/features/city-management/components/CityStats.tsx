@@ -19,7 +19,7 @@ export function CityStats(): ReactElement {
           <Card key={i}>
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('cityManagement.loading', 'Loading...')}
+                {t('cityManagement.loading')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -40,7 +40,7 @@ export function CityStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('cityManagement.stats.totalCities', 'Toplam Şehir')}
+            {t('cityManagement.stats.totalCities')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +67,7 @@ export function CityStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('cityManagement.stats.activeCities', 'Active Cities')}
+            {t('cityManagement.stats.activeCities')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +93,7 @@ export function CityStats(): ReactElement {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('cityManagement.stats.newThisMonth', 'Bu Ay Yeni')}
+            {t('cityManagement.stats.newThisMonth')}
           </CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
