@@ -16,7 +16,7 @@
     "showing": "Mostrando {{from}}-{{to}} de {{total}}",
     "page": "Página {{current}} de {{total}}",
     "rowsPerPage": "Filas por página",
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "ruleType": "Tipo de regla",
     "customerType": "Tipo de cliente",
     "salesRep": "Representante de ventas",

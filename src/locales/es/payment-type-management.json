@@ -5,7 +5,7 @@
   "edit": "Editar tipo de pago",
   "delete": "Eliminar",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "name": "Nombre",
     "code": "Código",
     "description": "Descripción",

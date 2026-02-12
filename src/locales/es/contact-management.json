@@ -8,7 +8,7 @@
     "newThisMonth": "Nuevos este Mes"
   },
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "fullName": "Nombre Completo",
     "email": "Correo Electrónico",
     "phone": "Teléfono",
@@ -22,7 +22,7 @@
     "updatedBy": "Actualizado Por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
     "page": "Página {{current}} / {{total}}",
-    "salutation": "Hitap"
+    "salutation": "DIRECCIÓN"
   },
   "form": {
     "addContact": "Añadir Nuevo Contacto",
@@ -52,23 +52,23 @@
     "title": "Título",
     "selectTitle": "Seleccionar título",
     "titleRequired": "La selección del título es obligatoria",
-    "salutation": "Hitap",
-    "selectSalutation": "Hitap seçin",
+    "salutation": "DIRECCIÓN",
+    "selectSalutation": "Elige dirección",
     "salutationNone": "None",
-    "salutationMr": "Bay",
-    "salutationMs": "Bayan",
-    "salutationMrs": "Sayın",
+    "salutationMr": "Señor",
+    "salutationMs": "Mujer",
+    "salutationMrs": "Estimado",
     "salutationDr": "Dr.",
     "firstName": "Name",
-    "firstNamePlaceholder": "Ad girin",
+    "firstNamePlaceholder": "Introduce el nombre",
     "lastName": "Apellido",
-    "lastNamePlaceholder": "Soyad girin",
-    "middleName": "İkinci Ad",
-    "middleNamePlaceholder": "İkinci ad girin (opsiyonel)",
-    "firstNameRequired": "Ad gereklidir",
-    "lastNameRequired": "Soyad gereklidir",
-    "middleNameMaxLength": "İkinci ad en fazla 100 karakter olabilir",
-    "titleNone": "Ünvan yok"
+    "lastNamePlaceholder": "Introduce el apellido",
+    "middleName": "Segundo nombre",
+    "middleNamePlaceholder": "Ingrese el segundo nombre (opcional)",
+    "firstNameRequired": "El nombre es obligatorio",
+    "lastNameRequired": "Se requiere apellido",
+    "middleNameMaxLength": "El segundo nombre puede tener hasta 100 caracteres.",
+    "titleNone": "sin título"
   },
   "delete": {
     "action": "Eliminar",

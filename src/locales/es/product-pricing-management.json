@@ -95,7 +95,7 @@
   "noStockTracking": "Sin Seguimiento de Stock",
   "priceAndDiscount": "PRECIO Y DESCUENTO",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "erpProductCode": "Código de Producto ERP",
     "erpGroupCode": "Código de Grupo de Productos ERP",
     "currency": "Moneda",

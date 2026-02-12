@@ -14,7 +14,7 @@
   "save": "Guardar",
   "saving": "Guardando...",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "name": "Nombre del Distrito",
     "erpCode": "Código ERP",
     "cityName": "Nombre de la Ciudad",

@@ -55,7 +55,7 @@
   "createDescription": "Introducir información de la nueva dirección de envío",
   "editDescription": "Editar información de la dirección de envío",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
     "page": "Página {{current}} / {{total}}",
     "customerName": "Nombre del Cliente",
@@ -74,10 +74,10 @@
   "save": "Guardar",
   "saving": "Guardando...",
   "deleting": "Eliminando...",
-  "name": "Adres Adı",
-  "namePlaceholder": "Adres adını girin",
-  "isDefault": "Varsayılan Sevk Adresi",
-  "isDefaultShort": "Varsayılan",
-  "defaultBadge": "Varsayılan",
-  "nameMaxLength": "Adres adı en fazla 150 karakter olabilir"
+  "name": "Nombre de dirección",
+  "namePlaceholder": "Introduzca el nombre de la dirección",
+  "isDefault": "Dirección de envío predeterminada",
+  "isDefaultShort": "Predeterminado",
+  "defaultBadge": "Predeterminado",
+  "nameMaxLength": "El nombre de la dirección puede tener hasta 150 caracteres."
 }
