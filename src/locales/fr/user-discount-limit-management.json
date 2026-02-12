@@ -57,7 +57,7 @@
   "getByGroup": "Obtenir par Groupe",
   "getBySalespersonAndGroup": "Obtenir par Représentant et Groupe",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "salespersonName": "Nom Représentant Commercial",
     "erpProductGroupCode": "Code Groupe Produit ERP",
     "maxDiscount1": "Remise Max 1",

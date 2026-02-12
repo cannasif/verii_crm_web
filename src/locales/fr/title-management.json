@@ -21,7 +21,7 @@
     "description": "Gérez les définitions de titres ici."
   },
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "name": "Nom du Titre",
     "code": "Code",
     "createdDate": "Date de Création",

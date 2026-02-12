@@ -3,7 +3,7 @@
   "description": "Gérer et modifier les utilisateurs",
   "addButton": "Ajouter un nouvel utilisateur",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "username": "Nom d'utilisateur",
     "email": "E-mail",
     "fullName": "Nom complet",
