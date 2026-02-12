@@ -13,7 +13,7 @@
     "newThisMonth": "Nuevos este Mes"
   },
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "name": "Nombre del Tipo de Cliente",
     "description": "Descripción",
     "createdDate": "Fecha de Creación",

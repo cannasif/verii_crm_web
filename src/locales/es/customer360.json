@@ -58,7 +58,7 @@
     "upsell": "Upsell Propensity",
     "payment": "Payment Behavior",
     "segment": "RFM Segment",
-    "ltv": "LTV"
+    "ltv": "TVL"
   },
   "cohort": {
     "title": "Cohort Retention",

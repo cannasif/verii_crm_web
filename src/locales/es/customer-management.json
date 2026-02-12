@@ -8,7 +8,7 @@
     "newThisMonth": "Nuevos este Mes"
   },
   "table": {
-    "id": "ID",
+    "id": "IDENTIFICACIÓN",
     "customerCode": "Código de Cliente",
     "name": "Nombre del Cliente",
     "customerType": "Tipo de Cliente",
@@ -23,10 +23,10 @@
     "createdBy": "Creado Por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
     "page": "Página {{current}} / {{total}}",
-    "phone2": "Telefon 2",
+    "phone2": "teléfono 2",
     "salesRepCode": "Sales Representative",
     "branchCode": "Código Sucursal",
-    "defaultShippingAddressId": "Varsayılan Sevk Adresi"
+    "defaultShippingAddressId": "Dirección de envío predeterminada"
   },
   "form": {
     "addCustomer": "Añadir Nuevo Cliente",
@@ -83,15 +83,15 @@
     "isApproved": "Aprobado",
     "isCompleted": "Completado",
     "isERPIntegrated": "Integrado con ERP",
-    "phone2": "Telefon 2",
-    "phone2Placeholder": "İkinci telefon numarasını girin (opsiyonel)",
-    "phone2MaxLength": "İkinci telefon numarası en fazla 100 karakter olabilir",
-    "salesRepCodeMaxLength": "Satış temsilcisi kodu en fazla 50 karakter olabilir",
-    "groupCodeMaxLength": "Grup kodu en fazla 50 karakter olabilir",
-    "isCompletedDescription": "Bu müşterinin tüm bilgileri eksiksiz dolduruldu mu?",
+    "phone2": "teléfono 2",
+    "phone2Placeholder": "Ingrese el segundo número de teléfono (opcional)",
+    "phone2MaxLength": "El segundo número de teléfono puede tener hasta 100 caracteres.",
+    "salesRepCodeMaxLength": "El código del representante de ventas puede tener hasta 50 caracteres",
+    "groupCodeMaxLength": "El código de grupo puede tener hasta 50 caracteres",
+    "isCompletedDescription": "¿Se ha completado completamente toda la información de este cliente?",
     "none": "None",
-    "defaultShippingAddress": "Varsayılan Sevk Adresi",
-    "selectDefaultShippingAddress": "Varsayılan sevk adresi seçin"
+    "defaultShippingAddress": "Dirección de envío predeterminada",
+    "selectDefaultShippingAddress": "Elija la dirección de envío predeterminada"
   },
   "delete": {
     "action": "Eliminar",
