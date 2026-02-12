@@ -53,7 +53,7 @@
       "confirmTitle": "İzin Tanımını Sil",
       "confirmMessage": "\"{{name}}\" silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
     },
-    "syncFromRoutes": "Sync From Routes"
+    "syncFromRoutes": "Rotalardan senkronize et"
   },
   "permissionGroups": {
     "title": "İzin Grupları",
@@ -106,19 +106,19 @@
   },
   "common": {
     "cancel": "Vazgeç",
-    "saving": "Saving...",
+    "saving": "Kaydediliyor...",
     "save": "Kaydet ve Uygula",
-    "loading": "Loading...",
+    "loading": "Yükleniyor...",
     "search": "Ara...",
-    "noData": "No data",
-    "actions": "Actions",
-    "yes": "Yes",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "yes": "Evet",
     "no": "Hayır",
-    "edit": "Edit",
-    "delete": "Delete",
-    "previous": "Previous",
-    "next": "Next",
-    "processing": "Processing..."
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "processing": "İşleniyor..."
   },
   "sidebar": {
     "accessControl": "Erişim Kontrolü",
