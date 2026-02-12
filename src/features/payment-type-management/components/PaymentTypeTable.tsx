@@ -59,12 +59,12 @@ interface PaymentTypeTableProps {
 }
 
 const getColumnsConfig = (t: TFunction): ColumnDef<PaymentTypeDto>[] => [
-    { key: 'id', label: t('paymentTypeManagement.table.id', 'ID'), type: 'id', className: 'w-[80px]' },
-    { key: 'name', label: t('paymentTypeManagement.table.name', 'Ad'), type: 'text', className: 'min-w-[200px] font-medium' },
-    { key: 'description', label: t('paymentTypeManagement.table.description', 'Açıklama'), type: 'text', className: 'min-w-[250px]' },
-    { key: 'createdDate', label: t('paymentTypeManagement.createdDate', 'Oluşturulma Tarihi'), type: 'date', className: 'w-[150px]' },
-    { key: 'updatedDate', label: t('paymentTypeManagement.updatedDate', 'Güncellenme Tarihi'), type: 'date', className: 'w-[150px]' },
-    { key: 'isDeleted', label: t('paymentTypeManagement.table.status', 'Durum'), type: 'status', className: 'w-[120px]' },
+    { key: 'id', label: t('paymentTypeManagement.table.id'), type: 'id', className: 'w-[80px]' },
+    { key: 'name', label: t('paymentTypeManagement.table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
+    { key: 'description', label: t('paymentTypeManagement.table.description'), type: 'text', className: 'min-w-[250px]' },
+    { key: 'createdDate', label: t('paymentTypeManagement.createdDate'), type: 'date', className: 'w-[150px]' },
+    { key: 'updatedDate', label: t('paymentTypeManagement.updatedDate'), type: 'date', className: 'w-[150px]' },
+    { key: 'isDeleted', label: t('paymentTypeManagement.table.status'), type: 'status', className: 'w-[120px]' },
 ];
 
 export function PaymentTypeTable({
@@ -119,11 +119,11 @@ export function PaymentTypeTable({
     if (selectedPaymentType) {
       try {
         await deletePaymentType.mutateAsync(selectedPaymentType.id);
-        toast.success(t('paymentTypeManagement.delete.success', 'Ödeme tipi başarıyla silindi'));
+        toast.success(t('paymentTypeManagement.delete.success'));
         setDeleteDialogOpen(false);
         setSelectedPaymentType(null);
       } catch {
-        toast.error(t('paymentTypeManagement.delete.error', 'Ödeme tipi silinirken bir hata oluştu'));
+        toast.error(t('paymentTypeManagement.delete.error'));
       }
     }
   };
@@ -158,7 +158,7 @@ export function PaymentTypeTable({
                 }`}
             >
                 {isActive ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                {isActive ? t('status.active', 'Aktif') : t('status.inactive', 'Pasif')}
+                {isActive ? t('status.active') : t('status.inactive')}
             </Badge>
         );
     }
@@ -195,7 +195,7 @@ export function PaymentTypeTable({
         <div className="flex flex-col items-center gap-2">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <div className="text-sm text-muted-foreground animate-pulse">
-             {t('common.loading', 'Yükleniyor...')}
+             {t('common.loading')}
            </div>
         </div>
       </div>
@@ -206,7 +206,7 @@ export function PaymentTypeTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('paymentTypeManagement.noData', 'Veri bulunamadı')}
+          {t('paymentTypeManagement.noData')}
         </div>
       </div>
     );
@@ -224,7 +224,7 @@ export function PaymentTypeTable({
                         className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
                     >
                         <EyeOff className="mr-2 h-4 w-4" />
-                        {t('common.editColumns', 'Sütunları Düzenle')}
+                        {t('common.editColumns')}
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -233,7 +233,7 @@ export function PaymentTypeTable({
                     className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
                 >
                     <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                        {t('common.visibleColumns', 'Görünür Sütunlar')}
+                        {t('common.visibleColumns')}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
                     
@@ -271,7 +271,7 @@ export function PaymentTypeTable({
                   </TableHead>
               ))}
               <TableHead className={`text-right ${headStyle} w-[100px]`}>
-                {t('common.actions', 'İşlemler')}
+                {t('common.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -295,7 +295,7 @@ export function PaymentTypeTable({
                       size="icon"
                       className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
                       onClick={() => onEdit(paymentType)}
-                      title={t('common.edit', 'Düzenle')}
+                      title={t('common.edit')}
                     >
                       <Edit2 size={16} />
                     </Button>
@@ -304,7 +304,7 @@ export function PaymentTypeTable({
                       size="icon"
                       className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
                       onClick={() => handleDeleteClick(paymentType)}
-                      title={t('common.delete', 'Sil')}
+                      title={t('common.delete')}
                     >
                       <Trash2 size={16} />
                     </Button>
@@ -318,16 +318,16 @@ export function PaymentTypeTable({
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          {t('paymentTypeManagement.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('paymentTypeManagement.table.showing', {
             from: (currentPage - 1) * pageSize + 1,
             to: Math.min(currentPage * pageSize, processedPaymentTypes.length),
             total: processedPaymentTypes.length,
           })}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.previous', 'Önceki')}</Button>
-          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('paymentTypeManagement.table.page', 'Sayfa {{current}} / {{total}}', { current: currentPage, total: totalPages || 1 })}</div>
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.next', 'Sonraki')}</Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.previous')}</Button>
+          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('paymentTypeManagement.table.page', { current: currentPage, total: totalPages || 1 })}</div>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.next')}</Button>
         </div>
       </div>
 
@@ -339,10 +339,10 @@ export function PaymentTypeTable({
             </div>
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('paymentTypeManagement.delete.confirmTitle', 'Ödeme Tipini Sil')}
+                {t('paymentTypeManagement.delete.confirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('paymentTypeManagement.delete.confirmMessage', '{{name}} ödeme tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', {
+                {t('paymentTypeManagement.delete.confirmMessage', {
                     name: selectedPaymentType?.name || '',
                 })}
                 </DialogDescription>
@@ -355,7 +355,7 @@ export function PaymentTypeTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('common.cancel', 'Vazgeç')}
+              {t('common.cancel')}
             </Button>
             <Button
               type="button"
@@ -365,7 +365,7 @@ export function PaymentTypeTable({
               className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deletePaymentType.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('common.delete', 'Evet, Sil')}
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

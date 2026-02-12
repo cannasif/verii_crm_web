@@ -17,10 +17,10 @@ export const useDeletePaymentType = () => {
         queryKey: [PAYMENT_TYPE_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('paymentTypeManagement.deleteSuccess', 'Ödeme tipi başarıyla silindi'));
+      toast.success(t('paymentTypeManagement.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('paymentTypeManagement.deleteError', 'Ödeme tipi silinirken bir hata oluştu'));
+      toast.error(error.message || t('paymentTypeManagement.deleteError'));
     },
   });
 };

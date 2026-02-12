@@ -20,10 +20,10 @@ export const useUpdatePaymentType = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedPaymentType.id) });
-      toast.success(t('paymentTypeManagement.updateSuccess', 'Ödeme tipi başarıyla güncellendi'));
+      toast.success(t('paymentTypeManagement.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('paymentTypeManagement.updateError', 'Ödeme tipi güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('paymentTypeManagement.updateError'));
     },
   });
 };

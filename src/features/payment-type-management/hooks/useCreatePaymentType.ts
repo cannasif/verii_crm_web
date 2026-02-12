@@ -19,10 +19,10 @@ export const useCreatePaymentType = () => {
         queryKey: [PAYMENT_TYPE_MANAGEMENT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('paymentTypeManagement.createSuccess', 'Ödeme tipi başarıyla oluşturuldu'));
+      toast.success(t('paymentTypeManagement.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('paymentTypeManagement.createError', 'Ödeme tipi oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('paymentTypeManagement.createError'));
     },
   });
 };

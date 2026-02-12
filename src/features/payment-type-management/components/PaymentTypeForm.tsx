@@ -107,13 +107,13 @@ export function PaymentTypeForm({
              <div className="space-y-1">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   {paymentType
-                    ? t('paymentTypeManagement.edit', 'Ödeme Tipi Düzenle')
-                    : t('paymentTypeManagement.create', 'Yeni Ödeme Tipi')}
+                    ? t('paymentTypeManagement.edit')
+                    : t('paymentTypeManagement.create')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                   {paymentType
-                    ? t('paymentTypeManagement.editDescription', 'Ödeme tipi bilgilerini düzenleyin')
-                    : t('paymentTypeManagement.createDescription', 'Yeni ödeme tipi bilgilerini girin')}
+                    ? t('paymentTypeManagement.editDescription')
+                    : t('paymentTypeManagement.createDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -131,12 +131,12 @@ export function PaymentTypeForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('paymentTypeManagement.name', 'Ad')} *
+                      {t('paymentTypeManagement.name')} *
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('paymentTypeManagement.namePlaceholder', 'Ödeme tipi adını girin')}
+                        placeholder={t('paymentTypeManagement.namePlaceholder')}
                         maxLength={100}
                         className={INPUT_STYLE}
                       />
@@ -152,12 +152,12 @@ export function PaymentTypeForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
-                      {t('paymentTypeManagement.description', 'Açıklama')}
+                      {t('paymentTypeManagement.description')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('paymentTypeManagement.descriptionPlaceholder', 'Açıklama girin (opsiyonel)')}
+                        placeholder={t('paymentTypeManagement.descriptionPlaceholder')}
                         maxLength={500}
                         className={INPUT_STYLE}
                       />
@@ -181,7 +181,7 @@ export function PaymentTypeForm({
                 disabled={isLoading}
                 className="h-11 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300"
             >
-                {t('paymentTypeManagement.cancel', 'İptal')}
+                {t('paymentTypeManagement.cancel')}
             </Button>
             <Button 
                 onClick={form.handleSubmit(handleSubmit)}
@@ -190,8 +190,8 @@ export function PaymentTypeForm({
             >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading
-                ? t('paymentTypeManagement.saving', 'Kaydediliyor...')
-                : t('paymentTypeManagement.save', 'Kaydet')}
+                ? t('paymentTypeManagement.saving')
+                : t('paymentTypeManagement.save')}
             </Button>
         </DialogFooter>
       </DialogContent>
