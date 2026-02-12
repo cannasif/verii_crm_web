@@ -12,9 +12,11 @@ export const activityApi = {
     if (Array.isArray(params.filters)) {
       if (params.filters.length > 0) {
         queryParams.append('filters', JSON.stringify(params.filters));
+        queryParams.append('filterLogic', params.filterLogic ?? 'and');
       }
     } else if (params.filters && Object.keys(params.filters).length > 0) {
       queryParams.append('filters', JSON.stringify(params.filters));
+      queryParams.append('filterLogic', params.filterLogic ?? 'and');
     }
 
     const response = await api.get<ApiResponse<PagedResponse<ActivityDto>>>(
