@@ -105,13 +105,13 @@ export function ReportDefinitionForm({
         <DialogHeader>
           <DialogTitle>
             {initial
-              ? t('powerbi.reportDefinition.edit', 'Rapor Tanımı Düzenle')
-              : t('powerbi.reportDefinition.add', 'Yeni Rapor Tanımı')}
+              ? t('powerbi.reportDefinition.edit')
+              : t('powerbi.reportDefinition.add')}
           </DialogTitle>
           <DialogDescription>
             {initial
-              ? t('powerbi.reportDefinition.editDescription', 'Rapor tanımı bilgilerini güncelleyin')
-              : t('powerbi.reportDefinition.createDescription', 'Yeni rapor tanımı bilgilerini girin')}
+              ? t('powerbi.reportDefinition.editDescription')
+              : t('powerbi.reportDefinition.createDescription')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -121,9 +121,9 @@ export function ReportDefinitionForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.name', 'Ad')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.name')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder={t('powerbi.reportDefinition.namePlaceholder', 'Rapor adı')} />
+                    <Input {...field} placeholder={t('powerbi.reportDefinition.namePlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -134,7 +134,7 @@ export function ReportDefinitionForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.description', 'Açıklama')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.description')}</FormLabel>
                   <FormControl>
                     <Textarea {...field} value={field.value ?? ''} rows={2} />
                   </FormControl>
@@ -147,7 +147,7 @@ export function ReportDefinitionForm({
               name="workspaceId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.workspaceId', 'Workspace ID (GUID)')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.workspaceId')}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="00000000-0000-0000-0000-000000000000" />
                   </FormControl>
@@ -160,7 +160,7 @@ export function ReportDefinitionForm({
               name="reportId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.reportId', 'Report ID (GUID)')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.reportId')}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="00000000-0000-0000-0000-000000000000" />
                   </FormControl>
@@ -173,7 +173,7 @@ export function ReportDefinitionForm({
               name="datasetId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.datasetId', 'Dataset ID (opsiyonel)')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.datasetId')}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value ?? ''} placeholder="00000000-0000-0000-0000-000000000000" />
                   </FormControl>
@@ -186,7 +186,7 @@ export function ReportDefinitionForm({
               name="embedUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.embedUrl', 'Embed URL (opsiyonel)')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.embedUrl')}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value ?? ''} type="url" placeholder="https://..." />
                   </FormControl>
@@ -199,7 +199,7 @@ export function ReportDefinitionForm({
               name="isActive"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <FormLabel>{t('powerbi.reportDefinition.isActive', 'Aktif')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.isActive')}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
@@ -212,7 +212,7 @@ export function ReportDefinitionForm({
               name="rlsRoles"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.rlsRoles', 'RLS Rolleri (opsiyonel)')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.rlsRoles')}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value ?? ''} />
                   </FormControl>
@@ -225,7 +225,7 @@ export function ReportDefinitionForm({
               name="allowedUserIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.allowedUserIds', 'İzinli Kullanıcı ID (opsiyonel)')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.allowedUserIds')}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value ?? ''} />
                   </FormControl>
@@ -238,7 +238,7 @@ export function ReportDefinitionForm({
               name="allowedRoleIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.reportDefinition.allowedRoleIds', 'İzinli Rol ID (opsiyonel)')}</FormLabel>
+                  <FormLabel>{t('powerbi.reportDefinition.allowedRoleIds')}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value ?? ''} />
                   </FormControl>
@@ -248,11 +248,11 @@ export function ReportDefinitionForm({
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-                {t('common.cancel', 'İptal')}
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('common.save', 'Kaydet')}
+                {t('common.save')}
               </Button>
             </DialogFooter>
           </form>

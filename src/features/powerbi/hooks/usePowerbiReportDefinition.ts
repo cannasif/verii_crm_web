@@ -41,10 +41,10 @@ export function useCreatePowerbiReportDefinition() {
       powerbiReportDefinitionApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.reportDefinitions.all });
-      toast.success(t('powerbi.reportDefinition.createSuccess', 'Rapor tanımı oluşturuldu'));
+      toast.success(t('powerbi.reportDefinition.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbi.reportDefinition.createError', 'Oluşturulamadı'));
+      toast.error(error.message ?? t('powerbi.reportDefinition.createError'));
     },
   });
 }
@@ -66,10 +66,10 @@ export function useUpdatePowerbiReportDefinition() {
       queryClient.invalidateQueries({
         queryKey: powerbiQueryKeys.reportDefinitions.detail(updated.id),
       });
-      toast.success(t('powerbi.reportDefinition.updateSuccess', 'Rapor tanımı güncellendi'));
+      toast.success(t('powerbi.reportDefinition.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbi.reportDefinition.updateError', 'Güncellenemedi'));
+      toast.error(error.message ?? t('powerbi.reportDefinition.updateError'));
     },
   });
 }
@@ -82,10 +82,10 @@ export function useDeletePowerbiReportDefinition() {
     mutationFn: (id: number): Promise<void> => powerbiReportDefinitionApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.reportDefinitions.all });
-      toast.success(t('powerbi.reportDefinition.deleteSuccess', 'Rapor tanımı silindi'));
+      toast.success(t('powerbi.reportDefinition.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbi.reportDefinition.deleteError', 'Silinemedi'));
+      toast.error(error.message ?? t('powerbi.reportDefinition.deleteError'));
     },
   });
 }

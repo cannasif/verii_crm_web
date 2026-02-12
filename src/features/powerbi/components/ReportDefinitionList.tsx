@@ -71,7 +71,7 @@ export function ReportDefinitionList(): ReactElement {
   }, [items, searchTerm]);
 
   useEffect(() => {
-    setPageTitle(t('powerbi.reportDefinition.title', 'PowerBI Rapor Tanımları'));
+    setPageTitle(t('powerbi.reportDefinition.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -131,11 +131,11 @@ export function ReportDefinitionList(): ReactElement {
       <PowerbiReportSyncCard />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          {t('powerbi.reportDefinition.title', 'PowerBI Rapor Tanımları')}
+          {t('powerbi.reportDefinition.title')}
         </h1>
         <Button onClick={handleAdd}>
           <Plus className="mr-2 h-4 w-4" />
-          {t('powerbi.reportDefinition.add', 'Yeni Rapor Tanımı')}
+          {t('powerbi.reportDefinition.add')}
         </Button>
       </div>
 
@@ -143,7 +143,7 @@ export function ReportDefinitionList(): ReactElement {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t('common.search', 'Ara...')}
+            placeholder={t('common.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
@@ -160,7 +160,7 @@ export function ReportDefinitionList(): ReactElement {
           )}
         </div>
         <Input
-          placeholder={t('powerbi.filterPlaceholder', 'Filtre (query param)')}
+          placeholder={t('powerbi.filterPlaceholder')}
           value={filterPlaceholder}
           onChange={(e) => setFilterPlaceholder(e.target.value)}
           className="max-w-xs"
@@ -174,11 +174,11 @@ export function ReportDefinitionList(): ReactElement {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('powerbi.reportDefinition.name', 'Ad')}</TableHead>
-              <TableHead>{t('powerbi.reportDefinition.workspaceId', 'Workspace ID')}</TableHead>
-              <TableHead>{t('powerbi.reportDefinition.reportId', 'Report ID')}</TableHead>
-              <TableHead>{t('powerbi.reportDefinition.isActive', 'Aktif')}</TableHead>
-              <TableHead className="text-right">{t('common.actions', 'İşlemler')}</TableHead>
+              <TableHead>{t('powerbi.reportDefinition.name')}</TableHead>
+              <TableHead>{t('powerbi.reportDefinition.workspaceId')}</TableHead>
+              <TableHead>{t('powerbi.reportDefinition.reportId')}</TableHead>
+              <TableHead>{t('powerbi.reportDefinition.isActive')}</TableHead>
+              <TableHead className="text-right">{t('common.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -191,7 +191,7 @@ export function ReportDefinitionList(): ReactElement {
             ) : filteredItems.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  {t('common.noData', 'Kayıt yok')}
+                  {t('common.noData')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -202,7 +202,7 @@ export function ReportDefinitionList(): ReactElement {
                   <TableCell className="font-mono text-xs">{row.reportId}</TableCell>
                   <TableCell>
                     <Badge variant={row.isActive ? 'default' : 'secondary'}>
-                      {row.isActive ? t('status.active', 'Aktif') : t('status.inactive', 'Pasif')}
+                      {row.isActive ? t('status.active') : t('status.inactive')}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -236,16 +236,16 @@ export function ReportDefinitionList(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('common.delete.confirmTitle', 'Sil')}</DialogTitle>
+            <DialogTitle>{t('common.delete.confirmTitle')}</DialogTitle>
             <DialogDescription>
-              {t('common.delete.confirmMessage', 'Bu kaydı silmek istediğinize emin misiniz?', {
+              {t('common.delete.confirmMessage', {
                 name: selectedItem?.name ?? '',
               })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -253,7 +253,7 @@ export function ReportDefinitionList(): ReactElement {
               disabled={deleteMutation.isPending}
             >
               {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('common.delete.action', 'Sil')}
+              {t('common.delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>

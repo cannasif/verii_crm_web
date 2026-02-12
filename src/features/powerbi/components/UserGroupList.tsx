@@ -63,7 +63,7 @@ export function UserGroupList(): ReactElement {
   }, [items, searchTerm]);
 
   useEffect(() => {
-    setPageTitle(t('powerbi.userGroup.title', 'PowerBI Kullanıcı-Grup Eşlemesi'));
+    setPageTitle(t('powerbi.userGroup.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -114,11 +114,11 @@ export function UserGroupList(): ReactElement {
     <div className="w-full space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          {t('powerbi.userGroup.title', 'PowerBI Kullanıcı-Grup Eşlemesi')}
+          {t('powerbi.userGroup.title')}
         </h1>
         <Button onClick={handleAdd}>
           <Plus className="mr-2 h-4 w-4" />
-          {t('powerbi.userGroup.add', 'Yeni Eşleme')}
+          {t('powerbi.userGroup.add')}
         </Button>
       </div>
 
@@ -126,7 +126,7 @@ export function UserGroupList(): ReactElement {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t('common.search', 'Ara...')}
+            placeholder={t('common.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
@@ -143,7 +143,7 @@ export function UserGroupList(): ReactElement {
           )}
         </div>
         <Input
-          placeholder={t('powerbi.filterPlaceholder', 'Filtre (query param)')}
+          placeholder={t('powerbi.filterPlaceholder')}
           value={filterPlaceholder}
           onChange={(e) => setFilterPlaceholder(e.target.value)}
           className="max-w-xs"
@@ -157,9 +157,9 @@ export function UserGroupList(): ReactElement {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('powerbi.userGroup.userName', 'Kullanıcı')}</TableHead>
-              <TableHead>{t('powerbi.userGroup.groupName', 'Grup')}</TableHead>
-              <TableHead className="text-right">{t('common.actions', 'İşlemler')}</TableHead>
+              <TableHead>{t('powerbi.userGroup.userName')}</TableHead>
+              <TableHead>{t('powerbi.userGroup.groupName')}</TableHead>
+              <TableHead className="text-right">{t('common.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -172,7 +172,7 @@ export function UserGroupList(): ReactElement {
             ) : filteredItems.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
-                  {t('common.noData', 'Kayıt yok')}
+                  {t('common.noData')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -211,16 +211,16 @@ export function UserGroupList(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('common.delete.confirmTitle', 'Sil')}</DialogTitle>
+            <DialogTitle>{t('common.delete.confirmTitle')}</DialogTitle>
             <DialogDescription>
-              {t('common.delete.confirmMessage', 'Bu kaydı silmek istediğinize emin misiniz?', {
+              {t('common.delete.confirmMessage', {
                 name: selectedItem?.userName ?? '',
               })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -228,7 +228,7 @@ export function UserGroupList(): ReactElement {
               disabled={deleteMutation.isPending}
             >
               {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('common.delete.action', 'Sil')}
+              {t('common.delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>

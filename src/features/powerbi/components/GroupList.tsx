@@ -62,7 +62,7 @@ export function GroupList(): ReactElement {
   }, [items, searchTerm]);
 
   useEffect(() => {
-    setPageTitle(t('powerbi.group.title', 'PowerBI Grupları'));
+    setPageTitle(t('powerbi.group.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -118,11 +118,11 @@ export function GroupList(): ReactElement {
     <div className="w-full space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          {t('powerbi.group.title', 'PowerBI Grupları')}
+          {t('powerbi.group.title')}
         </h1>
         <Button onClick={handleAdd}>
           <Plus className="mr-2 h-4 w-4" />
-          {t('powerbi.group.add', 'Yeni Grup')}
+          {t('powerbi.group.add')}
         </Button>
       </div>
 
@@ -130,7 +130,7 @@ export function GroupList(): ReactElement {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t('common.search', 'Ara...')}
+            placeholder={t('common.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
@@ -147,7 +147,7 @@ export function GroupList(): ReactElement {
           )}
         </div>
         <Input
-          placeholder={t('powerbi.filterPlaceholder', 'Filtre (query param)')}
+          placeholder={t('powerbi.filterPlaceholder')}
           value={filterPlaceholder}
           onChange={(e) => setFilterPlaceholder(e.target.value)}
           className="max-w-xs"
@@ -161,10 +161,10 @@ export function GroupList(): ReactElement {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('powerbi.group.name', 'Ad')}</TableHead>
-              <TableHead>{t('powerbi.group.description', 'Açıklama')}</TableHead>
-              <TableHead>{t('powerbi.group.isActive', 'Aktif')}</TableHead>
-              <TableHead className="text-right">{t('common.actions', 'İşlemler')}</TableHead>
+              <TableHead>{t('powerbi.group.name')}</TableHead>
+              <TableHead>{t('powerbi.group.description')}</TableHead>
+              <TableHead>{t('powerbi.group.isActive')}</TableHead>
+              <TableHead className="text-right">{t('common.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -177,7 +177,7 @@ export function GroupList(): ReactElement {
             ) : filteredItems.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                  {t('common.noData', 'Kayıt yok')}
+                  {t('common.noData')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -187,7 +187,7 @@ export function GroupList(): ReactElement {
                   <TableCell className="text-muted-foreground">{row.description ?? '-'}</TableCell>
                   <TableCell>
                     <Badge variant={row.isActive ? 'default' : 'secondary'}>
-                      {row.isActive ? t('status.active', 'Aktif') : t('status.inactive', 'Pasif')}
+                      {row.isActive ? t('status.active') : t('status.inactive')}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -221,16 +221,16 @@ export function GroupList(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('common.delete.confirmTitle', 'Sil')}</DialogTitle>
+            <DialogTitle>{t('common.delete.confirmTitle')}</DialogTitle>
             <DialogDescription>
-              {t('common.delete.confirmMessage', 'Bu kaydı silmek istediğinize emin misiniz?', {
+              {t('common.delete.confirmMessage', {
                 name: selectedItem?.name ?? '',
               })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -238,7 +238,7 @@ export function GroupList(): ReactElement {
               disabled={deleteMutation.isPending}
             >
               {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('common.delete.action', 'Sil')}
+              {t('common.delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>

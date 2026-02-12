@@ -42,10 +42,10 @@ export function useCreateUserPowerbiGroup() {
       userPowerbiGroupApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.userGroups.all });
-      toast.success(t('powerbi.userGroup.createSuccess', 'Kullanıcı-grup eşlemesi oluşturuldu'));
+      toast.success(t('powerbi.userGroup.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbi.userGroup.createError', 'Oluşturulamadı'));
+      toast.error(error.message ?? t('powerbi.userGroup.createError'));
     },
   });
 }
@@ -63,10 +63,10 @@ export function useUpdateUserPowerbiGroup() {
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.userGroups.all });
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.userGroups.detail(updated.id) });
-      toast.success(t('powerbi.userGroup.updateSuccess', 'Kullanıcı-grup eşlemesi güncellendi'));
+      toast.success(t('powerbi.userGroup.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbi.userGroup.updateError', 'Güncellenemedi'));
+      toast.error(error.message ?? t('powerbi.userGroup.updateError'));
     },
   });
 }
@@ -79,10 +79,10 @@ export function useDeleteUserPowerbiGroup() {
     mutationFn: (id: number): Promise<void> => userPowerbiGroupApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.userGroups.all });
-      toast.success(t('powerbi.userGroup.deleteSuccess', 'Kullanıcı-grup eşlemesi silindi'));
+      toast.success(t('powerbi.userGroup.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbi.userGroup.deleteError', 'Silinemedi'));
+      toast.error(error.message ?? t('powerbi.userGroup.deleteError'));
     },
   });
 }

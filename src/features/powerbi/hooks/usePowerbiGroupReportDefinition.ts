@@ -44,11 +44,11 @@ export function useCreatePowerbiGroupReportDefinition() {
       powerbiGroupReportDefinitionApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.groupReportDefinitions.all });
-      toast.success(t('powerbi.groupReportDefinition.createSuccess', 'Grup-rapor eşlemesi oluşturuldu'));
+      toast.success(t('powerbi.groupReportDefinition.createSuccess'));
     },
     onError: (error: Error) => {
       toast.error(
-        error.message ?? t('powerbi.groupReportDefinition.createError', 'Oluşturulamadı')
+        error.message ?? t('powerbi.groupReportDefinition.createError')
       );
     },
   });
@@ -72,11 +72,11 @@ export function useUpdatePowerbiGroupReportDefinition() {
       queryClient.invalidateQueries({
         queryKey: powerbiQueryKeys.groupReportDefinitions.detail(updated.id),
       });
-      toast.success(t('powerbi.groupReportDefinition.updateSuccess', 'Grup-rapor eşlemesi güncellendi'));
+      toast.success(t('powerbi.groupReportDefinition.updateSuccess'));
     },
     onError: (error: Error) => {
       toast.error(
-        error.message ?? t('powerbi.groupReportDefinition.updateError', 'Güncellenemedi')
+        error.message ?? t('powerbi.groupReportDefinition.updateError')
       );
     },
   });
@@ -90,11 +90,11 @@ export function useDeletePowerbiGroupReportDefinition() {
     mutationFn: (id: number): Promise<void> => powerbiGroupReportDefinitionApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: powerbiQueryKeys.groupReportDefinitions.all });
-      toast.success(t('powerbi.groupReportDefinition.deleteSuccess', 'Grup-rapor eşlemesi silindi'));
+      toast.success(t('powerbi.groupReportDefinition.deleteSuccess'));
     },
     onError: (error: Error) => {
       toast.error(
-        error.message ?? t('powerbi.groupReportDefinition.deleteError', 'Silinemedi')
+        error.message ?? t('powerbi.groupReportDefinition.deleteError')
       );
     },
   });

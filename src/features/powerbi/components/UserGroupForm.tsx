@@ -93,13 +93,13 @@ export function UserGroupForm({
         <DialogHeader>
           <DialogTitle>
             {initial
-              ? t('powerbi.userGroup.edit', 'Eşleme Düzenle')
-              : t('powerbi.userGroup.add', 'Yeni Eşleme')}
+              ? t('powerbi.userGroup.edit')
+              : t('powerbi.userGroup.add')}
           </DialogTitle>
           <DialogDescription>
             {initial
-              ? t('powerbi.userGroup.editDescription', 'Kullanıcı-grup eşlemesini güncelleyin')
-              : t('powerbi.userGroup.createDescription', 'Kullanıcı ve grup seçin')}
+              ? t('powerbi.userGroup.editDescription')
+              : t('powerbi.userGroup.createDescription')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -109,14 +109,14 @@ export function UserGroupForm({
               name="userId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.userGroup.userId', 'Kullanıcı')}</FormLabel>
+                  <FormLabel>{t('powerbi.userGroup.userId')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('powerbi.userGroup.selectUser', 'Kullanıcı seçin')} />
+                        <SelectValue placeholder={t('powerbi.userGroup.selectUser')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -136,14 +136,14 @@ export function UserGroupForm({
               name="groupId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.userGroup.groupId', 'Grup')}</FormLabel>
+                  <FormLabel>{t('powerbi.userGroup.groupId')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('powerbi.userGroup.selectGroup', 'Grup seçin')} />
+                        <SelectValue placeholder={t('powerbi.userGroup.selectGroup')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -160,11 +160,11 @@ export function UserGroupForm({
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-                {t('common.cancel', 'İptal')}
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('common.save', 'Kaydet')}
+                {t('common.save')}
               </Button>
             </DialogFooter>
           </form>

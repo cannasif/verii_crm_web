@@ -95,13 +95,13 @@ export function GroupReportDefinitionForm({
         <DialogHeader>
           <DialogTitle>
             {initial
-              ? t('powerbi.groupReportDefinition.edit', 'Eşleme Düzenle')
-              : t('powerbi.groupReportDefinition.add', 'Yeni Eşleme')}
+              ? t('powerbi.groupReportDefinition.edit')
+              : t('powerbi.groupReportDefinition.add')}
           </DialogTitle>
           <DialogDescription>
             {initial
-              ? t('powerbi.groupReportDefinition.editDescription', 'Grup-rapor eşlemesini güncelleyin')
-              : t('powerbi.groupReportDefinition.createDescription', 'Grup ve rapor tanımı seçin')}
+              ? t('powerbi.groupReportDefinition.editDescription')
+              : t('powerbi.groupReportDefinition.createDescription')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -111,14 +111,14 @@ export function GroupReportDefinitionForm({
               name="groupId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.groupReportDefinition.groupId', 'Grup')}</FormLabel>
+                  <FormLabel>{t('powerbi.groupReportDefinition.groupId')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('powerbi.groupReportDefinition.selectGroup', 'Grup seçin')} />
+                        <SelectValue placeholder={t('powerbi.groupReportDefinition.selectGroup')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -138,14 +138,14 @@ export function GroupReportDefinitionForm({
               name="reportDefinitionId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.groupReportDefinition.reportDefinitionId', 'Rapor Tanımı')}</FormLabel>
+                  <FormLabel>{t('powerbi.groupReportDefinition.reportDefinitionId')}</FormLabel>
                   <Select
                     onValueChange={(v) => field.onChange(Number(v))}
                     value={field.value ? String(field.value) : ''}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('powerbi.groupReportDefinition.selectReport', 'Rapor seçin')} />
+                        <SelectValue placeholder={t('powerbi.groupReportDefinition.selectReport')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -162,11 +162,11 @@ export function GroupReportDefinitionForm({
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-                {t('common.cancel', 'İptal')}
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('common.save', 'Kaydet')}
+                {t('common.save')}
               </Button>
             </DialogFooter>
           </form>

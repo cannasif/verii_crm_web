@@ -84,13 +84,13 @@ export function GroupForm({
         <DialogHeader>
           <DialogTitle>
             {initial
-              ? t('powerbi.group.edit', 'Grup Düzenle')
-              : t('powerbi.group.add', 'Yeni Grup')}
+              ? t('powerbi.group.edit')
+              : t('powerbi.group.add')}
           </DialogTitle>
           <DialogDescription>
             {initial
-              ? t('powerbi.group.editDescription', 'Grup bilgilerini güncelleyin')
-              : t('powerbi.group.createDescription', 'Yeni grup bilgilerini girin')}
+              ? t('powerbi.group.editDescription')
+              : t('powerbi.group.createDescription')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -100,9 +100,9 @@ export function GroupForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.group.name', 'Ad')}</FormLabel>
+                  <FormLabel>{t('powerbi.group.name')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder={t('powerbi.group.namePlaceholder', 'Grup adı')} />
+                    <Input {...field} placeholder={t('powerbi.group.namePlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -113,7 +113,7 @@ export function GroupForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('powerbi.group.description', 'Açıklama')}</FormLabel>
+                  <FormLabel>{t('powerbi.group.description')}</FormLabel>
                   <FormControl>
                     <Textarea {...field} value={field.value ?? ''} rows={2} />
                   </FormControl>
@@ -126,7 +126,7 @@ export function GroupForm({
               name="isActive"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <FormLabel>{t('powerbi.group.isActive', 'Aktif')}</FormLabel>
+                  <FormLabel>{t('powerbi.group.isActive')}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
@@ -136,11 +136,11 @@ export function GroupForm({
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-                {t('common.cancel', 'İptal')}
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('common.save', 'Kaydet')}
+                {t('common.save')}
               </Button>
             </DialogFooter>
           </form>
