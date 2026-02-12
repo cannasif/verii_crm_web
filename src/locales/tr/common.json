@@ -8,7 +8,11 @@
     "close": "Kapat",
     "previous": "Önceki",
     "next": "Sonraki",
-    "delete": "Sil",
+    "delete": {
+      "confirmTitle": "Sil",
+      "confirmMessage": "Bu kaydı silmek istediğinize emin misiniz?",
+      "action": "Sil"
+    },
     "edit": "Düzenle",
     "search": "Ara",
     "filter": "Filtrele",
@@ -63,7 +67,68 @@
       "discount2": "Indirim 2",
       "discount3": "Indirim 3",
       "discount2And3": "Ind. 2/3"
-    }
+    },
+    "serverErrorTitle": "Server error",
+    "serverErrorRetrying": "Connection lost. Retrying automatically...",
+    "serverErrorDescription": "Permissions could not be loaded. Please try again.",
+    "retry": "Retry",
+    "refreshPage": "Refresh page",
+    "voiceSearchPermissionDenied": "Mikrofon izni reddedildi.",
+    "voiceSearchError": "Sesli arama sırasında bir hata oluştu.",
+    "voiceSearchNotSupported": "Tarayıcınız sesli aramayı desteklemiyor",
+    "select": "Seçiniz",
+    "voiceSearch": "Sesli Arama",
+    "update": "Güncelle",
+    "deleting": "Siliniyor...",
+    "uploading": "Yükleniyor...",
+    "clear": "Temizle",
+    "all": "Tümü",
+    "editColumns": "Sütunları Düzenle",
+    "visibleColumns": "Görünür Sütunlar",
+    "paginationInfo": "{{start}}-{{end}} / {{total}} kayıt",
+    "refresh": "Yenile",
+    "showing": "Gösterilen",
+    "table": {
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "filters": "Detaylı Filtre",
+    "selectAll": "Tümünü Seç",
+    "export": "Dışa Aktar",
+    "exportExcel": "Excel İndir",
+    "exportPDF": "PDF İndir",
+    "exportPPT": "PowerPoint İndir",
+    "active": "Aktif",
+    "columns": "Görünür Sütunlar",
+    "ok": "TAMAM",
+    "clearFilters": "Temizle",
+    "apply": "Uygula",
+    "page": "Sayfa {{current}} / {{total}}",
+    "status": "Durum",
+    "deleteSuccess": "Silme işlemi başarılı",
+    "deleteError": "Silme işlemi sırasında hata oluştu",
+    "deleteConfirmTitle": "Silme İşlemi",
+    "voiceSearchCompleted": "Sesli arama tamamlandı",
+    "voiceSearchStopListening": "Dinlemeyi durdur",
+    "actionExecuted": "İşlem başarıyla gerçekleştirildi",
+    "actionExecutionFailed": "İşlem gerçekleştirilemedi",
+    "templateDeleted": "Şablon silindi",
+    "templateDeleteFailed": "Şablon silinemedi",
+    "enterValidDocumentId": "Geçerli bir belge ID girin",
+    "pdfGenerated": "PDF oluşturuldu",
+    "pdfGenerateFailed": "PDF oluşturulamadı",
+    "updated": "Güncellendi",
+    "saved": "Kaydedildi",
+    "templateUpdatedWithTitle": "Şablon güncellendi: {{title}}",
+    "templateSavedWithTitle": "Şablon kaydedildi: {{title}}",
+    "templateUpdateFailed": "Şablon güncellenemedi",
+    "templateSaveFailed": "Şablon kaydedilemedi",
+    "imageMax2Mb": "Resim en fazla 2 MB olabilir.",
+    "selectImage": "Resim seç",
+    "imageSettings": "Resim Özellikleri",
+    "imageUrl": "Resim URL",
+    "uploadFromFile": "Dosyadan yükle",
+    "imageUrlPlaceholder": "https://... veya /logo.png"
   },
   "auth": {
     "login": {
@@ -92,11 +157,21 @@
       "animationOff": "Animasyonu Kapat",
       "animationOn": "Animasyonu Aç"
     },
-    "logout": "Çıkış"
+    "logout": "Çıkış",
+    "changePassword": {
+      "error": "Şifre değiştirilemedi",
+      "success": "Başarılı"
+    },
+    "resetPassword": {
+      "successRedirect": "Şifreniz başarıyla sıfırlandı. Giriş sayfasına yönlendiriliyorsunuz...",
+      "failed": "Şifre sıfırlama işlemi başarısız oldu",
+      "error": "Şifre sıfırlama işlemi sırasında bir hata oluştu"
+    }
   },
   "navbar": {
     "VERII WMS": "VERII WMS",
-    "crm": "V3RII CRM"
+    "crm": "V3RII CRM",
+    "search_placeholder": "Hızlı arama yap..."
   },
   "nav": {
     "customersConflictInbox": "Çakışma Gelen Kutusu"
@@ -199,7 +274,23 @@
     "accessControl": "Erişim Kontrolü",
     "permissionDefinitions": "İzin Tanımları",
     "permissionGroups": "İzin Grupları",
-    "userGroupAssignments": "Kullanıcı Grup Atamaları"
+    "userGroupAssignments": "Kullanıcı Grup Atamaları",
+    "salesManagement": "Sales Management",
+    "demands": "Talepler",
+    "demandCreateWizard": "Yeni Talep Oluştur",
+    "waitingApprovalDemands": "Onay Bekleyen Talepler",
+    "demandList": "Talep Listesi",
+    "proposals": "Proposals",
+    "waitingApprovals": "Pending Approvals",
+    "quotationList": "Quotation List",
+    "orderCreateWizard": "Yeni Sipariş Oluştur",
+    "waitingApprovalOrders": "Onay Bekleyen Siparişler",
+    "orderList": "Sipariş Listesi",
+    "productAndStock": "Products & Stock",
+    "reportsList": "Liste",
+    "reportsCreate": "Yeni Oluştur",
+    "definitions": "Definitions",
+    "users": "Users"
   },
   "pdfReportDesigner": {
     "list": "Listele",
@@ -235,7 +326,132 @@
     "updateFailed": "Şablon güncellenemedi",
     "saveFailed": "Şablon kaydedilemedi",
     "undo": "Geri al",
-    "redo": "Yinele"
+    "redo": "Yinele",
+    "draftRestored": "Taslak geri yüklendi",
+    "draftRestoreFailed": "Taslak yüklenemedi",
+    "draftFound": "Taslak bulundu. Geri yükleyebilir veya temizleyebilirsiniz.",
+    "restoreDraft": "Geri yükle",
+    "discardDraft": "Temizle",
+    "snapToGrid": "Izgaraya hizala"
+  },
+  "reportDesigner": {
+    "ruleType": {
+      "demand": "Talep",
+      "quotation": "Teklif",
+      "order": "Sipariş"
+    },
+    "palette": {
+      "title": "Alan paleti",
+      "text": "Metin",
+      "fields": "Alanlar",
+      "tableColumns": "Tablo sütunları",
+      "exchangeRates": "Döviz kurları",
+      "addTable": "Tablo ekle",
+      "images": "Resimler",
+      "logoImage": "Logo resmi"
+    },
+    "sections": {
+      "header": "Üst bilgi",
+      "content": "İçerik",
+      "footer": "Alt bilgi"
+    },
+    "tableDropHint": "Sütun eklemek için palette'ten sürükleyin",
+    "tableSettingsHint": "Tablo sütunlarını sol palette'ten sürükleyip bu alana bırakın.",
+    "properties": {
+      "textTitle": "Metin özellikleri",
+      "fieldTitle": "Alan özellikleri",
+      "imageTitle": "Resim özellikleri",
+      "textSettings": "Metin ayarları",
+      "fieldSettings": "Alan ayarları",
+      "imageSettings": "Resim ayarları",
+      "text": "Metin",
+      "textPlaceholder": "Metin girin...",
+      "fontSize": "Yazı boyutu",
+      "fontFamily": "Yazı tipi",
+      "color": "Renk",
+      "valueLabel": "Değer / Etiket",
+      "draggedFieldPlaceholder": "Palette'ten sürüklenen alan",
+      "imageUrl": "Resim URL",
+      "imageUrlPlaceholder": "https://... veya /logo.png",
+      "uploadFromFile": "Dosyadan yükle",
+      "uploadFromFileMax2Mb": "Dosyadan yükle (max 2 MB)",
+      "selectImageMax2Mb": "Resim seç (max 2 MB)",
+      "max2MbNote": "(max 2 MB)",
+      "preview": "Önizleme",
+      "colorPlaceholder": "#374151"
+    },
+    "actions": {
+      "settings": "Ayarlar",
+      "remove": "Kaldır"
+    },
+    "defaults": {
+      "doubleClickToEdit": "Düzenlemek için çift tıklayın"
+    },
+    "list": {
+      "title": "Rapor şablonları",
+      "createNew": "Yeni oluştur",
+      "noTemplates": "Henüz şablon yok. Yeni oluştur ile ekleyebilirsiniz.",
+      "id": "ID",
+      "documentType": "Belge tipi",
+      "active": "Aktif",
+      "default": "Varsayılan",
+      "defaultBadge": "Varsayılan",
+      "action": "İşlem"
+    },
+    "form": {
+      "editTemplate": "Şablonu düzenle",
+      "newTemplate": "Yeni rapor şablonu",
+      "documentType": "Belge tipi",
+      "title": "Başlık",
+      "titlePlaceholder": "Rapor başlığını girin",
+      "setDefaultTemplate": "Varsayılan şablon yap",
+      "selectPlaceholder": "Seçin",
+      "saveFailed": "Şablon kaydedilemedi",
+      "updateFailed": "Şablon güncellenemedi",
+      "requiredDocumentType": "Belge tipi seçin",
+      "requiredTitle": "Başlık gerekli",
+      "documentIdPlaceholder": "Örn. 123"
+    },
+    "preview": {
+      "label": "Rapor şablonu",
+      "selectPlaceholder": "Şablon seçin",
+      "loading": "Yükleniyor...",
+      "defaultSuffix": " (Varsayılan)",
+      "generating": "Rapor oluşturuluyor...",
+      "iframeTitle": "Rapor önizleme",
+      "loadFailed": "PDF yüklenemedi. Şablonu tekrar seçin veya sayfayı yenileyin.",
+      "emptyDemand": "Talep şablonu bulunamadı",
+      "emptyQuotation": "Teklif şablonu bulunamadı",
+      "emptyOrder": "Sipariş şablonu bulunamadı"
+    },
+    "inspector": {
+      "title": "Denetleyici",
+      "selectHint": "Öğe seçin veya birden fazla seçiliyse konum/boyut güncellenmez.",
+      "zIndex": "Z sırası",
+      "zIndexPlaceholder": "auto",
+      "rotation": "Döndürme (°)",
+      "alignment": "Hizalama",
+      "left": "Sol",
+      "center": "Orta",
+      "right": "Sağ",
+      "background": "Arka plan",
+      "backgroundPlaceholder": "transparent",
+      "opacity": "Opaklık (0-1)"
+    },
+    "layers": {
+      "title": "Katmanlar",
+      "bringForward": "Öne getir",
+      "sendBackward": "Arkaya gönder",
+      "show": "Göster",
+      "hide": "Gizle",
+      "lock": "Kilitle",
+      "unlock": "Kilidi aç",
+      "noItems": "Henüz öğe yok. Palette'ten sürükleyin.",
+      "tableLabel": "Tablo ({{count}} sütun)",
+      "textLabel": "Metin",
+      "fieldLabel": "Alan",
+      "imageLabel": "Resim"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -304,7 +520,8 @@
         "twoDaysAgo": "2 Gün önce",
         "threeDaysAgo": "3 Gün önce"
       }
-    }
+    },
+    "user": "Kullanıcı"
   },
   "customer360": {
     "title": "Müşteri 360",
@@ -1446,7 +1663,9 @@
     "viewAll": "Tüm bildirimleri görüntüle",
     "loading": "Yükleniyor...",
     "disconnected": "Bağlantı kesildi",
-    "notifications": "Bildirimler"
+    "notifications": "Bildirimler",
+    "close": "Kapat",
+    "unread": "Okunmadı"
   },
   "titleManagement": {
     "menu": "Ünvan Yönetimi",
@@ -1480,11 +1699,14 @@
       "titleName.maxLength": "Ünvan adı en fazla 100 karakter olabilir",
       "code": "Kod",
       "codePlaceholder": "Kod girin (opsiyonel)",
-      "code.maxLength": "Kod en fazla 10 karakter olabilir"
+      "code.maxLength": "Kod en fazla 10 karakter olabilir",
+      "cancel": "İptal"
     },
     "delete": {
       "confirmTitle": "Ünvanı Sil",
-      "confirmMessage": "{{titleName}} ünvanını silmek istediğinizden emin misiniz?"
+      "confirmMessage": "{{titleName}} ünvanını silmek istediğinizden emin misiniz?",
+      "title": "Ünvanı Sil",
+      "confirm": "{{name}} ünvanını silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
     },
     "messages": {
       "createSuccess": "Ünvan başarıyla oluşturuldu",
@@ -1493,7 +1715,12 @@
       "updateError": "Ünvan güncellenemedi",
       "deleteSuccess": "Ünvan başarıyla silindi",
       "deleteError": "Ünvan silinemedi"
-    }
+    },
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "search": "Hızlı Ara...",
+    "loading": "Yükleniyor...",
+    "noData": "Kayıt Bulunamadı"
   },
   "salesTypeManagement": {
     "menu": "Satış Tipi Yönetimi",
@@ -1538,7 +1765,8 @@
       "createdDate": "Oluşturulma Tarihi",
       "createdBy": "Oluşturan Kullanıcı",
       "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "page": "Sayfa {{current}} / {{total}}",
+      "actions": "İşlemler"
     },
     "form": {
       "addTitle": "Yeni Onay Rol Grubu Ekle",
@@ -1552,7 +1780,8 @@
     },
     "delete": {
       "confirmTitle": "Onay Rol Grubunu Sil",
-      "confirmMessage": "{{name}} onay rol grubunu silmek istediğinizden emin misiniz?"
+      "confirmMessage": "{{name}} onay rol grubunu silmek istediğinizden emin misiniz?",
+      "title": "Rol Grubunu Sil"
     },
     "messages": {
       "createSuccess": "Onay rol grubu başarıyla oluşturuldu",
@@ -1561,7 +1790,13 @@
       "updateError": "Onay rol grubu güncellenemedi",
       "deleteSuccess": "Onay rol grubu başarıyla silindi",
       "deleteError": "Onay rol grubu silinemedi"
-    }
+    },
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "searchPlaceholder": "Ara...",
+    "refresh": "Yenile",
+    "noData": "Kayıt Bulunamadı"
   },
   "approvalUserRole": {
     "menu": "Onay Kullanıcı Rolü Yönetimi",
@@ -1574,7 +1809,8 @@
       "createdDate": "Oluşturulma Tarihi",
       "createdBy": "Oluşturan Kullanıcı",
       "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "page": "Sayfa {{current}} / {{total}}",
+      "actions": "İşlemler"
     },
     "form": {
       "addTitle": "Yeni Onay Kullanıcı Rolü Ekle",
@@ -1588,11 +1824,15 @@
       "approvalRoleId": "Onay Rolü",
       "selectApprovalRole": "Onay Rolü Seçin",
       "noApprovalRoleSelected": "Onay rolü seçilmedi",
-      "approvalRoleId.required": "Onay rolü seçimi zorunludur"
+      "approvalRoleId.required": "Onay rolü seçimi zorunludur",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet"
     },
     "delete": {
       "confirmTitle": "Onay Kullanıcı Rolünü Sil",
-      "confirmMessage": "Bu onay kullanıcı rolünü silmek istediğinizden emin misiniz?"
+      "confirmMessage": "Bu onay kullanıcı rolünü silmek istediğinizden emin misiniz?",
+      "title": "Rolü Sil"
     },
     "messages": {
       "createSuccess": "Onay kullanıcı rolü başarıyla oluşturuldu",
@@ -1601,7 +1841,10 @@
       "updateError": "Onay kullanıcı rolü güncellenemedi",
       "deleteSuccess": "Onay kullanıcı rolü başarıyla silindi",
       "deleteError": "Onay kullanıcı rolü silinemedi"
-    }
+    },
+    "searchPlaceholder": "Ara...",
+    "refresh": "Yenile",
+    "noData": "Kayıt Bulunamadı"
   },
   "approvalRole": {
     "menu": "Onay Rolü Yönetimi",
@@ -1614,7 +1857,12 @@
       "createdDate": "Oluşturulma Tarihi",
       "createdBy": "Oluşturan Kullanıcı",
       "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "page": "Sayfa {{current}} / {{total}}",
+      "maxAmount": "Maksimum Tutar",
+      "actions": "İşlemler",
+      "totalRecords": "Toplam <span class=",
+      "previous": "Önceki",
+      "next": "Sonraki"
     },
     "form": {
       "addTitle": "Yeni Onay Rolü Ekle",
@@ -1628,11 +1876,19 @@
       "name": "Rol Adı",
       "namePlaceholder": "Rol adını girin",
       "name.required": "Rol adı zorunludur",
-      "name.maxLength": "Rol adı en fazla 100 karakter olabilir"
+      "name.maxLength": "Rol adı en fazla 100 karakter olabilir",
+      "maxAmount": "Maksimum Tutar",
+      "maxAmountPlaceholder": "Maksimum tutarı girin",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet"
     },
     "delete": {
       "confirmTitle": "Onay Rolünü Sil",
-      "confirmMessage": "{{name}} onay rolünü silmek istediğinizden emin misiniz?"
+      "confirmMessage": "{{name}} onay rolünü silmek istediğinizden emin misiniz?",
+      "cancelButton": "İptal",
+      "deleting": "Siliniyor...",
+      "confirmButton": "Evet, Sil"
     },
     "messages": {
       "createSuccess": "Onay rolü başarıyla oluşturuldu",
@@ -1641,7 +1897,11 @@
       "updateError": "Onay rolü güncellenemedi",
       "deleteSuccess": "Onay rolü başarıyla silindi",
       "deleteError": "Onay rolü silinemedi"
-    }
+    },
+    "searchPlaceholder": "Ara...",
+    "refresh": "Yenile",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok"
   },
   "approvalFlow": {
     "menu": "Onay Akışı Yönetimi",
@@ -1650,7 +1910,9 @@
     "documentType": {
       "offer": "Teklif",
       "request": "Talep",
-      "order": "Sipariş"
+      "order": "Sipariş",
+      "demand": "Talep",
+      "quotation": "Teklif"
     },
     "table": {
       "id": "ID",
@@ -1660,7 +1922,8 @@
       "createdDate": "Oluşturulma Tarihi",
       "createdBy": "Oluşturan Kullanıcı",
       "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "page": "Sayfa {{current}} / {{total}}",
+      "actions": "İşlemler"
     },
     "form": {
       "addTitle": "Yeni Onay Akışı Ekle",
@@ -1675,11 +1938,16 @@
       "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
       "description.maxLength": "Açıklama en fazla 200 karakter olabilir",
       "isActive": "Aktif",
-      "isActiveDescription": "Onay akışının aktif durumu"
+      "isActiveDescription": "Onay akışının aktif durumu",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet"
     },
     "delete": {
       "confirmTitle": "Onay Akışını Sil",
-      "confirmMessage": "Bu onay akışını silmek istediğinizden emin misiniz?"
+      "confirmMessage": "Bu onay akışını silmek istediğinizden emin misiniz?",
+      "title": "Onay Akışını Sil",
+      "confirm": "Bu onay akışını silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
     },
     "messages": {
       "createSuccess": "Onay akışı başarıyla oluşturuldu",
@@ -1688,7 +1956,11 @@
       "updateError": "Onay akışı güncellenemedi",
       "deleteSuccess": "Onay akışı başarıyla silindi",
       "deleteError": "Onay akışı silinemedi"
-    }
+    },
+    "active": "Aktif",
+    "inactive": "Pasif",
+    "loading": "Yükleniyor...",
+    "noData": "Kayıt Bulunamadı"
   },
   "userManagement": {
     "menu": "Kullanıcı Yönetimi",
@@ -1698,7 +1970,8 @@
       "totalUsers": "Toplam Kullanıcı",
       "activeUsers": "Aktif Kullanıcı",
       "newThisMonth": "Bu Ay Yeni",
-      "confirmedUsers": "Onaylı Kullanıcı"
+      "confirmedUsers": "Onaylı Kullanıcı",
+      "loading": "Yükleniyor..."
     },
     "table": {
       "id": "ID",
@@ -1712,7 +1985,11 @@
       "inactive": "Pasif",
       "confirmed": "Onaylı",
       "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "page": "Sayfa {{current}} / {{total}}",
+      "loading": "Yükleniyor...",
+      "noData": "Veri yok",
+      "previous": "Önceki",
+      "next": "Sonraki"
     },
     "form": {
       "addUser": "Yeni Kullanıcı Ekle",
@@ -1820,7 +2097,8 @@
       "createdDate": "Oluşturulma Tarihi",
       "createdBy": "Oluşturan",
       "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "page": "Sayfa {{current}} / {{total}}",
+      "noData": "Kayıt Bulunamadı"
     },
     "form": {
       "addCountry": "Yeni Ülke Ekle",
@@ -1838,7 +2116,12 @@
       "code.required": "Ülke kodu gereklidir",
       "code.minLength": "Ülke kodu en az 2 karakter olmalıdır",
       "code.maxLength": "Ülke kodu en fazla 5 karakter olabilir",
-      "erpCode.maxLength": "ERP kodu en fazla 10 karakter olabilir"
+      "erpCode.maxLength": "ERP kodu en fazla 10 karakter olabilir",
+      "tabs": {
+        "header": "Genel Bilgiler"
+      },
+      "cancel": "İptal",
+      "save": "Kaydet"
     },
     "delete": {
       "confirmTitle": "Ülkeyi Sil",
@@ -1851,7 +2134,11 @@
       "updateError": "Ülke güncellenemedi",
       "deleteSuccess": "Ülke başarıyla silindi",
       "deleteError": "Ülke silinemedi"
-    }
+    },
+    "searchPlaceholder": "Hızlı Ara...",
+    "loading": "Yükleniyor...",
+    "deleteTitle": "Ülkeyi Sil",
+    "deleteConfirmation": "{{name}} isimli ülkeyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
   },
   "cityManagement": {
     "menu": "Şehir Yönetimi",
@@ -1886,11 +2173,19 @@
       "name.required": "Şehir adı gereklidir",
       "name.maxLength": "Şehir adı en fazla 100 karakter olabilir",
       "country.required": "Ülke seçimi gereklidir",
-      "erpCode.maxLength": "ERP kodu en fazla 10 karakter olabilir"
+      "erpCode.maxLength": "ERP kodu en fazla 10 karakter olabilir",
+      "tabs": {
+        "header": "Genel Bilgiler"
+      },
+      "searchCountry": "Ülke ara...",
+      "cancel": "İptal",
+      "save": "Kaydet"
     },
     "delete": {
       "confirmTitle": "Şehri Sil",
-      "confirmMessage": "{{name}} şehrini silmek istediğinizden emin misiniz?"
+      "confirmMessage": "{{name}} şehrini silmek istediğinizden emin misiniz?",
+      "success": "Şehir başarıyla silindi",
+      "error": "Şehir silinirken bir hata oluştu"
     },
     "messages": {
       "createSuccess": "Şehir başarıyla oluşturuldu",
@@ -1899,7 +2194,11 @@
       "updateError": "Şehir güncellenemedi",
       "deleteSuccess": "Şehir başarıyla silindi",
       "deleteError": "Şehir silinemedi"
-    }
+    },
+    "searchPlaceholder": "Hızlı Ara...",
+    "loading": "Loading...",
+    "noData": "Veri yok",
+    "actions": "İşlemler"
   },
   "districtManagement": {
     "menu": "İlçe Yönetimi",
@@ -1918,7 +2217,9 @@
       "createdDate": "Oluşturulma Tarihi",
       "createdBy": "Oluşturan",
       "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "page": "Sayfa {{current}} / {{total}}",
+      "city": "Şehir",
+      "status": "Durum"
     },
     "form": {
       "addDistrict": "Yeni İlçe Ekle",
@@ -1934,11 +2235,14 @@
       "name.required": "İlçe adı gereklidir",
       "name.maxLength": "İlçe adı en fazla 100 karakter olabilir",
       "city.required": "Şehir seçimi gereklidir",
-      "erpCode.maxLength": "ERP kodu en fazla 10 karakter olabilir"
+      "erpCode.maxLength": "ERP kodu en fazla 10 karakter olabilir",
+      "searchCity": "Şehir ara..."
     },
     "delete": {
       "confirmTitle": "İlçeyi Sil",
-      "confirmMessage": "{{name}} ilçesini silmek istediğinizden emin misiniz?"
+      "confirmMessage": "{{name}} ilçesini silmek istediğinizden emin misiniz?",
+      "success": "İlçe başarıyla silindi",
+      "error": "İlçe silinirken bir hata oluştu"
     },
     "messages": {
       "createSuccess": "İlçe başarıyla oluşturuldu",
@@ -1947,6 +2251,1834 @@
       "updateError": "İlçe güncellenemedi",
       "deleteSuccess": "İlçe başarıyla silindi",
       "deleteError": "İlçe silinemedi"
+    },
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet"
+  },
+  "currencySelectDialog": {
+    "title": "Para Birimi Seç",
+    "searchPlaceholder": "Döviz adı veya kodu ile ara...",
+    "loading": "Yükleniyor...",
+    "noResults": "Sonuç bulunamadı"
+  },
+  "customerSelectDialog": {
+    "loading": "Yükleniyor...",
+    "noResults": "Arama sonucu bulunamadı",
+    "title": "Müşteri Seç",
+    "description": "İşlem yapmak istediğiniz müşteriyi seçin",
+    "searchPlaceholder": "İsim, kod veya telefon ile ara...",
+    "erpCustomers": "ERP",
+    "potentialCustomers": "Potansiyel",
+    "allCustomers": "Tümü"
+  },
+  "menu": "Hangfire Monitoring",
+  "roles": {
+    "admin": "Yönetici"
+  },
+  "quotation": {
+    "notes": {
+      "title": "Ek Notlar ve Koşullar",
+      "description": "Belgenize eklemek istediğiniz notları düzenleyin ve seçin.",
+      "placeholder": "Not içeriği...",
+      "maxLengthError": "Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.",
+      "maxCountError": "En fazla 15 not eklenebilir.",
+      "saved": "Notlar kaydedildi.",
+      "saveError": "Notlar kaydedilirken bir hata oluştu.",
+      "noteLabel": "Not",
+      "saving": "Kaydediliyor..."
+    },
+    "select": "Seçiniz",
+    "header": {
+      "projectCode": "Proje Kodu",
+      "projectCodePlaceholder": "Proje kodu seçiniz...",
+      "descriptionPlaceholder": "Özel koşullar...",
+      "mainInfo": "Müşteri & Satış Bilgileri",
+      "customer": "Müşteri Hesabı",
+      "selectCustomer": "Müşteri ara veya seç...",
+      "tryDifferentSearch": "Farklı bir arama terimi deneyin",
+      "representative": "Satış Temsilcisi",
+      "shippingAddress": "Sevk Adresi",
+      "selectShippingAddress": "Sevk adresi seçin",
+      "currencyChange": {
+        "title": "Kur Değişikliği",
+        "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
+      }
+    },
+    "exchangeRates": {
+      "dialog": {
+        "title": "Döviz Kurları",
+        "subtitle": "Güncel kur değerlerini yönetin",
+        "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin.",
+        "info": "Burada yapılan değişiklikler sadece bu teklif için geçerlidir ve genel sistem kurlarını etkilemez. Değiştirilen kurlar "
+      },
+      "currency": "Para Birimi",
+      "rate": "Kur Değeri",
+      "status": "Durum",
+      "empty": "Kur bulunamadı",
+      "official": "Resmi",
+      "custom": "Özel",
+      "cannotEditUsedCurrency": "Kullanımda olan kur değiştirilemez",
+      "title": "Döviz Kurları",
+      "date": "Kur Tarihi",
+      "isOfficial": "Resmi",
+      "updateSuccess": "Döviz kurları güncellendi",
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+    },
+    "loading": "Kurlar yükleniyor...",
+    "actions": "İşlemler",
+    "edit": "Düzenle",
+    "cancel": "Vazgeç",
+    "saving": "Kaydediliyor...",
+    "saveAndApply": "Kaydet ve Uygula",
+    "approvalFlow": {
+      "stepCompleted": "Tamamlandı",
+      "stepInProgress": "Devam ediyor",
+      "stepRejected": "Reddedildi",
+      "stepNotStarted": "Başlamadı",
+      "loading": "Onay akışı yükleniyor...",
+      "noData": "Veri bulunamadı.",
+      "notStarted": "Henüz onay süreci başlatılmamış."
+    },
+    "create": {
+      "title": "Yeni Teklif Oluştur",
+      "error": "Teklif Oluşturulamadı",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Teklif Başarıyla Oluşturuldu",
+      "successMessage": "Teklif onay sürecine gönderildi.",
+      "errorMessage": "Teklif oluşturulurken bir hata oluştu.",
+      "validationError": "Lütfen form alanlarını kontrol ediniz.",
+      "subtitle": "Müşteri ve kalem bilgilerini girerek teklifi oluşturun"
+    },
+    "lines": {
+      "required": "En az 1 satır eklenmelidir",
+      "productCode": "Ürün Kodu",
+      "productName": "Ürün Adı",
+      "quantity": "Miktar",
+      "unitPrice": "Birim Fiyat",
+      "vatRate": "KDV",
+      "total": "Toplam",
+      "stock": "Stok Seçimi",
+      "unit": "Birim",
+      "discounts": "Satır İndirimleri",
+      "relatedStocks": "Bağlı Stoklar",
+      "netPrice": "Net Fiyat",
+      "lineTotal": "Toplam",
+      "description": "Açıklama",
+      "requiredFieldsMissing": "Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.",
+      "title": "Teklif Kalemleri",
+      "itemCount": "{count} kalem ürün listeleniyor",
+      "noItems": "Henüz ürün eklenmedi",
+      "add": "Satır Ekle",
+      "empty": "Sepetiniz Boş",
+      "emptyDescription": "Teklif oluşturmak için ",
+      "discount1": "İnd.1",
+      "discount2": "İnd.2",
+      "discount3": "İnd.3",
+      "addTitle": "Yeni Satır Ekle",
+      "editTitle": "Satır Düzenle",
+      "delete": {
+        "confirmTitleMultiple": "Bağlı Stokları Sil",
+        "confirmTitle": "Satırı Sil",
+        "confirmMessageMultiple": "Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.",
+        "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?"
+      },
+      "createSuccess": "Satırlar eklendi",
+      "createError": "Satırlar eklenirken bir hata oluştu",
+      "deleteSuccess": "Satır silindi",
+      "deleteError": "Satır silinirken bir hata oluştu",
+      "updateSuccess": "Satırlar güncellendi",
+      "updateError": "Satırlar güncellenirken bir hata oluştu"
+    },
+    "date": "Tarih",
+    "share": {
+      "whatsappMessage": "Merhaba, teklif dosyasını iletiyorum.",
+      "downloaded": "PDF indirildi. Lütfen WhatsApp üzerinden paylaşınız.",
+      "mailSubject": "Teklif Dosyası",
+      "mailBody": "Merhaba, ekte teklif dosyasını bulabilirsiniz."
+    },
+    "sections": {
+      "header": "Müşteri ve belge bilgileri",
+      "lines": "Teklif kalemleri",
+      "summary": "Özet & Toplamlar"
+    },
+    "export": "Dışa Aktar",
+    "exportPdf": "PDF İndir",
+    "shareWhatsapp": "WhatsApp ile Paylaş",
+    "shareMail": "E-posta ile Paylaş",
+    "save": "Teklifi Kaydet",
+    "detail": {
+      "title": "Teklif Detayı: {{offerNo}}",
+      "notFound": "Teklif bulunamadı",
+      "subtitle": "Teklif detaylarını görüntüleyin ve düzenleyin.",
+      "revisionNo": "Revizyon No",
+      "tabDetail": "Teklif Bilgileri",
+      "tabApprovalFlow": "Onay Akışı",
+      "tabReport": "Rapor"
+    },
+    "offerNo": "Teklif No",
+    "update": {
+      "error": "Teklif Güncellenemedi",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Teklif Başarıyla Güncellendi",
+      "successMessage": "Teklif başarıyla güncellendi.",
+      "errorMessage": "Teklif güncellenirken bir hata oluştu.",
+      "validationError": "Lütfen zorunlu alanları kontrol ediniz."
+    },
+    "backToQuotations": "Tekliflere Dön",
+    "approval": {
+      "sending": "Gönderiliyor...",
+      "sendForApproval": "Onaya Gönder",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "rejectTitle": "Teklifi Reddet",
+      "rejectDescription": "Red sebebini belirtiniz (opsiyonel)",
+      "rejectReasonPlaceholder": "Red sebebi...",
+      "approveSuccess": "Onay işlemi başarıyla gerçekleştirildi",
+      "approveError": "Onay işlemi gerçekleştirilemedi",
+      "rejectSuccess": "Red işlemi başarıyla gerçekleştirildi",
+      "rejectError": "Red işlemi gerçekleştirilemedi",
+      "startSuccess": "Onay akışı başarıyla başlatıldı",
+      "startError": "Onay akışı başlatılamadı"
+    },
+    "add": "Ekle",
+    "guide": "Rehber",
+    "confirm": "Onayla",
+    "error": "Hata",
+    "delete": "Sil",
+    "list": {
+      "title": "Teklif Listesi",
+      "description": "Tüm teklifleri görüntüleyin ve yönetin",
+      "createNew": "Yeni Teklif Oluştur",
+      "searchPlaceholder": "Teklif no veya müşteri adı ile ara...",
+      "id": "ID",
+      "offerNo": "Teklif No",
+      "customer": "Müşteri",
+      "representative": "Temsilci",
+      "offerDate": "Teklif Tarihi",
+      "currency": "Para Birimi",
+      "grandTotal": "Genel Toplam",
+      "status": "Durum",
+      "actions": "İşlemler",
+      "revise": "Revize et",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "refresh": "Yenile",
+    "summary": {
+      "title": "Özet",
+      "generalDiscountRate": "Genel İskonto Oranı (%)",
+      "generalDiscountAmount": "Genel İskonto Tutarı",
+      "generalDiscountHelp": "Oran veya tutar girildiğinde toplamlar otomatik güncellenir.",
+      "subtotal": "Ara Toplam",
+      "generalDiscount": "Genel İskonto",
+      "totalVat": "Toplam KDV",
+      "grandTotal": "Genel Toplam"
+    },
+    "noData": "Veri yok",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "waitingApprovals": {
+      "title": "Onay Bekleyen Teklifler",
+      "list": "Onay Bekleyen Teklifler Listesi",
+      "noApprovals": "Onay bekleyen teklif bulunmamaktadır",
+      "requestId": "İstek ID",
+      "description": "Açıklama",
+      "stepOrder": "Adım",
+      "approvedBy": "Onaylayan",
+      "actionDate": "Tarih",
+      "status": "Durum",
+      "waiting": "Bekliyor"
+    },
+    "back": "Geri",
+    "revision": {
+      "success": "Teklif revizyonu başarıyla oluşturuldu",
+      "error": "Teklif revizyonu oluşturulurken bir hata oluştu"
     }
+  },
+  "productSelectDialog": {
+    "stock": "STOK",
+    "group": "Grup",
+    "unit": "Birim",
+    "relatedStocks": "Bağlı Stoklar",
+    "unknownStock": "Bilinmeyen Stok",
+    "quantity": "Miktar",
+    "mandatory": "Zorunlu",
+    "loading": "Yükleniyor...",
+    "noResults": "Arama sonucu bulunamadı",
+    "noProducts": "Stok bulunamadı",
+    "title": "Stok Seç",
+    "searchPlaceholder": "Stok kodu veya adı ile ara...",
+    "voiceSearch": "Sesli arama",
+    "cardView": "Kart Görünümü",
+    "listView": "Liste Görünümü",
+    "stocks": "Stoklar",
+    "stocksWithImages": "Görselli Stoklar"
+  },
+  "relatedStocksSelectionDialog": {
+    "title": "Bağlı Stokları Seçin",
+    "description": "Ana stok ile birlikte eklemek istediğiniz bağlı stokları seçin. Zorunlu stoklar otomatik olarak seçilidir.",
+    "mandatoryStocks": "Zorunlu Stoklar",
+    "unknownStock": "Bilinmeyen Stok",
+    "quantity": "Miktar",
+    "mandatory": "Zorunlu",
+    "optionalStocks": "Opsiyonel Stoklar",
+    "noRelatedStocks": "Bağlı stok bulunamadı",
+    "cancel": "İptal",
+    "calculating": "Hesaplanıyor...",
+    "add": "Ekle"
+  },
+  "stockGroupSelectDialog": {
+    "title": "Stok Grubu Seç",
+    "searchPlaceholder": "Grup kodu veya adı ile ara...",
+    "loading": "Yükleniyor...",
+    "noResults": "Sonuç bulunamadı",
+    "unnamedGroup": "İsimsiz Grup"
+  },
+  "activityManagement": {
+    "edit": "Aktivite Düzenle",
+    "create": "Yeni Aktivite",
+    "editDescription": "Aktivite bilgilerini düzenleyin",
+    "createDescription": "Yeni aktivite bilgilerini girin",
+    "detailsTab": "Detaylar",
+    "imagesTab": "Resimler",
+    "basicInfo": "Temel bilgiler",
+    "subject": "Konu",
+    "enterSubject": "Örn: Proje Toplantısı",
+    "activityType": "Tip",
+    "select": "Seç",
+    "status": "Durum",
+    "activityDate": "Başlangıç",
+    "endDate": "Bitiş",
+    "priority": "Öncelik",
+    "allDay": "Tüm Gün",
+    "relations": "Müşteri & ilişkiler",
+    "customer": "Müşteri",
+    "selectCustomer": "Müşteri seçin",
+    "contactId": "İletişim",
+    "noContactSelected": "Seçilmedi",
+    "selectCustomerFirst": "Önce müşteri seçin",
+    "assignedUser": "Atanan Kullanıcı",
+    "noUserSelected": "Seçilmedi",
+    "details": "Detay",
+    "description": "Açıklama",
+    "enterDescription": "Aktivite detaylarını girin...",
+    "reminders": "Hatırlatmalar",
+    "noReminder": "Hatırlatma eklenmedi",
+    "validationError": "Lütfen zorunlu alanları doldurun",
+    "title": "Aktivite Yönetimi",
+    "priorityLow": "Düşük",
+    "priorityMedium": "Orta",
+    "priorityHigh": "Yüksek",
+    "statusScheduled": "Planlandı",
+    "statusCompleted": "Tamamlandı",
+    "statusCanceled": "İptal Edildi",
+    "id": "ID",
+    "contact": "Kişi",
+    "deleteActivity": "Aktiviteyi Sil",
+    "deleteConfirmation": "Bu aktiviteyi silmek istediğinizden emin misiniz?",
+    "createSuccess": "Aktivite başarıyla oluşturuldu",
+    "createError": "Aktivite oluşturulurken bir hata oluştu",
+    "deleteSuccess": "Aktivite başarıyla silindi",
+    "deleteError": "Aktivite silinirken bir hata oluştu",
+    "updateSuccess": "Aktivite başarıyla güncellendi",
+    "updateError": "Aktivite güncellenirken bir hata oluştu"
+  },
+  "status": {
+    "active": "Aktif",
+    "inactive": "Pasif"
+  },
+  "activityType": {
+    "form": {
+      "editTitle": "Aktivite Tipi Düzenle",
+      "addTitle": "Yeni Aktivite Tipi Ekle",
+      "editDescription": "Aktivite tipi bilgilerini güncelleyin",
+      "addDescription": "Yeni aktivite tipi kaydı oluşturun",
+      "name": "Aktivite Tipi Adı",
+      "namePlaceholder": "Örn: Toplantı, Ziyaret...",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Açıklama girin (opsiyonel)"
+    },
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "management": {
+      "title": "Aktivite Tipi Yönetimi",
+      "description": "Aktivite tiplerini yönetin ve düzenleyin"
+    },
+    "create": "Yeni Aktivite Tipi",
+    "loading": "Yükleniyor...",
+    "stats": {
+      "totalActivityTypes": "Toplam Aktivite Tipi",
+      "activeActivityTypes": "Aktif Aktivite Tipi",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Aktivite Tipi",
+      "description": "Açıklama",
+      "createdDate": "Oluşturulma",
+      "createdBy": "Oluşturan",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "delete": {
+      "confirmTitle": "Aktivite Tipini Sil",
+      "confirmMessage": "{{name}} aktivite tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "action": "Evet, Sil"
+    },
+    "messages": {
+      "createSuccess": "Aktivite tipi başarıyla oluşturuldu",
+      "createError": "Aktivite tipi oluşturulamadı",
+      "deleteSuccess": "Aktivite tipi başarıyla silindi",
+      "deleteError": "Aktivite tipi silinemedi",
+      "updateSuccess": "Aktivite tipi başarıyla güncellendi",
+      "updateError": "Aktivite tipi güncellenemedi"
+    }
+  },
+  "approval": {
+    "approve": {
+      "success": "Onaylandı",
+      "successMessage": "Teklif başarıyla onaylandı",
+      "errorMessage": "Teklif onaylanırken bir hata oluştu",
+      "error": "Onay Hatası"
+    },
+    "reject": {
+      "success": "Reddedildi",
+      "successMessage": "Teklif reddedildi",
+      "errorMessage": "Teklif reddedilirken bir hata oluştu",
+      "error": "Red Hatası"
+    },
+    "note": {
+      "label": "Not",
+      "placeholder": "Onay/red notu ekleyebilirsiniz (opsiyonel)"
+    },
+    "processing": "İşleniyor...",
+    "actions": {
+      "reject": "Reddet",
+      "approve": "Onayla",
+      "view": "Görüntüle"
+    },
+    "detail": {
+      "title": "Teklif Detayı",
+      "subtitle": "Teklif detaylarını görüntüleyin ve işlem yapın",
+      "tabs": {
+        "detail": "Detay",
+        "history": "Geçmiş",
+        "action": "İşlem"
+      },
+      "notFound": "Teklif bulunamadı",
+      "quotationInfo": "Teklif Bilgileri",
+      "offerNo": "Teklif No",
+      "customer": "Müşteri",
+      "representative": "Temsilci",
+      "currency": "Para Birimi",
+      "offerDate": "Teklif Tarihi",
+      "deliveryDate": "Teslimat Tarihi",
+      "total": "Toplam",
+      "grandTotal": "Genel Toplam",
+      "description": "Açıklama",
+      "lines": "Teklif Satırları",
+      "productCode": "Ürün Kodu",
+      "productName": "Ürün Adı",
+      "quantity": "Miktar",
+      "unitPrice": "Birim Fiyat",
+      "lineTotal": "Satır Toplamı",
+      "lineGrandTotal": "Satır Genel Toplamı",
+      "exchangeRates": "Döviz Kurları",
+      "exchangeRate": "Kur",
+      "exchangeRateDate": "Kur Tarihi",
+      "isOfficial": "Resmi Kur"
+    },
+    "level": {
+      "salesManager": "Satış Müdürü",
+      "regionalManager": "Bölge Müdürü",
+      "finance": "Finans",
+      "generalManager": "Genel Müdür",
+      "unknown": "Bilinmiyor"
+    },
+    "history": {
+      "empty": "Onay geçmişi bulunmuyor",
+      "approvedBy": "Onaylayan"
+    },
+    "assignedTo": "Atanan Kullanıcı",
+    "list": {
+      "title": "Bekleyen Onaylar",
+      "error": "Onaylar yüklenirken bir hata oluştu",
+      "empty": "Bekleyen onay bulunmuyor",
+      "description": "Size atanan teklifleri görüntüleyip onaylayabilir veya reddedebilirsiniz"
+    },
+    "status": {
+      "notRequired": "Gerekli Değil",
+      "waiting": "Bekliyor",
+      "approved": "Onaylandı",
+      "rejected": "Reddedildi",
+      "closed": "Kapandı"
+    },
+    "yes": "Evet",
+    "no": "Hayır",
+    "closedReason": "Kapanış Nedeni",
+    "statusFilterLabel": "Onay durumu"
+  },
+  "approvalFlowStep": {
+    "messages": {
+      "deleteConfirm": "Bu adımı silmek istediğinizden emin misiniz?",
+      "createSuccess": "Akış adımı başarıyla eklendi",
+      "createError": "Akış adımı eklenemedi",
+      "deleteSuccess": "Akış adımı başarıyla silindi",
+      "deleteError": "Akış adımı silinemedi",
+      "updateSuccess": "Akış adımı başarıyla güncellendi",
+      "updateError": "Akış adımı güncellenemedi"
+    },
+    "title": "Akış Adımları",
+    "addButton": "Adım Ekle",
+    "empty": "Henüz adım eklenmemiş",
+    "unknownRoleGroup": "Rol Grubu Yok",
+    "stepDescription": "Onay Sırası: {order}",
+    "form": {
+      "editTitle": "Adım Düzenle",
+      "addTitle": "Yeni Adım Ekle",
+      "editDescription": "Akış adımı bilgilerini düzenleyin",
+      "addDescription": "Yeni akış adımı ekleyin",
+      "approvalRoleGroup": "Rol Grubu",
+      "selectRoleGroup": "Rol grubu seçin",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet"
+    }
+  },
+  "contactManagement": {
+    "form": {
+      "editContact": "İletişim Düzenle",
+      "addContact": "Yeni İletişim Ekle",
+      "firstName": "Ad",
+      "firstNamePlaceholder": "Örn: Ali",
+      "salutation": "Hitap",
+      "selectSalutation": "Hitap seçiniz...",
+      "salutationNone": "Yok",
+      "salutationMr": "Bay",
+      "salutationMs": "Bayan",
+      "salutationMrs": "Sayın",
+      "salutationDr": "Dr.",
+      "lastName": "Soyad",
+      "lastNamePlaceholder": "Örn: Yılmaz",
+      "middleName": "İkinci Ad",
+      "middleNamePlaceholder": "Örn: Kemal",
+      "title": "Ünvan",
+      "selectTitle": "Ünvan seçiniz (opsiyonel)...",
+      "titleNone": "Ünvan yok",
+      "customer": "Müşteri",
+      "selectCustomer": "Müşteri seçiniz...",
+      "mobile": "Mobil",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "notes": "Notlar",
+      "notesPlaceholder": "Varsa notlarınızı buraya ekleyin..."
+    },
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "menu": "İletişim Yönetimi",
+    "description": "İletişimleri yönetin ve düzenleyin",
+    "addButton": "Yeni İletişim Ekle",
+    "columns": "Sütun Düzenle",
+    "visibleColumns": "Görünür Sütunlar",
+    "loading": "Yükleniyor...",
+    "stats": {
+      "totalContacts": "Toplam İletişim",
+      "activeContacts": "Aktif İletişim",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "table": {
+      "id": "ID",
+      "salutation": "Hitap",
+      "fullName": "Ad Soyad",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "mobile": "Mobil",
+      "customer": "Müşteri",
+      "title": "Ünvan",
+      "createdDate": "Oluşturulma",
+      "createdBy": "Oluşturan",
+      "status": "Durum",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "delete": {
+      "confirmTitle": "İletişimi Sil",
+      "confirmMessage": "{{name}} iletişimini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "action": "Evet, Sil"
+    },
+    "messages": {
+      "createSuccess": "İletişim başarıyla oluşturuldu",
+      "createError": "İletişim oluşturulamadı",
+      "deleteSuccess": "İletişim başarıyla silindi",
+      "deleteError": "İletişim silinemedi",
+      "updateSuccess": "İletişim başarıyla güncellendi",
+      "updateError": "İletişim güncellenemedi"
+    }
+  },
+  "customerManagement": {
+    "form": {
+      "editCustomer": "Müşteri Düzenle",
+      "addCustomer": "Yeni Müşteri Ekle",
+      "editDescription": "Müşteri bilgilerini güncelleyin",
+      "addDescription": "Yeni müşteri kaydı oluşturun",
+      "name": "Müşteri Adı",
+      "code": "Müşteri Kodu",
+      "customerType": "Müşteri Tipi",
+      "customerTypePlaceholder": "Müşteri tipi seçin",
+      "taxNumber": "Vergi No",
+      "taxOffice": "Vergi Dairesi",
+      "tcknNumber": "TCKN",
+      "email": "E-posta",
+      "website": "Web Sitesi",
+      "phone": "Telefon",
+      "phone2": "Telefon 2",
+      "country": "Ülke",
+      "countryPlaceholder": "Ülke seçin",
+      "city": "Şehir",
+      "cityPlaceholder": "Şehir seçin",
+      "district": "İlçe",
+      "districtPlaceholder": "İlçe seçin",
+      "creditLimit": "Kredi Limiti",
+      "salesRepCode": "Satış Temsilci Kodu",
+      "groupCode": "Grup Kodu",
+      "branchCode": {
+        "label": "Şube Kodu"
+      },
+      "businessUnitCode": {
+        "label": "İşletme Kodu"
+      },
+      "defaultShippingAddress": "Varsayılan Sevk Adresi",
+      "selectDefaultShippingAddress": "Sevk adresi seçin",
+      "none": "Yok",
+      "address": "Adres",
+      "notes": "Notlar",
+      "notesPlaceholder": "Not ekleyin...",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet"
+    },
+    "menu": "Müşteri Yönetimi",
+    "description": "Müşterilerinizi yönetin ve düzenleyin",
+    "addButton": "Yeni Müşteri Ekle",
+    "filter": {
+      "name": "Müşteri Adı ile ara...",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "customerCode": "Müşteri Kodu",
+      "taxNumber": "Vergi No",
+      "city": "Şehir"
+    },
+    "loading": "Yükleniyor...",
+    "stats": {
+      "totalCustomers": "Toplam Müşteri",
+      "approvedCustomers": "Onaylı Müşteri",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "table": {
+      "id": "ID",
+      "customerCode": "Kod",
+      "name": "Müşteri Adı",
+      "customerType": "Müşteri Tipi",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "city": "Şehir",
+      "district": "İlçe",
+      "country": "Ülke",
+      "creditLimit": "Kredi Limiti",
+      "defaultShippingAddressId": "Varsayılan Sevk Adresi",
+      "salesRep": "Temsilci",
+      "tckn": "TCKN",
+      "tax": "Vergi No",
+      "website": "Web",
+      "createdDate": "Oluşturulma",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "delete": {
+      "confirmTitle": "Müşteriyi Sil",
+      "confirmMessage": "{{name}} müşterisini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "action": "Evet, Sil"
+    },
+    "cancel": "Vazgeç",
+    "messages": {
+      "createSuccess": "Müşteri başarıyla oluşturuldu",
+      "createError": "Müşteri oluşturulamadı",
+      "deleteSuccess": "Müşteri başarıyla silindi",
+      "deleteError": "Müşteri silinemedi",
+      "updateSuccess": "Müşteri başarıyla güncellendi",
+      "updateError": "Müşteri güncellenemedi"
+    }
+  },
+  "customerTypeManagement": {
+    "form": {
+      "editCustomerType": "Müşteri Tipi Düzenle",
+      "addCustomerType": "Yeni Müşteri Tipi Ekle",
+      "name": "Müşteri Tipi Adı",
+      "namePlaceholder": "Örn: Kurumsal, Bireysel...",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Varsa açıklama giriniz...",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet"
+    },
+    "menu": "Müşteri Tipi Yönetimi",
+    "description": "Müşteri tiplerini yönetin ve düzenleyin",
+    "addButton": "Yeni Tip Ekle",
+    "table": {
+      "name": "Müşteri Tipi Adı",
+      "description": "Açıklama",
+      "id": "ID",
+      "createdDate": "Oluşturulma",
+      "createdBy": "Oluşturan",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "loading": "Yükleniyor...",
+    "stats": {
+      "totalCustomerTypes": "Toplam Müşteri Tipi",
+      "activeCustomerTypes": "Aktif Tipler",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "noData": "Veri yok",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "delete": {
+      "confirmTitle": "Müşteri Tipini Sil",
+      "confirmMessage": "{{name}} müşteri tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "deleting": "Siliniyor...",
+      "confirmButton": "Evet, Sil"
+    },
+    "messages": {
+      "createSuccess": "Müşteri tipi başarıyla oluşturuldu",
+      "createError": "Müşteri tipi oluşturulamadı",
+      "deleteSuccess": "Müşteri tipi başarıyla silindi",
+      "deleteError": "Müşteri tipi silinemedi",
+      "updateSuccess": "Müşteri tipi başarıyla güncellendi",
+      "updateError": "Müşteri tipi güncellenemedi"
+    }
+  },
+  "dailyTasks": {
+    "morning": "Günaydın",
+    "afternoon": "İyi Günler",
+    "evening": "İyi Akşamlar",
+    "unassigned": "Atanmamış",
+    "loading": "Yükleniyor...",
+    "dashboard": "Günlük Kontrol Paneli",
+    "summary": "Bugün için planlanmış işlerinizi buradan takip edebilirsiniz.",
+    "totalTasks": "Toplam Görev",
+    "newTask": "Yeni Görev Oluştur",
+    "weeklyTasks": "Kartlar",
+    "dailyList": "Liste",
+    "calendar": "Takvim",
+    "all": "Tümü",
+    "pending": "Bekleyen",
+    "completed": "Biten",
+    "allEmployees": "Personel",
+    "noTasks": "Görüntülenecek görev yok",
+    "relax": "Filtreleri değiştirmeyi veya yeni görev eklemeyi deneyin.",
+    "weekly": "Haftalık",
+    "monthly": "Aylık",
+    "thisWeek": "Bu Hafta",
+    "today": "Bugün",
+    "days": {
+      "mon": "Pzt",
+      "tue": "Sal",
+      "wed": "Çar",
+      "thu": "Per",
+      "fri": "Cum",
+      "sat": "Cmt",
+      "sun": "Paz"
+    },
+    "more": "daha"
+  },
+  "demand": {
+    "approvalFlow": {
+      "stepCompleted": "Tamamlandı",
+      "stepInProgress": "Devam ediyor",
+      "stepRejected": "Reddedildi",
+      "stepNotStarted": "Başlamadı",
+      "loading": "Onay akışı yükleniyor...",
+      "noData": "Veri bulunamadı.",
+      "notStarted": "Henüz onay süreci başlatılmamış."
+    },
+    "create": {
+      "title": "Yeni Teklif Oluştur",
+      "error": "Teklif Oluşturulamadı",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Teklif Başarıyla Oluşturuldu",
+      "successMessage": "Teklif onay sürecine gönderildi.",
+      "errorMessage": "Teklif oluşturulurken bir hata oluştu.",
+      "paymentTypeRequired": "Ödeme tipi seçilmelidir",
+      "deliveryDateRequired": "Teslimat tarihi girilmelidir",
+      "validationError": "Lütfen form alanlarını kontrol ediniz.",
+      "subtitle": "Müşteri için yeni bir satış talebi oluşturun."
+    },
+    "lines": {
+      "required": "En az 1 satır eklenmelidir",
+      "editLine": "Satır Düzenle",
+      "approvalRequired": "Onay Gerekli",
+      "selectStockFirst": "Stok seçilmedi",
+      "stock": "Stok",
+      "selectStock": "Stok Seç",
+      "productCode": "Stok Kodu",
+      "groupCode": "Grup Kodu",
+      "productName": "Stok Adı",
+      "unitPrice": "Birim Fiyat",
+      "quantity": "Miktar",
+      "vatRate": "KDV Oranı %",
+      "discounts": "İndirimler",
+      "discount1": "İndirim 1 %",
+      "discount2": "İndirim 2 %",
+      "discount3": "İndirim 3 %",
+      "calculations": "Hesaplamalar",
+      "discountAmount": "Toplam İndirim",
+      "netPrice": "Net Fiyat",
+      "lineTotal": "Satır Toplamı (KDV Dahil)",
+      "relatedStocks": "Bağlı Stoklar",
+      "requiredFieldsMissing": "Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.",
+      "title": "Teklif Kalemleri",
+      "itemCount": "{count} kalem ürün listeleniyor",
+      "noItems": "Henüz ürün eklenmedi",
+      "add": "Satır Ekle",
+      "empty": "Sepetiniz Boş",
+      "emptyDescription": "Teklif oluşturmak için ",
+      "addLine": "Yeni Satır Ekle",
+      "delete": {
+        "confirmTitleMultiple": "Bağlı Stokları Sil",
+        "confirmTitle": "Satırı Sil",
+        "confirmMessageMultiple": "Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.",
+        "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?"
+      },
+      "createSuccess": "Satırlar eklendi",
+      "createError": "Satırlar eklenirken bir hata oluştu",
+      "deleteSuccess": "Satır silindi",
+      "deleteError": "Satır silinirken bir hata oluştu",
+      "updateSuccess": "Satırlar güncellendi",
+      "updateError": "Satırlar güncellenirken bir hata oluştu"
+    },
+    "sections": {
+      "header": "Müşteri ve belge bilgileri",
+      "lines": "Talep kalemleri",
+      "summary": "Özet & Toplamlar"
+    },
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Teklifi Kaydet",
+    "detail": {
+      "title": "Teklif Detayı: {{offerNo}}",
+      "notFound": "Teklif bulunamadı",
+      "subtitle": "Talep detaylarını görüntüleyin ve düzenleyin.",
+      "revisionNo": "Revizyon No",
+      "tabDetail": "Talep Bilgileri",
+      "tabApprovalFlow": "Onay Akışı",
+      "tabReport": "Rapor"
+    },
+    "update": {
+      "error": "Teklif Güncellenemedi",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Teklif Başarıyla Güncellendi",
+      "successMessage": "Teklif başarıyla güncellendi.",
+      "errorMessage": "Teklif güncellenirken bir hata oluştu.",
+      "validationError": "Lütfen zorunlu alanları kontrol ediniz."
+    },
+    "loading": "Yükleniyor...",
+    "backToDemands": "Tekliflere Dön",
+    "approval": {
+      "sending": "Gönderiliyor...",
+      "sendForApproval": "Onaya Gönder",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "rejectTitle": "Teklifi Reddet",
+      "rejectDescription": "Red sebebini belirtiniz (opsiyonel)",
+      "rejectReasonPlaceholder": "Red sebebi...",
+      "approveSuccess": "Onay işlemi başarıyla gerçekleştirildi",
+      "approveError": "Onay işlemi gerçekleştirilemedi",
+      "rejectSuccess": "Red işlemi başarıyla gerçekleştirildi",
+      "rejectError": "Red işlemi gerçekleştirilemedi",
+      "startSuccess": "Onay akışı başarıyla başlatıldı",
+      "startError": "Onay akışı başlatılamadı"
+    },
+    "exchangeRates": {
+      "title": "Döviz Kurları",
+      "currency": "Para Birimi",
+      "rate": "Kur Değeri",
+      "date": "Kur Tarihi",
+      "isOfficial": "Resmi",
+      "official": "Resmi",
+      "custom": "Özel",
+      "empty": "Henüz eklenmiş özel kur bulunmuyor.",
+      "dialog": {
+        "title": "Döviz Kurları",
+        "subtitle": "Güncel kur değerlerini yönetin",
+        "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin.",
+        "info": "Burada yapılan değişiklikler sadece bu teklif için geçerlidir ve genel sistem kurlarını etkilemez. Değiştirilen kurlar "
+      },
+      "status": "Durum",
+      "cannotEditUsedCurrency": "Kullanımda olan kur değiştirilemez",
+      "updateSuccess": "Döviz kurları güncellendi",
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+    },
+    "select": "Seçiniz",
+    "add": "Ekle",
+    "actions": "İşlem",
+    "header": {
+      "title": "Teklif Detayları",
+      "subtitle": "Müşteri ve finansal bilgileri buradan yönetebilirsiniz.",
+      "customer": "Müşteri Hesabı",
+      "selectCustomer": "Müşteri seçiniz...",
+      "representative": "Satış Temsilcisi",
+      "shippingAddress": "Sevk Adresi",
+      "selectShippingAddress": "Sevk adresi seçin",
+      "descriptionPlaceholder": "Özel koşullar...",
+      "currencyChange": {
+        "title": "Kur Değişikliği",
+        "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
+      }
+    },
+    "confirm": "Onayla",
+    "error": "Hata",
+    "delete": "Sil",
+    "list": {
+      "title": "Teklif Listesi",
+      "description": "Tüm teklifleri görüntüleyin ve yönetin",
+      "createNew": "Yeni Teklif Oluştur",
+      "searchPlaceholder": "Teklif no veya müşteri adı ile ara...",
+      "id": "ID",
+      "offerNo": "Teklif No",
+      "customer": "Müşteri",
+      "representative": "Temsilci",
+      "offerDate": "Teklif Tarihi",
+      "currency": "Para Birimi",
+      "grandTotal": "Genel Toplam",
+      "status": "Durum",
+      "actions": "İşlemler",
+      "revise": "Revize et",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "refresh": "Yenile",
+    "summary": {
+      "title": "Özet",
+      "generalDiscountRate": "Genel İskonto Oranı (%)",
+      "generalDiscountAmount": "Genel İskonto Tutarı",
+      "generalDiscountHelp": "Oran veya tutar girildiğinde toplamlar otomatik güncellenir.",
+      "subtotal": "Ara Toplam",
+      "generalDiscount": "Genel İskonto",
+      "totalVat": "Toplam KDV",
+      "grandTotal": "Genel Toplam"
+    },
+    "noData": "Veri yok",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "edit": "Düzenle",
+    "saveAndApply": "Kaydet ve Uygula",
+    "waitingApprovals": {
+      "title": "Onay Bekleyen Teklifler",
+      "list": "Onay Bekleyen Teklifler Listesi",
+      "noApprovals": "Onay bekleyen teklif bulunmamaktadır",
+      "requestId": "İstek ID",
+      "description": "Açıklama",
+      "stepOrder": "Adım",
+      "approvedBy": "Onaylayan",
+      "actionDate": "Tarih",
+      "status": "Durum",
+      "waiting": "Bekliyor"
+    },
+    "back": "Geri",
+    "revision": {
+      "success": "Teklif revizyonu başarıyla oluşturuldu",
+      "error": "Teklif revizyonu oluşturulurken bir hata oluştu"
+    }
+  },
+  "documentSerialTypeManagement": {
+    "form": {
+      "editTitle": "Dosya Tipi Düzenle",
+      "addTitle": "Yeni Dosya Tipi Ekle",
+      "editDescription": "Dosya tipi bilgilerini düzenleyin",
+      "addDescription": "Yeni dosya tipi bilgilerini girin",
+      "ruleType": "Kural Tipi",
+      "selectRuleType": "Kural tipi seçin",
+      "customerType": "Müşteri Tipi",
+      "selectCustomerType": "Müşteri tipi seçin (opsiyonel)",
+      "searchCustomerType": "Müşteri tipi ara...",
+      "noCustomerTypeFound": "Müşteri tipi bulunamadı.",
+      "salesRep": "Satış Temsilcisi",
+      "selectSalesRep": "Satış temsilcisi seçin (opsiyonel)",
+      "searchSalesRep": "Satış temsilcisi ara...",
+      "noSalesRepFound": "Satış temsilcisi bulunamadı.",
+      "serialPrefix": "Seri Öneki",
+      "serialPrefixPlaceholder": "Seri önekini girin",
+      "serialLength": "Seri Uzunluğu",
+      "serialLengthPlaceholder": "Seri uzunluğunu girin",
+      "serialIncrement": "Seri Artış",
+      "serialIncrementPlaceholder": "Seri artış değerini girin",
+      "serialStart": "Seri Başlangıç",
+      "serialStartPlaceholder": "Seri başlangıç değerini girin"
+    },
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "menu": "Dosya Tip Yönetimi",
+    "description": "Dosya tiplerini yönetin ve düzenleyin",
+    "search": "Ara...",
+    "refresh": "Yenile",
+    "addButton": "Yeni Dosya Tipi Ekle",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok",
+    "table": {
+      "id": "ID",
+      "ruleType": "Kural Tipi",
+      "customerType": "Müşteri Tipi",
+      "salesRep": "Satış Temsilcisi",
+      "serialPrefix": "Seri Öneki",
+      "serialLength": "Seri Uzunluğu",
+      "createdDate": "Oluşturulma Tarihi"
+    },
+    "actions": "İşlemler",
+    "totalRecords": "Toplam Kayıt",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "deleteConfirmTitle": "Silme İşlemi",
+    "deleteConfirmDescription": "Bu kaydı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "deleting": "Siliniyor...",
+    "delete": "Sil"
+  },
+  "pricingRule": {
+    "ruleType": {
+      "demand": "Talep",
+      "quotation": "Teklif",
+      "order": "Sipariş",
+      "unknown": "Bilinmiyor"
+    },
+    "form": {
+      "lines": {
+        "required": "En az 1 satır eklenmelidir",
+        "requiredMessage": "Lütfen en az bir satır ekleyin",
+        "minQuantityInvalid": "Geçersiz Min Miktar",
+        "minQuantityInvalidMessage": "Minimum miktar 0\\",
+        "currencyCodeRequired": "Döviz Tipi Zorunlu",
+        "currencyCodeRequiredMessage": "Tüm satırlarda döviz tipi seçilmelidir"
+      },
+      "updateSuccess": "Fiyat Kuralı Güncellendi",
+      "updateSuccessMessage": "Fiyat kuralı başarıyla güncellendi",
+      "createSuccess": "Fiyat Kuralı Oluşturuldu",
+      "createSuccessMessage": "Fiyat kuralı başarıyla oluşturuldu",
+      "error": "Bir hata oluştu",
+      "edit": "Fiyat Kuralı Düzenle",
+      "create": "Yeni Fiyat Kuralı",
+      "editDescription": "Fiyat kuralı bilgilerini düzenleyin",
+      "createDescription": "Yeni fiyat kuralı bilgilerini girin",
+      "tabs": {
+        "header": "Genel Bilgiler",
+        "lines": "Satırlar",
+        "salesmen": "Satışçılar"
+      },
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "confirm": "Onayla"
+    },
+    "loadingDescription": "Veriler yükleniyor...",
+    "header": {
+      "ruleType": "Kural Tipi",
+      "ruleTypePlaceholder": "Kural tipi seçin",
+      "searchRuleType": "Kural tipi ara...",
+      "ruleCode": "Kural Kodu",
+      "ruleCodePlaceholder": "Kural kodu girin",
+      "ruleName": "Kural Adı",
+      "ruleNamePlaceholder": "Kural adı girin",
+      "validFrom": "Geçerlilik Başlangıç",
+      "validTo": "Geçerlilik Bitiş",
+      "customer": "Müşteri",
+      "customerPlaceholder": "Müşteri seçin (Opsiyonel)",
+      "selectCustomer": "Müşteri Seç",
+      "clearCustomer": "Müşteri Temizle"
+    },
+    "lines": {
+      "stokCode": "Stok Kodu",
+      "stokCodePlaceholder": "Ürün kodu",
+      "selectProduct": "Ürün Seç",
+      "minQuantity": "Min Miktar",
+      "maxQuantity": "Max Miktar",
+      "currencyCode": "Döviz Tipi",
+      "selectCurrency": "Para birimi seçin",
+      "searchCurrency": "Döviz ara...",
+      "fixedUnitPrice": "Liste Fiyatı",
+      "discount1Rate": "İndirim 1 (%)",
+      "discount1Amount": "Tutar 1",
+      "discount2Rate": "İndirim 2 (%)",
+      "discount3Rate": "İndirim 3 (%)",
+      "addSuccess": "Satır Eklendi",
+      "addSuccessMessage": "Satır başarıyla eklendi",
+      "addError": "Satır eklenirken bir hata oluştu",
+      "deleteSuccess": "Satır Kaldırıldı",
+      "deleteSuccessMessage": "Satır başarıyla silindi",
+      "deleteError": "Satır kaldırılırken bir hata oluştu",
+      "title": "Fiyat Kuralı Satırları",
+      "selectStock": "Stok Ekle",
+      "discount1": "İnd. 1 %",
+      "discount2": "İnd. 2 %",
+      "discount3": "İnd. 3 %",
+      "empty": "Henüz satır eklenmedi",
+      "addFirst": "İlk Satırı Ekle",
+      "stokCodeRequired": "Stok kodu zorunludur",
+      "addConfirmTitle": "Satır Ekle",
+      "addConfirmMessage": "{{code}} stok kodu fiyat kuralına eklenecektir. Onaylıyor musunuz?",
+      "deleteConfirmTitle": "Satır Kaldır",
+      "deleteConfirmMessage": "{{code}} stok kodlu satır fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?"
+    },
+    "loading": "Yükleniyor...",
+    "table": {
+      "actions": "İşlemler",
+      "ruleCode": "Kural Kodu",
+      "ruleName": "Kural Adı",
+      "ruleType": "Kural Tipi",
+      "validFrom": "Başlangıç",
+      "validTo": "Bitiş",
+      "customer": "Müşteri",
+      "status": "Durum",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "list": {
+      "title": "Fiyat Kuralları",
+      "description": "Fiyat kurallarını yönetin ve düzenleyin",
+      "add": "Yeni Kural Ekle"
+    },
+    "salesmen": {
+      "addSuccess": "Satışçı Eklendi",
+      "addSuccessMessage": "Satış temsilcisi başarıyla eklendi",
+      "addError": "Satışçı eklenirken bir hata oluştu",
+      "deleteSuccess": "Satışçı Kaldırıldı",
+      "deleteSuccessMessage": "Satış temsilcisi başarıyla silindi",
+      "deleteError": "Satışçı kaldırılırken bir hata oluştu",
+      "title": "Satışçılar",
+      "add": "Satışçı Ekle",
+      "search": "Satışçı ara...",
+      "empty": "Henüz satışçı eklenmedi",
+      "emptyDescription": "Bu kural tüm satışçılar için geçerli olacaktır",
+      "salesman": "Satışçı Adı",
+      "addConfirmTitle": "Satışçı Ekle",
+      "addConfirmMessage": "{{name}} satışçısı fiyat kuralına eklenecektir. Onaylıyor musunuz?",
+      "deleteConfirmTitle": "Satışçı Kaldır",
+      "deleteConfirmMessage": "{{name}} satışçısı fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?"
+    },
+    "delete": {
+      "success": "Kural başarıyla silindi",
+      "error": "Kural silinirken bir hata oluştu",
+      "confirmTitle": "Kuralı Sil",
+      "confirmMessage": "{{name}} kuralını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "action": "Evet, Sil"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif"
+    },
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "cancel": "Vazgeç"
+  },
+  "documentSerialType": {
+    "form": {
+      "serialCurrent": "Seri Mevcut",
+      "serialCurrentPlaceholder": "Mevcut seri değerini girin"
+    }
+  },
+  "mailSettings": {
+    "PageTitle": "Mail Ayarları",
+    "PageDescription": "SMTP sunucu ayarlarını yapılandırın",
+    "Fields": {
+      "Host": "Sunucu",
+      "Port": "Bağlantı Portu",
+      "EnableSsl": "SSL Kullan",
+      "Username": "Kullanıcı Adı",
+      "Password": "Şifre",
+      "PasswordPlaceholder": "Değiştirmek için yeni şifre girin",
+      "FromEmail": "Gönderen E-posta",
+      "FromName": "Gönderen Adı",
+      "Timeout": "Zaman Aşımı (sn)"
+    },
+    "TestMail": {
+      "Sending": "Test gönderiliyor...",
+      "Send": "Test Maili Gönder",
+      "Success": "Test maili gönderildi"
+    },
+    "Save": "Kaydet",
+    "SavedSuccessfully": "Ayarlar başarıyla kaydedildi"
+  },
+  "order": {
+    "exchangeRates": {
+      "dialog": {
+        "title": "Döviz Kurları",
+        "subtitle": "Güncel kur değerlerini yönetin",
+        "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin.",
+        "info": "Burada yapılan değişiklikler sadece bu sipariş için geçerlidir ve genel sistem kurlarını etkilemez. Değiştirilen kurlar "
+      },
+      "currency": "Para Birimi",
+      "rate": "Kur Değeri",
+      "status": "Durum",
+      "empty": "Kur bulunamadı",
+      "official": "Resmi",
+      "custom": "Özel",
+      "cannotEditUsedCurrency": "Kullanımda olan kur değiştirilemez",
+      "title": "Döviz Kurları",
+      "date": "Kur Tarihi",
+      "isOfficial": "Resmi",
+      "updateSuccess": "Döviz kurları güncellendi",
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+    },
+    "loading": "Kurlar yükleniyor...",
+    "actions": "İşlemler",
+    "edit": "Düzenle",
+    "cancel": "Vazgeç",
+    "saving": "Kaydediliyor...",
+    "saveAndApply": "Kaydet ve Uygula",
+    "approvalFlow": {
+      "stepCompleted": "Tamamlandı",
+      "stepInProgress": "Devam ediyor",
+      "stepRejected": "Reddedildi",
+      "stepNotStarted": "Başlamadı",
+      "loading": "Onay akışı yükleniyor...",
+      "noData": "Veri bulunamadı.",
+      "notStarted": "Henüz onay süreci başlatılmamış."
+    },
+    "create": {
+      "title": "Yeni Sipariş Oluştur",
+      "error": "Sipariş Oluşturulamadı",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Sipariş Başarıyla Oluşturuldu",
+      "successMessage": "Sipariş onay sürecine gönderildi.",
+      "errorMessage": "Sipariş oluşturulurken bir hata oluştu.",
+      "paymentTypeRequired": "Ödeme tipi seçilmelidir",
+      "deliveryDateRequired": "Teslimat tarihi girilmelidir",
+      "validationError": "Lütfen form alanlarını kontrol ediniz.",
+      "subtitle": "Müşteri için yeni bir satış siparişi oluşturun."
+    },
+    "lines": {
+      "required": "En az 1 satır eklenmelidir",
+      "editLine": "Satır Düzenle",
+      "approvalRequired": "Onay Gerekli",
+      "selectStockFirst": "Stok seçilmedi",
+      "stock": "Stok",
+      "selectStock": "Stok Seç",
+      "productCode": "Stok Kodu",
+      "groupCode": "Grup Kodu",
+      "productName": "Stok Adı",
+      "unitPrice": "Birim Fiyat",
+      "quantity": "Miktar",
+      "vatRate": "KDV Oranı %",
+      "discounts": "İndirimler",
+      "discount1": "İndirim 1 %",
+      "discount2": "İndirim 2 %",
+      "discount3": "İndirim 3 %",
+      "calculations": "Hesaplamalar",
+      "discountAmount": "Toplam İndirim",
+      "netPrice": "Net Fiyat",
+      "lineTotal": "Satır Toplamı (KDV Dahil)",
+      "relatedStocks": "Bağlı Stoklar",
+      "requiredFieldsMissing": "Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.",
+      "title": "Sipariş Kalemleri",
+      "itemCount": "{count} kalem ürün listeleniyor",
+      "noItems": "Henüz ürün eklenmedi",
+      "add": "Satır Ekle",
+      "empty": "Sepetiniz Boş",
+      "emptyDescription": "Sipariş oluşturmak için ",
+      "addLine": "Yeni Satır Ekle",
+      "delete": {
+        "confirmTitleMultiple": "Bağlı Stokları Sil",
+        "confirmTitle": "Satırı Sil",
+        "confirmMessageMultiple": "Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.",
+        "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?"
+      },
+      "createSuccess": "Satırlar eklendi",
+      "createError": "Satırlar eklenirken bir hata oluştu",
+      "deleteSuccess": "Satır silindi",
+      "deleteError": "Satır silinirken bir hata oluştu",
+      "updateSuccess": "Satırlar güncellendi",
+      "updateError": "Satırlar güncellenirken bir hata oluştu"
+    },
+    "sections": {
+      "header": "Müşteri ve belge bilgileri",
+      "lines": "Sipariş kalemleri",
+      "summary": "Özet & Toplamlar"
+    },
+    "save": "Siparişi Kaydet",
+    "detail": {
+      "title": "Sipariş Detayı: {{offerNo}}",
+      "notFound": "Sipariş bulunamadı",
+      "subtitle": "Sipariş detaylarını görüntüleyin ve düzenleyin.",
+      "revisionNo": "Revizyon No",
+      "tabDetail": "Sipariş Bilgileri",
+      "tabApprovalFlow": "Onay Akışı",
+      "tabReport": "Rapor"
+    },
+    "update": {
+      "error": "Sipariş Güncellenemedi",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Sipariş Başarıyla Güncellendi",
+      "successMessage": "Sipariş başarıyla güncellendi.",
+      "errorMessage": "Sipariş güncellenirken bir hata oluştu.",
+      "validationError": "Lütfen zorunlu alanları kontrol ediniz."
+    },
+    "backToOrders": "Siparişlere Dön",
+    "approval": {
+      "sending": "Gönderiliyor...",
+      "sendForApproval": "Onaya Gönder",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "rejectTitle": "Siparişi Reddet",
+      "rejectDescription": "Red sebebini belirtiniz (opsiyonel)",
+      "rejectReasonPlaceholder": "Red sebebi...",
+      "approveSuccess": "Onay işlemi başarıyla gerçekleştirildi",
+      "approveError": "Onay işlemi gerçekleştirilemedi",
+      "rejectSuccess": "Red işlemi başarıyla gerçekleştirildi",
+      "rejectError": "Red işlemi gerçekleştirilemedi",
+      "startSuccess": "Onay akışı başarıyla başlatıldı",
+      "startError": "Onay akışı başlatılamadı"
+    },
+    "select": "Seçiniz",
+    "add": "Ekle",
+    "header": {
+      "title": "Sipariş Detayları",
+      "subtitle": "Müşteri ve finansal bilgileri buradan yönetebilirsiniz.",
+      "customer": "Müşteri Hesabı",
+      "selectCustomer": "Müşteri seçiniz...",
+      "representative": "Satış Temsilcisi",
+      "shippingAddress": "Sevk Adresi",
+      "selectShippingAddress": "Sevk adresi seçin",
+      "descriptionPlaceholder": "Özel koşullar...",
+      "currencyChange": {
+        "title": "Kur Değişikliği",
+        "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
+      }
+    },
+    "confirm": "Onayla",
+    "error": "Hata",
+    "delete": "Sil",
+    "list": {
+      "title": "Sipariş Listesi",
+      "description": "Tüm siparişleri görüntüleyin ve yönetin",
+      "createNew": "Yeni Sipariş Oluştur",
+      "searchPlaceholder": "Sipariş no veya müşteri adı ile ara...",
+      "id": "ID",
+      "offerNo": "Sipariş No",
+      "customer": "Müşteri",
+      "representative": "Temsilci",
+      "offerDate": "Sipariş Tarihi",
+      "currency": "Para Birimi",
+      "grandTotal": "Genel Toplam",
+      "status": "Durum",
+      "actions": "İşlemler",
+      "revise": "Revize et",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "refresh": "Yenile",
+    "summary": {
+      "title": "Özet",
+      "generalDiscountRate": "Genel İskonto Oranı (%)",
+      "generalDiscountAmount": "Genel İskonto Tutarı",
+      "generalDiscountHelp": "Oran veya tutar girildiğinde toplamlar otomatik güncellenir.",
+      "subtotal": "Ara Toplam",
+      "generalDiscount": "Genel İskonto",
+      "totalVat": "Toplam KDV",
+      "grandTotal": "Genel Toplam"
+    },
+    "noData": "Veri yok",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "waitingApprovals": {
+      "title": "Onay Bekleyen Siparişler",
+      "list": "Onay Bekleyen Siparişler Listesi",
+      "noApprovals": "Onay bekleyen sipariş bulunmamaktadır",
+      "requestId": "İstek ID",
+      "description": "Açıklama",
+      "stepOrder": "Adım",
+      "approvedBy": "Onaylayan",
+      "actionDate": "Tarih",
+      "status": "Durum",
+      "waiting": "Bekliyor"
+    },
+    "back": "Geri",
+    "revision": {
+      "success": "Sipariş revizyonu başarıyla oluşturuldu",
+      "error": "Sipariş revizyonu oluşturulurken bir hata oluştu"
+    }
+  },
+  "paymentTypeManagement": {
+    "edit": "Ödeme Tipi Düzenle",
+    "create": "Yeni Ödeme Tipi",
+    "editDescription": "Ödeme tipi bilgilerini düzenleyin",
+    "createDescription": "Yeni ödeme tipi bilgilerini girin",
+    "name": "Ad",
+    "namePlaceholder": "Ödeme tipi adını girin",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "title": "Ödeme Tipi Yönetimi",
+    "table": {
+      "id": "ID",
+      "name": "Ad",
+      "description": "Açıklama",
+      "status": "Durum",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "createdDate": "Oluşturulma Tarihi",
+    "updatedDate": "Güncellenme Tarihi",
+    "delete": {
+      "success": "Ödeme tipi başarıyla silindi",
+      "error": "Ödeme tipi silinirken bir hata oluştu",
+      "confirmTitle": "Ödeme Tipini Sil",
+      "confirmMessage": "{{name}} ödeme tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+    },
+    "noData": "Veri bulunamadı",
+    "createSuccess": "Ödeme tipi başarıyla oluşturuldu",
+    "createError": "Ödeme tipi oluşturulurken bir hata oluştu",
+    "deleteSuccess": "Ödeme tipi başarıyla silindi",
+    "deleteError": "Ödeme tipi silinirken bir hata oluştu",
+    "updateSuccess": "Ödeme tipi başarıyla güncellendi",
+    "updateError": "Ödeme tipi güncellenirken bir hata oluştu"
+  },
+  "powerbi": {
+    "group": {
+      "edit": "Grup Düzenle",
+      "add": "Yeni Grup",
+      "editDescription": "Grup bilgilerini güncelleyin",
+      "createDescription": "Yeni grup bilgilerini girin",
+      "name": "Ad",
+      "namePlaceholder": "Grup adı",
+      "description": "Açıklama",
+      "isActive": "Aktif",
+      "title": "PowerBI Grupları",
+      "createSuccess": "Grup oluşturuldu",
+      "createError": "Oluşturulamadı",
+      "updateSuccess": "Grup güncellendi",
+      "updateError": "Güncellenemedi",
+      "deleteSuccess": "Grup silindi",
+      "deleteError": "Silinemedi"
+    },
+    "filterPlaceholder": "Filtre (query param)",
+    "groupReportDefinition": {
+      "edit": "Eşleme Düzenle",
+      "add": "Yeni Eşleme",
+      "editDescription": "Grup-rapor eşlemesini güncelleyin",
+      "createDescription": "Grup ve rapor tanımı seçin",
+      "groupId": "Grup",
+      "selectGroup": "Grup seçin",
+      "reportDefinitionId": "Rapor Tanımı",
+      "selectReport": "Rapor seçin",
+      "title": "PowerBI Grup-Rapor Eşlemesi",
+      "groupName": "Grup",
+      "reportDefinitionName": "Rapor Tanımı",
+      "createSuccess": "Grup-rapor eşlemesi oluşturuldu",
+      "createError": "Oluşturulamadı",
+      "updateSuccess": "Grup-rapor eşlemesi güncellendi",
+      "updateError": "Güncellenemedi",
+      "deleteSuccess": "Grup-rapor eşlemesi silindi",
+      "deleteError": "Silinemedi"
+    },
+    "reportDefinition": {
+      "edit": "Rapor Tanımı Düzenle",
+      "add": "Yeni Rapor Tanımı",
+      "editDescription": "Rapor tanımı bilgilerini güncelleyin",
+      "createDescription": "Yeni rapor tanımı bilgilerini girin",
+      "name": "Ad",
+      "namePlaceholder": "Rapor adı",
+      "description": "Açıklama",
+      "workspaceId": "Workspace ID (GUID)",
+      "reportId": "Report ID (GUID)",
+      "datasetId": "Dataset ID (opsiyonel)",
+      "embedUrl": "Embed URL (opsiyonel)",
+      "isActive": "Aktif",
+      "rlsRoles": "RLS Rolleri (opsiyonel)",
+      "allowedUserIds": "İzinli Kullanıcı ID (opsiyonel)",
+      "allowedRoleIds": "İzinli Rol ID (opsiyonel)",
+      "title": "PowerBI Rapor Tanımları",
+      "createSuccess": "Rapor tanımı oluşturuldu",
+      "createError": "Oluşturulamadı",
+      "updateSuccess": "Rapor tanımı güncellendi",
+      "updateError": "Güncellenemedi",
+      "deleteSuccess": "Rapor tanımı silindi",
+      "deleteError": "Silinemedi"
+    },
+    "userGroup": {
+      "edit": "Eşleme Düzenle",
+      "add": "Yeni Eşleme",
+      "editDescription": "Kullanıcı-grup eşlemesini güncelleyin",
+      "createDescription": "Kullanıcı ve grup seçin",
+      "userId": "Kullanıcı",
+      "selectUser": "Kullanıcı seçin",
+      "groupId": "Grup",
+      "selectGroup": "Grup seçin",
+      "title": "PowerBI Kullanıcı-Grup Eşlemesi",
+      "userName": "Kullanıcı",
+      "groupName": "Grup",
+      "createSuccess": "Kullanıcı-grup eşlemesi oluşturuldu",
+      "createError": "Oluşturulamadı",
+      "updateSuccess": "Kullanıcı-grup eşlemesi güncellendi",
+      "updateError": "Güncellenemedi",
+      "deleteSuccess": "Kullanıcı-grup eşlemesi silindi",
+      "deleteError": "Silinemedi"
+    }
+  },
+  "powerbiConfiguration": {
+    "title": "PowerBI Konfigürasyon",
+    "editDescription": "Mevcut konfigürasyonu düzenleyin",
+    "createDescription": "PowerBI bağlantı bilgilerini girin",
+    "tenantId": "Tenant ID",
+    "clientId": "Client ID",
+    "workspaceId": "Workspace ID (GUID)",
+    "apiBaseUrl": "API Base URL",
+    "scope": "Scope",
+    "clientSecretInfo": "ClientSecret güvenlik nedeniyle sadece sunucu ortam değişkeninden okunur.",
+    "update": "Güncelle",
+    "create": "Kaydet",
+    "delete": "Sil",
+    "deleteConfirmTitle": "Konfigürasyonu Sil",
+    "deleteConfirmDescription": "Bu konfigürasyonu silmek istediğinize emin misiniz?",
+    "pageTitle": "PowerBI Konfigürasyon",
+    "pageDescription": "PowerBI API bağlantı ayarlarını yönetin",
+    "createSuccess": "Konfigürasyon oluşturuldu",
+    "createError": "Oluşturulamadı",
+    "updateSuccess": "Konfigürasyon güncellendi",
+    "updateError": "Güncellenemedi",
+    "deleteSuccess": "Konfigürasyon silindi",
+    "deleteError": "Silinemedi"
+  },
+  "powerbiViewer": {
+    "invalidId": "Geçersiz rapor",
+    "backToList": "Listeye Dön",
+    "loadError": "Rapor yüklenemedi",
+    "loadingReport": "Rapor yükleniyor...",
+    "listTitle": "PowerBI Raporları",
+    "listDescription": "Raporlara tıklayarak görüntüleyebilirsiniz",
+    "name": "Ad",
+    "description": "Açıklama",
+    "isActive": "Durum",
+    "view": "Görüntüle"
+  },
+  "productPricingGroupByManagement": {
+    "edit": "Fiyatlandırma Grubu Düzenle",
+    "create": "Yeni Fiyatlandırma Grubu",
+    "editDescription": "Fiyatlandırma grubu bilgilerini düzenleyin",
+    "createDescription": "Yeni fiyatlandırma grubu bilgilerini girin",
+    "erpGroupCode": "ERP Ürün Grubu Kodu",
+    "selectErpGroupCode": "Grup Seçin",
+    "currency": "Para Birimi",
+    "selectCurrency": "Lütfen para birimi seçin",
+    "listPrice": "Liste Fiyatı",
+    "enterListPrice": "Liste Fiyatı Girin",
+    "costPrice": "Maliyet Fiyatı",
+    "enterCostPrice": "Maliyet Fiyatı Girin",
+    "discount1": "İskonto 1",
+    "enterDiscount1": "İskonto 1 (Ops.)",
+    "discount2": "İskonto 2",
+    "enterDiscount2": "İskonto 2 (Ops.)",
+    "discount3": "İskonto 3",
+    "enterDiscount3": "İskonto 3 (Ops.)",
+    "priceCalculation": "Fiyat Hesaplama",
+    "finalPriceAfterDiscounts": "İndirimler Sonrası Son Fiyat",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "title": "Ürün Fiyatlandırma Grubu Yönetimi",
+    "description": "Ürün fiyatlandırma gruplarını yönetin",
+    "add": "Yeni Grup Ekle",
+    "createSuccess": "Fiyatlandırma grubu başarıyla oluşturuldu",
+    "createError": "Fiyatlandırma grubu oluşturulurken bir hata oluştu",
+    "deleteSuccess": "Fiyatlandırma grubu başarıyla silindi",
+    "deleteError": "Fiyatlandırma grubu silinirken bir hata oluştu",
+    "updateSuccess": "Fiyatlandırma grubu başarıyla güncellendi",
+    "updateError": "Fiyatlandırma grubu güncellenirken bir hata oluştu"
+  },
+  "productPricingManagement": {
+    "title": "Ürün Fiyatlandırma Yönetimi",
+    "description": "Ürün fiyatlarını, maliyetlerini ve iskontolarını yönetin",
+    "create": "Yeni Fiyatlandırma",
+    "searchPlaceholder": "Ürün kodu veya grup ara...",
+    "selectStok": "Stok Seç",
+    "searchStockPlaceholder": "Stok kodu veya adı ile ara...",
+    "noStocksAvailable": "Listede olmayan stok bulunamadı",
+    "unnamedStock": "İsimsiz Stok",
+    "loading": "Yükleniyor...",
+    "noData": "Veri bulunamadı",
+    "productInfo": "ÜRÜN BİLGİSİ",
+    "category": "KATEGORİ",
+    "priceAndDiscount": "FİYAT & İSKONTO",
+    "actions": "İŞLEMLER",
+    "table": {
+      "showing": "{{from}}-{{to}} / {{total}} kayıt"
+    },
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "deleteTitle": "Fiyatlandırmayı Sil",
+    "confirmDelete": "Bu fiyatlandırmayı silmek istediğinizden emin misiniz?",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "createSuccess": "Fiyatlandırma başarıyla oluşturuldu",
+    "createError": "Fiyatlandırma oluşturulurken bir hata oluştu",
+    "deleteSuccess": "Fiyatlandırma başarıyla silindi",
+    "deleteError": "Fiyatlandırma silinirken bir hata oluştu",
+    "updateSuccess": "Fiyatlandırma başarıyla güncellendi",
+    "updateError": "Fiyatlandırma güncellenirken bir hata oluştu"
+  },
+  "shippingAddressManagement": {
+    "edit": "Sevk Adresi Düzenle",
+    "create": "Yeni Sevk Adresi",
+    "editDescription": "Sevk adresi bilgilerini düzenleyin",
+    "createDescription": "Yeni sevk adresi bilgilerini girin",
+    "customerId": "Müşteri",
+    "selectCustomer": "Müşteri Seçin",
+    "searchCustomer": "Müşteri Ara...",
+    "name": "Adres Adı",
+    "namePlaceholder": "Örn: Merkez Depo",
+    "address": "Adres",
+    "addressPlaceholder": "Açık adres giriniz",
+    "postalCode": "Posta Kodu",
+    "postalCodePlaceholder": "Örn: 34000",
+    "phone": "Telefon",
+    "phonePlaceholder": "Örn: 0555 555 55 55",
+    "contactPerson": "Yetkili Kişi",
+    "contactPersonPlaceholder": "İlgili kişi adı soyadı",
+    "isDefault": "Varsayılan sevk adresi",
+    "country": "Ülke",
+    "selectCountry": "Seçiniz",
+    "searchCountry": "Ara...",
+    "city": "İl",
+    "selectCity": "Seçiniz",
+    "searchCity": "Ara...",
+    "district": "İlçe",
+    "selectDistrict": "Seçiniz",
+    "searchDistrict": "Ara...",
+    "notes": "Notlar",
+    "notesPlaceholder": "Varsa ek notlar",
+    "title": "Sevk Adresi Yönetimi",
+    "description": "Sevk adreslerini yönetin ve düzenleyin",
+    "search": "Hızlı Ara...",
+    "customerName": "Müşteri",
+    "location": "Konum",
+    "isDefaultShort": "Varsayılan",
+    "createdDate": "Oluşturulma Tarihi",
+    "noData": "Veri Bulunamadı",
+    "defaultBadge": "Evet",
+    "deleteConfirmDescription": "Bu sevk adresini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "createSuccess": "Sevk adresi başarıyla oluşturuldu",
+    "createError": "Sevk adresi oluşturulurken bir hata oluştu",
+    "deleteSuccess": "Sevk adresi başarıyla silindi",
+    "deleteError": "Sevk adresi silinirken bir hata oluştu",
+    "updateSuccess": "Sevk adresi başarıyla güncellendi",
+    "updateError": "Sevk adresi güncellenirken bir hata oluştu"
+  },
+  "stock": {
+    "detail": {
+      "basicInfoReadonly": "Bu veriler ERP sisteminden senkronize edilmiştir ve manuel değiştirilemez.",
+      "mainInfo": "Temel Veriler",
+      "erpStockCode": "ERP Stok Kodu",
+      "stockName": "Stok Adı",
+      "unit": "Birim",
+      "ureticiKodu": "Üretici Kodu",
+      "groupInfo": "Gruplama ve Lokasyon",
+      "grup": "Grup Bilgisi",
+      "branchCode": "Şube Kodu",
+      "specialCodes": "Özel Kodlar",
+      "created": "Oluşturuldu",
+      "updated": "Güncellendi",
+      "copied": "Kopyalandı",
+      "copy": "Kopyala",
+      "htmlDescription": "Ürün Açıklaması (HTML)",
+      "htmlDescriptionDesc": "Ürün kartında görünecek detaylı açıklamayı ve biçimlendirilmiş metni buradan düzenleyin.",
+      "htmlDescriptionPlaceholder": "Detaylı ürün açıklaması giriniz...",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet",
+      "title": "Stok Detayı",
+      "notFound": "Stok Bulunamadı",
+      "notFoundDesc": "Aradığınız stok kaydı silinmiş veya hiç oluşturulmamış olabilir.",
+      "backToStockList": "Listeye Dön",
+      "subtitle": "Stok Detay Yönetimi",
+      "basicInfo": "Temel Bilgiler",
+      "images": "Görseller",
+      "relations": "Bağlı Stoklar",
+      "summary": "Hızlı Bakış",
+      "gallery": "Galeri",
+      "addRelation": "Bağlantı Ekle"
+    },
+    "images": {
+      "noImages": "Henüz görsel yüklenmemiş",
+      "noImagesDesc": "Yukarıdaki alanı kullanarak yeni görseller ekleyebilirsiniz.",
+      "primary": "Ana Görsel",
+      "altText": "Alt metin yok",
+      "setPrimary": "Ana Yap",
+      "isPrimary": "Seçili",
+      "deleteConfirm": "Görseli Sil",
+      "deleteConfirmMessage": "Bu görseli silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "Vazgeç",
+      "deleting": "Siliniyor...",
+      "confirmDelete": "Evet, Sil",
+      "upload": "Görselleri buraya sürükleyin veya tıklayın",
+      "uploadHint": "JPG, PNG, WEBP (Maks. 5MB)",
+      "selectedFiles": "Yüklenecek Dosyalar",
+      "uploading": "Yükleniyor...",
+      "uploadButton": "Seçilenleri Yükle"
+    },
+    "list": {
+      "title": "Stok Yönetimi",
+      "description": "Envanter ve stok durumunu takip edin.",
+      "search": "Stok adı veya ERP kodu ara...",
+      "syncedFromErp": "ERP Senkronizasyonu Aktif",
+      "noData": "Kayıt Bulunamadı",
+      "id": "ID",
+      "erpStockCode": "ERP Kodu",
+      "stockName": "Stok Adı",
+      "unit": "Birim",
+      "actions": "Detay",
+      "total": "Toplam",
+      "recordsListed": "{{count}} kayıt listeleniyor",
+      "previous": "Önceki",
+      "next": "Sonraki"
+    },
+    "relations": {
+      "relatedStock": "Bağlı Stok Seçimi",
+      "selectStock": "Listeden bir stok seçiniz...",
+      "search": "Stok adı veya kodu ara...",
+      "noStockFound": "Stok bulunamadı.",
+      "quantity": "Miktar / Katsayı",
+      "description": "Açıklama / Not",
+      "descriptionPlaceholder": "İlişki hakkında opsiyonel bir not ekleyin...",
+      "isMandatory": "Zorunlu İlişki",
+      "saving": "İşleniyor...",
+      "add": "İlişkiyi Ekle",
+      "noRelations": "Henüz bağlı stok eklenmemiş",
+      "noRelationsDesc": "Sol taraftaki formu kullanarak yeni ilişkiler tanımlayabilirsiniz.",
+      "stockCode": "Stok Kodu",
+      "stockName": "Stok Adı",
+      "actions": "İşlemler",
+      "mandatory": "Zorunlu",
+      "optional": "Opsiyonel",
+      "delete": "Sil",
+      "deleteConfirm": "Bağlantıyı Sil",
+      "deleteConfirmMessage": "{{name}} ile olan ilişkiyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "Vazgeç",
+      "deleting": "Siliniyor...",
+      "confirmDelete": "Evet, Sil"
+    },
+    "messages": {
+      "detailCreateSuccess": "Stok detayı başarıyla oluşturuldu",
+      "error": "Bir hata oluştu",
+      "detailUpdateSuccess": "Stok detayı başarıyla güncellendi",
+      "deleteSuccess": "Görsel başarıyla silindi",
+      "setPrimarySuccess": "Ana görsel başarıyla ayarlandı",
+      "uploadSuccess": "Görseller başarıyla yüklendi",
+      "relationCreateSuccess": "Bağlı stok başarıyla eklendi"
+    }
+  },
+  "userDetailManagement": {
+    "profilePageTitle": "Profil",
+    "fileSizeError": "Dosya boyutu 5MB\\",
+    "fileTypeError": "Sadece resim dosyaları yüklenebilir",
+    "saveSuccess": "Profil güncellendi",
+    "backToHome": "Ana sayfaya dön",
+    "personalInfo": "Kişisel Bilgiler",
+    "personalInfoDescription": "Boy, kilo, cinsiyet ve biyografi bilgilerinizi güncelleyin.",
+    "height": "Boy (cm)",
+    "weight": "Kilo (kg)",
+    "gender": "Cinsiyet",
+    "selectGender": "Seçiniz",
+    "noGenderSelected": "Belirtilmemiş",
+    "phoneNumber": "Telefon Numarası",
+    "enterPhoneNumber": "+90 5XX XXX XX XX",
+    "email": "E-posta Adresi",
+    "enterEmail": "ornek@sirket.com",
+    "linkedinUrl": "LinkedIn Profili",
+    "enterLinkedinUrl": "https://linkedin.com/in/...",
+    "description": "Biyografi",
+    "enterDescription": "Kendinizden kısaca bahsedin...",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "security": "Güvenlik",
+    "securityDescription": "Hesap şifrenizi güvenli bir şekilde güncelleyin.",
+    "changePassword": "Şifre Değiştir",
+    "currentPassword": "Mevcut Şifre",
+    "newPassword": "Yeni Şifre",
+    "newPasswordPlaceholder": "Yeni şifreniz",
+    "changingPassword": "İşleniyor...",
+    "changePasswordButton": "Şifreyi Güncelle",
+    "cancel": "Vazgeç ve Kapat",
+    "createSuccess": "Kullanıcı detayı başarıyla oluşturuldu",
+    "createError": "Kullanıcı detayı oluşturulurken bir hata oluştu",
+    "updateSuccess": "Kullanıcı detayı başarıyla güncellendi",
+    "updateError": "Kullanıcı detayı güncellenirken bir hata oluştu",
+    "uploadProfilePictureSuccess": "Profil resmi başarıyla yüklendi",
+    "uploadProfilePictureError": "Profil resmi yüklenirken bir hata oluştu"
+  },
+  "profile": {
+    "title": "Profil Bilgileri"
+  },
+  "language_choice": "Dil Seçeneği",
+  "appearance": "Görünüm Modu",
+  "logout": "ÇIKIŞ YAP",
+  "userDiscountLimitManagement": {
+    "alreadyExists": "Bu satış temsilcisi ve ürün grubu kombinasyonu için zaten bir iskonto limiti mevcut",
+    "edit": "İskonto Limiti Düzenle",
+    "create": "Yeni İskonto Limiti",
+    "editDescription": "İskonto limiti bilgilerini düzenleyin",
+    "createDescription": "Yeni iskonto limiti bilgilerini girin",
+    "salesperson": "Satış Temsilcisi",
+    "selectSalesperson": "Satış Temsilcisi Seçin",
+    "searchSalesperson": "Satış Temsilcisi Ara...",
+    "erpProductGroupCode": "ERP Ürün Grubu Kodu",
+    "selectErpProductGroupCode": "Grup Seçin",
+    "searchGroup": "Grup Ara...",
+    "maxDiscount1": "Maksimum İskonto 1",
+    "enterMaxDiscount1": "Maksimum İskonto 1 Girin (0-100)",
+    "maxDiscount2": "Maksimum İskonto 2",
+    "enterMaxDiscount2": "Maksimum İskonto 2 Girin (0-100, Opsiyonel)",
+    "maxDiscount3": "Maksimum İskonto 3",
+    "enterMaxDiscount3": "Maksimum İskonto 3 Girin (0-100, Opsiyonel)",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "title": "Kullanıcı İskonto Limiti Yönetimi",
+    "description": "Kullanıcı iskonto limitlerini yönetin ve düzenleyin",
+    "loading": "Yükleniyor...",
+    "noData": "Veri bulunamadı",
+    "table": {
+      "id": "ID",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "salespersonName": "Satış Temsilcisi Adı",
+    "createdDate": "Oluşturulma Tarihi",
+    "updatedDate": "Güncellenme Tarihi",
+    "actions": "İşlemler",
+    "delete": "Sil",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "deleteTitle": "İskonto Limiti Sil",
+    "confirmDelete": "Bu iskonto limitini silmek istediğinizden emin misiniz?",
+    "createSuccess": "İskonto limiti başarıyla oluşturuldu",
+    "createError": "İskonto limiti oluşturulurken bir hata oluştu",
+    "deleteSuccess": "İskonto limiti başarıyla silindi",
+    "deleteError": "İskonto limiti silinirken bir hata oluştu",
+    "updateSuccess": "İskonto limiti başarıyla güncellendi",
+    "updateError": "İskonto limiti güncellenirken bir hata oluştu"
   }
 }
