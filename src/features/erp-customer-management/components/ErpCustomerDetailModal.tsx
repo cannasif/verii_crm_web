@@ -72,7 +72,7 @@ export function ErpCustomerDetailModal({
              </div>
              <div className="space-y-1">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {t('details.title', 'Müşteri Detayları')}
+                  {t('details.title')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
                   {customer.customerName}
@@ -94,7 +94,7 @@ export function ErpCustomerDetailModal({
                     <div className="space-y-2">
                         <label className={LABEL_STYLE}>
                             <UserCircleIcon size={16} className="text-pink-500" />
-                            {t('table.customerName', 'Müşteri Adı')}
+                            {t('table.customerName')}
                         </label>
                         <Input readOnly value={customer.customerName || '-'} className={INPUT_STYLE} />
                     </div>
@@ -103,7 +103,7 @@ export function ErpCustomerDetailModal({
                 <div className="space-y-2">
                     <label className={LABEL_STYLE}>
                         <Building03Icon size={16} className="text-pink-500" />
-                        {t('table.customerCode', 'Müşteri Kodu')}
+                        {t('table.customerCode')}
                     </label>
                     <Input readOnly value={customer.customerCode || '-'} className={INPUT_STYLE} />
                 </div>
@@ -111,7 +111,7 @@ export function ErpCustomerDetailModal({
                 <div className="space-y-2">
                     <label className={LABEL_STYLE}>
                         <Building03Icon size={16} className="text-pink-500" />
-                        {t('table.branchCode', 'Şube Kodu')} / {t('table.businessUnitCode', 'İş Birimi')}
+                        {t('table.branchCode')} / {t('table.businessUnitCode')}
                     </label>
                     <Input readOnly value={`${customer.branchCode || '-'} / ${customer.businessUnit || '-'}`} className={INPUT_STYLE} />
                 </div>
@@ -119,7 +119,7 @@ export function ErpCustomerDetailModal({
                 <div className="space-y-2">
                     <label className={LABEL_STYLE}>
                         <Call02Icon size={16} className="text-pink-500" />
-                        {t('table.phone', 'Telefon')}
+                        {t('table.phone')}
                     </label>
                     <Input readOnly value={customer.phone || '-'} className={INPUT_STYLE} />
                 </div>
@@ -127,7 +127,7 @@ export function ErpCustomerDetailModal({
                 <div className="space-y-2">
                     <label className={LABEL_STYLE}>
                         <Mail01Icon size={16} className="text-pink-500" />
-                        {t('table.email', 'E-posta')}
+                        {t('table.email')}
                     </label>
                     <Input readOnly value={customer.email || '-'} className={INPUT_STYLE} />
                 </div>
@@ -135,7 +135,7 @@ export function ErpCustomerDetailModal({
                  <div className="space-y-2">
                     <label className={LABEL_STYLE}>
                         <Globe02Icon size={16} className="text-pink-500" />
-                        {t('table.website', 'Web Sitesi')}
+                        {t('table.website')}
                     </label>
                     <Input readOnly value={customer.website || '-'} className={INPUT_STYLE} />
                 </div>
@@ -143,7 +143,7 @@ export function ErpCustomerDetailModal({
                  <div className="space-y-2">
                     <label className={LABEL_STYLE}>
                         <Invoice01Icon size={16} className="text-pink-500" />
-                        {t('table.taxNumber', 'Vergi No')} / {t('table.tcknNumber', 'TCKN')}
+                        {t('table.taxNumber')} / {t('table.tcknNumber')}
                     </label>
                     <Input readOnly value={`${customer.taxNumber || '-'} / ${customer.tckn || '-'}`} className={INPUT_STYLE} />
                 </div>
@@ -151,7 +151,7 @@ export function ErpCustomerDetailModal({
                  <div className="space-y-2">
                     <label className={LABEL_STYLE}>
                         <Invoice01Icon size={16} className="text-pink-500" />
-                        {t('table.taxOffice', 'Vergi Dairesi')}
+                        {t('table.taxOffice')}
                     </label>
                     <Input readOnly value={customer.taxOffice || '-'} className={INPUT_STYLE} />
                 </div>
@@ -161,27 +161,27 @@ export function ErpCustomerDetailModal({
             <div className="pt-4 border-t border-slate-100 dark:border-white/5">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                     <Location01Icon size={18} className="text-orange-500" />
-                    {t('details.addressInfo', 'Adres Bilgileri')}
+                    {t('details.addressInfo')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                     <div className="space-y-2">
                         <label className={LABEL_STYLE}>
                             <City01Icon size={16} className="text-pink-500" />
-                            {t('table.city', 'Şehir')} / {t('table.district', 'İlçe')}
+                            {t('table.city')} / {t('table.district')}
                         </label>
                         <Input readOnly value={`${customer.city || '-'} / ${customer.district || '-'}`} className={INPUT_STYLE} />
                     </div>
                      <div className="space-y-2">
                         <label className={LABEL_STYLE}>
                             <MapsLocation01Icon size={16} className="text-pink-500" />
-                            {t('table.countryCode', 'Ülke Kodu')}
+                            {t('table.countryCode')}
                         </label>
                         <Input readOnly value={customer.countryCode || '-'} className={INPUT_STYLE} />
                     </div>
                     <div className="col-span-1 md:col-span-2 space-y-2">
                         <label className={LABEL_STYLE}>
                             <Location01Icon size={16} className="text-pink-500" />
-                            {t('table.address', 'Adres')}
+                            {t('table.address')}
                         </label>
                         <Textarea 
                             readOnly 
@@ -202,7 +202,7 @@ export function ErpCustomerDetailModal({
             onClick={() => onOpenChange(false)}
             className="w-full sm:w-auto h-11 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
           >
-            {t('common.close', 'Kapat')}
+            {t('common.close')}
           </Button>
         </DialogFooter>
 

@@ -409,7 +409,7 @@ export function ErpCustomerManagementPage(): ReactElement {
                                   }}
                                   className="flex-1 bg-gradient-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2.5 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
                               >
-                                  {t('actions.apply', 'SONUÇLARI LİSTELE')}
+                                  {t('actions.apply')}
                               </button>
                           </div>
                       </PopoverContent>
@@ -458,14 +458,14 @@ export function ErpCustomerManagementPage(): ReactElement {
                                   className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-white transition-colors px-1"
                               >
                                   <CheckSquare size={14} />
-                                  <span>{t('common.selectAll', 'Tümünü Seç')}</span>
+                                  <span>{t('common.selectAll')}</span>
                               </button>
                               
                               <button 
                                   onClick={() => setShowColumns(false)}
                                   className="bg-gradient-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2 px-6 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
                               >
-                                  {t('common.ok', 'TAMAM')}
+                                  {t('common.ok')}
                               </button>
                           </div>
                       </PopoverContent>
@@ -489,7 +489,7 @@ export function ErpCustomerManagementPage(): ReactElement {
           {/* Footer - Pagination */}
           <div className="flex-none h-14 border-t border-white/5 bg-[#1a1025]/90 backdrop-blur flex items-center justify-between px-4">
             <div className="text-xs text-slate-500 dark:text-slate-400">
-              {t('common.totalRecords', 'Toplam Kayıt')}: <span className="text-slate-900 dark:text-white font-medium">{totalItems}</span>
+              {t('common.totalRecords')}: <span className="text-slate-900 dark:text-white font-medium">{totalItems}</span>
             </div>
             
             <div className="flex items-center gap-2">

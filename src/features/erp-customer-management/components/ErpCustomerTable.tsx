@@ -25,20 +25,20 @@ interface ErpCustomerTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction) => [
-    { key: 'branchCode', label: t('table.branchCode', 'Şube'), className: 'font-medium whitespace-nowrap' },
-    { key: 'businessUnit', label: t('table.businessUnitCode', 'İş Birimi'), className: 'whitespace-nowrap' },
-    { key: 'customerCode', label: t('table.customerCode', 'Müşteri Kodu'), className: 'font-semibold text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors whitespace-nowrap' },
-    { key: 'customerName', label: t('table.customerName', 'Müşteri Adı'), className: 'text-slate-800 dark:text-slate-200 font-medium min-w-[160px] md:min-w-[200px]' },
-    { key: 'phone', label: t('table.phone', 'Telefon'), className: 'whitespace-nowrap' },
-    { key: 'email', label: t('table.email', 'E-posta'), className: 'min-w-[160px] md:min-w-[200px] break-all' },
-    { key: 'city', label: t('table.city', 'Şehir'), className: 'whitespace-nowrap' },
-    { key: 'district', label: t('table.district', 'İlçe'), className: 'whitespace-nowrap' },
-    { key: 'address', label: t('table.address', 'Adres'), className: 'min-w-[220px] md:min-w-[300px] leading-relaxed' },
-    { key: 'countryCode', label: t('table.countryCode', 'Ülke'), className: '' },
-    { key: 'website', label: t('table.website', 'Web Sitesi'), className: 'text-blue-500 hover:underline min-w-[120px] md:min-w-[150px] break-all', isLink: true },
-    { key: 'taxNumber', label: t('table.taxNumber', 'Vergi No'), className: 'font-mono text-xs whitespace-nowrap' },
-    { key: 'taxOffice', label: t('table.taxOffice', 'Vergi Dairesi'), className: 'whitespace-nowrap' },
-    { key: 'tckn', label: t('table.tcknNumber', 'TCKN'), className: 'font-mono text-xs whitespace-nowrap' },
+    { key: 'branchCode', label: t('table.branchCode'), className: 'font-medium whitespace-nowrap' },
+    { key: 'businessUnit', label: t('table.businessUnitCode'), className: 'whitespace-nowrap' },
+    { key: 'customerCode', label: t('table.customerCode'), className: 'font-semibold text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors whitespace-nowrap' },
+    { key: 'customerName', label: t('table.customerName'), className: 'text-slate-800 dark:text-slate-200 font-medium min-w-[160px] md:min-w-[200px]' },
+    { key: 'phone', label: t('table.phone'), className: 'whitespace-nowrap' },
+    { key: 'email', label: t('table.email'), className: 'min-w-[160px] md:min-w-[200px] break-all' },
+    { key: 'city', label: t('table.city'), className: 'whitespace-nowrap' },
+    { key: 'district', label: t('table.district'), className: 'whitespace-nowrap' },
+    { key: 'address', label: t('table.address'), className: 'min-w-[220px] md:min-w-[300px] leading-relaxed' },
+    { key: 'countryCode', label: t('table.countryCode'), className: '' },
+    { key: 'website', label: t('table.website'), className: 'text-blue-500 hover:underline min-w-[120px] md:min-w-[150px] break-all', isLink: true },
+    { key: 'taxNumber', label: t('table.taxNumber'), className: 'font-mono text-xs whitespace-nowrap' },
+    { key: 'taxOffice', label: t('table.taxOffice'), className: 'whitespace-nowrap' },
+    { key: 'tckn', label: t('table.tcknNumber'), className: 'font-mono text-xs whitespace-nowrap' },
 ];
 
 export function ErpCustomerTable({ customers, isLoading, visibleColumns, sortConfig, onSort, onRowClick }: ErpCustomerTableProps): ReactElement {
@@ -70,7 +70,7 @@ export function ErpCustomerTable({ customers, isLoading, visibleColumns, sortCon
         <div className="flex flex-col items-center gap-3">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <span className="text-sm font-medium text-muted-foreground animate-pulse">
-             {t('loading', 'Yükleniyor...')}
+             {t('loading')}
            </span>
         </div>
       </div>
@@ -81,7 +81,7 @@ export function ErpCustomerTable({ customers, isLoading, visibleColumns, sortCon
     return (
       <div className="flex items-center justify-center py-20 h-full">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('noData', 'Müşteri bulunamadı')}
+          {t('noData')}
         </div>
       </div>
     );
