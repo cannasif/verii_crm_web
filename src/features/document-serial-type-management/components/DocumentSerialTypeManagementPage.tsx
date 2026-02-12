@@ -33,7 +33,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    setPageTitle(t('documentSerialTypeManagement.menu', 'Dosya Tip Yönetimi'));
+    setPageTitle(t('documentSerialTypeManagement.menu'));
     return () => {
       setPageTitle(null);
     };
@@ -119,12 +119,12 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
       <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
         <div className="space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-foreground">
-            {t('documentSerialTypeManagement.menu', 'Dosya Tip Yönetimi')}
+            {t('documentSerialTypeManagement.menu')}
           </h1>
           <div className="flex flex-col gap-1">
             <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
               <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-              {t('documentSerialTypeManagement.description', 'Dosya tiplerini yönetin ve düzenleyin')}
+              {t('documentSerialTypeManagement.description')}
             </p>
           </div>
         </div>
@@ -137,7 +137,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
               </div>
 
               <Input
-                placeholder={t('documentSerialTypeManagement.search', 'Ara...')}
+                placeholder={t('documentSerialTypeManagement.search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="
@@ -164,7 +164,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
             <div 
               onClick={handleRefresh}
               className={`hidden md:flex items-center justify-center w-11 h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 text-muted-foreground hover:text-pink-600 hover:border-pink-200 transition-all cursor-pointer ${isRefreshing ? 'animate-spin' : ''}`} 
-              title={t('documentSerialTypeManagement.refresh', 'Yenile')}
+              title={t('documentSerialTypeManagement.refresh')}
             >
                <RefreshCw size={16} className="opacity-70" />
             </div>
@@ -175,7 +175,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
             className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
           >
             <Plus size={18} className="mr-2" />
-            {t('documentSerialTypeManagement.addButton', 'Yeni Dosya Tipi Ekle')}
+            {t('documentSerialTypeManagement.addButton')}
           </Button>
         </div>
       </div>

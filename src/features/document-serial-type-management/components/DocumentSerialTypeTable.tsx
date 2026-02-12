@@ -87,11 +87,11 @@ export function DocumentSerialTypeTable({
 
   const getRuleTypeLabel = (type: PricingRuleType): string => {
     const labels: Record<PricingRuleType, string> = {
-      [PricingRuleType.Demand]: t('pricingRule.ruleType.demand', 'Talep'),
-      [PricingRuleType.Quotation]: t('pricingRule.ruleType.quotation', 'Teklif'),
-      [PricingRuleType.Order]: t('pricingRule.ruleType.order', 'Sipariş'),
+      [PricingRuleType.Demand]: t('pricingRule.ruleType.demand'),
+      [PricingRuleType.Quotation]: t('pricingRule.ruleType.quotation'),
+      [PricingRuleType.Order]: t('pricingRule.ruleType.order'),
     };
-    return labels[type] || t('pricingRule.ruleType.unknown', 'Bilinmiyor');
+    return labels[type] || t('pricingRule.ruleType.unknown');
   };
 
   const borderClass = "border-zinc-300 dark:border-zinc-700/80"; 
@@ -100,7 +100,7 @@ export function DocumentSerialTypeTable({
     return (
       <div className={`flex flex-col items-center justify-center py-24 gap-4 border ${borderClass} rounded-xl bg-white/50 dark:bg-card/50`}>
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
-        <span className="text-muted-foreground animate-pulse text-sm font-medium">{t('documentSerialTypeManagement.loading', 'Yükleniyor...')}</span>
+        <span className="text-muted-foreground animate-pulse text-sm font-medium">{t('documentSerialTypeManagement.loading')}</span>
       </div>
     );
   }
@@ -111,7 +111,7 @@ export function DocumentSerialTypeTable({
     return (
       <div className={`flex flex-col items-center justify-center py-24 text-muted-foreground border ${borderClass} border-dashed rounded-xl bg-white/50 dark:bg-card/50`}>
         <FileText size={40} className="opacity-40 mb-2" />
-        <p className="text-sm font-medium">{t('documentSerialTypeManagement.noData', 'Veri yok')}</p>
+        <p className="text-sm font-medium">{t('documentSerialTypeManagement.noData')}</p>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export function DocumentSerialTypeTable({
               onClick={() => handleSort('Id')}
             >
               <div className="flex items-center gap-1">
-                {t('documentSerialTypeManagement.table.id', 'ID')} <SortIcon column="Id" />
+                {t('documentSerialTypeManagement.table.id')} <SortIcon column="Id" />
               </div>
             </TableHead>
             <TableHead 
@@ -136,7 +136,7 @@ export function DocumentSerialTypeTable({
               onClick={() => handleSort('RuleType')}
             >
               <div className="flex items-center gap-1">
-                {t('documentSerialTypeManagement.table.ruleType', 'Kural Tipi')} <SortIcon column="RuleType" />
+                {t('documentSerialTypeManagement.table.ruleType')} <SortIcon column="RuleType" />
               </div>
             </TableHead>
             <TableHead 
@@ -144,7 +144,7 @@ export function DocumentSerialTypeTable({
               onClick={() => handleSort('CustomerTypeName')}
             >
               <div className="flex items-center gap-1">
-                {t('documentSerialTypeManagement.table.customerType', 'Müşteri Tipi')} <SortIcon column="CustomerTypeName" />
+                {t('documentSerialTypeManagement.table.customerType')} <SortIcon column="CustomerTypeName" />
               </div>
             </TableHead>
             <TableHead 
@@ -152,7 +152,7 @@ export function DocumentSerialTypeTable({
               onClick={() => handleSort('SalesRepFullName')}
             >
               <div className="flex items-center gap-1">
-                {t('documentSerialTypeManagement.table.salesRep', 'Satış Temsilcisi')} <SortIcon column="SalesRepFullName" />
+                {t('documentSerialTypeManagement.table.salesRep')} <SortIcon column="SalesRepFullName" />
               </div>
             </TableHead>
             <TableHead 
@@ -160,7 +160,7 @@ export function DocumentSerialTypeTable({
               onClick={() => handleSort('SerialPrefix')}
             >
               <div className="flex items-center gap-1">
-                {t('documentSerialTypeManagement.table.serialPrefix', 'Seri Öneki')} <SortIcon column="SerialPrefix" />
+                {t('documentSerialTypeManagement.table.serialPrefix')} <SortIcon column="SerialPrefix" />
               </div>
             </TableHead>
             <TableHead 
@@ -168,14 +168,14 @@ export function DocumentSerialTypeTable({
               onClick={() => handleSort('SerialLength')}
             >
               <div className="flex items-center gap-1">
-                {t('documentSerialTypeManagement.table.serialLength', 'Seri Uzunluğu')} <SortIcon column="SerialLength" />
+                {t('documentSerialTypeManagement.table.serialLength')} <SortIcon column="SerialLength" />
               </div>
             </TableHead>
             <TableHead className={`py-4 px-4 text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-foreground/90 border-b border-r border-zinc-300 dark:border-zinc-700`}>
-              {t('documentSerialTypeManagement.table.createdDate', 'Oluşturulma Tarihi')}
+              {t('documentSerialTypeManagement.table.createdDate')}
             </TableHead>
             <TableHead className={`text-right py-4 px-4 text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-foreground/90 border-b border-zinc-300 dark:border-zinc-700`}>
-              {t('documentSerialTypeManagement.actions', 'İşlemler')}
+              {t('documentSerialTypeManagement.actions')}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -244,7 +244,7 @@ export function DocumentSerialTypeTable({
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1}
           >
-            {t('documentSerialTypeManagement.previous', 'Önceki')}
+            {t('documentSerialTypeManagement.previous')}
           </Button>
           
           <div className={`text-xs font-bold bg-white dark:bg-background px-3 py-1.5 rounded-md min-w-[3rem] text-center border ${borderClass}`}>
@@ -258,7 +258,7 @@ export function DocumentSerialTypeTable({
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
           >
-            {t('documentSerialTypeManagement.next', 'Sonraki')}
+            {t('documentSerialTypeManagement.next')}
           </Button>
         </div>
       </div>
@@ -270,10 +270,10 @@ export function DocumentSerialTypeTable({
                <Trash2 className="w-6 h-6 text-red-600 dark:text-red-500" />
              </div>
              <DialogTitle className="text-center text-xl font-bold text-zinc-900 dark:text-zinc-100">
-               {t('documentSerialTypeManagement.deleteConfirmTitle', 'Silme İşlemi')}
+               {t('documentSerialTypeManagement.deleteConfirmTitle')}
              </DialogTitle>
              <DialogDescription className="text-center text-zinc-500 dark:text-zinc-400">
-               {t('documentSerialTypeManagement.deleteConfirmDescription', 'Bu kaydı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')}
+               {t('documentSerialTypeManagement.deleteConfirmDescription')}
              </DialogDescription>
            </DialogHeader>
            <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 mt-6">
@@ -282,7 +282,7 @@ export function DocumentSerialTypeTable({
                onClick={() => setDeleteDialogOpen(false)}
                className="flex-1 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
              >
-               {t('documentSerialTypeManagement.cancel', 'İptal')}
+               {t('documentSerialTypeManagement.cancel')}
              </Button>
              <Button
                variant="destructive"
@@ -290,7 +290,7 @@ export function DocumentSerialTypeTable({
                disabled={deleteDocumentSerialType.isPending}
                className="flex-1 bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
              >
-               {deleteDocumentSerialType.isPending ? t('documentSerialTypeManagement.deleting', 'Siliniyor...') : t('documentSerialTypeManagement.delete', 'Sil')}
+               {deleteDocumentSerialType.isPending ? t('documentSerialTypeManagement.deleting') : t('documentSerialTypeManagement.delete')}
              </Button>
            </DialogFooter>
         </DialogContent>
