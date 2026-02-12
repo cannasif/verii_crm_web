@@ -18,14 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { 
-    DropdownMenu, 
-    DropdownMenuCheckboxItem, 
-    DropdownMenuContent, 
-    DropdownMenuTrigger,
-    DropdownMenuLabel,
-    DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
 import { useDeleteCity } from '../hooks/useDeleteCity';
 import type { CityDto } from '../types/city-types';
 import { toast } from 'sonner';
@@ -36,8 +28,6 @@ import {
   ArrowUp, 
   ArrowDown, 
   Calendar,
-  EyeOff,
-  ChevronDown,
   Map,
   Loader2
 } from 'lucide-react';
@@ -56,7 +46,7 @@ interface CityTableProps {
   onEdit: (city: CityDto) => void;
 }
 
-const getColumnsConfig = (t: TFunction): ColumnDef<CityDto>[] => [
+export const getColumnsConfig = (t: TFunction): ColumnDef<CityDto>[] => [
     { key: 'id', label: t('cityManagement.table.id'), type: 'id', className: 'w-[100px]' },
     { key: 'name', label: t('cityManagement.table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
     { key: 'erpCode', label: t('cityManagement.table.erpCode'), type: 'text', className: 'w-[140px]' },
@@ -65,10 +55,20 @@ const getColumnsConfig = (t: TFunction): ColumnDef<CityDto>[] => [
     { key: 'createdByFullUser', label: t('cityManagement.table.createdBy'), type: 'user', className: 'w-[160px]' },
 ];
 
+interface CityTableProps {
+  cities: CityDto[];
+  isLoading: boolean;
+  onEdit: (city: CityDto) => void;
+  pageSize?: number;
+  visibleColumns?: Array<keyof CityDto | 'actions'>;
+}
+
 export function CityTable({
   cities,
   isLoading,
   onEdit,
+  pageSize = 10,
+  visibleColumns: propVisibleColumns
 }: CityTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -76,15 +76,14 @@ export function CityTable({
   const deleteCity = useDeleteCity();
   
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
 
   const [sortConfig, setSortConfig] = useState<{ key: keyof CityDto; direction: 'asc' | 'desc' } | null>(null);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   
-  const [visibleColumns, setVisibleColumns] = useState<Array<keyof CityDto | 'actions'>>(
-    tableColumns.map(col => col.key)
-  );
+  const visibleColumns = useMemo(() => {
+    return propVisibleColumns || tableColumns.map(col => col.key);
+  }, [propVisibleColumns, tableColumns]);
 
   const processedCities = useMemo(() => {
     const result = [...cities];
@@ -133,12 +132,6 @@ export function CityTable({
     setSortConfig({ key, direction });
   };
 
-  const toggleColumn = (key: keyof CityDto | 'actions') => {
-    setVisibleColumns(prev => 
-      prev.includes(key) ? prev.filter(c => c !== key) : [...prev, key]
-    );
-  };
-
   const renderCellContent = (item: CityDto, column: ColumnDef<CityDto>) => {
     if (column.key === 'actions') return '-';
     const value = item[column.key];
@@ -162,7 +155,7 @@ export function CityTable({
         case 'user':
             return (
                 <div className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-gradient-to-tr from-pink-500/20 to-orange-500/20 flex items-center justify-center text-[10px] font-bold text-pink-600 dark:text-pink-400">
+                    <div className="h-6 w-6 rounded-full bg-linear-to-tr from-pink-500/20 to-orange-500/20 flex items-center justify-center text-[10px] font-bold text-pink-600 dark:text-pink-400">
                         {String(value).charAt(0).toUpperCase()}
                     </div>
                     <span className="text-xs">{String(value)}</span>
@@ -213,43 +206,6 @@ export function CityTable({
   return (
     <div className="flex flex-col gap-4">
       
-      <div className="flex justify-end p-2 sm:p-0">
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
-                    >
-                        <EyeOff className="mr-2 h-4 w-4" />
-                        {t('common.editColumns')}
-                        <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                    align="end" 
-                    className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
-                >
-                    <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                        {t('common.visibleColumns')}
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
-                    
-                    {tableColumns.map((col) => (
-                        <DropdownMenuCheckboxItem
-                            key={col.key}
-                            checked={visibleColumns.includes(col.key)}
-                            onSelect={(e) => e.preventDefault()} 
-                            onCheckedChange={() => toggleColumn(col.key)}
-                            className="text-sm text-slate-700 dark:text-slate-200 focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400 cursor-pointer rounded-lg px-2 py-1.5 pl-8 relative"
-                        >
-                            {col.label}
-                        </DropdownMenuCheckboxItem>
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
-      </div>
-
       <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-transparent">
         <Table>
             <TableHeader className="bg-slate-50/50 dark:bg-white/5">
@@ -345,10 +301,10 @@ export function CityTable({
               variant="destructive"
               onClick={handleDeleteConfirm}
               disabled={deleteCity.isPending}
-              className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
+              className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteCity.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('common.delete')}
+              {t('common.delete.action')}
             </Button>
           </DialogFooter>
 
