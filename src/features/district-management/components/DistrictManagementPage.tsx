@@ -254,7 +254,7 @@ export function DistrictManagementPage(): ReactElement {
             </div>
 
             {/* Right Side: Controls */}
-            <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
+            <div className="flex items-center gap-2 w-full lg:w-auto justify-end">
                 {/* Page Size Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
