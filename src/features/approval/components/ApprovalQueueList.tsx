@@ -17,7 +17,7 @@ export function ApprovalQueueList(): ReactElement {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   useEffect(() => {
-    setPageTitle(t('approval.list.title', 'Bekleyen Onaylar'));
+    setPageTitle(t('approval.list.title'));
     return () => {
       setPageTitle(null);
     };
@@ -58,7 +58,7 @@ export function ApprovalQueueList(): ReactElement {
       <Card>
         <CardContent className="pt-6">
           <p className="text-destructive">
-            {t('approval.list.error', 'Onaylar yüklenirken bir hata oluştu')}
+            {t('approval.list.error')}
           </p>
         </CardContent>
       </Card>
@@ -70,7 +70,7 @@ export function ApprovalQueueList(): ReactElement {
       <Card>
         <CardContent className="pt-6">
           <p className="text-center text-muted-foreground">
-            {t('approval.list.empty', 'Bekleyen onay bulunmuyor')}
+            {t('approval.list.empty')}
           </p>
         </CardContent>
       </Card>
@@ -82,10 +82,10 @@ export function ApprovalQueueList(): ReactElement {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {t('approval.list.title', 'Bekleyen Onaylar')}
+            {t('approval.list.title')}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            {t('approval.list.description', 'Size atanan teklifleri görüntüleyip onaylayabilir veya reddedebilirsiniz')}
+            {t('approval.list.description')}
           </p>
         </div>
       </div>

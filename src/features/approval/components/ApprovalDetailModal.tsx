@@ -37,19 +37,19 @@ export function ApprovalDetailModal({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {t('approval.detail.title', 'Teklif Detayı')} - {queue.quotationOfferNo || `#${queue.quotationId}`}
+            {t('approval.detail.title')} - {queue.quotationOfferNo || `#${queue.quotationId}`}
           </DialogTitle>
           <DialogDescription>
-            {t('approval.detail.subtitle', 'Teklif detaylarını görüntüleyin ve işlem yapın')}
+            {t('approval.detail.subtitle')}
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="detail" className="w-full">
           <TabsList>
-            <TabsTrigger value="detail">{t('approval.detail.tabs.detail', 'Detay')}</TabsTrigger>
-            <TabsTrigger value="history">{t('approval.detail.tabs.history', 'Geçmiş')}</TabsTrigger>
+            <TabsTrigger value="detail">{t('approval.detail.tabs.detail')}</TabsTrigger>
+            <TabsTrigger value="history">{t('approval.detail.tabs.history')}</TabsTrigger>
             {queue.status === ApprovalStatus.Waiting && queue.isCurrent && (
-              <TabsTrigger value="action">{t('approval.detail.tabs.action', 'İşlem')}</TabsTrigger>
+              <TabsTrigger value="action">{t('approval.detail.tabs.action')}</TabsTrigger>
             )}
           </TabsList>
 
@@ -59,7 +59,7 @@ export function ApprovalDetailModal({
             ) : quotation ? (
               <QuotationDetailView quotation={quotation} />
             ) : (
-              <p>{t('approval.detail.notFound', 'Teklif bulunamadı')}</p>
+              <p>{t('approval.detail.notFound')}</p>
             )}
           </TabsContent>
 

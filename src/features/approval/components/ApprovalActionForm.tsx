@@ -45,17 +45,17 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
 
       if (result.success) {
         toast.success(
-          t('approval.approve.success', 'Onaylandı'),
+          t('approval.approve.success'),
           {
-            description: t('approval.approve.successMessage', 'Teklif başarıyla onaylandı'),
+            description: t('approval.approve.successMessage'),
           }
         );
         onSuccess();
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('approval.approve.errorMessage', 'Teklif onaylanırken bir hata oluştu');
+      const errorMessage = error instanceof Error ? error.message : t('approval.approve.errorMessage');
       toast.error(
-        t('approval.approve.error', 'Onay Hatası'),
+        t('approval.approve.error'),
         {
           description: errorMessage,
         }
@@ -72,17 +72,17 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
 
       if (result.success) {
         toast.success(
-          t('approval.reject.success', 'Reddedildi'),
+          t('approval.reject.success'),
           {
-            description: t('approval.reject.successMessage', 'Teklif reddedildi'),
+            description: t('approval.reject.successMessage'),
           }
         );
         onSuccess();
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('approval.reject.errorMessage', 'Teklif reddedilirken bir hata oluştu');
+      const errorMessage = error instanceof Error ? error.message : t('approval.reject.errorMessage');
       toast.error(
-        t('approval.reject.error', 'Red Hatası'),
+        t('approval.reject.error'),
         {
           description: errorMessage,
         }
@@ -98,12 +98,12 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
           name="note"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('approval.note.label', 'Not')}</FormLabel>
+              <FormLabel>{t('approval.note.label')}</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   value={field.value || ''}
-                  placeholder={t('approval.note.placeholder', 'Onay/red notu ekleyebilirsiniz (opsiyonel)')}
+                  placeholder={t('approval.note.placeholder')}
                   rows={4}
                 />
               </FormControl>
@@ -121,8 +121,8 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
           >
             <XCircle className="h-4 w-4 mr-2" />
             {rejectMutation.isPending
-          ? t('approval.processing', 'İşleniyor...')
-          : t('approval.actions.reject', 'Reddet')}
+          ? t('approval.processing')
+          : t('approval.actions.reject')}
           </Button>
           <Button
             type="button"
@@ -132,8 +132,8 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
           >
             <CheckCircle2 className="h-4 w-4 mr-2" />
             {approveMutation.isPending
-              ? t('approval.processing', 'İşleniyor...')
-              : t('approval.actions.approve', 'Onayla')}
+              ? t('approval.processing')
+              : t('approval.actions.approve')}
           </Button>
         </div>
       </form>

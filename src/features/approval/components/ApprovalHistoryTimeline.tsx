@@ -27,12 +27,12 @@ export function ApprovalHistoryTimeline({ history }: ApprovalHistoryTimelineProp
 
   const getApprovalLevelLabel = (level: ApprovalLevel): string => {
     const labels: Record<ApprovalLevel, string> = {
-      [ApprovalLevel.SalesManager]: t('approval.level.salesManager', 'Satış Müdürü'),
-      [ApprovalLevel.RegionalManager]: t('approval.level.regionalManager', 'Bölge Müdürü'),
-      [ApprovalLevel.Finance]: t('approval.level.finance', 'Finans'),
-      [ApprovalLevel.GeneralManager]: t('approval.level.generalManager', 'Genel Müdür'),
+      [ApprovalLevel.SalesManager]: t('approval.level.salesManager'),
+      [ApprovalLevel.RegionalManager]: t('approval.level.regionalManager'),
+      [ApprovalLevel.Finance]: t('approval.level.finance'),
+      [ApprovalLevel.GeneralManager]: t('approval.level.generalManager'),
     };
-    return labels[level] || t('approval.level.unknown', 'Bilinmiyor');
+    return labels[level] || t('approval.level.unknown');
   };
 
   const formatDate = (dateString: string): string => {
@@ -48,7 +48,7 @@ export function ApprovalHistoryTimeline({ history }: ApprovalHistoryTimelineProp
   if (history.length === 0) {
     return (
       <p className="text-center text-muted-foreground py-8">
-        {t('approval.history.empty', 'Onay geçmişi bulunmuyor')}
+        {t('approval.history.empty')}
       </p>
     );
   }
@@ -72,7 +72,7 @@ export function ApprovalHistoryTimeline({ history }: ApprovalHistoryTimelineProp
             </div>
             {item.approvedByUserFullName && (
               <p className="text-sm text-muted-foreground">
-                {t('approval.history.approvedBy', 'Onaylayan')}: {item.approvedByUserFullName}
+                {t('approval.history.approvedBy')}: {item.approvedByUserFullName}
               </p>
             )}
             <p className="text-sm text-muted-foreground">
