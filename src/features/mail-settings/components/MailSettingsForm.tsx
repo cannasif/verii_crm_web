@@ -74,7 +74,7 @@ export function MailSettingsForm({
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-muted-foreground text-sm">{t('common.loading', 'Yükleniyor...')}</p>
+          <p className="text-muted-foreground text-sm">{t('common.loading')}</p>
         </CardContent>
       </Card>
     );
@@ -85,9 +85,9 @@ export function MailSettingsForm({
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('mailSettings.PageTitle', 'Mail Ayarları')}</CardTitle>
+            <CardTitle>{t('mailSettings.PageTitle')}</CardTitle>
             <CardDescription>
-              {t('mailSettings.PageDescription', 'SMTP sunucu ayarlarını yapılandırın')}
+              {t('mailSettings.PageDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -96,7 +96,7 @@ export function MailSettingsForm({
               name="host"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Host', 'Host')}</FormLabel>
+                  <FormLabel>{t('mailSettings.Fields.Host')}</FormLabel>
                   <FormControl>
                     <Input type="text" placeholder="smtp.gmail.com" {...field} />
                   </FormControl>
@@ -109,7 +109,7 @@ export function MailSettingsForm({
               name="port"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Port', 'Port')}</FormLabel>
+                  <FormLabel>{t('mailSettings.Fields.Port')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -130,7 +130,7 @@ export function MailSettingsForm({
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">
-                      {t('mailSettings.Fields.EnableSsl', 'SSL Kullan')}
+                      {t('mailSettings.Fields.EnableSsl')}
                     </FormLabel>
                   </div>
                   <FormControl>
@@ -144,7 +144,7 @@ export function MailSettingsForm({
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Username', 'Kullanıcı Adı')}</FormLabel>
+                  <FormLabel>{t('mailSettings.Fields.Username')}</FormLabel>
                   <FormControl>
                     <Input type="text" {...field} />
                   </FormControl>
@@ -157,11 +157,11 @@ export function MailSettingsForm({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Password', 'Şifre')}</FormLabel>
+                  <FormLabel>{t('mailSettings.Fields.Password')}</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder={t('mailSettings.Fields.PasswordPlaceholder', 'Değiştirmek için yeni şifre girin')}
+                      placeholder={t('mailSettings.Fields.PasswordPlaceholder')}
                       {...field}
                     />
                   </FormControl>
@@ -174,7 +174,7 @@ export function MailSettingsForm({
               name="fromEmail"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.FromEmail', 'Gönderen E-posta')}</FormLabel>
+                  <FormLabel>{t('mailSettings.Fields.FromEmail')}</FormLabel>
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
@@ -187,7 +187,7 @@ export function MailSettingsForm({
               name="fromName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.FromName', 'Gönderen Adı')}</FormLabel>
+                  <FormLabel>{t('mailSettings.Fields.FromName')}</FormLabel>
                   <FormControl>
                     <Input type="text" readOnly disabled {...field} />
                   </FormControl>
@@ -200,7 +200,7 @@ export function MailSettingsForm({
               name="timeout"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mailSettings.Fields.Timeout', 'Zaman Aşımı (sn)')}</FormLabel>
+                  <FormLabel>{t('mailSettings.Fields.Timeout')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -224,11 +224,11 @@ export function MailSettingsForm({
             disabled={isSubmitting || testMailMutation.isPending}
           >
             {testMailMutation.isPending
-              ? t('mailSettings.TestMail.Sending', 'Test gönderiliyor...')
-              : t('mailSettings.TestMail.Send', 'Test Maili Gönder')}
+              ? t('mailSettings.TestMail.Sending')
+              : t('mailSettings.TestMail.Send')}
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? t('common.saving', 'Kaydediliyor...') : t('mailSettings.Save', 'Kaydet')}
+            {isSubmitting ? t('common.saving') : t('mailSettings.Save')}
           </Button>
         </div>
       </form>

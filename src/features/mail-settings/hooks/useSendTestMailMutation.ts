@@ -13,10 +13,10 @@ export function useSendTestMailMutation() {
   return useMutation<boolean, Error, SendTestMailVars>({
     mutationFn: (vars: SendTestMailVars) => smtpSettingsApi.sendTest(vars.to),
     onSuccess: () => {
-      toast.success(t('mailSettings.TestMail.Success', 'Test maili gönderildi'));
+      toast.success(t('mailSettings.TestMail.Success'));
     },
     onError: (error: Error) => {
-      toast.error(t(error.message) || error.message || t('common.UnexpectedError', 'Beklenmeyen bir hata oluştu'));
+      toast.error(t(error.message) || error.message || t('common.UnexpectedError'));
     },
   });
 }

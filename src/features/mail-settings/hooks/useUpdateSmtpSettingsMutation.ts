@@ -15,10 +15,10 @@ export function useUpdateSmtpSettingsMutation() {
     mutationFn: (data: UpdateSmtpSettingsDto) => smtpSettingsApi.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SMTP_SETTINGS_QUERY_KEY });
-      toast.success(t('mailSettings.SavedSuccessfully', 'Ayarlar başarıyla kaydedildi'));
+      toast.success(t('mailSettings.SavedSuccessfully'));
     },
     onError: (error: Error) => {
-      toast.error(t(error.message) || error.message || t('common.UnexpectedError', 'Beklenmeyen bir hata oluştu'));
+      toast.error(t(error.message) || error.message || t('common.UnexpectedError'));
     },
   });
 }

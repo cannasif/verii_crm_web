@@ -13,7 +13,7 @@ export function MailSettingsPage(): ReactElement {
   const updateMutation = useUpdateSmtpSettingsMutation();
 
   useEffect(() => {
-    setPageTitle(t('mailSettings.PageTitle', 'Mail Ayarları'));
+    setPageTitle(t('mailSettings.PageTitle'));
     return () => {
       setPageTitle(null);
     };
@@ -36,10 +36,10 @@ export function MailSettingsPage(): ReactElement {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">
-          {t('mailSettings.PageTitle', 'Mail Ayarları')}
+          {t('mailSettings.PageTitle')}
         </h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          {t('mailSettings.PageDescription', 'SMTP sunucu ayarlarını yapılandırın')}
+          {t('mailSettings.PageDescription')}
         </p>
       </div>
       <MailSettingsForm
