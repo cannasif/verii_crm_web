@@ -104,7 +104,7 @@
   "searchProductCode": "Rechercher Code Produit",
   "searchGroupCode": "Rechercher Code Groupe",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "erpProductCode": "Code Produit ERP",
     "erpGroupCode": "Code Groupe Produit ERP",
     "currency": "Devise",

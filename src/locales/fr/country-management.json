@@ -20,7 +20,7 @@
     "newThisMonth": "Nouveaux ce mois-ci"
   },
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "name": "Nom du pays",
     "code": "Code",
     "erpCode": "Code ERP",

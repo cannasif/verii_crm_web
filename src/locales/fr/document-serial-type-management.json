@@ -15,7 +15,7 @@
   "deleteConfirmTitle": "Confirmer la suppression",
   "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer cet enregistrement ? Cette action est irréversible.",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "ruleType": "Type de règle",
     "customerType": "Type de client",
     "salesRep": "Représentant commercial",

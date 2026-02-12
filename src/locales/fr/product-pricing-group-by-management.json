@@ -84,7 +84,7 @@
   "lowProfit": "Profit Faible",
   "negativeProfit": "Perte",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "erpGroupCode": "Code Groupe Produit ERP",
     "currency": "Devise",
     "listPrice": "Prix Catalogue",

@@ -14,7 +14,7 @@
   "save": "Enregistrer",
   "saving": "Enregistrement...",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "name": "Nom du District",
     "erpCode": "Code ERP",
     "cityName": "Nom de la Ville",

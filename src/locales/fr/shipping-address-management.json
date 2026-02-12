@@ -55,7 +55,7 @@
   "createDescription": "Entrer les informations de la nouvelle adresse de livraison",
   "editDescription": "Modifier les informations de l'adresse de livraison",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "showing": "Affichage {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
     "customerName": "Nom du client",
@@ -74,10 +74,10 @@
   "save": "Enregistrer",
   "saving": "Enregistrement...",
   "deleting": "Suppression...",
-  "name": "Adres Adı",
-  "namePlaceholder": "Adres adını girin",
-  "isDefault": "Varsayılan Sevk Adresi",
-  "isDefaultShort": "Varsayılan",
-  "defaultBadge": "Varsayılan",
-  "nameMaxLength": "Adres adı en fazla 150 karakter olabilir"
+  "name": "Nom de l'adresse",
+  "namePlaceholder": "Entrez le nom de l'adresse",
+  "isDefault": "Adresse de livraison par défaut",
+  "isDefaultShort": "Défaut",
+  "defaultBadge": "Défaut",
+  "nameMaxLength": "Le nom de l'adresse peut contenir jusqu'à 150 caractères"
 }
