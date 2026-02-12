@@ -16,10 +16,10 @@ export const useStockImageUpload = (): UseMutationResult<StockImageDto[], Error,
     onSuccess: (_, variables: { stockId: number; files: File[]; altTexts?: string[] }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.images(variables.stockId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(variables.stockId) });
-      toast.success(t('stock.messages.uploadSuccess', 'Görseller başarıyla yüklendi'));
+      toast.success(t('stock.messages.uploadSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('stock.messages.error', 'Bir hata oluştu'));
+      toast.error(error.message || t('stock.messages.error'));
     },
   });
 };

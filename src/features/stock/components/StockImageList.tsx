@@ -80,10 +80,10 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
             <ImageIcon className="h-8 w-8 text-zinc-400" />
         </div>
         <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-1">
-            {t('stock.images.noImages', 'Henüz görsel yüklenmemiş')}
+            {t('stock.images.noImages')}
         </h3>
         <p className="text-sm text-zinc-500 text-center max-w-xs">
-            {t('stock.images.noImagesDesc', 'Yukarıdaki alanı kullanarak yeni görseller ekleyebilirsiniz.')}
+            {t('stock.images.noImagesDesc')}
         </p>
       </div>
     );
@@ -109,7 +109,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                     className="absolute top-3 left-3 z-10 bg-gradient-to-r from-pink-600 to-orange-600 border-0 shadow-lg shadow-pink-500/30 text-white px-2 py-1"
                   >
                     <Star className="h-3 w-3 mr-1 fill-white" />
-                    {t('stock.images.primary', 'Ana Görsel')}
+                    {t('stock.images.primary')}
                   </Badge>
                 )}
                 
@@ -139,7 +139,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                         focus-visible:ring-0 focus-visible:border-zinc-300
                         text-zinc-600 dark:text-zinc-300
                     "
-                    placeholder={t('stock.images.altText', 'Alt metin yok')}
+                    placeholder={t('stock.images.altText')}
                   />
               </div>
 
@@ -157,14 +157,14 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                     ) : (
                         <>
                             <Star className="h-3 w-3 mr-1.5" />
-                            {t('stock.images.setPrimary', 'Ana Yap')}
+                            {t('stock.images.setPrimary')}
                         </>
                     )}
                   </Button>
                 ) : (
                     <div className="flex-1 flex items-center justify-center h-8 text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 rounded-md border border-emerald-100 dark:border-emerald-900/20">
                         <CheckCircle2 className="h-3 w-3 mr-1.5" />
-                        {t('stock.images.isPrimary', 'Seçili')}
+                        {t('stock.images.isPrimary')}
                     </div>
                 )}
 
@@ -191,11 +191,11 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                     <Trash2 className="h-5 w-5" />
                 </div>
                 <DialogTitle className="text-xl">
-                    {t('stock.images.deleteConfirm', 'Görseli Sil')}
+                    {t('stock.images.deleteConfirm')}
                 </DialogTitle>
             </div>
             <DialogDescription className="pt-2">
-              {t('stock.images.deleteConfirmMessage', 'Bu görseli silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')}
+              {t('stock.images.deleteConfirmMessage')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
@@ -205,7 +205,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
               disabled={deleteImage.isPending}
               className="rounded-lg"
             >
-              {t('stock.images.cancel', 'Vazgeç')}
+              {t('stock.images.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -216,10 +216,10 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
               {deleteImage.isPending ? (
                  <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('stock.images.deleting', 'Siliniyor...')}
+                    {t('stock.images.deleting')}
                   </>
                 ) : (
-                 t('stock.images.confirmDelete', 'Evet, Sil')
+                 t('stock.images.confirmDelete')
                 )}
             </Button>
           </DialogFooter>

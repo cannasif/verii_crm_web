@@ -28,7 +28,7 @@ export function StockDetailPage(): ReactElement {
 
   useEffect(() => {
     if (stock) {
-      setPageTitle(t('stock.detail.title', 'Stok Detayı'));
+      setPageTitle(t('stock.detail.title'));
     }
     return () => setPageTitle(null);
   }, [stock, t, setPageTitle]);
@@ -58,16 +58,16 @@ export function StockDetailPage(): ReactElement {
             </div>
         </div>
         <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('stock.detail.notFound', 'Stok Bulunamadı')}</h2>
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('stock.detail.notFound')}</h2>
             <p className="text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
-                {t('stock.detail.notFoundDesc', 'Aradığınız stok kaydı silinmiş veya hiç oluşturulmamış olabilir.')}
+                {t('stock.detail.notFoundDesc')}
             </p>
         </div>
         <Button 
             onClick={() => navigate('/stocks')}
             className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-full px-8"
         >
-            {t('stock.detail.backToStockList', 'Listeye Dön')}
+            {t('stock.detail.backToStockList')}
         </Button>
       </div>
     );
@@ -99,7 +99,7 @@ export function StockDetailPage(): ReactElement {
                     <Box className="w-4 h-4 text-pink-500" />
                     <span>{stock.erpStockCode || 'Kod Yok'}</span>
                     <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                    <span>{t('stock.detail.subtitle', 'Stok Detay Yönetimi')}</span>
+                    <span>{t('stock.detail.subtitle')}</span>
                 </div>
             </div>
         </div>
@@ -116,9 +116,9 @@ export function StockDetailPage(): ReactElement {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <div className="border-b border-zinc-200/50 dark:border-white/5 px-6 pt-4">
                     <TabsList className="bg-transparent h-auto p-0 w-full justify-start gap-8">
-                        <TabItem value="basic" icon={Info} label={t('stock.detail.basicInfo', 'Temel Bilgiler')} active={activeTab === 'basic'} />
-                        <TabItem value="images" icon={ImageIcon} label={t('stock.detail.images', 'Görseller')} active={activeTab === 'images'} />
-                        <TabItem value="relations" icon={Layers} label={t('stock.detail.relations', 'Bağlı Stoklar')} active={activeTab === 'relations'} />
+                        <TabItem value="basic" icon={Info} label={t('stock.detail.basicInfo')} active={activeTab === 'basic'} />
+                        <TabItem value="images" icon={ImageIcon} label={t('stock.detail.images')} active={activeTab === 'images'} />
+                        <TabItem value="relations" icon={Layers} label={t('stock.detail.relations')} active={activeTab === 'relations'} />
                     </TabsList>
                 </div>
 
@@ -130,7 +130,7 @@ export function StockDetailPage(): ReactElement {
                                 <div className="bg-zinc-50/80 dark:bg-white/5 rounded-xl p-6 border border-zinc-100 dark:border-white/5">
                                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                                         <Info className="w-5 h-5 text-pink-600" />
-                                        {t('stock.detail.summary', 'Hızlı Bakış')}
+                                        {t('stock.detail.summary')}
                                     </h3>
                                     <StockBasicInfo stock={stock} />
                                 </div>
@@ -160,7 +160,7 @@ export function StockDetailPage(): ReactElement {
                                     <div className="w-full border-t border-zinc-200 dark:border-white/10"></div>
                                 </div>
                                 <div className="relative flex justify-center">
-                                    <span className="px-3 bg-white/0 text-sm text-muted-foreground bg-white dark:bg-[#1a1025]">{t('stock.detail.gallery', 'Galeri')}</span>
+                                    <span className="px-3 bg-white/0 text-sm text-muted-foreground bg-white dark:bg-[#1a1025]">{t('stock.detail.gallery')}</span>
                                 </div>
                             </div>
                             <StockImageList stockId={stockId} />
@@ -171,7 +171,7 @@ export function StockDetailPage(): ReactElement {
                         <div className="grid gap-8 lg:grid-cols-12">
                              <div className="lg:col-span-4">
                                 <div className="bg-gradient-to-br from-white to-zinc-50 dark:from-white/5 dark:to-transparent rounded-xl p-6 border border-zinc-100 dark:border-white/5 shadow-sm sticky top-6">
-                                    <h3 className="font-semibold text-lg mb-2">{t('stock.detail.addRelation', 'Bağlantı Ekle')}</h3>
+                                    <h3 className="font-semibold text-lg mb-2">{t('stock.detail.addRelation')}</h3>
                                     <p className="text-sm text-muted-foreground mb-6">Bu stoka ait alt veya üst ürün tanımlayın.</p>
                                     <StockRelationForm stockId={stockId} />
                                 </div>

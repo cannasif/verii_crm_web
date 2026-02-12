@@ -91,7 +91,7 @@ export function StockTable({
         <div className="p-4 bg-white dark:bg-zinc-800 rounded-full shadow-sm mb-3">
             <PackageOpen size={48} className="text-zinc-300 dark:text-zinc-600" />
         </div>
-        <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">{t('stock.list.noData', 'Kayıt Bulunamadı')}</h3>
+        <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">{t('stock.list.noData')}</h3>
         <p className="text-sm max-w-xs text-center mt-1">Arama kriterlerinize uygun stok kaydı mevcut değil.</p>
       </div>
     );
@@ -105,9 +105,9 @@ export function StockTable({
         <TableHeader className="bg-zinc-50/80 dark:bg-white/5">
           <TableRow className="hover:bg-transparent border-b border-zinc-200 dark:border-white/10">
             {[
-              { id: 'Id', label: t('stock.list.id', 'ID'), className: "w-[80px]" },
-              { id: 'ErpStockCode', label: t('stock.list.erpStockCode', 'ERP Kodu') },
-              { id: 'StockName', label: t('stock.list.stockName', 'Stok Adı') }
+              { id: 'Id', label: t('stock.list.id'), className: "w-[80px]" },
+              { id: 'ErpStockCode', label: t('stock.list.erpStockCode') },
+              { id: 'StockName', label: t('stock.list.stockName') }
             ].map((col) => (
               <TableHead 
                 key={col.id}
@@ -124,10 +124,10 @@ export function StockTable({
             ))}
             
             <TableHead className="py-4 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-center w-[100px]">
-              {t('stock.list.unit', 'Birim')}
+              {t('stock.list.unit')}
             </TableHead>
             <TableHead className="py-4 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-right w-[80px]">
-              {t('stock.list.actions', 'Detay')}
+              {t('stock.list.actions')}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -182,7 +182,7 @@ export function StockTable({
 
       <div className="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-white/50 dark:bg-black/20 border-t border-zinc-200 dark:border-white/10 gap-4">
         <div className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-            {t('stock.list.total', 'Toplam')} <span className="font-bold text-zinc-900 dark:text-white mx-1">{data.totalCount || 0}</span> {t('stock.list.recordsListed', 'kayıt listeleniyor.')}
+            {t('stock.list.total')} <span className="font-bold text-zinc-900 dark:text-white mx-1">{data.totalCount || 0}</span> {t('stock.list.recordsListed')}
         </div>
         
         <div className="flex items-center gap-2">
@@ -194,7 +194,7 @@ export function StockTable({
             disabled={pageNumber <= 1}
           >
             <ArrowLeft className="w-3 h-3 mr-1" />
-            {t('stock.list.previous', 'Önceki')}
+            {t('stock.list.previous')}
           </Button>
           
           <div className="text-xs font-semibold bg-zinc-100 dark:bg-white/10 px-3 py-1.5 rounded-md min-w-[3rem] text-center text-zinc-700 dark:text-zinc-200">
@@ -208,7 +208,7 @@ export function StockTable({
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
           >
-            {t('stock.list.next', 'Sonraki')}
+            {t('stock.list.next')}
             <ArrowRight className="w-3 h-3 ml-1" />
           </Button>
         </div>

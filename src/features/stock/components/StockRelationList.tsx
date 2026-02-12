@@ -75,10 +75,10 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
             <Link className="h-8 w-8 text-zinc-400" />
         </div>
         <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-1">
-            {t('stock.relations.noRelations', 'Henüz bağlı stok eklenmemiş')}
+            {t('stock.relations.noRelations')}
         </h3>
         <p className="text-sm text-zinc-500 text-center max-w-xs">
-            {t('stock.relations.noRelationsDesc', 'Sol taraftaki formu kullanarak yeni ilişkiler tanımlayabilirsiniz.')}
+            {t('stock.relations.noRelationsDesc')}
         </p>
       </div>
     );
@@ -91,19 +91,19 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
           <TableHeader className="bg-zinc-50/50 dark:bg-white/5">
             <TableRow className="hover:bg-transparent border-zinc-200 dark:border-white/10">
               <TableHead className="w-[120px] font-semibold text-zinc-700 dark:text-zinc-300">
-                {t('stock.relations.stockCode', 'Stok Kodu')}
+                {t('stock.relations.stockCode')}
               </TableHead>
               <TableHead className="font-semibold text-zinc-700 dark:text-zinc-300">
-                {t('stock.relations.stockName', 'Stok Adı')}
+                {t('stock.relations.stockName')}
               </TableHead>
               <TableHead className="text-center font-semibold text-zinc-700 dark:text-zinc-300">
-                {t('stock.relations.quantity', 'Miktar')}
+                {t('stock.relations.quantity')}
               </TableHead>
               <TableHead className="text-center font-semibold text-zinc-700 dark:text-zinc-300">
-                {t('stock.relations.isMandatory', 'Durum')}
+                {t('stock.relations.isMandatory')}
               </TableHead>
               <TableHead className="text-right font-semibold text-zinc-700 dark:text-zinc-300">
-                {t('stock.relations.actions', 'İşlemler')}
+                {t('stock.relations.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -128,12 +128,12 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
                   {relation.isMandatory ? (
                     <Badge variant="default" className="bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/30 dark:text-pink-300 border-pink-200 dark:border-pink-800 gap-1.5 shadow-none font-medium">
                       <CheckCircle2 className="h-3 w-3" />
-                      {t('stock.relations.mandatory', 'Zorunlu')}
+                      {t('stock.relations.mandatory')}
                     </Badge>
                   ) : (
                     <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 gap-1.5 shadow-none font-medium">
                       <XCircle className="h-3 w-3" />
-                      {t('stock.relations.optional', 'Opsiyonel')}
+                      {t('stock.relations.optional')}
                     </Badge>
                   )}
                 </TableCell>
@@ -150,7 +150,7 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
                     "
                     onClick={() => handleDeleteClick(relation)}
                     disabled={deleteRelation.isPending}
-                    title={t('stock.relations.delete', 'Sil')}
+                    title={t('stock.relations.delete')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -169,11 +169,11 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
                     <AlertTriangle className="h-5 w-5" />
                 </div>
                 <DialogTitle className="text-xl">
-                    {t('stock.relations.deleteConfirm', 'Bağlantıyı Sil')}
+                    {t('stock.relations.deleteConfirm')}
                 </DialogTitle>
             </div>
             <DialogDescription className="pt-2 text-zinc-600 dark:text-zinc-400">
-              {t('stock.relations.deleteConfirmMessage', '{{name}} ile olan ilişkiyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', {
+              {t('stock.relations.deleteConfirmMessage', {
                 name: relationToDelete?.relatedStockName || '',
               })}
             </DialogDescription>
@@ -185,7 +185,7 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
               disabled={deleteRelation.isPending}
               className="rounded-lg"
             >
-              {t('stock.relations.cancel', 'Vazgeç')}
+              {t('stock.relations.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -196,10 +196,10 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
               {deleteRelation.isPending ? (
                  <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('stock.relations.deleting', 'Siliniyor...')}
+                    {t('stock.relations.deleting')}
                  </>
               ) : (
-                 t('stock.relations.confirmDelete', 'Evet, Sil')
+                 t('stock.relations.confirmDelete')
               )}
             </Button>
           </DialogFooter>

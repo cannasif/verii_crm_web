@@ -92,7 +92,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
             <FormItem className="flex flex-col">
               <FormLabel className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2 text-sm">
                  <Box className="w-4 h-4 text-pink-600" />
-                 {t('stock.relations.relatedStock', 'Bağlı Stok Seçimi')}
+                 {t('stock.relations.relatedStock')}
               </FormLabel>
               
               <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
@@ -112,17 +112,17 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                     >
                       {field.value
                         ? stocks.find((stock) => stock.id === field.value)?.stockName
-                        : t('stock.relations.selectStock', 'Listeden bir stok seçiniz...')}
+                        : t('stock.relations.selectStock')}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-[350px] p-0 rounded-xl shadow-xl border-zinc-200 dark:border-zinc-800 overflow-hidden">
                   <Command className="bg-white dark:bg-zinc-900">
-                    <CommandInput placeholder={t('stock.relations.search', 'Stok adı veya kodu ara...')} className="h-11 border-none focus:ring-0" />
+                    <CommandInput placeholder={t('stock.relations.search')} className="h-11 border-none focus:ring-0" />
                     <CommandList>
                         <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
-                            {t('stock.relations.noStockFound', 'Stok bulunamadı.')}
+                            {t('stock.relations.noStockFound')}
                         </CommandEmpty>
                         <CommandGroup className="max-h-[240px] overflow-y-auto p-1">
                         {stocks
@@ -168,7 +168,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
             <FormItem>
               <FormLabel className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2 text-sm">
                 <Scale className="w-4 h-4 text-orange-500" />
-                {t('stock.relations.quantity', 'Miktar / Katsayı')}
+                {t('stock.relations.quantity')}
               </FormLabel>
               <FormControl>
                 <div className="relative group">
@@ -202,13 +202,13 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
             <FormItem>
               <FormLabel className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2 text-sm">
                 <FileText className="w-4 h-4 text-purple-500" />
-                {t('stock.relations.description', 'Açıklama / Not')}
+                {t('stock.relations.description')}
               </FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   value={field.value || ''}
-                  placeholder={t('stock.relations.descriptionPlaceholder', 'İlişki hakkında opsiyonel bir not ekleyin...')}
+                  placeholder={t('stock.relations.descriptionPlaceholder')}
                   className="
                     min-h-[100px] rounded-xl resize-none
                     bg-white/50 dark:bg-zinc-900/50 
@@ -245,7 +245,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
               </FormControl>
               <div className="space-y-1 leading-none select-none">
                 <FormLabel className="text-sm font-bold text-zinc-900 dark:text-white cursor-pointer flex items-center gap-2">
-                  {t('stock.relations.isMandatory', 'Zorunlu İlişki')}
+                  {t('stock.relations.isMandatory')}
                   {field.value && <AlertCircle className="w-3 h-3 text-pink-600 animate-pulse" />}
                 </FormLabel>
                 <FormDescription className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
@@ -273,12 +273,12 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
           {createRelation.isPending ? (
             <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                {t('stock.relations.saving', 'İşleniyor...')}
+                {t('stock.relations.saving')}
             </>
           ) : (
             <>
                 <PackagePlus className="mr-2 h-5 w-5" />
-                {t('stock.relations.add', 'İlişkiyi Ekle')}
+                {t('stock.relations.add')}
             </>
           )}
         </Button>

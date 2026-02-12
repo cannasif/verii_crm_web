@@ -41,17 +41,17 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
       <Alert className="bg-zinc-50 border-zinc-200 text-zinc-800 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 shadow-sm">
         <Info className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
         <AlertDescription className="ml-2 text-xs font-medium">
-          {t('stock.detail.basicInfoReadonly', 'Bu veriler ERP sisteminden senkronize edilmiştir ve manuel değiştirilemez.')}
+          {t('stock.detail.basicInfoReadonly')}
         </AlertDescription>
       </Alert>
 
       <div className="space-y-4">
-        <SectionHeader icon={Box} title={t('stock.detail.mainInfo', 'Temel Veriler')} />
+        <SectionHeader icon={Box} title={t('stock.detail.mainInfo')} />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             
             <InfoItem 
-                label={t('stock.detail.erpStockCode', 'ERP Stok Kodu')} 
+                label={t('stock.detail.erpStockCode')} 
                 value={stock.erpStockCode} 
                 icon={Hash}
                 copyable
@@ -60,7 +60,7 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
             />
 
             <InfoItem 
-                label={t('stock.detail.stockName', 'Stok Adı')} 
+                label={t('stock.detail.stockName')} 
                 value={stock.stockName} 
                 icon={Tag}
                 featured
@@ -69,13 +69,13 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
             />
 
             <InfoItem 
-                label={t('stock.detail.unit', 'Birim')} 
+                label={t('stock.detail.unit')} 
                 value={stock.unit} 
                 icon={Box}
             />
 
              <InfoItem 
-                label={t('stock.detail.ureticiKodu', 'Üretici Kodu')} 
+                label={t('stock.detail.ureticiKodu')} 
                 value={stock.ureticiKodu} 
                 icon={Building2}
                 copyable
@@ -86,16 +86,16 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
       <Separator className="bg-zinc-200 dark:bg-white/5" />
 
       <div className="space-y-4">
-        <SectionHeader icon={Layers} title={t('stock.detail.groupInfo', 'Gruplama ve Lokasyon')} />
+        <SectionHeader icon={Layers} title={t('stock.detail.groupInfo')} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
              <InfoItem 
-                label={t('stock.detail.grup', 'Grup Bilgisi')} 
+                label={t('stock.detail.grup')} 
                 value={stock.grupKodu ? `${stock.grupKodu} - ${stock.grupAdi || ''}` : '-'} 
                 icon={Layers}
             />
              <InfoItem 
-                label={t('stock.detail.branchCode', 'Şube Kodu')} 
+                label={t('stock.detail.branchCode')} 
                 value={stock.branchCode?.toString() ?? ''}
                 icon={GitBranch}
             />
@@ -105,7 +105,7 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
       <Separator className="bg-zinc-200 dark:bg-white/5" />
 
       <div className="space-y-4">
-         <SectionHeader icon={ListFilter} title={t('stock.detail.specialCodes', 'Özel Kodlar')} />
+         <SectionHeader icon={ListFilter} title={t('stock.detail.specialCodes')} />
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {specialCodes.map((item) => (
@@ -146,13 +146,13 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
          {stock.createdAt && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 dark:bg-white/5 text-xs text-zinc-500 border border-zinc-200 dark:border-white/5">
                 <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                <span>{t('stock.detail.created', 'Oluşturuldu')}: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{new Date(stock.createdAt).toLocaleDateString(i18n.language)}</span></span>
+                <span>{t('stock.detail.created')}: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{new Date(stock.createdAt).toLocaleDateString(i18n.language)}</span></span>
             </div>
          )}
          {stock.updatedAt && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 dark:bg-white/5 text-xs text-zinc-500 border border-zinc-200 dark:border-white/5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400" />
-                <span>{t('stock.detail.updated', 'Güncellendi')}: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{new Date(stock.updatedAt).toLocaleDateString(i18n.language)}</span></span>
+                <span>{t('stock.detail.updated')}: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{new Date(stock.updatedAt).toLocaleDateString(i18n.language)}</span></span>
             </div>
          )}
       </div>
@@ -194,7 +194,7 @@ function InfoItem({
     const handleCopy = () => {
         if (value) {
             navigator.clipboard.writeText(value);
-            toast.success(t('stock.detail.copied', 'Kopyalandı'));
+            toast.success(t('stock.detail.copied'));
         }
     };
 
@@ -233,7 +233,7 @@ function InfoItem({
                             multiline ? "ml-2 mt-0.5" : "absolute right-2 top-1/2 -translate-y-1/2"
                         )}
                         onClick={handleCopy}
-                        title={t('stock.detail.copy', 'Kopyala')}
+                        title={t('stock.detail.copy')}
                     >
                         <Copy className="h-4 w-4" />
                     </Button>

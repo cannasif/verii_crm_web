@@ -15,10 +15,10 @@ export const useStockRelationDelete = (): UseMutationResult<void, Error, { id: n
     onSuccess: (_, variables: { id: number; stockId: number }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.relations(variables.stockId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(variables.stockId) });
-      toast.success(t('stock.messages.deleteSuccess', 'Bağlı stok başarıyla silindi'));
+      toast.success(t('stock.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('stock.messages.error', 'Bir hata oluştu'));
+      toast.error(error.message || t('stock.messages.error'));
     },
   });
 };
