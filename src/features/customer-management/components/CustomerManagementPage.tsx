@@ -77,7 +77,7 @@ export function CustomerManagementPage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageTitle(t('customerManagement.menu', 'Müşteri Yönetimi'));
+    setPageTitle(t('customerManagement.menu'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -260,10 +260,10 @@ export function CustomerManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('customerManagement.menu', 'Müşteri Yönetimi')}
+            {t('customerManagement.menu')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
-            {t('customerManagement.description', 'Müşterilerinizi yönetin ve düzenleyin')}
+            {t('customerManagement.description')}
           </p>
         </div>
         
@@ -272,7 +272,7 @@ export function CustomerManagementPage(): ReactElement {
           className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
         >
           <Plus size={18} className="mr-2" />
-          {t('customerManagement.addButton', 'Yeni Müşteri Ekle')}
+          {t('customerManagement.addButton')}
         </Button>
       </div>
 
@@ -287,7 +287,7 @@ export function CustomerManagementPage(): ReactElement {
                 <div className="relative group w-full sm:w-72 lg:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
                   <Input
-                    placeholder={t('common.search', 'Hızlı Ara (Ad, Kod, Vergi No...)')}
+                    placeholder={t('common.search')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all w-full"
@@ -324,7 +324,7 @@ export function CustomerManagementPage(): ReactElement {
                 <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
                   <div className="p-2">
                     <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.actions', 'İşlemler')}
+                      {t('common.actions')}
                     </div>
                   </div>
 
@@ -332,19 +332,19 @@ export function CustomerManagementPage(): ReactElement {
 
                   <div className="p-2">
                     <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.export', 'Dışa Aktar')}
+                      {t('common.export')}
                     </div>
                     <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <FileSpreadsheet size={16} className="text-emerald-500" />
-                      <span>{t('common.exportExcel', 'Excel İndir')}</span>
+                      <span>{t('common.exportExcel')}</span>
                     </button>
                     <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <FileText size={16} className="text-red-400" />
-                      <span>{t('common.exportPDF', 'PDF İndir')}</span>
+                      <span>{t('common.exportPDF')}</span>
                     </button>
                     <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <Presentation size={16} className="text-orange-400" />
-                      <span>{t('common.exportPPT', 'PowerPoint İndir')}</span>
+                      <span>{t('common.exportPPT')}</span>
                     </button>
                   </div>
                 </DropdownMenuContent>
@@ -360,7 +360,7 @@ export function CustomerManagementPage(): ReactElement {
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showColumns ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
                         >
                             <EyeOff size={16} />
-                            <span className="font-medium text-sm">{t('common.editColumns', 'Sütunlar')}</span>
+                            <span className="font-medium text-sm">{t('common.editColumns')}</span>
                             <ChevronDown size={14} />
                         </button>
                     </DropdownMenuTrigger>
@@ -369,7 +369,7 @@ export function CustomerManagementPage(): ReactElement {
                         className="w-56 max-h-[400px] overflow-y-auto bg-[#151025] border border-white/10 shadow-xl rounded-xl p-2 z-50"
                     >
                         <DropdownMenuLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 py-1.5">
-                            {t('common.visibleColumns', 'Görünür Sütunlar')}
+                            {t('common.visibleColumns')}
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator className="bg-white/10 my-1" />
                         
@@ -393,13 +393,13 @@ export function CustomerManagementPage(): ReactElement {
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showFilters ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
                         >
                             <Filter size={16} />
-                            <span className="font-medium text-sm">{t('common.filters', 'Detaylı Filtre')}</span>
+                            <span className="font-medium text-sm">{t('common.filters')}</span>
                         </button>
                     </PopoverTrigger>
                     <PopoverContent side="bottom" align="end" className="w-96 p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
                         
                         <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                          <h3 className="text-sm font-semibold text-gray-200">{t('common.filters', 'Filtreleme')}</h3>
+                          <h3 className="text-sm font-semibold text-gray-200">{t('common.filters')}</h3>
                           <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-white transition-colors">
                             <X size={16} />
                           </button>
@@ -414,7 +414,7 @@ export function CustomerManagementPage(): ReactElement {
                                             <UserCircleIcon size={14} />
                                         </div>
                                         <Input 
-                                            placeholder={t('customerManagement.filter.name', 'Müşteri Adı ile ara...')}
+                                            placeholder={t('customerManagement.filter.name')}
                                             value={draftFilters.name}
                                             onChange={(e) => handleFilterChange('name', e.target.value)}
                                             className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
@@ -427,7 +427,7 @@ export function CustomerManagementPage(): ReactElement {
                                         <Mail01Icon size={14} />
                                     </div>
                                     <Input 
-                                        placeholder={t('customerManagement.filter.email', 'E-posta')}
+                                        placeholder={t('customerManagement.filter.email')}
                                         value={draftFilters.email}
                                         onChange={(e) => handleFilterChange('email', e.target.value)}
                                         className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
@@ -439,7 +439,7 @@ export function CustomerManagementPage(): ReactElement {
                                         <Call02Icon size={14} />
                                     </div>
                                     <Input 
-                                        placeholder={t('customerManagement.filter.phone', 'Telefon')}
+                                        placeholder={t('customerManagement.filter.phone')}
                                         value={draftFilters.phone}
                                         onChange={(e) => handleFilterChange('phone', e.target.value)}
                                         className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
@@ -451,7 +451,7 @@ export function CustomerManagementPage(): ReactElement {
                                         <Hash size={14} />
                                     </div>
                                     <Input 
-                                        placeholder={t('customerManagement.filter.customerCode', 'Müşteri Kodu')}
+                                        placeholder={t('customerManagement.filter.customerCode')}
                                         value={draftFilters.customerCode}
                                         onChange={(e) => handleFilterChange('customerCode', e.target.value)}
                                         className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
@@ -463,7 +463,7 @@ export function CustomerManagementPage(): ReactElement {
                                         <FileText size={14} />
                                     </div>
                                     <Input 
-                                        placeholder={t('customerManagement.filter.taxNumber', 'Vergi No')}
+                                        placeholder={t('customerManagement.filter.taxNumber')}
                                         value={draftFilters.taxNumber}
                                         onChange={(e) => handleFilterChange('taxNumber', e.target.value)}
                                         className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
@@ -476,7 +476,7 @@ export function CustomerManagementPage(): ReactElement {
                                             <MapPin size={14} />
                                         </div>
                                         <Input 
-                                            placeholder={t('customerManagement.filter.city', 'Şehir')}
+                                            placeholder={t('customerManagement.filter.city')}
                                             value={draftFilters.cityName}
                                             onChange={(e) => handleFilterChange('cityName', e.target.value)}
                                             className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
@@ -491,7 +491,7 @@ export function CustomerManagementPage(): ReactElement {
                                 onClick={clearAdvancedFilters}
                                 className="text-xs text-gray-500 hover:text-white transition-colors"
                             >
-                                {t('common.clearFilters', 'Temizle')}
+                                {t('common.clearFilters')}
                             </button>
                             <Button 
                                 onClick={() => {
@@ -501,7 +501,7 @@ export function CustomerManagementPage(): ReactElement {
                                 size="sm"
                                 className="bg-pink-600 hover:bg-pink-700 text-white border-0 h-8 text-xs"
                             >
-                                {t('common.apply', 'Uygula')}
+                                {t('common.apply')}
                             </Button>
                         </div>
                     </PopoverContent>

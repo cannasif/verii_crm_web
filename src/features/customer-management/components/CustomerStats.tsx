@@ -20,7 +20,7 @@ export function CustomerStats(): ReactElement {
           <Card key={i} className="bg-white/50 dark:bg-[#1a1025]/40 border border-slate-200 dark:border-white/5 shadow-sm">
             <CardHeader>
               <CardTitle className="text-sm font-medium text-slate-400">
-                {t('customerManagement.loading', 'Yükleniyor...')}
+                {t('customerManagement.loading')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -58,7 +58,7 @@ export function CustomerStats(): ReactElement {
         <div className={glowStyle} />
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
           <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('customerManagement.stats.totalCustomers', 'Toplam Müşteri')}
+            {t('customerManagement.stats.totalCustomers')}
           </CardTitle>
           <div className="p-2 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 rounded-lg shadow-sm border border-blue-100 dark:border-blue-500/20">
              <Users size={18} />
@@ -74,7 +74,7 @@ export function CustomerStats(): ReactElement {
         <div className={glowStyle} />
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
           <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('customerManagement.stats.approvedCustomers', 'Onaylı Müşteri')}
+            {t('customerManagement.stats.approvedCustomers')}
           </CardTitle>
           <div className="p-2 bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400 rounded-lg shadow-sm border border-green-100 dark:border-green-500/20">
              <CheckCircle2 size={18} />
@@ -90,7 +90,7 @@ export function CustomerStats(): ReactElement {
         <div className={glowStyle} />
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
           <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('customerManagement.stats.newThisMonth', 'Bu Ay Yeni')}
+            {t('customerManagement.stats.newThisMonth')}
           </CardTitle>
           <div className="p-2 bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 rounded-lg shadow-sm border border-orange-100 dark:border-orange-500/20">
              <Zap size={18} />

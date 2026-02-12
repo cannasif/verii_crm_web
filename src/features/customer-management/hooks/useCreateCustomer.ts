@@ -20,10 +20,10 @@ export const useCreateCustomer = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('customerManagement.messages.createSuccess', 'Müşteri başarıyla oluşturuldu'));
+      toast.success(t('customerManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('customerManagement.messages.createError', 'Müşteri oluşturulamadı'));
+      toast.error(error.message || t('customerManagement.messages.createError'));
     },
   });
 };

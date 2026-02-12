@@ -18,10 +18,10 @@ export const useDeleteCustomer = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('customerManagement.messages.deleteSuccess', 'Müşteri başarıyla silindi'));
+      toast.success(t('customerManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('customerManagement.messages.deleteError', 'Müşteri silinemedi'));
+      toast.error(error.message || t('customerManagement.messages.deleteError'));
     },
   });
 };

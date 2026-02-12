@@ -21,10 +21,10 @@ export const useUpdateCustomer = () => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedCustomer.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('customerManagement.messages.updateSuccess', 'Müşteri başarıyla güncellendi'));
+      toast.success(t('customerManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('customerManagement.messages.updateError', 'Müşteri güncellenemedi'));
+      toast.error(error.message || t('customerManagement.messages.updateError'));
     },
   });
 };

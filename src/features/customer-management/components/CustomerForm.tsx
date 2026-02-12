@@ -191,13 +191,13 @@ export function CustomerForm({
             <div className="space-y-1">
               <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {customer
-                  ? t('customerManagement.form.editCustomer', 'Müşteri Düzenle')
-                  : t('customerManagement.form.addCustomer', 'Yeni Müşteri Ekle')}
+                  ? t('customerManagement.form.editCustomer')
+                  : t('customerManagement.form.addCustomer')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
                 {customer
-                  ? t('customerManagement.form.editDescription', 'Müşteri bilgilerini güncelleyin')
-                  : t('customerManagement.form.addDescription', 'Yeni müşteri kaydı oluşturun')}
+                  ? t('customerManagement.form.editDescription')
+                  : t('customerManagement.form.addDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -212,7 +212,7 @@ export function CustomerForm({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.name', 'Müşteri Adı')} <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.name')} <span className="text-red-500">*</span></FormLabel>
                     <FormControl><Input {...field} className={INPUT_STYLE} placeholder="Örn: ABC Teknoloji A.Ş." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -220,7 +220,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="customerCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.code', 'Müşteri Kodu')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.code')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Örn: CST-001" /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -228,9 +228,9 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="customerTypeId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.customerType', 'Müşteri Tipi')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.customerType')}</FormLabel>
                     <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value ? String(field.value) : ''}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.customerTypePlaceholder', 'Müşteri tipi seçin')} /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.customerTypePlaceholder')} /></SelectTrigger></FormControl>
                       <SelectContent>{customerTypes.map((type) => <SelectItem key={type.id} value={String(type.id)}>{type.name}</SelectItem>)}</SelectContent>
                     </Select>
                     <FormMessage className="text-xs" />
@@ -239,7 +239,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="taxNumber" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxNumber', 'Vergi No')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxNumber')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Vergi numarası..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -247,7 +247,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="taxOffice" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxOffice', 'Vergi Dairesi')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxOffice')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Vergi dairesi..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -255,7 +255,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="tcknNumber" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.tcknNumber', 'TCKN')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.tcknNumber')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="TCKN..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -263,7 +263,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Mail size={16} className="text-pink-500" />{t('customerManagement.form.email', 'E-posta')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Mail size={16} className="text-pink-500" />{t('customerManagement.form.email')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="ornek@sirket.com" /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -271,7 +271,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="website" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Globe size={16} className="text-pink-500" />{t('customerManagement.form.website', 'Web Sitesi')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Globe size={16} className="text-pink-500" />{t('customerManagement.form.website')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="www.sirket.com" /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -279,7 +279,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="phone" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{t('customerManagement.form.phone', 'Telefon')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{t('customerManagement.form.phone')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="0555..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -287,7 +287,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="phone2" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{t('customerManagement.form.phone2', 'Telefon 2')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{t('customerManagement.form.phone2')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Alternatif telefon..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -295,9 +295,9 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="countryId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.country', 'Ülke')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.country')}</FormLabel>
                     <Select onValueChange={(value) => { field.onChange(Number(value)); form.setValue('cityId', undefined); form.setValue('districtId', undefined); }} value={field.value ? String(field.value) : ''}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.countryPlaceholder', 'Ülke seçin')} /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.countryPlaceholder')} /></SelectTrigger></FormControl>
                       <SelectContent>{countries.map((country) => <SelectItem key={country.id} value={String(country.id)}>{country.name}</SelectItem>)}</SelectContent>
                     </Select>
                     <FormMessage className="text-xs" />
@@ -306,9 +306,9 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="cityId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.city', 'Şehir')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.city')}</FormLabel>
                     <Select onValueChange={(value) => { field.onChange(Number(value)); form.setValue('districtId', undefined); }} value={field.value ? String(field.value) : ''} disabled={!selectedCountryId}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.cityPlaceholder', 'Şehir seçin')} /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.cityPlaceholder')} /></SelectTrigger></FormControl>
                       <SelectContent>{cities.map((city) => <SelectItem key={city.id} value={String(city.id)}>{city.name}</SelectItem>)}</SelectContent>
                     </Select>
                     <FormMessage className="text-xs" />
@@ -317,9 +317,9 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="districtId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.district', 'İlçe')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.district')}</FormLabel>
                     <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value ? String(field.value) : ''} disabled={!selectedCityId}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.districtPlaceholder', 'İlçe seçin')} /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.districtPlaceholder')} /></SelectTrigger></FormControl>
                       <SelectContent>{districts.map((district) => <SelectItem key={district.id} value={String(district.id)}>{district.name}</SelectItem>)}</SelectContent>
                     </Select>
                     <FormMessage className="text-xs" />
@@ -328,7 +328,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="creditLimit" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><CreditCard size={16} className="text-pink-500" />{t('customerManagement.form.creditLimit', 'Kredi Limiti')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><CreditCard size={16} className="text-pink-500" />{t('customerManagement.form.creditLimit')}</FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(e.target.valueAsNumber || 0)} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -336,7 +336,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="salesRepCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.salesRepCode', 'Satış Temsilci Kodu')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.salesRepCode')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Satış temsilci kodu..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -344,7 +344,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="groupCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.groupCode', 'Grup Kodu')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.groupCode')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Grup kodu..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -352,7 +352,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="branchCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.branchCode.label', 'Şube Kodu')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.branchCode.label')}</FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(Number(e.target.value || 0))} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -360,7 +360,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="businessUnitCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.businessUnitCode.label', 'İşletme Kodu')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.businessUnitCode.label')}</FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(Number(e.target.value || 0))} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -368,11 +368,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="defaultShippingAddressId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.defaultShippingAddress', 'Varsayılan Sevk Adresi')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.defaultShippingAddress')}</FormLabel>
                     <Select onValueChange={(value) => { const numericValue = Number(value); field.onChange(numericValue > 0 ? numericValue : null); }} value={field.value ? String(field.value) : ''} disabled={!customer?.id}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.selectDefaultShippingAddress', 'Sevk adresi seçin')} /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.selectDefaultShippingAddress')} /></SelectTrigger></FormControl>
                       <SelectContent>
-                        <SelectItem value="0">{t('customerManagement.form.none', 'Yok')}</SelectItem>
+                        <SelectItem value="0">{t('customerManagement.form.none')}</SelectItem>
                         {shippingAddresses.map((address) => <SelectItem key={address.id} value={String(address.id)}>{address.name || address.address}</SelectItem>)}
                       </SelectContent>
                     </Select>
@@ -382,7 +382,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="address" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.address', 'Adres')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.address')}</FormLabel>
                     <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`} placeholder="Açık adres..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -390,8 +390,8 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="notes" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.notes', 'Notlar')}</FormLabel>
-                    <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[90px] h-auto py-3 resize-none`} placeholder={t('customerManagement.form.notesPlaceholder', 'Not ekleyin...')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.notes')}</FormLabel>
+                    <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[90px] h-auto py-3 resize-none`} placeholder={t('customerManagement.form.notesPlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -402,10 +402,10 @@ export function CustomerForm({
 
         <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex-col sm:flex-row gap-3 sticky bottom-0 z-10 backdrop-blur-sm">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading} className="w-full sm:w-auto h-11 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5">
-            {t('customerManagement.form.cancel', 'İptal')}
+            {t('customerManagement.form.cancel')}
           </Button>
           <Button type="submit" form="customer-form" disabled={isLoading} className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all">
-            {isLoading ? t('customerManagement.form.saving', 'Kaydediliyor...') : t('customerManagement.form.save', 'Kaydet')}
+            {isLoading ? t('customerManagement.form.saving') : t('customerManagement.form.save')}
           </Button>
         </DialogFooter>
       </DialogContent>
