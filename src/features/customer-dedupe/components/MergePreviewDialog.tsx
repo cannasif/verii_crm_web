@@ -96,13 +96,13 @@ export function MergePreviewDialog({
             onClick={() => onOpenChange(false)}
             disabled={mergeMutation.isPending}
           >
-            {t('common:common.cancel', 'Cancel')}
+            {t('common:common.cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={mergeMutation.isPending}
           >
-            {mergeMutation.isPending ? t('common:common.processing', 'Processing...') : t('merge')}
+            {mergeMutation.isPending ? t('common:common.processing') : t('merge')}
           </Button>
         </DialogFooter>
       </DialogContent>

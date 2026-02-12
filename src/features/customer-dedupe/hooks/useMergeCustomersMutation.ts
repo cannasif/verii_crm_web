@@ -21,12 +21,12 @@ export function useMergeCustomersMutation(): ReturnType<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: [CUSTOMER_MANAGEMENT_QUERY_KEYS.LIST] });
-      toast.success(t('customerDedupe:mergeSuccess', 'Merge completed successfully.'));
+      toast.success(t('customerDedupe:mergeSuccess'));
     },
     onError: (error: Error) => {
       const message =
         error?.message ||
-        t('customerDedupe:mergeError', 'Merge failed. Please try again.');
+        t('customerDedupe:mergeError');
       toast.error(message);
     },
   });
