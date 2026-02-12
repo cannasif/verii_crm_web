@@ -28,10 +28,10 @@ export function useCreatePowerbiConfiguration() {
       powerbiConfigurationApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CONFIGURATION_QUERY_KEY });
-      toast.success(t('powerbiConfiguration.createSuccess', 'Konfigürasyon oluşturuldu'));
+      toast.success(t('powerbiConfiguration.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbiConfiguration.createError', 'Oluşturulamadı'));
+      toast.error(error.message ?? t('powerbiConfiguration.createError'));
     },
   });
 }
@@ -51,10 +51,10 @@ export function useUpdatePowerbiConfiguration() {
       powerbiConfigurationApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CONFIGURATION_QUERY_KEY });
-      toast.success(t('powerbiConfiguration.updateSuccess', 'Konfigürasyon güncellendi'));
+      toast.success(t('powerbiConfiguration.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbiConfiguration.updateError', 'Güncellenemedi'));
+      toast.error(error.message ?? t('powerbiConfiguration.updateError'));
     },
   });
 }
@@ -67,10 +67,10 @@ export function useDeletePowerbiConfiguration() {
     mutationFn: (id: number): Promise<void> => powerbiConfigurationApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CONFIGURATION_QUERY_KEY });
-      toast.success(t('powerbiConfiguration.deleteSuccess', 'Konfigürasyon silindi'));
+      toast.success(t('powerbiConfiguration.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('powerbiConfiguration.deleteError', 'Silinemedi'));
+      toast.error(error.message ?? t('powerbiConfiguration.deleteError'));
     },
   });
 }

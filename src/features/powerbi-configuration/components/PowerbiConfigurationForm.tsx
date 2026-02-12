@@ -100,12 +100,12 @@ export function PowerbiConfigurationForm({
       <Card>
         <CardHeader>
           <CardTitle>
-            {t('powerbiConfiguration.title', 'PowerBI Konfigürasyon')}
+            {t('powerbiConfiguration.title')}
           </CardTitle>
           <CardDescription>
             {configuration
-              ? t('powerbiConfiguration.editDescription', 'Mevcut konfigürasyonu düzenleyin')
-              : t('powerbiConfiguration.createDescription', 'PowerBI bağlantı bilgilerini girin')}
+              ? t('powerbiConfiguration.editDescription')
+              : t('powerbiConfiguration.createDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -116,7 +116,7 @@ export function PowerbiConfigurationForm({
                 name="tenantId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('powerbiConfiguration.tenantId', 'Tenant ID')}</FormLabel>
+                    <FormLabel>{t('powerbiConfiguration.tenantId')}</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
                     </FormControl>
@@ -129,7 +129,7 @@ export function PowerbiConfigurationForm({
                 name="clientId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('powerbiConfiguration.clientId', 'Client ID')}</FormLabel>
+                    <FormLabel>{t('powerbiConfiguration.clientId')}</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
                     </FormControl>
@@ -142,7 +142,7 @@ export function PowerbiConfigurationForm({
                 name="workspaceId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('powerbiConfiguration.workspaceId', 'Workspace ID (GUID)')}</FormLabel>
+                    <FormLabel>{t('powerbiConfiguration.workspaceId')}</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="00000000-0000-0000-0000-000000000000" />
                     </FormControl>
@@ -155,7 +155,7 @@ export function PowerbiConfigurationForm({
                 name="apiBaseUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('powerbiConfiguration.apiBaseUrl', 'API Base URL')}</FormLabel>
+                    <FormLabel>{t('powerbiConfiguration.apiBaseUrl')}</FormLabel>
                     <FormControl>
                       <Input {...field} value={field.value ?? ''} type="url" placeholder={DEFAULT_API_BASE_URL} />
                     </FormControl>
@@ -168,7 +168,7 @@ export function PowerbiConfigurationForm({
                 name="scope"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('powerbiConfiguration.scope', 'Scope')}</FormLabel>
+                    <FormLabel>{t('powerbiConfiguration.scope')}</FormLabel>
                     <FormControl>
                       <Input {...field} value={field.value ?? ''} placeholder={DEFAULT_SCOPE} />
                     </FormControl>
@@ -179,15 +179,15 @@ export function PowerbiConfigurationForm({
               <Alert className="border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/20">
                 <InfoIcon className="h-4 w-4 text-amber-600 dark:text-amber-500" />
                 <AlertDescription>
-                  {t('powerbiConfiguration.clientSecretInfo', 'ClientSecret güvenlik nedeniyle sadece sunucu ortam değişkeninden okunur.')}
+                  {t('powerbiConfiguration.clientSecretInfo')}
                 </AlertDescription>
               </Alert>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {configuration
-                    ? t('powerbiConfiguration.update', 'Güncelle')
-                    : t('powerbiConfiguration.create', 'Kaydet')}
+                    ? t('powerbiConfiguration.update')
+                    : t('powerbiConfiguration.create')}
                 </Button>
                 {configuration && (
                   <Button
@@ -197,7 +197,7 @@ export function PowerbiConfigurationForm({
                     disabled={isDeleting}
                   >
                     {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {t('powerbiConfiguration.delete', 'Sil')}
+                    {t('powerbiConfiguration.delete')}
                   </Button>
                 )}
               </div>
@@ -209,18 +209,18 @@ export function PowerbiConfigurationForm({
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('powerbiConfiguration.deleteConfirmTitle', 'Konfigürasyonu Sil')}</DialogTitle>
+            <DialogTitle>{t('powerbiConfiguration.deleteConfirmTitle')}</DialogTitle>
             <DialogDescription>
-              {t('powerbiConfiguration.deleteConfirmDescription', 'Bu konfigürasyonu silmek istediğinize emin misiniz?')}
+              {t('powerbiConfiguration.deleteConfirmDescription')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isDeleting}>
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('common.delete.action', 'Sil')}
+              {t('common.delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>

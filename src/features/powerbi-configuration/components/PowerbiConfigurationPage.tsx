@@ -15,7 +15,7 @@ export function PowerbiConfigurationPage(): ReactElement {
   const deleteMutation = useDeletePowerbiConfiguration();
 
   useEffect(() => {
-    setPageTitle(t('powerbiConfiguration.pageTitle', 'PowerBI Konfigürasyon'));
+    setPageTitle(t('powerbiConfiguration.pageTitle'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -43,7 +43,7 @@ export function PowerbiConfigurationPage(): ReactElement {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-2">
           <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">{t('common.loading', 'Yükleniyor...')}</p>
+          <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -53,10 +53,10 @@ export function PowerbiConfigurationPage(): ReactElement {
     <div className="w-full max-w-2xl space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          {t('powerbiConfiguration.pageTitle', 'PowerBI Konfigürasyon')}
+          {t('powerbiConfiguration.pageTitle')}
         </h1>
         <p className="text-muted-foreground mt-1">
-          {t('powerbiConfiguration.pageDescription', 'PowerBI API bağlantı ayarlarını yönetin')}
+          {t('powerbiConfiguration.pageDescription')}
         </p>
       </div>
       <PowerbiConfigurationForm
