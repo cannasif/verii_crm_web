@@ -19,10 +19,10 @@ export const useCreateProductPricing = () => {
         queryKey: [PRODUCT_PRICING_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('productPricingManagement.createSuccess', 'Fiyatlandırma başarıyla oluşturuldu'));
+      toast.success(t('productPricingManagement.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('productPricingManagement.createError', 'Fiyatlandırma oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('productPricingManagement.createError'));
     },
   });
 };

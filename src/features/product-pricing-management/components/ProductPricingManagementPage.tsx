@@ -52,7 +52,7 @@ export function ProductPricingManagementPage(): ReactElement {
   }, [usedErpProductCodes, editingProductPricing]);
 
   useEffect(() => {
-    setPageTitle(t('productPricingManagement.title', 'Ürün Fiyatlandırma Yönetimi'));
+    setPageTitle(t('productPricingManagement.title'));
     return () => {
       setPageTitle(null);
     };
@@ -150,10 +150,10 @@ export function ProductPricingManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('productPricingManagement.title', 'Ürün Fiyatlandırma')}
+            {t('productPricingManagement.title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
-            {t('productPricingManagement.description', 'Ürün fiyatlarını, maliyetlerini ve iskontolarını yönetin')}
+            {t('productPricingManagement.description')}
           </p>
         </div>
         
@@ -162,7 +162,7 @@ export function ProductPricingManagementPage(): ReactElement {
           className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
         >
           <Plus size={18} className="mr-2" />
-          {t('productPricingManagement.create', 'Yeni Fiyatlandırma')}
+          {t('productPricingManagement.create')}
         </Button>
       </div>
 
@@ -172,7 +172,7 @@ export function ProductPricingManagementPage(): ReactElement {
             <div className="relative group w-full md:w-96">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
               <Input
-                placeholder={t('productPricingManagement.searchPlaceholder', 'Ürün kodu veya grup ara...')}
+                placeholder={t('productPricingManagement.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl transition-all"

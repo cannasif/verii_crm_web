@@ -17,10 +17,10 @@ export const useDeleteProductPricing = () => {
         queryKey: [PRODUCT_PRICING_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('productPricingManagement.deleteSuccess', 'Fiyatlandırma başarıyla silindi'));
+      toast.success(t('productPricingManagement.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('productPricingManagement.deleteError', 'Fiyatlandırma silinirken bir hata oluştu'));
+      toast.error(error.message || t('productPricingManagement.deleteError'));
     },
   });
 };

@@ -102,7 +102,7 @@ export function ProductPricingTable({
         <div className="flex flex-col items-center gap-3">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <span className="text-sm font-medium text-muted-foreground animate-pulse">
-             {t('productPricingManagement.loading', 'Yükleniyor...')}
+             {t('productPricingManagement.loading')}
            </span>
         </div>
       </div>
@@ -113,7 +113,7 @@ export function ProductPricingTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[500px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('productPricingManagement.noData', 'Veri bulunamadı')}
+          {t('productPricingManagement.noData')}
         </div>
       </div>
     );
@@ -129,26 +129,26 @@ export function ProductPricingTable({
                 
                 <TableHead onClick={() => handleSort('ErpProductCode')} className={headStyle}>
                   <div className="flex items-center gap-2">
-                    {t('productPricingManagement.productInfo', 'ÜRÜN BİLGİSİ')}
+                    {t('productPricingManagement.productInfo')}
                     <SortIcon column="ErpProductCode" />
                   </div>
                 </TableHead>
 
                 <TableHead onClick={() => handleSort('ErpGroupCode')} className={headStyle}>
                   <div className="flex items-center gap-2">
-                    {t('productPricingManagement.category', 'KATEGORİ')}
+                    {t('productPricingManagement.category')}
                     <SortIcon column="ErpGroupCode" />
                   </div>
                 </TableHead>
 
                 <TableHead className="text-slate-500 dark:text-slate-400 py-4">
                   <div className="flex items-center gap-2">
-                    {t('productPricingManagement.priceAndDiscount', 'FİYAT & İSKONTO')}
+                    {t('productPricingManagement.priceAndDiscount')}
                   </div>
                 </TableHead>
 
                 <TableHead className="text-right text-slate-500 dark:text-slate-400 py-4">
-                  {t('productPricingManagement.actions', 'İŞLEMLER')}
+                  {t('productPricingManagement.actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -257,7 +257,7 @@ export function ProductPricingTable({
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4 px-2">
         <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-          {t('productPricingManagement.table.showing', '{{from}}-{{to}} / {{total}} kayıt', {
+          {t('productPricingManagement.table.showing', {
             from: (pageNumber - 1) * pageSize + 1,
             to: Math.min(pageNumber * pageSize, data?.totalCount || 0),
             total: data?.totalCount || 0,
@@ -271,7 +271,7 @@ export function ProductPricingTable({
             disabled={pageNumber <= 1}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 h-8 px-4"
           >
-            {t('productPricingManagement.previous', 'Önceki')}
+            {t('productPricingManagement.previous')}
           </Button>
           <div className="flex items-center px-4 text-sm font-bold text-slate-700 dark:text-white bg-white/50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10 h-8">
             {pageNumber} / {totalPages}
@@ -283,7 +283,7 @@ export function ProductPricingTable({
             disabled={pageNumber >= totalPages}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 h-8 px-4"
           >
-            {t('productPricingManagement.next', 'Sonraki')}
+            {t('productPricingManagement.next')}
           </Button>
         </div>
       </div>
@@ -292,10 +292,10 @@ export function ProductPricingTable({
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white sm:rounded-2xl shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-slate-900 dark:text-white">
-              {t('productPricingManagement.deleteTitle', 'Fiyatlandırmayı Sil')}
+              {t('productPricingManagement.deleteTitle')}
             </DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400">
-              {t('productPricingManagement.confirmDelete', 'Bu fiyatlandırmayı silmek istediğinizden emin misiniz?')}
+              {t('productPricingManagement.confirmDelete')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
@@ -305,7 +305,7 @@ export function ProductPricingTable({
               disabled={deleteProductPricing.isPending}
               className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
             >
-              {t('productPricingManagement.cancel', 'İptal')}
+              {t('productPricingManagement.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -314,8 +314,8 @@ export function ProductPricingTable({
               className="bg-red-600 hover:bg-red-700 dark:bg-red-900/50 dark:hover:bg-red-900/70 border border-transparent dark:border-red-500/20 text-white"
             >
               {deleteProductPricing.isPending
-                ? t('productPricingManagement.loading', 'Yükleniyor...')
-                : t('productPricingManagement.delete', 'Sil')}
+                ? t('productPricingManagement.loading')
+                : t('productPricingManagement.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

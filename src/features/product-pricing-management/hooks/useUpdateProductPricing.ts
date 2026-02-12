@@ -20,10 +20,10 @@ export const useUpdateProductPricing = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedProductPricing.id) });
-      toast.success(t('productPricingManagement.updateSuccess', 'Fiyatlandırma başarıyla güncellendi'));
+      toast.success(t('productPricingManagement.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('productPricingManagement.updateError', 'Fiyatlandırma güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('productPricingManagement.updateError'));
     },
   });
 };

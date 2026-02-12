@@ -81,7 +81,7 @@ export function ProductPricingStockSelectDialog({
             <div className="bg-gradient-to-br from-pink-500 to-orange-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
               <Package size={20} />
             </div>
-            {t('productPricingManagement.selectStok', 'Stok Seç')}
+            {t('productPricingManagement.selectStok')}
           </DialogTitle>
           <div className="flex items-center gap-2 mt-4">
             <div className="relative flex-1">
@@ -90,7 +90,7 @@ export function ProductPricingStockSelectDialog({
                 size={16}
               />
               <Input
-                placeholder={t('productPricingManagement.searchStockPlaceholder', 'Stok kodu veya adı ile ara...')}
+                placeholder={t('productPricingManagement.searchStockPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 h-11 rounded-xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all"
@@ -102,15 +102,15 @@ export function ProductPricingStockSelectDialog({
           {isLoading ? (
             <div className="flex items-center justify-center py-10 text-slate-500">
               <div className="animate-spin mr-2 h-4 w-4 border-2 border-pink-500 border-t-transparent rounded-full" />
-              {t('productSelectDialog.loading', 'Yükleniyor...')}
+              {t('productSelectDialog.loading')}
             </div>
           ) : filteredStocks.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-slate-500 dark:text-slate-400">
               <Package size={48} className="opacity-20 mb-4" />
               <p>
                 {searchQuery.trim()
-                  ? t('productSelectDialog.noResults', 'Arama sonucu bulunamadı')
-                  : t('productPricingManagement.noStocksAvailable', 'Listede olmayan stok bulunamadı')}
+                  ? t('productSelectDialog.noResults')
+                  : t('productPricingManagement.noStocksAvailable')}
               </p>
             </div>
           ) : (
@@ -130,7 +130,7 @@ export function ProductPricingStockSelectDialog({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm text-slate-900 dark:text-white truncate">
-                      {stock.stockName ?? t('productPricingManagement.unnamedStock', 'İsimsiz Stok')}
+                      {stock.stockName ?? t('productPricingManagement.unnamedStock')}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">
