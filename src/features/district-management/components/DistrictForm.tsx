@@ -24,6 +24,7 @@ import { districtFormSchema, type DistrictFormSchema } from '../types/district-t
 import type { DistrictDto } from '../types/district-types';
 import { useCityOptions } from '@/features/city-management/hooks/useCityOptions';
 import { MapPin } from 'lucide-react';
+import { Cancel01Icon } from 'hugeicons-react';
 
 interface DistrictFormProps {
   open: boolean;
@@ -100,15 +101,15 @@ export function DistrictForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
-        <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 flex-shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
-          <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden">
+        <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 shrink-0 flex flex-row items-center justify-between sticky top-0 z-10">
+          <div className="flex flex-col items-center gap-4 flex-1">
+             <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
                  <MapPin size={24} className="text-pink-600 dark:text-pink-500" />
                </div>
              </div>
-             <div className="space-y-1">
+             <div className="space-y-1 text-center">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   {district
                     ? t('districtManagement.form.editDistrict')
@@ -121,6 +122,9 @@ export function DistrictForm({
                 </DialogDescription>
              </div>
           </div>
+          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full absolute right-4 top-4">
+            <Cancel01Icon size={20} />
+          </Button>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
@@ -204,7 +208,7 @@ export function DistrictForm({
                 <Button 
                   type="submit" 
                   disabled={isLoading}
-                  className="h-12 px-8 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-bold shadow-lg shadow-pink-500/20 border-0 transition-all hover:scale-[1.02]"
+                  className="h-12 px-8 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-bold shadow-lg shadow-pink-500/20 border-0 transition-all hover:scale-[1.02]"
                 >
                   {isLoading
                     ? t('districtManagement.saving')
