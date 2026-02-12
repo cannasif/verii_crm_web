@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
   reportDesignerCreateSchema,
   type ReportDesignerCreateFormValues,
@@ -46,10 +47,10 @@ import { DocumentRuleType, type ReportTemplateCreateDto, type ReportTemplateElem
 import type { ReportTemplateGetDto } from './types/report-template-types';
 import { A4_CANVAS_WIDTH, A4_CANVAS_HEIGHT } from './constants';
 
-const RULE_TYPE_OPTIONS: { value: PricingRuleType; label: string }[] = [
-  { value: PricingRuleType.Demand, label: 'Talep' },
-  { value: PricingRuleType.Quotation, label: 'Teklif' },
-  { value: PricingRuleType.Order, label: 'Sipariş' },
+const RULE_TYPE_OPTIONS: PricingRuleType[] = [
+  PricingRuleType.Demand,
+  PricingRuleType.Quotation,
+  PricingRuleType.Order,
 ];
 
 const DEFAULT_ELEMENT_WIDTH = 200;
@@ -113,6 +114,7 @@ function applyTemplateToFormAndStore(
 }
 
 export function ReportDesignerCreatePage(): ReactElement {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id: idParam } = useParams<{ id: string }>();
   const location = useLocation();
@@ -217,18 +219,18 @@ export function ReportDesignerCreatePage(): ReactElement {
     try {
       if (isEdit && editId != null) {
         await updateMutation.mutateAsync({ id: editId, data: payload });
-        toast.success('Güncellendi', {
-          description: `Şablon güncellendi: ${values.title}`,
+        toast.success(t('common.updated'), {
+          description: t('common.templateUpdatedWithTitle', { title: values.title }),
         });
       } else {
         await createMutation.mutateAsync(payload);
-        toast.success('Kaydedildi', {
-          description: `Şablon kaydedildi: ${values.title}`,
+        toast.success(t('common.saved'), {
+          description: t('common.templateSavedWithTitle', { title: values.title }),
         });
       }
       navigate('/report-designer');
     } catch (err) {
-      toast.error(isEdit ? 'Şablon güncellenemedi' : 'Şablon kaydedilemedi', {
+      toast.error(isEdit ? t('reportDesigner.form.updateFailed') : t('reportDesigner.form.saveFailed'), {
         description: err instanceof Error ? err.message : undefined,
       });
     }
@@ -272,7 +274,7 @@ export function ReportDesignerCreatePage(): ReactElement {
         y,
         width: 200,
         height: 60,
-        text: 'Double click to edit',
+        text: t('reportDesigner.defaults.doubleClickToEdit'),
         fontSize: 14,
         fontFamily: 'Arial',
       };
@@ -330,7 +332,7 @@ export function ReportDesignerCreatePage(): ReactElement {
     <div className="flex h-full min-h-0 flex-col">
       <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-700 dark:bg-slate-900/50">
         <h1 className="mb-4 text-xl font-semibold text-slate-900 dark:text-white">
-          {isEdit ? 'Şablonu Düzenle' : 'Yeni Rapor Şablonu'}
+          {isEdit ? t('reportDesigner.form.editTemplate') : t('reportDesigner.form.newTemplate')}
         </h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-wrap items-end gap-4">
@@ -339,20 +341,24 @@ export function ReportDesignerCreatePage(): ReactElement {
               name="ruleType"
               render={({ field }) => (
                 <FormItem className="w-48">
-                  <FormLabel>Belge tipi</FormLabel>
+                  <FormLabel>{t('reportDesigner.form.documentType')}</FormLabel>
                   <Select
                     onValueChange={(value) => field.onChange(Number(value) as PricingRuleType)}
                     value={field.value?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Seçin" />
+                        <SelectValue placeholder={t('reportDesigner.form.selectPlaceholder')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {RULE_TYPE_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value.toString()}>
-                          {opt.label}
+                      {RULE_TYPE_OPTIONS.map((value) => (
+                        <SelectItem key={value} value={value.toString()}>
+                          {value === PricingRuleType.Demand
+                            ? t('reportDesigner.ruleType.demand')
+                            : value === PricingRuleType.Quotation
+                              ? t('reportDesigner.ruleType.quotation')
+                              : t('reportDesigner.ruleType.order')}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -366,9 +372,9 @@ export function ReportDesignerCreatePage(): ReactElement {
               name="title"
               render={({ field }) => (
                 <FormItem className="min-w-[200px] flex-1">
-                  <FormLabel>Başlık</FormLabel>
+                  <FormLabel>{t('reportDesigner.form.title')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Rapor başlığını girin" {...field} />
+                    <Input placeholder={t('reportDesigner.form.titlePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -385,7 +391,7 @@ export function ReportDesignerCreatePage(): ReactElement {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel className="font-normal">Varsayılan şablon yap</FormLabel>
+                  <FormLabel className="font-normal">{t('reportDesigner.form.setDefaultTemplate')}</FormLabel>
                 </FormItem>
               )}
             />
@@ -393,7 +399,7 @@ export function ReportDesignerCreatePage(): ReactElement {
               type="submit"
               disabled={isEdit && (updateMutation.isPending || !templateByIdLoaded)}
             >
-              {isEdit ? 'Güncelle' : 'Kaydet'}
+              {isEdit ? t('common.update') : t('common.save')}
             </Button>
           </form>
         </Form>

@@ -9,6 +9,7 @@ import {
 import { Sidebar, type SidebarDragData } from './components/Sidebar';
 import type { ReportElement, TableElement } from './models/report-element';
 import { useReportStore } from './store/useReportStore';
+import i18n from '@/lib/i18n';
 
 const DEFAULT_ELEMENT_WIDTH = 200;
 const DEFAULT_ELEMENT_HEIGHT = 50;
@@ -67,7 +68,7 @@ export function ReportDesignerPage(): ReactElement {
         y,
         width: 200,
         height: 60,
-        text: 'Double click to edit',
+        text: i18n.t('reportDesigner.defaults.doubleClickToEdit'),
         fontSize: 14,
         fontFamily: 'Arial',
       };

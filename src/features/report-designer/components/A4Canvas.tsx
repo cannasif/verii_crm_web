@@ -3,6 +3,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { type RndDragCallback, type RndResizeCallback, Rnd } from 'react-rnd';
 import { GripVertical, Settings, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -69,6 +70,7 @@ export interface A4CanvasProps {
 }
 
 function TableElementBlock({ table }: { table: TableElement }): ReactElement {
+  const { t } = useTranslation();
   const { setNodeRef, isOver } = useDroppable({
     id: getTableDroppableId(table.id),
   });
@@ -82,7 +84,7 @@ function TableElementBlock({ table }: { table: TableElement }): ReactElement {
     >
       {table.columns.length === 0 ? (
         <span className="flex flex-1 items-center justify-center px-2 py-1 text-xs text-slate-500">
-          Sütun eklemek için palette'ten sürükleyin
+          {t('reportDesigner.tableDropHint')}
         </span>
       ) : (
         table.columns.map((col) => (
@@ -102,6 +104,7 @@ const DEFAULT_FONT_SIZE = 14;
 const DEFAULT_FONT_FAMILY = 'Arial';
 
 function TextElementBlock({ element }: { element: ReportElement }): ReactElement | null {
+  const { t } = useTranslation();
   const updateElementText = useReportStore((s) => s.updateElementText);
   const setSelectedElement = useReportStore((s) => s.setSelectedElement);
   if (element.type !== 'text') return null;
@@ -117,7 +120,7 @@ function TextElementBlock({ element }: { element: ReportElement }): ReactElement
       onChange={(e) => updateElementText(element.id, e.target.value)}
       onFocus={() => setSelectedElement(element.id)}
       className="relative z-[1] h-full w-full resize-none border-0 bg-transparent p-2 text-slate-700 outline-none focus:ring-0"
-      placeholder="Metin girin..."
+      placeholder={t('reportDesigner.properties.textPlaceholder')}
       style={{
         fontSize: `${fontSize}px`,
         fontFamily: fontFamily || DEFAULT_FONT_FAMILY,
@@ -128,6 +131,7 @@ function TextElementBlock({ element }: { element: ReportElement }): ReactElement
 }
 
 function ImageElementBlock({ element }: { element: ReportElement }): ReactElement {
+  const { t } = useTranslation();
   const updateReportElement = useReportStore((s) => s.updateReportElement);
   const setSelectedElement = useReportStore((s) => s.setSelectedElement);
   const isUrl =
@@ -140,7 +144,7 @@ function ImageElementBlock({ element }: { element: ReportElement }): ReactElemen
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith('image/')) return;
     if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      toast.error('Resim en fazla 2 MB olabilir.');
+      toast.error(t('common.imageMax2Mb'));
       e.target.value = '';
       return;
     }
@@ -180,8 +184,8 @@ function ImageElementBlock({ element }: { element: ReportElement }): ReactElemen
         onClick={() => setSelectedElement(element.id)}
       >
         <Upload className="size-6 text-slate-400" />
-        <span>Resim seç</span>
-        <span className="text-[10px] text-slate-400">(max 2 MB)</span>
+        <span>{t('common.selectImage')}</span>
+        <span className="text-[10px] text-slate-400">{t('reportDesigner.properties.max2MbNote')}</span>
       </label>
     </div>
   );
@@ -215,6 +219,7 @@ function FieldElementBlock({ element }: { element: ReportElement }): ReactElemen
 }
 
 function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactElement | null {
+  const { t } = useTranslation();
   const updateReportElement = useReportStore((s) => s.updateReportElement);
 
   if (isTableElement(element)) {
@@ -225,7 +230,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
             type="button"
             data-element-settings
             className="absolute right-8 top-1 z-10 rounded p-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
-            title="Ayarlar"
+            title={t('reportDesigner.actions.settings')}
             onClick={(e) => e.stopPropagation()}
           >
             <Settings className="size-3.5" />
@@ -233,7 +238,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
         </PopoverTrigger>
         <PopoverContent className="w-64" align="end" side="bottom">
           <div className="text-xs text-slate-500">
-            Tablo sütunlarını sol palette'ten sürükleyip bu alana bırakın.
+            {t('reportDesigner.tableSettingsHint')}
           </div>
         </PopoverContent>
       </Popover>
@@ -247,7 +252,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
   const commonFields = (
     <>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Yazı boyutu</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
         <Select
           value={String(fontSize)}
           onValueChange={(v) => updateReportElement(el.id, { fontSize: Number(v) })}
@@ -265,7 +270,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
         </Select>
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Yazı tipi</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
         <Select
           value={fontFamily}
           onValueChange={(v) => updateReportElement(el.id, { fontFamily: v })}
@@ -283,7 +288,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
         </Select>
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Renk</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.color')}</Label>
         <div className="flex items-center gap-2">
           <input
             type="color"
@@ -297,7 +302,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
               updateReportElement(el.id, { color: e.target.value || undefined })
             }
             className="h-8 flex-1 text-xs"
-            placeholder="#374151"
+            placeholder={t('reportDesigner.properties.colorPlaceholder')}
           />
         </div>
       </div>
@@ -312,7 +317,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
             type="button"
             data-element-settings
             className="absolute right-8 top-1 z-10 rounded p-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
-            title="Ayarlar"
+            title={t('reportDesigner.actions.settings')}
             onClick={(e) => e.stopPropagation()}
           >
             <Settings className="size-3.5" />
@@ -320,14 +325,14 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
         </PopoverTrigger>
         <PopoverContent className="w-64" align="end" side="bottom">
           <div className="flex flex-col gap-3">
-            <span className="text-xs font-medium text-slate-600">Metin ayarları</span>
+            <span className="text-xs font-medium text-slate-600">{t('reportDesigner.properties.textSettings')}</span>
             <div className="flex flex-col gap-2">
-              <Label className="text-xs">Metin</Label>
+              <Label className="text-xs">{t('reportDesigner.properties.text')}</Label>
               <Input
                 value={el.text ?? ''}
                 onChange={(e) => updateReportElement(el.id, { text: e.target.value })}
                 className="min-h-[60px] text-sm"
-                placeholder="Metin girin..."
+                placeholder={t('reportDesigner.properties.textPlaceholder')}
               />
             </div>
             {commonFields}
@@ -345,7 +350,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
             type="button"
             data-element-settings
             className="absolute right-8 top-1 z-10 rounded p-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
-            title="Ayarlar"
+            title={t('reportDesigner.actions.settings')}
             onClick={(e) => e.stopPropagation()}
           >
             <Settings className="size-3.5" />
@@ -353,14 +358,14 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
         </PopoverTrigger>
         <PopoverContent className="w-64" align="end" side="bottom">
           <div className="flex flex-col gap-3">
-            <span className="text-xs font-medium text-slate-600">Alan ayarları</span>
+            <span className="text-xs font-medium text-slate-600">{t('reportDesigner.properties.fieldSettings')}</span>
             <div className="flex flex-col gap-2">
-              <Label className="text-xs">Değer / Etiket</Label>
+              <Label className="text-xs">{t('reportDesigner.properties.valueLabel')}</Label>
               <Input
                 value={el.value ?? ''}
                 readOnly
                 className="text-sm bg-slate-50 dark:bg-slate-800"
-                placeholder="Palette'ten sürüklenen alan"
+                placeholder={t('reportDesigner.properties.draggedFieldPlaceholder')}
               />
             </div>
             {commonFields}
@@ -375,7 +380,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
       const file = e.target.files?.[0];
       if (!file || !file.type.startsWith('image/')) return;
       if (file.size > MAX_IMAGE_SIZE_BYTES) {
-        toast.error('Resim en fazla 2 MB olabilir.');
+        toast.error(t('common.imageMax2Mb'));
         e.target.value = '';
         return;
       }
@@ -394,7 +399,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
             type="button"
             data-element-settings
             className="absolute right-8 top-1 z-10 rounded p-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
-            title="Ayarlar"
+            title={t('reportDesigner.actions.settings')}
             onClick={(e) => e.stopPropagation()}
           >
             <Settings className="size-3.5" />
@@ -402,18 +407,18 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
         </PopoverTrigger>
         <PopoverContent className="w-64" align="end" side="bottom">
           <div className="flex flex-col gap-3">
-            <span className="text-xs font-medium text-slate-600">Resim ayarları</span>
+            <span className="text-xs font-medium text-slate-600">{t('reportDesigner.properties.imageSettings')}</span>
             <div className="flex flex-col gap-2">
-              <Label className="text-xs">Resim URL</Label>
+              <Label className="text-xs">{t('reportDesigner.properties.imageUrl')}</Label>
               <Input
                 value={el.value ?? ''}
                 onChange={(e) => updateReportElement(el.id, { value: e.target.value })}
                 className="text-sm"
-                placeholder="https://... veya /logo.png"
+                placeholder={t('reportDesigner.properties.imageUrlPlaceholder')}
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-xs">Dosyadan yükle (max 2 MB)</Label>
+              <Label className="text-xs">{t('reportDesigner.properties.uploadFromFileMax2Mb')}</Label>
               <input
                 id={`settings-image-upload-${el.id}`}
                 type="file"
@@ -426,7 +431,7 @@ function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactE
                 className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-medium hover:bg-accent"
               >
                 <Upload className="size-3.5" />
-                Resim seç
+                {t('common.selectImage')}
               </Label>
             </div>
           </div>
@@ -464,6 +469,7 @@ function DroppableSection({
 }
 
 export function A4Canvas({ canvasRef }: A4CanvasProps): ReactElement {
+  const { t } = useTranslation();
   const elements = useReportStore((s) => s.elements);
   const updateElementPosition = useReportStore((s) => s.updateElementPosition);
   const updateElementSize = useReportStore((s) => s.updateElementSize);
@@ -502,7 +508,7 @@ export function A4Canvas({ canvasRef }: A4CanvasProps): ReactElement {
           className="absolute left-0 top-0 z-0 flex items-center justify-center border-b border-slate-200 bg-slate-50/50 text-xs text-slate-400"
           style={{ width: A4_CANVAS_WIDTH, height: A4_HEADER_HEIGHT }}
         >
-          Header
+          {t('reportDesigner.sections.header')}
         </DroppableSection>
         <DroppableSection
           setNodeRef={contentDroppable.setNodeRef}
@@ -510,7 +516,7 @@ export function A4Canvas({ canvasRef }: A4CanvasProps): ReactElement {
           className="absolute left-0 z-0 flex items-center justify-center border-b border-slate-200 bg-white/50 text-xs text-slate-400"
           style={{ width: A4_CANVAS_WIDTH, height: A4_CONTENT_HEIGHT, top: A4_CONTENT_TOP }}
         >
-          Content
+          {t('reportDesigner.sections.content')}
         </DroppableSection>
         <DroppableSection
           setNodeRef={footerDroppable.setNodeRef}
@@ -518,7 +524,7 @@ export function A4Canvas({ canvasRef }: A4CanvasProps): ReactElement {
           className="absolute bottom-0 left-0 z-0 flex items-center justify-center border-t border-slate-200 bg-slate-50/50 text-xs text-slate-400"
           style={{ width: A4_CANVAS_WIDTH, height: A4_FOOTER_HEIGHT }}
         >
-          Footer
+          {t('reportDesigner.sections.footer')}
         </DroppableSection>
         {elements.map((el) => (
           <Rnd
@@ -559,7 +565,7 @@ export function A4Canvas({ canvasRef }: A4CanvasProps): ReactElement {
                 removeElement(el.id);
               }}
               className="absolute right-1 top-1 z-10 rounded p-1 text-slate-500 hover:bg-red-100 hover:text-red-600"
-              title="Kaldır"
+              title={t('reportDesigner.actions.remove')}
             >
               <Trash2 className="size-3.5" />
             </button>

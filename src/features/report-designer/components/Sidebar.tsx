@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { isTableElement } from '../models/report-element';
 import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
 
 export type FieldPaletteType = 'text' | 'field' | 'table' | 'table-column' | 'image';
@@ -38,12 +39,6 @@ export interface SidebarProps {
   exchangeRateFields?: FieldPaletteItem[];
 }
 
-const TEXT_ITEM: FieldPaletteItem = {
-  label: 'Text',
-  path: '',
-  type: 'text',
-};
-
 const FIELDS: FieldPaletteItem[] = [
   { label: 'Company Name', path: 'CompanyName', type: 'field' },
   { label: 'Customer Name', path: 'CustomerName', type: 'field' },
@@ -55,19 +50,6 @@ const TABLE_COLUMNS: FieldPaletteItem[] = [
   { label: 'Quantity', path: 'Lines.Quantity', type: 'table-column' },
   { label: 'Price', path: 'Lines.Price', type: 'table-column' },
 ];
-
-const ADD_TABLE_ITEM: FieldPaletteItem = {
-  label: 'Add Table',
-  path: '',
-  type: 'table',
-};
-
-const LOGO_IMAGE_ITEM: FieldPaletteItem = {
-  label: 'Logo Image',
-  path: '',
-  type: 'image',
-  value: 'Logo',
-};
 
 function DraggablePaletteItem({
   field,
@@ -132,6 +114,7 @@ function Section({
 }
 
 function TextPropertiesPanel(): ReactElement | null {
+  const { t } = useTranslation();
   const elements = useReportStore((s) => s.elements);
   const selectedElementId = useReportStore((s) => s.selectedElementId);
   const updateReportElement = useReportStore((s) => s.updateReportElement);
@@ -151,19 +134,19 @@ function TextPropertiesPanel(): ReactElement | null {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Metin Özellikleri
+        {t('reportDesigner.properties.textTitle')}
       </span>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Metin</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.text')}</Label>
         <Input
           value={selectedElement.text ?? ''}
           onChange={(e) => updateReportElement(selectedElement.id, { text: e.target.value })}
           className="min-h-[60px] text-sm"
-          placeholder="Metin girin..."
+          placeholder={t('reportDesigner.properties.textPlaceholder')}
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Yazı boyutu</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
         <Select
           value={String(fontSize)}
           onValueChange={(v) =>
@@ -183,7 +166,7 @@ function TextPropertiesPanel(): ReactElement | null {
         </Select>
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Yazı tipi</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
         <Select
           value={fontFamily}
           onValueChange={(v) =>
@@ -203,7 +186,7 @@ function TextPropertiesPanel(): ReactElement | null {
         </Select>
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Renk</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.color')}</Label>
         <div className="flex items-center gap-2">
           <input
             type="color"
@@ -219,7 +202,7 @@ function TextPropertiesPanel(): ReactElement | null {
               updateReportElement(selectedElement.id, { color: e.target.value || undefined })
             }
             className="h-8 flex-1 text-xs"
-            placeholder="#374151"
+            placeholder={t('reportDesigner.properties.colorPlaceholder')}
           />
         </div>
       </div>
@@ -228,6 +211,7 @@ function TextPropertiesPanel(): ReactElement | null {
 }
 
 function FieldPropertiesPanel(): ReactElement | null {
+  const { t } = useTranslation();
   const elements = useReportStore((s) => s.elements);
   const selectedElementId = useReportStore((s) => s.selectedElementId);
   const updateReportElement = useReportStore((s) => s.updateReportElement);
@@ -247,19 +231,19 @@ function FieldPropertiesPanel(): ReactElement | null {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Alan Özellikleri
+        {t('reportDesigner.properties.fieldTitle')}
       </span>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Değer / Etiket</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.valueLabel')}</Label>
         <Input
           value={selectedElement.value ?? ''}
           readOnly
           className="text-sm bg-slate-50 dark:bg-slate-800"
-          placeholder="Palette'ten sürüklenen alan"
+          placeholder={t('reportDesigner.properties.draggedFieldPlaceholder')}
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Yazı boyutu</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
         <Select
           value={String(fontSize)}
           onValueChange={(v) =>
@@ -279,7 +263,7 @@ function FieldPropertiesPanel(): ReactElement | null {
         </Select>
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Yazı tipi</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
         <Select
           value={fontFamily}
           onValueChange={(v) =>
@@ -299,7 +283,7 @@ function FieldPropertiesPanel(): ReactElement | null {
         </Select>
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Renk</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.color')}</Label>
         <div className="flex items-center gap-2">
           <input
             type="color"
@@ -315,7 +299,7 @@ function FieldPropertiesPanel(): ReactElement | null {
               updateReportElement(selectedElement.id, { color: e.target.value || undefined })
             }
             className="h-8 flex-1 text-xs"
-            placeholder="#374151"
+            placeholder={t('reportDesigner.properties.colorPlaceholder')}
           />
         </div>
       </div>
@@ -327,6 +311,7 @@ const REPORT_IMAGE_INPUT_ID = 'report-designer-image-upload';
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 
 function ImagePropertiesPanel(): ReactElement | null {
+  const { t } = useTranslation();
   const elements = useReportStore((s) => s.elements);
   const selectedElementId = useReportStore((s) => s.selectedElementId);
   const updateReportElement = useReportStore((s) => s.updateReportElement);
@@ -350,7 +335,7 @@ function ImagePropertiesPanel(): ReactElement | null {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith('image/')) return;
     if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      toast.error('Resim en fazla 2 MB olabilir.');
+      toast.error(t('common.imageMax2Mb'));
       e.target.value = '';
       return;
     }
@@ -367,19 +352,19 @@ function ImagePropertiesPanel(): ReactElement | null {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Resim Özellikleri
+        {t('reportDesigner.properties.imageTitle')}
       </span>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Resim URL</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.imageUrl')}</Label>
         <Input
           value={selectedElement.value ?? ''}
           onChange={(e) => updateReportElement(selectedElement.id, { value: e.target.value })}
           className="text-sm"
-          placeholder="https://... veya /logo.png"
+          placeholder={t('reportDesigner.properties.imageUrlPlaceholder')}
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Dosyadan yükle</Label>
+        <Label className="text-xs">{t('reportDesigner.properties.uploadFromFile')}</Label>
         <input
           id={REPORT_IMAGE_INPUT_ID}
           type="file"
@@ -392,12 +377,12 @@ function ImagePropertiesPanel(): ReactElement | null {
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-medium ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <Upload className="size-3.5" />
-          Resim seç (max 2 MB)
+          {t('reportDesigner.properties.selectImageMax2Mb')}
         </Label>
       </div>
       {isUrl && (
         <div className="rounded border border-slate-200 bg-slate-50 p-2">
-          <span className="text-xs text-slate-500">Önizleme</span>
+          <span className="text-xs text-slate-500">{t('reportDesigner.properties.preview')}</span>
           <img
             src={selectedElement.value}
             alt=""
@@ -410,22 +395,39 @@ function ImagePropertiesPanel(): ReactElement | null {
 }
 
 export function Sidebar({ headerFields, lineFields, exchangeRateFields }: SidebarProps = {}): ReactElement {
+  const { t } = useTranslation();
   const fieldsItems = headerFields ?? FIELDS;
   const tableColumnsItems = lineFields ?? TABLE_COLUMNS;
   const exchangeRateColumnsItems = exchangeRateFields ?? [];
+  const textItem: FieldPaletteItem = {
+    label: t('reportDesigner.palette.text'),
+    path: '',
+    type: 'text',
+  };
+  const addTableItem: FieldPaletteItem = {
+    label: t('reportDesigner.palette.addTable'),
+    path: '',
+    type: 'table',
+  };
+  const logoImageItem: FieldPaletteItem = {
+    label: t('reportDesigner.palette.logoImage'),
+    path: '',
+    type: 'image',
+    value: 'Logo',
+  };
   return (
     <div className="flex w-64 flex-col gap-6 border-r border-slate-200 bg-slate-50 p-4">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Field Palette
+        {t('reportDesigner.palette.title')}
       </span>
-      <Section title="Text" items={[TEXT_ITEM]} idPrefix="palette-text" />
-      <Section title="Fields" items={fieldsItems} idPrefix="palette-fields" />
-      <Section title="Table Columns" items={tableColumnsItems} idPrefix="palette-table-columns" />
+      <Section title={t('reportDesigner.palette.text')} items={[textItem]} idPrefix="palette-text" />
+      <Section title={t('reportDesigner.palette.fields')} items={fieldsItems} idPrefix="palette-fields" />
+      <Section title={t('reportDesigner.palette.tableColumns')} items={tableColumnsItems} idPrefix="palette-table-columns" />
       {exchangeRateColumnsItems.length > 0 && (
-        <Section title="Döviz kurları" items={exchangeRateColumnsItems} idPrefix="palette-exchange-rates" />
+        <Section title={t('reportDesigner.palette.exchangeRates')} items={exchangeRateColumnsItems} idPrefix="palette-exchange-rates" />
       )}
-      <Section title="Add Table" items={[ADD_TABLE_ITEM]} idPrefix="palette-add-table" />
-      <Section title="Images" items={[LOGO_IMAGE_ITEM]} idPrefix="palette-images" />
+      <Section title={t('reportDesigner.palette.addTable')} items={[addTableItem]} idPrefix="palette-add-table" />
+      <Section title={t('reportDesigner.palette.images')} items={[logoImageItem]} idPrefix="palette-images" />
       <TextPropertiesPanel />
       <FieldPropertiesPanel />
       <ImagePropertiesPanel />
