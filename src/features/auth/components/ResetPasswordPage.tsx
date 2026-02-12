@@ -99,7 +99,7 @@ export function ResetPasswordPage(): React.JSX.Element {
                         <Input
                           {...field}
                           type={isPasswordVisible ? 'text' : 'password'}
-                          placeholder={t('auth.resetPassword.newPasswordPlaceholder', 'Yeni Şifre')}
+                          placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
                           className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 focus:bg-black/50"
                         />
                         <button
@@ -134,7 +134,7 @@ export function ResetPasswordPage(): React.JSX.Element {
                         <Input
                           {...field}
                           type={isConfirmPasswordVisible ? 'text' : 'password'}
-                          placeholder={t('auth.resetPassword.confirmPasswordPlaceholder', 'Şifre Tekrarı')}
+                          placeholder={t('auth.resetPassword.confirmPasswordPlaceholder')}
                           className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 focus:bg-black/50"
                         />
                         <button

@@ -50,7 +50,7 @@ export function ForgotPasswordPage(): React.JSX.Element {
           <div className="text-center mb-8">
             <img
               src={loginImage}
-              alt={t('auth.forgotPassword.logoAlt', 'Logo')}
+              alt={t('auth.forgotPassword.logoAlt')}
               className="inline-flex items-center justify-center w-80 h-50 object-contain p-2"
             />
             <p className="text-slate-400 text-xs uppercase tracking-[0.15em] mt-2 font-medium">

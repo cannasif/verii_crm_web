@@ -130,7 +130,7 @@ export function LoginPage(): React.JSX.Element {
               ? 'bg-pink-500/20 border-pink-500/50 text-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:bg-pink-500/30' 
               : 'bg-zinc-900/80 border-white/20 text-slate-200 hover:text-pink-400 hover:bg-zinc-800 hover:border-pink-500/30 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)]'}
           `}
-          title={showAnimation ? t('auth.login.animationOff', 'Animasyonu Kapat') : t('auth.login.animationOn', 'Animasyonu Aç')}
+          title={showAnimation ? t('auth.login.animationOff') : t('auth.login.animationOn')}
         >
           {showAnimation ? (
             <EnergyEllipseIcon size={20} />
@@ -208,7 +208,7 @@ export function LoginPage(): React.JSX.Element {
                         <Input
                           {...field}
                           type="email"
-                          placeholder={t('auth.login.emailPlaceholder', 'Kurumsal E-posta')}
+                          placeholder={t('auth.login.emailPlaceholder')}
                           className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300
                             ${fieldState.invalid 
                               ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' 
@@ -236,7 +236,7 @@ export function LoginPage(): React.JSX.Element {
                         <Input
                           {...field}
                           type={isPasswordVisible ? 'text' : 'password'}
-                          placeholder={t('auth.login.passwordPlaceholder', 'Şifre')}
+                          placeholder={t('auth.login.passwordPlaceholder')}
                           className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300
                             ${fieldState.invalid 
                               ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' 
@@ -262,7 +262,7 @@ export function LoginPage(): React.JSX.Element {
                       ) : capsLockActive ? (
                         <div className="flex items-center gap-2 text-orange-400 text-xs font-medium animate-in slide-in-from-top-1 bg-orange-400/10 px-3 py-1.5 rounded-lg border border-orange-400/20 w-fit mt-2">
                           <Alert02Icon size={14} />
-                          {t('auth.login.capsLockOn', 'Büyük harf kilidi açık')}
+                          {t('auth.login.capsLockOn')}
                         </div>
                       ) : null}
                     </div>

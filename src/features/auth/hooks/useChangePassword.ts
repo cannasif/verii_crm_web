@@ -15,14 +15,14 @@ export const useChangePassword = () => {
       });
 
       if (!response.success) {
-        throw new Error(response.message || response.exceptionMessage || t('auth.changePassword.error', 'Şifre değiştirilemedi'));
+        throw new Error(response.message || response.exceptionMessage || t('auth.changePassword.error'));
       }
     },
     onSuccess: () => {
-      toast.success(t('auth.changePassword.success', 'Başarılı'));
+      toast.success(t('auth.changePassword.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('auth.changePassword.error', 'Şifre değiştirilemedi'));
+      toast.error(error.message || t('auth.changePassword.error'));
     },
   });
 };
