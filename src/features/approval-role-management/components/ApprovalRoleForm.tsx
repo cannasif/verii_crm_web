@@ -84,13 +84,13 @@ export function ApprovalRoleForm({
         <DialogHeader className="p-6 pb-2 space-y-1">
           <DialogTitle className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-foreground">
             {role
-              ? t('approvalRole.form.editTitle', 'Onay Rolü Düzenle')
-              : t('approvalRole.form.addTitle', 'Yeni Onay Rolü Ekle')}
+              ? t('approvalRole.form.editTitle')
+              : t('approvalRole.form.addTitle')}
           </DialogTitle>
           <DialogDescription className="text-zinc-500 dark:text-muted-foreground text-base">
             {role
-              ? t('approvalRole.form.editDescription', 'Onay rolü bilgilerini düzenleyin')
-              : t('approvalRole.form.addDescription', 'Yeni onay rolü bilgilerini girin')}
+              ? t('approvalRole.form.editDescription')
+              : t('approvalRole.form.addDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -102,7 +102,7 @@ export function ApprovalRoleForm({
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                    {t('approvalRole.form.approvalRoleGroupId', 'Onay Rol Grubu')}
+                    {t('approvalRole.form.approvalRoleGroupId')}
                   </FormLabel>
                   <VoiceSearchCombobox
                     value={field.value && field.value !== 0 ? field.value.toString() : ''}
@@ -111,8 +111,8 @@ export function ApprovalRoleForm({
                       value: group.id.toString(),
                       label: group.name,
                     }))}
-                    placeholder={t('approvalRole.form.selectApprovalRoleGroup', 'Onay Rol Grubu Seçin')}
-                    searchPlaceholder={t('common.search', 'Ara...')}
+                    placeholder={t('approvalRole.form.selectApprovalRoleGroup')}
+                    searchPlaceholder={t('common.search')}
                     className={inputClass}
                   />
                   <FormMessage />
@@ -126,13 +126,13 @@ export function ApprovalRoleForm({
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                    {t('approvalRole.form.name', 'Rol Adı')}
+                    {t('approvalRole.form.name')}
                   </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       className={inputClass}
-                      placeholder={t('approvalRole.form.namePlaceholder', 'Rol adını girin')}
+                      placeholder={t('approvalRole.form.namePlaceholder')}
                       maxLength={100}
                     />
                   </FormControl>
@@ -147,7 +147,7 @@ export function ApprovalRoleForm({
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                    {t('approvalRole.form.maxAmount', 'Maksimum Tutar')}
+                    {t('approvalRole.form.maxAmount')}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -156,7 +156,7 @@ export function ApprovalRoleForm({
                       {...field}
                       value={field.value || ''}
                       onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
-                      placeholder={t('approvalRole.form.maxAmountPlaceholder', 'Maksimum tutarı girin')}
+                      placeholder={t('approvalRole.form.maxAmountPlaceholder')}
                       className={inputClass}
                     />
                   </FormControl>
@@ -173,7 +173,7 @@ export function ApprovalRoleForm({
                 disabled={isLoading}
                 className="h-11 px-6 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
               >
-                {t('approvalRole.form.cancel', 'İptal')}
+                {t('approvalRole.form.cancel')}
               </Button>
               <Button 
                 type="submit" 
@@ -181,8 +181,8 @@ export function ApprovalRoleForm({
                 className="h-11 px-8 bg-gradient-to-r from-pink-600 to-orange-600 text-white font-semibold shadow-lg shadow-pink-500/20 hover:scale-[1.02] transition-transform"
               >
                 {isLoading
-                  ? t('approvalRole.form.saving', 'Kaydediliyor...')
-                  : t('approvalRole.form.save', 'Kaydet')}
+                  ? t('approvalRole.form.saving')
+                  : t('approvalRole.form.save')}
               </Button>
             </DialogFooter>
           </form>

@@ -21,10 +21,10 @@ export const useCreateApprovalRole = () => {
         queryKey: [APPROVAL_ROLE_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalRole.messages.createSuccess', 'Onay rolü başarıyla oluşturuldu'));
+      toast.success(t('approvalRole.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalRole.messages.createError', 'Onay rolü oluşturulamadı'));
+      toast.error(error.message || t('approvalRole.messages.createError'));
     },
   });
 };

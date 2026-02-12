@@ -32,7 +32,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    setPageTitle(t('approvalRole.menu', 'Onay Rolü Yönetimi'));
+    setPageTitle(t('approvalRole.menu'));
     return () => {
       setPageTitle(null);
     };
@@ -110,12 +110,12 @@ export function ApprovalRoleManagementPage(): ReactElement {
         {/* Sol Taraf: Başlık ve Açıklama */}
         <div className="space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-foreground">
-            {t('approvalRole.menu', 'Onay Rolü Yönetimi')}
+            {t('approvalRole.menu')}
           </h1>
           <div className="flex flex-col gap-1">
             <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
               <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-              {t('approvalRole.description', 'Onay rollerini yönetin ve düzenleyin')}
+              {t('approvalRole.description')}
             </p>
           </div>
         </div>
@@ -131,7 +131,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
 
               {/* Input Alanı */}
               <Input
-                placeholder={t('approvalRole.searchPlaceholder', 'Ara...')}
+                placeholder={t('approvalRole.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="
@@ -159,7 +159,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
             <div 
               onClick={handleRefresh}
               className={`hidden md:flex items-center justify-center w-11 h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 text-muted-foreground hover:text-pink-600 hover:border-pink-200 transition-all cursor-pointer ${isRefreshing ? 'animate-spin' : ''}`} 
-              title={t('approvalRole.refresh', 'Yenile')}
+              title={t('approvalRole.refresh')}
             >
                <RefreshCw size={16} className="opacity-70" />
             </div>
@@ -170,7 +170,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
             className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
           >
             <Plus size={18} className="mr-2" />
-            {t('approvalRole.addButton', 'Yeni Onay Rolü Ekle')}
+            {t('approvalRole.addButton')}
           </Button>
         </div>
       </div>

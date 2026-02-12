@@ -20,10 +20,10 @@ export const useDeleteApprovalRole = () => {
         queryKey: [APPROVAL_ROLE_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalRole.messages.deleteSuccess', 'Onay rolü başarıyla silindi'));
+      toast.success(t('approvalRole.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalRole.messages.deleteError', 'Onay rolü silinemedi'));
+      toast.error(error.message || t('approvalRole.messages.deleteError'));
     },
   });
 };

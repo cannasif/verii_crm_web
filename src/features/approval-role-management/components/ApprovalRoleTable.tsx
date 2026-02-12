@@ -90,7 +90,7 @@ export function ApprovalRoleTable({
     return (
       <div className={`flex flex-col items-center justify-center py-24 gap-4 border ${borderClass} rounded-xl bg-white/50 dark:bg-card/50`}>
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
-        <span className="text-muted-foreground animate-pulse text-sm font-medium">{t('approvalRole.loading', 'Yükleniyor...')}</span>
+        <span className="text-muted-foreground animate-pulse text-sm font-medium">{t('approvalRole.loading')}</span>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export function ApprovalRoleTable({
     return (
       <div className={`flex flex-col items-center justify-center py-24 text-muted-foreground border ${borderClass} border-dashed rounded-xl bg-white/50 dark:bg-card/50`}>
         <ShieldCheck size={40} className="opacity-40 mb-2" />
-        <p className="text-sm font-medium">{t('approvalRole.noData', 'Veri yok')}</p>
+        <p className="text-sm font-medium">{t('approvalRole.noData')}</p>
       </div>
     );
   }
@@ -118,7 +118,7 @@ export function ApprovalRoleTable({
               onClick={() => handleSort('Id')}
             >
               <div className="flex items-center gap-1">
-                {t('approvalRole.table.id', 'ID')} <SortIcon column="Id" />
+                {t('approvalRole.table.id')} <SortIcon column="Id" />
               </div>
             </TableHead>
             <TableHead 
@@ -126,7 +126,7 @@ export function ApprovalRoleTable({
               onClick={() => handleSort('ApprovalRoleGroupName')}
             >
               <div className="flex items-center gap-1">
-                {t('approvalRole.table.approvalRoleGroupName', 'Rol Grubu')} <SortIcon column="ApprovalRoleGroupName" />
+                {t('approvalRole.table.approvalRoleGroupName')} <SortIcon column="ApprovalRoleGroupName" />
               </div>
             </TableHead>
             <TableHead 
@@ -134,7 +134,7 @@ export function ApprovalRoleTable({
               onClick={() => handleSort('Name')}
             >
               <div className="flex items-center gap-1">
-                {t('approvalRole.table.name', 'Rol Adı')} <SortIcon column="Name" />
+                {t('approvalRole.table.name')} <SortIcon column="Name" />
               </div>
             </TableHead>
             <TableHead 
@@ -142,17 +142,17 @@ export function ApprovalRoleTable({
               onClick={() => handleSort('MaxAmount')}
             >
               <div className="flex items-center gap-1">
-                {t('approvalRole.table.maxAmount', 'Maksimum Tutar')} <SortIcon column="MaxAmount" />
+                {t('approvalRole.table.maxAmount')} <SortIcon column="MaxAmount" />
               </div>
             </TableHead>
             <TableHead className={`py-4 px-4 text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-foreground/90 border-b border-r border-zinc-300 dark:border-zinc-700`}>
-              {t('approvalRole.table.createdDate', 'Oluşturulma Tarihi')}
+              {t('approvalRole.table.createdDate')}
             </TableHead>
             <TableHead className={`py-4 px-4 text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-foreground/90 border-b border-r border-zinc-300 dark:border-zinc-700`}>
-              {t('approvalRole.table.createdBy', 'Oluşturan Kullanıcı')}
+              {t('approvalRole.table.createdBy')}
             </TableHead>
             <TableHead className={`text-right py-4 px-4 text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-foreground/90 border-b border-zinc-300 dark:border-zinc-700`}>
-              {t('approvalRole.table.actions', 'İşlemler')}
+              {t('approvalRole.table.actions')}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -210,7 +210,7 @@ export function ApprovalRoleTable({
 
       <div className={`flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-zinc-50/50 dark:bg-muted/20 border-t-0 rounded-b-xl gap-4 border-x border-b ${borderClass}`}>
         <div className="text-xs text-muted-foreground font-medium">
-            <span dangerouslySetInnerHTML={{ __html: t('approvalRole.table.totalRecords', 'Toplam <span class="font-bold text-foreground">{{count}}</span> kayıt.', { count: data?.totalCount || 0 }).replace('{{count}}', `<span class="font-bold text-foreground">${data?.totalCount || 0}</span>`) }} />
+            <span dangerouslySetInnerHTML={{ __html: t('approvalRole.table.totalRecords', { count: data?.totalCount || 0 }).replace('{{count}}', `<span class="font-bold text-foreground">${data?.totalCount || 0}</span>`) }} />
         </div>
         
         <div className="flex items-center gap-3">
@@ -221,11 +221,11 @@ export function ApprovalRoleTable({
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1}
           >
-            {t('approvalRole.table.previous', 'Önceki')}
+            {t('approvalRole.table.previous')}
           </Button>
           
           <div className={`text-xs font-bold bg-white dark:bg-background px-3 py-1.5 rounded-md min-w-[3rem] text-center border ${borderClass}`}>
-            {t('approvalRole.table.page', 'Sayfa {{current}} / {{total}}', { current: pageNumber, total: totalPages })}
+            {t('approvalRole.table.page', { current: pageNumber, total: totalPages })}
           </div>
 
           <Button
@@ -235,7 +235,7 @@ export function ApprovalRoleTable({
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
           >
-            {t('approvalRole.table.next', 'Sonraki')}
+            {t('approvalRole.table.next')}
           </Button>
         </div>
       </div>
@@ -247,10 +247,10 @@ export function ApprovalRoleTable({
                <Trash2 className="w-6 h-6 text-red-600 dark:text-red-500" />
              </div>
              <DialogTitle className="text-center text-xl font-bold text-zinc-900 dark:text-zinc-100">
-               {t('approvalRole.delete.confirmTitle', 'Silme İşlemi')}
+               {t('approvalRole.delete.confirmTitle')}
              </DialogTitle>
              <DialogDescription className="text-center text-zinc-500 dark:text-zinc-400">
-               {t('approvalRole.delete.confirmMessage', 'Bu kaydı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')}
+               {t('approvalRole.delete.confirmMessage')}
              </DialogDescription>
            </DialogHeader>
            <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 mt-6">
@@ -259,7 +259,7 @@ export function ApprovalRoleTable({
                onClick={() => setDeleteDialogOpen(false)}
                className="flex-1 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
              >
-               {t('approvalRole.delete.cancelButton', 'İptal')}
+               {t('approvalRole.delete.cancelButton')}
              </Button>
              <Button
                variant="destructive"
@@ -267,7 +267,7 @@ export function ApprovalRoleTable({
                disabled={deleteRole.isPending}
                className="flex-1 bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
              >
-               {deleteRole.isPending ? t('approvalRole.delete.deleting', 'Siliniyor...') : t('approvalRole.delete.confirmButton', 'Sil')}
+               {deleteRole.isPending ? t('approvalRole.delete.deleting') : t('approvalRole.delete.confirmButton')}
              </Button>
            </DialogFooter>
         </DialogContent>
