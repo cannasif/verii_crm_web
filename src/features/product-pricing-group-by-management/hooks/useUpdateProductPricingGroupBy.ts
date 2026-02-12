@@ -20,10 +20,10 @@ export const useUpdateProductPricingGroupBy = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedProductPricingGroupBy.id) });
-      toast.success(t('productPricingGroupByManagement.updateSuccess', 'Fiyatlandırma grubu başarıyla güncellendi'));
+      toast.success(t('productPricingGroupByManagement.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('productPricingGroupByManagement.updateError', 'Fiyatlandırma grubu güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('productPricingGroupByManagement.updateError'));
     },
   });
 };

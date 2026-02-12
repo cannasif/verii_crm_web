@@ -17,10 +17,10 @@ export const useDeleteProductPricingGroupBy = () => {
         queryKey: [PRODUCT_PRICING_GROUP_BY_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('productPricingGroupByManagement.deleteSuccess', 'Fiyatlandırma grubu başarıyla silindi'));
+      toast.success(t('productPricingGroupByManagement.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('productPricingGroupByManagement.deleteError', 'Fiyatlandırma grubu silinirken bir hata oluştu'));
+      toast.error(error.message || t('productPricingGroupByManagement.deleteError'));
     },
   });
 };

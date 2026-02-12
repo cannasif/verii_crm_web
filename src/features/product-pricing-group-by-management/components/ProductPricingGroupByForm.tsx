@@ -127,13 +127,13 @@ export function ProductPricingGroupByForm({
             <div className="space-y-1">
               <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {productPricingGroupBy
-                  ? t('productPricingGroupByManagement.edit', 'Fiyatlandırma Grubu Düzenle')
-                  : t('productPricingGroupByManagement.create', 'Yeni Fiyatlandırma Grubu')}
+                  ? t('productPricingGroupByManagement.edit')
+                  : t('productPricingGroupByManagement.create')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                 {productPricingGroupBy
-                  ? t('productPricingGroupByManagement.editDescription', 'Fiyatlandırma grubu bilgilerini düzenleyin')
-                  : t('productPricingGroupByManagement.createDescription', 'Yeni fiyatlandırma grubu bilgilerini girin')}
+                  ? t('productPricingGroupByManagement.editDescription')
+                  : t('productPricingGroupByManagement.createDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -152,7 +152,7 @@ export function ProductPricingGroupByForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE}>
-                        {t('productPricingGroupByManagement.erpGroupCode', 'ERP Ürün Grubu Kodu')} *
+                        {t('productPricingGroupByManagement.erpGroupCode')} *
                       </FormLabel>
                       <FormControl>
                         <Button
@@ -179,7 +179,7 @@ export function ProductPricingGroupByForm({
                               })()}
                             </span>
                           ) : (
-                            t('productPricingGroupByManagement.selectErpGroupCode', 'Grup Seçin')
+                            t('productPricingGroupByManagement.selectErpGroupCode')
                           )}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -205,7 +205,7 @@ export function ProductPricingGroupByForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE}>
-                        {t('productPricingGroupByManagement.currency', 'Para Birimi')} *
+                        {t('productPricingGroupByManagement.currency')} *
                       </FormLabel>
                       <FormControl>
                         <Button
@@ -230,7 +230,7 @@ export function ProductPricingGroupByForm({
                               })()}
                             </span>
                           ) : (
-                            t('productPricingGroupByManagement.selectCurrency', 'Lütfen para birimi seçin')
+                            t('productPricingGroupByManagement.selectCurrency')
                           )}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -255,7 +255,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
-                          {t('productPricingGroupByManagement.listPrice', 'Liste Fiyatı')} *
+                          {t('productPricingGroupByManagement.listPrice')} *
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -266,7 +266,7 @@ export function ProductPricingGroupByForm({
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                             value={field.value || ''}
                             className={INPUT_STYLE}
-                            placeholder={t('productPricingGroupByManagement.enterListPrice', 'Liste Fiyatı Girin')}
+                            placeholder={t('productPricingGroupByManagement.enterListPrice')}
                           />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -280,7 +280,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
-                          {t('productPricingGroupByManagement.costPrice', 'Maliyet Fiyatı')} *
+                          {t('productPricingGroupByManagement.costPrice')} *
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -291,7 +291,7 @@ export function ProductPricingGroupByForm({
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                             value={field.value || ''}
                             className={INPUT_STYLE}
-                            placeholder={t('productPricingGroupByManagement.enterCostPrice', 'Maliyet Fiyatı Girin')}
+                            placeholder={t('productPricingGroupByManagement.enterCostPrice')}
                           />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -307,7 +307,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
-                          {t('productPricingGroupByManagement.discount1', 'İskonto 1')}
+                          {t('productPricingGroupByManagement.discount1')}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -319,7 +319,7 @@ export function ProductPricingGroupByForm({
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value || ''}
                             className={INPUT_STYLE}
-                            placeholder={t('productPricingGroupByManagement.enterDiscount1', 'İskonto 1 (Ops.)')}
+                            placeholder={t('productPricingGroupByManagement.enterDiscount1')}
                           />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -333,7 +333,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
-                          {t('productPricingGroupByManagement.discount2', 'İskonto 2')}
+                          {t('productPricingGroupByManagement.discount2')}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -345,7 +345,7 @@ export function ProductPricingGroupByForm({
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value || ''}
                             className={INPUT_STYLE}
-                            placeholder={t('productPricingGroupByManagement.enterDiscount2', 'İskonto 2 (Ops.)')}
+                            placeholder={t('productPricingGroupByManagement.enterDiscount2')}
                           />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -359,7 +359,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
-                          {t('productPricingGroupByManagement.discount3', 'İskonto 3')}
+                          {t('productPricingGroupByManagement.discount3')}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -371,7 +371,7 @@ export function ProductPricingGroupByForm({
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value || ''}
                             className={INPUT_STYLE}
-                            placeholder={t('productPricingGroupByManagement.enterDiscount3', 'İskonto 3 (Ops.)')}
+                            placeholder={t('productPricingGroupByManagement.enterDiscount3')}
                           />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px] mt-1" />
@@ -383,10 +383,10 @@ export function ProductPricingGroupByForm({
                 {watchedValues[0] > 0 && (
                   <div className="rounded-xl border border-pink-100 dark:border-pink-500/10 bg-pink-50/50 dark:bg-pink-500/5 p-4">
                     <div className="text-xs font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider mb-1">
-                      {t('productPricingGroupByManagement.priceCalculation', 'Fiyat Hesaplama')}
+                      {t('productPricingGroupByManagement.priceCalculation')}
                     </div>
                     <div className="text-lg font-bold text-slate-900 dark:text-white">
-                      {t('productPricingGroupByManagement.finalPriceAfterDiscounts', 'İndirimler Sonrası Son Fiyat')}:{' '}
+                      {t('productPricingGroupByManagement.finalPriceAfterDiscounts')}:{' '}
                       <span className="text-pink-600 dark:text-pink-400">
                         {formatPrice(finalPrice, watchedValues[4] || '1', exchangeRates)}
                       </span>
@@ -403,7 +403,7 @@ export function ProductPricingGroupByForm({
                   disabled={isLoading}
                   className="h-11 rounded-xl border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
                 >
-                  {t('productPricingGroupByManagement.cancel', 'İptal')}
+                  {t('productPricingGroupByManagement.cancel')}
                 </Button>
                 <Button 
                   type="submit" 
@@ -413,8 +413,8 @@ export function ProductPricingGroupByForm({
                 >
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {isLoading
-                    ? t('productPricingGroupByManagement.saving', 'Kaydediliyor...')
-                    : t('productPricingGroupByManagement.save', 'Kaydet')}
+                    ? t('productPricingGroupByManagement.saving')
+                    : t('productPricingGroupByManagement.save')}
                 </Button>
               </DialogFooter>
             </form>

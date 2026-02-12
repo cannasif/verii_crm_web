@@ -19,10 +19,10 @@ export const useCreateProductPricingGroupBy = () => {
         queryKey: [PRODUCT_PRICING_GROUP_BY_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('productPricingGroupByManagement.createSuccess', 'Fiyatlandırma grubu başarıyla oluşturuldu'));
+      toast.success(t('productPricingGroupByManagement.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('productPricingGroupByManagement.createError', 'Fiyatlandırma grubu oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('productPricingGroupByManagement.createError'));
     },
   });
 };
