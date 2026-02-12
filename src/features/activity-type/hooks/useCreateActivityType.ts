@@ -21,10 +21,10 @@ export const useCreateActivityType = () => {
         queryKey: [ACTIVITY_TYPE_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('activityType.messages.createSuccess', 'Aktivite tipi başarıyla oluşturuldu'));
+      toast.success(t('activityType.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('activityType.messages.createError', 'Aktivite tipi oluşturulamadı'));
+      toast.error(error.message || t('activityType.messages.createError'));
     },
   });
 };

@@ -107,13 +107,13 @@ export function ActivityTypeForm({
              <div className="space-y-1">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   {activityType
-                    ? t('activityType.form.editTitle', 'Aktivite Tipi Düzenle')
-                    : t('activityType.form.addTitle', 'Yeni Aktivite Tipi Ekle')}
+                    ? t('activityType.form.editTitle')
+                    : t('activityType.form.addTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
                   {activityType
-                    ? t('activityType.form.editDescription', 'Aktivite tipi bilgilerini güncelleyin')
-                    : t('activityType.form.addDescription', 'Yeni aktivite tipi kaydı oluşturun')}
+                    ? t('activityType.form.editDescription')
+                    : t('activityType.form.addDescription')}
                 </DialogDescription>
              </div>
           </div>
@@ -136,13 +136,13 @@ export function ActivityTypeForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <Type size={16} className="text-pink-500" />
-                        {t('activityType.form.name', 'Aktivite Tipi Adı')} <span className="text-red-500">*</span>
+                        {t('activityType.form.name')} <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input 
                             {...field} 
                             className={INPUT_STYLE} 
-                            placeholder={t('activityType.form.namePlaceholder', 'Örn: Toplantı, Ziyaret...')} 
+                            placeholder={t('activityType.form.namePlaceholder')} 
                             maxLength={100}
                         />
                       </FormControl>
@@ -158,14 +158,14 @@ export function ActivityTypeForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <FileText size={16} className="text-pink-500" />
-                        {t('activityType.form.description', 'Açıklama')}
+                        {t('activityType.form.description')}
                       </FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
                           value={field.value || ''}
                           className={`${INPUT_STYLE} min-h-[120px] h-auto py-3 resize-none`}
-                          placeholder={t('activityType.form.descriptionPlaceholder', 'Açıklama girin (opsiyonel)')}
+                          placeholder={t('activityType.form.descriptionPlaceholder')}
                           maxLength={500}
                         />
                       </FormControl>
@@ -189,7 +189,7 @@ export function ActivityTypeForm({
             disabled={isLoading}
             className="w-full sm:w-auto h-11 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
           >
-            {t('activityType.cancel', 'İptal')}
+            {t('activityType.cancel')}
           </Button>
           <Button 
             type="submit" 
@@ -198,8 +198,8 @@ export function ActivityTypeForm({
             className="w-full sm:w-auto h-11 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {isLoading
-              ? t('activityType.saving', 'Kaydediliyor...')
-              : t('activityType.save', 'Kaydet')}
+              ? t('activityType.saving')
+              : t('activityType.save')}
           </Button>
         </DialogFooter>
 

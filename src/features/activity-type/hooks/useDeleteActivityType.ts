@@ -20,10 +20,10 @@ export const useDeleteActivityType = () => {
         queryKey: [ACTIVITY_TYPE_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('activityType.messages.deleteSuccess', 'Aktivite tipi başarıyla silindi'));
+      toast.success(t('activityType.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('activityType.messages.deleteError', 'Aktivite tipi silinemedi'));
+      toast.error(error.message || t('activityType.messages.deleteError'));
     },
   });
 };

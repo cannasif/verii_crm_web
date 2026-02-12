@@ -38,7 +38,7 @@ export function ActivityTypeManagementPage(): ReactElement {
   const allActivityTypes = useMemo(() => apiResponse?.data ?? [], [apiResponse]);
 
   useEffect(() => {
-    setPageTitle(t('activityType.management.title', 'Aktivite Tipi Yönetimi'));
+    setPageTitle(t('activityType.management.title'));
     return () => {
       setPageTitle(null);
     };
@@ -114,10 +114,10 @@ export function ActivityTypeManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('activityType.management.title', 'Aktivite Tipi Yönetimi')}
+            {t('activityType.management.title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
-            {t('activityType.management.description', 'Aktivite tiplerini yönetin ve düzenleyin')}
+            {t('activityType.management.description')}
           </p>
         </div>
         
@@ -126,7 +126,7 @@ export function ActivityTypeManagementPage(): ReactElement {
           className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
         >
           <Plus size={18} className="mr-2" />
-          {t('activityType.create', 'Yeni Aktivite Tipi')}
+          {t('activityType.create')}
         </Button>
       </div>
 
@@ -135,7 +135,7 @@ export function ActivityTypeManagementPage(): ReactElement {
             <div className="relative group w-full md:w-96">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
               <Input
-                placeholder={t('common.search', 'Hızlı Ara...')}
+                placeholder={t('common.search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
@@ -153,7 +153,7 @@ export function ActivityTypeManagementPage(): ReactElement {
             <div 
               className="h-10 w-10 flex items-center justify-center bg-white/50 dark:bg-card/50 border border-slate-200 dark:border-white/10 rounded-xl cursor-pointer hover:border-pink-500/30 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all group shrink-0"
               onClick={handleRefresh}
-              title={t('common.refresh', 'Yenile')}
+              title={t('common.refresh')}
             >
               <RefreshCw 
                 size={18} 

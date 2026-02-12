@@ -20,7 +20,7 @@ export function ActivityTypeStats(): ReactElement {
           <Card key={i} className="bg-white/50 dark:bg-[#1a1025]/40 border border-slate-200 dark:border-white/5 shadow-sm">
             <CardHeader>
               <CardTitle className="text-sm font-medium text-slate-400">
-                {t('activityType.loading', 'Yükleniyor...')}
+                {t('activityType.loading')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -56,7 +56,7 @@ export function ActivityTypeStats(): ReactElement {
         <div className={glowStyle} />
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
           <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('activityType.stats.totalActivityTypes', 'Toplam Aktivite Tipi')}
+            {t('activityType.stats.totalActivityTypes')}
           </CardTitle>
           <div className="p-2 bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400 rounded-lg shadow-sm border border-violet-100 dark:border-violet-500/20">
              <ListTodo size={18} />
@@ -72,7 +72,7 @@ export function ActivityTypeStats(): ReactElement {
         <div className={glowStyle} />
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
           <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('activityType.stats.activeActivityTypes', 'Aktif Aktivite Tipi')}
+            {t('activityType.stats.activeActivityTypes')}
           </CardTitle>
           <div className="p-2 bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400 rounded-lg shadow-sm border border-green-100 dark:border-green-500/20">
              <CheckCircle2 size={18} />
@@ -87,7 +87,7 @@ export function ActivityTypeStats(): ReactElement {
         <div className={glowStyle} />
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
           <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('activityType.stats.newThisMonth', 'Bu Ay Yeni')}
+            {t('activityType.stats.newThisMonth')}
           </CardTitle>
           <div className="p-2 bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 rounded-lg shadow-sm border border-orange-100 dark:border-orange-500/20">
              <CalendarDays size={18} />

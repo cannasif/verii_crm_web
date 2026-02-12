@@ -23,10 +23,10 @@ export const useUpdateActivityType = () => {
         queryKey: [ACTIVITY_TYPE_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('activityType.messages.updateSuccess', 'Aktivite tipi başarıyla güncellendi'));
+      toast.success(t('activityType.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('activityType.messages.updateError', 'Aktivite tipi güncellenemedi'));
+      toast.error(error.message || t('activityType.messages.updateError'));
     },
   });
 };
