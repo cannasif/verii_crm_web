@@ -8,7 +8,7 @@
     "loading": "Chargement...",
     "noData": "Aucune donnée",
     "table": {
-      "id": "ID",
+      "id": "IDENTIFIANT",
       "approvalRoleGroupName": "Groupe de Rôles",
       "name": "Nom du Rôle",
       "maxAmount": "Montant Maximum",

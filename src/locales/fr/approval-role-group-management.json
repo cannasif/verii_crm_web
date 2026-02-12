@@ -8,7 +8,7 @@
   "noData": "Aucune donnée trouvée",
   "noDataDescription": "Aucun enregistrement correspondant à vos critères de recherche n'a été trouvé ou aucun enregistrement n'a encore été ajouté.",
   "table": {
-    "id": "ID",
+    "id": "IDENTIFIANT",
     "name": "Nom du Groupe",
     "createdDate": "Date de Création",
     "createdBy": "Créé Par",

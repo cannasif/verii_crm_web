@@ -8,7 +8,7 @@
     "loading": "Chargement...",
     "noData": "Aucune donnée",
     "table": {
-      "id": "ID",
+      "id": "IDENTIFIANT",
       "userFullName": "Utilisateur",
       "approvalRoleName": "Rôle d'Approbation",
       "createdDate": "Date de Création",

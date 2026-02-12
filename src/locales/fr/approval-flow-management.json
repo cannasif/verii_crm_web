@@ -4,7 +4,7 @@
     "description": "Gérer et modifier les flux d'approbation",
     "addButton": "Ajouter Nouveau Flux",
     "table": {
-      "id": "ID",
+      "id": "IDENTIFIANT",
       "documentType": "Type de Document",
       "description": "Description",
       "isActive": "Actif",
