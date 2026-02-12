@@ -30,7 +30,7 @@
   "updateError": "Fehler beim Aktualisieren der Zahlungsart",
   "deleteError": "An error occurred while deleting payment type",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "name": "Name",
     "description": "Beschreibung",
     "createdDate": "Erstellungsdatum",

@@ -7,7 +7,11 @@
     "close": "Schließen",
     "previous": "Previous",
     "next": "Weiter",
-    "delete": "Delete",
+    "delete": {
+      "confirmTitle": "Löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie diesen Datensatz löschen möchten?",
+      "action": "Löschen"
+    },
     "edit": "Bearbeiten",
     "search": "Suchen",
     "filter": "Filtern",
@@ -63,7 +67,68 @@
       "discount2": "Rabatt 2",
       "discount3": "Rabatt 3",
       "discount2And3": "Rab. 2/3"
-    }
+    },
+    "serverErrorTitle": "Serverfehler",
+    "serverErrorRetrying": "Verbindung verloren. Automatischer Wiederholungsversuch...",
+    "serverErrorDescription": "Berechtigungen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "retry": "wiederholen",
+    "refreshPage": "Seite aktualisieren",
+    "voiceSearchPermissionDenied": "Mikrofonberechtigung verweigert.",
+    "voiceSearchError": "Während eines Sprachanrufs ist ein Fehler aufgetreten.",
+    "voiceSearchNotSupported": "Ihr Browser unterstützt keine Sprachsuche",
+    "select": "Wählen",
+    "voiceSearch": "Sprachsuche",
+    "update": "Aktualisieren",
+    "deleting": "Löschen...",
+    "uploading": "Laden...",
+    "clear": "klar",
+    "all": "Alle",
+    "editColumns": "Spalten bearbeiten",
+    "visibleColumns": "Sichtbare Spalten",
+    "paginationInfo": "{{start}}-{{end}} / {{total}} Register",
+    "refresh": "Aktualisieren",
+    "showing": "gezeigt",
+    "table": {
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "filters": "Detaillierter Filter",
+    "selectAll": "Wählen Sie „Alle“ aus",
+    "export": "Export",
+    "exportExcel": "Laden Sie Excel herunter",
+    "exportPDF": "PDF herunterladen",
+    "exportPPT": "Laden Sie PowerPoint herunter",
+    "active": "Aktiv",
+    "columns": "Sichtbare Spalten",
+    "ok": "OK",
+    "clearFilters": "klar",
+    "apply": "Anwenden",
+    "page": "Seite {{current}} / {{total}}",
+    "status": "Situation",
+    "deleteSuccess": "Löschung erfolgreich",
+    "deleteError": "Beim Löschen ist ein Fehler aufgetreten",
+    "deleteConfirmTitle": "Löschvorgang",
+    "voiceSearchCompleted": "Sprachsuche abgeschlossen",
+    "voiceSearchStopListening": "Hör auf zuzuhören",
+    "actionExecuted": "Die Transaktion wurde erfolgreich abgeschlossen",
+    "actionExecutionFailed": "Der Vorgang konnte nicht ausgeführt werden",
+    "templateDeleted": "Vorlage gelöscht",
+    "templateDeleteFailed": "Vorlage konnte nicht gelöscht werden",
+    "enterValidDocumentId": "Geben Sie eine gültige Dokument-ID ein",
+    "pdfGenerated": "PDF erstellt",
+    "pdfGenerateFailed": "PDF konnte nicht erstellt werden",
+    "updated": "Aktualisiert",
+    "saved": "gespeichert",
+    "templateUpdatedWithTitle": "Vorlage aktualisiert: {{title}}",
+    "templateSavedWithTitle": "Vorlage gespeichert: {{title}}",
+    "templateUpdateFailed": "Vorlage konnte nicht aktualisiert werden",
+    "templateSaveFailed": "Vorlage konnte nicht gespeichert werden",
+    "imageMax2Mb": "Das Bild kann bis zu 2 MB groß sein.",
+    "selectImage": "Bild auswählen",
+    "imageSettings": "Bildeigenschaften",
+    "imageUrl": "Bild-URL",
+    "uploadFromFile": "Aus Datei laden",
+    "imageUrlPlaceholder": "https://... veya /logo.png"
   },
   "auth": {
     "login": {
@@ -92,11 +157,21 @@
       "animationOff": "Animation ausschalten",
       "animationOn": "Animation einschalten"
     },
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "changePassword": {
+      "error": "Passwort konnte nicht geändert werden",
+      "success": "Erfolgreich"
+    },
+    "resetPassword": {
+      "successRedirect": "Ihr Passwort wurde erfolgreich zurückgesetzt. Sie werden zur Anmeldeseite weitergeleitet...",
+      "failed": "Das Zurücksetzen des Passworts ist fehlgeschlagen",
+      "error": "Beim Zurücksetzen des Passworts ist ein Fehler aufgetreten"
+    }
   },
   "navbar": {
-    "VERII WMS": "VERII WMS",
-    "crm": "CRM"
+    "VERII WMS": "DATEN-WMS",
+    "crm": "CRM",
+    "search_placeholder": "Machen Sie eine schnelle Suche..."
   },
   "powerbiRls": {
     "title": "Power BI RLS-Verwaltung",
@@ -105,7 +180,7 @@
     "report": "Bericht",
     "role": "Rolle",
     "rlsRoles": "RLS-Rollen",
-    "rlsRolesPlaceholder": "Sales, Finance, NorthRegion",
+    "rlsRolesPlaceholder": "Vertrieb, Finanzen, Nordregion",
     "createdBy": "Erstellt von",
     "updatedBy": "Aktualisiert von",
     "actions": "Aktionen",
@@ -134,7 +209,7 @@
     "deleted": "Deleted"
   },
   "sidebar": {
-    "dashboard": "Dashboard",
+    "dashboard": "Armaturenbrett",
     "search": "Suchen...",
     "home": "Startseite",
     "customers": "Kunden",
@@ -190,15 +265,32 @@
     "approvalRoleManagement": "Approval Role Management",
     "approvalFlowManagement": "Approval Flow Management",
     "reportBuilder": "Report Builder",
-    "pdfBuilder": "PDF Builder",
+    "pdfBuilder": "PDF-Builder",
     "powerbiConfiguration": "Power BI Configuration",
     "powerbiReportsView": "Power BI Reports (View)",
     "mailSettings": "Mail Settings",
     "documentSerialTypeManagement": "Document Serial Type Management",
-    "salesTypeManagement": "Vertriebstyp-Verwaltung"
+    "salesTypeManagement": "Vertriebstyp-Verwaltung",
+    "customersConflictInbox": "Konflikt-Posteingang",
+    "salesManagement": "Vertriebsmanagement",
+    "demands": "Anfragen",
+    "demandCreateWizard": "Neue Anfrage erstellen",
+    "waitingApprovalDemands": "Anträge mit ausstehender Genehmigung",
+    "demandList": "Anforderungsliste",
+    "proposals": "Vorschläge",
+    "waitingApprovals": "Ausstehende Genehmigungen",
+    "quotationList": "Angebotsliste",
+    "orderCreateWizard": "Neue Bestellung erstellen",
+    "waitingApprovalOrders": "Bestellungen müssen noch genehmigt werden",
+    "orderList": "Bestellliste",
+    "productAndStock": "Produkte & Lagerbestand",
+    "reportsList": "Liste",
+    "reportsCreate": "Neu erstellen",
+    "definitions": "Definitionen",
+    "users": "Benutzer"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Armaturenbrett",
     "subtitle": "Willkommen im CRM-System",
     "monthlyRevenue": "Monatliches Einkommen",
     "conversionRate": "Konversionsrate",
@@ -230,9 +322,9 @@
     "monthsShort": {
       "jan": "Jan",
       "feb": "Feb",
-      "mar": "Mar",
+      "mar": "Beschädigen",
       "apr": "Apr",
-      "may": "May",
+      "may": "Mai",
       "jun": "Jun",
       "jul": "Jul",
       "aug": "Aug",
@@ -264,7 +356,8 @@
         "twoDaysAgo": "vor 2 Tagen",
         "threeDaysAgo": "vor 3 Tagen"
       }
-    }
+    },
+    "user": "Benutzer"
   },
   "customer360": {
     "title": "Customer 360",
@@ -360,19 +453,19 @@
       "paymentBehavior": "Zahlungsverhalten ist derzeit ein Proxy-Score (Bestellkontinuität, Angebotsablehnung, letzte Bestellung) statt direkter Forderungshistorie, Skala 0–100.",
       "rfmSegment": "RFM-Segment ordnet Champions/Loyal/AtRisk/Potential nach Recency-, Frequency- und Monetary-Regeln zu.",
       "cohortRetentionTitle": "Kohortenbindung: Erster Bestellmonat = Kohorte; bei Bestellung in Folgemonaten gilt als gehalten, es wird die Retentionsrate berechnet.",
-      "recommendedActionsTitle": "Empfohlene Aktionen sind priorisierte Follow-up-Vorschlaege der Regel-Engine (z. B. lange Inaktivitaet, offenes Angebot, hohes Churn). Jede Aktion ist mit reason + source rule code nachvollziehbar.",
+      "recommendedActionsTitle": "Empfohlene Aktionen sind vorrangige Folgevorschläge, die von der Regel-Engine generiert werden (z. B. keine Aktivität über einen längeren Zeitraum, es gibt ein offenes Angebot, die Abwanderung ist hoch). Jede Aktion kann mit Begründung + Regelcode verfolgt werden.",
       "executeAction": "Execute wandelt diese Empfehlung in eine Aktivitaet/Aufgabe um: Backend ruft `POST /api/customer360/{id}/actions/execute` auf und erstellt einen neuen Activity-Eintrag.",
       "noCohortData": "Cohort data is not available yet due to insufficient order history.",
       "modelNote": "Note: These scores are deterministic v1 and can be improved later with ERP collection data and ML models."
     }
   },
   "salesman360": {
-    "title": "Salesman 360",
+    "title": "Verkäufer 360",
     "subtitle": "Sales representative overview",
     "notFound": "Benutzer nicht gefunden",
     "error": "An error occurred while loading the overview",
     "retry": "Erneut versuchen",
-    "button": "Salesman 360",
+    "button": "Verkäufer 360",
     "currencyFilter": {
       "label": "Währung",
       "all": "Alle"
@@ -448,7 +541,7 @@
       "paymentBehavior": "Zahlungsverhalten nutzt derzeit Proxy-Metriken; wird genauer, sobald direkte Forderungshistorie angebunden ist.",
       "rfmSegment": "RFM-Segment klassifiziert das Portfolio nach Recency-/Frequency-/Monetary-Verhalten.",
       "cohortRetentionTitle": "Kohortenbindung gruppiert Kunden nach erstem Bestellmonat im Vertreter-Portfolio und zeigt monatliche Bindungsraten.",
-      "recommendedActionsTitle": "Empfohlene Aktionen schlagen priorisierte Schritte vor (z. B. Pipeline bereinigen, Aktivitaet steigern, Churn eingreifen). Jede Aktion ist mit reason + source rule code nachvollziehbar.",
+      "recommendedActionsTitle": "Empfohlene Aktionen empfehlen vorrangige Aktionen wie Pipeline-Reinigung, Aktivitätssteigerung und Abwanderungseingriffe. Jede Aktion kann mit Begründung + Regelcode verfolgt werden.",
       "executeAction": "Execute wandelt die Empfehlung in eine Aktivitaet/Aufgabe um: Backend ruft `POST /api/salesmen360/{userId}/actions/execute` auf.",
       "noCohortData": "Cohort data is not available yet due to insufficient order history.",
       "modelNote": "Note: Current scores are deterministic v1 and can be strengthened with quota/forecast/ML."
@@ -536,7 +629,7 @@
     "report": {
       "title": "Wareneingangsbericht",
       "searchPlaceholder": "Bestellnummer, Kundencode, Belegnummer...",
-      "id": "ID",
+      "id": "AUSWEIS",
       "orderId": "Bestellnummer",
       "customerCode": "Kundencode",
       "projectCode": "Projektcode",
@@ -639,7 +732,7 @@
     "list": {
       "title": "Versandauftragsliste",
       "searchPlaceholder": "Belegnummer, Kundencode, Lager...",
-      "id": "ID",
+      "id": "AUSWEIS",
       "documentNo": "Belegnummer",
       "documentDate": "Belegdatum",
       "customerCode": "Kundencode",
@@ -766,7 +859,7 @@
     "list": {
       "title": "Transferauftragsliste",
       "searchPlaceholder": "Belegnummer, Kundencode, Lager...",
-      "id": "ID",
+      "id": "AUSWEIS",
       "documentNo": "Belegnummer",
       "documentDate": "Belegdatum",
       "customerCode": "Kundencode",
@@ -945,7 +1038,7 @@
       "assignedList": {
         "title": "Zugewiesene Subunternehmer-Ausgangsaufträge",
         "searchPlaceholder": "Belegnummer, Kundencode, Lager...",
-        "id": "ID",
+        "id": "AUSWEIS",
         "documentNo": "Belegnummer",
         "documentDate": "Belegdatum",
         "customerCode": "Kundencode",
@@ -990,7 +1083,7 @@
       "assignedList": {
         "title": "Zugewiesene Subunternehmer-Eingangsaufträge",
         "searchPlaceholder": "Belegnummer, Kundencode, Lager...",
-        "id": "ID",
+        "id": "AUSWEIS",
         "documentNo": "Belegnummer",
         "documentDate": "Belegdatum",
         "customerCode": "Kundencode",
@@ -1045,7 +1138,7 @@
     "list": {
       "title": "Parameterliste",
       "searchPlaceholder": "Suchen...",
-      "id": "ID",
+      "id": "AUSWEIS",
       "allowLessQuantity": "Weniger Menge basierend auf Bestellung erlauben",
       "allowMoreQuantity": "Mehr Menge basierend auf Bestellung erlauben",
       "requireApproval": "Genehmigung vor ERP erforderlich",
@@ -1375,24 +1468,24 @@
     },
     "cargoCompany": {
       "None": "Keine",
-      "YurtiçiKargo": "Yurtiçi Kargo",
-      "ArasKargo": "Aras Kargo",
-      "MNGKargo": "MNG Kargo",
-      "PTTKargo": "PTT Kargo",
-      "SüratKargo": "Sürat Kargo",
+      "YurtiçiKargo": "Inländische Fracht",
+      "ArasKargo": "Aras Cargo",
+      "MNGKargo": "MNG-Fracht",
+      "PTTKargo": "PTT-Fracht",
+      "SüratKargo": "Schnelle Fracht",
       "UPS": "UPS",
       "DHL": "DHL",
       "FedEx": "FedEx",
       "TNT": "TNT",
       "HorozLojistik": "Horoz Logistik",
-      "CEVA": "CEVA",
-      "KargoTurk": "Kargo Türk",
+      "CEVA": "ANTWORT",
+      "KargoTurk": "Fracht Türkisch",
       "HepsiJET": "HepsiJET",
       "TrendyolExpress": "Trendyol Express",
-      "AmazonLogistics": "Amazon Logistics",
+      "AmazonLogistics": "Amazon Logistik",
       "Scotty": "Scotty",
-      "KolayGelsin": "Kolay Gelsin",
-      "BirGundeKargo": "Bir Günde Kargo"
+      "KolayGelsin": "Viel Glück",
+      "BirGundeKargo": "Versand innerhalb eines Tages"
     }
   },
   "notification": {
@@ -1406,7 +1499,9 @@
     "viewAll": "Alle Benachrichtigungen anzeigen",
     "loading": "Wird geladen...",
     "disconnected": "Verbindung getrennt",
-    "notifications": "Benachrichtigungen"
+    "notifications": "Benachrichtigungen",
+    "close": "Schließen",
+    "unread": "Nicht gelesen"
   },
   "titleManagement": {
     "menu": "Titelverwaltung",
@@ -1419,7 +1514,7 @@
       "totalContacts": "Gesamtkontakte"
     },
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "titleName": "Titelname",
       "contacts": "Kontaktanzahl",
       "createdDate": "Erstellungsdatum",
@@ -1440,11 +1535,14 @@
       "titleName.maxLength": "Titelname darf maximal 50 Zeichen lang sein",
       "code": "Code",
       "codePlaceholder": "Enter code (optional)",
-      "code.maxLength": "Code must be at most 10 characters"
+      "code.maxLength": "Code must be at most 10 characters",
+      "cancel": "Stornieren"
     },
     "delete": {
       "confirmTitle": "Delete Title",
-      "confirmMessage": "Are you sure you want to delete the title {{titleName}}?"
+      "confirmMessage": "Are you sure you want to delete the title {{titleName}}?",
+      "title": "Titel löschen",
+      "confirm": "Sind Sie sicher, dass Sie den Titel {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
     },
     "messages": {
       "createSuccess": "Titel erfolgreich erstellt",
@@ -1453,7 +1551,12 @@
       "updateError": "Titel konnte nicht aktualisiert werden",
       "deleteSuccess": "Title deleted successfully",
       "deleteError": "Failed to delete title"
-    }
+    },
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "search": "Schnellsuche...",
+    "loading": "Laden...",
+    "noData": "Kein Datensatz gefunden"
   },
   "userManagement": {
     "menu": "Benutzerverwaltung",
@@ -1463,10 +1566,11 @@
       "totalUsers": "Gesamtbenutzer",
       "activeUsers": "Aktive Benutzer",
       "newThisMonth": "Neu diesen Monat",
-      "confirmedUsers": "Bestätigte Benutzer"
+      "confirmedUsers": "Bestätigte Benutzer",
+      "loading": "Laden..."
     },
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "username": "Benutzername",
       "email": "E-Mail",
       "fullName": "Vollständiger Name",
@@ -1477,7 +1581,11 @@
       "inactive": "Inaktiv",
       "confirmed": "Bestätigt",
       "showing": "{{from}}-{{to}} von {{total}} angezeigt",
-      "page": "Seite {{current}} von {{total}}"
+      "page": "Seite {{current}} von {{total}}",
+      "loading": "Laden...",
+      "noData": "Keine Daten",
+      "previous": "Ehemalig",
+      "next": "Nächste"
     },
     "form": {
       "addUser": "Add New User",
@@ -1573,12 +1681,13 @@
     "description": "Verwalten Sie Genehmigungs‑Rollengruppen",
     "addButton": "Add New Approval Role Group",
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "name": "Name",
       "createdDate": "Erstellungsdatum",
       "createdBy": "Erstellt von",
       "showing": "{{from}}-{{to}} / {{total}} angezeigt",
-      "page": "Seite {{current}} / {{total}}"
+      "page": "Seite {{current}} / {{total}}",
+      "actions": "Transaktionen"
     },
     "form": {
       "addTitle": "Add New Approval Role Group",
@@ -1592,7 +1701,8 @@
     },
     "delete": {
       "confirmTitle": "Delete Approval Role Group",
-      "confirmMessage": "Are you sure you want to delete the approval role group {{name}}?"
+      "confirmMessage": "Are you sure you want to delete the approval role group {{name}}?",
+      "title": "Rollengruppe löschen"
     },
     "messages": {
       "createSuccess": "Gruppe erstellt",
@@ -1601,20 +1711,27 @@
       "updateError": "Gruppe konnte nicht aktualisiert werden",
       "deleteSuccess": "Approval role group deleted successfully",
       "deleteError": "Failed to delete approval role group"
-    }
+    },
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "searchPlaceholder": "Suchen...",
+    "refresh": "Aktualisieren",
+    "noData": "Kein Datensatz gefunden"
   },
   "approvalUserRole": {
     "menu": "Genehmigungs‑Benutzerrollen",
     "description": "Verwalten Sie Benutzer‑Rollenzuweisungen",
     "addButton": "Add New Approval User Role",
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "userFullName": "Vollständiger Name",
       "approvalRoleName": "Genehmigungsrolle",
       "createdDate": "Erstellungsdatum",
       "createdBy": "Erstellt von",
       "showing": "{{from}}-{{to}} / {{total}} angezeigt",
-      "page": "Seite {{current}} / {{total}}"
+      "page": "Seite {{current}} / {{total}}",
+      "actions": "Transaktionen"
     },
     "form": {
       "addTitle": "Add New Approval User Role",
@@ -1628,11 +1745,15 @@
       "approvalRoleId": "Genehmigungsrolle",
       "selectApprovalRole": "Genehmigungsrolle auswählen",
       "noApprovalRoleSelected": "Keine Genehmigungsrolle ausgewählt",
-      "approvalRoleId.required": "Genehmigungsrolle ist erforderlich"
+      "approvalRoleId.required": "Genehmigungsrolle ist erforderlich",
+      "cancel": "Stornieren",
+      "saving": "Aufnahme...",
+      "save": "Speichern"
     },
     "delete": {
       "confirmTitle": "Delete Approval User Role",
-      "confirmMessage": "Are you sure you want to delete this approval user role?"
+      "confirmMessage": "Are you sure you want to delete this approval user role?",
+      "title": "Rolle löschen"
     },
     "messages": {
       "createSuccess": "Zuweisung erstellt",
@@ -1641,20 +1762,28 @@
       "updateError": "Zuweisung konnte nicht aktualisiert werden",
       "deleteSuccess": "Approval user role deleted successfully",
       "deleteError": "Failed to delete approval user role"
-    }
+    },
+    "searchPlaceholder": "Suchen...",
+    "refresh": "Aktualisieren",
+    "noData": "Kein Datensatz gefunden"
   },
   "approvalRole": {
     "menu": "Genehmigungsrollen",
     "description": "Verwalten Sie Genehmigungsrollen",
     "addButton": "Add New Approval Role",
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "approvalRoleGroupName": "Rollengruppe",
       "name": "Name",
       "createdDate": "Erstellungsdatum",
       "createdBy": "Erstellt von",
       "showing": "{{from}}-{{to}} / {{total}} angezeigt",
-      "page": "Seite {{current}} / {{total}}"
+      "page": "Seite {{current}} / {{total}}",
+      "maxAmount": "Höchstbetrag",
+      "actions": "Transaktionen",
+      "totalRecords": "Insgesamt <span class=",
+      "previous": "Ehemalig",
+      "next": "Nächste"
     },
     "form": {
       "addTitle": "Add New Approval Role",
@@ -1668,11 +1797,19 @@
       "name": "Name",
       "namePlaceholder": "Name eingeben",
       "name.required": "Name ist erforderlich",
-      "name.maxLength": "Role name must be at most 100 characters"
+      "name.maxLength": "Role name must be at most 100 characters",
+      "maxAmount": "Höchstbetrag",
+      "maxAmountPlaceholder": "Geben Sie den Höchstbetrag ein",
+      "cancel": "Stornieren",
+      "saving": "Aufnahme...",
+      "save": "Speichern"
     },
     "delete": {
       "confirmTitle": "Delete Approval Role",
-      "confirmMessage": "Are you sure you want to delete the approval role {{name}}?"
+      "confirmMessage": "Are you sure you want to delete the approval role {{name}}?",
+      "cancelButton": "Stornieren",
+      "deleting": "Löschen...",
+      "confirmButton": "Ja, löschen"
     },
     "messages": {
       "createSuccess": "Rolle erstellt",
@@ -1681,7 +1818,11 @@
       "updateError": "Rolle konnte nicht aktualisiert werden",
       "deleteSuccess": "Approval role deleted successfully",
       "deleteError": "Failed to delete approval role"
-    }
+    },
+    "searchPlaceholder": "Suchen...",
+    "refresh": "Aktualisieren",
+    "loading": "Laden...",
+    "noData": "Keine Daten"
   },
   "approvalFlow": {
     "menu": "Genehmigungsfluss‑Verwaltung",
@@ -1690,17 +1831,20 @@
     "documentType": {
       "offer": "Angebot",
       "request": "Anfrage",
-      "order": "Bestellung"
+      "order": "Bestellung",
+      "demand": "Anfrage",
+      "quotation": "Angebot"
     },
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "documentType": "Dokumenttyp",
       "description": "Beschreibung",
       "isActive": "Aktiv",
       "createdDate": "Erstellungsdatum",
       "createdBy": "Erstellt von",
       "showing": "{{from}}-{{to}} / {{total}} angezeigt",
-      "page": "Seite {{current}} / {{total}}"
+      "page": "Seite {{current}} / {{total}}",
+      "actions": "Transaktionen"
     },
     "form": {
       "addTitle": "Add New Approval Flow",
@@ -1715,11 +1859,16 @@
       "descriptionPlaceholder": "Beschreibung eingeben (optional)",
       "description.maxLength": "Description must be at most 200 characters",
       "isActive": "Aktiv",
-      "isActiveDescription": "Aktiv‑Status des Genehmigungsflusses"
+      "isActiveDescription": "Aktiv‑Status des Genehmigungsflusses",
+      "cancel": "Stornieren",
+      "saving": "Aufnahme...",
+      "save": "Speichern"
     },
     "delete": {
       "confirmTitle": "Delete Approval Flow",
-      "confirmMessage": "Are you sure you want to delete this approval flow?"
+      "confirmMessage": "Are you sure you want to delete this approval flow?",
+      "title": "Genehmigungsablauf löschen",
+      "confirm": "Sind Sie sicher, dass Sie diesen Bestätigungsfluss löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
     },
     "messages": {
       "createSuccess": "Genehmigungsfluss erstellt",
@@ -1728,7 +1877,11 @@
       "updateError": "Genehmigungsfluss konnte nicht aktualisiert werden",
       "deleteSuccess": "Approval flow deleted successfully",
       "deleteError": "Failed to delete approval flow"
-    }
+    },
+    "active": "Aktiv",
+    "inactive": "Passiv",
+    "loading": "Laden...",
+    "noData": "Kein Datensatz gefunden"
   },
   "countryManagement": {
     "menu": "Länderverwaltung",
@@ -1740,41 +1893,38 @@
       "newThisMonth": "Neu in diesem Monat"
     },
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "name": "Landesname",
       "code": "Code",
       "erpCode": "ERP-Code",
       "createdDate": "Erstellungsdatum",
       "createdBy": "Erstellt von",
       "showing": "{{from}}-{{to}} / {{total}} angezeigt",
-      "page": "Seite {{current}} / {{total}}"
+      "page": "Seite {{current}} / {{total}}",
+      "noData": "Kein Datensatz gefunden"
     },
     "form": {
       "addCountry": "Add New Country",
       "editCountry": "Land bearbeiten",
       "addDescription": "Neue Landesdaten eingeben",
       "editDescription": "Landesdaten bearbeiten",
-      "name": {
-        "required": "Landesname ist erforderlich",
-        "maxLength": "Landesname darf höchstens 100 Zeichen haben"
-      },
+      "name": "Ländername",
       "namePlaceholder": "Landesnamen eingeben",
-      "code": {
-        "required": "Ländercode ist erforderlich",
-        "minLength": "Ländercode muss mindestens 2 Zeichen haben",
-        "maxLength": "Ländercode darf höchstens 5 Zeichen haben"
-      },
+      "code": "Landesvorwahl",
       "codePlaceholder": "Ländercode eingeben (z. B. DE, US)",
-      "erpCode": {
-        "maxLength": "ERP-Code darf höchstens 10 Zeichen haben"
-      },
+      "erpCode": "ERP-Code",
       "erpCodePlaceholder": "ERP-Code eingeben (optional)",
       "name.required": "Ländername ist erforderlich",
       "name.maxLength": "Country name must be at most 100 characters",
       "code.required": "Ländercode ist erforderlich",
       "code.minLength": "Ländercode muss mindestens 2 Zeichen haben",
       "code.maxLength": "Country code must be at most 5 characters",
-      "erpCode.maxLength": "ERP code must be at most 10 characters"
+      "erpCode.maxLength": "ERP code must be at most 10 characters",
+      "tabs": {
+        "header": "Allgemeine Informationen"
+      },
+      "cancel": "Stornieren",
+      "save": "Speichern"
     },
     "delete": {
       "confirmTitle": "Delete Country",
@@ -1787,7 +1937,11 @@
       "updateError": "Land konnte nicht aktualisiert werden",
       "deleteSuccess": "Country deleted successfully",
       "deleteError": "Failed to delete country"
-    }
+    },
+    "searchPlaceholder": "Schnellsuche...",
+    "loading": "Laden...",
+    "deleteTitle": "Land löschen",
+    "deleteConfirmation": "Sind Sie sicher, dass Sie das Land mit dem Namen {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "cityManagement": {
     "menu": "Stadtverwaltung",
@@ -1799,7 +1953,7 @@
       "newThisMonth": "Neu in diesem Monat"
     },
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "name": "Stadtname",
       "erpCode": "ERP-Code",
       "countryName": "Landesname",
@@ -1813,27 +1967,28 @@
       "editCity": "Stadt bearbeiten",
       "addDescription": "Neue Stadtdaten eingeben",
       "editDescription": "Stadtdaten bearbeiten",
-      "name": {
-        "required": "Stadtname ist erforderlich",
-        "maxLength": "Stadtname darf höchstens 100 Zeichen haben"
-      },
+      "name": "Stadtname",
       "namePlaceholder": "Stadtnamen eingeben",
-      "country": {
-        "required": "Landesauswahl ist erforderlich"
-      },
+      "country": "Land",
       "selectCountry": "Land auswählen",
-      "erpCode": {
-        "maxLength": "ERP-Code darf höchstens 10 Zeichen haben"
-      },
+      "erpCode": "ERP-Code",
       "erpCodePlaceholder": "ERP-Code eingeben (optional)",
       "name.required": "Stadtname ist erforderlich",
       "name.maxLength": "City name must be at most 100 characters",
       "country.required": "Land ist erforderlich",
-      "erpCode.maxLength": "ERP code must be at most 10 characters"
+      "erpCode.maxLength": "ERP code must be at most 10 characters",
+      "tabs": {
+        "header": "Allgemeine Informationen"
+      },
+      "searchCountry": "Nach Land suchen...",
+      "cancel": "Stornieren",
+      "save": "Speichern"
     },
     "delete": {
       "confirmTitle": "Delete City",
-      "confirmMessage": "Are you sure you want to delete city {{name}}?"
+      "confirmMessage": "Are you sure you want to delete city {{name}}?",
+      "success": "Stadt erfolgreich gelöscht",
+      "error": "Beim Löschen der Stadt ist ein Fehler aufgetreten"
     },
     "messages": {
       "createSuccess": "Stadt erfolgreich erstellt",
@@ -1842,7 +1997,11 @@
       "updateError": "Stadt konnte nicht aktualisiert werden",
       "deleteSuccess": "City deleted successfully",
       "deleteError": "Failed to delete city"
-    }
+    },
+    "searchPlaceholder": "Schnellsuche...",
+    "loading": "Laden...",
+    "noData": "Keine Daten",
+    "actions": "Transaktionen"
   },
   "districtManagement": {
     "menu": "Bezirksverwaltung",
@@ -1854,41 +2013,39 @@
       "newThisMonth": "Neu in diesem Monat"
     },
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "name": "Bezirksname",
       "erpCode": "ERP-Code",
       "cityName": "Stadtname",
       "createdDate": "Erstellungsdatum",
       "createdBy": "Erstellt von",
       "showing": "{{from}}-{{to}} / {{total}} angezeigt",
-      "page": "Seite {{current}} / {{total}}"
+      "page": "Seite {{current}} / {{total}}",
+      "city": "Stadt",
+      "status": "Situation"
     },
     "form": {
       "addDistrict": "Add New District",
       "editDistrict": "Bezirk bearbeiten",
       "addDescription": "Neue Bezirksdaten eingeben",
       "editDescription": "Bezirksdaten bearbeiten",
-      "name": {
-        "required": "Bezirksname ist erforderlich",
-        "maxLength": "Bezirksname darf höchstens 100 Zeichen haben"
-      },
+      "name": "Bezirksname",
       "namePlaceholder": "Bezirksnamen eingeben",
-      "city": {
-        "required": "Stadtauswahl ist erforderlich"
-      },
+      "city": "Stadt",
       "selectCity": "Stadt auswählen",
-      "erpCode": {
-        "maxLength": "ERP-Code darf höchstens 10 Zeichen haben"
-      },
+      "erpCode": "ERP-Code",
       "erpCodePlaceholder": "ERP-Code eingeben (optional)",
       "name.required": "Bezirksname ist erforderlich",
       "name.maxLength": "District name must be at most 100 characters",
       "city.required": "Stadt ist erforderlich",
-      "erpCode.maxLength": "ERP code must be at most 10 characters"
+      "erpCode.maxLength": "ERP code must be at most 10 characters",
+      "searchCity": "Stadt suchen..."
     },
     "delete": {
       "confirmTitle": "Delete District",
-      "confirmMessage": "Are you sure you want to delete district {{name}}?"
+      "confirmMessage": "Are you sure you want to delete district {{name}}?",
+      "success": "Bezirk erfolgreich gelöscht",
+      "error": "Beim Löschen des Bezirks ist ein Fehler aufgetreten"
     },
     "messages": {
       "createSuccess": "Bezirk erfolgreich erstellt",
@@ -1897,6 +2054,2031 @@
       "updateError": "Bezirk konnte nicht aktualisiert werden",
       "deleteSuccess": "District deleted successfully",
       "deleteError": "Failed to delete district"
+    },
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Speichern"
+  },
+  "nav": {
+    "customersConflictInbox": "Konflikt-Posteingang"
+  },
+  "pdfReportDesigner": {
+    "list": "Liste",
+    "create": "Erstellen",
+    "templatesTitle": "Berichtsvorlagen",
+    "createNew": "Neu erstellen",
+    "title": "Titel",
+    "documentType": "Dokumenttyp",
+    "active": "Aktiv",
+    "default": "Standard",
+    "defaultBadge": "Standard",
+    "templateDeleted": "Vorlage gelöscht",
+    "templateDeleteFailed": "Vorlage konnte nicht gelöscht werden",
+    "copy": "Kopie",
+    "generatePdf": "PDF erstellen",
+    "enterValidDocumentId": "Geben Sie eine gültige Dokument-ID ein",
+    "pdfGenerated": "PDF erstellt",
+    "pdfGenerateFailed": "PDF konnte nicht erstellt werden",
+    "deleteTemplateTitle": "Vorlage löschen",
+    "deleteTemplateConfirm": "Sind Sie sicher, dass Sie die Vorlage löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "generatePdfTitle": "PDF erstellen",
+    "generatePdfDescription": "Vorlage:",
+    "enterDocumentId": "Geben Sie die Dokument-ID ein (Angebots-/Auftrags-/Anfrage-ID).",
+    "documentId": "Dokument-ID",
+    "generating": "Wird erstellt…",
+    "noTemplates": "Noch keine Vorlagen. Sie können es mit „Neu erstellen“ hinzufügen.",
+    "editTemplate": "Vorlage bearbeiten",
+    "newTemplate": "Neue Berichtsvorlage",
+    "titlePlaceholder": "Berichtstitel eingeben",
+    "setDefaultTemplate": "Standardvorlage erstellen",
+    "updated": "Aktualisiert",
+    "saved": "gespeichert",
+    "updateFailed": "Vorlage konnte nicht aktualisiert werden",
+    "saveFailed": "Vorlage konnte nicht gespeichert werden",
+    "undo": "Rückgängig machen",
+    "redo": "Wiederherstellen",
+    "draftRestored": "Entwurf wiederhergestellt",
+    "draftRestoreFailed": "Entwurf konnte nicht geladen werden",
+    "draftFound": "Entwurf gefunden. Sie können es wiederherstellen oder löschen.",
+    "restoreDraft": "Wiederherstellen",
+    "discardDraft": "klar",
+    "snapToGrid": "Am Raster ausrichten"
+  },
+  "reportDesigner": {
+    "ruleType": {
+      "demand": "Anfrage",
+      "quotation": "Angebot",
+      "order": "Auftrag"
+    },
+    "palette": {
+      "title": "Feldpalette",
+      "text": "Text",
+      "fields": "Felder",
+      "tableColumns": "Tabellenspalten",
+      "exchangeRates": "Wechselkurse",
+      "addTable": "Tabelle einfügen",
+      "images": "Bilder",
+      "logoImage": "Logobild"
+    },
+    "sections": {
+      "header": "Kopfzeile",
+      "content": "Inhalt",
+      "footer": "Fußzeile"
+    },
+    "tableDropHint": "Ziehen Sie aus der Palette, um Spalten hinzuzufügen.",
+    "tableSettingsHint": "Ziehen Sie die Tabellenspalten aus der linken Palette und legen Sie sie in diesem Bereich ab.",
+    "properties": {
+      "textTitle": "Texteigenschaften",
+      "fieldTitle": "Feldeigenschaften",
+      "imageTitle": "Bildeigenschaften",
+      "textSettings": "Texteinstellungen",
+      "fieldSettings": "Feldeinstellungen",
+      "imageSettings": "Bildeinstellungen",
+      "text": "Text",
+      "textPlaceholder": "Text eingeben...",
+      "fontSize": "Schriftgröße",
+      "fontFamily": "Schriftart",
+      "color": "Farbe",
+      "valueLabel": "Wert/Beschriftung",
+      "draggedFieldPlaceholder": "Aus Palette gezogener Bereich",
+      "imageUrl": "Bild-URL",
+      "imageUrlPlaceholder": "https://... veya /logo.png",
+      "uploadFromFile": "Aus Datei laden",
+      "uploadFromFileMax2Mb": "Aus Datei laden (max. 2 MB)",
+      "selectImageMax2Mb": "Bild auswählen (max. 2 MB)",
+      "max2MbNote": "(max. 2 MB)",
+      "preview": "Vorschau",
+      "colorPlaceholder": "#374151"
+    },
+    "actions": {
+      "settings": "Einstellungen",
+      "remove": "Entfernen"
+    },
+    "defaults": {
+      "doubleClickToEdit": "Zum Bearbeiten doppelklicken"
+    },
+    "list": {
+      "title": "Berichtsvorlagen",
+      "createNew": "Neu erstellen",
+      "noTemplates": "Noch keine Vorlagen. Sie können es mit „Neu erstellen“ hinzufügen.",
+      "id": "AUSWEIS",
+      "documentType": "Dokumenttyp",
+      "active": "Aktiv",
+      "default": "Standard",
+      "defaultBadge": "Standard",
+      "action": "Aktion"
+    },
+    "form": {
+      "editTemplate": "Vorlage bearbeiten",
+      "newTemplate": "Neue Berichtsvorlage",
+      "documentType": "Dokumenttyp",
+      "title": "Titel",
+      "titlePlaceholder": "Berichtstitel eingeben",
+      "setDefaultTemplate": "Standardvorlage erstellen",
+      "selectPlaceholder": "Auswählen",
+      "saveFailed": "Vorlage konnte nicht gespeichert werden",
+      "updateFailed": "Vorlage konnte nicht aktualisiert werden",
+      "requiredDocumentType": "Dokumenttyp auswählen",
+      "requiredTitle": "Titel erforderlich",
+      "documentIdPlaceholder": "Z.B. 123"
+    },
+    "preview": {
+      "label": "Berichtsvorlage",
+      "selectPlaceholder": "Vorlage auswählen",
+      "loading": "Laden...",
+      "defaultSuffix": "(Standard)",
+      "generating": "Bericht wird erstellt...",
+      "iframeTitle": "Berichtsvorschau",
+      "loadFailed": "PDF konnte nicht geladen werden. Wählen Sie die Vorlage erneut aus oder aktualisieren Sie die Seite.",
+      "emptyDemand": "Anforderungsvorlage nicht gefunden",
+      "emptyQuotation": "Angebotsvorlage nicht gefunden",
+      "emptyOrder": "Bestellvorlage nicht gefunden"
+    },
+    "inspector": {
+      "title": "Controller",
+      "selectHint": "Artikel auswählen oder wenn mehr als einer ausgewählt ist, wird die Position/Abmessung nicht aktualisiert.",
+      "zIndex": "Z-Reihenfolge",
+      "zIndexPlaceholder": "automatisch",
+      "rotation": "Drehung (°)",
+      "alignment": "Ausrichtung",
+      "left": "Links",
+      "center": "Mitte",
+      "right": "Rechts",
+      "background": "Hintergrund",
+      "backgroundPlaceholder": "transparent",
+      "opacity": "Deckkraft (0-1)"
+    },
+    "layers": {
+      "title": "Ebenen",
+      "bringForward": "nach vorne bringen",
+      "sendBackward": "Nach hinten schicken",
+      "show": "Zeigen",
+      "hide": "verstecken",
+      "lock": "sperren",
+      "unlock": "entsperren",
+      "noItems": "Noch keine Artikel. Aus der Palette ziehen.",
+      "tableLabel": "Tabelle (Spalte {{count}})",
+      "textLabel": "Text",
+      "fieldLabel": "Bereich",
+      "imageLabel": "Bild"
     }
+  },
+  "salesTypeManagement": {
+    "menu": "Vertriebstypverwaltung",
+    "description": "Verkaufsarten verwalten und bearbeiten",
+    "addButton": "Neuer Verkaufstyp",
+    "searchPlaceholder": "Nach Namen suchen...",
+    "noData": "Kein Datensatz gefunden",
+    "table": {
+      "salesType": "Verkaufstyp",
+      "name": "Name",
+      "createdDate": "Erstellungsdatum"
+    },
+    "form": {
+      "addTitle": "Neuen Verkaufstyp hinzufügen",
+      "editTitle": "Verkaufstyp bearbeiten",
+      "addDescription": "Geben Sie neue Informationen zum Verkaufstyp ein",
+      "editDescription": "Bearbeiten Sie die Informationen zum Verkaufstyp",
+      "salesType": "Verkaufstyp",
+      "name": "Name",
+      "namePlaceholder": "Namen eingeben"
+    },
+    "delete": {
+      "title": "Verkaufsart löschen",
+      "confirm": "Sind Sie sicher, dass Sie den Verkaufstyp {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "messages": {
+      "createSuccess": "Verkaufstyp erfolgreich erstellt",
+      "createError": "Der Verkaufstyp konnte nicht erstellt werden",
+      "updateSuccess": "Verkaufstyp erfolgreich aktualisiert",
+      "updateError": "Der Verkaufstyp konnte nicht aktualisiert werden",
+      "deleteSuccess": "Verkaufstyp erfolgreich gelöscht",
+      "deleteError": "Der Verkaufstyp konnte nicht gelöscht werden"
+    }
+  },
+  "currencySelectDialog": {
+    "title": "Wählen Sie Währung aus",
+    "searchPlaceholder": "Suche nach Währungsname oder Code...",
+    "loading": "Laden...",
+    "noResults": "Keine Ergebnisse gefunden"
+  },
+  "customerSelectDialog": {
+    "loading": "Laden...",
+    "noResults": "Suchergebnisse nicht gefunden",
+    "title": "Wählen Sie Kunde aus",
+    "description": "Wählen Sie den Kunden aus, mit dem Sie eine Transaktion durchführen möchten",
+    "searchPlaceholder": "Suche nach Name, Code oder Telefonnummer...",
+    "erpCustomers": "ERP",
+    "potentialCustomers": "Potenzial",
+    "allCustomers": "Alle"
+  },
+  "menu": "Hangfire-Überwachung",
+  "roles": {
+    "admin": "Exekutive"
+  },
+  "quotation": {
+    "notes": {
+      "title": "Zusätzliche Hinweise und Bedingungen",
+      "description": "Bearbeiten Sie die Notizen, die Sie Ihrem Dokument hinzufügen möchten, und wählen Sie sie aus.",
+      "placeholder": "Inhalt beachten...",
+      "maxLengthError": "Jede Notiz kann bis zu 100 Zeichen lang sein. Überprüfen Sie bitte.",
+      "maxCountError": "Es können maximal 15 Notizen hinzugefügt werden.",
+      "saved": "Notizen aufgezeichnet.",
+      "saveError": "Beim Speichern von Notizen ist ein Fehler aufgetreten.",
+      "noteLabel": "Notizen",
+      "saving": "Aufnahme..."
+    },
+    "select": "Wählen",
+    "header": {
+      "projectCode": "Projektcode",
+      "projectCodePlaceholder": "Projektcode auswählen...",
+      "descriptionPlaceholder": "Sonderkonditionen...",
+      "mainInfo": "Kunden- und Vertriebsinformationen",
+      "customer": "Kundenkonto",
+      "selectCustomer": "Suchen oder wählen Sie einen Kunden aus...",
+      "tryDifferentSearch": "Versuchen Sie es mit einem anderen Suchbegriff",
+      "representative": "Außendienstmitarbeiter",
+      "shippingAddress": "Lieferadresse",
+      "selectShippingAddress": "Wählen Sie die Lieferadresse",
+      "currencyChange": {
+        "title": "Wechselkursänderung",
+        "message": "Die Währungsänderung wirkt sich auf alle Zeilen aus. Möchten Sie fortfahren?"
+      }
+    },
+    "exchangeRates": {
+      "dialog": {
+        "title": "Wechselkurse",
+        "subtitle": "Verwalten Sie aktuelle Wechselkurse",
+        "description": "Wechselkurse einsehen und bei Bedarf bearbeiten.",
+        "info": "Hier vorgenommene Änderungen gelten nur für dieses Angebot und haben keinen Einfluss auf die allgemeinen Systemtarife. Geänderte Wechselkurse"
+      },
+      "currency": "Währung",
+      "rate": "Tauschwert",
+      "status": "Situation",
+      "empty": "Preis nicht gefunden",
+      "official": "Offiziell",
+      "custom": "Besonders",
+      "cannotEditUsedCurrency": "Der verwendete Wechselkurs kann nicht geändert werden",
+      "title": "Wechselkurse",
+      "date": "Wechselkursdatum",
+      "isOfficial": "Offiziell",
+      "updateSuccess": "Wechselkurse aktualisiert",
+      "updateError": "Beim Aktualisieren der Wechselkurse ist ein Fehler aufgetreten"
+    },
+    "loading": "Preise werden geladen...",
+    "actions": "Transaktionen",
+    "edit": "Bearbeiten",
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "saveAndApply": "Speichern und anwenden",
+    "approvalFlow": {
+      "stepCompleted": "vollendet",
+      "stepInProgress": "im Gange",
+      "stepRejected": "abgelehnt",
+      "stepNotStarted": "Nicht gestartet",
+      "loading": "Genehmigungsablauf wird geladen...",
+      "noData": "Keine Daten gefunden.",
+      "notStarted": "Der Genehmigungsprozess hat noch nicht begonnen."
+    },
+    "create": {
+      "title": "Neues Angebot erstellen",
+      "error": "Angebot konnte nicht erstellt werden",
+      "invalidCurrency": "Es muss eine gültige Währung ausgewählt werden",
+      "success": "Angebot erfolgreich erstellt",
+      "successMessage": "Der Vorschlag wurde zum Genehmigungsprozess weitergeleitet.",
+      "errorMessage": "Beim Erstellen des Angebots ist ein Fehler aufgetreten.",
+      "validationError": "Bitte überprüfen Sie die Formularfelder.",
+      "subtitle": "Erstellen Sie das Angebot, indem Sie Kunden- und Artikelinformationen eingeben"
+    },
+    "lines": {
+      "required": "Es muss mindestens 1 Zeile hinzugefügt werden",
+      "productCode": "Produktcode",
+      "productName": "Produktname",
+      "quantity": "Menge",
+      "unitPrice": "Stückpreis",
+      "vatRate": "MwSt",
+      "total": "Gesamt",
+      "stock": "Aktienauswahl",
+      "unit": "Einheit",
+      "discounts": "Zeilenrabatte",
+      "relatedStocks": "Gebundene Aktien",
+      "netPrice": "Nettopreis",
+      "lineTotal": "Gesamt",
+      "description": "Erläuterung",
+      "requiredFieldsMissing": "Bitte wählen Sie Kunde, Vertreter und Währung aus.",
+      "title": "Angebotsartikel",
+      "itemCount": "{count} Artikel sind aufgelistet",
+      "noItems": "Noch keine Produkte hinzugefügt",
+      "add": "Zeile hinzufügen",
+      "empty": "Ihr Warenkorb ist leer",
+      "emptyDescription": "Um ein Angebot zu erstellen",
+      "discount1": "Ind.1",
+      "discount2": "Ind.2",
+      "discount3": "Ind.3",
+      "addTitle": "Neue Zeile hinzufügen",
+      "editTitle": "Zeile bearbeiten",
+      "delete": {
+        "confirmTitleMultiple": "Verknüpfte Aktien löschen",
+        "confirmTitle": "Zeile löschen",
+        "confirmMessageMultiple": "Wenn diese Zeile gelöscht wird, werden auch die anderen {count} verbundenen Bestände gelöscht.",
+        "confirmMessage": "Sind Sie sicher, dass Sie diese Zeile löschen möchten?"
+      },
+      "createSuccess": "Zeilen hinzugefügt",
+      "createError": "Beim Hinzufügen von Zeilen ist ein Fehler aufgetreten",
+      "deleteSuccess": "Zeile gelöscht",
+      "deleteError": "Beim Löschen der Zeile ist ein Fehler aufgetreten",
+      "updateSuccess": "Zeilen aktualisiert",
+      "updateError": "Beim Aktualisieren der Zeilen ist ein Fehler aufgetreten"
+    },
+    "date": "Geschichte",
+    "share": {
+      "whatsappMessage": "Hallo, ich sende Ihnen die Angebotsdatei.",
+      "downloaded": "PDF heruntergeladen. Bitte per WhatsApp teilen.",
+      "mailSubject": "Angebotsdatei",
+      "mailBody": "Hallo, die Angebotsdatei finden Sie im Anhang."
+    },
+    "sections": {
+      "header": "Kunden- und Dokumenteninformationen",
+      "lines": "Angebotspositionen",
+      "summary": "Zusammenfassung und Gesamtsummen"
+    },
+    "export": "Export",
+    "exportPdf": "PDF herunterladen",
+    "shareWhatsapp": "Über WhatsApp teilen",
+    "shareMail": "Per E-Mail teilen",
+    "save": "Angebot speichern",
+    "detail": {
+      "title": "Angebotsdetails: {{offerNo}}",
+      "notFound": "Kein Angebot gefunden",
+      "subtitle": "Angebotsdetails anzeigen und bearbeiten.",
+      "revisionNo": "Revisionsnummer",
+      "tabDetail": "Angebotsinformationen",
+      "tabApprovalFlow": "Genehmigungsablauf",
+      "tabReport": "Bericht"
+    },
+    "offerNo": "Angebot Nr.",
+    "update": {
+      "error": "Das Angebot konnte nicht aktualisiert werden",
+      "invalidCurrency": "Es muss eine gültige Währung ausgewählt werden",
+      "success": "Angebot erfolgreich aktualisiert",
+      "successMessage": "Das Angebot wurde erfolgreich aktualisiert.",
+      "errorMessage": "Beim Aktualisieren des Angebots ist ein Fehler aufgetreten.",
+      "validationError": "Bitte überprüfen Sie die erforderlichen Felder."
+    },
+    "backToQuotations": "Zurück zu den Angeboten",
+    "approval": {
+      "sending": "Senden...",
+      "sendForApproval": "Zur Genehmigung einreichen",
+      "approve": "Bestätigen",
+      "reject": "ablehnen",
+      "rejectTitle": "Angebot ablehnen",
+      "rejectDescription": "Geben Sie den Grund für die Ablehnung an (optional)",
+      "rejectReasonPlaceholder": "Grund für die Ablehnung...",
+      "approveSuccess": "Der Genehmigungsprozess wurde erfolgreich abgeschlossen",
+      "approveError": "Die Bestätigung konnte nicht abgeschlossen werden",
+      "rejectSuccess": "Der Ablehnungsprozess wurde erfolgreich abgeschlossen",
+      "rejectError": "Der Ablehnungsvorgang konnte nicht durchgeführt werden",
+      "startSuccess": "Der Genehmigungsablauf wurde erfolgreich gestartet",
+      "startError": "Der Genehmigungsablauf konnte nicht initialisiert werden"
+    },
+    "add": "Hinzufügen",
+    "guide": "Verzeichnis",
+    "confirm": "Bestätigen",
+    "error": "Fehler",
+    "delete": "Löschen",
+    "list": {
+      "title": "Angebotsliste",
+      "description": "Alle Angebote einsehen und verwalten",
+      "createNew": "Neues Angebot erstellen",
+      "searchPlaceholder": "Suche nach Angebotsnummer oder Kundenname...",
+      "id": "AUSWEIS",
+      "offerNo": "Angebot Nr.",
+      "customer": "Kunde",
+      "representative": "Vertreter",
+      "offerDate": "Angebotsdatum",
+      "currency": "Währung",
+      "grandTotal": "Gesamtsumme",
+      "status": "Situation",
+      "actions": "Transaktionen",
+      "revise": "Überarbeiten",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "refresh": "Aktualisieren",
+    "summary": {
+      "title": "Zusammenfassung",
+      "generalDiscountRate": "Allgemeiner Diskontsatz (%)",
+      "generalDiscountAmount": "Allgemeiner Rabattbetrag",
+      "generalDiscountHelp": "Gesamtsummen werden automatisch aktualisiert, wenn der Kurs oder Betrag eingegeben wird.",
+      "subtotal": "Zwischensumme",
+      "generalDiscount": "Allgemeiner Rabatt",
+      "totalVat": "Gesamte Mehrwertsteuer",
+      "grandTotal": "Gesamtsumme"
+    },
+    "noData": "Keine Daten",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "waitingApprovals": {
+      "title": "Angebote, deren Genehmigung noch aussteht",
+      "list": "Liste der Angebote, deren Genehmigung noch aussteht",
+      "noApprovals": "Es liegen keine Angebote vor, die auf die Genehmigung warten.",
+      "requestId": "ID anfordern",
+      "description": "Erläuterung",
+      "stepOrder": "Mein Name",
+      "approvedBy": "Genehmigt von",
+      "actionDate": "Geschichte",
+      "status": "Situation",
+      "waiting": "Warten"
+    },
+    "back": "Zurück",
+    "revision": {
+      "success": "Angebotsüberarbeitung erfolgreich erstellt",
+      "error": "Beim Erstellen der Angebotsrevision ist ein Fehler aufgetreten"
+    }
+  },
+  "productSelectDialog": {
+    "stock": "AKTIE",
+    "group": "Gruppe",
+    "unit": "Einheit",
+    "relatedStocks": "Gebundene Aktien",
+    "unknownStock": "Unbekannter Bestand",
+    "quantity": "Menge",
+    "mandatory": "Obligatorisch",
+    "loading": "Laden...",
+    "noResults": "Suchergebnisse nicht gefunden",
+    "noProducts": "Lagerbestand nicht gefunden",
+    "title": "Wählen Sie Lagerbestand",
+    "searchPlaceholder": "Suche nach Aktiencode oder Name...",
+    "voiceSearch": "Sprachsuche",
+    "cardView": "Kartenansicht",
+    "listView": "Listenansicht",
+    "stocks": "Aktien",
+    "stocksWithImages": "Aktien mit Bildern"
+  },
+  "relatedStocksSelectionDialog": {
+    "title": "Wählen Sie Verbundene Aktien aus",
+    "description": "Wählen Sie die Tochterbestände aus, die Sie zusammen mit dem Stammbestand hinzufügen möchten. Pflichtbestände werden automatisch ausgewählt.",
+    "mandatoryStocks": "Pflichtaktien",
+    "unknownStock": "Unbekannter Bestand",
+    "quantity": "Menge",
+    "mandatory": "Obligatorisch",
+    "optionalStocks": "Optionale Aktien",
+    "noRelatedStocks": "Verlinkter Bestand nicht gefunden",
+    "cancel": "Stornieren",
+    "calculating": "Berechnen...",
+    "add": "Hinzufügen"
+  },
+  "stockGroupSelectDialog": {
+    "title": "Wählen Sie die Aktiengruppe aus",
+    "searchPlaceholder": "Suche nach Gruppencode oder Name...",
+    "loading": "Laden...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "unnamedGroup": "Anonyme Gruppe"
+  },
+  "activityManagement": {
+    "edit": "Aktivität bearbeiten",
+    "create": "Neue Aktivität",
+    "editDescription": "Aktivitätsinformationen bearbeiten",
+    "createDescription": "Geben Sie neue Aktivitätsinformationen ein",
+    "detailsTab": "Detail",
+    "imagesTab": "Bilder",
+    "basicInfo": "Grundlegende Informationen",
+    "subject": "Thema",
+    "enterSubject": "Beispiel: Projekttreffen",
+    "activityType": "Medizin",
+    "select": "Wählen",
+    "status": "Situation",
+    "activityDate": "Anfang",
+    "endDate": "Beenden",
+    "priority": "Priorität",
+    "allDay": "Den ganzen Tag",
+    "relations": "Kunden & Beziehungen",
+    "customer": "Kunde",
+    "selectCustomer": "Kunde auswählen",
+    "contactId": "Kommunikation",
+    "noContactSelected": "Nicht ausgewählt",
+    "selectCustomerFirst": "Wählen Sie zuerst den Kunden aus",
+    "assignedUser": "Zugewiesener Benutzer",
+    "noUserSelected": "Nicht ausgewählt",
+    "details": "Detail",
+    "description": "Erläuterung",
+    "enterDescription": "Aktivitätsdetails eingeben...",
+    "reminders": "Erinnerungen",
+    "noReminder": "Keine Erinnerung hinzugefügt",
+    "validationError": "Bitte füllen Sie die erforderlichen Felder aus",
+    "title": "Aktivitätsmanagement",
+    "priorityLow": "Niedrig",
+    "priorityMedium": "Mitte",
+    "priorityHigh": "Hoch",
+    "statusScheduled": "geplant",
+    "statusCompleted": "vollendet",
+    "statusCanceled": "Abgesagt",
+    "id": "AUSWEIS",
+    "contact": "Person",
+    "deleteActivity": "Aktivität löschen",
+    "deleteConfirmation": "Sind Sie sicher, dass Sie diese Aktivität löschen möchten?",
+    "createSuccess": "Aktivität erfolgreich erstellt",
+    "createError": "Beim Erstellen der Aktivität ist ein Fehler aufgetreten",
+    "deleteSuccess": "Aktivität erfolgreich gelöscht",
+    "deleteError": "Beim Löschen der Aktivität ist ein Fehler aufgetreten",
+    "updateSuccess": "Aktivität erfolgreich aktualisiert",
+    "updateError": "Beim Aktualisieren der Aktivität ist ein Fehler aufgetreten"
+  },
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Passiv"
+  },
+  "activityType": {
+    "form": {
+      "editTitle": "Aktivitätstyp bearbeiten",
+      "addTitle": "Neuen Aktivitätstyp hinzufügen",
+      "editDescription": "Informationen zum Aktivitätstyp aktualisieren",
+      "addDescription": "Erstellen Sie einen neuen Aktivitätstypdatensatz",
+      "name": "Name des Aktivitätstyps",
+      "namePlaceholder": "Zum Beispiel: Treffen, Besuch...",
+      "description": "Erläuterung",
+      "descriptionPlaceholder": "Geben Sie eine Beschreibung ein (optional)"
+    },
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "management": {
+      "title": "Aktivitätstypverwaltung",
+      "description": "Aktivitätstypen verwalten und bearbeiten"
+    },
+    "create": "Neuer Aktivitätstyp",
+    "loading": "Laden...",
+    "stats": {
+      "totalActivityTypes": "Gesamtaktivitätstyp",
+      "activeActivityTypes": "Aktiver Aktivitätstyp",
+      "newThisMonth": "Neu in diesem Monat"
+    },
+    "table": {
+      "id": "AUSWEIS",
+      "name": "Aktivitätstyp",
+      "description": "Erläuterung",
+      "createdDate": "Schaffung",
+      "createdBy": "Erstellt von",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "noData": "Keine Daten",
+    "actions": "Transaktionen",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "delete": {
+      "confirmTitle": "Aktivitätstyp löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie den Aktivitätstyp {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "action": "Ja, löschen"
+    },
+    "messages": {
+      "createSuccess": "Aktivitätstyp erfolgreich erstellt",
+      "createError": "Der Aktivitätstyp konnte nicht erstellt werden",
+      "deleteSuccess": "Aktivitätstyp erfolgreich gelöscht",
+      "deleteError": "Der Aktivitätstyp konnte nicht gelöscht werden",
+      "updateSuccess": "Aktivitätstyp erfolgreich aktualisiert",
+      "updateError": "Der Aktivitätstyp konnte nicht aktualisiert werden"
+    }
+  },
+  "approval": {
+    "approve": {
+      "success": "Genehmigt",
+      "successMessage": "Angebot erfolgreich angenommen",
+      "errorMessage": "Beim Genehmigen des Angebots ist ein Fehler aufgetreten",
+      "error": "Behauptungsfehler"
+    },
+    "reject": {
+      "success": "abgelehnt",
+      "successMessage": "Angebot abgelehnt",
+      "errorMessage": "Beim Ablehnen des Angebots ist ein Fehler aufgetreten",
+      "error": "Ablehnungsfehler"
+    },
+    "note": {
+      "label": "Notizen",
+      "placeholder": "Sie können eine Genehmigungs-/Ablehnungsnotiz hinzufügen (optional)"
+    },
+    "processing": "Verarbeitung...",
+    "actions": {
+      "reject": "ablehnen",
+      "approve": "Bestätigen",
+      "view": "Sicht"
+    },
+    "detail": {
+      "title": "Angebotsdetails",
+      "subtitle": "Angebotsdetails anzeigen und Maßnahmen ergreifen",
+      "tabs": {
+        "detail": "Detail",
+        "history": "Vergangenheit",
+        "action": "Aktion"
+      },
+      "notFound": "Kein Angebot gefunden",
+      "quotationInfo": "Angebotsinformationen",
+      "offerNo": "Angebot Nr.",
+      "customer": "Kunde",
+      "representative": "Vertreter",
+      "currency": "Währung",
+      "offerDate": "Angebotsdatum",
+      "deliveryDate": "Liefertermin",
+      "total": "Gesamt",
+      "grandTotal": "Gesamtsumme",
+      "description": "Erläuterung",
+      "lines": "Angebotszeilen",
+      "productCode": "Produktcode",
+      "productName": "Produktname",
+      "quantity": "Menge",
+      "unitPrice": "Stückpreis",
+      "lineTotal": "Zeilensumme",
+      "lineGrandTotal": "Gesamtsumme der Zeile",
+      "exchangeRates": "Wechselkurse",
+      "exchangeRate": "Heilung",
+      "exchangeRateDate": "Wechselkursdatum",
+      "isOfficial": "Installieren Sie offiziell"
+    },
+    "level": {
+      "salesManager": "Verkaufsleiter",
+      "regionalManager": "Regionalleiter",
+      "finance": "Finanzen",
+      "generalManager": "Hauptgeschäftsführer",
+      "unknown": "unbekannt"
+    },
+    "history": {
+      "empty": "Es gibt keine Genehmigungshistorie",
+      "approvedBy": "Genehmigt von"
+    },
+    "assignedTo": "Zugewiesener Benutzer",
+    "list": {
+      "title": "Ausstehende Genehmigungen",
+      "error": "Beim Laden der Bestätigungen ist ein Fehler aufgetreten",
+      "empty": "Es liegen keine ausstehenden Genehmigungen vor",
+      "description": "Sie können Ihnen zugewiesene Angebote einsehen und genehmigen oder ablehnen"
+    },
+    "status": {
+      "notRequired": "Nicht erforderlich",
+      "waiting": "Warten",
+      "approved": "Genehmigt",
+      "rejected": "abgelehnt",
+      "closed": "Geschlossen"
+    },
+    "yes": "Ja",
+    "no": "NEIN",
+    "closedReason": "Grund für die Schließung",
+    "statusFilterLabel": "Genehmigungsstatus"
+  },
+  "approvalFlowStep": {
+    "messages": {
+      "deleteConfirm": "Möchten Sie diesen Schritt wirklich löschen?",
+      "createSuccess": "Flow-Schritt erfolgreich hinzugefügt",
+      "createError": "Flow-Schritt konnte nicht hinzugefügt werden",
+      "deleteSuccess": "Flow-Schritt erfolgreich gelöscht",
+      "deleteError": "Flow-Schritt konnte nicht gelöscht werden",
+      "updateSuccess": "Flow-Schritt erfolgreich aktualisiert",
+      "updateError": "Flow-Schritt konnte nicht aktualisiert werden"
+    },
+    "title": "Flow-Schritte",
+    "addButton": "Schritt hinzufügen",
+    "empty": "Es wurden noch keine Schritte hinzugefügt",
+    "unknownRoleGroup": "Keine Rollengruppe",
+    "stepDescription": "Genehmigungsauftrag: {order}",
+    "form": {
+      "editTitle": "Schritt bearbeiten",
+      "addTitle": "Neuen Schritt hinzufügen",
+      "editDescription": "Bearbeiten Sie die Informationen zum Ablaufschritt",
+      "addDescription": "Neuen Flow-Schritt hinzufügen",
+      "approvalRoleGroup": "Rollengruppe",
+      "selectRoleGroup": "Rollengruppe auswählen",
+      "cancel": "Stornieren",
+      "saving": "Aufnahme...",
+      "save": "Speichern"
+    }
+  },
+  "contactManagement": {
+    "form": {
+      "editContact": "Kontakt bearbeiten",
+      "addContact": "Neuen Kontakt hinzufügen",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Bsp.: Ali",
+      "salutation": "Adresse",
+      "selectSalutation": "Wählen Sie Ihre Adresse...",
+      "salutationNone": "Keiner",
+      "salutationMr": "Herr",
+      "salutationMs": "Frau",
+      "salutationMrs": "Liebling",
+      "salutationDr": "Dr.",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "Beispiel: Yilmaz",
+      "middleName": "Zweiter Vorname",
+      "middleNamePlaceholder": "Bsp.: Kemal",
+      "title": "Titel",
+      "selectTitle": "Titel auswählen (optional)...",
+      "titleNone": "kein Titel",
+      "customer": "Kunde",
+      "selectCustomer": "Kunde auswählen...",
+      "mobile": "Mobile",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "notes": "Notizen",
+      "notesPlaceholder": "Fügen Sie hier Ihre Notizen hinzu, wenn Sie welche haben ..."
+    },
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "menu": "Kommunikationsmanagement",
+    "description": "Verwalten und organisieren Sie die Kommunikation",
+    "addButton": "Neuen Kontakt hinzufügen",
+    "columns": "Spalte bearbeiten",
+    "visibleColumns": "Sichtbare Spalten",
+    "loading": "Laden...",
+    "stats": {
+      "totalContacts": "Totale Kommunikation",
+      "activeContacts": "Aktive Kommunikation",
+      "newThisMonth": "Neu in diesem Monat"
+    },
+    "table": {
+      "id": "AUSWEIS",
+      "salutation": "Adresse",
+      "fullName": "Vorname Nachname",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "mobile": "Mobile",
+      "customer": "Kunde",
+      "title": "Titel",
+      "createdDate": "Schaffung",
+      "createdBy": "Erstellt von",
+      "status": "Situation",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "noData": "Keine Daten",
+    "actions": "Transaktionen",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "delete": {
+      "confirmTitle": "Kontakt löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie die {{name}}-Kommunikation löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "action": "Ja, löschen"
+    },
+    "messages": {
+      "createSuccess": "Kontakt erfolgreich erstellt",
+      "createError": "Die Kommunikation konnte nicht hergestellt werden",
+      "deleteSuccess": "Kontakt erfolgreich gelöscht",
+      "deleteError": "Der Kontakt konnte nicht gelöscht werden",
+      "updateSuccess": "Kontakt erfolgreich aktualisiert",
+      "updateError": "Der Kontakt konnte nicht aktualisiert werden"
+    }
+  },
+  "customerManagement": {
+    "form": {
+      "editCustomer": "Kunde bearbeiten",
+      "addCustomer": "Neuen Kunden hinzufügen",
+      "editDescription": "Kundeninformationen aktualisieren",
+      "addDescription": "Neuen Kundendatensatz erstellen",
+      "name": "Kundenname",
+      "code": "Kundencode",
+      "customerType": "Kundentyp",
+      "customerTypePlaceholder": "Kundentyp auswählen",
+      "taxNumber": "Steuernummer",
+      "taxOffice": "Finanzamt",
+      "tcknNumber": "TR-ID-Nummer",
+      "email": "E-Mail",
+      "website": "Webseite",
+      "phone": "Telefon",
+      "phone2": "Telefon 2",
+      "country": "Land",
+      "countryPlaceholder": "Land auswählen",
+      "city": "Stadt",
+      "cityPlaceholder": "Stadt auswählen",
+      "district": "Bezirk",
+      "districtPlaceholder": "Bezirk auswählen",
+      "creditLimit": "Kreditlimit",
+      "salesRepCode": "Vertriebsmitarbeitercode",
+      "groupCode": "Gruppencode",
+      "branchCode": {
+        "label": "Filialcode"
+      },
+      "businessUnitCode": {
+        "label": "Geschäftsgesetzbuch"
+      },
+      "defaultShippingAddress": "Standardversandadresse",
+      "selectDefaultShippingAddress": "Wählen Sie die Lieferadresse",
+      "none": "Keiner",
+      "address": "Adresse",
+      "notes": "Notizen",
+      "notesPlaceholder": "Notiz hinzufügen...",
+      "cancel": "Stornieren",
+      "saving": "Aufnahme...",
+      "save": "Speichern"
+    },
+    "menu": "Kundenmanagement",
+    "description": "Verwalten und organisieren Sie Ihre Kunden",
+    "addButton": "Neuen Kunden hinzufügen",
+    "filter": {
+      "name": "Nach Kundennamen suchen...",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "customerCode": "Kundencode",
+      "taxNumber": "Steuernummer",
+      "city": "Stadt"
+    },
+    "loading": "Laden...",
+    "stats": {
+      "totalCustomers": "Gesamtzahl der Kunden",
+      "approvedCustomers": "Zugelassener Kunde",
+      "newThisMonth": "Neu in diesem Monat"
+    },
+    "table": {
+      "id": "AUSWEIS",
+      "customerCode": "Code",
+      "name": "Kundenname",
+      "customerType": "Kundentyp",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "city": "Stadt",
+      "district": "Bezirk",
+      "country": "Land",
+      "creditLimit": "Kreditlimit",
+      "defaultShippingAddressId": "Standardversandadresse",
+      "salesRep": "Vertreter",
+      "tckn": "TR-ID-Nummer",
+      "tax": "Steuernummer",
+      "website": "Web",
+      "createdDate": "Schaffung",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "noData": "Keine Daten",
+    "actions": "Transaktionen",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "delete": {
+      "confirmTitle": "Kunde löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie den Kunden {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "action": "Ja, löschen"
+    },
+    "cancel": "Stornieren",
+    "messages": {
+      "createSuccess": "Kunde erfolgreich erstellt",
+      "createError": "Fehler beim Erstellen des Kunden",
+      "deleteSuccess": "Kunde erfolgreich gelöscht",
+      "deleteError": "Der Kunde konnte nicht gelöscht werden",
+      "updateSuccess": "Client wurde erfolgreich aktualisiert",
+      "updateError": "Client konnte nicht aktualisiert werden"
+    }
+  },
+  "customerTypeManagement": {
+    "form": {
+      "editCustomerType": "Kundentyp bearbeiten",
+      "addCustomerType": "Neuen Kundentyp hinzufügen",
+      "name": "Name des Kundentyps",
+      "namePlaceholder": "Zum Beispiel: Unternehmen, Privatperson...",
+      "description": "Erläuterung",
+      "descriptionPlaceholder": "Bitte geben Sie ggf. eine Beschreibung ein...",
+      "cancel": "Stornieren",
+      "saving": "Aufnahme...",
+      "save": "Speichern"
+    },
+    "menu": "Kundentypverwaltung",
+    "description": "Kundentypen verwalten und bearbeiten",
+    "addButton": "Neuen Typ hinzufügen",
+    "table": {
+      "name": "Name des Kundentyps",
+      "description": "Erläuterung",
+      "id": "AUSWEIS",
+      "createdDate": "Schaffung",
+      "createdBy": "Erstellt von",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "loading": "Laden...",
+    "stats": {
+      "totalCustomerTypes": "Gesamtkundentyp",
+      "activeCustomerTypes": "Aktive Typen",
+      "newThisMonth": "Neu in diesem Monat"
+    },
+    "noData": "Keine Daten",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "delete": {
+      "confirmTitle": "Kundentyp löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie den Kundentyp {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleting": "Löschen...",
+      "confirmButton": "Ja, löschen"
+    },
+    "messages": {
+      "createSuccess": "Kundentyp erfolgreich erstellt",
+      "createError": "Der Kundentyp konnte nicht erstellt werden",
+      "deleteSuccess": "Kundentyp erfolgreich gelöscht",
+      "deleteError": "Der Kundentyp konnte nicht gelöscht werden",
+      "updateSuccess": "Kundentyp erfolgreich aktualisiert",
+      "updateError": "Der Kundentyp konnte nicht aktualisiert werden"
+    }
+  },
+  "dailyTasks": {
+    "morning": "Guten Morgen",
+    "afternoon": "Einen schönen Tag noch",
+    "evening": "Guten Abend",
+    "unassigned": "Nicht zugewiesen",
+    "loading": "Laden...",
+    "dashboard": "Tägliches Dashboard",
+    "summary": "Ihre für heute geplante Arbeit können Sie hier verfolgen.",
+    "totalTasks": "Totale Mission",
+    "newTask": "Neue Aufgabe erstellen",
+    "weeklyTasks": "Karten",
+    "dailyList": "Liste",
+    "calendar": "Kalender",
+    "all": "Alle",
+    "pending": "Warten",
+    "completed": "Ende",
+    "allEmployees": "Mitarbeiter",
+    "noTasks": "Es sind keine Aufgaben zum Anzeigen vorhanden",
+    "relax": "Versuchen Sie, Filter zu ändern oder neue Aufgaben hinzuzufügen.",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich",
+    "thisWeek": "Diese Woche",
+    "today": "Heute",
+    "days": {
+      "mon": "Mo",
+      "tue": "Schal",
+      "wed": "Zar",
+      "thu": "Do",
+      "fri": "Sperma",
+      "sat": "Sa",
+      "sun": "Sonne"
+    },
+    "more": "mehr"
+  },
+  "demand": {
+    "approvalFlow": {
+      "stepCompleted": "vollendet",
+      "stepInProgress": "im Gange",
+      "stepRejected": "abgelehnt",
+      "stepNotStarted": "Nicht gestartet",
+      "loading": "Genehmigungsablauf wird geladen...",
+      "noData": "Keine Daten gefunden.",
+      "notStarted": "Der Genehmigungsprozess hat noch nicht begonnen."
+    },
+    "create": {
+      "title": "Neues Angebot erstellen",
+      "error": "Angebot konnte nicht erstellt werden",
+      "invalidCurrency": "Es muss eine gültige Währung ausgewählt werden",
+      "success": "Angebot erfolgreich erstellt",
+      "successMessage": "Der Vorschlag wurde zum Genehmigungsprozess weitergeleitet.",
+      "errorMessage": "Beim Erstellen des Angebots ist ein Fehler aufgetreten.",
+      "paymentTypeRequired": "Zahlungsart muss ausgewählt werden",
+      "deliveryDateRequired": "Das Lieferdatum muss eingegeben werden",
+      "validationError": "Bitte überprüfen Sie die Formularfelder.",
+      "subtitle": "Erstellen Sie eine neue Verkaufsanfrage für den Kunden."
+    },
+    "lines": {
+      "required": "Es muss mindestens 1 Zeile hinzugefügt werden",
+      "editLine": "Zeile bearbeiten",
+      "approvalRequired": "Genehmigung erforderlich",
+      "selectStockFirst": "Lagerbestand nicht ausgewählt",
+      "stock": "Aktie",
+      "selectStock": "Wählen Sie Lagerbestand",
+      "productCode": "Aktiencode",
+      "groupCode": "Gruppencode",
+      "productName": "Aktienname",
+      "unitPrice": "Stückpreis",
+      "quantity": "Menge",
+      "vatRate": "Mehrwertsteuersatz %",
+      "discounts": "Rabatte",
+      "discount1": "Rabatt 1%",
+      "discount2": "Rabatt 2%",
+      "discount3": "Rabatt 3%",
+      "calculations": "Berechnungen",
+      "discountAmount": "Gesamtrabatt",
+      "netPrice": "Nettopreis",
+      "lineTotal": "Zeilensumme (inkl. MwSt.)",
+      "relatedStocks": "Gebundene Aktien",
+      "requiredFieldsMissing": "Bitte wählen Sie Kunde, Vertreter und Währung aus.",
+      "title": "Angebotsartikel",
+      "itemCount": "{count} Artikel sind aufgelistet",
+      "noItems": "Noch keine Produkte hinzugefügt",
+      "add": "Zeile hinzufügen",
+      "empty": "Ihr Warenkorb ist leer",
+      "emptyDescription": "Um ein Angebot zu erstellen",
+      "addLine": "Neue Zeile hinzufügen",
+      "delete": {
+        "confirmTitleMultiple": "Verknüpfte Aktien löschen",
+        "confirmTitle": "Zeile löschen",
+        "confirmMessageMultiple": "Wenn diese Zeile gelöscht wird, werden auch die anderen {count} verbundenen Bestände gelöscht.",
+        "confirmMessage": "Sind Sie sicher, dass Sie diese Zeile löschen möchten?"
+      },
+      "createSuccess": "Zeilen hinzugefügt",
+      "createError": "Beim Hinzufügen von Zeilen ist ein Fehler aufgetreten",
+      "deleteSuccess": "Zeile gelöscht",
+      "deleteError": "Beim Löschen der Zeile ist ein Fehler aufgetreten",
+      "updateSuccess": "Zeilen aktualisiert",
+      "updateError": "Beim Aktualisieren der Zeilen ist ein Fehler aufgetreten"
+    },
+    "sections": {
+      "header": "Kunden- und Dokumenteninformationen",
+      "lines": "Artikel nachfragen",
+      "summary": "Zusammenfassung und Gesamtsummen"
+    },
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Angebot speichern",
+    "detail": {
+      "title": "Angebotsdetails: {{offerNo}}",
+      "notFound": "Kein Angebot gefunden",
+      "subtitle": "Anfragedetails anzeigen und bearbeiten.",
+      "revisionNo": "Revisionsnummer",
+      "tabDetail": "Informationen anfordern",
+      "tabApprovalFlow": "Genehmigungsablauf",
+      "tabReport": "Bericht"
+    },
+    "update": {
+      "error": "Das Angebot konnte nicht aktualisiert werden",
+      "invalidCurrency": "Es muss eine gültige Währung ausgewählt werden",
+      "success": "Angebot erfolgreich aktualisiert",
+      "successMessage": "Das Angebot wurde erfolgreich aktualisiert.",
+      "errorMessage": "Beim Aktualisieren des Angebots ist ein Fehler aufgetreten.",
+      "validationError": "Bitte überprüfen Sie die erforderlichen Felder."
+    },
+    "loading": "Laden...",
+    "backToDemands": "Zurück zu den Angeboten",
+    "approval": {
+      "sending": "Senden...",
+      "sendForApproval": "Zur Genehmigung einreichen",
+      "approve": "Bestätigen",
+      "reject": "ablehnen",
+      "rejectTitle": "Angebot ablehnen",
+      "rejectDescription": "Geben Sie den Grund für die Ablehnung an (optional)",
+      "rejectReasonPlaceholder": "Grund für die Ablehnung...",
+      "approveSuccess": "Der Genehmigungsprozess wurde erfolgreich abgeschlossen",
+      "approveError": "Die Bestätigung konnte nicht abgeschlossen werden",
+      "rejectSuccess": "Der Ablehnungsprozess wurde erfolgreich abgeschlossen",
+      "rejectError": "Der Ablehnungsvorgang konnte nicht durchgeführt werden",
+      "startSuccess": "Der Genehmigungsablauf wurde erfolgreich gestartet",
+      "startError": "Der Genehmigungsablauf konnte nicht initialisiert werden"
+    },
+    "exchangeRates": {
+      "title": "Wechselkurse",
+      "currency": "Währung",
+      "rate": "Tauschwert",
+      "date": "Wechselkursdatum",
+      "isOfficial": "Offiziell",
+      "official": "Offiziell",
+      "custom": "Besonders",
+      "empty": "Es wurden noch keine Sondertarife hinzugefügt.",
+      "dialog": {
+        "title": "Wechselkurse",
+        "subtitle": "Verwalten Sie aktuelle Wechselkurse",
+        "description": "Wechselkurse einsehen und bei Bedarf bearbeiten.",
+        "info": "Hier vorgenommene Änderungen gelten nur für dieses Angebot und haben keinen Einfluss auf die allgemeinen Systemtarife. Geänderte Wechselkurse"
+      },
+      "status": "Situation",
+      "cannotEditUsedCurrency": "Der verwendete Wechselkurs kann nicht geändert werden",
+      "updateSuccess": "Wechselkurse aktualisiert",
+      "updateError": "Beim Aktualisieren der Wechselkurse ist ein Fehler aufgetreten"
+    },
+    "select": "Wählen",
+    "add": "Hinzufügen",
+    "actions": "Aktion",
+    "header": {
+      "title": "Angebotsdetails",
+      "subtitle": "Hier können Sie Kunden- und Finanzinformationen verwalten.",
+      "customer": "Kundenkonto",
+      "selectCustomer": "Kunde auswählen...",
+      "representative": "Außendienstmitarbeiter",
+      "shippingAddress": "Lieferadresse",
+      "selectShippingAddress": "Wählen Sie die Lieferadresse",
+      "descriptionPlaceholder": "Sonderkonditionen...",
+      "currencyChange": {
+        "title": "Wechselkursänderung",
+        "message": "Die Währungsänderung wirkt sich auf alle Zeilen aus. Möchten Sie fortfahren?"
+      }
+    },
+    "confirm": "Bestätigen",
+    "error": "Fehler",
+    "delete": "Löschen",
+    "list": {
+      "title": "Angebotsliste",
+      "description": "Alle Angebote einsehen und verwalten",
+      "createNew": "Neues Angebot erstellen",
+      "searchPlaceholder": "Suche nach Angebotsnummer oder Kundenname...",
+      "id": "AUSWEIS",
+      "offerNo": "Angebot Nr.",
+      "customer": "Kunde",
+      "representative": "Vertreter",
+      "offerDate": "Angebotsdatum",
+      "currency": "Währung",
+      "grandTotal": "Gesamtsumme",
+      "status": "Situation",
+      "actions": "Transaktionen",
+      "revise": "Überarbeiten",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "refresh": "Aktualisieren",
+    "summary": {
+      "title": "Zusammenfassung",
+      "generalDiscountRate": "Allgemeiner Diskontsatz (%)",
+      "generalDiscountAmount": "Allgemeiner Rabattbetrag",
+      "generalDiscountHelp": "Gesamtsummen werden automatisch aktualisiert, wenn der Kurs oder Betrag eingegeben wird.",
+      "subtotal": "Zwischensumme",
+      "generalDiscount": "Allgemeiner Rabatt",
+      "totalVat": "Gesamte Mehrwertsteuer",
+      "grandTotal": "Gesamtsumme"
+    },
+    "noData": "Keine Daten",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "edit": "Bearbeiten",
+    "saveAndApply": "Speichern und anwenden",
+    "waitingApprovals": {
+      "title": "Angebote, deren Genehmigung noch aussteht",
+      "list": "Liste der Angebote, deren Genehmigung noch aussteht",
+      "noApprovals": "Es liegen keine Angebote vor, die auf die Genehmigung warten.",
+      "requestId": "ID anfordern",
+      "description": "Erläuterung",
+      "stepOrder": "Mein Name",
+      "approvedBy": "Genehmigt von",
+      "actionDate": "Geschichte",
+      "status": "Situation",
+      "waiting": "Warten"
+    },
+    "back": "Zurück",
+    "revision": {
+      "success": "Angebotsüberarbeitung erfolgreich erstellt",
+      "error": "Beim Erstellen der Angebotsrevision ist ein Fehler aufgetreten"
+    }
+  },
+  "documentSerialTypeManagement": {
+    "form": {
+      "editTitle": "Dateityp bearbeiten",
+      "addTitle": "Neuen Dateityp hinzufügen",
+      "editDescription": "Bearbeiten Sie die Dateitypinformationen",
+      "addDescription": "Geben Sie neue Dateitypinformationen ein",
+      "ruleType": "Regeltyp",
+      "selectRuleType": "Wählen Sie den Regeltyp aus",
+      "customerType": "Kundentyp",
+      "selectCustomerType": "Kundentyp auswählen (optional)",
+      "searchCustomerType": "Nach Kundentyp suchen...",
+      "noCustomerTypeFound": "Kundentyp nicht gefunden.",
+      "salesRep": "Außendienstmitarbeiter",
+      "selectSalesRep": "Vertriebsmitarbeiter auswählen (optional)",
+      "searchSalesRep": "Auf der Suche nach einem Vertriebsmitarbeiter...",
+      "noSalesRepFound": "Kein Vertriebsmitarbeiter gefunden.",
+      "serialPrefix": "Serienpräfix",
+      "serialPrefixPlaceholder": "Geben Sie das Serienpräfix ein",
+      "serialLength": "Serienlänge",
+      "serialLengthPlaceholder": "Geben Sie die Serienlänge ein",
+      "serialIncrement": "Serienerhöhung",
+      "serialIncrementPlaceholder": "Geben Sie den seriellen Inkrementwert ein",
+      "serialStart": "Serienstart",
+      "serialStartPlaceholder": "Geben Sie den Startwert der Serie ein"
+    },
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "menu": "Dateitypverwaltung",
+    "description": "Dateitypen verwalten und organisieren",
+    "search": "Suchen...",
+    "refresh": "Aktualisieren",
+    "addButton": "Neuen Dateityp hinzufügen",
+    "loading": "Laden...",
+    "noData": "Keine Daten",
+    "table": {
+      "id": "AUSWEIS",
+      "ruleType": "Regeltyp",
+      "customerType": "Kundentyp",
+      "salesRep": "Außendienstmitarbeiter",
+      "serialPrefix": "Serienpräfix",
+      "serialLength": "Serienlänge",
+      "createdDate": "Erstellungsdatum"
+    },
+    "actions": "Transaktionen",
+    "totalRecords": "Gesamtregistrierung",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "deleteConfirmTitle": "Löschvorgang",
+    "deleteConfirmDescription": "Sind Sie sicher, dass Sie diesen Datensatz löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleting": "Löschen...",
+    "delete": "Löschen"
+  },
+  "pricingRule": {
+    "ruleType": {
+      "demand": "Anfrage",
+      "quotation": "Angebot",
+      "order": "Auftrag",
+      "unknown": "unbekannt"
+    },
+    "form": {
+      "lines": {
+        "required": "Es muss mindestens 1 Zeile hinzugefügt werden",
+        "requiredMessage": "Bitte fügen Sie mindestens eine Zeile hinzu",
+        "minQuantityInvalid": "Ungültige Mindestmenge",
+        "minQuantityInvalidMessage": "Mindestmenge 0\\",
+        "currencyCodeRequired": "Währungstyp erforderlich",
+        "currencyCodeRequiredMessage": "In allen Zeilen muss der Währungstyp ausgewählt werden"
+      },
+      "updateSuccess": "Preisregel aktualisiert",
+      "updateSuccessMessage": "Preisregel erfolgreich aktualisiert",
+      "createSuccess": "Preisregel erstellt",
+      "createSuccessMessage": "Preisregel erfolgreich erstellt",
+      "error": "Es ist ein Fehler aufgetreten",
+      "edit": "Preisregel bearbeiten",
+      "create": "Neue Preisregel",
+      "editDescription": "Bearbeiten Sie die Informationen zur Preisregel",
+      "createDescription": "Geben Sie neue Preisregelinformationen ein",
+      "tabs": {
+        "header": "Allgemeine Informationen",
+        "lines": "Reihen",
+        "salesmen": "Verkäufer"
+      },
+      "cancel": "Stornieren",
+      "save": "Speichern",
+      "confirm": "Bestätigen"
+    },
+    "loadingDescription": "Daten werden geladen...",
+    "header": {
+      "ruleType": "Regeltyp",
+      "ruleTypePlaceholder": "Wählen Sie den Regeltyp aus",
+      "searchRuleType": "Nach Regeltyp suchen...",
+      "ruleCode": "Regelcode",
+      "ruleCodePlaceholder": "Geben Sie den Regelcode ein",
+      "ruleName": "Regelname",
+      "ruleNamePlaceholder": "Geben Sie den Regelnamen ein",
+      "validFrom": "Gültigkeit ab",
+      "validTo": "Läuft ab",
+      "customer": "Kunde",
+      "customerPlaceholder": "Kunde auswählen (optional)",
+      "selectCustomer": "Wählen Sie Kunde aus",
+      "clearCustomer": "Klarer Kunde"
+    },
+    "lines": {
+      "stokCode": "Aktiencode",
+      "stokCodePlaceholder": "Produktcode",
+      "selectProduct": "Wählen Sie Produkt aus",
+      "minQuantity": "Mindestmenge",
+      "maxQuantity": "Maximale Menge",
+      "currencyCode": "Währungstyp",
+      "selectCurrency": "Währung auswählen",
+      "searchCurrency": "Suche nach Fremdwährung...",
+      "fixedUnitPrice": "Listenpreis",
+      "discount1Rate": "Rabatt 1 (%)",
+      "discount1Amount": "Betrag 1",
+      "discount2Rate": "Rabatt 2 (%)",
+      "discount3Rate": "Rabatt 3 (%)",
+      "addSuccess": "Zeile hinzugefügt",
+      "addSuccessMessage": "Zeile erfolgreich hinzugefügt",
+      "addError": "Beim Hinzufügen einer Zeile ist ein Fehler aufgetreten",
+      "deleteSuccess": "Zeile entfernt",
+      "deleteSuccessMessage": "Zeile erfolgreich gelöscht",
+      "deleteError": "Beim Entfernen der Zeile ist ein Fehler aufgetreten",
+      "title": "Preisregelzeilen",
+      "selectStock": "Lagerbestand hinzufügen",
+      "discount1": "Ind. 1 %",
+      "discount2": "Ind. 2 %",
+      "discount3": "Ind. 3 %",
+      "empty": "Es wurden noch keine Zeilen hinzugefügt",
+      "addFirst": "Erste Zeile hinzufügen",
+      "stokCodeRequired": "Lagerbestandscode ist erforderlich",
+      "addConfirmTitle": "Zeile hinzufügen",
+      "addConfirmMessage": "Der Aktiencode {{code}} wird zur Preisregel hinzugefügt. Sind Sie damit einverstanden?",
+      "deleteConfirmTitle": "Zeile entfernen",
+      "deleteConfirmMessage": "Die Zeile mit dem Lagerbestandscode {{code}} wird aus der Preisregel entfernt. Sind Sie damit einverstanden?"
+    },
+    "loading": "Laden...",
+    "table": {
+      "actions": "Transaktionen",
+      "ruleCode": "Regelcode",
+      "ruleName": "Regelname",
+      "ruleType": "Regeltyp",
+      "validFrom": "Anfang",
+      "validTo": "Beenden",
+      "customer": "Kunde",
+      "status": "Situation",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "list": {
+      "title": "Preisregeln",
+      "description": "Preisregeln verwalten und bearbeiten",
+      "add": "Neue Regel hinzufügen"
+    },
+    "salesmen": {
+      "addSuccess": "Verkäufer hinzugefügt",
+      "addSuccessMessage": "Vertriebsmitarbeiter erfolgreich hinzugefügt",
+      "addError": "Beim Hinzufügen eines Verkäufers ist ein Fehler aufgetreten",
+      "deleteSuccess": "Verkäufer entfernt",
+      "deleteSuccessMessage": "Vertriebsmitarbeiter erfolgreich gelöscht",
+      "deleteError": "Beim Entfernen des Verkäufers ist ein Fehler aufgetreten",
+      "title": "Verkäufer",
+      "add": "Verkäufer hinzufügen",
+      "search": "Verkäufer suchen...",
+      "empty": "Noch kein Verkäufer hinzugefügt",
+      "emptyDescription": "Diese Regel gilt für alle Verkäufer",
+      "salesman": "Name des Verkäufers",
+      "addConfirmTitle": "Verkäufer hinzufügen",
+      "addConfirmMessage": "Verkäufer {{name}} wird zur Preisregel hinzugefügt. Sind Sie damit einverstanden?",
+      "deleteConfirmTitle": "Verkäufer entfernen",
+      "deleteConfirmMessage": "Verkäufer {{name}} wird aus der Preisregel entfernt. Sind Sie damit einverstanden?"
+    },
+    "delete": {
+      "success": "Die Regel wurde erfolgreich gelöscht",
+      "error": "Beim Löschen der Regel ist ein Fehler aufgetreten",
+      "confirmTitle": "Regel löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie die Regel {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "action": "Ja, löschen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Passiv"
+    },
+    "noData": "Keine Daten",
+    "actions": "Transaktionen",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "cancel": "Stornieren"
+  },
+  "documentSerialType": {
+    "form": {
+      "serialCurrent": "Serie verfügbar",
+      "serialCurrentPlaceholder": "Geben Sie den aktuellen Serienwert ein"
+    }
+  },
+  "mailSettings": {
+    "PageTitle": "E-Mail-Einstellungen",
+    "PageDescription": "Konfigurieren Sie die SMTP-Servereinstellungen",
+    "Fields": {
+      "Host": "Moderator",
+      "Port": "Verbindungsport",
+      "EnableSsl": "Verwenden Sie SSL",
+      "Username": "Benutzername",
+      "Password": "Passwort",
+      "PasswordPlaceholder": "Geben Sie zum Ändern ein neues Passwort ein",
+      "FromEmail": "Von E-Mail",
+      "FromName": "Absendername",
+      "Timeout": "Zeitüberschreitung (Sek.)"
+    },
+    "TestMail": {
+      "Sending": "Test wird gesendet...",
+      "Send": "Test-E-Mail senden",
+      "Success": "Test-E-Mail gesendet"
+    },
+    "Save": "Speichern",
+    "SavedSuccessfully": "Einstellungen erfolgreich gespeichert"
+  },
+  "order": {
+    "exchangeRates": {
+      "dialog": {
+        "title": "Wechselkurse",
+        "subtitle": "Verwalten Sie aktuelle Wechselkurse",
+        "description": "Wechselkurse einsehen und bei Bedarf bearbeiten.",
+        "info": "Hier vorgenommene Änderungen gelten nur für diese Bestellung und haben keinen Einfluss auf die allgemeinen Systemtarife. Geänderte Wechselkurse"
+      },
+      "currency": "Währung",
+      "rate": "Tauschwert",
+      "status": "Situation",
+      "empty": "Preis nicht gefunden",
+      "official": "Offiziell",
+      "custom": "Besonders",
+      "cannotEditUsedCurrency": "Der verwendete Wechselkurs kann nicht geändert werden",
+      "title": "Wechselkurse",
+      "date": "Wechselkursdatum",
+      "isOfficial": "Offiziell",
+      "updateSuccess": "Wechselkurse aktualisiert",
+      "updateError": "Beim Aktualisieren der Wechselkurse ist ein Fehler aufgetreten"
+    },
+    "loading": "Preise werden geladen...",
+    "actions": "Transaktionen",
+    "edit": "Bearbeiten",
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "saveAndApply": "Speichern und anwenden",
+    "approvalFlow": {
+      "stepCompleted": "vollendet",
+      "stepInProgress": "im Gange",
+      "stepRejected": "abgelehnt",
+      "stepNotStarted": "Nicht gestartet",
+      "loading": "Genehmigungsablauf wird geladen...",
+      "noData": "Keine Daten gefunden.",
+      "notStarted": "Der Genehmigungsprozess hat noch nicht begonnen."
+    },
+    "create": {
+      "title": "Neue Bestellung erstellen",
+      "error": "Bestellung konnte nicht erstellt werden",
+      "invalidCurrency": "Es muss eine gültige Währung ausgewählt werden",
+      "success": "Bestellung erfolgreich erstellt",
+      "successMessage": "Die Bestellung wurde an den Genehmigungsprozess weitergeleitet.",
+      "errorMessage": "Beim Erstellen der Bestellung ist ein Fehler aufgetreten.",
+      "paymentTypeRequired": "Zahlungsart muss ausgewählt werden",
+      "deliveryDateRequired": "Das Lieferdatum muss eingegeben werden",
+      "validationError": "Bitte überprüfen Sie die Formularfelder.",
+      "subtitle": "Erstellen Sie einen neuen Kundenauftrag für den Kunden."
+    },
+    "lines": {
+      "required": "Es muss mindestens 1 Zeile hinzugefügt werden",
+      "editLine": "Zeile bearbeiten",
+      "approvalRequired": "Genehmigung erforderlich",
+      "selectStockFirst": "Lagerbestand nicht ausgewählt",
+      "stock": "Aktie",
+      "selectStock": "Wählen Sie Lagerbestand",
+      "productCode": "Aktiencode",
+      "groupCode": "Gruppencode",
+      "productName": "Aktienname",
+      "unitPrice": "Stückpreis",
+      "quantity": "Menge",
+      "vatRate": "Mehrwertsteuersatz %",
+      "discounts": "Rabatte",
+      "discount1": "Rabatt 1%",
+      "discount2": "Rabatt 2%",
+      "discount3": "Rabatt 3%",
+      "calculations": "Berechnungen",
+      "discountAmount": "Gesamtrabatt",
+      "netPrice": "Nettopreis",
+      "lineTotal": "Zeilensumme (inkl. MwSt.)",
+      "relatedStocks": "Gebundene Aktien",
+      "requiredFieldsMissing": "Bitte wählen Sie Kunde, Vertreter und Währung aus.",
+      "title": "Artikel bestellen",
+      "itemCount": "{count} Artikel sind aufgelistet",
+      "noItems": "Noch keine Produkte hinzugefügt",
+      "add": "Zeile hinzufügen",
+      "empty": "Ihr Warenkorb ist leer",
+      "emptyDescription": "Um eine Bestellung zu erstellen",
+      "addLine": "Neue Zeile hinzufügen",
+      "delete": {
+        "confirmTitleMultiple": "Verknüpfte Aktien löschen",
+        "confirmTitle": "Zeile löschen",
+        "confirmMessageMultiple": "Wenn diese Zeile gelöscht wird, werden auch die anderen {count} verbundenen Bestände gelöscht.",
+        "confirmMessage": "Sind Sie sicher, dass Sie diese Zeile löschen möchten?"
+      },
+      "createSuccess": "Zeilen hinzugefügt",
+      "createError": "Beim Hinzufügen von Zeilen ist ein Fehler aufgetreten",
+      "deleteSuccess": "Zeile gelöscht",
+      "deleteError": "Beim Löschen der Zeile ist ein Fehler aufgetreten",
+      "updateSuccess": "Zeilen aktualisiert",
+      "updateError": "Beim Aktualisieren der Zeilen ist ein Fehler aufgetreten"
+    },
+    "sections": {
+      "header": "Kunden- und Dokumenteninformationen",
+      "lines": "Artikel bestellen",
+      "summary": "Zusammenfassung und Gesamtsummen"
+    },
+    "save": "Bestellung speichern",
+    "detail": {
+      "title": "Bestelldetail: {{offerNo}}",
+      "notFound": "Bestellung nicht gefunden",
+      "subtitle": "Bestelldetails anzeigen und bearbeiten.",
+      "revisionNo": "Revisionsnummer",
+      "tabDetail": "Bestellinformationen",
+      "tabApprovalFlow": "Genehmigungsablauf",
+      "tabReport": "Bericht"
+    },
+    "update": {
+      "error": "Bestellung konnte nicht aktualisiert werden",
+      "invalidCurrency": "Es muss eine gültige Währung ausgewählt werden",
+      "success": "Bestellung erfolgreich aktualisiert",
+      "successMessage": "Die Bestellung wurde erfolgreich aktualisiert.",
+      "errorMessage": "Beim Aktualisieren der Bestellung ist ein Fehler aufgetreten.",
+      "validationError": "Bitte überprüfen Sie die erforderlichen Felder."
+    },
+    "backToOrders": "Zurück zu Bestellungen",
+    "approval": {
+      "sending": "Senden...",
+      "sendForApproval": "Zur Genehmigung einreichen",
+      "approve": "Bestätigen",
+      "reject": "ablehnen",
+      "rejectTitle": "Bestellung ablehnen",
+      "rejectDescription": "Geben Sie den Grund für die Ablehnung an (optional)",
+      "rejectReasonPlaceholder": "Grund für die Ablehnung...",
+      "approveSuccess": "Der Genehmigungsprozess wurde erfolgreich abgeschlossen",
+      "approveError": "Die Bestätigung konnte nicht abgeschlossen werden",
+      "rejectSuccess": "Der Ablehnungsprozess wurde erfolgreich abgeschlossen",
+      "rejectError": "Der Ablehnungsvorgang konnte nicht durchgeführt werden",
+      "startSuccess": "Der Genehmigungsablauf wurde erfolgreich gestartet",
+      "startError": "Der Genehmigungsablauf konnte nicht initialisiert werden"
+    },
+    "select": "Wählen",
+    "add": "Hinzufügen",
+    "header": {
+      "title": "Bestelldetails",
+      "subtitle": "Hier können Sie Kunden- und Finanzinformationen verwalten.",
+      "customer": "Kundenkonto",
+      "selectCustomer": "Kunde auswählen...",
+      "representative": "Außendienstmitarbeiter",
+      "shippingAddress": "Lieferadresse",
+      "selectShippingAddress": "Wählen Sie die Lieferadresse",
+      "descriptionPlaceholder": "Sonderkonditionen...",
+      "currencyChange": {
+        "title": "Wechselkursänderung",
+        "message": "Die Währungsänderung wirkt sich auf alle Zeilen aus. Möchten Sie fortfahren?"
+      }
+    },
+    "confirm": "Bestätigen",
+    "error": "Fehler",
+    "delete": "Löschen",
+    "list": {
+      "title": "Bestellliste",
+      "description": "Alle Bestellungen einsehen und verwalten",
+      "createNew": "Neue Bestellung erstellen",
+      "searchPlaceholder": "Suche nach Bestellnummer oder Kundenname...",
+      "id": "AUSWEIS",
+      "offerNo": "Bestell-Nr.",
+      "customer": "Kunde",
+      "representative": "Vertreter",
+      "offerDate": "Bestelldatum",
+      "currency": "Währung",
+      "grandTotal": "Gesamtsumme",
+      "status": "Situation",
+      "actions": "Transaktionen",
+      "revise": "Überarbeiten",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "refresh": "Aktualisieren",
+    "summary": {
+      "title": "Zusammenfassung",
+      "generalDiscountRate": "Allgemeiner Diskontsatz (%)",
+      "generalDiscountAmount": "Allgemeiner Rabattbetrag",
+      "generalDiscountHelp": "Gesamtsummen werden automatisch aktualisiert, wenn der Kurs oder Betrag eingegeben wird.",
+      "subtotal": "Zwischensumme",
+      "generalDiscount": "Allgemeiner Rabatt",
+      "totalVat": "Gesamte Mehrwertsteuer",
+      "grandTotal": "Gesamtsumme"
+    },
+    "noData": "Keine Daten",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "waitingApprovals": {
+      "title": "Bestellungen müssen noch genehmigt werden",
+      "list": "Liste der zur Genehmigung ausstehenden Bestellungen",
+      "noApprovals": "Es liegen keine Aufträge zur Genehmigung vor",
+      "requestId": "ID anfordern",
+      "description": "Erläuterung",
+      "stepOrder": "Mein Name",
+      "approvedBy": "Genehmigt von",
+      "actionDate": "Geschichte",
+      "status": "Situation",
+      "waiting": "Warten"
+    },
+    "back": "Zurück",
+    "revision": {
+      "success": "Bestellrevision erfolgreich erstellt",
+      "error": "Beim Erstellen der Bestellrevision ist ein Fehler aufgetreten"
+    }
+  },
+  "paymentTypeManagement": {
+    "edit": "Zahlungsart bearbeiten",
+    "create": "Neue Zahlungsart",
+    "editDescription": "Informationen zur Zahlungsart bearbeiten",
+    "createDescription": "Geben Sie neue Informationen zur Zahlungsart ein",
+    "name": "Name",
+    "namePlaceholder": "Geben Sie den Namen der Zahlungsart ein",
+    "description": "Erläuterung",
+    "descriptionPlaceholder": "Geben Sie eine Beschreibung ein (optional)",
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "title": "Zahlungsartenverwaltung",
+    "table": {
+      "id": "AUSWEIS",
+      "name": "Name",
+      "description": "Erläuterung",
+      "status": "Situation",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "createdDate": "Erstellungsdatum",
+    "updatedDate": "Aktualisiertes Datum",
+    "delete": {
+      "success": "Zahlungsart erfolgreich gelöscht",
+      "error": "Beim Löschen der Zahlungsart ist ein Fehler aufgetreten",
+      "confirmTitle": "Zahlungsart löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie die Zahlungsart {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "noData": "Keine Daten gefunden",
+    "createSuccess": "Zahlungsart erfolgreich erstellt",
+    "createError": "Beim Erstellen der Zahlungsart ist ein Fehler aufgetreten",
+    "deleteSuccess": "Zahlungsart erfolgreich gelöscht",
+    "deleteError": "Beim Löschen der Zahlungsart ist ein Fehler aufgetreten",
+    "updateSuccess": "Zahlungsart erfolgreich aktualisiert",
+    "updateError": "Beim Aktualisieren der Zahlungsart ist ein Fehler aufgetreten"
+  },
+  "powerbi": {
+    "group": {
+      "edit": "Gruppe bearbeiten",
+      "add": "Neue Gruppe",
+      "editDescription": "Gruppeninformationen aktualisieren",
+      "createDescription": "Geben Sie neue Gruppeninformationen ein",
+      "name": "Name",
+      "namePlaceholder": "Gruppenname",
+      "description": "Erläuterung",
+      "isActive": "Aktiv",
+      "title": "PowerBI-Gruppen",
+      "createSuccess": "Gruppe erstellt",
+      "createError": "Fehler beim Erstellen",
+      "updateSuccess": "Gruppe aktualisiert",
+      "updateError": "Aktualisierung fehlgeschlagen",
+      "deleteSuccess": "Gruppe gelöscht",
+      "deleteError": "Konnte nicht gelöscht werden"
+    },
+    "filterPlaceholder": "Filter (Abfrageparameter)",
+    "groupReportDefinition": {
+      "edit": "Matching bearbeiten",
+      "add": "Neues Matching",
+      "editDescription": "Gruppen-zu-Bericht-Zuordnung aktualisieren",
+      "createDescription": "Wählen Sie die Gruppen- und Berichtsdefinition aus",
+      "groupId": "Gruppe",
+      "selectGroup": "Gruppe auswählen",
+      "reportDefinitionId": "Berichtsbeschreibung",
+      "selectReport": "Bericht auswählen",
+      "title": "PowerBI-Gruppenberichtszuordnung",
+      "groupName": "Gruppe",
+      "reportDefinitionName": "Berichtsbeschreibung",
+      "createSuccess": "Gruppenberichtszuordnung erstellt",
+      "createError": "Fehler beim Erstellen",
+      "updateSuccess": "Aktualisierte Gruppenberichtszuordnung",
+      "updateError": "Aktualisierung fehlgeschlagen",
+      "deleteSuccess": "Gruppenberichtszuordnung gelöscht",
+      "deleteError": "Konnte nicht gelöscht werden"
+    },
+    "reportDefinition": {
+      "edit": "Berichtsbeschreibung bearbeiten",
+      "add": "Neue Berichtsdefinition",
+      "editDescription": "Berichtdefinitionsinformationen aktualisieren",
+      "createDescription": "Geben Sie neue Berichtsdefinitionsinformationen ein",
+      "name": "Name",
+      "namePlaceholder": "Berichtsname",
+      "description": "Erläuterung",
+      "workspaceId": "Arbeitsbereichs-ID (GUID)",
+      "reportId": "Berichts-ID (GUID)",
+      "datasetId": "Datensatz-ID (optional)",
+      "embedUrl": "Einbettungs-URL (optional)",
+      "isActive": "Aktiv",
+      "rlsRoles": "RLS-Rollen (optional)",
+      "allowedUserIds": "Zulässige Benutzer-ID (optional)",
+      "allowedRoleIds": "Berechtigte Rollen-ID (optional)",
+      "title": "PowerBI-Berichtsdefinitionen",
+      "createSuccess": "Berichtsdefinition erstellt",
+      "createError": "Fehler beim Erstellen",
+      "updateSuccess": "Berichtsdefinition aktualisiert",
+      "updateError": "Aktualisierung fehlgeschlagen",
+      "deleteSuccess": "Berichtsdefinition gelöscht",
+      "deleteError": "Konnte nicht gelöscht werden"
+    },
+    "userGroup": {
+      "edit": "Matching bearbeiten",
+      "add": "Neues Matching",
+      "editDescription": "Benutzergruppenzuordnung aktualisieren",
+      "createDescription": "Wählen Sie Benutzer und Gruppe aus",
+      "userId": "Benutzer",
+      "selectUser": "Benutzer auswählen",
+      "groupId": "Gruppe",
+      "selectGroup": "Gruppe auswählen",
+      "title": "PowerBI-Benutzergruppenzuordnung",
+      "userName": "Benutzer",
+      "groupName": "Gruppe",
+      "createSuccess": "Benutzergruppenzuordnung erstellt",
+      "createError": "Fehler beim Erstellen",
+      "updateSuccess": "Benutzergruppenzuordnung aktualisiert",
+      "updateError": "Aktualisierung fehlgeschlagen",
+      "deleteSuccess": "Benutzergruppenzuordnung gelöscht",
+      "deleteError": "Konnte nicht gelöscht werden"
+    }
+  },
+  "powerbiConfiguration": {
+    "title": "PowerBI-Konfiguration",
+    "editDescription": "Bearbeiten Sie die vorhandene Konfiguration",
+    "createDescription": "Geben Sie die PowerBI-Verbindungsinformationen ein",
+    "tenantId": "Mieter-ID",
+    "clientId": "Kunden-ID",
+    "workspaceId": "Arbeitsbereichs-ID (GUID)",
+    "apiBaseUrl": "API-Basis-URL",
+    "scope": "Umfang",
+    "clientSecretInfo": "ClientSecret wird aus Sicherheitsgründen nur aus der Serverumgebungsvariablen gelesen.",
+    "update": "Aktualisieren",
+    "create": "Speichern",
+    "delete": "Löschen",
+    "deleteConfirmTitle": "Konfiguration löschen",
+    "deleteConfirmDescription": "Sind Sie sicher, dass Sie diese Konfiguration löschen möchten?",
+    "pageTitle": "PowerBI-Konfiguration",
+    "pageDescription": "Verwalten Sie die Verbindungseinstellungen der PowerBI-API",
+    "createSuccess": "Konfiguration erstellt",
+    "createError": "Fehler beim Erstellen",
+    "updateSuccess": "Konfiguration aktualisiert",
+    "updateError": "Aktualisierung fehlgeschlagen",
+    "deleteSuccess": "Konfiguration gelöscht",
+    "deleteError": "Konnte nicht gelöscht werden"
+  },
+  "powerbiViewer": {
+    "invalidId": "Ungültiger Bericht",
+    "backToList": "Zurück zur Liste",
+    "loadError": "Der Bericht konnte nicht geladen werden",
+    "loadingReport": "Bericht wird geladen...",
+    "listTitle": "PowerBI-Berichte",
+    "listDescription": "Sie können die Berichte anzeigen, indem Sie auf klicken",
+    "name": "Name",
+    "description": "Erläuterung",
+    "isActive": "Situation",
+    "view": "Sicht"
+  },
+  "productPricingGroupByManagement": {
+    "edit": "Preisgruppe bearbeiten",
+    "create": "Neue Preisgruppe",
+    "editDescription": "Bearbeiten Sie die Informationen zur Preisgruppe",
+    "createDescription": "Geben Sie neue Preisgruppeninformationen ein",
+    "erpGroupCode": "ERP-Produktgruppencode",
+    "selectErpGroupCode": "Wählen Sie Gruppe aus",
+    "currency": "Währung",
+    "selectCurrency": "Bitte wählen Sie die Währung aus",
+    "listPrice": "Listenpreis",
+    "enterListPrice": "Geben Sie den Listenpreis ein",
+    "costPrice": "Selbstkostenpreis",
+    "enterCostPrice": "Geben Sie den Selbstkostenpreis ein",
+    "discount1": "Rabatt 1",
+    "enterDiscount1": "Rabatt 1 (Opt.)",
+    "discount2": "Rabatt 2",
+    "enterDiscount2": "Rabatt 2 (Opt.)",
+    "discount3": "Rabatt 3",
+    "enterDiscount3": "Rabatt 3 (Opt.)",
+    "priceCalculation": "Preisberechnung",
+    "finalPriceAfterDiscounts": "Endpreis nach Rabatten",
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "title": "Leitung der Produktpreisgruppe",
+    "description": "Verwalten Sie Produktpreisgruppen",
+    "add": "Neue Gruppe hinzufügen",
+    "createSuccess": "Preisgruppe erfolgreich erstellt",
+    "createError": "Beim Erstellen der Preisgruppe ist ein Fehler aufgetreten",
+    "deleteSuccess": "Preisgruppe erfolgreich gelöscht",
+    "deleteError": "Beim Löschen der Preisgruppe ist ein Fehler aufgetreten",
+    "updateSuccess": "Preisgruppe erfolgreich aktualisiert",
+    "updateError": "Beim Aktualisieren der Preisgruppe ist ein Fehler aufgetreten"
+  },
+  "productPricingManagement": {
+    "title": "Produktpreismanagement",
+    "description": "Verwalten Sie Produktpreise, Kosten und Rabatte",
+    "create": "Neue Preise",
+    "searchPlaceholder": "Nach Produktcode oder Gruppe suchen...",
+    "selectStok": "Wählen Sie Lagerbestand",
+    "searchStockPlaceholder": "Suche nach Aktiencode oder Name...",
+    "noStocksAvailable": "Keine nicht gelistete Aktie gefunden",
+    "unnamedStock": "Anonymer Bestand",
+    "loading": "Laden...",
+    "noData": "Keine Daten gefunden",
+    "productInfo": "PRODUKTINFORMATIONEN",
+    "category": "KATEGORIE",
+    "priceAndDiscount": "PREIS & RABATT",
+    "actions": "TRANSAKTIONEN",
+    "table": {
+      "showing": "{{from}}-{{to}} / {{total}} Register"
+    },
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "deleteTitle": "Klare Preise",
+    "confirmDelete": "Sind Sie sicher, dass Sie diesen Preis löschen möchten?",
+    "cancel": "Stornieren",
+    "delete": "Löschen",
+    "createSuccess": "Preisgestaltung erfolgreich erstellt",
+    "createError": "Beim Erstellen der Preise ist ein Fehler aufgetreten",
+    "deleteSuccess": "Preise erfolgreich gelöscht",
+    "deleteError": "Beim Löschen der Preise ist ein Fehler aufgetreten",
+    "updateSuccess": "Preise erfolgreich aktualisiert",
+    "updateError": "Beim Aktualisieren der Preise ist ein Fehler aufgetreten"
+  },
+  "shippingAddressManagement": {
+    "edit": "Lieferadresse bearbeiten",
+    "create": "Neue Lieferadresse",
+    "editDescription": "Bearbeiten Sie die Informationen zur Lieferadresse",
+    "createDescription": "Geben Sie neue Lieferadresseninformationen ein",
+    "customerId": "Kunde",
+    "selectCustomer": "Wählen Sie Kunde aus",
+    "searchCustomer": "Nach Kunden suchen...",
+    "name": "Adressname",
+    "namePlaceholder": "Beispiel: Zentrallager",
+    "address": "Adresse",
+    "addressPlaceholder": "Geben Sie die vollständige Adresse ein",
+    "postalCode": "Postleitzahl",
+    "postalCodePlaceholder": "Beispiel: 34000",
+    "phone": "Telefon",
+    "phonePlaceholder": "Bsp.: 0555 555 55 55",
+    "contactPerson": "Autorisierte Person",
+    "contactPersonPlaceholder": "Vor- und Nachname der Kontaktperson",
+    "isDefault": "Standardversandadresse",
+    "country": "Land",
+    "selectCountry": "Wählen",
+    "searchCountry": "Suchen...",
+    "city": "Provinz",
+    "selectCity": "Wählen",
+    "searchCity": "Suchen...",
+    "district": "Bezirk",
+    "selectDistrict": "Wählen",
+    "searchDistrict": "Suchen...",
+    "notes": "Notizen",
+    "notesPlaceholder": "Zusätzliche Hinweise, falls vorhanden",
+    "title": "Versandadressenverwaltung",
+    "description": "Lieferadressen verwalten und bearbeiten",
+    "search": "Schnellsuche...",
+    "customerName": "Kunde",
+    "location": "Standort",
+    "isDefaultShort": "Standard",
+    "createdDate": "Erstellungsdatum",
+    "noData": "Keine Daten gefunden",
+    "defaultBadge": "Ja",
+    "deleteConfirmDescription": "Sind Sie sicher, dass Sie diese Lieferadresse löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "createSuccess": "Lieferadresse erfolgreich erstellt",
+    "createError": "Beim Erstellen der Lieferadresse ist ein Fehler aufgetreten",
+    "deleteSuccess": "Lieferadresse erfolgreich gelöscht",
+    "deleteError": "Beim Löschen der Lieferadresse ist ein Fehler aufgetreten",
+    "updateSuccess": "Lieferadresse erfolgreich aktualisiert",
+    "updateError": "Beim Aktualisieren der Lieferadresse ist ein Fehler aufgetreten"
+  },
+  "stock": {
+    "detail": {
+      "basicInfoReadonly": "Diese Daten werden aus dem ERP-System synchronisiert und können nicht manuell geändert werden.",
+      "mainInfo": "Grunddaten",
+      "erpStockCode": "ERP-Aktiencode",
+      "stockName": "Aktienname",
+      "unit": "Einheit",
+      "ureticiKodu": "Herstellercode",
+      "groupInfo": "Gruppierung und Standort",
+      "grup": "Gruppeninformationen",
+      "branchCode": "Filialcode",
+      "specialCodes": "Sondercodes",
+      "created": "Erstellt",
+      "updated": "Aktualisiert",
+      "copied": "kopiert",
+      "copy": "Kopie",
+      "htmlDescription": "Produktbeschreibung (HTML)",
+      "htmlDescriptionDesc": "Bearbeiten Sie hier die detaillierte Beschreibung und den formatierten Text, der auf der Produktkarte angezeigt wird.",
+      "htmlDescriptionPlaceholder": "Detaillierte Produktbeschreibung eingeben...",
+      "saving": "Aufnahme...",
+      "save": "Speichern",
+      "title": "Lagerdetails",
+      "notFound": "Kein Bestand gefunden",
+      "notFoundDesc": "Der gesuchte Bestandsdatensatz wurde möglicherweise gelöscht oder nie erstellt.",
+      "backToStockList": "Zurück zur Liste",
+      "subtitle": "Bestandsdetailverwaltung",
+      "basicInfo": "Grundlegende Informationen",
+      "images": "Bilder",
+      "relations": "Gebundene Aktien",
+      "summary": "Kurzer Blick",
+      "gallery": "Galerie",
+      "addRelation": "Link hinzufügen"
+    },
+    "images": {
+      "noImages": "Noch keine Bilder hochgeladen",
+      "noImagesDesc": "Über den Bereich oben können Sie neue Bilder hinzufügen.",
+      "primary": "Hauptbild",
+      "altText": "Kein Subtext",
+      "setPrimary": "Machen Sie Main",
+      "isPrimary": "ausgewählt",
+      "deleteConfirm": "Bild löschen",
+      "deleteConfirmMessage": "Möchten Sie dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "cancel": "Stornieren",
+      "deleting": "Löschen...",
+      "confirmDelete": "Ja, löschen",
+      "upload": "Ziehen oder klicken Sie Bilder hierher",
+      "uploadHint": "JPG, PNG, WEBP (max. 5 MB)",
+      "selectedFiles": "Dateien zum Hochladen",
+      "uploading": "Laden...",
+      "uploadButton": "Ausgewählte hochladen"
+    },
+    "list": {
+      "title": "Lagerverwaltung",
+      "description": "Verfolgen Sie den Lagerbestand und den Lagerstatus.",
+      "search": "Nach Aktienname oder ERP-Code suchen...",
+      "syncedFromErp": "ERP-Synchronisierung aktiv",
+      "noData": "Kein Datensatz gefunden",
+      "id": "AUSWEIS",
+      "erpStockCode": "ERP-Code",
+      "stockName": "Aktienname",
+      "unit": "Einheit",
+      "actions": "Detail",
+      "total": "Gesamt",
+      "recordsListed": "{{count}}-Datensatz wird aufgelistet",
+      "previous": "Ehemalig",
+      "next": "Nächste"
+    },
+    "relations": {
+      "relatedStock": "Gebundene Aktienauswahl",
+      "selectStock": "Wählen Sie eine Aktie aus der Liste aus...",
+      "search": "Nach Aktienname oder Code suchen...",
+      "noStockFound": "Lagerbestand nicht gefunden.",
+      "quantity": "Menge / Koeffizient",
+      "description": "Beschreibung/Hinweis",
+      "descriptionPlaceholder": "Fügen Sie optional eine Notiz zur Beziehung hinzu...",
+      "isMandatory": "Zwangsbeziehung",
+      "saving": "Verarbeitung...",
+      "add": "Beziehung hinzufügen",
+      "noRelations": "Noch kein gebundener Bestand hinzugefügt",
+      "noRelationsDesc": "Über das Formular links können Sie neue Beziehungen definieren.",
+      "stockCode": "Aktiencode",
+      "stockName": "Aktienname",
+      "actions": "Transaktionen",
+      "mandatory": "Obligatorisch",
+      "optional": "optional",
+      "delete": "Löschen",
+      "deleteConfirm": "Link löschen",
+      "deleteConfirmMessage": "Sind Sie sicher, dass Sie die Verknüpfung mit {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "cancel": "Stornieren",
+      "deleting": "Löschen...",
+      "confirmDelete": "Ja, löschen"
+    },
+    "messages": {
+      "detailCreateSuccess": "Bestandsdetail erfolgreich erstellt",
+      "error": "Es ist ein Fehler aufgetreten",
+      "detailUpdateSuccess": "Bestandsdetails erfolgreich aktualisiert",
+      "deleteSuccess": "Bild erfolgreich gelöscht",
+      "setPrimarySuccess": "Hauptbild erfolgreich eingestellt",
+      "uploadSuccess": "Bilder erfolgreich hochgeladen",
+      "relationCreateSuccess": "Verlinkter Bestand erfolgreich hinzugefügt"
+    }
+  },
+  "userDetailManagement": {
+    "profilePageTitle": "Profil",
+    "fileSizeError": "Dateigröße 5 MB\\",
+    "fileTypeError": "Es können nur Bilddateien hochgeladen werden",
+    "saveSuccess": "Profil aktualisiert",
+    "backToHome": "Zurück zur Startseite",
+    "personalInfo": "Persönliche Informationen",
+    "personalInfoDescription": "Aktualisieren Sie Ihre Informationen zu Größe, Gewicht, Geschlecht und Biografie.",
+    "height": "Höhe (cm)",
+    "weight": "Gewicht (kg)",
+    "gender": "Geschlecht",
+    "selectGender": "Wählen",
+    "noGenderSelected": "Nicht spezifiziert",
+    "phoneNumber": "Telefonnummer",
+    "enterPhoneNumber": "+90 5XX XXX XX XX",
+    "email": "E-Mail-Adresse",
+    "enterEmail": "example@company.com",
+    "linkedinUrl": "LinkedIn-Profil",
+    "enterLinkedinUrl": "https://linkedin.com/in/...",
+    "description": "Biographie",
+    "enterDescription": "Erzählen Sie uns kurz etwas über sich...",
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "security": "Sicherheit",
+    "securityDescription": "Aktualisieren Sie Ihr Kontopasswort sicher.",
+    "changePassword": "Kennwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "newPasswordPlaceholder": "Ihr neues Passwort",
+    "changingPassword": "Verarbeitung...",
+    "changePasswordButton": "Passwort aktualisieren",
+    "cancel": "Abbrechen und schließen",
+    "createSuccess": "Benutzerdetails erfolgreich erstellt",
+    "createError": "Beim Erstellen der Benutzerdetails ist ein Fehler aufgetreten",
+    "updateSuccess": "Benutzerdetails erfolgreich aktualisiert",
+    "updateError": "Beim Aktualisieren der Benutzerdetails ist ein Fehler aufgetreten",
+    "uploadProfilePictureSuccess": "Profilbild erfolgreich hochgeladen",
+    "uploadProfilePictureError": "Beim Laden des Profilbilds ist ein Fehler aufgetreten"
+  },
+  "profile": {
+    "title": "Profilinformationen"
+  },
+  "language_choice": "Sprachoption",
+  "appearance": "Ansichtsmodus",
+  "logout": "Abmelden",
+  "userDiscountLimitManagement": {
+    "alreadyExists": "Für diese Kombination aus Vertriebsmitarbeiter und Produktgruppe besteht bereits ein Rabattlimit",
+    "edit": "Rabattlimit bearbeiten",
+    "create": "Neues Rabattlimit",
+    "editDescription": "Informationen zum Rabattlimit bearbeiten",
+    "createDescription": "Geben Sie neue Informationen zum Rabattlimit ein",
+    "salesperson": "Außendienstmitarbeiter",
+    "selectSalesperson": "Wählen Sie einen Vertriebsmitarbeiter aus",
+    "searchSalesperson": "Suchen Sie nach einem Vertriebsmitarbeiter...",
+    "erpProductGroupCode": "ERP-Produktgruppencode",
+    "selectErpProductGroupCode": "Wählen Sie Gruppe aus",
+    "searchGroup": "Gruppensuche...",
+    "maxDiscount1": "Maximaler Rabatt 1",
+    "enterMaxDiscount1": "Geben Sie den maximalen Rabatt 1 (0-100) ein.",
+    "maxDiscount2": "Maximaler Rabatt 2",
+    "enterMaxDiscount2": "Geben Sie den maximalen Rabatt 2 ein (0-100, optional)",
+    "maxDiscount3": "Maximaler Rabatt 3",
+    "enterMaxDiscount3": "Geben Sie den maximalen Rabatt 3 ein (0-100, optional)",
+    "cancel": "Stornieren",
+    "saving": "Aufnahme...",
+    "save": "Speichern",
+    "title": "Verwaltung des Benutzerrabattlimits",
+    "description": "Verwalten und bearbeiten Sie Benutzerrabattlimits",
+    "loading": "Laden...",
+    "noData": "Keine Daten gefunden",
+    "table": {
+      "id": "AUSWEIS",
+      "showing": "Angezeigt werden {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "salespersonName": "Name des Vertriebsmitarbeiters",
+    "createdDate": "Erstellungsdatum",
+    "updatedDate": "Aktualisiertes Datum",
+    "actions": "Transaktionen",
+    "delete": "Löschen",
+    "previous": "Ehemalig",
+    "next": "Nächste",
+    "deleteTitle": "Rabattlimit löschen",
+    "confirmDelete": "Sind Sie sicher, dass Sie dieses Rabattlimit löschen möchten?",
+    "createSuccess": "Rabattlimit erfolgreich erstellt",
+    "createError": "Beim Erstellen des Rabattlimits ist ein Fehler aufgetreten",
+    "deleteSuccess": "Rabattlimit erfolgreich gelöscht",
+    "deleteError": "Beim Löschen des Rabattlimits ist ein Fehler aufgetreten",
+    "updateSuccess": "Rabattlimit erfolgreich aktualisiert",
+    "updateError": "Beim Aktualisieren des Rabattlimits ist ein Fehler aufgetreten"
   }
 }

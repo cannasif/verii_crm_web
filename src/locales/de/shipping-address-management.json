@@ -55,7 +55,7 @@
   "createDescription": "Geben Sie neue Lieferadressinformationen ein",
   "editDescription": "Lieferadressinformationen bearbeiten",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "showing": "Zeige {{from}}-{{to}} / {{total}}",
     "page": "Seite {{current}} / {{total}}",
     "customerName": "Kundenname",
@@ -73,5 +73,11 @@
   "cancel": "Abbrechen",
   "save": "Speichern",
   "saving": "Speichern...",
-  "deleting": "Deleting..."
+  "deleting": "Deleting...",
+  "name": "Adressname",
+  "namePlaceholder": "Geben Sie den Adressnamen ein",
+  "isDefault": "Standardversandadresse",
+  "isDefaultShort": "Standard",
+  "defaultBadge": "Standard",
+  "nameMaxLength": "Der Adressname kann bis zu 150 Zeichen lang sein"
 }

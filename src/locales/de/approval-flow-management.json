@@ -4,7 +4,7 @@
     "description": "Genehmigungsabläufe verwalten und bearbeiten",
     "addButton": "Add New Approval Flow",
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "documentType": "Dokumententyp",
       "description": "Beschreibung",
       "isActive": "Aktiv",

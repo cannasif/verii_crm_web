@@ -11,9 +11,7 @@
   "deleteConfirmTitle": "Delete Confirmation",
   "cancel": "Abbrechen",
   "deleting": "Deleting...",
-  "delete": {
-    "confirmMessage": "Sind Sie sicher, dass Sie das Land {{name}} löschen möchten?"
-  },
+  "delete": "Löschen",
   "saving": "Speichern...",
   "save": "Speichern",
   "stats": {
@@ -22,7 +20,7 @@
     "newThisMonth": "Diesen Monat neu"
   },
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "name": "Ländername",
     "code": "Code",
     "erpCode": "ERP-Code",

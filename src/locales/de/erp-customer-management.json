@@ -44,6 +44,17 @@
     "filter": "Filtern",
     "all": "ALLE",
     "active": "AKTIV",
-    "passive": "PASSIV"
+    "passive": "PASSIV",
+    "apply": "ERGEBNISSE AUFLISTEN"
+  },
+  "details": {
+    "title": "Kundendaten",
+    "addressInfo": "Adressinformationen"
+  },
+  "common": {
+    "close": "Schließen",
+    "selectAll": "Wählen Sie „Alle“ aus",
+    "ok": "OK",
+    "totalRecords": "Gesamtregistrierung"
   }
 }

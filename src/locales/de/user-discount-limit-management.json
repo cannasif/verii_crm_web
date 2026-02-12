@@ -57,7 +57,7 @@
   "getByGroup": "Nach Gruppe abrufen",
   "getBySalespersonAndGroup": "Nach Verkäufer und Gruppe abrufen",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "salespersonName": "Name des Vertriebsmitarbeiters",
     "erpProductGroupCode": "ERP-Produktgruppencode",
     "maxDiscount1": "Max. Rabatt 1",

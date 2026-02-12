@@ -8,7 +8,7 @@
     "newThisMonth": "Neu in diesem Monat"
   },
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "customerCode": "Kundencode",
     "name": "Kundenname",
     "customerType": "Kundentyp",
@@ -25,7 +25,8 @@
     "createdDate": "Erstellungsdatum",
     "createdBy": "Erstellt von",
     "showing": "Zeige {{from}}-{{to}} / {{total}}",
-    "page": "Seite {{current}} / {{total}}"
+    "page": "Seite {{current}} / {{total}}",
+    "defaultShippingAddressId": "Standardversandadresse"
   },
   "form": {
     "addCustomer": "Add New Customer",
@@ -85,10 +86,12 @@
     "isCompletedDescription": "Sind alle Informationen für diesen Kunden vollständig ausgefüllt?",
     "isERPIntegrated": "ERP-Integriert",
     "none": "Keine",
-    "phone2MaxLength": "İkinci telefon numarası en fazla 100 karakter olabilir",
+    "phone2MaxLength": "Die zweite Telefonnummer kann bis zu 100 Zeichen lang sein",
     "notesMaxLength": "Notes must be at most 250 characters",
-    "salesRepCodeMaxLength": "Satış temsilcisi kodu en fazla 50 karakter olabilir",
-    "groupCodeMaxLength": "Grup kodu en fazla 50 karakter olabilir"
+    "salesRepCodeMaxLength": "Der Vertriebsmitarbeitercode kann bis zu 50 Zeichen lang sein",
+    "groupCodeMaxLength": "Der Gruppencode kann bis zu 50 Zeichen lang sein",
+    "defaultShippingAddress": "Standardversandadresse",
+    "selectDefaultShippingAddress": "Wählen Sie die Standardversandadresse"
   },
   "delete": {
     "action": "Delete",

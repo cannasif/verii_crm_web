@@ -5,8 +5,8 @@
   "SavedSuccessfully": "E-Mail-Einstellungen wurden erfolgreich gespeichert",
   "SaveFailed": "E-Mail-Einstellungen konnten nicht gespeichert werden",
   "Fields": {
-    "Host": "Host",
-    "Port": "Port",
+    "Host": "Servername",
+    "Port": "Verbindungsport",
     "EnableSsl": "SSL verwenden",
     "Username": "Benutzername",
     "Password": "Passwort",
@@ -14,5 +14,10 @@
     "FromEmail": "Absender-E-Mail",
     "FromName": "Absendername",
     "Timeout": "Timeout (sec)"
+  },
+  "TestMail": {
+    "Send": "Test-E-Mail senden",
+    "Sending": "Test wird gesendet...",
+    "Success": "Test-E-Mail gesendet"
   }
 }

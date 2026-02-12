@@ -8,7 +8,7 @@
     "newThisMonth": "Neu diesen Monat"
   },
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "fullName": "Vollständiger Name",
     "email": "E-Mail",
     "phone": "Phone",
@@ -21,7 +21,8 @@
     "updatedDate": "Aktualisierungsdatum",
     "updatedBy": "Aktualisiert von",
     "showing": "Zeige {{from}}-{{to}} / {{total}}",
-    "page": "Seite {{current}} / {{total}}"
+    "page": "Seite {{current}} / {{total}}",
+    "salutation": "Adresse"
   },
   "form": {
     "addContact": "Add New Contact",
@@ -50,7 +51,24 @@
     "customerRequired": "Kundenauswahl ist erforderlich",
     "title": "Titel",
     "selectTitle": "Titel auswählen",
-    "titleRequired": "Titelauswahl ist erforderlich"
+    "titleRequired": "Titelauswahl ist erforderlich",
+    "salutation": "Adresse",
+    "selectSalutation": "Adresse wählen",
+    "salutationNone": "Keiner",
+    "salutationMr": "Herr",
+    "salutationMs": "Frau",
+    "salutationMrs": "Liebling",
+    "salutationDr": "Dr.",
+    "firstName": "Name",
+    "firstNamePlaceholder": "Namen eingeben",
+    "lastName": "Nachname",
+    "lastNamePlaceholder": "Geben Sie den Nachnamen ein",
+    "middleName": "Zweiter Vorname",
+    "middleNamePlaceholder": "Zweitnamen eingeben (optional)",
+    "firstNameRequired": "Name ist erforderlich",
+    "lastNameRequired": "Nachname ist erforderlich",
+    "middleNameMaxLength": "Der zweite Vorname kann bis zu 100 Zeichen lang sein",
+    "titleNone": "kein Titel"
   },
   "delete": {
     "action": "Delete",

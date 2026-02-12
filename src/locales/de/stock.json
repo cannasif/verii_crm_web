@@ -4,7 +4,7 @@
     "description": "Verwalten Sie Produkte, die mit dem ERP synchronisiert sind",
     "syncedFromErp": "Aus ERP synchronisiert",
     "search": "Suchen",
-    "id": "ID",
+    "id": "AUSWEIS",
     "erpStockCode": "ERP‑Lagercode",
     "stockName": "Produktname",
     "unit": "Einheit",

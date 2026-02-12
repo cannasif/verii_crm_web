@@ -26,7 +26,7 @@
     "descriptionMaxLength": "Beschreibung darf maximal 500 Zeichen lang sein"
   },
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "name": "Name der Aktivitätsart",
     "description": "Beschreibung",
     "createdDate": "Erstellungsdatum",

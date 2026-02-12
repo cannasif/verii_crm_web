@@ -21,7 +21,7 @@
     "description": "Verwalten Sie hier Titeldefinitionen."
   },
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "name": "Titelname",
     "code": "Code",
     "createdDate": "Erstellungsdatum",

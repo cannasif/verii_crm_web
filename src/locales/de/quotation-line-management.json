@@ -107,7 +107,7 @@
   "vatApplied": "Angewandte MwSt.",
   "finalAmount": "Endbetrag",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "quotationId": "Angebots-ID",
     "productCode": "Produktcode",
     "productName": "Produktname",

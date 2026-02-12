@@ -10,14 +10,11 @@
   "previous": "Previous",
   "next": "Weiter",
   "cancel": "Abbrechen",
-  "delete": {
-    "confirmTitle": "Bezirk löschen",
-    "confirmMessage": "Sind Sie sicher, dass Sie den Bezirk {{name}} löschen möchten?"
-  },
+  "delete": "Löschen",
   "save": "Speichern",
   "saving": "Wird gespeichert...",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "name": "Bezirksname",
     "erpCode": "ERP-Code",
     "cityName": "Stadtname",

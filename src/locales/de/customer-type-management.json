@@ -13,7 +13,7 @@
     "newThisMonth": "Neu in diesem Monat"
   },
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "name": "Kundentyp Name",
     "description": "Beschreibung",
     "createdDate": "Erstellungsdatum",

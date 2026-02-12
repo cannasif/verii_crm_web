@@ -84,7 +84,7 @@
   "lowProfit": "Niedriger Gewinn",
   "negativeProfit": "Verlust",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "erpGroupCode": "ERP-Produktgruppencode",
     "currency": "Währung",
     "listPrice": "Listenpreis",

@@ -15,7 +15,7 @@
   "deleteConfirmTitle": "Delete Confirmation",
   "deleteConfirmDescription": "Are you sure you want to delete this record? This action cannot be undone.",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "ruleType": "Regeltyp",
     "customerType": "Kundentyp",
     "salesRep": "Vertriebsmitarbeiter",

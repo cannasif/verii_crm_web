@@ -8,7 +8,7 @@
   "noData": "Keine Daten gefunden",
   "noDataDescription": "No records found matching your search criteria or no records added yet.",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "name": "Gruppenname",
     "createdDate": "Erstellungsdatum",
     "createdBy": "Erstellt von",

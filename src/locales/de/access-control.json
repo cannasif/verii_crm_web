@@ -35,7 +35,12 @@
       "namePlaceholder": "Display name",
       "description": "Description",
       "descriptionPlaceholder": "Optional description",
-      "isActive": "Active"
+      "isActive": "Active",
+      "codePlaceholder": "Code auswählen",
+      "affectedRoutes": "Betroffene Seiten",
+      "affectedRoutesNone": "Für diesen Code wurde keine passende Route gefunden",
+      "codeSearchPlaceholder": "Suchen...",
+      "codeEmpty": "Keine Ergebnisse gefunden"
     },
     "table": {
       "code": "Code",
@@ -47,7 +52,8 @@
     "delete": {
       "confirmTitle": "Delete Permission Definition",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
-    }
+    },
+    "syncFromRoutes": "Von Routen synchronisieren"
   },
   "permissionGroups": {
     "title": "Permission Groups",
@@ -84,7 +90,8 @@
     "delete": {
       "confirmTitle": "Delete Permission Group",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
-    }
+    },
+    "search": "Suchen..."
   },
   "userGroupAssignments": {
     "title": "User Group Assignments",
@@ -96,5 +103,27 @@
     "noUsers": "No users found",
     "noGroups": "No permission groups available",
     "selectAll": "Select all"
+  },
+  "common": {
+    "cancel": "Stornieren",
+    "saving": "Sparen...",
+    "save": "Speichern und anwenden",
+    "loading": "Laden...",
+    "search": "Suchen...",
+    "noData": "Keine Daten",
+    "actions": "Aktionen",
+    "yes": "Ja",
+    "no": "NEIN",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "previous": "Vorherige",
+    "next": "Nächste",
+    "processing": "Verarbeitung..."
+  },
+  "sidebar": {
+    "accessControl": "Zugangskontrolle",
+    "permissionDefinitions": "Berechtigungsdefinitionen",
+    "permissionGroups": "Berechtigungsgruppen",
+    "userGroupAssignments": "Benutzergruppenzuweisungen"
   }
 }

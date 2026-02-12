@@ -11,7 +11,7 @@
     "newThisMonth": "Neu diesen Monat"
   },
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "name": "Stadtname",
     "erpCode": "ERP-Code",
     "countryName": "Ländername",

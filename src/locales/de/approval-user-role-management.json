@@ -8,7 +8,7 @@
     "loading": "Laden...",
     "noData": "Keine Daten",
     "table": {
-      "id": "ID",
+      "id": "AUSWEIS",
       "userFullName": "Benutzer",
       "approvalRoleName": "Genehmigungsrolle",
       "createdDate": "Erstellungsdatum",

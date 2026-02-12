@@ -104,7 +104,7 @@
   "searchProductCode": "Produktcode suchen",
   "searchGroupCode": "Gruppencode suchen",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "erpProductCode": "ERP-Produktcode",
     "erpGroupCode": "ERP-Produktgruppencode",
     "currency": "Währung",

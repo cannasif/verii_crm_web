@@ -1,5 +1,5 @@
 {
-  "title": "Dashboard",
+  "title": "Armaturenbrett",
   "loading": "Wird geladen",
   "stats": {
     "totalRevenue": "Gesamtumsatz",
@@ -39,8 +39,37 @@
     "openQuotations": "Offene Angebote",
     "openQuotationsDescription": "5 Angebote warten auf Genehmigung",
     "criticalStock": "Kritischer Bestand",
-    "criticalStockDescription": "3 Produkte unter kritischem Niveau"
+    "criticalStockDescription": "3 Produkte unter kritischem Niveau",
+    "checkTasks": "Überprüfen Sie die Aufgabenliste",
+    "reviewQuotations": "Schauen Sie sich die Angebote an",
+    "stockStatus": "Siehe Lagerstatus"
   },
   "noDate": "No date",
-  "unnamedActivity": "Unnamed Activity"
+  "unnamedActivity": "Unnamed Activity",
+  "greeting": {
+    "morning": "Guten Morgen",
+    "afternoon": "Einen schönen Tag noch",
+    "evening": "Guten Abend"
+  },
+  "refresh": "Aktualisieren",
+  "refreshing": "Es wird erneuert...",
+  "refreshed": "Daten aktualisiert",
+  "refreshError": "Update fehlgeschlagen",
+  "user": "Benutzer",
+  "noSalesData": "Noch keine Verkaufsdaten",
+  "noActivities": "Noch keine Aktivität",
+  "selectFormat": "Wählen Sie Format",
+  "reportPreparing": "Der Bericht ist in Vorbereitung...",
+  "reportDownloaded": "Der Bericht wurde heruntergeladen.",
+  "reportError": "Der Bericht konnte nicht empfangen werden.",
+  "sidebar": {
+    "customers": "Kunden",
+    "customerManagement": "Kundenmanagement",
+    "salesManagement": "Verkaufstrichter",
+    "demandCreateWizard": "Neue Anfrage erstellen",
+    "quotationCreateWizard": "Neues Angebot erstellen",
+    "orderCreateWizard": "Neue Bestellung erstellen",
+    "activities": "Planung",
+    "activityManagement": "Aktivitätsmanagement"
+  }
 }

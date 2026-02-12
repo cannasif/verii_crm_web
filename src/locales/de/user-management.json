@@ -3,7 +3,7 @@
   "description": "Benutzer verwalten und bearbeiten",
   "addButton": "Add New User",
   "table": {
-    "id": "ID",
+    "id": "AUSWEIS",
     "username": "Benutzername",
     "email": "E-Mail",
     "fullName": "Vollständiger Name",
@@ -65,5 +65,37 @@
   "delete": {
     "confirmTitle": "Delete User",
     "confirmMessage": "Are you sure you want to delete user {{username}}?"
+  },
+  "userManagement": {
+    "form": {
+      "editUser": "Benutzer bearbeiten",
+      "addUser": "Neuen Benutzer hinzufügen",
+      "editDescription": "Benutzerinformationen bearbeiten",
+      "addDescription": "Geben Sie neue Benutzerinformationen ein",
+      "username": "Benutzername",
+      "usernamePlaceholder": "Geben Sie den Benutzernamen ein",
+      "email": "E-Mail",
+      "emailPlaceholder": "Geben Sie die E-Mail-Adresse ein",
+      "password": "Passwort",
+      "passwordPlaceholder": "Bleibt das Feld leer, wird ein temporäres Passwort erstellt.",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Namen eingeben",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "Geben Sie den Nachnamen ein",
+      "phoneNumber": "Telefon",
+      "phoneNumberPlaceholder": "Geben Sie die Telefonnummer ein",
+      "role": "Rolle",
+      "rolePlaceholder": "Rolle auswählen",
+      "permissionGroups": "Berechtigungsgruppen",
+      "isActive": "Aktiv",
+      "cancel": "Stornieren",
+      "saving": "Aufnahme...",
+      "save": "Speichern",
+      "selectAll": "Alles auswählen",
+      "permissionGroupsNoData": "Berechtigungsgruppe nicht gefunden"
+    },
+    "table": {
+      "loading": "Laden..."
+    }
   }
 }
