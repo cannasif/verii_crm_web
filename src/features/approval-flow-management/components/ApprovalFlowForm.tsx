@@ -27,6 +27,7 @@ import type { ApprovalFlowDto } from '../types/approval-flow-types';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { ApprovalFlowStepList } from './ApprovalFlowStepList';
 import { Package } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface ApprovalFlowFormProps {
   open: boolean;
@@ -147,8 +148,8 @@ export function ApprovalFlowForm({
                 name="documentType"
                 render={({ field }) => (
                   <FormItem className="space-y-0">
-                    <FormLabel className={LABEL_STYLE}>
-                      {t('approvalFlow.form.documentType')} *
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(approvalFlowFormSchema, 'documentType')}>
+                      {t('approvalFlow.form.documentType')}
                     </FormLabel>
                     <VoiceSearchCombobox
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}

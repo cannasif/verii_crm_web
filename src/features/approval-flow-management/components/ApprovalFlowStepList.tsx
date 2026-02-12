@@ -26,6 +26,7 @@ import { useUpdateApprovalFlowStep } from '../hooks/useUpdateApprovalFlowStep';
 import { useDeleteApprovalFlowStep } from '../hooks/useDeleteApprovalFlowStep';
 import { useApprovalRoleGroupOptions } from '../hooks/useApprovalRoleGroupOptions';
 import type { ApprovalFlowStepGetDto } from '../types/approval-flow-step-types';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface ApprovalFlowStepListProps {
   approvalFlowId: number;
@@ -315,8 +316,8 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                   name="approvalRoleGroupId"
                   render={({ field }) => (
                     <FormItem className="space-y-0">
-                      <FormLabel className={LABEL_STYLE}>
-                        {t('approvalFlowStep.form.approvalRoleGroup')} *
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(stepFormSchema, 'approvalRoleGroupId')}>
+                        {t('approvalFlowStep.form.approvalRoleGroup')}
                       </FormLabel>
                       <VoiceSearchCombobox
                         value={field.value && field.value !== 0 ? field.value.toString() : ''}
