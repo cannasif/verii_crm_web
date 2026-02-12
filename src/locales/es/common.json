@@ -8,7 +8,11 @@
     "close": "Cerrar",
     "previous": "Anterior",
     "next": "Siguiente",
-    "delete": "Eliminar",
+    "delete": {
+      "confirmTitle": "Eliminar",
+      "confirmMessage": "Bu kaydı silmek istediğinize emin misiniz?",
+      "action": "Eliminar"
+    },
     "edit": "Editar",
     "search": "Buscar",
     "filter": "Filtrar",
@@ -41,9 +45,9 @@
     "selectDate": "Seleccionar fecha",
     "UnexpectedError": "An unexpected error occurred",
     "forbiddenTitle": "Acceso denegado",
-    "forbiddenDescription": "No tienes permiso para ver esta pagina.",
-    "forbiddenFrom": "Ruta solicitada",
-    "goBack": "Volver",
+    "forbiddenDescription": "No estás autorizado a ver esta página.",
+    "forbiddenFrom": "camino deseado",
+    "goBack": "regresar",
     "goHome": "Inicio",
     "pricingInsights": {
       "button": "Regla",
@@ -63,7 +67,68 @@
       "discount2": "Descuento 2",
       "discount3": "Descuento 3",
       "discount2And3": "Desc. 2/3"
-    }
+    },
+    "serverErrorTitle": "error del servidor",
+    "serverErrorRetrying": "La conexión se pierde. Reintentando automáticamente...",
+    "serverErrorDescription": "No se pudieron cargar las credenciales. Por favor inténtalo de nuevo.",
+    "retry": "intentar otra vez",
+    "refreshPage": "Actualizar página",
+    "voiceSearchPermissionDenied": "Mikrofon izni reddedildi.",
+    "voiceSearchError": "Sesli arama sırasında bir hata oluştu.",
+    "voiceSearchNotSupported": "Tarayıcınız sesli aramayı desteklemiyor",
+    "select": "Seçiniz",
+    "voiceSearch": "Sesli Arama",
+    "update": "Actualizar",
+    "deleting": "Eliminando...",
+    "uploading": "Cargando...",
+    "clear": "Pulisci",
+    "all": "Todas",
+    "editColumns": "Modifica Colonne",
+    "visibleColumns": "Colonne Visibili",
+    "paginationInfo": "{{start}}-{{end}} / {{total}} kayıt",
+    "refresh": "Actualizar",
+    "showing": "Gösterilen",
+    "table": {
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "filters": "Filtro Avanzato",
+    "selectAll": "Tümünü Seç",
+    "export": "Dışa Aktar",
+    "exportExcel": "Excel İndir",
+    "exportPDF": "PDF İndir",
+    "exportPPT": "PowerPoint İndir",
+    "active": "Active",
+    "columns": "Colonne Visibili",
+    "ok": "TAMAM",
+    "clearFilters": "Pulisci",
+    "apply": "Ejecutar",
+    "page": "Página {{current}} / {{total}}",
+    "status": "Estado",
+    "deleteSuccess": "Silme işlemi başarılı",
+    "deleteError": "Silme işlemi sırasında hata oluştu",
+    "deleteConfirmTitle": "Confirmación de eliminación",
+    "voiceSearchCompleted": "Sesli arama tamamlandı",
+    "voiceSearchStopListening": "Dinlemeyi durdur",
+    "actionExecuted": "İşlem başarıyla gerçekleştirildi",
+    "actionExecutionFailed": "İşlem gerçekleştirilemedi",
+    "templateDeleted": "Şablon silindi",
+    "templateDeleteFailed": "Şablon silinemedi",
+    "enterValidDocumentId": "Geçerli bir belge ID girin",
+    "pdfGenerated": "PDF oluşturuldu",
+    "pdfGenerateFailed": "PDF oluşturulamadı",
+    "updated": "Güncellendi",
+    "saved": "Kaydedildi",
+    "templateUpdatedWithTitle": "Şablon güncellendi: {{title}}",
+    "templateSavedWithTitle": "Şablon kaydedildi: {{title}}",
+    "templateUpdateFailed": "Şablon güncellenemedi",
+    "templateSaveFailed": "Şablon kaydedilemedi",
+    "imageMax2Mb": "Resim en fazla 2 MB olabilir.",
+    "selectImage": "Resim seç",
+    "imageSettings": "Resim Özellikleri",
+    "imageUrl": "Resim URL",
+    "uploadFromFile": "Dosyadan yükle",
+    "imageUrlPlaceholder": "https://... veya /logo.png"
   },
   "auth": {
     "login": {
@@ -92,11 +157,21 @@
       "animationOff": "Desactivar animación",
       "animationOn": "Activar animación"
     },
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "changePassword": {
+      "error": "Şifre değiştirilemedi",
+      "success": "Éxito"
+    },
+    "resetPassword": {
+      "successRedirect": "Şifreniz başarıyla sıfırlandı. Giriş sayfasına yönlendiriliyorsunuz...",
+      "failed": "Şifre sıfırlama işlemi başarısız oldu",
+      "error": "Şifre sıfırlama işlemi sırasında bir hata oluştu"
+    }
   },
   "navbar": {
-    "VERII WMS": "VERII WMS",
-    "crm": "CRM"
+    "VERII WMS": "Inicie sesión para continuar",
+    "crm": "CRM",
+    "search_placeholder": "Hızlı arama yap..."
   },
   "powerbiRls": {
     "title": "Gestión RLS de Power BI",
@@ -122,8 +197,8 @@
   "powerbiSync": {
     "title": "Sincronización de informes Power BI",
     "description": "Obtiene informes del workspace y los sincroniza con la base de datos CRM.",
-    "workspaceId": "ID de workspace",
-    "workspaceIdPlaceholder": "GUID de workspace (opcional)",
+    "workspaceId": "ID del espacio de trabajo",
+    "workspaceIdPlaceholder": "GUID del espacio de trabajo (opcional)",
     "sync": "Sincronizar",
     "success": "Sincronización completada correctamente",
     "error": "Sincronización fallida",
@@ -134,7 +209,7 @@
     "deleted": "Eliminados"
   },
   "sidebar": {
-    "dashboard": "Tablero",
+    "dashboard": "Panel",
     "search": "Buscar...",
     "home": "Inicio",
     "customers": "Clientes",
@@ -191,18 +266,28 @@
     "permissionDefinitions": "Definiciones de Permisos",
     "permissionGroups": "Grupos de Permisos",
     "userGroupAssignments": "Asignaciones de Grupos de Usuario",
-    "productAndStock": "Productos y Stock",
+    "productAndStock": "Productos y existencias",
     "salesManagement": "Gestión de Ventas",
-    "proposals": "Propuestas",
-    "quotationList": "Lista de Presupuestos",
-    "waitingApprovals": "Aprobaciones Pendientes",
+    "proposals": "Ofertas",
+    "quotationList": "Lista de ofertas",
+    "waitingApprovals": "Aprobaciones pendientes",
     "definitions": "Definiciones",
     "users": "Usuarios",
-    "reportBuilder": "Report Builder",
-    "pdfBuilder": "PDF Builder",
+    "reportBuilder": "Generador de informes",
+    "pdfBuilder": "Creador de PDF",
     "powerbiConfiguration": "Power BI Configuration",
     "powerbiReportsView": "Power BI Reports (View)",
-    "mailSettings": "Mail Settings"
+    "mailSettings": "Mail Settings",
+    "customersConflictInbox": "Çakışma Gelen Kutusu",
+    "demands": "Talepler",
+    "demandCreateWizard": "Yeni Talep Oluştur",
+    "waitingApprovalDemands": "Onay Bekleyen Talepler",
+    "demandList": "Talep Listesi",
+    "orderCreateWizard": "Crear Nueva Cotización",
+    "waitingApprovalOrders": "Onay Bekleyen Siparişler",
+    "orderList": "Sipariş Listesi",
+    "reportsList": "Liste",
+    "reportsCreate": "Yeni Oluştur"
   },
   "dashboard": {
     "title": "Tablero",
@@ -271,7 +356,8 @@
         "twoDaysAgo": "hace 2 días",
         "threeDaysAgo": "hace 3 días"
       }
-    }
+    },
+    "user": "Usuario"
   },
   "customer360": {
     "title": "Customer 360",
@@ -367,19 +453,19 @@
       "paymentBehavior": "El comportamiento de pago es actualmente un score proxy (continuidad de pedidos, tasa de rechazo de cotizaciones, recencia) y no historial de cobro directo, escala 0–100.",
       "rfmSegment": "El segmento RFM asigna Champions/Loyal/AtRisk/Potential según reglas de recencia, frecuencia y monetario.",
       "cohortRetentionTitle": "La retención por cohorte toma el primer mes de pedido como cohorte; si hay pedido en meses siguientes, cuenta como retenido y calcula el porcentaje de retención.",
-      "recommendedActionsTitle": "Las acciones recomendadas son sugerencias prioritarias del motor de reglas (ej. larga inactividad, cotizacion abierta, churn alto). Cada accion es trazable con reason + source rule code.",
+      "recommendedActionsTitle": "Las acciones recomendadas son sugerencias de seguimiento prioritario producidas por el motor de reglas (por ejemplo, sin actividad durante mucho tiempo, hay una oferta abierta, la rotación es alta). Se puede realizar un seguimiento de cada acción con justificación + código de regla.",
       "executeAction": "Ejecutar convierte esta recomendacion en actividad/tarea: el backend llama a `POST /api/customer360/{id}/actions/execute` y crea un nuevo registro de actividad.",
       "noCohortData": "Los datos de cohorte no están disponibles aún por historial de pedidos insuficiente.",
       "modelNote": "Nota: estos scores son deterministas v1 y podrán mejorarse con datos de cobro ERP y modelos ML."
     }
   },
   "salesman360": {
-    "title": "Salesman 360",
+    "title": "Representante de ventas 360",
     "subtitle": "Resumen del representante",
     "notFound": "Usuario no encontrado",
     "error": "Error al cargar el resumen",
     "retry": "Reintentar",
-    "button": "Salesman 360",
+    "button": "Representante de ventas 360",
     "currencyFilter": {
       "label": "Moneda",
       "all": "Todas"
@@ -455,7 +541,7 @@
       "paymentBehavior": "El comportamiento de pago usa actualmente métricas proxy; será más preciso cuando se integre el historial de cobro directo.",
       "rfmSegment": "El segmento RFM clasifica la cartera por comportamiento recencia/frecuencia/monetario.",
       "cohortRetentionTitle": "La retención por cohorte agrupa clientes por primer mes de pedido en la cartera del representante y muestra tasas de retención mensuales.",
-      "recommendedActionsTitle": "Las acciones recomendadas sugieren acciones prioritarias: limpieza de pipeline, aumento de actividad e intervencion en churn. Cada accion es trazable con reason + source rule code.",
+      "recommendedActionsTitle": "Las Acciones Recomendadas recomiendan acciones prioritarias como la limpieza de tuberías, el aumento de la actividad y la intervención en la deserción. Se puede realizar un seguimiento de cada acción con justificación + código de regla.",
       "executeAction": "Ejecutar convierte la recomendacion en actividad/tarea: el backend llama a `POST /api/salesmen360/{userId}/actions/execute`.",
       "noCohortData": "Los datos de cohorte no están disponibles aún por historial de pedidos insuficiente.",
       "modelNote": "Nota: los scores actuales son deterministas v1 y pueden reforzarse con quota/forecast/ML."
@@ -580,7 +666,7 @@
       "approvedBy": "Aprobado Por",
       "approvalDate": "Fecha de Aprobación",
       "erpInfo": "Información de Integración ERP",
-      "erp": "ERP",
+      "erp": "Clientes ERP",
       "isERPIntegrated": "Integrado ERP",
       "erpReferenceNumber": "Nº Referencia ERP",
       "erpIntegrationDate": "Fecha Integración ERP",
@@ -1339,7 +1425,9 @@
     "viewAll": "Ver todas las notificaciones",
     "loading": "Cargando...",
     "disconnected": "Conexión desconectada",
-    "notifications": "Notificaciones"
+    "notifications": "Notificaciones",
+    "close": "Cerrar",
+    "unread": "No leído"
   },
   "titleManagement": {
     "menu": "Gestión de Títulos",
@@ -1373,11 +1461,14 @@
       "titleName.maxLength": "El nombre del título debe tener máximo 100 caracteres",
       "code": "Código",
       "codePlaceholder": "Ingrese código (opcional)",
-      "code.maxLength": "El código debe tener máximo 10 caracteres"
+      "code.maxLength": "El código debe tener máximo 10 caracteres",
+      "cancel": "Cancelar"
     },
     "delete": {
       "confirmTitle": "Eliminar Título",
-      "confirmMessage": "¿Está seguro de que desea eliminar el título {{titleName}}?"
+      "confirmMessage": "¿Está seguro de que desea eliminar el título {{titleName}}?",
+      "title": "Eliminar Título",
+      "confirm": "{{name}} ünvanını silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
     },
     "messages": {
       "createSuccess": "Título creado con éxito",
@@ -1386,7 +1477,12 @@
       "updateError": "Error al actualizar título",
       "deleteSuccess": "Título eliminado con éxito",
       "deleteError": "Error al eliminar título"
-    }
+    },
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "search": "Ricerca Rapida...",
+    "loading": "Cargando...",
+    "noData": "Kayıt Bulunamadı"
   },
   "inventory": {
     "warehouse3d": {
@@ -1517,7 +1613,8 @@
       "createdDate": "Fecha de creación",
       "createdBy": "Creado por",
       "showing": "Mostrando",
-      "page": "Página"
+      "page": "Página",
+      "actions": "Acciones"
     },
     "form": {
       "addTitle": "Agregar grupo de rol de aprobación",
@@ -1531,7 +1628,8 @@
     },
     "delete": {
       "confirmTitle": "Eliminar grupo",
-      "confirmMessage": "¿Seguro que desea eliminar este grupo?"
+      "confirmMessage": "¿Seguro que desea eliminar este grupo?",
+      "title": "Rol Grubunu Sil"
     },
     "messages": {
       "createSuccess": "Grupo creado",
@@ -1540,7 +1638,13 @@
       "updateError": "No se pudo actualizar el grupo",
       "deleteSuccess": "Grupo eliminado",
       "deleteError": "No se pudo eliminar el grupo"
-    }
+    },
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "searchPlaceholder": "Buscar...",
+    "refresh": "Actualizar",
+    "noData": "Kayıt Bulunamadı"
   },
   "approvalUserRole": {
     "menu": "Roles de usuario de aprobación",
@@ -1553,7 +1657,8 @@
       "createdDate": "Fecha de creación",
       "createdBy": "Creado por",
       "showing": "Mostrando",
-      "page": "Página"
+      "page": "Página",
+      "actions": "Acciones"
     },
     "form": {
       "addTitle": "Agregar rol de usuario",
@@ -1567,11 +1672,15 @@
       "approvalRoleId": "Rol de aprobación",
       "selectApprovalRole": "Seleccione rol de aprobación",
       "noApprovalRoleSelected": "No se seleccionó rol de aprobación",
-      "approvalRoleId.required": "El rol de aprobación es obligatorio"
+      "approvalRoleId.required": "El rol de aprobación es obligatorio",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "save": "Guardar"
     },
     "delete": {
       "confirmTitle": "Eliminar asignación",
-      "confirmMessage": "¿Seguro que desea eliminar esta asignación?"
+      "confirmMessage": "¿Seguro que desea eliminar esta asignación?",
+      "title": "Eliminar rol"
     },
     "messages": {
       "createSuccess": "Asignación creada",
@@ -1580,7 +1689,10 @@
       "updateError": "No se pudo actualizar la asignación",
       "deleteSuccess": "Asignación eliminada",
       "deleteError": "No se pudo eliminar la asignación"
-    }
+    },
+    "searchPlaceholder": "Buscar...",
+    "refresh": "Actualizar",
+    "noData": "Kayıt Bulunamadı"
   },
   "approvalRole": {
     "menu": "Roles de aprobación",
@@ -1593,7 +1705,12 @@
       "createdDate": "Fecha de creación",
       "createdBy": "Creado por",
       "showing": "Mostrando",
-      "page": "Página"
+      "page": "Página",
+      "maxAmount": "Importe máximo",
+      "actions": "Acciones",
+      "totalRecords": "Toplam <span class=",
+      "previous": "Anterior",
+      "next": "Siguiente"
     },
     "form": {
       "addTitle": "Agregar rol de aprobación",
@@ -1607,11 +1724,19 @@
       "name": "Nombre",
       "namePlaceholder": "Ingrese nombre",
       "name.required": "El nombre es obligatorio",
-      "name.maxLength": "El nombre es demasiado largo"
+      "name.maxLength": "El nombre es demasiado largo",
+      "maxAmount": "Importe máximo",
+      "maxAmountPlaceholder": "Ingrese el importe máximo",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "save": "Guardar"
     },
     "delete": {
       "confirmTitle": "Eliminar rol",
-      "confirmMessage": "¿Seguro que desea eliminar este rol?"
+      "confirmMessage": "¿Seguro que desea eliminar este rol?",
+      "cancelButton": "Cancelar",
+      "deleting": "Eliminando...",
+      "confirmButton": "Confirmar eliminación"
     },
     "messages": {
       "createSuccess": "Rol creado correctamente",
@@ -1620,7 +1745,11 @@
       "updateError": "No se pudo actualizar el rol",
       "deleteSuccess": "Rol eliminado correctamente",
       "deleteError": "No se pudo eliminar el rol"
-    }
+    },
+    "searchPlaceholder": "Buscar...",
+    "refresh": "Actualizar",
+    "loading": "Cargando...",
+    "noData": "Sin datos"
   },
   "approvalFlow": {
     "menu": "Gestión de flujo de aprobación",
@@ -1629,7 +1758,9 @@
     "documentType": {
       "offer": "Oferta",
       "request": "Solicitud",
-      "order": "Pedido"
+      "order": "Pedido",
+      "demand": "Solicitud",
+      "quotation": "Oferta"
     },
     "table": {
       "id": "ID",
@@ -1639,7 +1770,8 @@
       "createdDate": "Fecha de creación",
       "createdBy": "Creado por",
       "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-      "page": "Página {{current}} / {{total}}"
+      "page": "Página {{current}} / {{total}}",
+      "actions": "Acciones"
     },
     "form": {
       "addTitle": "Agregar nuevo flujo de aprobación",
@@ -1654,11 +1786,16 @@
       "descriptionPlaceholder": "Ingrese una descripción (opcional)",
       "description.maxLength": "La descripción puede tener como máximo 200 caracteres",
       "isActive": "Activo",
-      "isActiveDescription": "Estado activo del flujo de aprobación"
+      "isActiveDescription": "Estado activo del flujo de aprobación",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "save": "Guardar"
     },
     "delete": {
       "confirmTitle": "Eliminar flujo de aprobación",
-      "confirmMessage": "¿Seguro que desea eliminar este flujo de aprobación?"
+      "confirmMessage": "¿Seguro que desea eliminar este flujo de aprobación?",
+      "title": "Eliminar Flujo",
+      "confirm": "Bu onay akışını silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
     },
     "messages": {
       "createSuccess": "Flujo de aprobación creado correctamente",
@@ -1667,7 +1804,11 @@
       "updateError": "No se pudo actualizar el flujo de aprobación",
       "deleteSuccess": "Flujo de aprobación eliminado correctamente",
       "deleteError": "No se pudo eliminar el flujo de aprobación"
-    }
+    },
+    "active": "Active",
+    "inactive": "Inactivo",
+    "loading": "Cargando...",
+    "noData": "Kayıt Bulunamadı"
   },
   "userManagement": {
     "menu": "Gestión de usuarios",
@@ -1677,7 +1818,8 @@
       "totalUsers": "Usuarios totales",
       "activeUsers": "Usuarios activos",
       "newThisMonth": "Nuevos este mes",
-      "confirmedUsers": "Usuarios confirmados"
+      "confirmedUsers": "Usuarios confirmados",
+      "loading": "Cargando..."
     },
     "table": {
       "id": "ID",
@@ -1691,7 +1833,11 @@
       "inactive": "Inactivo",
       "confirmed": "Confirmado",
       "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-      "page": "Página {{current}} / {{total}}"
+      "page": "Página {{current}} / {{total}}",
+      "loading": "Cargando...",
+      "noData": "Sin datos",
+      "previous": "Anterior",
+      "next": "Siguiente"
     },
     "form": {
       "addUser": "Agregar nuevo usuario",
@@ -1799,7 +1945,8 @@
       "createdDate": "Fecha de creación",
       "createdBy": "Creado por",
       "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-      "page": "Página {{current}} / {{total}}"
+      "page": "Página {{current}} / {{total}}",
+      "noData": "Kayıt Bulunamadı"
     },
     "form": {
       "addCountry": "Agregar nuevo país",
@@ -1817,7 +1964,12 @@
       "code.required": "El código del país es obligatorio",
       "code.minLength": "El código del país debe tener al menos 2 caracteres",
       "code.maxLength": "El código del país puede tener como máximo 5 caracteres",
-      "erpCode.maxLength": "El código ERP puede tener como máximo 10 caracteres"
+      "erpCode.maxLength": "El código ERP puede tener como máximo 10 caracteres",
+      "tabs": {
+        "header": "General Information"
+      },
+      "cancel": "Cancelar",
+      "save": "Guardar"
     },
     "delete": {
       "confirmTitle": "Eliminar país",
@@ -1830,7 +1982,11 @@
       "updateError": "No se pudo actualizar el país",
       "deleteSuccess": "País eliminado correctamente",
       "deleteError": "No se pudo eliminar el país"
-    }
+    },
+    "searchPlaceholder": "Ricerca Rapida...",
+    "loading": "Cargando...",
+    "deleteTitle": "Eliminar país",
+    "deleteConfirmation": "{{name}} isimli ülkeyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
   },
   "cityManagement": {
     "menu": "Gestión de ciudades",
@@ -1865,11 +2021,19 @@
       "name.required": "El nombre de la ciudad es obligatorio",
       "name.maxLength": "El nombre de la ciudad puede tener como máximo 100 caracteres",
       "country.required": "La selección de país es obligatoria",
-      "erpCode.maxLength": "El código ERP puede tener como máximo 10 caracteres"
+      "erpCode.maxLength": "El código ERP puede tener como máximo 10 caracteres",
+      "tabs": {
+        "header": "General Information"
+      },
+      "searchCountry": "Ülke ara...",
+      "cancel": "Cancelar",
+      "save": "Guardar"
     },
     "delete": {
       "confirmTitle": "Eliminar ciudad",
-      "confirmMessage": "¿Seguro que desea eliminar la ciudad {{name}}?"
+      "confirmMessage": "¿Seguro que desea eliminar la ciudad {{name}}?",
+      "success": "Ciudad eliminada correctamente",
+      "error": "Şehir silinirken bir hata oluştu"
     },
     "messages": {
       "createSuccess": "Ciudad creada correctamente",
@@ -1878,7 +2042,11 @@
       "updateError": "No se pudo actualizar la ciudad",
       "deleteSuccess": "Ciudad eliminada correctamente",
       "deleteError": "No se pudo eliminar la ciudad"
-    }
+    },
+    "searchPlaceholder": "Ricerca Rapida...",
+    "loading": "Cargando...",
+    "noData": "Sin datos",
+    "actions": "Acciones"
   },
   "districtManagement": {
     "menu": "Gestión de distritos",
@@ -1897,7 +2065,9 @@
       "createdDate": "Fecha de creación",
       "createdBy": "Creado por",
       "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-      "page": "Página {{current}} / {{total}}"
+      "page": "Página {{current}} / {{total}}",
+      "city": "Ciudad",
+      "status": "Estado"
     },
     "form": {
       "addDistrict": "Agregar nuevo distrito",
@@ -1913,11 +2083,14 @@
       "name.required": "El nombre del distrito es obligatorio",
       "name.maxLength": "El nombre del distrito puede tener como máximo 100 caracteres",
       "city.required": "La selección de ciudad es obligatoria",
-      "erpCode.maxLength": "El código ERP puede tener como máximo 10 caracteres"
+      "erpCode.maxLength": "El código ERP puede tener como máximo 10 caracteres",
+      "searchCity": "Şehir ara..."
     },
     "delete": {
       "confirmTitle": "Eliminar distrito",
-      "confirmMessage": "¿Seguro que desea eliminar el distrito {{name}}?"
+      "confirmMessage": "¿Seguro que desea eliminar el distrito {{name}}?",
+      "success": "Distrito eliminado correctamente",
+      "error": "İlçe silinirken bir hata oluştu"
     },
     "messages": {
       "createSuccess": "Distrito creado correctamente",
@@ -1926,6 +2099,2031 @@
       "updateError": "No se pudo actualizar el distrito",
       "deleteSuccess": "Distrito eliminado correctamente",
       "deleteError": "No se pudo eliminar el distrito"
+    },
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Guardar"
+  },
+  "nav": {
+    "customersConflictInbox": "Çakışma Gelen Kutusu"
+  },
+  "pdfReportDesigner": {
+    "list": "Listele",
+    "create": "Create",
+    "templatesTitle": "Rapor Şablonları",
+    "createNew": "Yeni Oluştur",
+    "title": "Başlık",
+    "documentType": "Belge tipi",
+    "active": "Active",
+    "default": "Varsayılan",
+    "defaultBadge": "Varsayılan",
+    "templateDeleted": "Şablon silindi",
+    "templateDeleteFailed": "Şablon silinemedi",
+    "copy": "Copiar",
+    "generatePdf": "PDF oluştur",
+    "enterValidDocumentId": "Geçerli bir belge ID girin",
+    "pdfGenerated": "PDF oluşturuldu",
+    "pdfGenerateFailed": "PDF oluşturulamadı",
+    "deleteTemplateTitle": "Şablonu sil",
+    "deleteTemplateConfirm": "şablonunu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "generatePdfTitle": "PDF oluştur",
+    "generatePdfDescription": "Şablon:",
+    "enterDocumentId": "Belge ID (Teklif / Sipariş / Talep ID) girin.",
+    "documentId": "Belge ID",
+    "generating": "Oluşturuluyor…",
+    "noTemplates": "Henüz şablon yok. Yeni Oluştur ile ekleyebilirsiniz.",
+    "editTemplate": "Şablonu Düzenle",
+    "newTemplate": "Yeni Rapor Şablonu",
+    "titlePlaceholder": "Rapor başlığını girin",
+    "setDefaultTemplate": "Varsayılan şablon yap",
+    "updated": "Güncellendi",
+    "saved": "Kaydedildi",
+    "updateFailed": "Şablon güncellenemedi",
+    "saveFailed": "Şablon kaydedilemedi",
+    "undo": "Geri al",
+    "redo": "Yinele",
+    "draftRestored": "Taslak geri yüklendi",
+    "draftRestoreFailed": "Taslak yüklenemedi",
+    "draftFound": "Taslak bulundu. Geri yükleyebilir veya temizleyebilirsiniz.",
+    "restoreDraft": "Geri yükle",
+    "discardDraft": "Pulisci",
+    "snapToGrid": "Izgaraya hizala"
+  },
+  "reportDesigner": {
+    "ruleType": {
+      "demand": "Solicitud",
+      "quotation": "Oferta",
+      "order": "Pedido"
+    },
+    "palette": {
+      "title": "Alan paleti",
+      "text": "Metin",
+      "fields": "Alanlar",
+      "tableColumns": "Tablo sütunları",
+      "exchangeRates": "Döviz kurları",
+      "addTable": "Tablo ekle",
+      "images": "Resimler",
+      "logoImage": "Logo resmi"
+    },
+    "sections": {
+      "header": "Üst bilgi",
+      "content": "İçerik",
+      "footer": "Alt bilgi"
+    },
+    "tableDropHint": "Sütun eklemek için palette'ten sürükleyin",
+    "tableSettingsHint": "Tablo sütunlarını sol palette'ten sürükleyip bu alana bırakın.",
+    "properties": {
+      "textTitle": "Metin özellikleri",
+      "fieldTitle": "Alan özellikleri",
+      "imageTitle": "Resim özellikleri",
+      "textSettings": "Metin ayarları",
+      "fieldSettings": "Alan ayarları",
+      "imageSettings": "Resim ayarları",
+      "text": "Metin",
+      "textPlaceholder": "Metin girin...",
+      "fontSize": "Yazı boyutu",
+      "fontFamily": "Yazı tipi",
+      "color": "Renk",
+      "valueLabel": "Değer / Etiket",
+      "draggedFieldPlaceholder": "Palette'ten sürüklenen alan",
+      "imageUrl": "Resim URL",
+      "imageUrlPlaceholder": "https://... veya /logo.png",
+      "uploadFromFile": "Dosyadan yükle",
+      "uploadFromFileMax2Mb": "Dosyadan yükle (max 2 MB)",
+      "selectImageMax2Mb": "Resim seç (max 2 MB)",
+      "max2MbNote": "(max 2 MB)",
+      "preview": "Önizleme",
+      "colorPlaceholder": "#374151"
+    },
+    "actions": {
+      "settings": "Configuración",
+      "remove": "Kaldır"
+    },
+    "defaults": {
+      "doubleClickToEdit": "Düzenlemek için çift tıklayın"
+    },
+    "list": {
+      "title": "Rapor şablonları",
+      "createNew": "Yeni oluştur",
+      "noTemplates": "Henüz şablon yok. Yeni oluştur ile ekleyebilirsiniz.",
+      "id": "ID",
+      "documentType": "Belge tipi",
+      "active": "Active",
+      "default": "Varsayılan",
+      "defaultBadge": "Varsayılan",
+      "action": "Acción"
+    },
+    "form": {
+      "editTemplate": "Şablonu düzenle",
+      "newTemplate": "Yeni rapor şablonu",
+      "documentType": "Belge tipi",
+      "title": "Başlık",
+      "titlePlaceholder": "Rapor başlığını girin",
+      "setDefaultTemplate": "Varsayılan şablon yap",
+      "selectPlaceholder": "Seçin",
+      "saveFailed": "Şablon kaydedilemedi",
+      "updateFailed": "Şablon güncellenemedi",
+      "requiredDocumentType": "Seleccionar tipo de documento",
+      "requiredTitle": "Başlık gerekli",
+      "documentIdPlaceholder": "Örn. 123"
+    },
+    "preview": {
+      "label": "Rapor şablonu",
+      "selectPlaceholder": "Şablon seçin",
+      "loading": "Cargando...",
+      "defaultSuffix": " (Varsayılan)",
+      "generating": "Rapor oluşturuluyor...",
+      "iframeTitle": "Rapor önizleme",
+      "loadFailed": "PDF yüklenemedi. Şablonu tekrar seçin veya sayfayı yenileyin.",
+      "emptyDemand": "Talep şablonu bulunamadı",
+      "emptyQuotation": "Teklif şablonu bulunamadı",
+      "emptyOrder": "Sipariş şablonu bulunamadı"
+    },
+    "inspector": {
+      "title": "Denetleyici",
+      "selectHint": "Öğe seçin veya birden fazla seçiliyse konum/boyut güncellenmez.",
+      "zIndex": "Z sırası",
+      "zIndexPlaceholder": "auto",
+      "rotation": "Döndürme (°)",
+      "alignment": "Hizalama",
+      "left": "Sol",
+      "center": "Media",
+      "right": "Sağ",
+      "background": "Arka plan",
+      "backgroundPlaceholder": "transparent",
+      "opacity": "Opaklık (0-1)"
+    },
+    "layers": {
+      "title": "Katmanlar",
+      "bringForward": "Öne getir",
+      "sendBackward": "Arkaya gönder",
+      "show": "Göster",
+      "hide": "Gizle",
+      "lock": "Kilitle",
+      "unlock": "Kilidi aç",
+      "noItems": "Henüz öğe yok. Palette'ten sürükleyin.",
+      "tableLabel": "Tablo ({{count}} sütun)",
+      "textLabel": "Metin",
+      "fieldLabel": "Alan",
+      "imageLabel": "Resim"
     }
+  },
+  "salesTypeManagement": {
+    "menu": "Gestión de Tipos de Venta",
+    "description": "Satış tiplerini yönetin ve düzenleyin",
+    "addButton": "Yeni Satış Tipi",
+    "searchPlaceholder": "Ad ile ara...",
+    "noData": "Kayıt bulunamadı",
+    "table": {
+      "salesType": "Satış Tipi",
+      "name": "Name",
+      "createdDate": "Fecha de creación"
+    },
+    "form": {
+      "addTitle": "Yeni Satış Tipi Ekle",
+      "editTitle": "Satış Tipi Düzenle",
+      "addDescription": "Yeni satış tipi bilgilerini girin",
+      "editDescription": "Satış tipi bilgilerini düzenleyin",
+      "salesType": "Satış Tipi",
+      "name": "Name",
+      "namePlaceholder": "Ad girin"
+    },
+    "delete": {
+      "title": "Satış Tipini Sil",
+      "confirm": "{{name}} satış tipini silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+    },
+    "messages": {
+      "createSuccess": "Satış tipi başarıyla oluşturuldu",
+      "createError": "Satış tipi oluşturulamadı",
+      "updateSuccess": "Satış tipi başarıyla güncellendi",
+      "updateError": "Satış tipi güncellenemedi",
+      "deleteSuccess": "Satış tipi başarıyla silindi",
+      "deleteError": "Satış tipi silinemedi"
+    }
+  },
+  "currencySelectDialog": {
+    "title": "Para Birimi Seç",
+    "searchPlaceholder": "Döviz adı veya kodu ile ara...",
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados"
+  },
+  "customerSelectDialog": {
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados",
+    "title": "Seleccionar cliente",
+    "description": "İşlem yapmak istediğiniz müşteriyi seçin",
+    "searchPlaceholder": "İsim, kod veya telefon ile ara...",
+    "erpCustomers": "Clientes ERP",
+    "potentialCustomers": "Potential",
+    "allCustomers": "Todas"
+  },
+  "menu": "Hangfire Monitoring",
+  "roles": {
+    "admin": "Yönetici"
+  },
+  "quotation": {
+    "notes": {
+      "title": "Ek Notlar ve Koşullar",
+      "description": "Belgenize eklemek istediğiniz notları düzenleyin ve seçin.",
+      "placeholder": "Not içeriği...",
+      "maxLengthError": "Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.",
+      "maxCountError": "En fazla 15 not eklenebilir.",
+      "saved": "Notlar kaydedildi.",
+      "saveError": "Notlar kaydedilirken bir hata oluştu.",
+      "noteLabel": "Nota",
+      "saving": "Guardando..."
+    },
+    "select": "Seçiniz",
+    "header": {
+      "projectCode": "Código de Proyecto",
+      "projectCodePlaceholder": "Proje kodu seçiniz...",
+      "descriptionPlaceholder": "Özel koşullar...",
+      "mainInfo": "Müşteri & Satış Bilgileri",
+      "customer": "Müşteri Hesabı",
+      "selectCustomer": "Müşteri ara veya seç...",
+      "tryDifferentSearch": "Farklı bir arama terimi deneyin",
+      "representative": "Sales Representative",
+      "shippingAddress": "Shipping Address",
+      "selectShippingAddress": "Sevk adresi seçin",
+      "currencyChange": {
+        "title": "Kur Değişikliği",
+        "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
+      }
+    },
+    "exchangeRates": {
+      "dialog": {
+        "title": "Tipos de Cambio",
+        "subtitle": "Güncel kur değerlerini yönetin",
+        "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin.",
+        "info": "Burada yapılan değişiklikler sadece bu teklif için geçerlidir ve genel sistem kurlarını etkilemez. Değiştirilen kurlar "
+      },
+      "currency": "Moneda",
+      "rate": "Kur Değeri",
+      "status": "Estado",
+      "empty": "No exchange rates found",
+      "official": "Official",
+      "custom": "Personalizado",
+      "cannotEditUsedCurrency": "Kullanımda olan kur değiştirilemez",
+      "title": "Tipos de Cambio",
+      "date": "Fecha Tasa",
+      "isOfficial": "Official",
+      "updateSuccess": "Döviz kurları güncellendi",
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+    },
+    "loading": "Kurlar yükleniyor...",
+    "actions": "Acciones",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "saveAndApply": "Save and Apply",
+    "approvalFlow": {
+      "stepCompleted": "Completada",
+      "stepInProgress": "Devam ediyor",
+      "stepRejected": "Rechazado",
+      "stepNotStarted": "No iniciado",
+      "loading": "Onay akışı yükleniyor...",
+      "noData": "Veri bulunamadı.",
+      "notStarted": "Henüz onay süreci başlatılmamış."
+    },
+    "create": {
+      "title": "Crear Nueva Cotización",
+      "error": "Demand Could Not Be Created",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Demand Created Successfully",
+      "successMessage": "Demand has been sent to the approval process.",
+      "errorMessage": "An error occurred while creating the demand.",
+      "validationError": "Lütfen form alanlarını kontrol ediniz.",
+      "subtitle": "Müşteri ve kalem bilgilerini girerek teklifi oluşturun"
+    },
+    "lines": {
+      "required": "At least 1 line must be added",
+      "productCode": "Código Producto",
+      "productName": "Nombre Producto",
+      "quantity": "Cantidad",
+      "unitPrice": "Precio Unitario",
+      "vatRate": "KDV",
+      "total": "Total",
+      "stock": "Selección de Stock",
+      "unit": "Unidad",
+      "discounts": "Satır İndirimleri",
+      "relatedStocks": "Relaciones",
+      "netPrice": "Net Price",
+      "lineTotal": "Total",
+      "description": "Description",
+      "requiredFieldsMissing": "Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.",
+      "title": "Teklif Kalemleri",
+      "itemCount": "{count} kalem ürün listeleniyor",
+      "noItems": "Henüz ürün eklenmedi",
+      "add": "Add Line",
+      "empty": "Sepetiniz Boş",
+      "emptyDescription": "Teklif oluşturmak için ",
+      "discount1": "İnd.1",
+      "discount2": "İnd.2",
+      "discount3": "İnd.3",
+      "addTitle": "Add New Line",
+      "editTitle": "Edit Line",
+      "delete": {
+        "confirmTitleMultiple": "Bağlı Stokları Sil",
+        "confirmTitle": "Delete Line",
+        "confirmMessageMultiple": "Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.",
+        "confirmMessage": "Are you sure you want to delete this line?"
+      },
+      "createSuccess": "Satırlar eklendi",
+      "createError": "Satırlar eklenirken bir hata oluştu",
+      "deleteSuccess": "Line deleted",
+      "deleteError": "An error occurred while deleting line",
+      "updateSuccess": "Satırlar güncellendi",
+      "updateError": "Satırlar güncellenirken bir hata oluştu"
+    },
+    "date": "Tarih",
+    "share": {
+      "whatsappMessage": "Merhaba, teklif dosyasını iletiyorum.",
+      "downloaded": "PDF indirildi. Lütfen WhatsApp üzerinden paylaşınız.",
+      "mailSubject": "Teklif Dosyası",
+      "mailBody": "Merhaba, ekte teklif dosyasını bulabilirsiniz."
+    },
+    "sections": {
+      "header": "Müşteri ve belge bilgileri",
+      "lines": "Teklif kalemleri",
+      "summary": "Özet & Toplamlar"
+    },
+    "export": "Dışa Aktar",
+    "exportPdf": "PDF İndir",
+    "shareWhatsapp": "WhatsApp ile Paylaş",
+    "shareMail": "E-posta ile Paylaş",
+    "save": "Teklifi Kaydet",
+    "detail": {
+      "title": "Teklif Detayı: {{offerNo}}",
+      "notFound": "Cotización no encontrada",
+      "subtitle": "Teklif detaylarını görüntüleyin ve düzenleyin.",
+      "revisionNo": "Revizyon No",
+      "tabDetail": "Información de la Cotización",
+      "tabApprovalFlow": "Onay Akışı",
+      "tabReport": "Informe"
+    },
+    "offerNo": "Nº Oferta",
+    "update": {
+      "error": "Teklif Güncellenemedi",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Teklif Başarıyla Güncellendi",
+      "successMessage": "Teklif başarıyla güncellendi.",
+      "errorMessage": "Teklif güncellenirken bir hata oluştu.",
+      "validationError": "Lütfen zorunlu alanları kontrol ediniz."
+    },
+    "backToQuotations": "Back to Demands",
+    "approval": {
+      "sending": "Gönderiliyor...",
+      "sendForApproval": "Onaya Gönder",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "rejectTitle": "Teklifi Reddet",
+      "rejectDescription": "Red sebebini belirtiniz (opsiyonel)",
+      "rejectReasonPlaceholder": "Red sebebi...",
+      "approveSuccess": "Onay işlemi başarıyla gerçekleştirildi",
+      "approveError": "Onay işlemi gerçekleştirilemedi",
+      "rejectSuccess": "Red işlemi başarıyla gerçekleştirildi",
+      "rejectError": "Red işlemi gerçekleştirilemedi",
+      "startSuccess": "Onay akışı başarıyla başlatıldı",
+      "startError": "Onay akışı başlatılamadı"
+    },
+    "add": "Añadir",
+    "guide": "Rehber",
+    "confirm": "Aprobar",
+    "error": "Error",
+    "delete": "Eliminar",
+    "list": {
+      "title": "Demand List",
+      "description": "View and manage all demands",
+      "createNew": "Crear Nueva Cotización",
+      "searchPlaceholder": "Search by demand no or customer name...",
+      "id": "ID",
+      "offerNo": "Nº Oferta",
+      "customer": "Cliente",
+      "representative": "Representante",
+      "offerDate": "Fecha Oferta",
+      "currency": "Moneda",
+      "grandTotal": "Gran Total",
+      "status": "Estado",
+      "actions": "Acciones",
+      "revise": "Revise",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "refresh": "Actualizar",
+    "summary": {
+      "title": "Overview",
+      "generalDiscountRate": "Genel İskonto Oranı (%)",
+      "generalDiscountAmount": "Genel İskonto Tutarı",
+      "generalDiscountHelp": "Oran veya tutar girildiğinde toplamlar otomatik güncellenir.",
+      "subtotal": "Subtotal",
+      "generalDiscount": "Genel İskonto",
+      "totalVat": "Total VAT",
+      "grandTotal": "Gran Total"
+    },
+    "noData": "Sin datos",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "waitingApprovals": {
+      "title": "Onay Bekleyen Teklifler",
+      "list": "Onay Bekleyen Teklifler Listesi",
+      "noApprovals": "Onay bekleyen teklif bulunmamaktadır",
+      "requestId": "İstek ID",
+      "description": "Description",
+      "stepOrder": "Adım",
+      "approvedBy": "Aprobado Por",
+      "actionDate": "Tarih",
+      "status": "Estado",
+      "waiting": "Esperando"
+    },
+    "back": "Volver",
+    "revision": {
+      "success": "Teklif revizyonu başarıyla oluşturuldu",
+      "error": "Teklif revizyonu oluşturulurken bir hata oluştu"
+    }
+  },
+  "productSelectDialog": {
+    "stock": "STOK",
+    "group": "Grupo",
+    "unit": "Unidad",
+    "relatedStocks": "Relaciones",
+    "unknownStock": "Stock desconocido",
+    "quantity": "Cantidad",
+    "mandatory": "Obligatorio",
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados",
+    "noProducts": "Stock no encontrado",
+    "title": "Select Stock",
+    "searchPlaceholder": "Buscar por código o nombre de stock...",
+    "voiceSearch": "Búsqueda por voz",
+    "cardView": "Kart Görünümü",
+    "listView": "Liste Görünümü",
+    "stocks": "Stoklar",
+    "stocksWithImages": "Görselli Stoklar"
+  },
+  "relatedStocksSelectionDialog": {
+    "title": "Seleccione stocks relacionados",
+    "description": "Seleccione los stocks relacionados que desea agregar junto con el stock principal. Los stocks obligatorios se seleccionan automáticamente.",
+    "mandatoryStocks": "Stocks obligatorios",
+    "unknownStock": "Stock desconocido",
+    "quantity": "Cantidad",
+    "mandatory": "Obligatorio",
+    "optionalStocks": "Stocks opcionales",
+    "noRelatedStocks": "No se encontraron stocks relacionados",
+    "cancel": "Cancelar",
+    "calculating": "Calculando...",
+    "add": "Añadir"
+  },
+  "stockGroupSelectDialog": {
+    "title": "Stok Grubu Seç",
+    "searchPlaceholder": "Grup kodu veya adı ile ara...",
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados",
+    "unnamedGroup": "İsimsiz Grup"
+  },
+  "activityManagement": {
+    "edit": "Editar actividad",
+    "create": "Nueva actividad",
+    "editDescription": "Edite la información de la actividad",
+    "createDescription": "Ingrese la información de la nueva actividad",
+    "detailsTab": "Detaylar",
+    "imagesTab": "Resimler",
+    "basicInfo": "Temel bilgiler",
+    "subject": "Asunto",
+    "enterSubject": "Örn: Proje Toplantısı",
+    "activityType": "Tipo",
+    "select": "Select",
+    "status": "Estado",
+    "activityDate": "Başlangıç",
+    "endDate": "Bitiş",
+    "priority": "Prioridad",
+    "allDay": "Tüm Gün",
+    "relations": "Müşteri & ilişkiler",
+    "customer": "Cliente",
+    "selectCustomer": "Seleccionar cliente",
+    "contactId": "Contacto",
+    "noContactSelected": "Seçilmedi",
+    "selectCustomerFirst": "Seleccione primero un cliente",
+    "assignedUser": "Usuario asignado",
+    "noUserSelected": "Seçilmedi",
+    "details": "Detalle",
+    "description": "Description",
+    "enterDescription": "Aktivite detaylarını girin...",
+    "reminders": "Hatırlatmalar",
+    "noReminder": "Hatırlatma eklenmedi",
+    "validationError": "Lütfen zorunlu alanları doldurun",
+    "title": "Gestión de actividades",
+    "priorityLow": "Baja",
+    "priorityMedium": "Media",
+    "priorityHigh": "Alta",
+    "statusScheduled": "Programada",
+    "statusCompleted": "Completada",
+    "statusCanceled": "Cancelada",
+    "id": "ID",
+    "contact": "Contacto",
+    "deleteActivity": "Eliminar actividad",
+    "deleteConfirmation": "¿Seguro que desea eliminar esta actividad?",
+    "createSuccess": "Actividad creada correctamente",
+    "createError": "Ocurrió un error al crear la actividad",
+    "deleteSuccess": "Actividad eliminada correctamente",
+    "deleteError": "Ocurrió un error al eliminar la actividad",
+    "updateSuccess": "Actividad actualizada correctamente",
+    "updateError": "Ocurrió un error al actualizar la actividad"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactivo"
+  },
+  "activityType": {
+    "form": {
+      "editTitle": "Editar tipo de actividad",
+      "addTitle": "Agregar nuevo tipo de actividad",
+      "editDescription": "Aktivite tipi bilgilerini güncelleyin",
+      "addDescription": "Yeni aktivite tipi kaydı oluşturun",
+      "name": "Nombre del tipo de actividad",
+      "namePlaceholder": "Örn: Toplantı, Ziyaret...",
+      "description": "Description",
+      "descriptionPlaceholder": "Ingrese una descripción (opcional)"
+    },
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "management": {
+      "title": "Gestión de tipos de actividad",
+      "description": "Gestione y edite los tipos de actividad"
+    },
+    "create": "Yeni Aktivite Tipi",
+    "loading": "Cargando...",
+    "stats": {
+      "totalActivityTypes": "Total de tipos de actividad",
+      "activeActivityTypes": "Tipos de actividad activos",
+      "newThisMonth": "Nuevos este mes"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Tipo de actividad",
+      "description": "Description",
+      "createdDate": "Creado",
+      "createdBy": "Creado Por",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "noData": "Sin datos",
+    "actions": "Acciones",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "delete": {
+      "confirmTitle": "Eliminar tipo de actividad",
+      "confirmMessage": "{{name}} aktivite tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "action": "Confirmar eliminación"
+    },
+    "messages": {
+      "createSuccess": "Tipo de actividad creado correctamente",
+      "createError": "No se pudo crear el tipo de actividad",
+      "deleteSuccess": "Tipo de actividad eliminado correctamente",
+      "deleteError": "No se pudo eliminar el tipo de actividad",
+      "updateSuccess": "Tipo de actividad actualizado correctamente",
+      "updateError": "No se pudo actualizar el tipo de actividad"
+    }
+  },
+  "approval": {
+    "approve": {
+      "success": "Aprobado",
+      "successMessage": "Cotización aprobada exitosamente",
+      "errorMessage": "Ocurrió un error al aprobar la cotización",
+      "error": "Error de Aprobación"
+    },
+    "reject": {
+      "success": "Rechazado",
+      "successMessage": "Cotización rechazada",
+      "errorMessage": "Ocurrió un error al rechazar la cotización",
+      "error": "Error de Rechazo"
+    },
+    "note": {
+      "label": "Nota",
+      "placeholder": "Puede agregar una nota de aprobación/rechazo (opcional)"
+    },
+    "processing": "Procesando...",
+    "actions": {
+      "reject": "Rechazar",
+      "approve": "Aprobar",
+      "view": "Ver"
+    },
+    "detail": {
+      "title": "Detalle de Cotización",
+      "subtitle": "Ver detalles de la cotización y realizar acciones",
+      "tabs": {
+        "detail": "Detalle",
+        "history": "Historial",
+        "action": "Acción"
+      },
+      "notFound": "Cotización no encontrada",
+      "quotationInfo": "Información de la Cotización",
+      "offerNo": "Nº Oferta",
+      "customer": "Cliente",
+      "representative": "Representante",
+      "currency": "Moneda",
+      "offerDate": "Fecha Oferta",
+      "deliveryDate": "Fecha Entrega",
+      "total": "Total",
+      "grandTotal": "Gran Total",
+      "description": "Description",
+      "lines": "Líneas de Cotización",
+      "productCode": "Código Producto",
+      "productName": "Nombre Producto",
+      "quantity": "Cantidad",
+      "unitPrice": "Precio Unitario",
+      "lineTotal": "Total Línea",
+      "lineGrandTotal": "Gran Total Línea",
+      "exchangeRates": "Tipos de Cambio",
+      "exchangeRate": "Tasa",
+      "exchangeRateDate": "Fecha Tasa",
+      "isOfficial": "Tasa Oficial"
+    },
+    "level": {
+      "salesManager": "Gerente de Ventas",
+      "regionalManager": "Gerente Regional",
+      "finance": "Finanzas",
+      "generalManager": "Gerente General",
+      "unknown": "Desconocido"
+    },
+    "history": {
+      "empty": "Sin historial de aprobaciones",
+      "approvedBy": "Aprobado Por"
+    },
+    "assignedTo": "Usuario asignado",
+    "list": {
+      "title": "Aprobaciones Pendientes",
+      "error": "Ocurrió un error al cargar las aprobaciones",
+      "empty": "No hay aprobaciones pendientes",
+      "description": "Ver y aprobar o rechazar cotizaciones asignadas a usted"
+    },
+    "status": {
+      "notRequired": "No Requerido",
+      "waiting": "Esperando",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "closed": "Cerrado"
+    },
+    "yes": "Sí",
+    "no": "No",
+    "closedReason": "Kapanış Nedeni",
+    "statusFilterLabel": "Estado de aprobación"
+  },
+  "approvalFlowStep": {
+    "messages": {
+      "deleteConfirm": "¿Está seguro de que desea eliminar este paso?",
+      "createSuccess": "Akış adımı başarıyla eklendi",
+      "createError": "Akış adımı eklenemedi",
+      "deleteSuccess": "Akış adımı başarıyla silindi",
+      "deleteError": "Akış adımı silinemedi",
+      "updateSuccess": "Akış adımı başarıyla güncellendi",
+      "updateError": "Akış adımı güncellenemedi"
+    },
+    "title": "Pasos del Flujo",
+    "addButton": "Añadir Paso",
+    "empty": "No hay pasos añadidos",
+    "unknownRoleGroup": "Sin Grupo de Roles",
+    "stepDescription": "Onay Sırası: {order}",
+    "form": {
+      "editTitle": "Editar Paso",
+      "addTitle": "Añadir Nuevo Paso",
+      "editDescription": "Editar información del paso",
+      "addDescription": "Añadir nuevo paso al flujo",
+      "approvalRoleGroup": "Grupo de Roles",
+      "selectRoleGroup": "Seleccionar grupo de roles",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "save": "Guardar"
+    }
+  },
+  "contactManagement": {
+    "form": {
+      "editContact": "Editar Contacto",
+      "addContact": "Añadir Nuevo Contacto",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Örn: Ali",
+      "salutation": "Hitap",
+      "selectSalutation": "Hitap seçiniz...",
+      "salutationNone": "None",
+      "salutationMr": "Bay",
+      "salutationMs": "Bayan",
+      "salutationMrs": "Sayın",
+      "salutationDr": "Dr.",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "Örn: Yılmaz",
+      "middleName": "İkinci Ad",
+      "middleNamePlaceholder": "Örn: Kemal",
+      "title": "Título",
+      "selectTitle": "Ünvan seçiniz (opsiyonel)...",
+      "titleNone": "Ünvan yok",
+      "customer": "Cliente",
+      "selectCustomer": "Müşteri seçiniz...",
+      "mobile": "Móvil",
+      "phone": "Teléfono",
+      "email": "Correo",
+      "notes": "Notas",
+      "notesPlaceholder": "Varsa notlarınızı buraya ekleyin..."
+    },
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "menu": "İletişim Yönetimi",
+    "description": "İletişimleri yönetin ve düzenleyin",
+    "addButton": "Añadir Nuevo Contacto",
+    "columns": "Sütun Düzenle",
+    "visibleColumns": "Colonne Visibili",
+    "loading": "Cargando...",
+    "stats": {
+      "totalContacts": "Total Contactos",
+      "activeContacts": "Contactos Activos",
+      "newThisMonth": "Nuevos este mes"
+    },
+    "table": {
+      "id": "ID",
+      "salutation": "Hitap",
+      "fullName": "Nombre completo",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "mobile": "Móvil",
+      "customer": "Cliente",
+      "title": "Título",
+      "createdDate": "Creado",
+      "createdBy": "Creado Por",
+      "status": "Estado",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "noData": "Sin datos",
+    "actions": "Acciones",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "delete": {
+      "confirmTitle": "Eliminar Contacto",
+      "confirmMessage": "{{name}} iletişimini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "action": "Confirmar eliminación"
+    },
+    "messages": {
+      "createSuccess": "Contacto creado con éxito",
+      "createError": "No se pudo crear el contacto",
+      "deleteSuccess": "Contacto eliminado con éxito",
+      "deleteError": "No se pudo eliminar el contacto",
+      "updateSuccess": "Contacto actualizado con éxito",
+      "updateError": "No se pudo actualizar el contacto"
+    }
+  },
+  "customerManagement": {
+    "form": {
+      "editCustomer": "Editar Cliente",
+      "addCustomer": "Añadir Nuevo Cliente",
+      "editDescription": "Müşteri bilgilerini güncelleyin",
+      "addDescription": "Yeni müşteri kaydı oluşturun",
+      "name": "Nombre del Cliente",
+      "code": "Código de Cliente",
+      "customerType": "Tipo de Cliente",
+      "customerTypePlaceholder": "Seleccionar tipo de cliente",
+      "taxNumber": "Partita IVA",
+      "taxOffice": "Oficina de Impuestos",
+      "tcknNumber": "TCKN",
+      "email": "Correo",
+      "website": "Sitio Web",
+      "phone": "Teléfono",
+      "phone2": "Telefon 2",
+      "country": "País",
+      "countryPlaceholder": "Seleccionar país",
+      "city": "Ciudad",
+      "cityPlaceholder": "Seleccione ciudad",
+      "district": "Distrito",
+      "districtPlaceholder": "Seleccionar distrito",
+      "creditLimit": "Kredi Limiti",
+      "salesRepCode": "Satış Temsilci Kodu",
+      "groupCode": "Grup Kodu",
+      "branchCode": {
+        "label": "Código Sucursal"
+      },
+      "businessUnitCode": {
+        "label": "İşletme Kodu"
+      },
+      "defaultShippingAddress": "Varsayılan Sevk Adresi",
+      "selectDefaultShippingAddress": "Sevk adresi seçin",
+      "none": "None",
+      "address": "Dirección",
+      "notes": "Notas",
+      "notesPlaceholder": "Not ekleyin...",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "save": "Guardar"
+    },
+    "menu": "Gestión de Clientes",
+    "description": "Müşterilerinizi yönetin ve düzenleyin",
+    "addButton": "Añadir Nuevo Cliente",
+    "filter": {
+      "name": "Müşteri Adı ile ara...",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "customerCode": "Código de Cliente",
+      "taxNumber": "Partita IVA",
+      "city": "Ciudad"
+    },
+    "loading": "Cargando...",
+    "stats": {
+      "totalCustomers": "Total de Clientes",
+      "approvedCustomers": "Clientes Aprobados",
+      "newThisMonth": "Nuevos este mes"
+    },
+    "table": {
+      "id": "ID",
+      "customerCode": "Code",
+      "name": "Nombre del Cliente",
+      "customerType": "Tipo de Cliente",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "city": "Ciudad",
+      "district": "Distrito",
+      "country": "País",
+      "creditLimit": "Kredi Limiti",
+      "defaultShippingAddressId": "Varsayılan Sevk Adresi",
+      "salesRep": "Representante",
+      "tckn": "TCKN",
+      "tax": "Partita IVA",
+      "website": "Web",
+      "createdDate": "Creado",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "noData": "Sin datos",
+    "actions": "Acciones",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "delete": {
+      "confirmTitle": "Eliminar Cliente",
+      "confirmMessage": "{{name}} müşterisini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "action": "Confirmar eliminación"
+    },
+    "cancel": "Cancelar",
+    "messages": {
+      "createSuccess": "Cliente creado con éxito",
+      "createError": "No se pudo crear el cliente",
+      "deleteSuccess": "Cliente eliminado con éxito",
+      "deleteError": "No se pudo eliminar el cliente",
+      "updateSuccess": "Cliente actualizado con éxito",
+      "updateError": "No se pudo actualizar el cliente"
+    }
+  },
+  "customerTypeManagement": {
+    "form": {
+      "editCustomerType": "Editar Tipo de Cliente",
+      "addCustomerType": "Añadir Nuevo Tipo de Cliente",
+      "name": "Nombre del Tipo de Cliente",
+      "namePlaceholder": "Örn: Kurumsal, Bireysel...",
+      "description": "Description",
+      "descriptionPlaceholder": "Varsa açıklama giriniz...",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "save": "Guardar"
+    },
+    "menu": "Gestión de Tipos de Clientes",
+    "description": "Gestionar y editar tipos de cliente",
+    "addButton": "Yeni Tip Ekle",
+    "table": {
+      "name": "Nombre del Tipo de Cliente",
+      "description": "Description",
+      "id": "ID",
+      "createdDate": "Creado",
+      "createdBy": "Creado Por",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "loading": "Cargando...",
+    "stats": {
+      "totalCustomerTypes": "Total de Tipos de Cliente",
+      "activeCustomerTypes": "Aktif Tipler",
+      "newThisMonth": "Nuevos este mes"
+    },
+    "noData": "Sin datos",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "delete": {
+      "confirmTitle": "Eliminar Tipo de Cliente",
+      "confirmMessage": "{{name}} müşteri tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "deleting": "Eliminando...",
+      "confirmButton": "Confirmar eliminación"
+    },
+    "messages": {
+      "createSuccess": "Tipo de cliente creado con éxito",
+      "createError": "No se pudo crear el tipo de cliente",
+      "deleteSuccess": "Tipo de cliente eliminado con éxito",
+      "deleteError": "No se pudo eliminar el tipo de cliente",
+      "updateSuccess": "Tipo de cliente actualizado con éxito",
+      "updateError": "No se pudo actualizar el tipo de cliente"
+    }
+  },
+  "dailyTasks": {
+    "morning": "Günaydın",
+    "afternoon": "İyi Günler",
+    "evening": "İyi Akşamlar",
+    "unassigned": "Sin Asignar",
+    "loading": "Cargando...",
+    "dashboard": "Günlük Kontrol Paneli",
+    "summary": "Bugün için planlanmış işlerinizi buradan takip edebilirsiniz.",
+    "totalTasks": "Toplam Görev",
+    "newTask": "Yeni Görev Oluştur",
+    "weeklyTasks": "Kartlar",
+    "dailyList": "Liste",
+    "calendar": "Calendario",
+    "all": "Todas",
+    "pending": "Bekleyen",
+    "completed": "Biten",
+    "allEmployees": "Personel",
+    "noTasks": "Görüntülenecek görev yok",
+    "relax": "Filtreleri değiştirmeyi veya yeni görev eklemeyi deneyin.",
+    "weekly": "Haftalık",
+    "monthly": "Aylık",
+    "thisWeek": "Bu Hafta",
+    "today": "Hoy",
+    "days": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mié",
+      "thu": "Jue",
+      "fri": "Vie",
+      "sat": "Sáb",
+      "sun": "Dom"
+    },
+    "more": "daha"
+  },
+  "demand": {
+    "approvalFlow": {
+      "stepCompleted": "Completada",
+      "stepInProgress": "Devam ediyor",
+      "stepRejected": "Rechazado",
+      "stepNotStarted": "No iniciado",
+      "loading": "Onay akışı yükleniyor...",
+      "noData": "Veri bulunamadı.",
+      "notStarted": "Henüz onay süreci başlatılmamış."
+    },
+    "create": {
+      "title": "Crear Nueva Cotización",
+      "error": "Demand Could Not Be Created",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Demand Created Successfully",
+      "successMessage": "Demand has been sent to the approval process.",
+      "errorMessage": "An error occurred while creating the demand.",
+      "paymentTypeRequired": "Ödeme tipi seçilmelidir",
+      "deliveryDateRequired": "Teslimat tarihi girilmelidir",
+      "validationError": "Lütfen form alanlarını kontrol ediniz.",
+      "subtitle": "Müşteri için yeni bir satış talebi oluşturun."
+    },
+    "lines": {
+      "required": "At least 1 line must be added",
+      "editLine": "Edit Line",
+      "approvalRequired": "Onay Gerekli",
+      "selectStockFirst": "Stock not selected",
+      "stock": "Stock",
+      "selectStock": "Select Stock",
+      "productCode": "Código Stock",
+      "groupCode": "Grup Kodu",
+      "productName": "Nombre Stock",
+      "unitPrice": "Precio Unitario",
+      "quantity": "Cantidad",
+      "vatRate": "VAT Rate %",
+      "discounts": "Discounts",
+      "discount1": "Discount 1 %",
+      "discount2": "Discount 2 %",
+      "discount3": "Discount 3 %",
+      "calculations": "Calculations",
+      "discountAmount": "Toplam İndirim",
+      "netPrice": "Net Price",
+      "lineTotal": "Line Total (VAT Included)",
+      "relatedStocks": "Relaciones",
+      "requiredFieldsMissing": "Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.",
+      "title": "Teklif Kalemleri",
+      "itemCount": "{count} kalem ürün listeleniyor",
+      "noItems": "Henüz ürün eklenmedi",
+      "add": "Add Line",
+      "empty": "Sepetiniz Boş",
+      "emptyDescription": "Teklif oluşturmak için ",
+      "addLine": "Add New Line",
+      "delete": {
+        "confirmTitleMultiple": "Bağlı Stokları Sil",
+        "confirmTitle": "Delete Line",
+        "confirmMessageMultiple": "Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.",
+        "confirmMessage": "Are you sure you want to delete this line?"
+      },
+      "createSuccess": "Satırlar eklendi",
+      "createError": "Satırlar eklenirken bir hata oluştu",
+      "deleteSuccess": "Line deleted",
+      "deleteError": "An error occurred while deleting line",
+      "updateSuccess": "Satırlar güncellendi",
+      "updateError": "Satırlar güncellenirken bir hata oluştu"
+    },
+    "sections": {
+      "header": "Müşteri ve belge bilgileri",
+      "lines": "Talep kalemleri",
+      "summary": "Özet & Toplamlar"
+    },
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Teklifi Kaydet",
+    "detail": {
+      "title": "Teklif Detayı: {{offerNo}}",
+      "notFound": "Cotización no encontrada",
+      "subtitle": "Talep detaylarını görüntüleyin ve düzenleyin.",
+      "revisionNo": "Revizyon No",
+      "tabDetail": "Talep Bilgileri",
+      "tabApprovalFlow": "Onay Akışı",
+      "tabReport": "Informe"
+    },
+    "update": {
+      "error": "Teklif Güncellenemedi",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Teklif Başarıyla Güncellendi",
+      "successMessage": "Teklif başarıyla güncellendi.",
+      "errorMessage": "Teklif güncellenirken bir hata oluştu.",
+      "validationError": "Lütfen zorunlu alanları kontrol ediniz."
+    },
+    "loading": "Cargando...",
+    "backToDemands": "Back to Demands",
+    "approval": {
+      "sending": "Gönderiliyor...",
+      "sendForApproval": "Onaya Gönder",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "rejectTitle": "Teklifi Reddet",
+      "rejectDescription": "Red sebebini belirtiniz (opsiyonel)",
+      "rejectReasonPlaceholder": "Red sebebi...",
+      "approveSuccess": "Onay işlemi başarıyla gerçekleştirildi",
+      "approveError": "Onay işlemi gerçekleştirilemedi",
+      "rejectSuccess": "Red işlemi başarıyla gerçekleştirildi",
+      "rejectError": "Red işlemi gerçekleştirilemedi",
+      "startSuccess": "Onay akışı başarıyla başlatıldı",
+      "startError": "Onay akışı başlatılamadı"
+    },
+    "exchangeRates": {
+      "title": "Tipos de Cambio",
+      "currency": "Moneda",
+      "rate": "Kur Değeri",
+      "date": "Fecha Tasa",
+      "isOfficial": "Official",
+      "official": "Official",
+      "custom": "Personalizado",
+      "empty": "Henüz eklenmiş özel kur bulunmuyor.",
+      "dialog": {
+        "title": "Tipos de Cambio",
+        "subtitle": "Güncel kur değerlerini yönetin",
+        "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin.",
+        "info": "Burada yapılan değişiklikler sadece bu teklif için geçerlidir ve genel sistem kurlarını etkilemez. Değiştirilen kurlar "
+      },
+      "status": "Estado",
+      "cannotEditUsedCurrency": "Kullanımda olan kur değiştirilemez",
+      "updateSuccess": "Döviz kurları güncellendi",
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+    },
+    "select": "Seçiniz",
+    "add": "Añadir",
+    "actions": "Acción",
+    "header": {
+      "title": "Teklif Detayları",
+      "subtitle": "Müşteri ve finansal bilgileri buradan yönetebilirsiniz.",
+      "customer": "Müşteri Hesabı",
+      "selectCustomer": "Müşteri seçiniz...",
+      "representative": "Sales Representative",
+      "shippingAddress": "Shipping Address",
+      "selectShippingAddress": "Sevk adresi seçin",
+      "descriptionPlaceholder": "Özel koşullar...",
+      "currencyChange": {
+        "title": "Kur Değişikliği",
+        "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
+      }
+    },
+    "confirm": "Aprobar",
+    "error": "Error",
+    "delete": "Eliminar",
+    "list": {
+      "title": "Demand List",
+      "description": "View and manage all demands",
+      "createNew": "Crear Nueva Cotización",
+      "searchPlaceholder": "Search by demand no or customer name...",
+      "id": "ID",
+      "offerNo": "Nº Oferta",
+      "customer": "Cliente",
+      "representative": "Representante",
+      "offerDate": "Fecha Oferta",
+      "currency": "Moneda",
+      "grandTotal": "Gran Total",
+      "status": "Estado",
+      "actions": "Acciones",
+      "revise": "Revise",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "refresh": "Actualizar",
+    "summary": {
+      "title": "Overview",
+      "generalDiscountRate": "Genel İskonto Oranı (%)",
+      "generalDiscountAmount": "Genel İskonto Tutarı",
+      "generalDiscountHelp": "Oran veya tutar girildiğinde toplamlar otomatik güncellenir.",
+      "subtotal": "Subtotal",
+      "generalDiscount": "Genel İskonto",
+      "totalVat": "Total VAT",
+      "grandTotal": "Gran Total"
+    },
+    "noData": "Sin datos",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "edit": "Editar",
+    "saveAndApply": "Save and Apply",
+    "waitingApprovals": {
+      "title": "Onay Bekleyen Teklifler",
+      "list": "Onay Bekleyen Teklifler Listesi",
+      "noApprovals": "Onay bekleyen teklif bulunmamaktadır",
+      "requestId": "İstek ID",
+      "description": "Description",
+      "stepOrder": "Adım",
+      "approvedBy": "Aprobado Por",
+      "actionDate": "Tarih",
+      "status": "Estado",
+      "waiting": "Esperando"
+    },
+    "back": "Volver",
+    "revision": {
+      "success": "Teklif revizyonu başarıyla oluşturuldu",
+      "error": "Teklif revizyonu oluşturulurken bir hata oluştu"
+    }
+  },
+  "documentSerialTypeManagement": {
+    "form": {
+      "editTitle": "Editar tipo de documento",
+      "addTitle": "Agregar nuevo tipo de documento",
+      "editDescription": "Edite la información del tipo de documento",
+      "addDescription": "Ingrese la información del nuevo tipo de documento",
+      "ruleType": "Tipo de regla",
+      "selectRuleType": "Seleccione tipo de regla",
+      "customerType": "Tipo de Cliente",
+      "selectCustomerType": "Seleccione tipo de cliente (opcional)",
+      "searchCustomerType": "Müşteri tipi ara...",
+      "noCustomerTypeFound": "Müşteri tipi bulunamadı.",
+      "salesRep": "Sales Representative",
+      "selectSalesRep": "Seleccione representante de ventas (opcional)",
+      "searchSalesRep": "Satış temsilcisi ara...",
+      "noSalesRepFound": "Satış temsilcisi bulunamadı.",
+      "serialPrefix": "Prefijo de serie",
+      "serialPrefixPlaceholder": "Ingrese el prefijo de serie",
+      "serialLength": "Longitud de serie",
+      "serialLengthPlaceholder": "Ingrese la longitud de serie",
+      "serialIncrement": "Incremento de serie",
+      "serialIncrementPlaceholder": "Ingrese el valor de incremento de serie",
+      "serialStart": "Inicio de serie",
+      "serialStartPlaceholder": "Ingrese el valor inicial de serie"
+    },
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "menu": "Gestión de Tipos de Serie de Documentos",
+    "description": "Gestione y edite los tipos de documento",
+    "search": "Buscar...",
+    "refresh": "Actualizar",
+    "addButton": "Agregar nuevo tipo de documento",
+    "loading": "Cargando...",
+    "noData": "Sin datos",
+    "table": {
+      "id": "ID",
+      "ruleType": "Tipo de regla",
+      "customerType": "Tipo de Cliente",
+      "salesRep": "Sales Representative",
+      "serialPrefix": "Prefijo de serie",
+      "serialLength": "Longitud de serie",
+      "createdDate": "Fecha de creación"
+    },
+    "actions": "Acciones",
+    "totalRecords": "Toplam Kayıt",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "deleteConfirmTitle": "Confirmación de eliminación",
+    "deleteConfirmDescription": "¿Seguro que desea eliminar este registro? Esta acción no se puede deshacer.",
+    "deleting": "Eliminando...",
+    "delete": "Eliminar"
+  },
+  "pricingRule": {
+    "ruleType": {
+      "demand": "Solicitud",
+      "quotation": "Oferta",
+      "order": "Pedido",
+      "unknown": "Desconocido"
+    },
+    "form": {
+      "lines": {
+        "required": "At least 1 line must be added",
+        "requiredMessage": "Please add at least one line",
+        "minQuantityInvalid": "Invalid Min Quantity",
+        "minQuantityInvalidMessage": "Minimum miktar 0\\",
+        "currencyCodeRequired": "Currency Type Required",
+        "currencyCodeRequiredMessage": "Currency type must be selected for all lines"
+      },
+      "updateSuccess": "Pricing Rule Updated",
+      "updateSuccessMessage": "Pricing rule updated successfully",
+      "createSuccess": "Pricing Rule Created",
+      "createSuccessMessage": "Pricing rule created successfully",
+      "error": "An error occurred",
+      "edit": "Edit Pricing Rule",
+      "create": "New Pricing Rule",
+      "editDescription": "Edit pricing rule information",
+      "createDescription": "Enter new pricing rule information",
+      "tabs": {
+        "header": "General Information",
+        "lines": "Lines",
+        "salesmen": "Salesmen"
+      },
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "confirm": "Aprobar"
+    },
+    "loadingDescription": "Veriler yükleniyor...",
+    "header": {
+      "ruleType": "Tipo de regla",
+      "ruleTypePlaceholder": "Seleccione tipo de regla",
+      "searchRuleType": "Kural tipi ara...",
+      "ruleCode": "Rule Code",
+      "ruleCodePlaceholder": "Ingrese código de regla",
+      "ruleName": "Rule Name",
+      "ruleNamePlaceholder": "Ingrese nombre de regla",
+      "validFrom": "Valid From",
+      "validTo": "Valid To",
+      "customer": "Cliente",
+      "customerPlaceholder": "Ingrese cliente",
+      "selectCustomer": "Seleccionar cliente",
+      "clearCustomer": "Müşteri Temizle"
+    },
+    "lines": {
+      "stokCode": "Código Stock",
+      "stokCodePlaceholder": "Ingrese código de stock",
+      "selectProduct": "Select Product",
+      "minQuantity": "Cantidad mín.",
+      "maxQuantity": "Cantidad máx.",
+      "currencyCode": "Döviz Tipi",
+      "selectCurrency": "Seleccione moneda",
+      "searchCurrency": "Döviz ara...",
+      "fixedUnitPrice": "Precio de lista",
+      "discount1Rate": "İndirim 1 (%)",
+      "discount1Amount": "Tutar 1",
+      "discount2Rate": "İndirim 2 (%)",
+      "discount3Rate": "İndirim 3 (%)",
+      "addSuccess": "Satır Eklendi",
+      "addSuccessMessage": "Línea añadida con éxito",
+      "addError": "An error occurred while adding line",
+      "deleteSuccess": "Satır Kaldırıldı",
+      "deleteSuccessMessage": "Satır başarıyla silindi",
+      "deleteError": "Satır kaldırılırken bir hata oluştu",
+      "title": "Líneas",
+      "selectStock": "Stok Ekle",
+      "discount1": "İnd. 1 %",
+      "discount2": "İnd. 2 %",
+      "discount3": "İnd. 3 %",
+      "empty": "No lines added yet",
+      "addFirst": "İlk Satırı Ekle",
+      "stokCodeRequired": "El código de stock es obligatorio",
+      "addConfirmTitle": "Add Line",
+      "addConfirmMessage": "{{code}} stok kodu fiyat kuralına eklenecektir. Onaylıyor musunuz?",
+      "deleteConfirmTitle": "Satır Kaldır",
+      "deleteConfirmMessage": "{{code}} stok kodlu satır fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?"
+    },
+    "loading": "Cargando...",
+    "table": {
+      "actions": "Acciones",
+      "ruleCode": "Rule Code",
+      "ruleName": "Rule Name",
+      "ruleType": "Tipo de regla",
+      "validFrom": "Başlangıç",
+      "validTo": "Bitiş",
+      "customer": "Cliente",
+      "status": "Estado",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "list": {
+      "title": "Reglas de precio",
+      "description": "Gestione las reglas de precio y sus líneas",
+      "add": "Agregar regla"
+    },
+    "salesmen": {
+      "addSuccess": "Vendedor agregado",
+      "addSuccessMessage": "Satış temsilcisi başarıyla eklendi",
+      "addError": "No se pudo agregar el vendedor",
+      "deleteSuccess": "Vendedor eliminado",
+      "deleteSuccessMessage": "Satış temsilcisi başarıyla silindi",
+      "deleteError": "No se pudo eliminar el vendedor",
+      "title": "Salesmen",
+      "add": "Satışçı Ekle",
+      "search": "Satışçı ara...",
+      "empty": "Henüz satışçı eklenmedi",
+      "emptyDescription": "Bu kural tüm satışçılar için geçerli olacaktır",
+      "salesman": "Satışçı Adı",
+      "addConfirmTitle": "Satışçı Ekle",
+      "addConfirmMessage": "{{name}} satışçısı fiyat kuralına eklenecektir. Onaylıyor musunuz?",
+      "deleteConfirmTitle": "Satışçı Kaldır",
+      "deleteConfirmMessage": "{{name}} satışçısı fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?"
+    },
+    "delete": {
+      "success": "Kural başarıyla silindi",
+      "error": "Kural silinirken bir hata oluştu",
+      "confirmTitle": "Kuralı Sil",
+      "confirmMessage": "{{name}} kuralını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "action": "Confirmar eliminación"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactivo"
+    },
+    "noData": "Sin datos",
+    "actions": "Acciones",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "cancel": "Cancelar"
+  },
+  "documentSerialType": {
+    "form": {
+      "serialCurrent": "Seri Mevcut",
+      "serialCurrentPlaceholder": "Ingrese el valor actual de serie"
+    }
+  },
+  "mailSettings": {
+    "PageTitle": "Mail Settings",
+    "PageDescription": "Configura los ajustes del servidor SMTP",
+    "Fields": {
+      "Host": "Sunucu",
+      "Port": "Puerto",
+      "EnableSsl": "Usar SSL",
+      "Username": "Nombre de usuario",
+      "Password": "Contraseña",
+      "PasswordPlaceholder": "Introduce una nueva contraseña para cambiar",
+      "FromEmail": "Correo del remitente",
+      "FromName": "Nombre del remitente",
+      "Timeout": "Tiempo de espera (s)"
+    },
+    "TestMail": {
+      "Sending": "Test gönderiliyor...",
+      "Send": "Test Maili Gönder",
+      "Success": "Test maili gönderildi"
+    },
+    "Save": "Guardar",
+    "SavedSuccessfully": "Ayarlar başarıyla kaydedildi"
+  },
+  "order": {
+    "exchangeRates": {
+      "dialog": {
+        "title": "Tipos de Cambio",
+        "subtitle": "Güncel kur değerlerini yönetin",
+        "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin.",
+        "info": "Burada yapılan değişiklikler sadece bu sipariş için geçerlidir ve genel sistem kurlarını etkilemez. Değiştirilen kurlar "
+      },
+      "currency": "Moneda",
+      "rate": "Kur Değeri",
+      "status": "Estado",
+      "empty": "No exchange rates found",
+      "official": "Official",
+      "custom": "Personalizado",
+      "cannotEditUsedCurrency": "Kullanımda olan kur değiştirilemez",
+      "title": "Tipos de Cambio",
+      "date": "Fecha Tasa",
+      "isOfficial": "Official",
+      "updateSuccess": "Döviz kurları güncellendi",
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+    },
+    "loading": "Kurlar yükleniyor...",
+    "actions": "Acciones",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "saveAndApply": "Save and Apply",
+    "approvalFlow": {
+      "stepCompleted": "Completada",
+      "stepInProgress": "Devam ediyor",
+      "stepRejected": "Rechazado",
+      "stepNotStarted": "No iniciado",
+      "loading": "Onay akışı yükleniyor...",
+      "noData": "Veri bulunamadı.",
+      "notStarted": "Henüz onay süreci başlatılmamış."
+    },
+    "create": {
+      "title": "Crear Nueva Cotización",
+      "error": "No se Pudo Crear la Cotización",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Cotización Creada Exitosamente",
+      "successMessage": "La cotización ha sido enviada al proceso de aprobación.",
+      "errorMessage": "Ocurrió un error al crear la cotización.",
+      "paymentTypeRequired": "Ödeme tipi seçilmelidir",
+      "deliveryDateRequired": "Teslimat tarihi girilmelidir",
+      "validationError": "Lütfen form alanlarını kontrol ediniz.",
+      "subtitle": "Müşteri için yeni bir satış siparişi oluşturun."
+    },
+    "lines": {
+      "required": "At least 1 line must be added",
+      "editLine": "Edit Line",
+      "approvalRequired": "Onay Gerekli",
+      "selectStockFirst": "Stock not selected",
+      "stock": "Stock",
+      "selectStock": "Select Stock",
+      "productCode": "Código Stock",
+      "groupCode": "Grup Kodu",
+      "productName": "Nombre Stock",
+      "unitPrice": "Precio Unitario",
+      "quantity": "Cantidad",
+      "vatRate": "VAT Rate %",
+      "discounts": "Discounts",
+      "discount1": "Discount 1 %",
+      "discount2": "Discount 2 %",
+      "discount3": "Discount 3 %",
+      "calculations": "Calculations",
+      "discountAmount": "Toplam İndirim",
+      "netPrice": "Net Price",
+      "lineTotal": "Line Total (VAT Included)",
+      "relatedStocks": "Relaciones",
+      "requiredFieldsMissing": "Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.",
+      "title": "Sipariş Kalemleri",
+      "itemCount": "{count} kalem ürün listeleniyor",
+      "noItems": "Henüz ürün eklenmedi",
+      "add": "Add Line",
+      "empty": "Sepetiniz Boş",
+      "emptyDescription": "Sipariş oluşturmak için ",
+      "addLine": "Add New Line",
+      "delete": {
+        "confirmTitleMultiple": "Bağlı Stokları Sil",
+        "confirmTitle": "Delete Line",
+        "confirmMessageMultiple": "Bu satır silindiğinde bağlı olan diğer {count} stok da silinecektir.",
+        "confirmMessage": "Are you sure you want to delete this line?"
+      },
+      "createSuccess": "Satırlar eklendi",
+      "createError": "Satırlar eklenirken bir hata oluştu",
+      "deleteSuccess": "Line deleted",
+      "deleteError": "An error occurred while deleting line",
+      "updateSuccess": "Satırlar güncellendi",
+      "updateError": "Satırlar güncellenirken bir hata oluştu"
+    },
+    "sections": {
+      "header": "Müşteri ve belge bilgileri",
+      "lines": "Sipariş kalemleri",
+      "summary": "Özet & Toplamlar"
+    },
+    "save": "Siparişi Kaydet",
+    "detail": {
+      "title": "Sipariş Detayı: {{offerNo}}",
+      "notFound": "Sipariş bulunamadı",
+      "subtitle": "Sipariş detaylarını görüntüleyin ve düzenleyin.",
+      "revisionNo": "Revizyon No",
+      "tabDetail": "Información de Cotización",
+      "tabApprovalFlow": "Onay Akışı",
+      "tabReport": "Informe"
+    },
+    "update": {
+      "error": "Sipariş Güncellenemedi",
+      "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
+      "success": "Sipariş Başarıyla Güncellendi",
+      "successMessage": "Sipariş başarıyla güncellendi.",
+      "errorMessage": "Sipariş güncellenirken bir hata oluştu.",
+      "validationError": "Lütfen zorunlu alanları kontrol ediniz."
+    },
+    "backToOrders": "Volver a Cotizaciones",
+    "approval": {
+      "sending": "Gönderiliyor...",
+      "sendForApproval": "Onaya Gönder",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "rejectTitle": "Siparişi Reddet",
+      "rejectDescription": "Red sebebini belirtiniz (opsiyonel)",
+      "rejectReasonPlaceholder": "Red sebebi...",
+      "approveSuccess": "Onay işlemi başarıyla gerçekleştirildi",
+      "approveError": "Onay işlemi gerçekleştirilemedi",
+      "rejectSuccess": "Red işlemi başarıyla gerçekleştirildi",
+      "rejectError": "Red işlemi gerçekleştirilemedi",
+      "startSuccess": "Onay akışı başarıyla başlatıldı",
+      "startError": "Onay akışı başlatılamadı"
+    },
+    "select": "Seçiniz",
+    "add": "Añadir",
+    "header": {
+      "title": "Detalles del Pedido",
+      "subtitle": "Müşteri ve finansal bilgileri buradan yönetebilirsiniz.",
+      "customer": "Müşteri Hesabı",
+      "selectCustomer": "Müşteri seçiniz...",
+      "representative": "Sales Representative",
+      "shippingAddress": "Shipping Address",
+      "selectShippingAddress": "Sevk adresi seçin",
+      "descriptionPlaceholder": "Özel koşullar...",
+      "currencyChange": {
+        "title": "Kur Değişikliği",
+        "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
+      }
+    },
+    "confirm": "Aprobar",
+    "error": "Error",
+    "delete": "Eliminar",
+    "list": {
+      "title": "Sipariş Listesi",
+      "description": "Tüm siparişleri görüntüleyin ve yönetin",
+      "createNew": "Crear Nueva Cotización",
+      "searchPlaceholder": "Sipariş no veya müşteri adı ile ara...",
+      "id": "ID",
+      "offerNo": "Nº Pedido",
+      "customer": "Cliente",
+      "representative": "Representante",
+      "offerDate": "Fecha de Oferta",
+      "currency": "Moneda",
+      "grandTotal": "Gran Total",
+      "status": "Estado",
+      "actions": "Acciones",
+      "revise": "Revise",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "refresh": "Actualizar",
+    "summary": {
+      "title": "Overview",
+      "generalDiscountRate": "Genel İskonto Oranı (%)",
+      "generalDiscountAmount": "Genel İskonto Tutarı",
+      "generalDiscountHelp": "Oran veya tutar girildiğinde toplamlar otomatik güncellenir.",
+      "subtotal": "Subtotal",
+      "generalDiscount": "Genel İskonto",
+      "totalVat": "Total VAT",
+      "grandTotal": "Gran Total"
+    },
+    "noData": "Sin datos",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "waitingApprovals": {
+      "title": "Onay Bekleyen Siparişler",
+      "list": "Onay Bekleyen Siparişler Listesi",
+      "noApprovals": "Onay bekleyen sipariş bulunmamaktadır",
+      "requestId": "İstek ID",
+      "description": "Description",
+      "stepOrder": "Adım",
+      "approvedBy": "Aprobado Por",
+      "actionDate": "Tarih",
+      "status": "Estado",
+      "waiting": "Esperando"
+    },
+    "back": "Volver",
+    "revision": {
+      "success": "Sipariş revizyonu başarıyla oluşturuldu",
+      "error": "Sipariş revizyonu oluşturulurken bir hata oluştu"
+    }
+  },
+  "paymentTypeManagement": {
+    "edit": "Editar tipo de pago",
+    "create": "Nuevo tipo de pago",
+    "editDescription": "Edite la información del tipo de pago",
+    "createDescription": "Ingrese la información del nuevo tipo de pago",
+    "name": "Name",
+    "namePlaceholder": "Ingrese el nombre del tipo de pago",
+    "description": "Description",
+    "descriptionPlaceholder": "Ingrese una descripción (opcional)",
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "title": "Gestión de Tipos de Pago",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "status": "Estado",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "createdDate": "Fecha de creación",
+    "updatedDate": "Fecha de actualización",
+    "delete": {
+      "success": "Tipo de pago eliminado correctamente",
+      "error": "Ocurrió un error al eliminar el tipo de pago",
+      "confirmTitle": "Eliminar tipo de pago",
+      "confirmMessage": "{{name}} ödeme tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+    },
+    "noData": "No se encontraron datos",
+    "createSuccess": "Tipo de pago creado correctamente",
+    "createError": "Ocurrió un error al crear el tipo de pago",
+    "deleteSuccess": "Tipo de pago eliminado correctamente",
+    "deleteError": "Ocurrió un error al eliminar el tipo de pago",
+    "updateSuccess": "Tipo de pago actualizado correctamente",
+    "updateError": "Ocurrió un error al actualizar el tipo de pago"
+  },
+  "powerbi": {
+    "group": {
+      "edit": "Grup Düzenle",
+      "add": "Yeni Grup",
+      "editDescription": "Grup bilgilerini güncelleyin",
+      "createDescription": "Yeni grup bilgilerini girin",
+      "name": "Name",
+      "namePlaceholder": "Group name",
+      "description": "Description",
+      "isActive": "Active",
+      "title": "Grupos Power BI",
+      "createSuccess": "Grup oluşturuldu",
+      "createError": "Oluşturulamadı",
+      "updateSuccess": "Grup güncellendi",
+      "updateError": "Güncellenemedi",
+      "deleteSuccess": "Grup silindi",
+      "deleteError": "Silinemedi"
+    },
+    "filterPlaceholder": "Filtre (query param)",
+    "groupReportDefinition": {
+      "edit": "Eşleme Düzenle",
+      "add": "Yeni Eşleme",
+      "editDescription": "Grup-rapor eşlemesini güncelleyin",
+      "createDescription": "Grup ve rapor tanımı seçin",
+      "groupId": "Grupo",
+      "selectGroup": "Grup seçin",
+      "reportDefinitionId": "Rapor Tanımı",
+      "selectReport": "Rapor seçin",
+      "title": "PowerBI Grup-Rapor Eşlemesi",
+      "groupName": "Grupo",
+      "reportDefinitionName": "Rapor Tanımı",
+      "createSuccess": "Grup-rapor eşlemesi oluşturuldu",
+      "createError": "Oluşturulamadı",
+      "updateSuccess": "Grup-rapor eşlemesi güncellendi",
+      "updateError": "Güncellenemedi",
+      "deleteSuccess": "Grup-rapor eşlemesi silindi",
+      "deleteError": "Silinemedi"
+    },
+    "reportDefinition": {
+      "edit": "Rapor Tanımı Düzenle",
+      "add": "Yeni Rapor Tanımı",
+      "editDescription": "Rapor tanımı bilgilerini güncelleyin",
+      "createDescription": "Yeni rapor tanımı bilgilerini girin",
+      "name": "Name",
+      "namePlaceholder": "Rapor adı",
+      "description": "Description",
+      "workspaceId": "ID del espacio de trabajo (GUID)",
+      "reportId": "Report ID (GUID)",
+      "datasetId": "Dataset ID (opsiyonel)",
+      "embedUrl": "Embed URL (opsiyonel)",
+      "isActive": "Active",
+      "rlsRoles": "RLS Rolleri (opsiyonel)",
+      "allowedUserIds": "İzinli Kullanıcı ID (opsiyonel)",
+      "allowedRoleIds": "İzinli Rol ID (opsiyonel)",
+      "title": "PowerBI Rapor Tanımları",
+      "createSuccess": "Rapor tanımı oluşturuldu",
+      "createError": "Oluşturulamadı",
+      "updateSuccess": "Rapor tanımı güncellendi",
+      "updateError": "Güncellenemedi",
+      "deleteSuccess": "Rapor tanımı silindi",
+      "deleteError": "Silinemedi"
+    },
+    "userGroup": {
+      "edit": "Eşleme Düzenle",
+      "add": "Yeni Eşleme",
+      "editDescription": "Kullanıcı-grup eşlemesini güncelleyin",
+      "createDescription": "Kullanıcı ve grup seçin",
+      "userId": "Usuario",
+      "selectUser": "Kullanıcı seçin",
+      "groupId": "Grupo",
+      "selectGroup": "Grup seçin",
+      "title": "PowerBI Kullanıcı-Grup Eşlemesi",
+      "userName": "Usuario",
+      "groupName": "Grupo",
+      "createSuccess": "Kullanıcı-grup eşlemesi oluşturuldu",
+      "createError": "Oluşturulamadı",
+      "updateSuccess": "Kullanıcı-grup eşlemesi güncellendi",
+      "updateError": "Güncellenemedi",
+      "deleteSuccess": "Kullanıcı-grup eşlemesi silindi",
+      "deleteError": "Silinemedi"
+    }
+  },
+  "powerbiConfiguration": {
+    "title": "Power BI Configuration",
+    "editDescription": "Mevcut konfigürasyonu düzenleyin",
+    "createDescription": "PowerBI bağlantı bilgilerini girin",
+    "tenantId": "Tenant ID",
+    "clientId": "Client ID",
+    "workspaceId": "ID del espacio de trabajo (GUID)",
+    "apiBaseUrl": "API Base URL",
+    "scope": "Scope",
+    "clientSecretInfo": "ClientSecret güvenlik nedeniyle sadece sunucu ortam değişkeninden okunur.",
+    "update": "Actualizar",
+    "create": "Guardar",
+    "delete": "Eliminar",
+    "deleteConfirmTitle": "Konfigürasyonu Sil",
+    "deleteConfirmDescription": "Bu konfigürasyonu silmek istediğinize emin misiniz?",
+    "pageTitle": "Power BI Configuration",
+    "pageDescription": "PowerBI API bağlantı ayarlarını yönetin",
+    "createSuccess": "Konfigürasyon oluşturuldu",
+    "createError": "Oluşturulamadı",
+    "updateSuccess": "Konfigürasyon güncellendi",
+    "updateError": "Güncellenemedi",
+    "deleteSuccess": "Konfigürasyon silindi",
+    "deleteError": "Silinemedi"
+  },
+  "powerbiViewer": {
+    "invalidId": "Geçersiz rapor",
+    "backToList": "Volver a la lista",
+    "loadError": "Rapor yüklenemedi",
+    "loadingReport": "Rapor yükleniyor...",
+    "listTitle": "Informes Power BI",
+    "listDescription": "Raporlara tıklayarak görüntüleyebilirsiniz",
+    "name": "Name",
+    "description": "Description",
+    "isActive": "Estado",
+    "view": "Ver"
+  },
+  "productPricingGroupByManagement": {
+    "edit": "Editar grupo de precios",
+    "create": "Nuevo grupo de precios",
+    "editDescription": "Edite la información del grupo de precios",
+    "createDescription": "Ingrese la información del nuevo grupo de precios",
+    "erpGroupCode": "Código de grupo de producto ERP",
+    "selectErpGroupCode": "Seleccione grupo",
+    "currency": "Moneda",
+    "selectCurrency": "Please select currency",
+    "listPrice": "Precio de lista",
+    "enterListPrice": "Ingrese el precio de lista",
+    "costPrice": "Precio de costo",
+    "enterCostPrice": "Ingrese el precio de costo",
+    "discount1": "Descuento 1",
+    "enterDiscount1": "İskonto 1 (Ops.)",
+    "discount2": "Descuento 2",
+    "enterDiscount2": "İskonto 2 (Ops.)",
+    "discount3": "Descuento 3",
+    "enterDiscount3": "İskonto 3 (Ops.)",
+    "priceCalculation": "Cálculo de precio",
+    "finalPriceAfterDiscounts": "Precio final después de descuentos",
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "title": "Gestión de Agrupación de Precios de Productos",
+    "description": "Ürün fiyatlandırma gruplarını yönetin",
+    "add": "Añadir Nuevo Grupo",
+    "createSuccess": "Grupo de precios creado correctamente",
+    "createError": "Ocurrió un error al crear el grupo de precios",
+    "deleteSuccess": "Grupo de precios eliminado correctamente",
+    "deleteError": "Ocurrió un error al eliminar el grupo de precios",
+    "updateSuccess": "Grupo de precios actualizado correctamente",
+    "updateError": "Ocurrió un error al actualizar el grupo de precios"
+  },
+  "productPricingManagement": {
+    "title": "Gestión de Precios de Productos",
+    "description": "Ürün fiyatlarını, maliyetlerini ve iskontolarını yönetin",
+    "create": "Nuevo Precio",
+    "searchPlaceholder": "Ürün kodu veya grup ara...",
+    "selectStok": "Select Stock",
+    "searchStockPlaceholder": "Buscar por código o nombre de stock...",
+    "noStocksAvailable": "Listede olmayan stok bulunamadı",
+    "unnamedStock": "İsimsiz Stok",
+    "loading": "Cargando...",
+    "noData": "No se encontraron datos",
+    "productInfo": "INFO DEL PRODUCTO",
+    "category": "CATEGORÍA",
+    "priceAndDiscount": "PRECIO Y DESCUENTO",
+    "actions": "İŞLEMLER",
+    "table": {
+      "showing": "{{from}}-{{to}} / {{total}} kayıt"
+    },
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "deleteTitle": "Eliminar Precio",
+    "confirmDelete": "¿Está seguro de que desea eliminar este precio?",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "createSuccess": "Precio creado con éxito",
+    "createError": "Ocurrió un error al crear el precio",
+    "deleteSuccess": "Precio eliminado con éxito",
+    "deleteError": "Ocurrió un error al eliminar el precio",
+    "updateSuccess": "Precio actualizado con éxito",
+    "updateError": "Ocurrió un error al actualizar el precio"
+  },
+  "shippingAddressManagement": {
+    "edit": "Editar Dirección de Envío",
+    "create": "Nueva Dirección de Envío",
+    "editDescription": "Editar información de la dirección de envío",
+    "createDescription": "Introducir información de la nueva dirección de envío",
+    "customerId": "Cliente",
+    "selectCustomer": "Select customer",
+    "searchCustomer": "Müşteri Ara...",
+    "name": "Adres Adı",
+    "namePlaceholder": "Örn: Merkez Depo",
+    "address": "Dirección",
+    "addressPlaceholder": "Açık adres giriniz",
+    "postalCode": "Código Postal",
+    "postalCodePlaceholder": "Örn: 34000",
+    "phone": "Teléfono",
+    "phonePlaceholder": "Örn: 0555 555 55 55",
+    "contactPerson": "Persona de Contacto",
+    "contactPersonPlaceholder": "İlgili kişi adı soyadı",
+    "isDefault": "Varsayılan sevk adresi",
+    "country": "País",
+    "selectCountry": "Seçiniz",
+    "searchCountry": "Buscar...",
+    "city": "İl",
+    "selectCity": "Seçiniz",
+    "searchCity": "Buscar...",
+    "district": "Distrito",
+    "selectDistrict": "Seçiniz",
+    "searchDistrict": "Buscar...",
+    "notes": "Notas",
+    "notesPlaceholder": "Varsa ek notlar",
+    "title": "Gestión de Direcciones de Envío",
+    "description": "Sevk adreslerini yönetin ve düzenleyin",
+    "search": "Ricerca Rapida...",
+    "customerName": "Cliente",
+    "location": "Ubicación",
+    "isDefaultShort": "Varsayılan",
+    "createdDate": "Fecha de creación",
+    "noData": "Veri Bulunamadı",
+    "defaultBadge": "Sí",
+    "deleteConfirmDescription": "Bu sevk adresini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "createSuccess": "Dirección de envío creada con éxito",
+    "createError": "Ocurrió un error al crear la dirección de envío",
+    "deleteSuccess": "Dirección de envío eliminada con éxito",
+    "deleteError": "Ocurrió un error al eliminar la dirección de envío",
+    "updateSuccess": "Dirección de envío actualizada con éxito",
+    "updateError": "Ocurrió un error al actualizar la dirección de envío"
+  },
+  "stock": {
+    "detail": {
+      "basicInfoReadonly": "Bu veriler ERP sisteminden senkronize edilmiştir ve manuel değiştirilemez.",
+      "mainInfo": "Información principal",
+      "erpStockCode": "Código de stock ERP",
+      "stockName": "Nombre Stock",
+      "unit": "Unidad",
+      "ureticiKodu": "Código de fabricante",
+      "groupInfo": "Información de grupo",
+      "grup": "Grupo",
+      "branchCode": "Código Sucursal",
+      "specialCodes": "Códigos especiales",
+      "created": "Oluşturuldu",
+      "updated": "Güncellendi",
+      "copied": "Copiado",
+      "copy": "Copiar",
+      "htmlDescription": "Ürün Açıklaması (HTML)",
+      "htmlDescriptionDesc": "Ürün kartında görünecek detaylı açıklamayı ve biçimlendirilmiş metni buradan düzenleyin.",
+      "htmlDescriptionPlaceholder": "Detaylı ürün açıklaması giriniz...",
+      "saving": "Guardando...",
+      "save": "Guardar",
+      "title": "Detalle del producto",
+      "notFound": "Producto no encontrado",
+      "notFoundDesc": "El producto solicitado no existe",
+      "backToStockList": "Volver a la lista",
+      "subtitle": "Stok Detay Yönetimi",
+      "basicInfo": "Información Básica",
+      "images": "Imágenes",
+      "relations": "Relaciones",
+      "summary": "Hızlı Bakış",
+      "gallery": "Galeri",
+      "addRelation": "Bağlantı Ekle"
+    },
+    "images": {
+      "noImages": "Sin imágenes",
+      "noImagesDesc": "Yukarıdaki alanı kullanarak yeni görseller ekleyebilirsiniz.",
+      "primary": "Ana Görsel",
+      "altText": "Alt metin yok",
+      "setPrimary": "Establecer como principal",
+      "isPrimary": "Seleccionada",
+      "deleteConfirm": "Eliminar imagen",
+      "deleteConfirmMessage": "Bu görseli silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando...",
+      "confirmDelete": "Confirmar eliminación",
+      "upload": "Subir",
+      "uploadHint": "JPG, PNG, WEBP (Maks. 5MB)",
+      "selectedFiles": "Yüklenecek Dosyalar",
+      "uploading": "Cargando...",
+      "uploadButton": "Seçilenleri Yükle"
+    },
+    "list": {
+      "title": "Gestión de Inventario",
+      "description": "Envanter ve stok durumunu takip edin.",
+      "search": "Stok adı veya ERP kodu ara...",
+      "syncedFromErp": "ERP Senkronizasyonu Aktif",
+      "noData": "Kayıt Bulunamadı",
+      "id": "ID",
+      "erpStockCode": "Código ERP",
+      "stockName": "Nombre Stock",
+      "unit": "Unidad",
+      "actions": "Detalle",
+      "total": "Total",
+      "recordsListed": "{{count}} kayıt listeleniyor",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "relations": {
+      "relatedStock": "Bağlı Stok Seçimi",
+      "selectStock": "Listeden bir stok seçiniz...",
+      "search": "Stok adı veya kodu ara...",
+      "noStockFound": "Stok bulunamadı.",
+      "quantity": "Miktar / Katsayı",
+      "description": "Açıklama / Not",
+      "descriptionPlaceholder": "İlişki hakkında opsiyonel bir not ekleyin...",
+      "isMandatory": "Zorunlu İlişki",
+      "saving": "Procesando...",
+      "add": "İlişkiyi Ekle",
+      "noRelations": "Sin relaciones",
+      "noRelationsDesc": "No hay productos relacionados",
+      "stockCode": "Código Stock",
+      "stockName": "Nombre Stock",
+      "actions": "Acciones",
+      "mandatory": "Obligatorio",
+      "optional": "Opcional",
+      "delete": "Eliminar",
+      "deleteConfirm": "Bağlantıyı Sil",
+      "deleteConfirmMessage": "{{name}} ile olan ilişkiyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando...",
+      "confirmDelete": "Confirmar eliminación"
+    },
+    "messages": {
+      "detailCreateSuccess": "Detalle creado correctamente",
+      "error": "An error occurred",
+      "detailUpdateSuccess": "Detalle actualizado correctamente",
+      "deleteSuccess": "Görsel başarıyla silindi",
+      "setPrimarySuccess": "Imagen principal actualizada",
+      "uploadSuccess": "Imagen subida correctamente",
+      "relationCreateSuccess": "Relación creada correctamente"
+    }
+  },
+  "userDetailManagement": {
+    "profilePageTitle": "Profil",
+    "fileSizeError": "Dosya boyutu 5MB\\",
+    "fileTypeError": "Solo se pueden cargar archivos de imagen",
+    "saveSuccess": "Profil güncellendi",
+    "backToHome": "Ana sayfaya dön",
+    "personalInfo": "Kişisel Bilgiler",
+    "personalInfoDescription": "Boy, kilo, cinsiyet ve biyografi bilgilerinizi güncelleyin.",
+    "height": "Altura (cm)",
+    "weight": "Peso (kg)",
+    "gender": "Género",
+    "selectGender": "Seçiniz",
+    "noGenderSelected": "No especificado",
+    "phoneNumber": "Telefon Numarası",
+    "enterPhoneNumber": "+90 5XX XXX XX XX",
+    "email": "Dirección de Correo",
+    "enterEmail": "ornek@sirket.com",
+    "linkedinUrl": "LinkedIn Profili",
+    "enterLinkedinUrl": "https://linkedin.com/in/...",
+    "description": "Biyografi",
+    "enterDescription": "Kendinizden kısaca bahsedin...",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "security": "Güvenlik",
+    "securityDescription": "Hesap şifrenizi güvenli bir şekilde güncelleyin.",
+    "changePassword": "Cambiar contraseña",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva Contraseña",
+    "newPasswordPlaceholder": "Yeni şifreniz",
+    "changingPassword": "Procesando...",
+    "changePasswordButton": "Şifreyi Güncelle",
+    "cancel": "Vazgeç ve Kapat",
+    "createSuccess": "El detalle del usuario se creó correctamente",
+    "createError": "Ocurrió un error al crear el detalle del usuario",
+    "updateSuccess": "El detalle del usuario se actualizó correctamente",
+    "updateError": "Ocurrió un error al actualizar el detalle del usuario",
+    "uploadProfilePictureSuccess": "La foto de perfil se cargó correctamente",
+    "uploadProfilePictureError": "Error al cargar la foto de perfil"
+  },
+  "profile": {
+    "title": "Profil Bilgileri"
+  },
+  "language_choice": "Dil Seçeneği",
+  "appearance": "Görünüm Modu",
+  "logout": "ÇIKIŞ YAP",
+  "userDiscountLimitManagement": {
+    "alreadyExists": "Ya existe un límite de descuento para este vendedor y grupo",
+    "edit": "Editar",
+    "create": "Crear",
+    "editDescription": "Actualice los límites de descuento del vendedor y del grupo de productos.",
+    "createDescription": "Defina los límites de descuento para el vendedor y el grupo de productos.",
+    "salesperson": "Sales Representative",
+    "selectSalesperson": "Seleccione vendedor",
+    "searchSalesperson": "Satış Temsilcisi Ara...",
+    "erpProductGroupCode": "Código de grupo de producto ERP",
+    "selectErpProductGroupCode": "Seleccione grupo",
+    "searchGroup": "Grup Ara...",
+    "maxDiscount1": "Descuento máx. 1",
+    "enterMaxDiscount1": "Ingrese el descuento máx. 1",
+    "maxDiscount2": "Descuento máx. 2",
+    "enterMaxDiscount2": "Ingrese el descuento máx. 2",
+    "maxDiscount3": "Descuento máx. 3",
+    "enterMaxDiscount3": "Ingrese el descuento máx. 3",
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "title": "Gestión de Límites de Descuento de Usuario",
+    "description": "Gestionar límites de descuento de usuario",
+    "loading": "Cargando...",
+    "noData": "No se encontraron datos",
+    "table": {
+      "id": "ID",
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+      "page": "Página {{current}} / {{total}}"
+    },
+    "salespersonName": "Nombre del vendedor",
+    "createdDate": "Fecha de creación",
+    "updatedDate": "Fecha de actualización",
+    "actions": "Acciones",
+    "delete": "Eliminar",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "deleteTitle": "Eliminar Límite",
+    "confirmDelete": "¿Seguro que desea eliminar este registro?",
+    "createSuccess": "Límite de descuento creado",
+    "createError": "No se pudo crear el límite de descuento",
+    "deleteSuccess": "Límite de descuento eliminado con éxito",
+    "deleteError": "No se pudo eliminar el límite de descuento",
+    "updateSuccess": "Límite de descuento actualizado",
+    "updateError": "No se pudo actualizar el límite de descuento"
   }
 }

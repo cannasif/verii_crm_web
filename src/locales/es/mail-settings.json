@@ -14,5 +14,10 @@
     "FromEmail": "Correo del remitente",
     "FromName": "Nombre del remitente",
     "Timeout": "Tiempo de espera (s)"
+  },
+  "TestMail": {
+    "Send": "Test Maili Gönder",
+    "Sending": "Test gönderiliyor...",
+    "Success": "Test maili gönderildi"
   }
 }

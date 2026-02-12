@@ -21,7 +21,8 @@
     "updatedDate": "Fecha de Actualización",
     "updatedBy": "Actualizado Por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Página {{current}} / {{total}}"
+    "page": "Página {{current}} / {{total}}",
+    "salutation": "Hitap"
   },
   "form": {
     "addContact": "Añadir Nuevo Contacto",
@@ -50,7 +51,24 @@
     "customerRequired": "La selección del cliente es obligatoria",
     "title": "Título",
     "selectTitle": "Seleccionar título",
-    "titleRequired": "La selección del título es obligatoria"
+    "titleRequired": "La selección del título es obligatoria",
+    "salutation": "Hitap",
+    "selectSalutation": "Hitap seçin",
+    "salutationNone": "None",
+    "salutationMr": "Bay",
+    "salutationMs": "Bayan",
+    "salutationMrs": "Sayın",
+    "salutationDr": "Dr.",
+    "firstName": "Name",
+    "firstNamePlaceholder": "Ad girin",
+    "lastName": "Apellido",
+    "lastNamePlaceholder": "Soyad girin",
+    "middleName": "İkinci Ad",
+    "middleNamePlaceholder": "İkinci ad girin (opsiyonel)",
+    "firstNameRequired": "Ad gereklidir",
+    "lastNameRequired": "Soyad gereklidir",
+    "middleNameMaxLength": "İkinci ad en fazla 100 karakter olabilir",
+    "titleNone": "Ünvan yok"
   },
   "delete": {
     "action": "Eliminar",

@@ -1,5 +1,5 @@
 {
-  "title": "Tablero",
+  "title": "Panel",
   "loading": "Cargando",
   "stats": {
     "totalRevenue": "Ingresos Totales",
@@ -39,8 +39,37 @@
     "openQuotations": "Cotizaciones Abiertas",
     "openQuotationsDescription": "5 cotizaciones pendientes de aprobación",
     "criticalStock": "Stock Crítico",
-    "criticalStockDescription": "3 productos por debajo del nivel crítico"
+    "criticalStockDescription": "3 productos por debajo del nivel crítico",
+    "checkTasks": "Görev listesini kontrol et",
+    "reviewQuotations": "Teklifleri incele",
+    "stockStatus": "Stok durumunu gör"
   },
   "noDate": "No date",
-  "unnamedActivity": "Unnamed Activity"
+  "unnamedActivity": "Unnamed Activity",
+  "greeting": {
+    "morning": "Günaydın",
+    "afternoon": "İyi Günler",
+    "evening": "İyi Akşamlar"
+  },
+  "refresh": "Actualizar",
+  "refreshing": "Yenileniyor...",
+  "refreshed": "Veriler güncellendi",
+  "refreshError": "Güncelleme başarısız",
+  "user": "Usuario",
+  "noSalesData": "Henüz satış verisi oluşmadı",
+  "noActivities": "No hay actividades aún",
+  "selectFormat": "Format Seçiniz",
+  "reportPreparing": "raporu hazırlanıyor...",
+  "reportDownloaded": "raporu indirildi.",
+  "reportError": "Rapor alınamadı.",
+  "sidebar": {
+    "customers": "Clientes",
+    "customerManagement": "Gestión de Clientes",
+    "salesManagement": "Satış Hunisi",
+    "demandCreateWizard": "Yeni Talep Oluştur",
+    "quotationCreateWizard": "Crear Nueva Cotización",
+    "orderCreateWizard": "Crear Nueva Cotización",
+    "activities": "Planlama",
+    "activityManagement": "Gestión de actividades"
+  }
 }
