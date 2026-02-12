@@ -19,6 +19,7 @@ import { useStockDetailQuery } from '../hooks/useStockDetailQuery';
 import { useStockDetailCreate } from '../hooks/useStockDetailCreate';
 import { useStockDetailUpdate } from '../hooks/useStockDetailUpdate';
 import { stockDetailSchema, type StockDetailFormSchema } from '../types/schemas';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface StockDetailFormProps {
   stockId: number;
@@ -95,7 +96,7 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
           render={({ field }) => (
             <FormItem>
               <div className="mb-3 space-y-1">
-                  <FormLabel className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FormLabel className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2" required={isZodFieldRequired(stockDetailSchema, 'htmlDescription')}>
                     <FileText className="w-4 h-4 text-pink-600 dark:text-pink-500" />
                     {t('stock.detail.htmlDescription')}
                   </FormLabel>

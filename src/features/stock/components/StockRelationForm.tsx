@@ -33,6 +33,7 @@ import { useStockRelationCreate } from '../hooks/useStockRelationCreate';
 import { useStockList } from '../hooks/useStockList';
 import { stockRelationSchema, type StockRelationFormSchema } from '../types/schemas';
 import { cn } from '@/lib/utils';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface StockRelationFormProps {
   stockId: number;
@@ -90,7 +91,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
           name="relatedStockId"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2 text-sm">
+              <FormLabel className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2 text-sm" required={isZodFieldRequired(stockRelationSchema, 'relatedStockId')}>
                  <Box className="w-4 h-4 text-pink-600" />
                  {t('stock.relations.relatedStock')}
               </FormLabel>
@@ -166,7 +167,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
           name="quantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2 text-sm">
+              <FormLabel className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2 text-sm" required={isZodFieldRequired(stockRelationSchema, 'quantity')}>
                 <Scale className="w-4 h-4 text-orange-500" />
                 {t('stock.relations.quantity')}
               </FormLabel>
