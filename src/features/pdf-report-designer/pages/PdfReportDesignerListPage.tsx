@@ -36,10 +36,10 @@ import { useGeneratePdfReportDocument } from '../hooks/useGeneratePdfReportDocum
 import type { ReportTemplateGetDto } from '@/features/pdf-report';
 import { DocumentRuleType } from '@/features/pdf-report';
 
-const RULE_TYPE_LABELS: Record<DocumentRuleType, string> = {
-  [DocumentRuleType.Demand]: 'Talep',
-  [DocumentRuleType.Quotation]: 'Teklif',
-  [DocumentRuleType.Order]: 'Sipariş',
+const RULE_TYPE_LABEL_KEYS: Record<DocumentRuleType, string> = {
+  [DocumentRuleType.Demand]: 'reportDesigner.ruleType.demand',
+  [DocumentRuleType.Quotation]: 'reportDesigner.ruleType.quotation',
+  [DocumentRuleType.Order]: 'reportDesigner.ruleType.order',
 };
 
 function downloadBlobAsPdf(blob: Blob, filename: string): void {
@@ -73,11 +73,11 @@ export function PdfReportDesignerListPage(): ReactElement {
     if (!templateToDelete) return;
     try {
       await deleteMutation.mutateAsync(templateToDelete.id);
-      toast.success(t('pdfReportDesigner.templateDeleted', 'Şablon silindi'));
+      toast.success(t('pdfReportDesigner.templateDeleted'));
       setDeleteDialogOpen(false);
       setTemplateToDelete(null);
     } catch (err) {
-      toast.error(t('pdfReportDesigner.templateDeleteFailed', 'Şablon silinemedi'), {
+      toast.error(t('pdfReportDesigner.templateDeleteFailed'), {
         description: err instanceof Error ? err.message : undefined,
       });
     }
@@ -97,7 +97,7 @@ export function PdfReportDesignerListPage(): ReactElement {
     if (!pdfTemplate) return;
     const id = Number(entityId);
     if (!Number.isInteger(id) || id < 1) {
-      toast.error(t('pdfReportDesigner.enterValidDocumentId', 'Geçerli bir belge ID girin'));
+      toast.error(t('pdfReportDesigner.enterValidDocumentId'));
       return;
     }
     try {
@@ -106,12 +106,12 @@ export function PdfReportDesignerListPage(): ReactElement {
         entityId: id,
       });
       downloadBlobAsPdf(blob, `rapor-${pdfTemplate.title}-${id}.pdf`);
-      toast.success(t('pdfReportDesigner.pdfGenerated', 'PDF oluşturuldu'));
+      toast.success(t('pdfReportDesigner.pdfGenerated'));
       setPdfDialogOpen(false);
       setPdfTemplate(null);
       setEntityId('');
     } catch (err) {
-      toast.error(t('pdfReportDesigner.pdfGenerateFailed', 'PDF oluşturulamadı'), {
+      toast.error(t('pdfReportDesigner.pdfGenerateFailed'), {
         description: err instanceof Error ? err.message : undefined,
       });
     }
@@ -121,34 +121,34 @@ export function PdfReportDesignerListPage(): ReactElement {
     <div className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
-          {t('pdfReportDesigner.templatesTitle', 'Rapor Şablonları')}
+          {t('pdfReportDesigner.templatesTitle')}
         </h1>
         <Button asChild>
           <Link to="/report-designer/create" className="inline-flex items-center gap-2">
             <Plus className="size-4" />
-            {t('pdfReportDesigner.createNew', 'Yeni Oluştur')}
+            {t('pdfReportDesigner.createNew')}
           </Link>
         </Button>
       </div>
       <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/50">
         {isLoading ? (
           <div className="p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-            {t('common.loading', 'Yükleniyor…')}
+            {t('common.loading')}
           </div>
         ) : templates.length === 0 ? (
           <div className="p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-            {t('pdfReportDesigner.noTemplates', 'Henüz şablon yok. Yeni Oluştur ile ekleyebilirsiniz.')}
+            {t('pdfReportDesigner.noTemplates')}
           </div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[60px]">ID</TableHead>
-                <TableHead>{t('pdfReportDesigner.title', 'Başlık')}</TableHead>
-                <TableHead>{t('pdfReportDesigner.documentType', 'Belge tipi')}</TableHead>
-                <TableHead className="w-[80px]">{t('pdfReportDesigner.active', 'Aktif')}</TableHead>
-                <TableHead className="w-[100px]">{t('pdfReportDesigner.default', 'Varsayılan')}</TableHead>
-                <TableHead className="w-[100px] text-right">{t('common.actions', 'İşlem')}</TableHead>
+                <TableHead className="w-[60px]">{t('reportDesigner.list.id')}</TableHead>
+                <TableHead>{t('pdfReportDesigner.title')}</TableHead>
+                <TableHead>{t('pdfReportDesigner.documentType')}</TableHead>
+                <TableHead className="w-[80px]">{t('pdfReportDesigner.active')}</TableHead>
+                <TableHead className="w-[100px]">{t('pdfReportDesigner.default')}</TableHead>
+                <TableHead className="w-[100px] text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -156,11 +156,11 @@ export function PdfReportDesignerListPage(): ReactElement {
                 <TableRow key={template.id}>
                   <TableCell className="font-mono text-slate-500">{template.id}</TableCell>
                   <TableCell className="font-medium">{template.title}</TableCell>
-                  <TableCell>{RULE_TYPE_LABELS[template.ruleType] ?? template.ruleType}</TableCell>
-                  <TableCell>{template.isActive ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}</TableCell>
+                  <TableCell>{t(RULE_TYPE_LABEL_KEYS[template.ruleType] ?? String(template.ruleType))}</TableCell>
+                  <TableCell>{template.isActive ? t('common.yes') : t('common.no')}</TableCell>
                   <TableCell>
                     {template.default === true ? (
-                      <Badge variant="secondary">{t('pdfReportDesigner.defaultBadge', 'Varsayılan')}</Badge>
+                      <Badge variant="secondary">{t('pdfReportDesigner.defaultBadge')}</Badge>
                     ) : (
                       '—'
                     )}
@@ -176,23 +176,23 @@ export function PdfReportDesignerListPage(): ReactElement {
                         <DropdownMenuItem asChild>
                           <Link to={`/report-designer/edit/${template.id}`} className="flex items-center gap-2">
                             <Pencil className="size-4" />
-                            {t('common.edit', 'Düzenle')}
+                            {t('common.edit')}
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleCopyClick(template)}>
                           <Copy className="size-4" />
-                          {t('pdfReportDesigner.copy', 'Kopyala')}
+                          {t('pdfReportDesigner.copy')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handlePdfClick(template)}>
                           <FileDown className="size-4" />
-                          {t('pdfReportDesigner.generatePdf', 'PDF oluştur')}
+                          {t('pdfReportDesigner.generatePdf')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive focus:text-destructive"
                           onClick={() => handleDeleteClick(template)}
                         >
                           <Trash2 className="size-4" />
-                          {t('common.delete', 'Sil')}
+                          {t('common.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -207,21 +207,21 @@ export function PdfReportDesignerListPage(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('pdfReportDesigner.deleteTemplateTitle', 'Şablonu sil')}</DialogTitle>
+            <DialogTitle>{t('pdfReportDesigner.deleteTemplateTitle')}</DialogTitle>
             <DialogDescription>
-              &quot;{templateToDelete?.title}&quot; {t('pdfReportDesigner.deleteTemplateConfirm', 'şablonunu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')}
+              &quot;{templateToDelete?.title}&quot; {t('pdfReportDesigner.deleteTemplateConfirm')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
               disabled={deleteMutation.isPending}
             >
-              {t('common.delete', 'Sil')}
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -230,19 +230,19 @@ export function PdfReportDesignerListPage(): ReactElement {
       <Dialog open={pdfDialogOpen} onOpenChange={setPdfDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('pdfReportDesigner.generatePdfTitle', 'PDF oluştur')}</DialogTitle>
+            <DialogTitle>{t('pdfReportDesigner.generatePdfTitle')}</DialogTitle>
             <DialogDescription>
-              {t('pdfReportDesigner.generatePdfDescription', 'Şablon:')} {pdfTemplate?.title}. {t('pdfReportDesigner.enterDocumentId', 'Belge ID (Teklif / Sipariş / Talep ID) girin.')}
+              {t('pdfReportDesigner.generatePdfDescription')} {pdfTemplate?.title}. {t('pdfReportDesigner.enterDocumentId')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="entityId">{t('pdfReportDesigner.documentId', 'Belge ID')}</Label>
+              <Label htmlFor="entityId">{t('pdfReportDesigner.documentId')}</Label>
               <Input
                 id="entityId"
                 type="number"
                 min={1}
-                placeholder="Örn. 123"
+                placeholder={t('reportDesigner.form.documentIdPlaceholder')}
                 value={entityId}
                 onChange={(e) => setEntityId(e.target.value)}
               />
@@ -250,15 +250,15 @@ export function PdfReportDesignerListPage(): ReactElement {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPdfDialogOpen(false)}>
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={handlePdfGenerate}
               disabled={generatePdfMutation.isPending || !entityId.trim()}
             >
               {generatePdfMutation.isPending
-                ? t('pdfReportDesigner.generating', 'Oluşturuluyor…')
-                : t('pdfReportDesigner.generatePdf', 'PDF oluştur')}
+                ? t('pdfReportDesigner.generating')
+                : t('pdfReportDesigner.generatePdf')}
             </Button>
           </DialogFooter>
         </DialogContent>

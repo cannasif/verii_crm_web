@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ import {
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
 
 export function PdfInspectorPanel(): ReactElement {
+  const { t } = useTranslation();
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
   const updateElement = usePdfReportDesignerStore((s) => s.updateElement);
@@ -25,9 +27,9 @@ export function PdfInspectorPanel(): ReactElement {
     return (
       <div className="flex w-56 flex-col gap-3 border-l border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/30">
         <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          Inspector
+          {t('reportDesigner.inspector.title')}
         </span>
-        <p className="text-xs text-slate-500">Öğe seçin veya birden fazla seçiliyse konum/size güncellenmez.</p>
+        <p className="text-xs text-slate-500">{t('reportDesigner.inspector.selectHint')}</p>
       </div>
     );
   }
@@ -38,7 +40,7 @@ export function PdfInspectorPanel(): ReactElement {
   return (
     <div className="flex w-56 flex-col gap-3 border-l border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/30">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Inspector
+        {t('reportDesigner.inspector.title')}
       </span>
       <div className="grid grid-cols-2 gap-2">
         <div className="flex flex-col gap-1">
@@ -87,7 +89,7 @@ export function PdfInspectorPanel(): ReactElement {
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">zIndex</Label>
+        <Label className="text-xs">{t('reportDesigner.inspector.zIndex')}</Label>
         <Input
           type="number"
           value={selectedElement.zIndex ?? ''}
@@ -97,11 +99,11 @@ export function PdfInspectorPanel(): ReactElement {
             })
           }
           className="h-8 text-xs"
-          placeholder="auto"
+          placeholder={t('reportDesigner.inspector.zIndexPlaceholder')}
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Rotation (°)</Label>
+        <Label className="text-xs">{t('reportDesigner.inspector.rotation')}</Label>
         <Input
           type="number"
           value={selectedElement.rotation ?? 0}
@@ -114,7 +116,7 @@ export function PdfInspectorPanel(): ReactElement {
       {(
         <>
           <div className="flex flex-col gap-2">
-            <Label className="text-xs">Yazı boyutu</Label>
+            <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
             <Select
               value={String(selectedElement.fontSize ?? 14)}
               onValueChange={(v) =>
@@ -134,7 +136,7 @@ export function PdfInspectorPanel(): ReactElement {
             </Select>
           </div>
           <div className="flex flex-col gap-2">
-            <Label className="text-xs">Yazı tipi</Label>
+            <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
             <Select
               value={selectedElement.fontFamily ?? 'Arial'}
               onValueChange={(v) =>
@@ -154,7 +156,7 @@ export function PdfInspectorPanel(): ReactElement {
             </Select>
           </div>
           <div className="flex flex-col gap-2">
-            <Label className="text-xs">Hizalama</Label>
+            <Label className="text-xs">{t('reportDesigner.inspector.alignment')}</Label>
             <Select
               value={style.textAlign ?? 'left'}
               onValueChange={(v: 'left' | 'center' | 'right') =>
@@ -167,14 +169,14 @@ export function PdfInspectorPanel(): ReactElement {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="left">Sol</SelectItem>
-                <SelectItem value="center">Orta</SelectItem>
-                <SelectItem value="right">Sağ</SelectItem>
+                <SelectItem value="left">{t('reportDesigner.inspector.left')}</SelectItem>
+                <SelectItem value="center">{t('reportDesigner.inspector.center')}</SelectItem>
+                <SelectItem value="right">{t('reportDesigner.inspector.right')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex flex-col gap-2">
-            <Label className="text-xs">Arka plan</Label>
+            <Label className="text-xs">{t('reportDesigner.inspector.background')}</Label>
             <div className="flex gap-2">
               <input
                 type="color"
@@ -194,12 +196,12 @@ export function PdfInspectorPanel(): ReactElement {
                   })
                 }
                 className="h-8 flex-1 text-xs"
-                placeholder="transparent"
+                placeholder={t('reportDesigner.inspector.backgroundPlaceholder')}
               />
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <Label className="text-xs">Opacity (0-1)</Label>
+            <Label className="text-xs">{t('reportDesigner.inspector.opacity')}</Label>
             <Input
               type="number"
               min={0}
@@ -219,4 +221,3 @@ export function PdfInspectorPanel(): ReactElement {
     </div>
   );
 }
-

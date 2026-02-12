@@ -61,10 +61,10 @@ import type {
 import type { DocumentRuleType } from '@/features/pdf-report';
 import { A4_CANVAS_WIDTH, A4_CANVAS_HEIGHT, PDF_REPORT_DRAFT_STORAGE_KEY } from '../constants';
 
-const RULE_TYPE_OPTIONS: { value: PricingRuleType; label: string }[] = [
-  { value: PricingRuleType.Demand, label: 'Talep' },
-  { value: PricingRuleType.Quotation, label: 'Teklif' },
-  { value: PricingRuleType.Order, label: 'Sipariş' },
+const RULE_TYPE_OPTIONS: PricingRuleType[] = [
+  PricingRuleType.Demand,
+  PricingRuleType.Quotation,
+  PricingRuleType.Order,
 ];
 
 const DEFAULT_ELEMENT_WIDTH = 200;
@@ -268,9 +268,9 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       localStorage.removeItem(draftKey);
       setHasDraft(false);
       setDraftBannerDismissed(true);
-      toast.success(t('pdfReportDesigner.draftRestored', 'Taslak geri yüklendi'));
+      toast.success(t('pdfReportDesigner.draftRestored'));
     } catch {
-      toast.error(t('pdfReportDesigner.draftRestoreFailed', 'Taslak yüklenemedi'));
+      toast.error(t('pdfReportDesigner.draftRestoreFailed'));
     }
   }, [draftKey, form, setElements]);
 
@@ -302,12 +302,12 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     try {
       if (isEdit && editId != null) {
         await updateMutation.mutateAsync({ id: editId, data: payload });
-        toast.success(t('pdfReportDesigner.updated', 'Güncellendi'), {
+        toast.success(t('pdfReportDesigner.updated'), {
           description: `${values.title}`,
         });
       } else {
         await createMutation.mutateAsync(payload);
-        toast.success(t('pdfReportDesigner.saved', 'Kaydedildi'), {
+        toast.success(t('pdfReportDesigner.saved'), {
           description: `${values.title}`,
         });
       }
@@ -321,8 +321,8 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       const detail = getApiErrorMessage(err);
       toast.error(
         isEdit
-          ? t('pdfReportDesigner.updateFailed', 'Şablon güncellenemedi')
-          : t('pdfReportDesigner.saveFailed', 'Şablon kaydedilemedi'),
+          ? t('pdfReportDesigner.updateFailed')
+          : t('pdfReportDesigner.saveFailed'),
         { description: detail }
       );
     }
@@ -366,7 +366,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         y,
         width: 200,
         height: 60,
-        text: 'Double click to edit',
+        text: t('reportDesigner.defaults.doubleClickToEdit'),
         fontSize: 14,
         fontFamily: 'Arial',
       };
@@ -427,13 +427,13 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       {hasDraft && !draftBannerDismissed && (
         <Alert className="rounded-none border-x-0 border-t-0 border-b border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30">
           <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-            <span>{t('pdfReportDesigner.draftFound', 'Taslak bulundu. Geri yükleyebilir veya temizleyebilirsiniz.')}</span>
+            <span>{t('pdfReportDesigner.draftFound')}</span>
             <span className="flex gap-2">
               <Button type="button" variant="outline" size="sm" onClick={handleRestoreDraft}>
-                {t('pdfReportDesigner.restoreDraft', 'Geri yükle')}
+                {t('pdfReportDesigner.restoreDraft')}
               </Button>
               <Button type="button" variant="ghost" size="sm" onClick={handleClearDraft}>
-                {t('pdfReportDesigner.discardDraft', 'Temizle')}
+                {t('pdfReportDesigner.discardDraft')}
               </Button>
             </span>
           </AlertDescription>
@@ -441,7 +441,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       )}
       <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-700 dark:bg-slate-900/50">
         <h1 className="mb-4 text-xl font-semibold text-slate-900 dark:text-white">
-          {isEdit ? t('pdfReportDesigner.editTemplate', 'Şablonu Düzenle') : t('pdfReportDesigner.newTemplate', 'Yeni Rapor Şablonu')}
+          {isEdit ? t('pdfReportDesigner.editTemplate') : t('pdfReportDesigner.newTemplate')}
         </h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-wrap items-end gap-4">
@@ -450,20 +450,24 @@ export function PdfReportDesignerCreatePage(): ReactElement {
               name="ruleType"
               render={({ field }) => (
                 <FormItem className="w-48">
-                  <FormLabel>{t('pdfReportDesigner.documentType', 'Belge tipi')}</FormLabel>
+                  <FormLabel>{t('pdfReportDesigner.documentType')}</FormLabel>
                   <Select
                     onValueChange={(value) => field.onChange(Number(value) as PricingRuleType)}
                     value={field.value?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t('common.select', 'Seçin')} />
+                        <SelectValue placeholder={t('common.select')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {RULE_TYPE_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value.toString()}>
-                          {opt.label}
+                      {RULE_TYPE_OPTIONS.map((value) => (
+                        <SelectItem key={value} value={value.toString()}>
+                          {value === PricingRuleType.Demand
+                            ? t('reportDesigner.ruleType.demand')
+                            : value === PricingRuleType.Quotation
+                              ? t('reportDesigner.ruleType.quotation')
+                              : t('reportDesigner.ruleType.order')}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -477,9 +481,9 @@ export function PdfReportDesignerCreatePage(): ReactElement {
               name="title"
               render={({ field }) => (
                 <FormItem className="min-w-[200px] flex-1">
-                  <FormLabel>{t('pdfReportDesigner.title', 'Başlık')}</FormLabel>
+                  <FormLabel>{t('pdfReportDesigner.title')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('pdfReportDesigner.titlePlaceholder', 'Rapor başlığını girin')} {...field} />
+                    <Input placeholder={t('pdfReportDesigner.titlePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -497,7 +501,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                     />
                   </FormControl>
                   <FormLabel className="font-normal">
-                    {t('pdfReportDesigner.setDefaultTemplate', 'Varsayılan şablon yap')}
+                    {t('pdfReportDesigner.setDefaultTemplate')}
                   </FormLabel>
                 </FormItem>
               )}
@@ -509,7 +513,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
               className="shrink-0"
               disabled={historyIndex <= 0}
               onClick={() => undo()}
-              title={t('pdfReportDesigner.undo', 'Geri al')}
+              title={t('pdfReportDesigner.undo')}
             >
               <Undo2 className="size-4" />
             </Button>
@@ -520,7 +524,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
               className="shrink-0"
               disabled={historyIndex >= history.length - 1 || history.length === 0}
               onClick={() => redo()}
-              title={t('pdfReportDesigner.redo', 'Yinele')}
+              title={t('pdfReportDesigner.redo')}
             >
               <Redo2 className="size-4" />
             </Button>
@@ -532,14 +536,14 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 onCheckedChange={setSnapEnabled}
               />
               <Label htmlFor="snap-toggle" className="text-sm font-normal cursor-pointer">
-                {t('pdfReportDesigner.snapToGrid', 'Izgara hizala')}
+                {t('pdfReportDesigner.snapToGrid')}
               </Label>
             </div>
             <Button
               type="submit"
               disabled={isSaving || (isEdit && !templateByIdLoaded)}
             >
-              {isSaving ? t('common.saving', 'Kaydediliyor…') : isEdit ? t('common.update', 'Güncelle') : t('common.save', 'Kaydet')}
+              {isSaving ? t('common.saving') : isEdit ? t('common.update') : t('common.save')}
             </Button>
           </form>
         </Form>

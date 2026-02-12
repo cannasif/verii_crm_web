@@ -1,9 +1,11 @@
 import type { ReactElement } from 'react';
 import { Eye, EyeOff, Lock, Unlock, ChevronUp, ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
 
 export function PdfLayersPanel(): ReactElement {
+  const { t } = useTranslation();
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
@@ -17,17 +19,18 @@ export function PdfLayersPanel(): ReactElement {
   const elements = getOrderedElements();
 
   const getLabel = (el: (typeof elements)[0]): string => {
-    if (isPdfTableElement(el)) return `Table (${el.columns.length} cols)`;
-    if (el.type === 'text') return el.text?.slice(0, 20) || 'Text';
-    if (el.type === 'field') return el.value || 'Field';
-    if (el.type === 'image') return 'Image';
+    if (isPdfTableElement(el))
+      return t('reportDesigner.layers.tableLabel', { count: el.columns.length });
+    if (el.type === 'text') return el.text?.slice(0, 20) || t('reportDesigner.layers.textLabel');
+    if (el.type === 'field') return el.value || t('reportDesigner.layers.fieldLabel');
+    if (el.type === 'image') return t('reportDesigner.layers.imageLabel');
     return el.type;
   };
 
   return (
     <div className="flex w-56 flex-col gap-2 border-l border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/30">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Katmanlar
+        {t('reportDesigner.layers.title')}
       </span>
       <div className="flex flex-col gap-0.5">
         {[...elementOrder].reverse().map((id, reverseIndex) => {
@@ -48,7 +51,7 @@ export function PdfLayersPanel(): ReactElement {
                 <button
                   type="button"
                   className="rounded p-0.5 text-slate-400 hover:bg-slate-200 disabled:opacity-40"
-                  title="Öne getir"
+                  title={t('reportDesigner.layers.bringForward')}
                   disabled={index >= elementOrder.length - 1}
                   onClick={() => bringForward(id)}
                 >
@@ -57,7 +60,7 @@ export function PdfLayersPanel(): ReactElement {
                 <button
                   type="button"
                   className="rounded p-0.5 text-slate-400 hover:bg-slate-200 disabled:opacity-40"
-                  title="Arkaya gönder"
+                  title={t('reportDesigner.layers.sendBackward')}
                   disabled={index <= 0}
                   onClick={() => sendBackward(id)}
                 >
@@ -75,7 +78,7 @@ export function PdfLayersPanel(): ReactElement {
                 type="button"
                 onClick={() => setElementHidden(id, !el.hidden)}
                 className="rounded p-0.5 text-slate-500 hover:bg-slate-200"
-                title={el.hidden ? 'Göster' : 'Gizle'}
+                title={el.hidden ? t('reportDesigner.layers.show') : t('reportDesigner.layers.hide')}
               >
                 {el.hidden ? (
                   <EyeOff className="size-3.5" />
@@ -87,7 +90,7 @@ export function PdfLayersPanel(): ReactElement {
                 type="button"
                 onClick={() => setElementLocked(id, !el.locked)}
                 className="rounded p-0.5 text-slate-500 hover:bg-slate-200"
-                title={el.locked ? 'Kilidi aç' : 'Kilitle'}
+                title={el.locked ? t('reportDesigner.layers.unlock') : t('reportDesigner.layers.lock')}
               >
                 {el.locked ? (
                   <Lock className="size-3.5" />
@@ -100,7 +103,7 @@ export function PdfLayersPanel(): ReactElement {
         })}
       </div>
       {elements.length === 0 && (
-        <p className="text-xs text-slate-500">Henüz öğe yok. Palette'ten sürükleyin.</p>
+        <p className="text-xs text-slate-500">{t('reportDesigner.layers.noItems')}</p>
       )}
     </div>
   );
