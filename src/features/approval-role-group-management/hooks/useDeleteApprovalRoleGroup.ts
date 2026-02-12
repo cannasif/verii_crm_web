@@ -19,10 +19,10 @@ export const useDeleteApprovalRoleGroup = () => {
         queryKey: [APPROVAL_ROLE_GROUP_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalRoleGroup.messages.deleteSuccess', 'Onay rol grubu başarıyla silindi'));
+      toast.success(t('approvalRoleGroup.messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalRoleGroup.messages.deleteError', 'Onay rol grubu silinemedi'));
+      toast.error(error.message || t('approvalRoleGroup.messages.deleteError'));
     },
   });
 };

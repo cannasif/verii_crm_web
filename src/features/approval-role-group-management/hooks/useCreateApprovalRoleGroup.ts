@@ -20,10 +20,10 @@ export const useCreateApprovalRoleGroup = () => {
         queryKey: [APPROVAL_ROLE_GROUP_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalRoleGroup.messages.createSuccess', 'Onay rol grubu başarıyla oluşturuldu'));
+      toast.success(t('approvalRoleGroup.messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalRoleGroup.messages.createError', 'Onay rol grubu oluşturulamadı'));
+      toast.error(error.message || t('approvalRoleGroup.messages.createError'));
     },
   });
 };

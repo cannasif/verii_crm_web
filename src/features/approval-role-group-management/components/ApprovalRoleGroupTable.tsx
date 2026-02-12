@@ -68,10 +68,10 @@ export function ApprovalRoleGroupTable({
   const deleteRoleGroup = useDeleteApprovalRoleGroup();
 
   const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalRoleGroupDto>[] => [
-    { key: 'id', label: t('approvalRoleGroup.table.id', 'ID'), className: 'w-[100px]' },
-    { key: 'name', label: t('approvalRoleGroup.table.name', 'Grup Adı'), className: 'min-w-[200px]' },
-    { key: 'createdDate', label: t('approvalRoleGroup.table.createdDate', 'Oluşturulma Tarihi'), className: 'w-[160px]' },
-    { key: 'createdByFullUser', label: t('approvalRoleGroup.table.createdBy', 'Oluşturan'), className: 'w-[160px]' },
+    { key: 'id', label: t('approvalRoleGroup.table.id'), className: 'w-[100px]' },
+    { key: 'name', label: t('approvalRoleGroup.table.name'), className: 'min-w-[200px]' },
+    { key: 'createdDate', label: t('approvalRoleGroup.table.createdDate'), className: 'w-[160px]' },
+    { key: 'createdByFullUser', label: t('approvalRoleGroup.table.createdBy'), className: 'w-[160px]' },
   ];
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
@@ -149,7 +149,7 @@ export function ApprovalRoleGroupTable({
         <div className="flex flex-col items-center gap-2">
            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
            <div className="text-sm text-muted-foreground animate-pulse">
-             {t('common.loading', 'Yükleniyor...')}
+             {t('common.loading')}
            </div>
         </div>
       </div>
@@ -160,7 +160,7 @@ export function ApprovalRoleGroupTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('approvalRoleGroup.noData', 'Kayıt Bulunamadı')}
+          {t('approvalRoleGroup.noData')}
         </div>
       </div>
     );
@@ -177,7 +177,7 @@ export function ApprovalRoleGroupTable({
                 className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
             >
               <EyeOff className="mr-2 h-4 w-4" />
-              {t('common.editColumns', 'Sütunları Düzenle')}
+              {t('common.editColumns')}
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -186,7 +186,7 @@ export function ApprovalRoleGroupTable({
             className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
           >
             <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                {t('common.visibleColumns', 'Görünür Sütunlar')}
+                {t('common.visibleColumns')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
             {tableColumns.map((column) => (
@@ -223,7 +223,7 @@ export function ApprovalRoleGroupTable({
                 )
               ))}
               <TableHead className={`${headStyle} text-right w-[100px]`}>
-                {t('approvalRoleGroup.table.actions', 'İşlemler')}
+                {t('approvalRoleGroup.table.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -263,7 +263,7 @@ export function ApprovalRoleGroupTable({
                       size="icon"
                       onClick={() => onEdit(roleGroup)}
                       className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-colors"
-                      title={t('common.edit', 'Düzenle')}
+                      title={t('common.edit')}
                     >
                       <Edit2 size={15} />
                     </Button>
@@ -272,7 +272,7 @@ export function ApprovalRoleGroupTable({
                       size="icon"
                       onClick={() => handleDeleteClick(roleGroup)}
                       className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
-                      title={t('common.delete', 'Sil')}
+                      title={t('common.delete')}
                     >
                       <Trash2 size={15} />
                     </Button>
@@ -286,16 +286,16 @@ export function ApprovalRoleGroupTable({
 
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          {t('common.table.showing', '{{from}}-{{to}} / {{total}} gösteriliyor', {
+          {t('common.table.showing', {
             from: (currentPage - 1) * pageSize + 1,
             to: Math.min(currentPage * pageSize, processedRoleGroups.length),
             total: processedRoleGroups.length,
           })}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.previous', 'Önceki')}</Button>
-          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('common.table.page', 'Sayfa {{current}} / {{total}}', { current: currentPage, total: totalPages || 1 })}</div>
-          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.next', 'Sonraki')}</Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage <= 1} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.previous')}</Button>
+          <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t('common.table.page', { current: currentPage, total: totalPages || 1 })}</div>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage >= totalPages} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5">{t('common.next')}</Button>
         </div>
       </div>
 
@@ -309,10 +309,10 @@ export function ApprovalRoleGroupTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('approvalRoleGroup.delete.title', 'Rol Grubunu Sil')}
+                {t('approvalRoleGroup.delete.title')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('approvalRoleGroup.delete.confirmMessage', '{{name}} rol grubunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', {
+                {t('approvalRoleGroup.delete.confirmMessage', {
                     name: selectedRoleGroup?.name || '',
                 })}
                 </DialogDescription>
@@ -326,7 +326,7 @@ export function ApprovalRoleGroupTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('common.cancel', 'Vazgeç')}
+              {t('common.cancel')}
             </Button>
             
             <Button
@@ -337,7 +337,7 @@ export function ApprovalRoleGroupTable({
               className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteRoleGroup.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('common.delete', 'Sil')}
+              {t('common.delete')}
             </Button>
           </DialogFooter>
 

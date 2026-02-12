@@ -85,13 +85,13 @@ export function ApprovalRoleGroupForm({
             <div className="space-y-1">
               <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {group
-                  ? t('approvalRoleGroup.form.editTitle', 'Onay Rol Grubu Düzenle')
-                  : t('approvalRoleGroup.form.addTitle', 'Yeni Onay Rol Grubu Ekle')}
+                  ? t('approvalRoleGroup.form.editTitle')
+                  : t('approvalRoleGroup.form.addTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                 {group
-                  ? t('approvalRoleGroup.form.editDescription', 'Onay rol grubu bilgilerini düzenleyin')
-                  : t('approvalRoleGroup.form.addDescription', 'Yeni onay rol grubu bilgilerini girin')}
+                  ? t('approvalRoleGroup.form.editDescription')
+                  : t('approvalRoleGroup.form.addDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -109,12 +109,12 @@ export function ApprovalRoleGroupForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      {t('approvalRoleGroup.form.name', 'Grup Adı')}
+                      {t('approvalRoleGroup.form.name')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('approvalRoleGroup.form.namePlaceholder', 'Grup adını girin')}
+                        placeholder={t('approvalRoleGroup.form.namePlaceholder')}
                         maxLength={100}
                         className={INPUT_STYLE}
                       />
@@ -133,7 +133,7 @@ export function ApprovalRoleGroupForm({
                 disabled={isLoading}
                 className="h-11 rounded-xl border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
               >
-                {t('approvalRoleGroup.cancel', 'İptal')}
+                {t('approvalRoleGroup.cancel')}
               </Button>
               <Button 
                 type="submit" 
@@ -142,8 +142,8 @@ export function ApprovalRoleGroupForm({
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading
-                  ? t('approvalRoleGroup.saving', 'Kaydediliyor...')
-                  : t('approvalRoleGroup.save', 'Kaydet')}
+                  ? t('approvalRoleGroup.saving')
+                  : t('approvalRoleGroup.save')}
               </Button>
             </DialogFooter>
           </form>

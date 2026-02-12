@@ -22,10 +22,10 @@ export const useUpdateApprovalRoleGroup = () => {
         queryKey: [APPROVAL_ROLE_GROUP_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('approvalRoleGroup.messages.updateSuccess', 'Onay rol grubu başarıyla güncellendi'));
+      toast.success(t('approvalRoleGroup.messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('approvalRoleGroup.messages.updateError', 'Onay rol grubu güncellenemedi'));
+      toast.error(error.message || t('approvalRoleGroup.messages.updateError'));
     },
   });
 };
