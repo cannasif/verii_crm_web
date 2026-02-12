@@ -97,10 +97,10 @@ export function ActivityImageEditDialog({
             </div>
             <div className="min-w-0">
               <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white truncate">
-                {t('activity-image:editDescription', 'Açıklamayı Düzenle')}
+                {t('activity-image:editDescription')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm truncate">
-                {t('activity-image:editDescriptionSubtitle', 'Resim açıklamasını güncelleyin')}
+                {t('activity-image:editDescriptionSubtitle')}
               </DialogDescription>
             </div>
           </div>
@@ -109,7 +109,7 @@ export function ActivityImageEditDialog({
             size="icon" 
             onClick={() => onOpenChange(false)} 
             className="shrink-0 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white" 
-            aria-label={t('common.close', 'Kapat')}
+            aria-label={t('common.close')}
           >
             <X size={20} />
           </Button>
@@ -141,13 +141,13 @@ export function ActivityImageEditDialog({
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
                       <Image size={16} className="text-pink-500 shrink-0" />
-                      {t('activity-image:description', 'Açıklama')}
+                      {t('activity-image:description')}
                     </FormLabel>
                     <FormControl>
                       <Textarea 
                         {...field} 
                         className={INPUT_STYLE} 
-                        placeholder={t('activity-image:descriptionPlaceholder', 'Resim hakkında açıklama girin...')}
+                        placeholder={t('activity-image:descriptionPlaceholder')}
                         maxLength={500}
                       />
                     </FormControl>
@@ -168,7 +168,7 @@ export function ActivityImageEditDialog({
                   onClick={() => onOpenChange(false)} 
                   className="h-11 px-5 rounded-lg font-medium"
                 >
-                  {t('common.cancel', 'Vazgeç')}
+                  {t('common.cancel')}
                 </Button>
                 <Button 
                   type="submit" 
@@ -176,8 +176,8 @@ export function ActivityImageEditDialog({
                   className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none"
                 >
                   {isSubmitting 
-                    ? t('common.saving', 'Kaydediliyor...') 
-                    : t('common.update', 'Güncelle')
+                    ? t('common.saving') 
+                    : t('common.update')
                   }
                 </Button>
               </div>

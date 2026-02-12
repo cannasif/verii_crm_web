@@ -14,10 +14,10 @@ export function useUpdateActivityImage(activityId: number) {
       activityImageApi.update(id, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: activityImageKeys.byActivity(activityId) });
-      toast.success(t('activity-image:updateSuccess', 'Resim başarıyla güncellendi'));
+      toast.success(t('activity-image:updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(t('activity-image:updateError', 'Resim güncellenemedi'), {
+      toast.error(t('activity-image:updateError'), {
         description: error.message,
       });
     },

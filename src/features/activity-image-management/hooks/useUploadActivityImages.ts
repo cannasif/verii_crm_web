@@ -15,11 +15,11 @@ export function useUploadActivityImages(activityId: number) {
       void queryClient.invalidateQueries({ queryKey: activityImageKeys.byActivity(activityId) });
       const count = data.length;
       toast.success(
-        t('activity-image:uploadSuccess', '{{count}} resim başarıyla yüklendi', { count })
+        t('activity-image:uploadSuccess', { count })
       );
     },
     onError: (error: Error) => {
-      toast.error(t('activity-image:uploadError', 'Resimler yüklenemedi'), {
+      toast.error(t('activity-image:uploadError'), {
         description: error.message,
       });
     },

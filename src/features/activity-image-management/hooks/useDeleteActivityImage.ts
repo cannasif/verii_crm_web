@@ -12,10 +12,10 @@ export function useDeleteActivityImage(activityId: number) {
     mutationFn: (id: number) => activityImageApi.delete(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: activityImageKeys.byActivity(activityId) });
-      toast.success(t('activity-image:deleteSuccess', 'Resim başarıyla silindi'));
+      toast.success(t('activity-image:deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(t('activity-image:deleteError', 'Resim silinemedi'), {
+      toast.error(t('activity-image:deleteError'), {
         description: error.message,
       });
     },

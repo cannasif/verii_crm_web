@@ -123,10 +123,10 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
         </div>
         <div className="text-center space-y-2">
           <p className="text-lg font-medium text-slate-700 dark:text-slate-300">
-            {t('activity-image:saveActivityFirst', 'Önce Aktivite Kaydet')}
+            {t('activity-image:saveActivityFirst')}
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {t('activity-image:saveActivityFirstDescription', 'Resim eklemek için önce aktiviteyi kaydetmelisiniz.')}
+            {t('activity-image:saveActivityFirstDescription')}
           </p>
         </div>
         {onCreateActivity && (
@@ -138,12 +138,12 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
             {isCreatingActivity ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t('common.saving', 'Kaydediliyor...')}
+                {t('common.saving')}
               </>
             ) : (
               <>
                 <Upload className="h-4 w-4 mr-2" />
-                {t('activity-image:saveAndUpload', 'Kaydet ve Resim Yükle')}
+                {t('activity-image:saveAndUpload')}
               </>
             )}
           </Button>
@@ -157,7 +157,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-pink-500" />
         <span className="text-muted-foreground text-sm font-medium">
-          {t('activity-image:loading', 'Yükleniyor...')}
+          {t('activity-image:loading')}
         </span>
       </div>
     );
@@ -168,10 +168,10 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-            {t('activity-image:title', 'Aktivite Resimleri')}
+            {t('activity-image:title')}
           </h3>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {t('activity-image:subtitle', 'Aktiviteye ait resimleri yönetin')}
+            {t('activity-image:subtitle')}
           </p>
         </div>
         <Button
@@ -180,7 +180,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
           className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white"
         >
           <Upload className="h-4 w-4 mr-2" />
-          {t('activity-image:uploadImages', 'Resim Yükle')}
+          {t('activity-image:uploadImages')}
         </Button>
       </div>
 
@@ -191,10 +191,10 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
           </div>
           <div className="text-center space-y-2">
             <p className="text-lg font-medium text-slate-700 dark:text-slate-300">
-              {t('activity-image:noImages', 'Henüz resim eklenmedi')}
+              {t('activity-image:noImages')}
             </p>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              {t('activity-image:noImagesDescription', 'Başlamak için yeni bir resim ekleyin')}
+              {t('activity-image:noImagesDescription')}
             </p>
           </div>
           <Button
@@ -203,7 +203,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
             className="mt-4"
           >
             <Upload className="h-4 w-4 mr-2" />
-            {t('activity-image:uploadFirstImage', 'İlk Resmi Yükle')}
+            {t('activity-image:uploadFirstImage')}
           </Button>
         </div>
       ) : (
@@ -212,13 +212,13 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
             <TableHeader>
               <TableRow className="bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                 <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
-                  {t('activity-image:preview', 'Önizleme')}
+                  {t('activity-image:preview')}
                 </TableHead>
                 <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
-                  {t('activity-image:description', 'Açıklama')}
+                  {t('activity-image:description')}
                 </TableHead>
                 <TableHead className="text-right font-semibold text-slate-700 dark:text-slate-300">
-                  {t('common.actions', 'İşlemler')}
+                  {t('common.actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -306,15 +306,15 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
         <AlertDialogContent className="bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-slate-900 dark:text-white">
-              {t('activity-image:deleteConfirmTitle', 'Resmi Sil')}
+              {t('activity-image:deleteConfirmTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
-              {t('activity-image:deleteConfirmDescription', 'Bu resmi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')}
+              {t('activity-image:deleteConfirmDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-              {t('common.cancel', 'Vazgeç')}
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
@@ -323,10 +323,10 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
               {deleteMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {t('common.deleting', 'Siliniyor...')}
+                  {t('common.deleting')}
                 </>
               ) : (
-                t('common.delete', 'Sil')
+                t('common.delete')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

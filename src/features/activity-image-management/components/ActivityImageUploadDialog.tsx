@@ -110,10 +110,10 @@ export function ActivityImageUploadDialog({
             </div>
             <div className="min-w-0">
               <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white truncate">
-                {t('activity-image:uploadImages', 'Resimleri Yükle')}
+                {t('activity-image:uploadImages')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm truncate">
-                {t('activity-image:uploadDescription', 'Birden fazla resim seçebilir ve yükleyebilirsiniz')}
+                {t('activity-image:uploadDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -122,7 +122,7 @@ export function ActivityImageUploadDialog({
             size="icon" 
             onClick={handleClose} 
             className="shrink-0 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white" 
-            aria-label={t('common.close', 'Kapat')}
+            aria-label={t('common.close')}
           >
             <X size={20} />
           </Button>
@@ -148,10 +148,10 @@ export function ActivityImageUploadDialog({
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        {t('activity-image:clickToSelect', 'Dosya seçmek için tıklayın')}
+                        {t('activity-image:clickToSelect')}
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {t('activity-image:fileTypes', 'PNG, JPG, GIF, WEBP (maks. 5MB)')}
+                        {t('activity-image:fileTypes')}
                       </p>
                     </div>
                   </div>
@@ -162,7 +162,7 @@ export function ActivityImageUploadDialog({
             {selectedFiles.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                  {t('activity-image:selectedFiles', 'Seçilen Dosyalar')} ({selectedFiles.length})
+                  {t('activity-image:selectedFiles')} ({selectedFiles.length})
                 </h3>
                 <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                   {selectedFiles.map((fileItem, index) => (
@@ -187,7 +187,7 @@ export function ActivityImageUploadDialog({
                         <Input
                           value={fileItem.aciklama}
                           onChange={(e) => handleDescriptionChange(index, e.target.value)}
-                          placeholder={t('activity-image:descriptionPlaceholder', 'Açıklama (opsiyonel)')}
+                          placeholder={t('activity-image:descriptionPlaceholder')}
                           className={INPUT_STYLE}
                           maxLength={500}
                         />
@@ -215,7 +215,7 @@ export function ActivityImageUploadDialog({
             onClick={handleClose} 
             className="h-11 px-5 rounded-lg font-medium"
           >
-            {t('common.cancel', 'Vazgeç')}
+            {t('common.cancel')}
           </Button>
           <Button 
             type="button" 
@@ -224,8 +224,8 @@ export function ActivityImageUploadDialog({
             className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none"
           >
             {isLoading 
-              ? t('common.uploading', 'Yükleniyor...') 
-              : t('activity-image:upload', 'Yükle ({{count}})', { count: selectedFiles.length })
+              ? t('common.uploading') 
+              : t('activity-image:upload', { count: selectedFiles.length })
             }
           </Button>
         </div>
