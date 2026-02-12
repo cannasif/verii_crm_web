@@ -21,10 +21,10 @@ export const useUpdateUserDetail = (): UseMutationResult<UserDetailDto, Error, {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedUserDetail.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.byUserId(updatedUserDetail.userId) });
-      toast.success(t('userDetailManagement.updateSuccess', 'Kullanıcı detayı başarıyla güncellendi'));
+      toast.success(t('userDetailManagement.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDetailManagement.updateError', 'Kullanıcı detayı güncellenirken bir hata oluştu'));
+      toast.error(error.message || t('userDetailManagement.updateError'));
     },
   });
 };

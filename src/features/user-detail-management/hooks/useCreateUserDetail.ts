@@ -20,10 +20,10 @@ export const useCreateUserDetail = (): UseMutationResult<UserDetailDto, Error, C
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.byUserId(newUserDetail.userId) });
-      toast.success(t('userDetailManagement.createSuccess', 'Kullanıcı detayı başarıyla oluşturuldu'));
+      toast.success(t('userDetailManagement.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDetailManagement.createError', 'Kullanıcı detayı oluşturulurken bir hata oluştu'));
+      toast.error(error.message || t('userDetailManagement.createError'));
     },
   });
 };

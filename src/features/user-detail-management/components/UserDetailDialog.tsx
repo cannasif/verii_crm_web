@@ -141,12 +141,12 @@ export function UserDetailDialog({
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error(t('userDetailManagement.fileSizeError', 'Dosya boyutu 5MB\'dan büyük olamaz'));
+      toast.error(t('userDetailManagement.fileSizeError'));
       return;
     }
 
     if (!file.type.startsWith('image/')) {
-      toast.error(t('userDetailManagement.fileTypeError', 'Sadece resim dosyaları yüklenebilir'));
+      toast.error(t('userDetailManagement.fileTypeError'));
       return;
     }
 
@@ -288,7 +288,7 @@ export function UserDetailDialog({
                     onClick={() => onOpenChange(false)}
                 >
                     <LogOut size={18} />
-                    {t('userDetailManagement.cancel', 'Vazgeç ve Kapat')}
+                    {t('userDetailManagement.cancel')}
                 </Button>
             </div>
           </div>
@@ -317,7 +317,7 @@ export function UserDetailDialog({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1 uppercase tracking-wide">
-                                {t('userDetailManagement.height', 'Boy (cm)')}
+                                {t('userDetailManagement.height')}
                             </FormLabel>
                             <FormControl>
                               <div className="relative group">
@@ -346,7 +346,7 @@ export function UserDetailDialog({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1 uppercase tracking-wide">
-                                {t('userDetailManagement.weight', 'Kilo (kg)')}
+                                {t('userDetailManagement.weight')}
                             </FormLabel>
                             <FormControl>
                                 <div className="relative group">
@@ -374,7 +374,7 @@ export function UserDetailDialog({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1 uppercase tracking-wide">
-                              {t('userDetailManagement.gender', 'Cinsiyet')}
+                              {t('userDetailManagement.gender')}
                           </FormLabel>
                           <div className="relative group">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 z-10 group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
@@ -384,12 +384,12 @@ export function UserDetailDialog({
                             >
                                 <FormControl>
                                 <SelectTrigger className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-12 w-full shadow-sm transition-all">
-                                    <SelectValue placeholder={t('userDetailManagement.selectGender', 'Seçiniz')} />
+                                    <SelectValue placeholder={t('userDetailManagement.selectGender')} />
                                 </SelectTrigger>
                                 </FormControl>
                                 <SelectContent className="bg-white dark:bg-[#1e1235] border-zinc-100 dark:border-white/10 text-zinc-900 dark:text-slate-300 shadow-xl">
                                 <SelectItem value="none" className="focus:bg-zinc-50 dark:focus:bg-white/5 cursor-pointer">
-                                    {t('userDetailManagement.noGenderSelected', 'Belirtilmemiş')}
+                                    {t('userDetailManagement.noGenderSelected')}
                                 </SelectItem>
                                 {GENDER_OPTIONS.map((option) => (
                                     <SelectItem key={option.value} value={option.value.toString()} className="focus:bg-zinc-50 dark:focus:bg-white/5 cursor-pointer">
@@ -410,7 +410,7 @@ export function UserDetailDialog({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1 uppercase tracking-wide">
-                              {t('userDetailManagement.description', 'Biyografi')}
+                              {t('userDetailManagement.description')}
                           </FormLabel>
                           <FormControl>
                             <div className="relative group">
@@ -418,7 +418,7 @@ export function UserDetailDialog({
                                 <Textarea
                                 {...field}
                                 value={field.value || ''}
-                                placeholder={t('userDetailManagement.enterDescription', 'Kendinizden kısaca bahsedin...')}
+                                placeholder={t('userDetailManagement.enterDescription')}
                                 rows={4}
                                 className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl py-3.5 min-h-[120px] resize-none shadow-sm transition-all"
                                 />
@@ -438,12 +438,12 @@ export function UserDetailDialog({
                         {isSaving ? (
                              <div className="flex items-center gap-2">
                                  <Loader2 size={18} className="animate-spin" />
-                                 {t('userDetailManagement.saving', 'Kaydediliyor...')}
+                                 {t('userDetailManagement.saving')}
                              </div>
                         ) : (
                             <div className="flex items-center justify-center gap-2">
                                 <Save size={18} />
-                                {t('userDetailManagement.save', 'Kaydet')}
+                                {t('userDetailManagement.save')}
                             </div>
                         )}
                       </Button>
@@ -460,7 +460,7 @@ export function UserDetailDialog({
                             <div className="p-2 bg-white dark:bg-white/5 rounded-lg border border-zinc-100 dark:border-white/5 group-hover:border-pink-200 dark:group-hover:border-pink-900 transition-colors">
                                 <Shield size={18} className="text-zinc-400 dark:text-slate-500 group-hover:text-pink-600 dark:group-hover:text-pink-500 group-hover:animate-[wiggle_0.3s_ease-in-out] transition-colors" />
                             </div>
-                            <span className="group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{t('userDetailManagement.changePassword', 'Şifre Değiştir')}</span>
+                            <span className="group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{t('userDetailManagement.changePassword')}</span>
                         </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-6 py-6 bg-white dark:bg-[#1a1025] border-t border-zinc-100 dark:border-white/5">
@@ -478,7 +478,7 @@ export function UserDetailDialog({
                                             name="currentPassword"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1">{t('userDetailManagement.currentPassword', 'Mevcut Şifre')}</FormLabel>
+                                                <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1">{t('userDetailManagement.currentPassword')}</FormLabel>
                                                 <FormControl>
                                                     <div className="relative group focus-within:text-pink-600 dark:focus-within:text-pink-500">
                                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
@@ -506,7 +506,7 @@ export function UserDetailDialog({
                                             name="newPassword"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1">{t('userDetailManagement.newPassword', 'Yeni Şifre')}</FormLabel>
+                                                <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1">{t('userDetailManagement.newPassword')}</FormLabel>
                                                 <FormControl>
                                                     <div className="relative group focus-within:text-pink-600 dark:focus-within:text-pink-500">
                                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
@@ -540,12 +540,12 @@ export function UserDetailDialog({
                                         {isChangingPassword ? (
                                             <div className="flex items-center gap-2">
                                                  <Loader2 size={16} className="animate-spin" />
-                                                 {t('userDetailManagement.changingPassword', 'İşleniyor...')}
+                                                 {t('userDetailManagement.changingPassword')}
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <Shield size={16} />
-                                                {t('userDetailManagement.changePasswordButton', 'Şifreyi Güncelle')}
+                                                {t('userDetailManagement.changePasswordButton')}
                                             </div>
                                         )}
                                         </Button>

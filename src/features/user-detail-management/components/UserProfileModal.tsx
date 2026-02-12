@@ -176,7 +176,7 @@ export function UserProfileModal({
                   <UserIcon size={20} className="md:w-6 md:h-6" />
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('profile.title', 'Profil Bilgileri')}</p>
+                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('profile.title')}</p>
                   <p className="text-[10px] md:text-xs opacity-50">{t('customerManagement.form.editDescription')}</p>
                 </div>
               </div>
@@ -193,7 +193,7 @@ export function UserProfileModal({
                   <LanguageSquareIcon size={20} className="md:w-6 md:h-6" />
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('language_choice', 'Dil Seçeneği')}</p>
+                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('language_choice')}</p>
                 </div>
               </div>
               <Select value={currentLanguage.code} onValueChange={handleLanguageChange} disabled={isChangingLanguage}>
@@ -238,7 +238,7 @@ export function UserProfileModal({
                   {darkMode ? <Moon02Icon size={20} className="md:w-6 md:h-6" /> : <Sun01Icon size={20} className="md:w-6 md:h-6" />}
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('appearance', 'Görünüm Modu')}</p>
+                  <p className="font-bold text-sm md:text-base lg:text-lg">{t('appearance')}</p>
                 </div>
               </div>
               <Switch 
@@ -256,7 +256,7 @@ export function UserProfileModal({
               onClick={handleLogout}
             >
               <Logout02Icon size={18} className="mr-3 md:w-5 md:h-5" />
-              {t('logout', 'ÇIKIŞ YAP')}
+              {t('logout')}
             </Button>
           </div>
         </div>

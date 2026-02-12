@@ -16,10 +16,10 @@ export const useUploadProfilePicture = (): UseMutationResult<UserDetailDto, Erro
     },
     onSuccess: async (updatedUserDetail: UserDetailDto) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.byUserId(updatedUserDetail.userId) });
-      toast.success(t('userDetailManagement.uploadProfilePictureSuccess', 'Profil resmi başarıyla yüklendi'));
+      toast.success(t('userDetailManagement.uploadProfilePictureSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDetailManagement.uploadProfilePictureError', 'Profil resmi yüklenirken bir hata oluştu'));
+      toast.error(error.message || t('userDetailManagement.uploadProfilePictureError'));
     },
   });
 };

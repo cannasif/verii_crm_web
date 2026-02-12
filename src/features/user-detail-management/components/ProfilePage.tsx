@@ -97,7 +97,7 @@ export function ProfilePage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('userDetailManagement.profilePageTitle', 'Profil'));
+    setPageTitle(t('userDetailManagement.profilePageTitle'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -142,11 +142,11 @@ export function ProfilePage(): ReactElement {
     const file = event.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error(t('userDetailManagement.fileSizeError', 'Dosya boyutu 5MB\'dan büyük olamaz'));
+      toast.error(t('userDetailManagement.fileSizeError'));
       return;
     }
     if (!file.type.startsWith('image/')) {
-      toast.error(t('userDetailManagement.fileTypeError', 'Sadece resim dosyaları yüklenebilir'));
+      toast.error(t('userDetailManagement.fileTypeError'));
       return;
     }
     const tempPreviewUrl = await new Promise<string>((resolve) => {
@@ -203,7 +203,7 @@ export function ProfilePage(): ReactElement {
         email: data.email || undefined,
       });
     }
-    toast.success(t('userDetailManagement.saveSuccess', 'Profil güncellendi'));
+    toast.success(t('userDetailManagement.saveSuccess'));
   };
 
   const handleChangePasswordSubmit = async (data: ChangePasswordRequest): Promise<void> => {
@@ -233,8 +233,8 @@ export function ProfilePage(): ReactElement {
     <div className="w-full max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-10">
       <Breadcrumb
         items={[
-          { label: t('sidebar.home', 'Ana Sayfa') },
-          { label: t('userDetailManagement.profilePageTitle', 'Profil'), isActive: true },
+          { label: t('sidebar.home') },
+          { label: t('userDetailManagement.profilePageTitle'), isActive: true },
         ]}
       />
 
@@ -246,7 +246,7 @@ export function ProfilePage(): ReactElement {
         )}
       >
         <ArrowLeft size={16} />
-        {t('userDetailManagement.backToHome', 'Ana sayfaya dön')}
+        {t('userDetailManagement.backToHome')}
       </Link>
 
       <section className="rounded-2xl border bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border-white/60 dark:border-white/5 p-6 sm:p-8 shadow-sm transition-all duration-300">
@@ -293,7 +293,7 @@ export function ProfilePage(): ReactElement {
               )}
               <span className="inline-flex items-center gap-2 text-sm">
                 <Briefcase size={14} />
-                {t('roles.admin', 'Yönetici')}
+                {t('roles.admin')}
               </span>
             </div>
           </div>
@@ -302,9 +302,9 @@ export function ProfilePage(): ReactElement {
 
       <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-xl">{t('userDetailManagement.personalInfo', 'Kişisel Bilgiler')}</CardTitle>
+          <CardTitle className="text-xl">{t('userDetailManagement.personalInfo')}</CardTitle>
           <CardDescription>
-            {t('userDetailManagement.personalInfoDescription', 'Boy, kilo, cinsiyet ve biyografi bilgilerinizi güncelleyin.')}
+            {t('userDetailManagement.personalInfoDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -317,7 +317,7 @@ export function ProfilePage(): ReactElement {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.height', 'Boy (cm)')}
+                        {t('userDetailManagement.height')}
                       </FormLabel>
                       <FormControl>
                         <div className="relative group">
@@ -343,7 +343,7 @@ export function ProfilePage(): ReactElement {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.weight', 'Kilo (kg)')}
+                        {t('userDetailManagement.weight')}
                       </FormLabel>
                       <FormControl>
                         <div className="relative group">
@@ -370,7 +370,7 @@ export function ProfilePage(): ReactElement {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t('userDetailManagement.gender', 'Cinsiyet')}
+                      {t('userDetailManagement.gender')}
                     </FormLabel>
                     <div className="relative group">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
@@ -380,11 +380,11 @@ export function ProfilePage(): ReactElement {
                       >
                         <FormControl>
                           <SelectTrigger className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:ring-0 focus:ring-offset-0 focus:border-pink-500 dark:focus:border-pink-500 rounded-xl transition-all w-full">
-                            <SelectValue placeholder={t('userDetailManagement.selectGender', 'Seçiniz')} />
+                            <SelectValue placeholder={t('userDetailManagement.selectGender')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="none">{t('userDetailManagement.noGenderSelected', 'Belirtilmemiş')}</SelectItem>
+                          <SelectItem value="none">{t('userDetailManagement.noGenderSelected')}</SelectItem>
                           {GENDER_OPTIONS.map((option) => (
                             <SelectItem key={option.value} value={String(option.value)}>
                               {t(`userDetailManagement.gender${option.label}`, option.label)}
@@ -404,7 +404,7 @@ export function ProfilePage(): ReactElement {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.phoneNumber', 'Telefon Numarası')}
+                        {t('userDetailManagement.phoneNumber')}
                       </FormLabel>
                       <FormControl>
                         <div className="relative group">
@@ -414,7 +414,7 @@ export function ProfilePage(): ReactElement {
                             {...field}
                             value={field.value ?? ''}
                             className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder={t('userDetailManagement.enterPhoneNumber', '+90 5XX XXX XX XX')}
+                            placeholder={t('userDetailManagement.enterPhoneNumber')}
                           />
                         </div>
                       </FormControl>
@@ -428,7 +428,7 @@ export function ProfilePage(): ReactElement {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.email', 'E-posta Adresi')}
+                        {t('userDetailManagement.email')}
                       </FormLabel>
                       <FormControl>
                         <div className="relative group">
@@ -438,7 +438,7 @@ export function ProfilePage(): ReactElement {
                             {...field}
                             value={field.value ?? ''}
                             className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder={t('userDetailManagement.enterEmail', 'ornek@sirket.com')}
+                            placeholder={t('userDetailManagement.enterEmail')}
                           />
                         </div>
                       </FormControl>
@@ -452,7 +452,7 @@ export function ProfilePage(): ReactElement {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.linkedinUrl', 'LinkedIn Profili')}
+                        {t('userDetailManagement.linkedinUrl')}
                       </FormLabel>
                       <FormControl>
                         <div className="relative group">
@@ -462,7 +462,7 @@ export function ProfilePage(): ReactElement {
                             {...field}
                             value={field.value ?? ''}
                             className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder={t('userDetailManagement.enterLinkedinUrl', 'https://linkedin.com/in/...')}
+                            placeholder={t('userDetailManagement.enterLinkedinUrl')}
                           />
                         </div>
                       </FormControl>
@@ -477,7 +477,7 @@ export function ProfilePage(): ReactElement {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t('userDetailManagement.description', 'Biyografi')}
+                      {t('userDetailManagement.description')}
                     </FormLabel>
                     <FormControl>
                       <div className="relative group">
@@ -485,7 +485,7 @@ export function ProfilePage(): ReactElement {
                         <Textarea
                           {...field}
                           value={field.value ?? ''}
-                          placeholder={t('userDetailManagement.enterDescription', 'Kendinizden kısaca bahsedin...')}
+                          placeholder={t('userDetailManagement.enterDescription')}
                           rows={4}
                           className="pl-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl min-h-[120px] resize-none transition-all"
                         />
@@ -500,12 +500,12 @@ export function ProfilePage(): ReactElement {
                   {isSaving ? (
                     <>
                       <Loader2 size={18} className="animate-spin mr-2" />
-                      {t('userDetailManagement.saving', 'Kaydediliyor...')}
+                      {t('userDetailManagement.saving')}
                     </>
                   ) : (
                     <>
                       <Save size={18} className="mr-2" />
-                      {t('userDetailManagement.save', 'Kaydet')}
+                      {t('userDetailManagement.save')}
                     </>
                   )}
                 </Button>
@@ -519,10 +519,10 @@ export function ProfilePage(): ReactElement {
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">
             <Shield size={20} className="text-muted-foreground" />
-            {t('userDetailManagement.security', 'Güvenlik')}
+            {t('userDetailManagement.security')}
           </CardTitle>
           <CardDescription>
-            {t('userDetailManagement.securityDescription', 'Hesap şifrenizi güvenli bir şekilde güncelleyin.')}
+            {t('userDetailManagement.securityDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -533,7 +533,7 @@ export function ProfilePage(): ReactElement {
                   <div className="p-2 rounded-lg bg-muted">
                     <Lock size={18} className="text-muted-foreground" />
                   </div>
-                  {t('userDetailManagement.changePassword', 'Şifre Değiştir')}
+                  {t('userDetailManagement.changePassword')}
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-2 pb-0 px-0">
@@ -550,7 +550,7 @@ export function ProfilePage(): ReactElement {
                       name="currentPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('userDetailManagement.currentPassword', 'Mevcut Şifre')}</FormLabel>
+                          <FormLabel>{t('userDetailManagement.currentPassword')}</FormLabel>
                           <FormControl>
                             <div className="relative group">
                               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
@@ -578,7 +578,7 @@ export function ProfilePage(): ReactElement {
                       name="newPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('userDetailManagement.newPassword', 'Yeni Şifre')}</FormLabel>
+                          <FormLabel>{t('userDetailManagement.newPassword')}</FormLabel>
                           <FormControl>
                             <div className="relative group">
                               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
@@ -586,7 +586,7 @@ export function ProfilePage(): ReactElement {
                                 {...field}
                                 type={isNewPasswordVisible ? 'text' : 'password'}
                                 className="pl-10 pr-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                                placeholder={t('userDetailManagement.newPasswordPlaceholder', 'Yeni şifreniz')}
+                                placeholder={t('userDetailManagement.newPasswordPlaceholder')}
                               />
                               <button
                                 type="button"
@@ -606,12 +606,12 @@ export function ProfilePage(): ReactElement {
                         {isChangingPassword ? (
                           <>
                             <Loader2 size={16} className="animate-spin mr-2" />
-                            {t('userDetailManagement.changingPassword', 'İşleniyor...')}
+                            {t('userDetailManagement.changingPassword')}
                           </>
                         ) : (
                           <>
                             <Shield size={16} className="mr-2" />
-                            {t('userDetailManagement.changePasswordButton', 'Şifreyi Güncelle')}
+                            {t('userDetailManagement.changePasswordButton')}
                           </>
                         )}
                       </Button>
