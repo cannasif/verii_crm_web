@@ -50,10 +50,10 @@ export function GroupPermissionsPanel({
       <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
           <DialogTitle>
-            {t('permissionGroups.permissionsPanel.title', 'Edit Group Permissions')}
+            {t('permissionGroups.permissionsPanel.title')}
           </DialogTitle>
           <DialogDescription>
-            {group?.name} - {t('permissionGroups.permissionsPanel.description', 'Select permissions for this group')}
+            {group?.name} - {t('permissionGroups.permissionsPanel.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -61,7 +61,7 @@ export function GroupPermissionsPanel({
           {group?.permissionCodes && group.permissionCodes.length > 0 && (
             <div className="mb-4">
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
-                {t('permissionGroups.permissionsPanel.currentCodes', 'Current permission codes')}
+                {t('permissionGroups.permissionsPanel.currentCodes')}
               </p>
               <div className="flex flex-wrap gap-1">
                 {group.permissionCodes.map((code) => (
@@ -74,7 +74,7 @@ export function GroupPermissionsPanel({
           )}
           <div>
             <p className="text-sm font-medium mb-2 inline-flex items-center">
-              {t('permissionGroups.form.permissions', 'Permissions')}
+              {t('permissionGroups.form.permissions')}
               <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
             </p>
             <PermissionDefinitionMultiSelect value={selectedIds} onChange={setSelectedIds} disabled={setPermissions.isPending} />
@@ -83,12 +83,12 @@ export function GroupPermissionsPanel({
 
         <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={setPermissions.isPending}>
-            {t('common.cancel', 'Cancel')}
+            {t('common.cancel')}
           </Button>
           <span className="inline-flex items-center gap-1">
             <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
             <Button onClick={handleSave} disabled={setPermissions.isPending}>
-              {setPermissions.isPending ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
+              {setPermissions.isPending ? t('common.saving') : t('common.save')}
             </Button>
           </span>
         </DialogFooter>

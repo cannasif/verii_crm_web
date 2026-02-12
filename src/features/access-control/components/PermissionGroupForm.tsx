@@ -89,13 +89,13 @@ export function PermissionGroupForm({
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
           <DialogTitle className="text-xl font-bold">
             {item
-              ? t('permissionGroups.form.editTitle', 'Edit Permission Group')
-              : t('permissionGroups.form.addTitle', 'Add Permission Group')}
+              ? t('permissionGroups.form.editTitle')
+              : t('permissionGroups.form.addTitle')}
           </DialogTitle>
           <DialogDescription>
             {item
-              ? t('permissionGroups.form.editDescription', 'Update permission group details')
-              : t('permissionGroups.form.addDescription', 'Create a new permission group')}
+              ? t('permissionGroups.form.editDescription')
+              : t('permissionGroups.form.addDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -108,11 +108,11 @@ export function PermissionGroupForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="inline-flex items-center">
-                      {t('permissionGroups.form.name', 'Name')}
+                      {t('permissionGroups.form.name')}
                       <FieldHelpTooltip text={t('help.permissionGroup.name')} />
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder={t('permissionGroups.form.namePlaceholder', 'Group name')} maxLength={100} />
+                      <Input {...field} placeholder={t('permissionGroups.form.namePlaceholder')} maxLength={100} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -123,9 +123,9 @@ export function PermissionGroupForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('permissionGroups.form.description', 'Description')}</FormLabel>
+                    <FormLabel>{t('permissionGroups.form.description')}</FormLabel>
                     <FormControl>
-                      <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionGroups.form.descriptionPlaceholder', 'Optional description')} maxLength={500} className="min-h-[80px]" />
+                      <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionGroups.form.descriptionPlaceholder')} maxLength={500} className="min-h-[80px]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -137,7 +137,7 @@ export function PermissionGroupForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <FormLabel className="inline-flex items-center">
-                      {t('permissionGroups.form.isSystemAdmin', 'System Admin')}
+                      {t('permissionGroups.form.isSystemAdmin')}
                       <FieldHelpTooltip text={t('help.permissionGroup.isSystemAdmin')} />
                     </FormLabel>
                     <FormControl>
@@ -153,7 +153,7 @@ export function PermissionGroupForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <FormLabel className="inline-flex items-center">
-                      {t('permissionGroups.form.isActive', 'Active')}
+                      {t('permissionGroups.form.isActive')}
                       <FieldHelpTooltip text={t('help.permissionGroup.isActive')} />
                     </FormLabel>
                     <FormControl>
@@ -169,7 +169,7 @@ export function PermissionGroupForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="inline-flex items-center">
-                      {t('permissionGroups.form.permissions', 'Permissions')}
+                      {t('permissionGroups.form.permissions')}
                       <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
                     </FormLabel>
                     <FormControl>
@@ -185,12 +185,12 @@ export function PermissionGroupForm({
 
         <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            {t('common.cancel', 'Cancel')}
+            {t('common.cancel')}
           </Button>
           <span className="inline-flex items-center gap-1">
             <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
             <Button type="submit" form="permission-group-form" disabled={isLoading}>
-              {isLoading ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
+              {isLoading ? t('common.saving') : t('common.save')}
             </Button>
           </span>
         </DialogFooter>

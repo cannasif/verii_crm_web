@@ -41,7 +41,7 @@ export function PermissionGroupMultiSelect({
   };
 
   if (isLoading) {
-    return <div className="text-sm text-slate-500 py-4">{t('common.loading', 'Loading...')}</div>;
+    return <div className="text-sm text-slate-500 py-4">{t('common.loading')}</div>;
   }
 
   return (
@@ -54,12 +54,12 @@ export function PermissionGroupMultiSelect({
           disabled={disabled || items.length === 0}
         />
         <label htmlFor="select-all-groups" className="text-sm font-medium cursor-pointer">
-          {t('userGroupAssignments.selectAll', 'Select all')}
+          {t('userGroupAssignments.selectAll')}
         </label>
       </div>
       <div className="max-h-[200px] overflow-y-auto border rounded-lg p-2 space-y-2">
         {items.length === 0 ? (
-          <p className="text-sm text-slate-500 py-2">{t('userGroupAssignments.noGroups', 'No permission groups available')}</p>
+          <p className="text-sm text-slate-500 py-2">{t('userGroupAssignments.noGroups')}</p>
         ) : (
           items.map((item) => (
             <div key={item.id} className="flex items-center gap-2">

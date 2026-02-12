@@ -94,7 +94,7 @@ export function PermissionDefinitionMultiSelect({
   }, [filteredItems, value]);
 
   if (isLoading) {
-    return <div className="text-sm text-slate-500 py-4">{t('common.loading', 'Loading...')}</div>;
+    return <div className="text-sm text-slate-500 py-4">{t('common.loading')}</div>;
   }
 
   return (
@@ -102,7 +102,7 @@ export function PermissionDefinitionMultiSelect({
       <Input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={t('permissionGroups.search', 'Ara...')}
+        placeholder={t('permissionGroups.search')}
         disabled={disabled}
       />
       <div className="flex items-center gap-2">
@@ -113,12 +113,12 @@ export function PermissionDefinitionMultiSelect({
           disabled={disabled || filteredItems.length === 0}
         />
         <label htmlFor="select-all-permissions" className="text-sm font-medium cursor-pointer">
-          {t('permissionGroups.selectAll', 'Select all')}
+          {t('permissionGroups.selectAll')}
         </label>
       </div>
       <div className="max-h-[200px] overflow-y-auto border rounded-lg p-2 space-y-2">
         {filteredItems.length === 0 ? (
-          <p className="text-sm text-slate-500 py-2">{t('permissionGroups.noDefinitions', 'No permission definitions available')}</p>
+          <p className="text-sm text-slate-500 py-2">{t('permissionGroups.noDefinitions')}</p>
         ) : (
           groupedItems.map(({ groupLabel, items: group }) => (
             <div key={groupLabel} className="space-y-2">

@@ -100,13 +100,13 @@ export function PermissionDefinitionForm({
           <div className="space-y-1">
             <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
               {item
-                ? t('permissionDefinitions.form.editTitle', 'Edit Permission Definition')
-                : t('permissionDefinitions.form.addTitle', 'Add Permission Definition')}
+                ? t('permissionDefinitions.form.editTitle')
+                : t('permissionDefinitions.form.addTitle')}
             </DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
               {item
-                ? t('permissionDefinitions.form.editDescription', 'Update permission definition details')
-                : t('permissionDefinitions.form.addDescription', 'Create a new permission definition')}
+                ? t('permissionDefinitions.form.editDescription')
+                : t('permissionDefinitions.form.addDescription')}
             </DialogDescription>
           </div>
         </DialogHeader>
@@ -120,7 +120,7 @@ export function PermissionDefinitionForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="inline-flex items-center">
-                      {t('permissionDefinitions.form.code', 'Code')}
+                      {t('permissionDefinitions.form.code')}
                       <FieldHelpTooltip text={t('help.permissionDefinition.code')} />
                     </FormLabel>
                     <FormControl>
@@ -138,9 +138,9 @@ export function PermissionDefinitionForm({
                               form.setValue('name', title, { shouldDirty: true });
                             }
                           }}
-                          placeholder={t('permissionDefinitions.form.codePlaceholder', 'Kod secin')}
-                          searchPlaceholder={t('permissionDefinitions.form.codeSearchPlaceholder', 'Ara...')}
-                          emptyText={t('permissionDefinitions.form.codeEmpty', 'Sonuc bulunamadi')}
+                          placeholder={t('permissionDefinitions.form.codePlaceholder')}
+                          searchPlaceholder={t('permissionDefinitions.form.codeSearchPlaceholder')}
+                          emptyText={t('permissionDefinitions.form.codeEmpty')}
                         />
                       )}
                     </FormControl>
@@ -148,17 +148,13 @@ export function PermissionDefinitionForm({
                     {field.value ? (
                       <div className="pt-2">
                         <div className="text-xs text-slate-500 dark:text-slate-400">
-                          {t(
-                            'permissionDefinitions.form.affectedRoutes',
-                            'Etkilenen sayfalar'
+                          {t('permissionDefinitions.form.affectedRoutes'
                           )}
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {getRoutesForPermissionCode(field.value).length === 0 ? (
                             <span className="text-xs text-slate-400">
-                              {t(
-                                'permissionDefinitions.form.affectedRoutesNone',
-                                'Bu kod için eşleşen rota bulunamadı'
+                              {t('permissionDefinitions.form.affectedRoutesNone'
                               )}
                             </span>
                           ) : (
@@ -180,11 +176,11 @@ export function PermissionDefinitionForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="inline-flex items-center">
-                      {t('permissionDefinitions.form.name', 'Name')}
+                      {t('permissionDefinitions.form.name')}
                       <FieldHelpTooltip text={t('help.permissionDefinition.name')} />
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder={t('permissionDefinitions.form.namePlaceholder', 'Display name')} maxLength={150} />
+                      <Input {...field} placeholder={t('permissionDefinitions.form.namePlaceholder')} maxLength={150} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -196,11 +192,11 @@ export function PermissionDefinitionForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="inline-flex items-center">
-                      {t('permissionDefinitions.form.description', 'Description')}
+                      {t('permissionDefinitions.form.description')}
                       <FieldHelpTooltip text={t('help.permissionDefinition.description')} />
                     </FormLabel>
                     <FormControl>
-                      <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionDefinitions.form.descriptionPlaceholder', 'Optional description')} maxLength={500} className="min-h-[80px]" />
+                      <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionDefinitions.form.descriptionPlaceholder')} maxLength={500} className="min-h-[80px]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -212,7 +208,7 @@ export function PermissionDefinitionForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <FormLabel className="inline-flex items-center">
-                      {t('permissionDefinitions.form.isActive', 'Active')}
+                      {t('permissionDefinitions.form.isActive')}
                       <FieldHelpTooltip text={t('help.permissionDefinition.isActive')} />
                     </FormLabel>
                     <FormControl>
@@ -228,12 +224,12 @@ export function PermissionDefinitionForm({
 
         <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            {t('common.cancel', 'Cancel')}
+            {t('common.cancel')}
           </Button>
           <span className="inline-flex items-center gap-1">
             <FieldHelpTooltip text={t('help.permissionDefinition.save')} side="top" />
             <Button type="submit" form="permission-definition-form" disabled={isLoading}>
-              {isLoading ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
+              {isLoading ? t('common.saving') : t('common.save')}
             </Button>
           </span>
         </DialogFooter>

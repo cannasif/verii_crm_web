@@ -74,7 +74,7 @@ export function PermissionGroupsPage(): ReactElement {
   }, [items, searchTerm]);
 
   useEffect(() => {
-    setPageTitle(t('permissionGroups.title', 'Permission Groups'));
+    setPageTitle(t('permissionGroups.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -129,19 +129,19 @@ export function PermissionGroupsPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6">
-      <Breadcrumb items={[{ label: t('sidebar.accessControl', 'Access Control') }, { label: t('sidebar.permissionGroups', 'Permission Groups'), isActive: true }]} />
+      <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.permissionGroups'), isActive: true }]} />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('permissionGroups.title', 'Permission Groups')}
+            {t('permissionGroups.title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
-            {t('permissionGroups.description', 'Manage permission groups and their assignments')}
+            {t('permissionGroups.description')}
           </p>
         </div>
         <Button onClick={handleAddClick}>
           <Plus size={18} className="mr-2" />
-          {t('permissionGroups.add', 'Add Group')}
+          {t('permissionGroups.add')}
         </Button>
       </div>
 
@@ -149,7 +149,7 @@ export function PermissionGroupsPage(): ReactElement {
         <div className="relative group w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
-            placeholder={t('common.search', 'Search')}
+            placeholder={t('common.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 h-10"
@@ -171,22 +171,22 @@ export function PermissionGroupsPage(): ReactElement {
       <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white dark:bg-[#0b0713] shadow-sm">
         {isLoading ? (
           <div className="flex items-center justify-center py-20 min-h-[300px]">
-            <div className="animate-pulse text-slate-500">{t('common.loading', 'Loading...')}</div>
+            <div className="animate-pulse text-slate-500">{t('common.loading')}</div>
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="flex items-center justify-center py-20 min-h-[300px]">
-            <p className="text-slate-500 dark:text-slate-400">{t('common.noData', 'No data')}</p>
+            <p className="text-slate-500 dark:text-slate-400">{t('common.noData')}</p>
           </div>
         ) : (
           <>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('permissionGroups.table.name', 'Name')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.isSystemAdmin', 'System Admin')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.isActive', 'Active')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.permissionCount', 'Permissions')}</TableHead>
-                  <TableHead className="text-right">{t('common.actions', 'Actions')}</TableHead>
+                  <TableHead>{t('permissionGroups.table.name')}</TableHead>
+                  <TableHead>{t('permissionGroups.table.isSystemAdmin')}</TableHead>
+                  <TableHead>{t('permissionGroups.table.isActive')}</TableHead>
+                  <TableHead>{t('permissionGroups.table.permissionCount')}</TableHead>
+                  <TableHead className="text-right">{t('common.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -195,24 +195,24 @@ export function PermissionGroupsPage(): ReactElement {
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>
                       <Badge variant={item.isSystemAdmin ? 'default' : 'secondary'}>
-                        {item.isSystemAdmin ? t('common.yes', 'Yes') : t('common.no', 'No')}
+                        {item.isSystemAdmin ? t('common.yes') : t('common.no')}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant={item.isActive ? 'default' : 'secondary'}>
-                        {item.isActive ? t('common.yes', 'Yes') : t('common.no', 'No')}
+                        {item.isActive ? t('common.yes') : t('common.no')}
                       </Badge>
                     </TableCell>
                     <TableCell>{(item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0)}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handlePermissionsClick(item)} title={t('permissionGroups.managePermissions', 'Manage permissions')}>
+                      <Button variant="ghost" size="sm" onClick={() => handlePermissionsClick(item)} title={t('permissionGroups.managePermissions')}>
                         <Settings size={16} />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>
-                        {t('common.edit', 'Edit')}
+                        {t('common.edit')}
                       </Button>
                       <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDeleteClick(item)}>
-                        {t('common.delete', 'Delete')}
+                        {t('common.delete')}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -222,7 +222,7 @@ export function PermissionGroupsPage(): ReactElement {
             {totalPages > 1 && (
               <div className="flex items-center justify-between p-4 border-t">
                 <span className="text-sm text-slate-500">
-                  {t('permissionGroups.table.showing', '{{from}}-{{to}} of {{total}}', {
+                  {t('permissionGroups.table.showing', {
                     from: (pageNumber - 1) * pageSize + 1,
                     to: Math.min(pageNumber * pageSize, totalCount),
                     total: totalCount,
@@ -230,10 +230,10 @@ export function PermissionGroupsPage(): ReactElement {
                 </span>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => setPageNumber((p) => Math.max(1, p - 1))} disabled={pageNumber <= 1}>
-                    {t('common.previous', 'Previous')}
+                    {t('common.previous')}
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => setPageNumber((p) => Math.min(totalPages, p + 1))} disabled={pageNumber >= totalPages}>
-                    {t('common.next', 'Next')}
+                    {t('common.next')}
                   </Button>
                 </div>
               </div>
@@ -255,19 +255,19 @@ export function PermissionGroupsPage(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('permissionGroups.delete.confirmTitle', 'Delete Permission Group')}</DialogTitle>
+            <DialogTitle>{t('permissionGroups.delete.confirmTitle')}</DialogTitle>
             <DialogDescription>
-              {t('permissionGroups.delete.confirmMessage', 'Are you sure you want to delete "{{name}}"? This action cannot be undone.', {
+              {t('permissionGroups.delete.confirmMessage', {
                 name: itemToDelete?.name ?? '',
               })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
-              {t('common.cancel', 'Cancel')}
+              {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? t('common.processing', 'Processing...') : t('common.delete', 'Delete')}
+              {deleteMutation.isPending ? t('common.processing') : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
