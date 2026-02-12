@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select';
 import { contactFormSchema, SALUTATION_TYPE, type ContactFormSchema } from '../types/contact-types';
 import type { ContactDto } from '../types/contact-types';
+import { isZodFieldRequired } from '@/lib/zod-required';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useTitleOptions } from '@/features/title-management/hooks/useTitleOptions';
 import { 
@@ -188,9 +189,9 @@ export function ContactForm({
                     name="firstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'firstName')}>
                           <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.firstName')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.firstName')}
                         </FormLabel>
                         <FormControl>
                           <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder')} maxLength={100} />
@@ -236,9 +237,9 @@ export function ContactForm({
                     name="lastName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'lastName')}>
                           <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.lastName')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.lastName')}
                         </FormLabel>
                         <FormControl>
                           <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder')} maxLength={100} />
@@ -272,7 +273,7 @@ export function ContactForm({
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <Briefcase01Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.title')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.title')}
                         </FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))}
@@ -305,9 +306,9 @@ export function ContactForm({
                     name="customerId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'customerId')}>
                           <Building03Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.customer')} <span className="text-red-500">*</span>
+                          {t('contactManagement.form.customer')}
                         </FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))}

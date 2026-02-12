@@ -29,6 +29,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { customerFormSchema, type CustomerFormData, type CustomerDto } from '../types/customer-types';
+import { isZodFieldRequired } from '@/lib/zod-required';
 import { useShippingAddressesByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesByCustomer';
 import { useCountryOptions } from '@/features/country-management/hooks/useCountryOptions';
 import { useCityOptions } from '@/features/city-management/hooks/useCityOptions';
@@ -212,7 +213,7 @@ export function CustomerForm({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.name')} <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'name')}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.name')}</FormLabel>
                     <FormControl><Input {...field} className={INPUT_STYLE} placeholder="Örn: ABC Teknoloji A.Ş." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -352,7 +353,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="branchCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.branchCode.label')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'branchCode')}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.branchCode.label')}</FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(Number(e.target.value || 0))} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -360,7 +361,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="businessUnitCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.businessUnitCode.label')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'businessUnitCode')}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.businessUnitCode.label')}</FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(Number(e.target.value || 0))} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
