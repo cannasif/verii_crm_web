@@ -21,6 +21,68 @@ export const api = axios.create({
   },
 });
 
+function normalizeApiEnvelope(payload: unknown): unknown {
+  if (payload == null || typeof payload !== 'object' || Array.isArray(payload)) {
+    return payload;
+  }
+
+  const source = payload as Record<string, unknown>;
+  const normalized: Record<string, unknown> = { ...source };
+
+  if (normalized.success === undefined && typeof source.Success === 'boolean') {
+    normalized.success = source.Success;
+  }
+  if (normalized.message === undefined && typeof source.Message === 'string') {
+    normalized.message = source.Message;
+  }
+  if (normalized.exceptionMessage === undefined && typeof source.ExceptionMessage === 'string') {
+    normalized.exceptionMessage = source.ExceptionMessage;
+  }
+  if (normalized.data === undefined && source.Data !== undefined) {
+    normalized.data = source.Data;
+  }
+  if (normalized.errors === undefined && Array.isArray(source.Errors)) {
+    normalized.errors = source.Errors;
+  }
+  if (normalized.timestamp === undefined && typeof source.Timestamp === 'string') {
+    normalized.timestamp = source.Timestamp;
+  }
+  if (normalized.statusCode === undefined && typeof source.StatusCode === 'number') {
+    normalized.statusCode = source.StatusCode;
+  }
+  if (normalized.className === undefined && typeof source.ClassName === 'string') {
+    normalized.className = source.ClassName;
+  }
+
+  return normalized;
+}
+
+function extractApiErrorMessage(payload: unknown): string | null {
+  if (payload == null || typeof payload !== 'object') return null;
+
+  const errorPayload = payload as Record<string, unknown>;
+
+  const message = errorPayload.message;
+  if (typeof message === 'string' && message.trim().length > 0) {
+    return message;
+  }
+
+  const exceptionMessage = errorPayload.exceptionMessage;
+  if (typeof exceptionMessage === 'string' && exceptionMessage.trim().length > 0) {
+    return exceptionMessage;
+  }
+
+  const errors = errorPayload.errors;
+  if (Array.isArray(errors)) {
+    const firstError = errors.find((item) => typeof item === 'string' && item.trim().length > 0);
+    if (typeof firstError === 'string') {
+      return firstError;
+    }
+  }
+
+  return null;
+}
+
 api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
 
@@ -40,7 +102,7 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response.data,
+  (response) => normalizeApiEnvelope(response.data) as any,
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token');
@@ -52,11 +114,14 @@ api.interceptors.response.use(
       }
     }
 
-    const apiError = error.response?.data;
-    if (apiError?.message) {
-      error.message = apiError.message;
-    } else if (apiError?.exceptionMessage) {
-      error.message = apiError.exceptionMessage;
+    const apiError = normalizeApiEnvelope(error.response?.data);
+    if (error.response) {
+      error.response.data = apiError;
+    }
+
+    const apiMessage = extractApiErrorMessage(apiError);
+    if (apiMessage) {
+      error.message = apiMessage;
     }
 
     return Promise.reject(error);
