@@ -73,6 +73,8 @@ interface DistrictTableProps {
   onEdit: (district: DistrictDto) => void;
   pageSize?: number;
   visibleColumns?: Array<keyof DistrictDto | 'status'>;
+  columnOrder?: string[];
+  onColumnOrderChange?: (order: string[]) => void;
 }
 
 interface DraggableTableHeadProps extends React.ComponentProps<typeof TableHead> {
@@ -125,37 +127,38 @@ export function DistrictTable({
   isLoading,
   onEdit,
   pageSize = 10,
-  visibleColumns,
+  visibleColumns: propVisibleColumns,
+  columnOrder: externalColumnOrder,
+  onColumnOrderChange,
 }: DistrictTableProps): ReactElement {
   const { t } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictDto | null>(null);
   const deleteDistrict = useDeleteDistrict();
-  
+
   const [currentPage, setCurrentPage] = useState(1);
 
   const [sortConfig, setSortConfig] = useState<{ key: keyof DistrictDto | 'status'; direction: 'asc' | 'desc' } | null>(null);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  
-  // Column Order State
-  const [columnOrder, setColumnOrder] = useState<string[]>(tableColumns.map(c => c.key));
 
-  // Sync columnOrder with tableColumns
+  const [internalColumnOrder, setInternalColumnOrder] = useState<string[]>([]);
+
   useEffect(() => {
-    setColumnOrder((prevOrder) => {
-      const newKeys = tableColumns.map(c => c.key);
-      const existingKeys = prevOrder.filter(key => newKeys.includes(key as keyof DistrictDto | 'status'));
-      const addedKeys = newKeys.filter(key => !prevOrder.includes(key));
-      return [...existingKeys, ...addedKeys];
-    });
-  }, [tableColumns]);
+    if (externalColumnOrder) return;
+    if (tableColumns.length > 0 && internalColumnOrder.length === 0) {
+      setInternalColumnOrder(tableColumns.map((c) => c.key as string));
+    }
+  }, [tableColumns, internalColumnOrder.length, externalColumnOrder]);
+
+  const columnOrder = externalColumnOrder ?? internalColumnOrder;
+
+  const visibleColumns = propVisibleColumns ?? tableColumns.map((col) => col.key);
 
   const orderedColumns = useMemo(() => {
-    const currentVisibleColumns = visibleColumns || tableColumns.map(col => col.key);
     return columnOrder
-      .filter(key => currentVisibleColumns.includes(key as keyof DistrictDto | 'status'))
-      .map(key => tableColumns.find(col => col.key === key))
+      .filter((key) => visibleColumns.includes(key as keyof DistrictDto | 'status'))
+      .map((key) => tableColumns.find((col) => col.key === key))
       .filter((col): col is ColumnDef<DistrictDto> => !!col);
   }, [columnOrder, visibleColumns, tableColumns]);
 
@@ -170,11 +173,16 @@ export function DistrictTable({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setColumnOrder((items) => {
+      const reorder = (items: string[]) => {
         const oldIndex = items.indexOf(active.id as string);
         const newIndex = items.indexOf(over.id as string);
         return arrayMove(items, oldIndex, newIndex);
-      });
+      };
+      if (onColumnOrderChange) {
+        onColumnOrderChange(reorder([...columnOrder]));
+      } else {
+        setInternalColumnOrder((items) => reorder(items));
+      }
     }
   };
 
