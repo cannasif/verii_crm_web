@@ -1,169 +1,169 @@
 {
-  "loading": "Loading...",
-  "saving": "Saving...",
-  "error": "Error",
-  "noData": "No data found",
-  "previous": "Previous",
-  "next": "Next",
-  "actions": "Actions",
-  "edit": "Edit",
-  "delete": "Delete",
-  "back": "Back",
-  "refresh": "Refresh",
-  "select": "Select",
-  "yes": "Yes",
-  "add": "Add",
-  "backToQuotations": "Back to Demands",
-  "cancel": "Cancel",
-  "save": "Save",
-  "confirm": "Confirm",
-  "saveAndApply": "Save and Apply",
+  "loading": "Caricamento...",
+  "saving": "Salvataggio...",
+  "error": "Errore",
+  "noData": "Nessun dato trovato",
+  "previous": "Precedente",
+  "next": "Successivo",
+  "actions": "Azioni",
+  "edit": "Modifica",
+  "delete": "Elimina",
+  "back": "Indietro",
+  "refresh": "Aggiorna",
+  "select": "Seleziona",
+  "yes": "Sì",
+  "add": "Aggiungi",
+  "backToQuotations": "Torna alle Richieste",
+  "cancel": "Annulla",
+  "save": "Salva",
+  "confirm": "Conferma",
+  "saveAndApply": "Salva e Applica",
   "list": {
-    "revise": "Revise",
-    "showing": "Showing {{from}}-{{to}} / {{total}}",
-    "title": "Demand List",
-    "description": "View and manage all demands",
-    "createNew": "Create New Demand",
-    "searchPlaceholder": "Search by demand no or customer name..."
+    "revise": "Revisiona",
+    "showing": "Visualizzazione {{from}}-{{to}} / {{total}}",
+    "title": "Elenco Richieste",
+    "description": "Visualizza e gestisci tutte le richieste",
+    "createNew": "Crea Nuova Richiesta",
+    "searchPlaceholder": "Cerca per n. richiesta o nome cliente..."
   },
   "detail": {
-    "title": "Demand Detail"
+    "title": "Dettaglio Richiesta"
   },
   "create": {
-    "title": "Create New Demand",
-    "submit": "Save Demand and Send for Approval",
-    "success": "Demand Created Successfully",
-    "successMessage": "Demand has been sent to the approval process.",
-    "error": "Demand Could Not Be Created",
-    "errorMessage": "An error occurred while creating the demand."
+    "title": "Crea Nuova Richiesta",
+    "submit": "Salva Richiesta e Invia per Approvazione",
+    "success": "Richiesta Creata con Successo",
+    "successMessage": "La richiesta è stata inviata al processo di approvazione.",
+    "error": "Impossibile Creare la Richiesta",
+    "errorMessage": "Si è verificato un errore durante la creazione della richiesta."
   },
   "header": {
-    "title": "Demand Information",
-    "customer": "Customer",
-    "selectCustomer": "Select customer",
-    "shippingAddress": "Shipping Address",
-    "selectShippingAddress": "Select shipping address",
-    "representative": "Sales Representative",
-    "selectRepresentative": "Select representative",
-    "offerType": "Demand Type",
-    "selectOfferType": "Select demand type",
-    "currency": "Currency",
-    "selectCurrency": "Please select currency",
-    "showExchangeRates": "Show Exchange Rates",
-    "offerDate": "Demand Date",
-    "deliveryDate": "Delivery Date",
-    "paymentType": "Payment Type",
-    "selectPaymentType": "Select payment type",
-    "description": "Description",
-    "descriptionPlaceholder": "Enter description",
-    "offerNo": "Demand No",
-    "offerNoPlaceholder": "Demand number",
+    "title": "Informazioni Richiesta",
+    "customer": "Cliente",
+    "selectCustomer": "Seleziona cliente",
+    "shippingAddress": "Indirizzo di Spedizione",
+    "selectShippingAddress": "Seleziona indirizzo di spedizione",
+    "representative": "Rappresentante Vendite",
+    "selectRepresentative": "Seleziona rappresentante",
+    "offerType": "Tipo di Richiesta",
+    "selectOfferType": "Seleziona tipo di richiesta",
+    "currency": "Valuta",
+    "selectCurrency": "Si prega di selezionare la valuta",
+    "showExchangeRates": "Mostra Tassi di Cambio",
+    "offerDate": "Data Richiesta",
+    "deliveryDate": "Data di Consegna",
+    "paymentType": "Tipo di Pagamento",
+    "selectPaymentType": "Seleziona tipo di pagamento",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "Inserisci descrizione",
+    "offerNo": "N. Richiesta",
+    "offerNoPlaceholder": "Numero richiesta",
     "currencyChange": {
-      "title": "Currency Change",
-      "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
+      "title": "Cambio Valuta",
+      "message": "Quando la valuta cambia, tutte le righe esistenti verranno ricalcolate in base alla nuova valuta. Approvi questa operazione?"
     }
   },
   "lines": {
-    "title": "Demand Lines",
-    "add": "Add Line",
-    "empty": "No lines added yet",
-    "emptyDescription": "Use \"Select Stock\" or \"Add Line\" button to add demand lines",
-    "itemCount": "line",
-    "editLine": "Edit Line",
-    "selectStock": "Select Stock",
-    "selectProduct": "Select Product",
-    "selectStockFirst": "Stock not selected",
+    "title": "Righe Richiesta",
+    "add": "Aggiungi Riga",
+    "empty": "Nessuna riga aggiunta ancora",
+    "emptyDescription": "Usa il pulsante \"Seleziona Stock\" o \"Aggiungi Riga\" per aggiungere righe alla richiesta",
+    "itemCount": "riga",
+    "editLine": "Modifica Riga",
+    "selectStock": "Seleziona Stock",
+    "selectProduct": "Seleziona Prodotto",
+    "selectStockFirst": "Stock non selezionato",
     "stock": "Stock",
-    "productCode": "Stock Code",
-    "enterProductCode": "Enter product code or search",
-    "productName": "Stock Name",
-    "enterProductName": "Enter product name",
-    "quantity": "Quantity",
-    "unitPrice": "Unit Price",
-    "discount1": "Discount 1 %",
-    "discount2": "Discount 2 %",
-    "discount3": "Discount 3 %",
-    "discounts": "Discounts",
-    "discountAmount": "Discount Amount",
-    "netPrice": "Net Price",
-    "vatRate": "VAT Rate %",
-    "lineTotal": "Line Total (VAT Included)",
-    "calculations": "Calculations",
-    "required": "At least 1 line must be added",
-    "noProductsFound": "No products found",
+    "productCode": "Codice Stock",
+    "enterProductCode": "Inserisci codice prodotto o cerca",
+    "productName": "Nome Stock",
+    "enterProductName": "Inserisci nome prodotto",
+    "quantity": "Quantità",
+    "unitPrice": "Prezzo Unitario",
+    "discount1": "Sconto 1 %",
+    "discount2": "Sconto 2 %",
+    "discount3": "Sconto 3 %",
+    "discounts": "Sconti",
+    "discountAmount": "Importo Sconto",
+    "netPrice": "Prezzo Netto",
+    "vatRate": "Aliquota IVA %",
+    "lineTotal": "Totale Riga (IVA Inclusa)",
+    "calculations": "Calcoli",
+    "required": "Deve essere aggiunta almeno 1 riga",
+    "noProductsFound": "Nessun prodotto trovato",
     "delete": {
-      "confirmTitle": "Delete Line",
-      "confirmMessage": "Are you sure you want to delete this line?"
+      "confirmTitle": "Elimina Riga",
+      "confirmMessage": "Sei sicuro di voler eliminare questa riga?"
     }
   },
   "exchangeRates": {
-    "title": "Exchange Rates",
-    "currency": "Currency",
-    "rate": "Rate",
-    "date": "Rate Date",
-    "isOfficial": "Official Rate",
-    "official": "Official",
-    "custom": "Custom",
-    "empty": "No exchange rates found",
-    "status": "Status",
+    "title": "Tassi di Cambio",
+    "currency": "Valuta",
+    "rate": "Tasso",
+    "date": "Data Tasso",
+    "isOfficial": "Tasso Ufficiale",
+    "official": "Ufficiale",
+    "custom": "Personalizzato",
+    "empty": "Nessun tasso di cambio trovato",
+    "status": "Stato",
     "dialog": {
-      "title": "Exchange Rates",
-      "description": "View and edit exchange rate values if needed. Modified rates will not be marked as official rates."
+      "title": "Tassi di Cambio",
+      "description": "Visualizza e modifica i valori dei tassi di cambio se necessario. I tassi modificati non saranno contrassegnati come tassi ufficiali."
     }
   },
   "summary": {
-    "title": "Summary",
-    "subtotal": "Subtotal",
-    "totalVat": "Total VAT",
-    "grandTotal": "Grand Total"
+    "title": "Riepilogo",
+    "subtotal": "Subtotale",
+    "totalVat": "Totale IVA",
+    "grandTotal": "Totale Generale"
   },
   "offerType": {
-    "domestic": "Domestic",
-    "export": "Export"
+    "domestic": "Nazionale",
+    "export": "Estero"
   },
   "wizard": {
-    "title": "Create New Demand",
+    "title": "Crea Nuova Richiesta",
     "step1": {
-      "title": "Step 1: Demand Information",
-      "description": "Enter demand header information and exchange rates",
+      "title": "Passo 1: Informazioni Richiesta",
+      "description": "Inserisci le informazioni di intestazione della richiesta e i tassi di cambio",
       "validation": {
-        "offerType": "Demand Type",
-        "currency": "Currency",
-        "exchangeRate": "Exchange Rate"
+        "offerType": "Tipo di Richiesta",
+        "currency": "Valuta",
+        "exchangeRate": "Tasso di Cambio"
       },
       "exchangeRate": {
-        "required": "At least one exchange rate must be added for non-TRY currencies"
+        "required": "Deve essere aggiunto almeno un tasso di cambio per le valute diverse da TRY"
       },
       "currency": {
         "try": {
-          "info": "Exchange rate is not required when TRY is selected"
+          "info": "Il tasso di cambio non è richiesto quando è selezionato TRY"
         }
       }
     },
     "step2": {
-      "title": "Step 2: Demand Lines",
-      "description": "Add product and price information",
-      "info": "You must add at least one line",
+      "title": "Passo 2: Righe Richiesta",
+      "description": "Aggiungi informazioni su prodotti e prezzi",
+      "info": "Devi aggiungere almeno una riga",
       "validation": {
-        "noLines": "At least one line must be added",
-        "invalidLines": "All lines must have valid information",
-        "allValid": "{{count}} lines successfully added"
+        "noLines": "Deve essere aggiunta almeno una riga",
+        "invalidLines": "Tutte le righe devono avere informazioni valide",
+        "allValid": "{{count}} righe aggiunte con successo"
       }
     },
     "step3": {
-      "title": "Step 3: Summary and Approval",
-      "description": "Review information and save demand",
+      "title": "Passo 3: Riepilogo e Approvazione",
+      "description": "Rivedi le informazioni e salva la richiesta",
       "header": {
-        "title": "Demand Information"
+        "title": "Informazioni Richiesta"
       },
       "lines": {
-        "title": "Demand Lines"
+        "title": "Righe Richiesta"
       },
       "summary": {
-        "title": "Final Summary"
+        "title": "Riepilogo Finale"
       },
       "approval": {
-        "info": "The demand will be automatically sent to the approval process after saving"
+        "info": "La richiesta verrà inviata automaticamente al processo di approvazione dopo il salvataggio"
       }
     }
   }

@@ -43,9 +43,10 @@ import type { QuotationNotesDto } from '@/features/quotation/types/quotation-typ
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { Badge } from '@/components/ui/badge';
 import { 
-  DollarSign, Search, User, Truck, Briefcase, Globe, 
+  Search, User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
-  Layers, Quote, Folder, ListPlus, X
+  Layers, Folder, ListPlus, X, MapPin, BookUser,
+  Banknote
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
@@ -81,8 +82,7 @@ export function DemandHeaderForm({
   lines = [],
   onLinesChange,
   initialCurrency,
-  revisionNo,
-  demandId,
+   demandId,
   demandOfferNo,
   readOnly = false,
   showDocumentSerialType = true,
@@ -109,7 +109,6 @@ export function DemandHeaderForm({
     }
   };
 
-  // Watchers
   const watchedCustomerId = form.watch('demand.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedCurrency = form.watch('demand.currency');
@@ -238,164 +237,148 @@ export function DemandHeaderForm({
     setPendingCurrency(null);
   };
 
+  const currencyConfig = useMemo(() => {
+    const val = String(watchedCurrency);
+    switch (val) {
+      case '1': return { color: "text-red-500", bg: "bg-red-50/50 dark:bg-red-950/20", border: "border-red-200 dark:border-red-800/50" };
+      case '2': return { color: "text-blue-500", bg: "bg-blue-50/50 dark:bg-blue-950/20", border: "border-blue-200 dark:border-blue-800/50" };
+      case '3': return { color: "text-amber-500", bg: "bg-amber-50/50 dark:bg-amber-950/20", border: "border-amber-200 dark:border-amber-800/50" };
+      default: return { color: "text-emerald-500", bg: "bg-emerald-50/50 dark:bg-emerald-950/20", border: "border-emerald-200 dark:border-emerald-800/50" };
+    }
+  }, [watchedCurrency]);
+
   const styles = {
     glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl shadow-sm transition-all duration-300 hover:shadow-md",
-    inputBase: "pl-10 h-11 bg-white dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:shadow transition-all duration-300 ease-out focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 w-full",
-    label: "text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 pl-1 flex items-center gap-1.5",
-    iconWrapper: "absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 pointer-events-none z-10 flex items-center justify-center",
+    inputBase: "h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none w-full",
+    label: "text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-2",
+    iconWrapper: "absolute left-3 top-1/2 -translate-y-1/2 transition-colors z-20 flex items-center justify-center pointer-events-none",
+    selectTrigger: "w-full h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 hover:border-pink-400 dark:hover:border-zinc-700 transition-all shadow-sm rounded-xl focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none",
+    selectContent: "rounded-xl border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl",
+    selectItem: "focus:bg-pink-50 dark:focus:bg-pink-900/10 focus:text-pink-600 cursor-pointer rounded-lg m-1"
   };
 
   return (
     <div className="relative space-y-6 pt-2 pb-8 animate-in fade-in slide-in-from-bottom-3 duration-700">
       <div className="absolute -top-10 -left-10 w-96 h-96 bg-pink-500/10 blur-[100px] pointer-events-none rounded-full" />
       <div className="absolute top-20 right-0 w-80 h-80 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
-      <div className="relative z-10 flex items-center gap-3 mb-6 px-1">
-        <div className="p-2.5 bg-linear-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg shadow-pink-500/30 text-white">
-           <Quote className="h-5 w-5" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            {t('demand.header.title')}
-            {revisionNo && (
-              <span className="px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-[10px] font-bold border border-pink-200 dark:border-pink-800">
-                REV-{revisionNo}
-              </span>
-            )}
-          </h2>
-          <p className="text-xs text-zinc-500 font-medium flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse shadow-[0_0_6px_rgba(236,72,153,0.8)]" />
-            {t('demand.header.subtitle')}
-          </p>
-        </div>
-      </div>
-
+      
       <div className={styles.glassCard}>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5">
-            
-            {/* Müşteri Seçimi */}
-            <div className="lg:col-span-8">
-              <FormField
-                control={form.control}
-                name="demand.potentialCustomerId"
-                render={() => (
-                  <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label}>
-                      {t('demand.header.customer')}
-                    </FormLabel>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1 group">
-                        <div className={styles.iconWrapper}>
-                          <User className="h-4 w-4" />
-                        </div>
-                        <FormControl>
-                          <Input
-                            className={cn(styles.inputBase, "font-semibold text-zinc-800 dark:text-zinc-100")}
-                            value={customerDisplayValue}
-                            placeholder={t('demand.header.selectCustomer')}
-                            readOnly
-                            onClick={() => !readOnly && setCustomerSelectDialogOpen(true)}
-                            disabled={readOnly}
-                          />
-                        </FormControl>
-                      </div>
-                      <Button
-                        type="button"
-                        onClick={() => setCustomerSelectDialogOpen(true)}
-                        className="h-11 px-6 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white shadow-md hover:shadow-lg transition-all border border-zinc-800 active:scale-95"
-                      >
-                        <Search className="h-4 w-4 mr-2" />
-                        {t('demand.select')}
-                      </Button>
+        <div className="p-4 sm:p-6">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8 items-start">
+                <div className="xl:col-span-2 space-y-2">
+                  <div className={styles.label}>
+                    <div className="p-1 rounded-md bg-pink-50 dark:bg-pink-900/20 text-pink-600">
+                      <User className="w-3.5 h-3.5" />
                     </div>
-                    <FormMessage className="mt-1.5" />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Temsilci Seçimi */}
-            <div className="lg:col-span-4">
-              <FormField
-                control={form.control}
-                name="demand.representativeId"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label}>
-                      {t('demand.header.representative')}
-                    </FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                      value={field.value?.toString() || ''}
+                    {t('demand.header.customer')}
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1 group min-w-0">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 z-10 pointer-events-none group-focus-within:text-pink-500 transition-colors">
+                        <Search className="h-4 w-4" />
+                      </div>
+                      <Input
+                        className={cn(styles.inputBase, "pl-10 font-medium truncate cursor-pointer focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                        value={customerDisplayValue}
+                        placeholder={t('demand.header.selectCustomer')}
+                        readOnly
+                        onClick={() => !readOnly && setCustomerSelectDialogOpen(true)}
+                        disabled={readOnly}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setCustomerSelectDialogOpen(true)}
+                      className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-pink-600 hover:border-pink-600 hover:text-white transition-all duration-300 shadow-sm"
                       disabled={readOnly}
                     >
-                      <FormControl>
-                        <div className="relative">
-                           <div className={styles.iconWrapper}><Briefcase className="h-4 w-4" /></div>
-                           <SelectTrigger className={styles.inputBase}>
-                             <SelectValue placeholder={t('demand.select')} />
-                           </SelectTrigger>
-                        </div>
-                      </FormControl>
-                      <SelectContent>
-                        {relatedUsers.map((u) => (
-                          <SelectItem key={u.userId} value={u.userId.toString()}>
-                            {[u.firstName, u.lastName].filter(Boolean).join(' ')}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="mt-1.5" />
-                  </FormItem>
-                )}
-              />
+                      <BookUser className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="xl:col-span-1 space-y-2">
+                  <div className={styles.label}>
+                    <div className="p-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600">
+                      <Briefcase className="w-3.5 h-3.5" />
+                    </div>
+                    {t('demand.header.representative')}
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="demand.representativeId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0">
+                        <Select
+                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                          value={field.value?.toString() || ''}
+                          disabled={readOnly}
+                        >
+                          <FormControl>
+                            <SelectTrigger className={cn(styles.selectTrigger, "px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
+                              <SelectValue placeholder={t('demand.select')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className={styles.selectContent}>
+                            {relatedUsers.map((u) => (
+                              <SelectItem key={u.userId} value={u.userId.toString()} className={styles.selectItem}>
+                                {[u.firstName, u.lastName].filter(Boolean).join(' ')}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="text-[10px] mt-1" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
             </div>
-            
+
             {selectedCustomer && (
-              <div className="lg:col-span-12 animate-in slide-in-from-top-2 fade-in duration-500">
-                <FormField
-                  control={form.control}
-                  name="demand.shippingAddressId"
-                  render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>
-                         <Truck className="h-3.5 w-3.5 text-orange-500" />
-                        {t('demand.header.shippingAddress')}
-                      </FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                        value={field.value?.toString() || ''}
-                      >
-                        <FormControl>
-                          <div className="relative">
-                             <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
-                             <SelectTrigger className={cn(styles.inputBase, "bg-orange-50/30 dark:bg-orange-950/10 border-orange-100 dark:border-orange-900/30")}>
-                               <SelectValue placeholder={t('demand.header.selectShippingAddress')} />
-                             </SelectTrigger>
-                          </div>
-                        </FormControl>
-                        <SelectContent>
-                          {shippingAddresses.map((address) => (
-                            <SelectItem key={address.id} value={address.id.toString()}>
-                              {address.addressText}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage className="mt-1.5" />
-                    </FormItem>
-                  )}
-                />
+              <div className="animate-in fade-in slide-in-from-top-2 duration-500">
+                <div className="space-y-2">
+                  <div className={styles.label}>
+                    <div className="p-1 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600">
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    {t('demand.header.shippingAddress')}
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="demand.shippingAddressId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 min-w-0">
+                        <Select
+                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                          value={field.value?.toString() || ''}
+                        >
+                          <FormControl>
+                            <SelectTrigger className={cn(styles.selectTrigger, "px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
+                              <SelectValue placeholder={t('demand.header.selectShippingAddress')} className="truncate block" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className={cn(styles.selectContent, "max-w-[90vw] md:max-w-xl")}>
+                            {shippingAddresses.map((address) => (
+                              <SelectItem key={address.id} value={address.id.toString()} className={styles.selectItem}>
+                                <span className="text-xs sm:text-sm truncate block">{address.addressText}</span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* 2. DETAYLAR GRID'İ */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* SOL: FİNANSAL BİLGİLER */}
         <div className={styles.glassCard}>
           <div className="p-5 h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
@@ -411,14 +394,13 @@ export function DemandHeaderForm({
                    variant="ghost"
                    size="sm"
                    onClick={() => setExchangeRateDialogOpen(true)}
-                   className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20"
+                   className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
                  >
                    <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
                    Kurlar
                  </Button>
                )}
             </div>
-            
             <div className="space-y-4 flex-1">
               <FormField
                 control={form.control}
@@ -433,16 +415,25 @@ export function DemandHeaderForm({
                     >
                       <FormControl>
                         <div className="relative">
-                          <div className={styles.iconWrapper}><DollarSign className="h-4 w-4 text-emerald-600" /></div>
-                          <SelectTrigger className={cn(styles.inputBase, "font-bold tracking-wide text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30")}>
+                          <div className={cn(styles.iconWrapper, currencyConfig.color)}>
+                            <Banknote className="h-4 w-4" />
+                          </div>
+                          <SelectTrigger className={cn(
+                            styles.selectTrigger,
+                            "pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
+                            currencyConfig.color,
+                            currencyConfig.bg,
+                            currencyConfig.border,
+                            "hover:brightness-95 dark:hover:brightness-110"
+                          )}>
                             <SelectValue placeholder={t('demand.select')} />
                           </SelectTrigger>
                         </div>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className={styles.selectContent}>
                         {erpRates.map((currency: KurDto) => (
-                          <SelectItem key={currency.dovizTipi} value={String(currency.dovizTipi)}>
-                            {currency.dovizIsmi || `Döviz ${currency.dovizTipi}`}
+                          <SelectItem key={currency.dovizTipi} value={String(currency.dovizTipi)} className={styles.selectItem}>
+                            <span className="font-bold">{currency.dovizIsmi || `Döviz ${currency.dovizTipi}`}</span>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -451,7 +442,6 @@ export function DemandHeaderForm({
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="demand.paymentTypeId"
@@ -464,15 +454,19 @@ export function DemandHeaderForm({
                     >
                       <FormControl>
                         <div className="relative">
-                           <div className={styles.iconWrapper}><CreditCard className="h-4 w-4" /></div>
-                           <SelectTrigger className={styles.inputBase}>
+                           <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}>
+                             <CreditCard className="h-4 w-4" />
+                           </div>
+                           <SelectTrigger className={cn(styles.selectTrigger, "pl-10 hover:border-pink-400 dark:hover:border-zinc-700 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
                              <SelectValue placeholder={t('demand.select')} />
                            </SelectTrigger>
                         </div>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className={styles.selectContent}>
                         {paymentTypes.map((pt) => (
-                          <SelectItem key={pt.id} value={pt.id.toString()}>{pt.name}</SelectItem>
+                          <SelectItem key={pt.id} value={pt.id.toString()} className={styles.selectItem}>
+                            {pt.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -492,9 +486,8 @@ export function DemandHeaderForm({
               </div>
               <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Tip & Tarihler</h4>
             </div>
-
             <div className="space-y-4 flex-1">
-              <div className={cn("grid gap-4", watchedOfferType ? "grid-cols-2" : "grid-cols-1")}>
+              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4">
                 <FormField
                   control={form.control}
                   name="demand.offerType"
@@ -506,48 +499,39 @@ export function DemandHeaderForm({
                       <Select onValueChange={field.onChange} value={field.value || ''} disabled={readOnly}>
                         <FormControl>
                            <div className="relative">
-                              <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
-                              <SelectTrigger className={styles.inputBase}>
+                              <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Layers className="h-4 w-4" /></div>
+                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
                                 <SelectValue placeholder={t('common.offerType.selectPlaceholder')} />
                               </SelectTrigger>
                            </div>
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value={OfferType.YURTICI}>{t('common.offerType.yurtici')}</SelectItem>
-                          <SelectItem value={OfferType.YURTDISI}>{t('common.offerType.yurtdisi')}</SelectItem>
+                        <SelectContent className={styles.selectContent}>
+                          <SelectItem value={OfferType.YURTICI} className={styles.selectItem}>{t('common.offerType.yurtici')}</SelectItem>
+                          <SelectItem value={OfferType.YURTDISI} className={styles.selectItem}>{t('common.offerType.yurtdisi')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage className="mt-1" />
                     </FormItem>
                   )}
                 />
-
                 {watchedOfferType && (
                   <FormField
                     control={form.control}
                     name="demand.deliveryMethod"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>
-                          Gönderim/Teslim Şekli
-                        </FormLabel>
+                        <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>Teslim Şekli</FormLabel>
                         <div className="relative">
-                          <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
-                          <Select
-                            disabled={readOnly}
-                            onValueChange={field.onChange}
-                            value={field.value || ''}
-                          >
+                          <div className={styles.iconWrapper}><Truck className="h-4 w-4 text-zinc-400 group-focus-within:text-pink-500" /></div>
+                          <Select disabled={readOnly} onValueChange={field.onChange} value={field.value || ''}>
                             <FormControl>
-                              <SelectTrigger className={cn(styles.inputBase, "pl-10")}>
+                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
                                 <SelectValue placeholder={t('quotation.select')} />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className={styles.selectContent}>
                               {salesTypesByOfferType.map((item) => (
-                                <SelectItem key={item.id} value={String(item.id)}>
-                                  {item.name}
-                                </SelectItem>
+                                <SelectItem key={item.id} value={String(item.id)} className={styles.selectItem}>{item.name}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -558,8 +542,7 @@ export function DemandHeaderForm({
                   />
                 )}
               </div>
-
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4 pt-1">
                  <FormField
                   control={form.control}
                   name="demand.offerDate"
@@ -567,11 +550,11 @@ export function DemandHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>Teklif T.</FormLabel>
                       <div className="relative">
-                        <div className={styles.iconWrapper}><Calendar className="h-4 w-4" /></div>
+                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Calendar className="h-4 w-4" /></div>
                         <FormControl>
                           <Input 
                             type="date" 
-                            className={cn(styles.inputBase, "pl-10 text-xs")} 
+                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")} 
                             {...field}
                             value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
                             onChange={(e) => field.onChange(e.target.value)}
@@ -589,11 +572,11 @@ export function DemandHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>Teslim T.</FormLabel>
                       <div className="relative">
-                        <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
+                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Truck className="h-4 w-4" /></div>
                         <FormControl>
                           <Input 
                             type="date" 
-                            className={cn(styles.inputBase, "pl-10 text-xs")}
+                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")}
                             {...field}
                             value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
                             onChange={(e) => field.onChange(e.target.value)}
@@ -610,7 +593,6 @@ export function DemandHeaderForm({
           </div>
         </div>
 
-        {/* SAĞ: BELGE & NOTLAR */}
         <div className={styles.glassCard}>
            <div className="p-5 h-full flex flex-col">
               <div className="flex items-center gap-2 mb-4">
@@ -619,7 +601,6 @@ export function DemandHeaderForm({
                 </div>
                 <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Belge Detayı</h4>
               </div>
-
               <div className="space-y-4 flex-1">
                  {showDocumentSerialType && (
                   <FormField
@@ -635,20 +616,20 @@ export function DemandHeaderForm({
                         >
                           <FormControl>
                             <div className="relative">
-                              <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
-                              <SelectTrigger className={styles.inputBase}>
+                              <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Hash className="h-4 w-4" /></div>
+                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
                                 <SelectValue placeholder={t('demand.select')} />
                               </SelectTrigger>
                             </div>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className={styles.selectContent}>
                             {availableDocumentSerialTypes.length === 0 ? (
                               <div className="p-3 text-center text-xs text-muted-foreground">Uygun seri yok</div>
                             ) : (
                               availableDocumentSerialTypes
                                 .filter((d) => d.serialPrefix?.trim() !== '')
                                 .map((d) => (
-                                  <SelectItem key={d.id} value={d.id.toString()}>{d.serialPrefix}</SelectItem>
+                                  <SelectItem key={d.id} value={d.id.toString()} className={styles.selectItem}>{d.serialPrefix}</SelectItem>
                                 ))
                             )}
                           </SelectContent>
@@ -658,7 +639,6 @@ export function DemandHeaderForm({
                     )}
                   />
                 )}
-
                 <div>
                   <FormField
                     control={form.control}
@@ -670,9 +650,9 @@ export function DemandHeaderForm({
                           {t('quotation.header.projectCode')}
                         </FormLabel>
                         <div className="relative">
-                          <div className={styles.iconWrapper}><Folder className="h-4 w-4" /></div>
+                          <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Folder className="h-4 w-4" /></div>
                           <VoiceSearchCombobox
-                            className={styles.inputBase}
+                            className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 [&_*]:pl-8")}
                             value={field.value || ''}
                             onSelect={(value) => field.onChange(value)}
                             options={projects.map((p) => ({
@@ -689,33 +669,33 @@ export function DemandHeaderForm({
                     )}
                   />
                 </div>
-
                 <FormField
                   control={form.control}
                   name="demand.description"
                   render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
+                    <FormItem className="space-y-0 relative group w-full min-w-0">
                       <div className="flex items-center justify-between mb-2">
-                        <FormLabel className={cn(styles.label, "mb-0")}>
-                          Notlar
-                        </FormLabel>
+                        <FormLabel className={cn(styles.label, "mb-0")}>Notlar</FormLabel>
+                        <span className={cn("text-[10px] transition-colors", (field.value?.length || 0) > 350 ? "text-red-500 font-bold" : "text-zinc-400")}>
+                          {field.value?.length || 0}/400
+                        </span>
                       </div>
                       {filledNoteKeys.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-2.5">
+                        <div className="flex flex-wrap gap-2 mb-2.5 overflow-hidden">
                           {filledNoteKeys.map((key, idx) => (
                             <Badge
                               key={key}
                               variant="secondary"
-                              className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 h-6 text-xs border border-purple-200 dark:border-purple-500/20"
+                              className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 max-w-full h-auto py-1 text-xs border border-purple-200 dark:border-purple-500/20 shadow-sm"
                             >
-                              <span className="mr-1.5 truncate max-w-[200px]">
+                              <span className="mr-1.5 break-all whitespace-normal">
                                 {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel')} ${idx + 1}`}
                               </span>
                               {!readOnly && onQuotationNotesChange && (
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveNote(key)}
-                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
+                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors flex-shrink-0"
                                 >
                                   <X className="h-3 w-3" />
                                 </button>
@@ -725,12 +705,13 @@ export function DemandHeaderForm({
                         </div>
                       )}
                       <FormControl>
-                        <div className="relative">
+                        <div className="relative w-full min-w-0">
                           <Textarea
                             {...field}
                             value={field.value || ''}
+                            maxLength={400}
                             placeholder={t('demand.header.descriptionPlaceholder')}
-                            className="min-h-[80px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10"
+                            className="min-h-[100px] max-h-[160px] overflow-y-auto w-full break-all whitespace-pre-wrap rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10 shadow-sm"
                             disabled={readOnly}
                           />
                           {onQuotationNotesChange && (
@@ -791,7 +772,7 @@ export function DemandHeaderForm({
       )}
 
       <Dialog open={currencyChangeDialogOpen} onOpenChange={setCurrencyChangeDialogOpen}>
-        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px]">
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] rounded-2xl border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-pink-600">
               <ArrowRightLeft className="h-5 w-5" />
@@ -802,10 +783,10 @@ export function DemandHeaderForm({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button variant="outline" onClick={handleCurrencyChangeCancel} className="rounded-xl">
+            <Button variant="outline" onClick={handleCurrencyChangeCancel} className="rounded-xl border-zinc-200 dark:border-zinc-800">
               {t('demand.cancel')}
             </Button>
-            <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-pink-600 hover:bg-pink-700 text-white">
+            <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-pink-600 hover:bg-pink-700 text-white shadow-lg shadow-pink-500/20 transition-all">
               {t('demand.confirm')}
             </Button>
           </DialogFooter>

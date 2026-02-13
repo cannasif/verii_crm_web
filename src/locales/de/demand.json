@@ -1,169 +1,169 @@
 {
-  "loading": "Loading...",
-  "saving": "Saving...",
-  "error": "Error",
-  "noData": "No data found",
-  "previous": "Previous",
-  "next": "Next",
-  "actions": "Actions",
-  "edit": "Edit",
-  "delete": "Delete",
-  "back": "Back",
-  "refresh": "Refresh",
-  "select": "Select",
-  "yes": "Yes",
-  "add": "Add",
-  "backToQuotations": "Back to Demands",
-  "cancel": "Cancel",
-  "save": "Save",
-  "confirm": "Confirm",
-  "saveAndApply": "Save and Apply",
+  "loading": "Laden...",
+  "saving": "Speichern...",
+  "error": "Fehler",
+  "noData": "Keine Daten gefunden",
+  "previous": "Zurück",
+  "next": "Weiter",
+  "actions": "Aktionen",
+  "edit": "Bearbeiten",
+  "delete": "Löschen",
+  "back": "Zurück",
+  "refresh": "Aktualisieren",
+  "select": "Auswählen",
+  "yes": "Ja",
+  "add": "Hinzufügen",
+  "backToQuotations": "Zurück zu Anforderungen",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "confirm": "Bestätigen",
+  "saveAndApply": "Speichern und Anwenden",
   "list": {
-    "revise": "Revise",
-    "showing": "Showing {{from}}-{{to}} / {{total}}",
-    "title": "Demand List",
-    "description": "View and manage all demands",
-    "createNew": "Create New Demand",
-    "searchPlaceholder": "Search by demand no or customer name..."
+    "revise": "Überarbeiten",
+    "showing": "Zeige {{from}}-{{to}} / {{total}}",
+    "title": "Anforderungsliste",
+    "description": "Alle Anforderungen anzeigen und verwalten",
+    "createNew": "Neue Anforderung erstellen",
+    "searchPlaceholder": "Nach Anforderungs-Nr. oder Kundenname suchen..."
   },
   "detail": {
-    "title": "Demand Detail"
+    "title": "Anforderungsdetails"
   },
   "create": {
-    "title": "Create New Demand",
-    "submit": "Save Demand and Send for Approval",
-    "success": "Demand Created Successfully",
-    "successMessage": "Demand has been sent to the approval process.",
-    "error": "Demand Could Not Be Created",
-    "errorMessage": "An error occurred while creating the demand."
+    "title": "Neue Anforderung erstellen",
+    "submit": "Anforderung speichern und zur Genehmigung senden",
+    "success": "Anforderung erfolgreich erstellt",
+    "successMessage": "Die Anforderung wurde an den Genehmigungsprozess gesendet.",
+    "error": "Anforderung konnte nicht erstellt werden",
+    "errorMessage": "Beim Erstellen der Anforderung ist ein Fehler aufgetreten."
   },
   "header": {
-    "title": "Demand Information",
-    "customer": "Customer",
-    "selectCustomer": "Select customer",
-    "shippingAddress": "Shipping Address",
-    "selectShippingAddress": "Select shipping address",
-    "representative": "Sales Representative",
-    "selectRepresentative": "Select representative",
-    "offerType": "Demand Type",
-    "selectOfferType": "Select demand type",
-    "currency": "Currency",
-    "selectCurrency": "Please select currency",
-    "showExchangeRates": "Show Exchange Rates",
-    "offerDate": "Demand Date",
-    "deliveryDate": "Delivery Date",
-    "paymentType": "Payment Type",
-    "selectPaymentType": "Select payment type",
-    "description": "Description",
-    "descriptionPlaceholder": "Enter description",
-    "offerNo": "Demand No",
-    "offerNoPlaceholder": "Demand number",
+    "title": "Anforderungsinformationen",
+    "customer": "Kunde",
+    "selectCustomer": "Kunde auswählen",
+    "shippingAddress": "Lieferadresse",
+    "selectShippingAddress": "Lieferadresse auswählen",
+    "representative": "Vertriebsmitarbeiter",
+    "selectRepresentative": "Mitarbeiter auswählen",
+    "offerType": "Anforderungstyp",
+    "selectOfferType": "Anforderungstyp auswählen",
+    "currency": "Währung",
+    "selectCurrency": "Bitte Währung auswählen",
+    "showExchangeRates": "Wechselkurse anzeigen",
+    "offerDate": "Anforderungsdatum",
+    "deliveryDate": "Lieferdatum",
+    "paymentType": "Zahlungsart",
+    "selectPaymentType": "Zahlungsart auswählen",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Beschreibung eingeben",
+    "offerNo": "Anforderungs-Nr.",
+    "offerNoPlaceholder": "Anforderungsnummer",
     "currencyChange": {
-      "title": "Currency Change",
-      "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
+      "title": "Währungsänderung",
+      "message": "Wenn die Währung geändert wird, werden alle vorhandenen Zeilen entsprechend der neuen Währung neu berechnet. Möchten Sie diesen Vorgang genehmigen?"
     }
   },
   "lines": {
-    "title": "Demand Lines",
-    "add": "Add Line",
-    "empty": "No lines added yet",
-    "emptyDescription": "Use \"Select Stock\" or \"Add Line\" button to add demand lines",
-    "itemCount": "line",
-    "editLine": "Edit Line",
-    "selectStock": "Select Stock",
-    "selectProduct": "Select Product",
-    "selectStockFirst": "Stock not selected",
-    "stock": "Stock",
-    "productCode": "Stock Code",
-    "enterProductCode": "Enter product code or search",
-    "productName": "Stock Name",
-    "enterProductName": "Enter product name",
-    "quantity": "Quantity",
-    "unitPrice": "Unit Price",
-    "discount1": "Discount 1 %",
-    "discount2": "Discount 2 %",
-    "discount3": "Discount 3 %",
-    "discounts": "Discounts",
-    "discountAmount": "Discount Amount",
-    "netPrice": "Net Price",
-    "vatRate": "VAT Rate %",
-    "lineTotal": "Line Total (VAT Included)",
-    "calculations": "Calculations",
-    "required": "At least 1 line must be added",
-    "noProductsFound": "No products found",
+    "title": "Anforderungszeilen",
+    "add": "Zeile hinzufügen",
+    "empty": "Noch keine Zeilen hinzugefügt",
+    "emptyDescription": "Verwenden Sie die Schaltfläche \"Lager auswählen\" oder \"Zeile hinzufügen\", um Anforderungszeilen hinzuzufügen",
+    "itemCount": "Zeile",
+    "editLine": "Zeile bearbeiten",
+    "selectStock": "Lager auswählen",
+    "selectProduct": "Produkt auswählen",
+    "selectStockFirst": "Lager nicht ausgewählt",
+    "stock": "Lager",
+    "productCode": "Lager-Code",
+    "enterProductCode": "Produktcode eingeben oder suchen",
+    "productName": "Lager-Name",
+    "enterProductName": "Produktname eingeben",
+    "quantity": "Menge",
+    "unitPrice": "Einzelpreis",
+    "discount1": "Rabatt 1 %",
+    "discount2": "Rabatt 2 %",
+    "discount3": "Rabatt 3 %",
+    "discounts": "Rabatte",
+    "discountAmount": "Rabattbetrag",
+    "netPrice": "Nettopreis",
+    "vatRate": "MwSt.-Satz %",
+    "lineTotal": "Zeilensumme (inkl. MwSt.)",
+    "calculations": "Berechnungen",
+    "required": "Es muss mindestens 1 Zeile hinzugefügt werden",
+    "noProductsFound": "Keine Produkte gefunden",
     "delete": {
-      "confirmTitle": "Delete Line",
-      "confirmMessage": "Are you sure you want to delete this line?"
+      "confirmTitle": "Zeile löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie diese Zeile löschen möchten?"
     }
   },
   "exchangeRates": {
-    "title": "Exchange Rates",
-    "currency": "Currency",
-    "rate": "Rate",
-    "date": "Rate Date",
-    "isOfficial": "Official Rate",
-    "official": "Official",
-    "custom": "Custom",
-    "empty": "No exchange rates found",
+    "title": "Wechselkurse",
+    "currency": "Währung",
+    "rate": "Kurs",
+    "date": "Kursdatum",
+    "isOfficial": "Offizieller Kurs",
+    "official": "Offiziell",
+    "custom": "Benutzerdefiniert",
+    "empty": "Keine Wechselkurse gefunden",
     "status": "Status",
     "dialog": {
-      "title": "Exchange Rates",
-      "description": "View and edit exchange rate values if needed. Modified rates will not be marked as official rates."
+      "title": "Wechselkurse",
+      "description": "Wechselkurswerte bei Bedarf anzeigen und bearbeiten. Geänderte Kurse werden nicht als offizielle Kurse markiert."
     }
   },
   "summary": {
-    "title": "Summary",
-    "subtotal": "Subtotal",
-    "totalVat": "Total VAT",
-    "grandTotal": "Grand Total"
+    "title": "Zusammenfassung",
+    "subtotal": "Zwischensumme",
+    "totalVat": "Gesamt MwSt.",
+    "grandTotal": "Gesamtsumme"
   },
   "offerType": {
-    "domestic": "Domestic",
+    "domestic": "Inland",
     "export": "Export"
   },
   "wizard": {
-    "title": "Create New Demand",
+    "title": "Neue Anforderung erstellen",
     "step1": {
-      "title": "Step 1: Demand Information",
-      "description": "Enter demand header information and exchange rates",
+      "title": "Schritt 1: Anforderungsinformationen",
+      "description": "Geben Sie die Anforderungskopfdaten und Wechselkurse ein",
       "validation": {
-        "offerType": "Demand Type",
-        "currency": "Currency",
-        "exchangeRate": "Exchange Rate"
+        "offerType": "Anforderungstyp",
+        "currency": "Währung",
+        "exchangeRate": "Wechselkurs"
       },
       "exchangeRate": {
-        "required": "At least one exchange rate must be added for non-TRY currencies"
+        "required": "Für Nicht-TRY-Währungen muss mindestens ein Wechselkurs hinzugefügt werden"
       },
       "currency": {
         "try": {
-          "info": "Exchange rate is not required when TRY is selected"
+          "info": "Wechselkurs ist nicht erforderlich, wenn TRY ausgewählt ist"
         }
       }
     },
     "step2": {
-      "title": "Step 2: Demand Lines",
-      "description": "Add product and price information",
-      "info": "You must add at least one line",
+      "title": "Schritt 2: Anforderungszeilen",
+      "description": "Produkt- und Preisinformationen hinzufügen",
+      "info": "Sie müssen mindestens eine Zeile hinzufügen",
       "validation": {
-        "noLines": "At least one line must be added",
-        "invalidLines": "All lines must have valid information",
-        "allValid": "{{count}} lines successfully added"
+        "noLines": "Es muss mindestens eine Zeile hinzugefügt werden",
+        "invalidLines": "Alle Zeilen müssen gültige Informationen enthalten",
+        "allValid": "{{count}} Zeilen erfolgreich hinzugefügt"
       }
     },
     "step3": {
-      "title": "Step 3: Summary and Approval",
-      "description": "Review information and save demand",
+      "title": "Schritt 3: Zusammenfassung und Genehmigung",
+      "description": "Informationen überprüfen und Anforderung speichern",
       "header": {
-        "title": "Demand Information"
+        "title": "Anforderungsinformationen"
       },
       "lines": {
-        "title": "Demand Lines"
+        "title": "Anforderungszeilen"
       },
       "summary": {
-        "title": "Final Summary"
+        "title": "Endgültige Zusammenfassung"
       },
       "approval": {
-        "info": "The demand will be automatically sent to the approval process after saving"
+        "info": "Die Anforderung wird nach dem Speichern automatisch an den Genehmigungsprozess gesendet"
       }
     }
   }

@@ -1,169 +1,169 @@
 {
-  "loading": "Loading...",
-  "saving": "Saving...",
-  "error": "Error",
-  "noData": "No data found",
-  "previous": "Previous",
-  "next": "Next",
-  "actions": "Actions",
-  "edit": "Edit",
-  "delete": "Delete",
-  "back": "Back",
-  "refresh": "Refresh",
-  "select": "Select",
-  "yes": "Yes",
-  "add": "Add",
-  "backToQuotations": "Back to Demands",
-  "cancel": "Cancel",
-  "save": "Save",
-  "confirm": "Confirm",
-  "saveAndApply": "Save and Apply",
+  "loading": "جار التحميل...",
+  "saving": "جار الحفظ...",
+  "error": "خطأ",
+  "noData": "لا توجد بيانات",
+  "previous": "السابق",
+  "next": "التالي",
+  "actions": "إجراءات",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "back": "رجوع",
+  "refresh": "تحديث",
+  "select": "تحديد",
+  "yes": "نعم",
+  "add": "إضافة",
+  "backToQuotations": "العودة إلى الطلبات",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "confirm": "تأكيد",
+  "saveAndApply": "حفظ وتطبيق",
   "list": {
-    "revise": "Revise",
-    "showing": "Showing {{from}}-{{to}} / {{total}}",
-    "title": "Demand List",
-    "description": "View and manage all demands",
-    "createNew": "Create New Demand",
-    "searchPlaceholder": "Search by demand no or customer name..."
+    "revise": "مراجعة",
+    "showing": "عرض {{from}}-{{to}} / {{total}}",
+    "title": "قائمة الطلبات",
+    "description": "عرض وإدارة جميع الطلبات",
+    "createNew": "إنشاء طلب جديد",
+    "searchPlaceholder": "بحث برقم الطلب أو اسم العميل..."
   },
   "detail": {
-    "title": "Demand Detail"
+    "title": "تفاصيل الطلب"
   },
   "create": {
-    "title": "Create New Demand",
-    "submit": "Save Demand and Send for Approval",
-    "success": "Demand Created Successfully",
-    "successMessage": "Demand has been sent to the approval process.",
-    "error": "Demand Could Not Be Created",
-    "errorMessage": "An error occurred while creating the demand."
+    "title": "إنشاء طلب جديد",
+    "submit": "حفظ الطلب وإرساله للموافقة",
+    "success": "تم إنشاء الطلب بنجاح",
+    "successMessage": "تم إرسال الطلب إلى عملية الموافقة.",
+    "error": "تعذر إنشاء الطلب",
+    "errorMessage": "حدث خطأ أثناء إنشاء الطلب."
   },
   "header": {
-    "title": "Demand Information",
-    "customer": "Customer",
-    "selectCustomer": "Select customer",
-    "shippingAddress": "Shipping Address",
-    "selectShippingAddress": "Select shipping address",
-    "representative": "Sales Representative",
-    "selectRepresentative": "Select representative",
-    "offerType": "Demand Type",
-    "selectOfferType": "Select demand type",
-    "currency": "Currency",
-    "selectCurrency": "Please select currency",
-    "showExchangeRates": "Show Exchange Rates",
-    "offerDate": "Demand Date",
-    "deliveryDate": "Delivery Date",
-    "paymentType": "Payment Type",
-    "selectPaymentType": "Select payment type",
-    "description": "Description",
-    "descriptionPlaceholder": "Enter description",
-    "offerNo": "Demand No",
-    "offerNoPlaceholder": "Demand number",
+    "title": "معلومات الطلب",
+    "customer": "العميل",
+    "selectCustomer": "اختر العميل",
+    "shippingAddress": "عنوان الشحن",
+    "selectShippingAddress": "اختر عنوان الشحن",
+    "representative": "مندوب المبيعات",
+    "selectRepresentative": "اختر المندوب",
+    "offerType": "نوع الطلب",
+    "selectOfferType": "اختر نوع الطلب",
+    "currency": "العملة",
+    "selectCurrency": "يرجى اختيار العملة",
+    "showExchangeRates": "عرض أسعار الصرف",
+    "offerDate": "تاريخ الطلب",
+    "deliveryDate": "تاريخ التوصيل",
+    "paymentType": "نوع الدفع",
+    "selectPaymentType": "اختر نوع الدفع",
+    "description": "الوصف",
+    "descriptionPlaceholder": "أدخل الوصف",
+    "offerNo": "رقم الطلب",
+    "offerNoPlaceholder": "رقم الطلب",
     "currencyChange": {
-      "title": "Currency Change",
-      "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
+      "title": "تغيير العملة",
+      "message": "عند تغيير العملة، ستتم إعادة حساب جميع الأسطر الموجودة وفقًا للعملة الجديدة. هل توافق على هذه العملية؟"
     }
   },
   "lines": {
-    "title": "Demand Lines",
-    "add": "Add Line",
-    "empty": "No lines added yet",
-    "emptyDescription": "Use \"Select Stock\" or \"Add Line\" button to add demand lines",
-    "itemCount": "line",
-    "editLine": "Edit Line",
-    "selectStock": "Select Stock",
-    "selectProduct": "Select Product",
-    "selectStockFirst": "Stock not selected",
-    "stock": "Stock",
-    "productCode": "Stock Code",
-    "enterProductCode": "Enter product code or search",
-    "productName": "Stock Name",
-    "enterProductName": "Enter product name",
-    "quantity": "Quantity",
-    "unitPrice": "Unit Price",
-    "discount1": "Discount 1 %",
-    "discount2": "Discount 2 %",
-    "discount3": "Discount 3 %",
-    "discounts": "Discounts",
-    "discountAmount": "Discount Amount",
-    "netPrice": "Net Price",
-    "vatRate": "VAT Rate %",
-    "lineTotal": "Line Total (VAT Included)",
-    "calculations": "Calculations",
-    "required": "At least 1 line must be added",
-    "noProductsFound": "No products found",
+    "title": "بنود الطلب",
+    "add": "إضافة بند",
+    "empty": "لم تتم إضافة بنود بعد",
+    "emptyDescription": "استخدم زر \"اختيار المخزون\" أو \"إضافة بند\" لإضافة بنود الطلب",
+    "itemCount": "بند",
+    "editLine": "تعديل البند",
+    "selectStock": "اختيار المخزون",
+    "selectProduct": "اختيار المنتج",
+    "selectStockFirst": "لم يتم اختيار المخزون",
+    "stock": "المخزون",
+    "productCode": "كود المخزون",
+    "enterProductCode": "أدخل كود المنتج أو ابحث",
+    "productName": "اسم المخزون",
+    "enterProductName": "أدخل اسم المنتج",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "discount1": "خصم 1 %",
+    "discount2": "خصم 2 %",
+    "discount3": "خصم 3 %",
+    "discounts": "الخصومات",
+    "discountAmount": "قيمة الخصم",
+    "netPrice": "السعر الصافي",
+    "vatRate": "نسبة الضريبة %",
+    "lineTotal": "إجمالي البند (شامل الضريبة)",
+    "calculations": "الحسابات",
+    "required": "يجب إضافة بند واحد على الأقل",
+    "noProductsFound": "لم يتم العثور على منتجات",
     "delete": {
-      "confirmTitle": "Delete Line",
-      "confirmMessage": "Are you sure you want to delete this line?"
+      "confirmTitle": "حذف البند",
+      "confirmMessage": "هل أنت متأكد أنك تريد حذف هذا البند؟"
     }
   },
   "exchangeRates": {
-    "title": "Exchange Rates",
-    "currency": "Currency",
-    "rate": "Rate",
-    "date": "Rate Date",
-    "isOfficial": "Official Rate",
-    "official": "Official",
-    "custom": "Custom",
-    "empty": "No exchange rates found",
-    "status": "Status",
+    "title": "أسعار الصرف",
+    "currency": "العملة",
+    "rate": "السعر",
+    "date": "تاريخ السعر",
+    "isOfficial": "سعر رسمي",
+    "official": "رسمي",
+    "custom": "مخصص",
+    "empty": "لم يتم العثور على أسعار صرف",
+    "status": "الحالة",
     "dialog": {
-      "title": "Exchange Rates",
-      "description": "View and edit exchange rate values if needed. Modified rates will not be marked as official rates."
+      "title": "أسعار الصرف",
+      "description": "عرض وتعديل قيم أسعار الصرف إذا لزم الأمر. لن يتم وضع علامة على الأسعار المعدلة كأسعار رسمية."
     }
   },
   "summary": {
-    "title": "Summary",
-    "subtotal": "Subtotal",
-    "totalVat": "Total VAT",
-    "grandTotal": "Grand Total"
+    "title": "الملخص",
+    "subtotal": "المجموع الفرعي",
+    "totalVat": "إجمالي الضريبة",
+    "grandTotal": "المجموع الكلي"
   },
   "offerType": {
-    "domestic": "Domestic",
-    "export": "Export"
+    "domestic": "محلي",
+    "export": "تصدير"
   },
   "wizard": {
-    "title": "Create New Demand",
+    "title": "إنشاء طلب جديد",
     "step1": {
-      "title": "Step 1: Demand Information",
-      "description": "Enter demand header information and exchange rates",
+      "title": "الخطوة 1: معلومات الطلب",
+      "description": "أدخل معلومات رأس الطلب وأسعار الصرف",
       "validation": {
-        "offerType": "Demand Type",
-        "currency": "Currency",
-        "exchangeRate": "Exchange Rate"
+        "offerType": "نوع الطلب",
+        "currency": "العملة",
+        "exchangeRate": "سعر الصرف"
       },
       "exchangeRate": {
-        "required": "At least one exchange rate must be added for non-TRY currencies"
+        "required": "يجب إضافة سعر صرف واحد على الأقل للعملات غير الليرة التركية"
       },
       "currency": {
         "try": {
-          "info": "Exchange rate is not required when TRY is selected"
+          "info": "سعر الصرف غير مطلوب عند اختيار الليرة التركية"
         }
       }
     },
     "step2": {
-      "title": "Step 2: Demand Lines",
-      "description": "Add product and price information",
-      "info": "You must add at least one line",
+      "title": "الخطوة 2: بنود الطلب",
+      "description": "إضافة معلومات المنتج والسعر",
+      "info": "يجب إضافة بند واحد على الأقل",
       "validation": {
-        "noLines": "At least one line must be added",
-        "invalidLines": "All lines must have valid information",
-        "allValid": "{{count}} lines successfully added"
+        "noLines": "يجب إضافة بند واحد على الأقل",
+        "invalidLines": "يجب أن تحتوي جميع البنود على معلومات صالحة",
+        "allValid": "تمت إضافة {{count}} بنود بنجاح"
       }
     },
     "step3": {
-      "title": "Step 3: Summary and Approval",
-      "description": "Review information and save demand",
+      "title": "الخطوة 3: الملخص والموافقة",
+      "description": "مراجعة المعلومات وحفظ الطلب",
       "header": {
-        "title": "Demand Information"
+        "title": "معلومات الطلب"
       },
       "lines": {
-        "title": "Demand Lines"
+        "title": "بنود الطلب"
       },
       "summary": {
-        "title": "Final Summary"
+        "title": "الملخص النهائي"
       },
       "approval": {
-        "info": "The demand will be automatically sent to the approval process after saving"
+        "info": "سيتم إرسال الطلب تلقائيًا إلى عملية الموافقة بعد الحفظ"
       }
     }
   }

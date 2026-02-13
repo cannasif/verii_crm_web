@@ -1,1 +1,170 @@
-{"loading":"Yükleniyor...","saving":"Kaydediliyor...","error":"Hata","noData":"Veri yok","previous":"Önceki","next":"Sonraki","actions":"İşlemler","edit":"Düzenle","delete":"Sil","back":"Geri","refresh":"Yenile","select":"Seç","yes":"Evet","add":"Ekle","backToQuotations":"Tekliflere Dön","cancel":"İptal","save":"Kaydet","confirm":"Onayla","saveAndApply":"Kaydet ve Uygula","list":{"revise":"Revize et","showing":"{{from}}-{{to}} / {{total}} gösteriliyor","title":"Teklif Listesi","description":"Tüm teklifleri görüntüleyin ve yönetin","createNew":"Yeni Teklif Oluştur","searchPlaceholder":"Teklif no veya müşteri adı ile ara..."},"detail":{"title":"Teklif Detayı"},"create":{"title":"Yeni Teklif Oluştur","submit":"Teklifi Kaydet ve Onaya Gönder","success":"Teklif Başarıyla Oluşturuldu","successMessage":"Teklif onay sürecine gönderildi.","error":"Teklif Oluşturulamadı","errorMessage":"Teklif oluşturulurken bir hata oluştu."},"header":{"title":"Teklif Bilgileri","customer":"Müşteri","selectCustomer":"Müşteri Seçin","shippingAddress":"Sevk Adresi","selectShippingAddress":"Sevk Adresi Seçin","representative":"Satış Temsilcisi","selectRepresentative":"Temsilci seçin","offerType":"Teklif Tipi","selectOfferType":"Teklif tipi seçin","currency":"Para Birimi","selectCurrency":"Lütfen para birimi seçin","showExchangeRates":"Kurları Göster","offerDate":"Teklif Tarihi","deliveryDate":"Teslimat Tarihi","paymentType":"Ödeme Tipi","selectPaymentType":"Ödeme tipi seçin","description":"Açıklama","descriptionPlaceholder":"Açıklama giriniz","offerNo":"Teklif No","offerNoPlaceholder":"Teklif numarası","currencyChange":{"title":"Para Birimi Değişikliği","message":"Para birimi değiştiğinde mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"}},"lines":{"title":"Teklif Satırları","add":"Satır Ekle","empty":"Henüz satır eklenmedi","emptyDescription":"Teklif satırları eklemek için \"Stok Seç\" veya \"Satır Ekle\" butonunu kullanın","itemCount":"satır","editLine":"Satır Düzenle","selectStock":"Stok Seç","selectProduct":"Ürün Seç","selectStockFirst":"Stok seçilmedi","stock":"Stok","productCode":"Stok Kodu","enterProductCode":"Ürün kodu girin veya ara","productName":"Stok Adı","enterProductName":"Ürün adı girin","quantity":"Miktar","unitPrice":"Birim Fiyat","discount1":"İndirim 1 %","discount2":"İndirim 2 %","discount3":"İndirim 3 %","discounts":"İndirimler","discountAmount":"İndirim Tutarı","netPrice":"Net Fiyat","vatRate":"KDV Oranı %","lineTotal":"Satır Toplamı (KDV Dahil)","calculations":"Hesaplamalar","required":"En az 1 satır eklenmelidir","noProductsFound":"Ürün bulunamadı","delete":{"confirmTitle":"Satırı Sil","confirmMessage":"Bu satırı silmek istediğinizden emin misiniz?"}},"exchangeRates":{"title":"Döviz Kurları","currency":"Para Birimi","rate":"Kur","date":"Kur Tarihi","isOfficial":"Resmi Kur","official":"Resmi","custom":"Özel","empty":"Kur bulunamadı","status":"Durum","dialog":{"title":"Döviz Kurları","description":"Kur değerlerini görüntüleyin ve gerekirse düzenleyin. Değiştirilen kurlar resmi kur olarak işaretlenmeyecektir."}},"summary":{"title":"Özet","subtotal":"Ara Toplam","totalVat":"Toplam KDV","grandTotal":"Genel Toplam"},"offerType":{"domestic":"Yurtiçi","export":"Yurtdışı"},"wizard":{"title":"Yeni Teklif Oluştur","step1":{"title":"Adım 1: Teklif Bilgileri","description":"Teklif header bilgilerini ve döviz kurlarını girin","validation":{"offerType":"Teklif Tipi","currency":"Para Birimi","exchangeRate":"Döviz Kuru"},"exchangeRate":{"required":"TRY dışı para birimleri için en az bir döviz kuru eklenmelidir"},"currency":{"try":{"info":"TRY seçildiğinde döviz kuru gerekmez"}}},"step2":{"title":"Adım 2: Teklif Satırları","description":"Ürün ve fiyat bilgilerini ekleyin","info":"En az bir satır eklemeniz gerekmektedir","validation":{"noLines":"En az bir satır eklenmelidir","invalidLines":"Tüm satırların geçerli bilgileri olmalıdır","allValid":"{{count}} satır başarıyla eklendi"}},"step3":{"title":"Adım 3: Özet ve Onay","description":"Bilgileri kontrol edin ve teklifi kaydedin","header":{"title":"Teklif Bilgileri"},"lines":{"title":"Teklif Satırları"},"summary":{"title":"Final Özet"},"approval":{"info":"Teklif kaydedildikten sonra otomatik olarak onay sürecine gönderilecektir"}}}}
+{
+  "loading": "Yükleniyor...",
+  "saving": "Kaydediliyor...",
+  "error": "Hata",
+  "noData": "Veri bulunamadı",
+  "previous": "Önceki",
+  "next": "Sonraki",
+  "actions": "İşlemler",
+  "edit": "Düzenle",
+  "delete": "Sil",
+  "back": "Geri",
+  "refresh": "Yenile",
+  "select": "Seç",
+  "yes": "Evet",
+  "add": "Ekle",
+  "backToQuotations": "Taleplere Dön",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "confirm": "Onayla",
+  "saveAndApply": "Kaydet ve Uygula",
+  "list": {
+    "revise": "Revize Et",
+    "showing": "{{total}} kayıttan {{from}}-{{to}} arası gösteriliyor",
+    "title": "Talep Listesi",
+    "description": "Tüm talepleri görüntüle ve yönet",
+    "createNew": "Yeni Talep Oluştur",
+    "searchPlaceholder": "Talep no veya müşteri adı ile ara..."
+  },
+  "detail": {
+    "title": "Talep Detayı"
+  },
+  "create": {
+    "title": "Yeni Talep Oluştur",
+    "submit": "Talebi Kaydet ve Onaya Gönder",
+    "success": "Talep Başarıyla Oluşturuldu",
+    "successMessage": "Talep onay sürecine gönderildi.",
+    "error": "Talep Oluşturulamadı",
+    "errorMessage": "Talep oluşturulurken bir hata meydana geldi."
+  },
+  "header": {
+    "title": "Talep Bilgileri",
+    "customer": "Müşteri",
+    "selectCustomer": "Müşteri seçin",
+    "shippingAddress": "Teslimat Adresi",
+    "selectShippingAddress": "Teslimat adresi seçin",
+    "representative": "Satış Temsilcisi",
+    "selectRepresentative": "Temsilci seçin",
+    "offerType": "Talep Tipi",
+    "selectOfferType": "Talep tipi seçin",
+    "currency": "Para Birimi",
+    "selectCurrency": "Lütfen para birimi seçin",
+    "showExchangeRates": "Döviz Kurlarını Göster",
+    "offerDate": "Talep Tarihi",
+    "deliveryDate": "Teslim Tarihi",
+    "paymentType": "Ödeme Tipi",
+    "selectPaymentType": "Ödeme tipi seçin",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Açıklama girin",
+    "offerNo": "Talep No",
+    "offerNoPlaceholder": "Talep numarası",
+    "currencyChange": {
+      "title": "Para Birimi Değişikliği",
+      "message": "Para birimi değiştiğinde, mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
+    }
+  },
+  "lines": {
+    "title": "Talep Satırları",
+    "add": "Satır Ekle",
+    "empty": "Henüz satır eklenmedi",
+    "emptyDescription": "Talep satırları eklemek için \"Stok Seç\" veya \"Satır Ekle\" butonunu kullanın",
+    "itemCount": "satır",
+    "editLine": "Satırı Düzenle",
+    "selectStock": "Stok Seç",
+    "selectProduct": "Ürün Seç",
+    "selectStockFirst": "Stok seçilmedi",
+    "stock": "Stok",
+    "productCode": "Stok Kodu",
+    "enterProductCode": "Ürün kodu girin veya arayın",
+    "productName": "Stok Adı",
+    "enterProductName": "Ürün adı girin",
+    "quantity": "Miktar",
+    "unitPrice": "Birim Fiyat",
+    "discount1": "İndirim 1 %",
+    "discount2": "İndirim 2 %",
+    "discount3": "İndirim 3 %",
+    "discounts": "İndirimler",
+    "discountAmount": "İndirim Tutarı",
+    "netPrice": "Net Fiyat",
+    "vatRate": "KDV Oranı %",
+    "lineTotal": "Satır Toplamı (KDV Dahil)",
+    "calculations": "Hesaplamalar",
+    "required": "En az 1 satır eklenmelidir",
+    "noProductsFound": "Ürün bulunamadı",
+    "delete": {
+      "confirmTitle": "Satırı Sil",
+      "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?"
+    }
+  },
+  "exchangeRates": {
+    "title": "Döviz Kurları",
+    "currency": "Para Birimi",
+    "rate": "Kur",
+    "date": "Kur Tarihi",
+    "isOfficial": "Resmi Kur",
+    "official": "Resmi",
+    "custom": "Özel",
+    "empty": "Döviz kuru bulunamadı",
+    "status": "Durum",
+    "dialog": {
+      "title": "Döviz Kurları",
+      "description": "Gerekirse döviz kurlarını görüntüleyin ve düzenleyin. Değiştirilen kurlar resmi kur olarak işaretlenmeyecektir."
+    }
+  },
+  "summary": {
+    "title": "Özet",
+    "subtotal": "Ara Toplam",
+    "totalVat": "Toplam KDV",
+    "grandTotal": "Genel Toplam"
+  },
+  "offerType": {
+    "domestic": "Yurtiçi",
+    "export": "İhracat"
+  },
+  "wizard": {
+    "title": "Yeni Talep Oluştur",
+    "step1": {
+      "title": "Adım 1: Talep Bilgileri",
+      "description": "Talep başlık bilgilerini ve döviz kurlarını girin",
+      "validation": {
+        "offerType": "Talep Tipi",
+        "currency": "Para Birimi",
+        "exchangeRate": "Döviz Kuru"
+      },
+      "exchangeRate": {
+        "required": "TRY olmayan para birimleri için en az bir döviz kuru eklenmelidir"
+      },
+      "currency": {
+        "try": {
+          "info": "TRY seçildiğinde döviz kuru gerekli değildir"
+        }
+      }
+    },
+    "step2": {
+      "title": "Adım 2: Talep Satırları",
+      "description": "Ürün ve fiyat bilgilerini ekleyin",
+      "info": "En az bir satır eklemelisiniz",
+      "validation": {
+        "noLines": "En az bir satır eklenmelidir",
+        "invalidLines": "Tüm satırlar geçerli bilgiye sahip olmalıdır",
+        "allValid": "{{count}} satır başarıyla eklendi"
+      }
+    },
+    "step3": {
+      "title": "Adım 3: Özet ve Onay",
+      "description": "Bilgileri gözden geçirin ve talebi kaydedin",
+      "header": {
+        "title": "Talep Bilgileri"
+      },
+      "lines": {
+        "title": "Talep Satırları"
+      },
+      "summary": {
+        "title": "Nihai Özet"
+      },
+      "approval": {
+        "info": "Talep kaydedildikten sonra otomatik olarak onay sürecine gönderilecektir"
+      }
+    }
+  }
+}
