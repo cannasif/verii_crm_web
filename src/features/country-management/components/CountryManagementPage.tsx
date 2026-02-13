@@ -141,7 +141,7 @@ export function CountryManagementPage(): ReactElement {
       displayedColumnsForExport.map((col) => country[col.key] ?? '')
     );
 
-    // @ts-ignore
+    // @ts-expect-error jspdf-autotable typing mismatch
     autoTable(doc, {
         head: [tableColumn],
         body: tableRows,

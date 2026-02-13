@@ -127,9 +127,7 @@ export function ErpCustomerManagementPage(): ReactElement {
 
     if (sortConfig) {
       result.sort((a, b) => {
-        // @ts-ignore - dynamic key access
         const aValue = a[sortConfig.key];
-        // @ts-ignore
         const bValue = b[sortConfig.key];
 
         if (aValue == null && bValue == null) return 0;

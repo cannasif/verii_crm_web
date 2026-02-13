@@ -141,7 +141,7 @@ export function CityManagementPage(): ReactElement {
       displayedColumnsForExport.map((col) => city[col.key] ?? '')
     );
 
-    // @ts-ignore
+    // @ts-expect-error jspdf-autotable typing mismatch
     autoTable(doc, {
         head: [tableColumn],
         body: tableRows,

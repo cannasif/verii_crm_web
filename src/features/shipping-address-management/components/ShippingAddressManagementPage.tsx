@@ -235,7 +235,7 @@ export function ShippingAddressManagementPage(): ReactElement {
       displayedColumnsForExport.map((col) => item[col.key as keyof ShippingAddressDto] ?? '')
     );
 
-    // @ts-ignore
+    // @ts-expect-error jspdf-autotable typing mismatch
     autoTable(doc, {
         head: [tableColumnLabels],
         body: tableRows,
