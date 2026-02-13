@@ -487,7 +487,8 @@ export function DemandHeaderForm({
               <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Tip & Tarihler</h4>
             </div>
             <div className="space-y-4 flex-1">
-              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4">
+              {/* FIXED: Changed to single column (grid-cols-1) to ensure stacking */}
+              <div className="grid grid-cols-1 gap-4">
                 <FormField
                   control={form.control}
                   name="demand.offerType"
@@ -542,7 +543,8 @@ export function DemandHeaderForm({
                   />
                 )}
               </div>
-              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4 pt-1">
+              {/* FIXED: Changed to single column (grid-cols-1) to ensure dates are stacked */}
+              <div className="grid grid-cols-1 gap-4 pt-1">
                  <FormField
                   control={form.control}
                   name="demand.offerDate"
@@ -715,16 +717,14 @@ export function DemandHeaderForm({
                             disabled={readOnly}
                           />
                           {onQuotationNotesChange && (
-                            <Button
+                            <button
                               type="button"
-                              size="icon"
-                              variant="ghost"
                               className="absolute right-1 top-1 h-7 w-7 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
                               onClick={() => setNotesDialogOpen(true)}
                               disabled={readOnly}
                             >
                               <ListPlus className="h-4 w-4" />
-                            </Button>
+                            </button>
                           )}
                         </div>
                       </FormControl>

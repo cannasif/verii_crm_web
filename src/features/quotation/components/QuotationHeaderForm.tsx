@@ -60,7 +60,7 @@ import {
   User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
   Layers, SearchX,  BookUser, Building2, Phone, Mail, Folder,
-  ListPlus, X, MapPin, Banknote,Search
+  ListPlus, X, MapPin, Banknote, Search
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
@@ -130,7 +130,6 @@ export function QuotationHeaderForm({
   const watchedCurrency = form.watch('quotation.currency');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
   
-  // BURADA: watchedDocumentSerialTypeId artık kullanılıyor
   const watchedDocumentSerialTypeId = form.watch('quotation.documentSerialTypeId');
   
   const watchedOfferType = form.watch('quotation.offerType');
@@ -161,7 +160,6 @@ export function QuotationHeaderForm({
   const { data: relatedUsers = [] } = useQuotationRelatedUsers(user?.id);
   const { data: paymentTypes } = usePaymentTypes();
   
-  // BURADA: useCustomerOptions artık kullanılıyor
   const { data: customerOptions = [] } = useCustomerOptions();
   
   const { data: customer } = useCustomer(watchedCustomerId ?? 0);
@@ -178,7 +176,6 @@ export function QuotationHeaderForm({
     PricingRuleType.Quotation
   );
 
-  // BURADA: watchedDocumentSerialTypeId kullanılarak seri tipi bulunuyor
   const selectedSerialType = useMemo(() => 
     availableDocumentSerialTypes.find(t => t.id === Number(watchedDocumentSerialTypeId)),
     [availableDocumentSerialTypes, watchedDocumentSerialTypeId]
@@ -198,7 +195,6 @@ export function QuotationHeaderForm({
     setCustomerSearchQuery(customerDisplayValue);
   }, [customerDisplayValue]);
 
-  // BURADA: customerOptions hook verisi mapleniyor
   const allCustomerOptions = useMemo(() => {
     return customerOptions.map((c) => ({
       value: `customer-${c.id}`,
@@ -215,11 +211,9 @@ export function QuotationHeaderForm({
     }));
   }, [customerOptions]);
 
-  // BURADA: selectedSerialType kullanılarak filtreleme yapılıyor
   const filteredCustomerOptions = useMemo(() => {
     let options = allCustomerOptions;
 
-    // Seri Numarası seçiliyse ve müşteri tipi kısıtlaması varsa listeyi filtrele
     if (selectedSerialType?.customerTypeId && !watchedCustomerId && !watchedErpCustomerCode) {
       options = options.filter(o => o.customerTypeId === selectedSerialType.customerTypeId);
     }
@@ -541,11 +535,11 @@ export function QuotationHeaderForm({
               </h4>
               {onExchangeRatesChange && (
                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setExchangeRateDialogOpen(true)}
-                    className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
+                   type="button"
+                   variant="ghost"
+                   size="sm"
+                   onClick={() => setExchangeRateDialogOpen(true)}
+                   className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
                  >
                    <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
                    Kurlar
@@ -638,7 +632,7 @@ export function QuotationHeaderForm({
               <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Tip & Tarihler</h4>
             </div>
             <div className="space-y-4 flex-1">
-              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <FormField
                   control={form.control}
                   name="quotation.offerType"
@@ -693,7 +687,7 @@ export function QuotationHeaderForm({
                   />
                 )}
               </div>
-              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4 pt-1">
+              <div className="grid grid-cols-1 gap-4 pt-1">
                  <FormField
                   control={form.control}
                   name="quotation.offerDate"
@@ -866,16 +860,14 @@ export function QuotationHeaderForm({
                             disabled={readOnly}
                           />
                           {onQuotationNotesChange && (
-                            <Button
+                            <button
                               type="button"
-                              size="icon"
-                              variant="ghost"
                               className="absolute right-1 top-1 h-7 w-7 flex items-center justify-center text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
                               onClick={() => setNotesDialogOpen(true)}
                               disabled={readOnly}
                             >
                               <ListPlus className="h-4 w-4" />
-                            </Button>
+                            </button>
                           )}
                         </div>
                       </FormControl>

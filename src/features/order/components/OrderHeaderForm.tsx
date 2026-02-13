@@ -251,6 +251,7 @@ export function OrderHeaderForm({
       <div className="absolute -top-10 -left-10 w-96 h-96 bg-pink-500/10 blur-[100px] pointer-events-none rounded-full" />
       <div className="absolute top-20 right-0 w-80 h-80 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
       
+      {/* CUSTOMER CARD */}
       <div className={styles.glassCard}>
         <div className="p-4 sm:p-6">
           <div className="space-y-6">
@@ -367,7 +368,9 @@ export function OrderHeaderForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        
+        {/* CARD 1: FINANSAL */}
         <div className={styles.glassCard}>
           <div className="p-5 h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
@@ -379,11 +382,11 @@ export function OrderHeaderForm({
               </h4>
               {onExchangeRatesChange && (
                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setExchangeRateDialogOpen(true)}
-                    className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
+                   type="button"
+                   variant="ghost"
+                   size="sm"
+                   onClick={() => setExchangeRateDialogOpen(true)}
+                   className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
                  >
                    <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
                    Kurlar
@@ -467,6 +470,7 @@ export function OrderHeaderForm({
           </div>
         </div>
 
+        {/* CARD 2: TIP & TARIHLER */}
         <div className={styles.glassCard}>
           <div className="p-5 h-full flex flex-col">
             <div className="flex items-center gap-2 mb-4">
@@ -476,7 +480,8 @@ export function OrderHeaderForm({
               <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Tip & Tarihler</h4>
             </div>
             <div className="space-y-4 flex-1">
-              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4">
+              {/* FIXED: Changed from grid with 2 columns to flex-col/grid-cols-1 to prevent overlap */}
+              <div className="grid grid-cols-1 gap-4">
                 <FormField
                   control={form.control}
                   name="order.offerType"
@@ -531,7 +536,8 @@ export function OrderHeaderForm({
                   />
                 )}
               </div>
-              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4 pt-1">
+              {/* FIXED: Removed 2xl:grid-cols-2 and kept it single column */}
+              <div className="grid grid-cols-1 gap-4 pt-1">
                  <FormField
                   control={form.control}
                   name="order.offerDate"
@@ -582,6 +588,7 @@ export function OrderHeaderForm({
           </div>
         </div>
 
+        {/* CARD 3: BELGE DETAYI */}
         <div className={styles.glassCard}>
            <div className="p-5 h-full flex flex-col">
               <div className="flex items-center gap-2 mb-4">
