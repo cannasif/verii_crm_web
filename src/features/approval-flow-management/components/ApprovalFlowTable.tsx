@@ -18,27 +18,9 @@ import {
   DialogFooter,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-    DropdownMenuLabel,
-    DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
 import { useDeleteApprovalFlow } from '../hooks/useDeleteApprovalFlow';
 import type { ApprovalFlowDto } from '../types/approval-flow-types';
-import { 
-    Edit2, 
-    Trash2, 
-    ArrowUpDown, 
-    ArrowUp, 
-    ArrowDown, 
-    ChevronLeft, 
-    ChevronRight,
-    ChevronDown,
-    EyeOff
-} from 'lucide-react';
+import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 
 export interface ColumnDef<T> {
@@ -51,12 +33,25 @@ interface ApprovalFlowTableProps {
   approvalFlows: ApprovalFlowDto[];
   isLoading: boolean;
   onEdit: (approvalFlow: ApprovalFlowDto) => void;
+  visibleColumns?: string[];
+  columnOrder?: string[];
 }
+
+export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalFlowDto>[] => [
+  { key: 'id', label: t('approvalFlow.table.id'), className: 'w-[100px]' },
+  { key: 'documentType', label: t('approvalFlow.table.documentType'), className: 'min-w-[150px]' },
+  { key: 'description', label: t('approvalFlow.table.description'), className: 'min-w-[200px]' },
+  { key: 'isActive', label: t('approvalFlow.table.isActive'), className: 'w-[120px]' },
+  { key: 'createdDate', label: t('approvalFlow.table.createdDate'), className: 'w-[160px]' },
+  { key: 'createdByFullUser', label: t('approvalFlow.table.createdBy'), className: 'w-[160px]' },
+];
 
 export function ApprovalFlowTable({
   approvalFlows,
   isLoading,
   onEdit,
+  visibleColumns: visibleColumnsProp,
+  columnOrder: columnOrderProp,
 }: ApprovalFlowTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -68,20 +63,12 @@ export function ApprovalFlowTable({
 
   const deleteApprovalFlow = useDeleteApprovalFlow();
 
-  const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalFlowDto>[] => [
-    { key: 'id', label: t('approvalFlow.table.id'), className: 'w-[100px]' },
-    { key: 'documentType', label: t('approvalFlow.table.documentType'), className: 'min-w-[150px]' },
-    { key: 'description', label: t('approvalFlow.table.description'), className: 'min-w-[200px]' },
-    { key: 'isActive', label: t('approvalFlow.table.isActive'), className: 'w-[120px]' },
-    { key: 'createdDate', label: t('approvalFlow.table.createdDate'), className: 'w-[160px]' },
-    { key: 'createdByFullUser', label: t('approvalFlow.table.createdBy'), className: 'w-[160px]' },
-  ];
-
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  
-  type ColumnKey = keyof ApprovalFlowDto | 'actions';
-  const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(
-    [...tableColumns.map(col => col.key), 'actions']
+  const visibleColumns = visibleColumnsProp ?? [...tableColumns.map((c) => c.key), 'actions'];
+  const columnOrder = columnOrderProp ?? [...tableColumns.map((c) => c.key), 'actions'];
+  const orderedColumns = useMemo(
+    () => columnOrder.filter((k) => tableColumns.some((c) => c.key === k) || k === 'actions'),
+    [columnOrder, tableColumns]
   );
 
   const processedApprovalFlows = useMemo(() => {
@@ -137,14 +124,6 @@ export function ApprovalFlowTable({
     }
   };
 
-  const toggleColumn = (key: keyof ApprovalFlowDto | 'actions') => {
-    setVisibleColumns(prev => 
-      prev.includes(key) 
-        ? prev.filter(c => c !== key)
-        : [...prev, key]
-    );
-  };
-
   const SortIcon = ({ column }: { column: string }): ReactElement => {
     if (sortConfig?.key !== column) {
       return <ArrowUpDown size={14} className="ml-2 inline-block text-slate-400 opacity-50 group-hover:opacity-100 transition-opacity" />;
@@ -184,63 +163,33 @@ export function ApprovalFlowTable({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end p-2 sm:p-0">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-                variant="outline" 
-                size="sm" 
-                className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
-            >
-              <EyeOff className="mr-2 h-4 w-4" />
-              {t('common.editColumns')}
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
-            className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50"
-          >
-            <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-                {t('common.visibleColumns')}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
-            {tableColumns.map((column) => (
-              <DropdownMenuCheckboxItem
-                key={column.key}
-                checked={visibleColumns.includes(column.key)}
-                onCheckedChange={() => toggleColumn(column.key)}
-                onSelect={(e) => e.preventDefault()}
-                className="text-sm text-slate-700 dark:text-slate-200 focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400 cursor-pointer rounded-lg px-2 py-1.5 pl-8 relative"
-              >
-                {column.label}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
       <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-white/5 backdrop-blur-sm">
         <Table>
           <TableHeader className="bg-slate-50/50 dark:bg-white/5">
             <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
-              {tableColumns.map((column) => (
-                visibleColumns.includes(column.key) && (
-                    <TableHead
-                        key={column.key}
-                        className={`${headStyle} ${column.className}`}
-                        onClick={() => handleSort(column.key as string)}
-                    >
-                        <div className="flex items-center gap-1 group">
-                        {column.label}
-                        <SortIcon column={column.key as string} />
-                        </div>
+              {orderedColumns.map((key) => {
+                if (key === 'actions') {
+                  return (
+                    <TableHead key="actions" className={`${headStyle} text-right w-[100px]`}>
+                      {t('approvalFlow.table.actions')}
                     </TableHead>
-                )
-              ))}
-              <TableHead className={`${headStyle} text-right w-[100px]`}>
-                {t('approvalFlow.table.actions')}
-              </TableHead>
+                  );
+                }
+                const column = tableColumns.find((c) => c.key === key);
+                if (!column || !visibleColumns.includes(column.key as string)) return null;
+                return (
+                  <TableHead
+                    key={column.key as string}
+                    className={`${headStyle} ${column.className}`}
+                    onClick={() => handleSort(column.key as string)}
+                  >
+                    <div className="flex items-center gap-1 group">
+                      {column.label}
+                      <SortIcon column={column.key as string} />
+                    </div>
+                  </TableHead>
+                );
+              })}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -249,68 +198,85 @@ export function ApprovalFlowTable({
                 key={approvalFlow.id}
                 className="border-b border-slate-100 dark:border-white/5 transition-colors duration-200 hover:bg-pink-50/40 dark:hover:bg-pink-500/5 group"
               >
-                {visibleColumns.includes('id') && (
-                    <TableCell className={cellStyle}>
+                {orderedColumns.map((key) => {
+                  if (key === 'actions') {
+                    return (
+                      <TableCell key="actions" className={`${cellStyle} text-right`}>
+                        <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onEdit(approvalFlow)}
+                            className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-colors"
+                            title={t('common.edit')}
+                          >
+                            <Edit2 size={15} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteClick(approvalFlow)}
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+                            title={t('common.delete')}
+                          >
+                            <Trash2 size={15} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    );
+                  }
+                  if (!visibleColumns.includes(key)) return null;
+                  if (key === 'id') {
+                    return (
+                      <TableCell key="id" className={cellStyle}>
                         <span className="font-mono text-xs bg-slate-100 dark:bg-white/10 px-2 py-1 rounded text-slate-700 dark:text-slate-300">
-                            #{approvalFlow.id}
+                          #{approvalFlow.id}
                         </span>
-                    </TableCell>
-                )}
-                {visibleColumns.includes('documentType') && (
-                    <TableCell className={`${cellStyle} font-medium text-slate-900 dark:text-white`}>
+                      </TableCell>
+                    );
+                  }
+                  if (key === 'documentType') {
+                    return (
+                      <TableCell key="documentType" className={`${cellStyle} font-medium text-slate-900 dark:text-white`}>
                         {getDocumentTypeLabel(approvalFlow.documentType)}
-                    </TableCell>
-                )}
-                {visibleColumns.includes('description') && (
-                    <TableCell className={cellStyle}>
+                      </TableCell>
+                    );
+                  }
+                  if (key === 'description') {
+                    return (
+                      <TableCell key="description" className={cellStyle}>
                         {approvalFlow.description || '-'}
-                    </TableCell>
-                )}
-                {visibleColumns.includes('isActive') && (
-                    <TableCell className={cellStyle}>
+                      </TableCell>
+                    );
+                  }
+                  if (key === 'isActive') {
+                    return (
+                      <TableCell key="isActive" className={cellStyle}>
                         <Badge 
-                            variant={approvalFlow.isActive ? 'default' : 'secondary'}
-                            className={`${approvalFlow.isActive ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200 dark:bg-slate-500/20 dark:text-slate-400 dark:border-slate-500/30'} border shadow-sm`}
+                          variant={approvalFlow.isActive ? 'default' : 'secondary'}
+                          className={`${approvalFlow.isActive ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200 dark:bg-slate-500/20 dark:text-slate-400 dark:border-slate-500/30'} border shadow-sm`}
                         >
-                            {approvalFlow.isActive
-                            ? t('approvalFlow.active')
-                            : t('approvalFlow.inactive')}
+                          {approvalFlow.isActive ? t('approvalFlow.active') : t('approvalFlow.inactive')}
                         </Badge>
-                    </TableCell>
-                )}
-                {visibleColumns.includes('createdDate') && (
-                    <TableCell className={cellStyle}>
+                      </TableCell>
+                    );
+                  }
+                  if (key === 'createdDate') {
+                    return (
+                      <TableCell key="createdDate" className={cellStyle}>
                         {new Date(approvalFlow.createdDate).toLocaleDateString(i18n.language)}
-                    </TableCell>
-                )}
-                {visibleColumns.includes('createdByFullUser') && (
-                    <TableCell className={cellStyle}>
+                      </TableCell>
+                    );
+                  }
+                  if (key === 'createdByFullUser') {
+                    return (
+                      <TableCell key="createdByFullUser" className={cellStyle}>
                         {approvalFlow.createdByFullUser || '-'}
-                    </TableCell>
-                )}
-                
-                <TableCell className={`${cellStyle} text-right`}>
-                  <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(approvalFlow)}
-                      className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-colors"
-                      title={t('common.edit')}
-                    >
-                      <Edit2 size={15} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteClick(approvalFlow)}
-                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
-                      title={t('common.delete')}
-                    >
-                      <Trash2 size={15} />
-                    </Button>
-                  </div>
-                </TableCell>
+                      </TableCell>
+                    );
+                  }
+                  return null;
+                })}
               </TableRow>
             ))}
           </TableBody>
