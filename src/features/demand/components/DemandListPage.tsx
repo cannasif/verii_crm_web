@@ -2,7 +2,6 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -11,9 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { DemandTable } from './DemandTable';
-import { Search, RefreshCw, Plus, X } from 'lucide-react';
+import { PageToolbar } from '@/components/shared';
+import { Plus, Filter } from 'lucide-react';
 import type { PagedFilter } from '@/types/api';
+import { useQueryClient } from '@tanstack/react-query';
+import { DEMAND_QUERY_KEYS } from '../utils/query-keys';
 
 export function DemandListPage(): ReactElement {
   const { t } = useTranslation();
@@ -57,8 +64,9 @@ export function DemandListPage(): ReactElement {
     navigate(`/demands/${demandId}`);
   };
 
-  const clearSearch = (): void => {
-    setSearchTerm('');
+  const queryClient = useQueryClient();
+  const handleRefresh = async (): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] });
   };
 
   return (
@@ -89,67 +97,56 @@ export function DemandListPage(): ReactElement {
           </Button>
         </div>
 
-        {/* SEARCH & FILTER AREA */}
-        <div className="flex flex-col md:flex-row gap-4 items-center bg-white/40 dark:bg-zinc-900/40 p-1.5 rounded-2xl border border-white/20 dark:border-white/5 backdrop-blur-sm shadow-sm">
-          <div className="relative flex-1 w-full group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 transition-colors pointer-events-none z-10">
-              <Search className="h-5 w-5" />
-            </div>
-            <Input
-              type="text"
-              placeholder={t('demand.list.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="
-                pl-12 pr-12 h-12 
-                bg-white dark:bg-zinc-950/50 
-                border-transparent dark:border-zinc-800 
-                rounded-xl shadow-sm 
-                focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20
-                transition-all duration-300 ease-out
-                text-base
-              "
+        <div className="relative z-10 bg-white/80 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-xl shadow-zinc-200/50 dark:shadow-none overflow-hidden p-6">
+          <div className="flex flex-col gap-4 mb-4">
+            <PageToolbar
+              searchPlaceholder={t('demand.list.searchPlaceholder')}
+              searchValue={searchTerm}
+              onSearchChange={setSearchTerm}
+              onRefresh={handleRefresh}
+              rightSlot={
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={approvalStatusFilter !== 'all' ? 'default' : 'outline'}
+                      size="sm"
+                      className={`h-10 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
+                        approvalStatusFilter !== 'all'
+                          ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
+                          : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
+                      }`}
+                    >
+                      <Filter className="mr-2 h-4 w-4" />
+                      {t('approval.statusFilterLabel')}
+                      {approvalStatusFilter !== 'all' && (
+                        <span className="ml-2 h-2 w-2 rounded-full bg-pink-500" />
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-[220px] p-4 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl z-50">
+                    <div className="space-y-2">
+                      <div className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                        {t('approval.statusFilterLabel')}
+                      </div>
+                      <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
+                        <SelectTrigger className="h-10 w-full rounded-xl">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{t('common.all')}</SelectItem>
+                          <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                          <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+                          <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+                          <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+                          <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              }
             />
-            {searchTerm && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={clearSearch}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-pink-600 transition-colors"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
           </div>
-
-          <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-            <SelectTrigger className="h-12 w-[200px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/50">
-              <SelectValue placeholder={t('approval.statusFilterLabel')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('common.all')}</SelectItem>
-              <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
-              <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-              <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-              <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-              <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button
-            variant="outline"
-            onClick={() => {
-              setSearchTerm('');
-              setPageNumber(1);
-            }}
-            className="h-12 px-6 rounded-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/50 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-400 gap-2 font-medium w-full md:w-auto shadow-sm"
-          >
-            <RefreshCw size={18} className="opacity-70" />
-            {t('demand.refresh')}
-          </Button>
-        </div>
-
-        <div className="relative z-10 bg-white/80 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
           <DemandTable
             pageNumber={pageNumber}
             pageSize={pageSize}
