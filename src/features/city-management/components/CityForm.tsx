@@ -75,12 +75,15 @@ export function CityForm({
 
   const form = useForm<CityFormSchema>({
     resolver: zodResolver(cityFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       erpCode: '',
       countryId: 0,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (city) {
@@ -258,7 +261,7 @@ export function CityForm({
               </Button>
               <Button 
                 type="submit" 
-                disabled={isLoading}
+                disabled={isLoading || !isFormValid}
                 className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white shadow-lg shadow-pink-500/20 border-0"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

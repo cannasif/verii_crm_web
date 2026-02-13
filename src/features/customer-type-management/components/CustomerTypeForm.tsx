@@ -63,11 +63,14 @@ export function CustomerTypeForm({
 
   const form = useForm<CustomerTypeFormSchema>({
     resolver: zodResolver(customerTypeFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (customerType) {
@@ -190,7 +193,7 @@ export function CustomerTypeForm({
           <Button 
             type="submit" 
             form="customer-type-form" 
-            disabled={isLoading}
+            disabled={isLoading || !isFormValid}
             className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {isLoading 

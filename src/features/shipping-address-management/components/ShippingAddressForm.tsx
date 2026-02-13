@@ -71,6 +71,8 @@ export function ShippingAddressForm({
 
   const form = useForm<ShippingAddressFormSchema>({
     resolver: zodResolver(shippingAddressFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       address: '',
@@ -86,6 +88,7 @@ export function ShippingAddressForm({
       isActive: true,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const watchedCountryId = form.watch('countryId');
   const watchedCityId = form.watch('cityId');
@@ -462,7 +465,7 @@ export function ShippingAddressForm({
                 </Button>
                 <Button 
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoading || !isFormValid}
                     className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white font-medium shadow-lg shadow-pink-500/20 border-0"
                 >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

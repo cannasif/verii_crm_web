@@ -64,11 +64,14 @@ export function ActivityTypeForm({
 
   const form = useForm<ActivityTypeFormSchema>({
     resolver: zodResolver(activityTypeFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (activityType) {
@@ -195,7 +198,7 @@ export function ActivityTypeForm({
           <Button 
             type="submit" 
             form="activity-type-form"
-            disabled={isLoading}
+            disabled={isLoading || !isFormValid}
             className="w-full sm:w-auto h-11 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {isLoading

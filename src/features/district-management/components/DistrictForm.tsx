@@ -69,12 +69,15 @@ export function DistrictForm({
 
   const form = useForm<DistrictFormSchema>({
     resolver: zodResolver(districtFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       erpCode: '',
       cityId: 0,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (district) {
@@ -207,7 +210,7 @@ export function DistrictForm({
                 </Button>
                 <Button 
                   type="submit" 
-                  disabled={isLoading}
+                  disabled={isLoading || !isFormValid}
                   className="h-12 px-8 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-bold shadow-lg shadow-pink-500/20 border-0 transition-all hover:scale-[1.02]"
                 >
                   {isLoading

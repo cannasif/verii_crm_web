@@ -86,6 +86,8 @@ export function CustomerForm({
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       customerCode: '',
@@ -111,6 +113,7 @@ export function CustomerForm({
       isCompleted: false,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const selectedCountryId = form.watch('countryId');
   const selectedCityId = form.watch('cityId');
@@ -405,7 +408,7 @@ export function CustomerForm({
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading} className="w-full sm:w-auto h-11 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5">
             {t('customerManagement.form.cancel')}
           </Button>
-          <Button type="submit" form="customer-form" disabled={isLoading} className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all">
+          <Button type="submit" form="customer-form" disabled={isLoading || !isFormValid} className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all">
             {isLoading ? t('customerManagement.form.saving') : t('customerManagement.form.save')}
           </Button>
         </DialogFooter>

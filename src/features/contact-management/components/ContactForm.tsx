@@ -98,6 +98,8 @@ export function ContactForm({
 
   const form = useForm<ContactFormSchema>({
     resolver: zodResolver(contactFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       salutation: SALUTATION_TYPE.None,
       firstName: '',
@@ -112,6 +114,7 @@ export function ContactForm({
       titleId: 0,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (contact) {
@@ -428,7 +431,7 @@ export function ContactForm({
           <Button 
             type="submit" 
             form="contact-form" 
-            disabled={isLoading}
+            disabled={isLoading || !isFormValid}
             className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {isLoading ? t('contactManagement.saving') : t('contactManagement.save')}

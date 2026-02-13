@@ -65,11 +65,14 @@ export function TitleForm({
 
   const form = useForm<TitleFormSchema>({
     resolver: zodResolver(titleFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       titleName: '',
       code: '',
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (title) {
@@ -190,7 +193,7 @@ export function TitleForm({
             </Button>
             <Button 
               onClick={form.handleSubmit(handleSubmit)}
-              disabled={isLoading}
+              disabled={isLoading || !isFormValid}
               className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               {isLoading
