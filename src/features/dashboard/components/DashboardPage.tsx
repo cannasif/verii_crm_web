@@ -220,7 +220,7 @@ export function DashboardPage(): ReactElement {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
             <span>{t(`greeting.${timeOfDay}`)},</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-orange-500">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-orange-500">
               <span className="md:hidden">{firstName}</span>
               <span className="hidden md:inline">{displayName}</span>
             </span>
@@ -249,7 +249,7 @@ export function DashboardPage(): ReactElement {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
-                    className="bg-gradient-to-r from-pink-600 to-orange-600 text-white border-0 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 hover:scale-[1.02] transition-all h-10 px-6"
+                    className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 hover:scale-[1.02] transition-all h-10 px-6"
                 >
                     <Zap size={16} className="mr-2" />
                     {t('quickAction')}

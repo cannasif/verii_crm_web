@@ -199,7 +199,7 @@ export function ActivityTypeForm({
             type="submit" 
             form="activity-type-form"
             disabled={isLoading || !isFormValid}
-            className="w-full sm:w-auto h-11 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+            className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {isLoading
               ? t('activityType.saving')

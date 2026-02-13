@@ -74,7 +74,7 @@ export function RelatedStocksSelectionDialog({
     <Dialog open={open} onOpenChange={(isOpen) => !isLoading && onOpenChange(isOpen)}>
       <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-2xl rounded-2xl overflow-hidden">
         <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0 border-b border-slate-200/50 dark:border-white/5">
-          <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-orange-600">
+          <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-pink-600 to-orange-600">
             {t('relatedStocksSelectionDialog.title')}
           </DialogTitle>
           <DialogDescription className="text-slate-500 dark:text-slate-400">
@@ -207,7 +207,7 @@ export function RelatedStocksSelectionDialog({
           <Button 
             onClick={handleConfirm} 
             disabled={isLoading}
-            className="bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md shadow-pink-500/20 border-0"
+            className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md shadow-pink-500/20 border-0"
           >
             {isLoading ? (
               <>

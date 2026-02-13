@@ -436,7 +436,7 @@ export function UserDetailDialog({
                       <Button 
                         type="submit" 
                         disabled={isSaving || !isFormValid}
-                        className="w-full md:w-auto bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-medium px-8 py-3 h-12 rounded-xl shadow-lg shadow-pink-600/20 active:scale-95 transition-all duration-200"
+                        className="w-full md:w-auto bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-medium px-8 py-3 h-12 rounded-xl shadow-lg shadow-pink-600/20 active:scale-95 transition-all duration-200"
                       >
                         {isSaving ? (
                              <div className="flex items-center gap-2">
