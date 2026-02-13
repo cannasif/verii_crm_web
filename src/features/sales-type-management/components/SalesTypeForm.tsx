@@ -30,7 +30,7 @@ import {
 import { salesTypeFormSchema, type SalesTypeFormSchema } from '../types/sales-type-types';
 import type { SalesTypeGetDto } from '../types/sales-type-types';
 import { OfferType } from '@/types/offer-type';
-import { Tag } from 'lucide-react';
+import { Tag, X } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface SalesTypeFormProps {
@@ -42,7 +42,7 @@ interface SalesTypeFormProps {
 }
 
 const INPUT_STYLE = `
-  h-11 rounded-xl
+  h-12 rounded-xl
   bg-slate-50 dark:bg-[#0c0516]
   border border-slate-200 dark:border-white/10
   text-slate-900 dark:text-white text-sm
@@ -97,12 +97,12 @@ export function SalesTypeForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-lg shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl max-h-[90vh] h-auto flex flex-col gap-0 p-0 overflow-hidden transition-colors duration-300">
-        <DialogHeader className="border-b border-slate-100 dark:border-white/5 px-6 py-5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md shrink-0 flex-row items-center justify-between space-y-0">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl">
+        <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                <Tag size={24} className="text-pink-600 dark:text-pink-500" />
+            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5">
+              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
+                <Tag size={20} className="text-pink-600 dark:text-pink-500" />
               </div>
             </div>
             <div>
@@ -117,6 +117,14 @@ export function SalesTypeForm({
                   : t('salesTypeManagement.form.addDescription')}
               </DialogDescription>
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onOpenChange(false)}
+              className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-500 dark:text-slate-400"
+            >
+              <X size={20} />
+            </button>
           </div>
         </DialogHeader>
 
@@ -174,27 +182,25 @@ export function SalesTypeForm({
           </Form>
         </div>
 
-        <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-6 py-5 bg-slate-50/50 dark:bg-[#130822] sm:justify-between sm:space-x-0">
-          <div className="flex items-center gap-2 w-full justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isLoading}
-              className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              onClick={form.handleSubmit(handleSubmit)}
-              disabled={isLoading}
-              className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
-            >
-              {isLoading
-                ? t('common.saving')
-                : t('common.save')}
-            </Button>
-          </div>
+        <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm shrink-0 flex flex-row justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+            className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            onClick={form.handleSubmit(handleSubmit)}
+            disabled={isLoading}
+            className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
+          >
+            {isLoading
+              ? t('common.saving')
+              : t('common.save')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
