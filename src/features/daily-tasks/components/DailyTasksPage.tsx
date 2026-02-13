@@ -81,7 +81,7 @@ export function DailyTasksPage(): ReactElement {
     if (user?.id && assignedUserFilter === undefined) {
       setAssignedUserFilter(user.id);
     }
-  }, [user]);
+  }, [user, assignedUserFilter]);
 
   // --- Date Helpers ---
   const getWeekDateRange = (): { startDate: string; endDate: string } => {

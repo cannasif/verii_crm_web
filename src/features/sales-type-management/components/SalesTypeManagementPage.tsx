@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
@@ -89,11 +89,11 @@ export function SalesTypeManagementPage(): ReactElement {
     };
   }, [t, setPageTitle]);
 
-  const salesTypeLabel = (value: string): string => {
+  const salesTypeLabel = useCallback((value: string): string => {
     if (value === OfferType.YURTICI) return t('common.offerType.yurtici', { ns: 'common' });
     if (value === OfferType.YURTDISI) return t('common.offerType.yurtdisi', { ns: 'common' });
     return value;
-  };
+  }, [t]);
 
   const filteredItems = useMemo<SalesTypeGetDto[]>(() => {
     if (!items) return [];
@@ -114,7 +114,7 @@ export function SalesTypeManagementPage(): ReactElement {
     result = applySalesTypeFilters(result, appliedFilterRows);
 
     return result;
-  }, [items, searchTerm, appliedFilterRows]);
+  }, [items, searchTerm, appliedFilterRows, salesTypeLabel]);
 
   const handleAdvancedSearch = () => {
     setAppliedFilterRows(draftFilterRows);
@@ -168,7 +168,7 @@ export function SalesTypeManagementPage(): ReactElement {
       })
     );
 
-    // @ts-ignore
+    // @ts-expect-error jspdf-autotable typing mismatch
     autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
@@ -196,7 +196,7 @@ export function SalesTypeManagementPage(): ReactElement {
       })
     );
 
-    // @ts-ignore
+    // @ts-expect-error pptxgenjs table typing mismatch
     const tableData = [
       headers.map(text => ({ text })),
       ...rows.map(row => row.map(text => ({ text }))),

@@ -48,7 +48,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
     }, AUTO_RETRY_DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [myPermissionsQuery.isError, myPermissionsQuery.error, myPermissionsQuery.refetch]);
+  }, [myPermissionsQuery]);
 
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" replace />;

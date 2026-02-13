@@ -135,7 +135,7 @@ export function ActivityTable({
     const finalVisible = withId.length > 0 ? withId : defaultOrder;
     setColumnOrder(mergedOrder);
     setVisibleColumns(finalVisible);
-  }, [userId, defaultOrder.join(',')]);
+  }, [userId, defaultOrder]);
 
   const persistColumnPrefs = (order: string[], visible: string[]): void => {
     saveColumnPreferences(userId, { order, visibleKeys: visible });

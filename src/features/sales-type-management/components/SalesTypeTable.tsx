@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useMemo, useEffect } from 'react';
+import { type ReactElement, useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
@@ -203,11 +203,11 @@ export function SalesTypeTable({
     }
   };
 
-  const salesTypeLabel = (value: string): string => {
+  const salesTypeLabel = useCallback((value: string): string => {
     if (value === OfferType.YURTICI) return t('common.offerType.yurtici', { ns: 'common' });
     if (value === OfferType.YURTDISI) return t('common.offerType.yurtdisi', { ns: 'common' });
     return value;
-  };
+  }, [t]);
 
   const processedItems = useMemo(() => {
     const result = [...items];
@@ -232,7 +232,7 @@ export function SalesTypeTable({
       });
     }
     return result;
-  }, [items, sortConfig, t]);
+  }, [items, sortConfig, salesTypeLabel]);
 
   const totalPages = Math.ceil(processedItems.length / pageSize) || 1;
   const paginatedItems = processedItems.slice(

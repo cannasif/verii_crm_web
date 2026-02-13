@@ -133,6 +133,8 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   const form = useForm<PdfReportDesignerCreateFormValues, unknown, PdfReportDesignerCreateFormValues>(
     {
       resolver: zodResolver(pdfReportDesignerCreateSchema),
+      mode: 'onChange',
+      reValidateMode: 'onChange',
       defaultValues: {
         ruleType: PricingRuleType.Demand,
         title: '',
@@ -140,6 +142,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       },
     }
   );
+  const isFormValid = form.formState.isValid;
 
   const { data: templateById, isSuccess: templateByIdLoaded } = usePdfReportTemplateById(
     isEdit ? editId! : null
@@ -272,7 +275,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     } catch {
       toast.error(t('pdfReportDesigner.draftRestoreFailed'));
     }
-  }, [draftKey, form, setElements]);
+  }, [draftKey, form, setElements, t]);
 
   const handleClearDraft = useCallback(() => {
     try {
@@ -541,7 +544,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
             </div>
             <Button
               type="submit"
-              disabled={isSaving || (isEdit && !templateByIdLoaded)}
+              disabled={isSaving || (isEdit && !templateByIdLoaded) || !isFormValid}
             >
               {isSaving ? t('common.saving') : isEdit ? t('common.update') : t('common.save')}
             </Button>

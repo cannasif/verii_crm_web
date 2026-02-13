@@ -70,8 +70,14 @@ export function ApprovalUserRoleTable({
   const deleteUserRole = useDeleteApprovalUserRole();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  const visibleColumns = visibleColumnsProp ?? [...tableColumns.map((col) => col.key), 'actions'];
-  const columnOrder = columnOrderProp ?? [...tableColumns.map((col) => col.key), 'actions'];
+  const visibleColumns = useMemo(
+    () => visibleColumnsProp ?? [...tableColumns.map((col) => col.key), 'actions'],
+    [visibleColumnsProp, tableColumns]
+  );
+  const columnOrder = useMemo(
+    () => columnOrderProp ?? [...tableColumns.map((col) => col.key), 'actions'],
+    [columnOrderProp, tableColumns]
+  );
   const orderedColumns = useMemo(
     () => columnOrder.filter((k) => tableColumns.some((c) => c.key === k) || k === 'actions'),
     [columnOrder, tableColumns]

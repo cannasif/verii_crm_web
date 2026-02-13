@@ -77,6 +77,8 @@ export function QuotationDetailPage(): ReactElement {
 
   const form = useForm<CreateQuotationSchema>({
     resolver: zodResolver(createQuotationSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       quotation: {
         offerType: DEFAULT_OFFER_TYPE,
@@ -86,6 +88,8 @@ export function QuotationDetailPage(): ReactElement {
       },
     },
   });
+  const isFormValid = form.formState.isValid;
+  const watchedCurrencyValue = form.watch('quotation.currency');
 
   // Başlık Ayarı
   useEffect(() => {
@@ -197,10 +201,10 @@ export function QuotationDetailPage(): ReactElement {
   const { currencyOptions: currencyOptionsForExchangeRates, currencyOptions } = useCurrencyOptions();
 
   const currencyCode = useMemo(() => {
-    const currencyId = Number(form.getValues('quotation.currency'));
+    const currencyId = Number(watchedCurrencyValue);
     const option = currencyOptions.find(opt => opt.value === currencyId);
     return option?.code || 'TRY';
-  }, [form.getValues('quotation.currency'), currencyOptions]);
+  }, [watchedCurrencyValue, currencyOptions]);
 
   const generatePDF = async () => {
     const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
@@ -714,7 +718,7 @@ export function QuotationDetailPage(): ReactElement {
                 {!isReadOnly && (
                   <Button
                     type="submit"
-                    disabled={updateMutation.isPending}
+                    disabled={updateMutation.isPending || !isFormValid}
                     className="group bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white min-w-[140px]"
                   >
                     <Save className="mr-2 h-4 w-4" />

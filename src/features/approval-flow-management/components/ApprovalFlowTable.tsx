@@ -64,8 +64,14 @@ export function ApprovalFlowTable({
   const deleteApprovalFlow = useDeleteApprovalFlow();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  const visibleColumns = visibleColumnsProp ?? [...tableColumns.map((c) => c.key), 'actions'];
-  const columnOrder = columnOrderProp ?? [...tableColumns.map((c) => c.key), 'actions'];
+  const visibleColumns = useMemo(
+    () => visibleColumnsProp ?? [...tableColumns.map((c) => c.key), 'actions'],
+    [visibleColumnsProp, tableColumns]
+  );
+  const columnOrder = useMemo(
+    () => columnOrderProp ?? [...tableColumns.map((c) => c.key), 'actions'],
+    [columnOrderProp, tableColumns]
+  );
   const orderedColumns = useMemo(
     () => columnOrder.filter((k) => tableColumns.some((c) => c.key === k) || k === 'actions'),
     [columnOrder, tableColumns]

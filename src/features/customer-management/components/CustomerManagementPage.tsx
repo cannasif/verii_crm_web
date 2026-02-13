@@ -62,7 +62,7 @@ export function CustomerManagementPage(): ReactElement {
     const prefs = loadColumnPreferences('customer-management', user?.id, defaultColumnKeys);
     setVisibleColumns(prefs.visibleKeys as Array<keyof CustomerDto>);
     setColumnOrder(prefs.order);
-  }, [user?.id]);
+  }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useCustomerList({
     pageNumber: 1,

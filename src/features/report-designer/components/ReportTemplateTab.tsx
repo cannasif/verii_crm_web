@@ -87,7 +87,7 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
     return () => {
       cancelled = true;
     };
-  }, [selectedTemplateId, entityId]);
+  }, [selectedTemplateId, entityId, generatePdfMutation, t]);
 
   useEffect(() => {
     return () => {
@@ -96,8 +96,7 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
     };
   }, []);
 
-  const isGenerating =
-    Boolean(selectedTemplateId) && (generatePdfMutation.isPending || !pdfBlobUrl);
+  const isGenerating = Boolean(selectedTemplateId) && generatePdfMutation.isPending;
   const emptyLabel = t(RULE_TYPE_EMPTY_LABELS[ruleType]);
 
   return (
