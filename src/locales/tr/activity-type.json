@@ -12,6 +12,11 @@
   "saving": "Kaydediliyor...",
   "previous": "Önceki",
   "next": "Sonraki",
+  "advancedFilter": {
+    "columnName": "Aktivite Tipi Adı",
+    "columnDescription": "Açıklama",
+    "columnCreatedBy": "Oluşturan"
+  },
   "form": {
     "addTitle": "Yeni Aktivite Tipi Ekle",
     "editTitle": "Aktivite Tipi Düzenle",

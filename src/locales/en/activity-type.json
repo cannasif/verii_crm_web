@@ -12,6 +12,11 @@
   "saving": "Saving...",
   "previous": "Previous",
   "next": "Next",
+  "advancedFilter": {
+    "columnName": "Activity Type Name",
+    "columnDescription": "Description",
+    "columnCreatedBy": "Created By"
+  },
   "form": {
     "addTitle": "Add New Activity Type",
     "editTitle": "Edit Activity Type",
