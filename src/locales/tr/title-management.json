@@ -5,6 +5,10 @@
   "refresh": "Yenile",
   "previous": "Önceki",
   "next": "Sonraki",
+  "advancedFilter": {
+    "columnTitleName": "Ünvan Adı",
+    "columnCode": "Kod"
+  },
   "cancel": "İptal",
   "save": "Kaydet",
   "saving": "Kaydediliyor...",

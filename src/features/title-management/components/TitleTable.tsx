@@ -63,6 +63,8 @@ interface TitleTableProps {
   onEdit: (title: TitleDto) => void;
   visibleColumns: Array<keyof TitleDto>;
   pageSize: number;
+  columnOrder?: string[];
+  onColumnOrderChange?: (order: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<TitleDto>[] => [
@@ -124,11 +126,13 @@ export function TitleTable({
   onEdit,
   visibleColumns,
   pageSize,
+  columnOrder: externalColumnOrder,
+  onColumnOrderChange,
 }: TitleTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState<TitleDto | null>(null);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState<{ key: keyof TitleDto; direction: 'asc' | 'desc' } | null>(null);
 
@@ -139,24 +143,22 @@ export function TitleTable({
   }, [titles]);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  
-  // Column Order State
-  const [columnOrder, setColumnOrder] = useState<string[]>(tableColumns.map(c => c.key));
 
-  // Sync columnOrder with tableColumns
+  const [internalColumnOrder, setInternalColumnOrder] = useState<string[]>([]);
+
   useEffect(() => {
-    setColumnOrder((prevOrder) => {
-      const newKeys = tableColumns.map(c => c.key);
-      const existingKeys = prevOrder.filter(key => newKeys.includes(key as keyof TitleDto));
-      const addedKeys = newKeys.filter(key => !prevOrder.includes(key));
-      return [...existingKeys, ...addedKeys];
-    });
-  }, [tableColumns]);
+    if (externalColumnOrder) return;
+    if (tableColumns.length > 0 && internalColumnOrder.length === 0) {
+      setInternalColumnOrder(tableColumns.map((c) => c.key as string));
+    }
+  }, [tableColumns, internalColumnOrder.length, externalColumnOrder]);
+
+  const columnOrder = externalColumnOrder ?? internalColumnOrder;
 
   const orderedColumns = useMemo(() => {
     return columnOrder
-      .filter(key => visibleColumns.includes(key as keyof TitleDto))
-      .map(key => tableColumns.find(col => col.key === key))
+      .filter((key) => visibleColumns.includes(key as keyof TitleDto))
+      .map((key) => tableColumns.find((col) => col.key === key))
       .filter((col): col is ColumnDef<TitleDto> => !!col);
   }, [columnOrder, visibleColumns, tableColumns]);
 
@@ -171,11 +173,16 @@ export function TitleTable({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setColumnOrder((items) => {
+      const reorder = (items: string[]) => {
         const oldIndex = items.indexOf(active.id as string);
         const newIndex = items.indexOf(over.id as string);
         return arrayMove(items, oldIndex, newIndex);
-      });
+      };
+      if (onColumnOrderChange) {
+        onColumnOrderChange(reorder([...columnOrder]));
+      } else {
+        setInternalColumnOrder((items) => reorder(items));
+      }
     }
   };
 
