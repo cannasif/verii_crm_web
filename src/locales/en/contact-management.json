@@ -2,7 +2,7 @@
   "menu": "Customer Contact Management",
   "description": "Manage and edit customer contacts",
   "addButton": "Add New Contact",
-  "stats": {
+  "advancedFilter":{"columnFullName":"Full Name","columnFirstName":"First Name","columnLastName":"Last Name","columnEmail":"Email","columnPhone":"Phone","columnMobile":"Mobile","columnCustomerName":"Customer","columnTitleName":"Title"},"stats": {
     "totalContacts": "Total Contacts",
     "activeContacts": "Active Contacts",
     "newThisMonth": "New This Month"

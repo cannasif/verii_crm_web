@@ -68,6 +68,8 @@ interface ContactTableProps {
   onEdit: (contact: ContactDto) => void;
   visibleColumns: Array<keyof ContactDto>;
   pageSize: number;
+  columnOrder?: string[];
+  onColumnOrderChange?: (order: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ContactDto>[] => [
@@ -135,11 +137,13 @@ export function ContactTable({
   onEdit,
   visibleColumns,
   pageSize,
+  columnOrder: externalColumnOrder,
+  onColumnOrderChange,
 }: ContactTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<ContactDto | null>(null);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -150,19 +154,19 @@ export function ContactTable({
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
 
-  // Column Order State
-  const [columnOrder, setColumnOrder] = useState<string[]>(tableColumns.map(c => c.key));
+  const [internalColumnOrder, setInternalColumnOrder] = useState<string[]>(tableColumns.map((c) => c.key));
 
-  // Sync columnOrder with tableColumns when language changes or columns definition updates
   useEffect(() => {
-    setColumnOrder((prevOrder) => {
-      // Keep existing order for known keys, append new keys
-      const newKeys = tableColumns.map(c => c.key);
-      const existingKeys = prevOrder.filter(key => newKeys.includes(key as keyof ContactDto));
-      const addedKeys = newKeys.filter(key => !prevOrder.includes(key));
+    if (externalColumnOrder) return;
+    setInternalColumnOrder((prevOrder) => {
+      const newKeys = tableColumns.map((c) => c.key);
+      const existingKeys = prevOrder.filter((key) => newKeys.includes(key as keyof ContactDto));
+      const addedKeys = newKeys.filter((key) => !prevOrder.includes(key));
       return [...existingKeys, ...addedKeys];
     });
-  }, [tableColumns]);
+  }, [tableColumns, externalColumnOrder]);
+
+  const columnOrder = externalColumnOrder ?? internalColumnOrder;
 
   const orderedColumns = useMemo(() => {
     return columnOrder
@@ -182,11 +186,16 @@ export function ContactTable({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setColumnOrder((items) => {
+      const reorder = (items: string[]) => {
         const oldIndex = items.indexOf(active.id as string);
         const newIndex = items.indexOf(over.id as string);
         return arrayMove(items, oldIndex, newIndex);
-      });
+      };
+      if (onColumnOrderChange) {
+        onColumnOrderChange(reorder([...columnOrder]));
+      } else {
+        setInternalColumnOrder((items) => reorder(items));
+      }
     }
   };
   
