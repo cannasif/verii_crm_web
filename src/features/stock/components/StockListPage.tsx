@@ -1,15 +1,17 @@
 import { type ReactElement, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui-store';
-import { Input } from '@/components/ui/input';
 import { StockTable } from './StockTable';
-import { Search, RefreshCw, X } from 'lucide-react';
+import { PageToolbar } from '@/components/shared';
+import { STOCK_QUERY_KEYS } from '../utils/query-keys';
 import type { PagedFilter } from '@/types/api';
 
 export function StockListPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(20);
@@ -45,8 +47,9 @@ export function StockListPage(): ReactElement {
     navigate(`/stocks/${stockId}`);
   };
 
-  const clearSearch = () => {
-    setSearchTerm('');
+  const handleRefresh = async (): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.LIST] });
+    await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.LIST_WITH_IMAGES] });
   };
 
   return (
@@ -67,40 +70,13 @@ export function StockListPage(): ReactElement {
           </div>
         </div>
 
-        <div className="w-full md:w-auto flex items-center gap-2">
-          <div className="relative group w-full md:w-[320px]">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 transition-colors pointer-events-none z-10">
-              <Search className="w-4 h-4" />
-            </div>
-
-            <Input
-              placeholder={t('stock.list.search')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="
-                pl-10 pr-10 h-11 
-                bg-white dark:bg-zinc-900/50 
-                border-zinc-200 dark:border-zinc-800 
-                rounded-xl shadow-sm hover:shadow-md 
-                focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20
-                transition-all duration-300 ease-out
-                text-sm font-medium
-              "
-            />
-
-            {searchTerm && (
-              <button
-                onClick={clearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-pink-50 dark:hover:bg-pink-900/30 text-muted-foreground hover:text-pink-600 transition-colors"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-          
-          <div className="hidden md:flex items-center justify-center w-11 h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 text-muted-foreground" title={t('stock.list.syncedFromErp')}>
-             <RefreshCw size={16} className="opacity-70" />
-          </div>
+        <div className="w-full md:w-auto">
+          <PageToolbar
+            searchPlaceholder={t('stock.list.search')}
+            searchValue={searchTerm}
+            onSearchChange={setSearchTerm}
+            onRefresh={handleRefresh}
+          />
         </div>
       </div>
 
