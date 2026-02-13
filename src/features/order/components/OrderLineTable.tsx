@@ -175,7 +175,7 @@ export function OrderLineTable({
   });
 
   const styles = {
-    glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/50 backdrop-blur-xl shadow-lg shadow-zinc-200/50 dark:shadow-none",
+    glassCard: "relative overflow-hidden rounded-none border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/50 backdrop-blur-xl shadow-lg shadow-zinc-200/50 dark:shadow-none",
     tableHeadRow: "bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800",
     tableHead: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider",
     tableCell: "p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800",
@@ -228,42 +228,42 @@ export function OrderLineTable({
     async (line: OrderLineFormState): Promise<void> => {
       const lineToAdd = { ...line, isEditing: false };
       if (isExistingOrder && orderId) {
-	        try {
-	          const dtos: CreateOrderLineDto[] = [toCreateDto(lineToAdd, orderId)];
-	          const created = await createMutation.mutateAsync(dtos);
-	          const mapped = created.map((dto, i) => dtoToFormState(dto, lines.length + i));
-	          setLines([...lines, ...mapped]);
-	          setAddLineDialogOpen(false);
-	          setNewLine(null);
-	        } catch {
-	          void 0;
-	        }
-	        return;
-	      }
+          try {
+            const dtos: CreateOrderLineDto[] = [toCreateDto(lineToAdd, orderId)];
+            const created = await createMutation.mutateAsync(dtos);
+            const mapped = created.map((dto: OrderLineGetDto, i: number) => dtoToFormState(dto, lines.length + i));
+            setLines([...lines, ...mapped]);
+            setAddLineDialogOpen(false);
+            setNewLine(null);
+          } catch {
+            void 0;
+          }
+          return;
+        }
       setLines([...lines, lineToAdd]);
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-	    [isExistingOrder, orderId, createMutation, lines, setLines]
-	  );
+      [isExistingOrder, orderId, createMutation, lines, setLines]
+    );
 
   const handleSaveMultipleLines = useCallback(
     async (newLines: OrderLineFormState[]): Promise<void> => {
       if (!linesEditable) return;
       const linesToAdd = newLines.map((l) => ({ ...l, isEditing: false }));
       if (isExistingOrder && orderId) {
-	        try {
-	          const dtos: CreateOrderLineDto[] = linesToAdd.map((l) => toCreateDto(l, orderId));
-	          const created = await createMutation.mutateAsync(dtos);
-	          const mapped = created.map((dto, i) => dtoToFormState(dto, lines.length + i));
-	          setLines([...lines, ...mapped]);
-	          setAddLineDialogOpen(false);
-	          setNewLine(null);
-	        } catch {
-	          void 0;
-	        }
-	        return;
-	      }
+          try {
+            const dtos: CreateOrderLineDto[] = linesToAdd.map((l) => toCreateDto(l, orderId));
+            const created = await createMutation.mutateAsync(dtos);
+            const mapped = created.map((dto: OrderLineGetDto, i: number) => dtoToFormState(dto, lines.length + i));
+            setLines([...lines, ...mapped]);
+            setAddLineDialogOpen(false);
+            setNewLine(null);
+          } catch {
+            void 0;
+          }
+          return;
+        }
       setLines([...lines, ...linesToAdd]);
       setAddLineDialogOpen(false);
       setNewLine(null);
@@ -301,6 +301,7 @@ export function OrderLineTable({
   };
 
   const handleEditLine = (id: string): void => {
+    if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
     if (!line) return;
 
@@ -356,7 +357,6 @@ export function OrderLineTable({
     updatedLine: OrderLineFormState,
     relatedLinesToUpdate?: OrderLineFormState[]
   ): Promise<void> => {
-    if (!linesEditable) return;
     const originalLine = lines.find((l) => l.id === updatedLine.id);
     if (!originalLine) {
       setEditLineDialogOpen(false);
@@ -368,19 +368,19 @@ export function OrderLineTable({
     const linesWithBackendId = allUpdatedLines.filter((l) => parseLineId(l.id) != null);
 
     if (isExistingOrder && orderId && linesWithBackendId.length > 0) {
-	      try {
-	        const dtos: OrderLineGetDto[] = linesWithBackendId.map((l) => toUpdateDto(l, orderId));
-	        await updateMutation.mutateAsync(dtos);
-	        const fresh = await orderApi.getOrderLinesByOrderId(orderId);
-	        const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
-	        setLines(mapped);
-	        setEditLineDialogOpen(false);
-	        setLineToEdit(null);
-	      } catch {
-	        void 0;
-	      }
-	      return;
-	    }
+        try {
+          const dtos: OrderLineGetDto[] = linesWithBackendId.map((l) => toUpdateDto(l, orderId));
+          await updateMutation.mutateAsync(dtos);
+          const fresh = await orderApi.getOrderLinesByOrderId(orderId);
+          const mapped = fresh.map((dto: OrderLineGetDto, index: number) => dtoToFormState(dto, index));
+          setLines(mapped);
+          setEditLineDialogOpen(false);
+          setLineToEdit(null);
+        } catch {
+          void 0;
+        }
+        return;
+      }
 
     applyLineUpdatesToLocalState(updatedLine, relatedLinesToUpdate, originalLine);
     setEditLineDialogOpen(false);
@@ -393,6 +393,7 @@ export function OrderLineTable({
   };
 
   const handleDeleteClick = (id: string): void => {
+    if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
     setLineToDelete(id);
     if (line?.relatedProductKey) {
@@ -436,7 +437,7 @@ export function OrderLineTable({
       deleteMutation.mutate(lineBackendId, {
         onSuccess: async (): Promise<void> => {
           const fresh = await orderApi.getOrderLinesByOrderId(oid);
-          const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
+          const mapped = fresh.map((dto: OrderLineGetDto, index: number) => dtoToFormState(dto, index));
           setLines(mapped);
           setLineToDelete(null);
           setRelatedLinesCount(0);
@@ -505,15 +506,15 @@ export function OrderLineTable({
               <Table>
                 <TableHeader>
                   <TableRow className={styles.tableHeadRow}>
-                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[240px]")}>{t('order.lines.stock')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[140px]")}>{t('order.lines.unitPrice')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[100px]")}>{t('order.lines.quantity')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount1')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount2')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px]")}>{t('order.lines.discount3')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px]")}>{t('order.lines.netPrice')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('order.lines.stock')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[120px] md:min-w-[140px]")}>{t('order.lines.unitPrice')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[90px] md:min-w-[100px]")}>{t('order.lines.quantity')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('order.lines.discount1')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('order.lines.discount2')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('order.lines.discount3')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right min-w-[110px] md:min-w-[120px]")}>{t('order.lines.netPrice')}</TableHead>
                     {!linesEditable && (
-                    <TableHead className={cn(styles.tableHead, "text-center w-[100px]")}>{t('order.actions')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('order.actions')}</TableHead>
                     )}
                   </TableRow>
                 </TableHeader>

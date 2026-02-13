@@ -12,7 +12,7 @@ import { OrderHeaderForm } from './OrderHeaderForm';
 import { OrderLineTable } from './OrderLineTable';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Save, X } from 'lucide-react';
+import { ArrowLeft, Save, X, FileText, Layers, Calculator } from 'lucide-react';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
@@ -42,11 +42,11 @@ export function OrderCreateForm(): ReactElement {
   const { data: customerOptions = [] } = useCustomerOptions();
 
   useEffect(() => {
-    setPageTitle(t('order.create.title'));
+    setPageTitle(null);
     return () => {
       setPageTitle(null);
     };
-  }, [t, setPageTitle]);
+  }, [setPageTitle]);
 
   const form = useForm<CreateOrderSchema>({
     resolver: zodResolver(createOrderSchema),
@@ -113,7 +113,7 @@ export function OrderCreateForm(): ReactElement {
     }
 
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
-    const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
+    const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 400);
     if (overLimitNote) {
       toast.error(t('order.create.error'), {
         description: t('quotation.notes.maxLengthError'),
@@ -272,99 +272,148 @@ export function OrderCreateForm(): ReactElement {
   };
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto relative pb-10">
+    <div className="w-full max-w-[1600px] mx-auto relative pb-10 px-4 md:px-6">
       <FormProvider {...form}>
         <form onSubmit={handleFormSubmit} className="space-y-0">
-          <div className="flex items-center gap-5 mb-6">
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={() => navigate(-1)}
-              className="group h-12 w-12 rounded-2xl bg-white/80 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/10 shadow-sm hover:border-pink-500/50 hover:shadow-pink-500/20 transition-all duration-300"
-            >
-              <ArrowLeft className="h-5 w-5 text-zinc-500 group-hover:text-pink-600 transition-colors" />
-            </Button>
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+          
+          {/* Header Section */}
+          <div className="relative mb-10 pt-6">
+            <div className="absolute left-0 top-6 hidden lg:block">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => navigate(-1)}
+                className="group h-11 w-11 rounded-xl bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/10 hover:border-pink-500/50 hover:shadow-[0_0_20px_-5px_rgba(236,72,153,0.3)] transition-all duration-300"
+              >
+                <ArrowLeft className="h-5 w-5 text-zinc-500 group-hover:text-pink-600 transition-colors" />
+              </Button>
+            </div>
+
+            <div className="flex flex-col items-center justify-center text-center px-4">
+              <div className="lg:hidden self-start mb-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(-1)}
+                  className="rounded-lg border-zinc-200 dark:border-zinc-800"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  {t('common.back', 'Geri')}
+                </Button>
+              </div>
+
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-zinc-900 dark:text-white">
                 {t('order.create.title')}
-              </h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              </h1>
+              
+              <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-3 max-w-2xl mx-auto leading-relaxed">
                 {t('order.create.subtitle')}
               </p>
+
+              <div className="h-1.5 w-24 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full mt-6 shadow-lg shadow-pink-500/20" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
-            <div className="flex flex-col gap-6 min-w-0">
-              <section className="space-y-1" aria-label={t('order.sections.header')}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
-                    1
-                  </span>
-                  <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                    {t('order.sections.header')}
-                  </h3>
+            {/* Left Content Column */}
+            <div className="flex flex-col gap-6 min-w-0 h-fit">
+              
+              {/* Section 1: Order Information */}
+              <section aria-label={t('order.sections.header')}>
+                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
+                  <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
+                      1
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                            {t('order.sections.header')}
+                        </h3>
+                    </div>
+                  </div>
+
+                  <div className="p-5">
+                    <OrderHeaderForm
+                      exchangeRates={exchangeRates}
+                      onExchangeRatesChange={setExchangeRates}
+                      quotationNotes={quotationNotes}
+                      onQuotationNotesChange={setQuotationNotes}
+                      lines={lines}
+                      onLinesChange={async () => {
+                        const newCurrency = form.getValues('order.currency');
+                        if (newCurrency) {
+                          await handleCurrencyChange(newCurrency);
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
-                <OrderHeaderForm
-                  exchangeRates={exchangeRates}
-                  onExchangeRatesChange={setExchangeRates}
-                  quotationNotes={quotationNotes}
-                  onQuotationNotesChange={setQuotationNotes}
-                  lines={lines}
-                  onLinesChange={async () => {
-                    const newCurrency = form.getValues('order.currency');
-                    if (newCurrency) {
-                      await handleCurrencyChange(newCurrency);
-                    }
-                  }}
-                />
               </section>
 
-              <section className="space-y-1 pt-2" aria-label={t('order.sections.lines')}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
-                    2
-                  </span>
-                  <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                    {t('order.sections.lines')}
-                  </h3>
+              {/* Section 2: Order Lines */}
+              <section aria-label={t('order.sections.lines')}>
+                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
+                   <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
+                      2
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                            {t('order.sections.lines')}
+                        </h3>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full overflow-x-auto p-0">
+                      <OrderLineTable
+                        lines={lines}
+                        setLines={setLines}
+                        currency={watchedCurrency}
+                        exchangeRates={exchangeRates}
+                        pricingRules={pricingRules}
+                        userDiscountLimits={temporarySallerData}
+                        customerId={watchedCustomerId}
+                        erpCustomerCode={watchedErpCustomerCode}
+                        representativeId={watchedRepresentativeId}
+                      />
+                  </div>
                 </div>
-                <OrderLineTable
-                  lines={lines}
-                  setLines={setLines}
-                  currency={watchedCurrency}
-                  exchangeRates={exchangeRates}
-                  pricingRules={pricingRules}
-                  userDiscountLimits={temporarySallerData}
-                  customerId={watchedCustomerId}
-                  erpCustomerCode={watchedErpCustomerCode}
-                  representativeId={watchedRepresentativeId}
-                />
               </section>
             </div>
 
-            <aside className="xl:sticky xl:top-6">
-              <div className="flex items-center gap-2 mb-3 xl:mb-4">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                  3
-                </span>
-                <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                  {t('order.sections.summary')}
-                </h3>
-              </div>
-              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
-                <OrderSummaryCard lines={lines} currency={watchedCurrency} />
+            {/* Sidebar Sticky Column */}
+            <aside className="xl:sticky xl:top-6 w-full">
+              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
+                <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
+                      3
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                            {t('order.sections.summary')}
+                        </h3>
+                    </div>
+                  </div>
+
+                <div>
+                    <OrderSummaryCard lines={lines} currency={watchedCurrency} />
+                </div>
               </div>
             </aside>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+          {/* Action Buttons */}
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
             <Button
               type="button"
               variant="outline"
               onClick={() => navigate(-1)}
-              className="group"
+              className="group w-full sm:w-auto"
             >
               <X className="mr-2 h-4 w-4" />
               {t('order.cancel')}
@@ -372,7 +421,7 @@ export function OrderCreateForm(): ReactElement {
             <Button
               type="submit"
               disabled={createMutation.isPending}
-              className="group bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white min-w-[140px]"
+              className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
             >
               <Save className="mr-2 h-4 w-4" />
               {createMutation.isPending
