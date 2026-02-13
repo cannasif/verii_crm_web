@@ -62,6 +62,8 @@ interface ShippingAddressTableProps {
   onEdit: (shippingAddress: ShippingAddressDto) => void;
   pageSize: number;
   visibleColumns: string[];
+  columnOrder?: string[];
+  onColumnOrderChange?: (order: string[]) => void;
 }
 
 type SortConfig = {
@@ -140,25 +142,29 @@ export function ShippingAddressTable({
   onEdit,
   pageSize,
   visibleColumns,
+  columnOrder: externalColumnOrder,
+  onColumnOrderChange,
 }: ShippingAddressTableProps): ReactElement {
   const { t } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedShippingAddress, setSelectedShippingAddress] = useState<ShippingAddressDto | null>(null);
-  
-  // Client-side pagination & sorting
+
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'id', direction: 'desc' });
-  const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const [internalColumnOrder, setInternalColumnOrder] = useState<string[]>([]);
 
   const deleteShippingAddress = useDeleteShippingAddress();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
 
   useEffect(() => {
-    if (tableColumns.length > 0 && columnOrder.length === 0) {
-      setColumnOrder(tableColumns.map(col => col.key));
+    if (externalColumnOrder) return;
+    if (tableColumns.length > 0 && internalColumnOrder.length === 0) {
+      setInternalColumnOrder(tableColumns.map((col) => col.key));
     }
-  }, [tableColumns, columnOrder.length]);
+  }, [tableColumns, internalColumnOrder.length, externalColumnOrder]);
+
+  const columnOrder = externalColumnOrder ?? internalColumnOrder;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -175,11 +181,16 @@ export function ShippingAddressTable({
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-        setColumnOrder((items) => {
-            const oldIndex = items.indexOf(active.id as string);
-            const newIndex = items.indexOf(over?.id as string);
-            return arrayMove(items, oldIndex, newIndex);
-        });
+      const reorder = (items: string[]) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over?.id as string);
+        return arrayMove(items, oldIndex, newIndex);
+      };
+      if (onColumnOrderChange) {
+        onColumnOrderChange(reorder([...columnOrder]));
+      } else {
+        setInternalColumnOrder((items) => reorder(items));
+      }
     }
   };
 
