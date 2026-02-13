@@ -1,0 +1,24 @@
+{
+  "menu": "Satış Tipi Yönetimi",
+  "description": "Satış tiplerini yönetin ve düzenleyin",
+  "addButton": "Yeni Satış Tipi Ekle",
+  "searchPlaceholder": "Satış tipi ara...",
+  "table": {
+    "salesType": "Teklif Tipi",
+    "name": "Ad",
+    "createdDate": "Oluşturulma Tarihi"
+  },
+  "form": {
+    "addTitle": "Yeni Satış Tipi Ekle",
+    "editTitle": "Satış Tipini Düzenle",
+    "addDescription": "Yeni bir satış tipi tanımı oluşturun.",
+    "editDescription": "Mevcut satış tipi tanımını güncelleyin.",
+    "salesType": "Teklif Tipi",
+    "name": "Ad",
+    "namePlaceholder": "Satış tipi adını girin",
+    "validation": {
+      "required": "Ad zorunludur",
+      "whitespace": "Ad boş veya sadece boşluk olamaz"
+    }
+  }
+}

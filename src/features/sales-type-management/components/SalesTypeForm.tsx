@@ -63,7 +63,7 @@ export function SalesTypeForm({
   salesType,
   isLoading = false,
 }: SalesTypeFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['sales-type-management', 'common']);
 
   const form = useForm<SalesTypeFormSchema>({
     resolver: zodResolver(salesTypeFormSchema),
@@ -108,13 +108,13 @@ export function SalesTypeForm({
             <div>
               <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
                 {salesType
-                  ? t('salesTypeManagement.form.editTitle')
-                  : t('salesTypeManagement.form.addTitle')}
+                  ? t('form.editTitle')
+                  : t('form.addTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                 {salesType
-                  ? t('salesTypeManagement.form.editDescription')
-                  : t('salesTypeManagement.form.addDescription')}
+                  ? t('form.editDescription')
+                  : t('form.addDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -137,20 +137,20 @@ export function SalesTypeForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(salesTypeFormSchema, 'salesType')}>
-                      {t('salesTypeManagement.form.salesType')}
+                      {t('form.salesType')}
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className={INPUT_STYLE}>
-                          <SelectValue placeholder={t('common.offerType.selectPlaceholder')} />
+                          <SelectValue placeholder={t('common.offerType.selectPlaceholder', { ns: 'common' })} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value={OfferType.YURTICI}>
-                          {t('common.offerType.yurtici')}
+                          {t('common.offerType.yurtici', { ns: 'common' })}
                         </SelectItem>
                         <SelectItem value={OfferType.YURTDISI}>
-                          {t('common.offerType.yurtdisi')}
+                          {t('common.offerType.yurtdisi', { ns: 'common' })}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -165,12 +165,12 @@ export function SalesTypeForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(salesTypeFormSchema, 'name')}>
-                      {t('salesTypeManagement.form.name')}
+                      {t('form.name')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('salesTypeManagement.form.namePlaceholder')}
+                        placeholder={t('form.namePlaceholder')}
                         className={INPUT_STYLE}
                       />
                     </FormControl>
@@ -190,7 +190,7 @@ export function SalesTypeForm({
             disabled={isLoading}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
           >
-            {t('common.cancel')}
+            {t('common.cancel', { ns: 'common' })}
           </Button>
           <Button
             onClick={form.handleSubmit(handleSubmit)}
@@ -198,8 +198,8 @@ export function SalesTypeForm({
             className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
           >
             {isLoading
-              ? t('common.saving')
-              : t('common.save')}
+              ? t('common.saving', { ns: 'common' })
+              : t('common.save', { ns: 'common' })}
           </Button>
         </DialogFooter>
       </DialogContent>

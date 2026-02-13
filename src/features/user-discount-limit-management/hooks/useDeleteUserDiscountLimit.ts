@@ -5,7 +5,7 @@ import { userDiscountLimitApi } from '../api/user-discount-limit-api';
 import { USER_DISCOUNT_LIMIT_QUERY_KEYS } from '../utils/query-keys';
 
 export const useDeleteUserDiscountLimit = (): UseMutationResult<void, Error, number> => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user-discount-limit-management');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -17,10 +17,10 @@ export const useDeleteUserDiscountLimit = (): UseMutationResult<void, Error, num
         queryKey: [USER_DISCOUNT_LIMIT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('userDiscountLimitManagement.deleteSuccess'));
+      toast.success(t('deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDiscountLimitManagement.deleteError'));
+      toast.error(error.message || t('deleteError'));
     },
   });
 };

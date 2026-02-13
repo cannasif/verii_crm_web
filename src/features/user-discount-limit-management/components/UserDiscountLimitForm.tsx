@@ -27,18 +27,23 @@ import { useUserOptions } from '../hooks/useUserOptions';
 import { useStokGroup } from '@/services/hooks/useStokGroup';
 import { toast } from 'sonner';
 import { userDiscountLimitApi } from '../api/user-discount-limit-api';
+import { BadgePercent, X } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
 const INPUT_STYLE = `
-  h-11 rounded-lg
-  border-gray-200 bg-white
-  focus:border-pink-500 focus:ring-2 focus:ring-pink-100
-  hover:border-pink-200 hover:bg-pink-50/30
+  h-12 rounded-xl
+  bg-slate-50 dark:bg-[#0c0516]
+  border border-slate-200 dark:border-white/10
+  text-slate-900 dark:text-white text-sm
+  placeholder:text-slate-400 dark:placeholder:text-slate-600
+  focus-visible:ring-0 focus-visible:ring-offset-0
+  focus:bg-white focus:border-pink-500 focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)]
+  dark:focus:bg-[#0c0516] dark:focus:border-pink-500/60 dark:focus:shadow-[0_0_0_3px_rgba(236,72,153,0.1)]
   transition-all duration-200
-  text-gray-700 font-medium
 `;
 
-const LABEL_STYLE = "text-sm font-semibold text-gray-700 mb-1.5 ml-1";
+const LABEL_STYLE =
+  'text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold ml-1 mb-1.5 block';
 
 interface UserDiscountLimitFormProps {
   open: boolean;
@@ -55,7 +60,7 @@ export function UserDiscountLimitForm({
   userDiscountLimit,
   isLoading = false,
 }: UserDiscountLimitFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user-discount-limit-management');
   const { data: users, isLoading: usersLoading } = useUserOptions();
   const { data: stokGroups = [], isLoading: isLoadingGroups } = useStokGroup();
 
@@ -95,7 +100,7 @@ export function UserDiscountLimitForm({
       try {
         const existsResult = await userDiscountLimitApi.existsBySalespersonAndGroup(data.salespersonId, data.erpProductGroupCode);
         if (existsResult) {
-          toast.error(t('userDiscountLimitManagement.alreadyExists'));
+          toast.error(t('alreadyExists'));
           return;
         }
       } catch {
@@ -127,167 +132,193 @@ export function UserDiscountLimitForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {userDiscountLimit
-              ? t('userDiscountLimitManagement.edit')
-              : t('userDiscountLimitManagement.create')}
-          </DialogTitle>
-          <DialogDescription>
-            {userDiscountLimit
-              ? t('userDiscountLimitManagement.editDescription')
-              : t('userDiscountLimitManagement.createDescription')}
-          </DialogDescription>
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl">
+        <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5">
+              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
+                <BadgePercent size={20} className="text-pink-600 dark:text-pink-500" />
+              </div>
+            </div>
+            <div>
+              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
+                {userDiscountLimit
+                  ? t('edit')
+                  : t('create')}
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
+                {userDiscountLimit
+                  ? t('editDescription')
+                  : t('createDescription')}
+              </DialogDescription>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onOpenChange(false)}
+              className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-500 dark:text-slate-400"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="salespersonId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'salespersonId')}>
-                    {t('userDiscountLimitManagement.salesperson')}
-                  </FormLabel>
-                  <VoiceSearchCombobox
-                    options={userComboboxOptions}
-                    value={field.value && field.value > 0 ? field.value.toString() : ''}
-                    onSelect={(value) => {
-                      field.onChange(value ? Number(value) : 0);
-                    }}
-                    placeholder={t('userDiscountLimitManagement.selectSalesperson')}
-                    searchPlaceholder={t('userDiscountLimitManagement.searchSalesperson')}
-                    className={INPUT_STYLE}
-                    modal={true}
-                    disabled={usersLoading}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="erpProductGroupCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'erpProductGroupCode')}>
-                    {t('userDiscountLimitManagement.erpProductGroupCode')}
-                  </FormLabel>
-                  <VoiceSearchCombobox
-                    options={groupComboboxOptions}
-                    value={field.value || ''}
-                    onSelect={(value) => {
-                      field.onChange(value);
-                    }}
-                    placeholder={t('userDiscountLimitManagement.selectErpProductGroupCode')}
-                    searchPlaceholder={t('userDiscountLimitManagement.searchGroup')}
-                    className={INPUT_STYLE}
-                    modal={true}
-                    disabled={isLoadingGroups}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="maxDiscount1"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'maxDiscount1')}>
-                    {t('userDiscountLimitManagement.maxDiscount1')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
+        <div className="flex-1 overflow-y-auto p-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="salespersonId"
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'salespersonId')}>
+                      {t('salesperson')}
+                    </FormLabel>
+                    <VoiceSearchCombobox
+                      options={userComboboxOptions}
+                      value={field.value && field.value > 0 ? field.value.toString() : ''}
+                      onSelect={(value) => {
+                        field.onChange(value ? Number(value) : 0);
+                      }}
+                      placeholder={t('selectSalesperson')}
+                      searchPlaceholder={t('common.search', { ns: 'common' })}
                       className={INPUT_STYLE}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="100"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      value={field.value || ''}
-                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount1')}
+                      modal={true}
+                      disabled={usersLoading}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage className="text-red-500 text-[10px] mt-1" />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="maxDiscount2"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.maxDiscount2')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
+              <FormField
+                control={form.control}
+                name="erpProductGroupCode"
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'erpProductGroupCode')}>
+                      {t('erpProductGroupCode')}
+                    </FormLabel>
+                    <VoiceSearchCombobox
+                      options={groupComboboxOptions}
+                      value={field.value || ''}
+                      onSelect={(value) => {
+                        field.onChange(value);
+                      }}
+                      placeholder={t('enterErpProductGroupCode')}
+                      searchPlaceholder={t('common.search', { ns: 'common' })}
                       className={INPUT_STYLE}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="100"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                      value={field.value || ''}
-                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount2')}
+                      modal={true}
+                      disabled={isLoadingGroups}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage className="text-red-500 text-[10px] mt-1" />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="maxDiscount3"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={LABEL_STYLE}>
-                    {t('userDiscountLimitManagement.maxDiscount3')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className={INPUT_STYLE}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="100"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                      value={field.value || ''}
-                      placeholder={t('userDiscountLimitManagement.enterMaxDiscount3')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <FormField
+                  control={form.control}
+                  name="maxDiscount1"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(userDiscountLimitFormSchema, 'maxDiscount1')}>
+                        {t('maxDiscount1')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          className={INPUT_STYLE}
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="100"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          value={field.value || ''}
+                          placeholder={t('enterMaxDiscount1')}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-500 text-[10px] mt-1" />
+                    </FormItem>
+                  )}
+                />
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isLoading}
-              >
-                {t('userDiscountLimitManagement.cancel')}
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading
-                  ? t('userDiscountLimitManagement.saving')
-                  : t('userDiscountLimitManagement.save')}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+                <FormField
+                  control={form.control}
+                  name="maxDiscount2"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <FormLabel className={LABEL_STYLE}>
+                        {t('maxDiscount2')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          className={INPUT_STYLE}
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="100"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                          value={field.value || ''}
+                          placeholder={t('enterMaxDiscount2')}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-500 text-[10px] mt-1" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="maxDiscount3"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <FormLabel className={LABEL_STYLE}>
+                        {t('maxDiscount3')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          className={INPUT_STYLE}
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="100"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                          value={field.value || ''}
+                          placeholder={t('enterMaxDiscount3')}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-500 text-[10px] mt-1" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </form>
+          </Form>
+        </div>
+
+        <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm shrink-0 flex flex-row justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+            className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
+          >
+            {t('common.cancel', { ns: 'common' })}
+          </Button>
+          <Button
+            onClick={form.handleSubmit(handleSubmit)}
+            disabled={isLoading}
+            className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
+          >
+            {isLoading
+              ? t('common.saving', { ns: 'common' })
+              : t('common.save', { ns: 'common' })}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

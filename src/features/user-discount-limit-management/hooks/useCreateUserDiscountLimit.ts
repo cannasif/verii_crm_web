@@ -6,7 +6,7 @@ import { USER_DISCOUNT_LIMIT_QUERY_KEYS } from '../utils/query-keys';
 import type { CreateUserDiscountLimitDto, UserDiscountLimitDto } from '../types/user-discount-limit-types';
 
 export const useCreateUserDiscountLimit = (): UseMutationResult<UserDiscountLimitDto, Error, CreateUserDiscountLimitDto> => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user-discount-limit-management');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -19,10 +19,10 @@ export const useCreateUserDiscountLimit = (): UseMutationResult<UserDiscountLimi
         queryKey: [USER_DISCOUNT_LIMIT_QUERY_KEYS.LIST],
         exact: false,
       });
-      toast.success(t('userDiscountLimitManagement.createSuccess'));
+      toast.success(t('createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDiscountLimitManagement.createError'));
+      toast.error(error.message || t('createError'));
     },
   });
 };

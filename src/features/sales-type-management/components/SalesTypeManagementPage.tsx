@@ -46,7 +46,7 @@ import { OfferType } from '@/types/offer-type';
 const EMPTY_SALES_TYPES: SalesTypeGetDto[] = [];
 
 export function SalesTypeManagementPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['sales-type-management', 'common']);
   const { setPageTitle } = useUIStore();
   
   const [formOpen, setFormOpen] = useState(false);
@@ -88,15 +88,15 @@ export function SalesTypeManagementPage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageTitle(t('salesTypeManagement.menu'));
+    setPageTitle(t('menu'));
     return () => {
       setPageTitle(null);
     };
   }, [t, setPageTitle]);
 
   const salesTypeLabel = (value: string): string => {
-    if (value === OfferType.YURTICI) return t('common.offerType.yurtici');
-    if (value === OfferType.YURTDISI) return t('common.offerType.yurtdisi');
+    if (value === OfferType.YURTICI) return t('common.offerType.yurtici', { ns: 'common' });
+    if (value === OfferType.YURTDISI) return t('common.offerType.yurtdisi', { ns: 'common' });
     return value;
   };
 
@@ -288,10 +288,10 @@ export function SalesTypeManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('salesTypeManagement.menu')}
+            {t('menu')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('salesTypeManagement.description')}
+            {t('description')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -300,7 +300,7 @@ export function SalesTypeManagementPage(): ReactElement {
               className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
             >
               <Plus size={18} className="mr-2" />
-              {t('salesTypeManagement.addButton')}
+              {t('addButton')}
             </Button>
         </div>
       </div>
@@ -311,7 +311,7 @@ export function SalesTypeManagementPage(): ReactElement {
             <div className="relative group w-full sm:w-72 lg:w-96">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
               <Input
-                placeholder={t('salesTypeManagement.searchPlaceholder')}
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all w-full"
@@ -364,14 +364,14 @@ export function SalesTypeManagementPage(): ReactElement {
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showFilters ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
                     >
                         <Filter size={16} />
-                        <span className="font-medium text-sm">{t('common.filters')}</span>
+                        <span className="font-medium text-sm">{t('common.filters', { ns: 'common' })}</span>
                     </button>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" align="end" className="w-96 p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
                     
                     {/* Header */}
                     <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                      <h3 className="text-sm font-semibold text-gray-200">{t('common.filters')}</h3>
+                      <h3 className="text-sm font-semibold text-gray-200">{t('common.filters', { ns: 'common' })}</h3>
                       <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-white transition-colors">
                         <X size={16} />
                       </button>
@@ -388,7 +388,7 @@ export function SalesTypeManagementPage(): ReactElement {
                                         <Map size={14} />
                                     </div>
                                     <Input 
-                                        placeholder={t('salesTypeManagement.form.namePlaceholder')}
+                                        placeholder={t('form.namePlaceholder')}
                                         value={draftFilters.name}
                                         onChange={(e) => handleFilterChange('name', e.target.value)}
                                         className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
@@ -403,7 +403,7 @@ export function SalesTypeManagementPage(): ReactElement {
                                         <Code size={14} />
                                     </div>
                                     <Input 
-                                        placeholder={t('salesTypeManagement.table.salesType')}
+                                        placeholder={t('table.salesType')}
                                         value={draftFilters.salesType}
                                         onChange={(e) => handleFilterChange('salesType', e.target.value)}
                                         className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
@@ -420,14 +420,14 @@ export function SalesTypeManagementPage(): ReactElement {
                             className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-red-400 transition-colors px-2 py-2"
                         >
                             <Trash2 size={14} />
-                            <span>{t('common.clear')}</span>
+                            <span>{t('common.clear', { ns: 'common' })}</span>
                         </button>
                         
                         <button 
                             onClick={applyAdvancedFilters}
                             className="flex-1 bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2.5 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
                         >
-                            {t('common.filter')}
+                            {t('common.filter', { ns: 'common' })}
                         </button>
                     </div>
                 </PopoverContent>
@@ -440,14 +440,14 @@ export function SalesTypeManagementPage(): ReactElement {
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showColumns ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
                     >
                         <SlidersHorizontal size={16} />
-                        <span className="font-medium text-sm">{t('common.columns')}</span>
+                        <span className="font-medium text-sm">{t('common.columns', { ns: 'common' })}</span>
                     </button>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                     
                     {/* Header */}
                     <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                        <h3 className="text-sm font-semibold text-gray-200">{t('common.visibleColumns')}</h3>
+                        <h3 className="text-sm font-semibold text-gray-200">{t('common.visibleColumns', { ns: 'common' })}</h3>
                         <button onClick={() => setShowColumns(false)} className="text-gray-500 hover:text-white transition-colors">
                             <X size={16} />
                         </button>
@@ -480,14 +480,14 @@ export function SalesTypeManagementPage(): ReactElement {
                             className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-white transition-colors px-1"
                         >
                             <CheckSquare size={14} />
-                            <span>{t('common.selectAll')}</span>
+                            <span>{t('common.selectAll', { ns: 'common' })}</span>
                         </button>
                         
                         <button 
                             onClick={() => setShowColumns(false)}
                             className="bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2 px-6 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
                         >
-                            {t('common.ok')}
+                            {t('common.ok', { ns: 'common' })}
                         </button>
                     </div>
                 </PopoverContent>
@@ -502,7 +502,7 @@ export function SalesTypeManagementPage(): ReactElement {
                 <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
                   <div className="p-2">
                     <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.actions')}
+                      {t('common.actions', { ns: 'common' })}
                     </div>
                   </div>
 
@@ -510,19 +510,19 @@ export function SalesTypeManagementPage(): ReactElement {
 
                   <div className="p-2">
                     <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.export')}
+                      {t('common.export', { ns: 'common' })}
                     </div>
                     <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <FileSpreadsheet size={16} className="text-emerald-500" />
-                      <span>{t('common.exportExcel')}</span>
+                      <span>{t('common.exportExcel', { ns: 'common' })}</span>
                     </button>
                     <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <FileText size={16} className="text-red-400" />
-                      <span>{t('common.exportPDF')}</span>
+                      <span>{t('common.exportPDF', { ns: 'common' })}</span>
                     </button>
                     <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                       <Presentation size={16} className="text-orange-400" />
-                      <span>{t('common.exportPPT')}</span>
+                      <span>{t('common.exportPPT', { ns: 'common' })}</span>
                     </button>
                   </div>
                 </DropdownMenuContent>

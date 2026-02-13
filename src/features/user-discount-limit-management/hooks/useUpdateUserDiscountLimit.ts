@@ -6,7 +6,7 @@ import { queryKeys, USER_DISCOUNT_LIMIT_QUERY_KEYS } from '../utils/query-keys';
 import type { UpdateUserDiscountLimitDto, UserDiscountLimitDto } from '../types/user-discount-limit-types';
 
 export const useUpdateUserDiscountLimit = (): UseMutationResult<UserDiscountLimitDto, Error, { id: number; data: UpdateUserDiscountLimitDto }> => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user-discount-limit-management');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -20,10 +20,10 @@ export const useUpdateUserDiscountLimit = (): UseMutationResult<UserDiscountLimi
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedUserDiscountLimit.id) });
-      toast.success(t('userDiscountLimitManagement.updateSuccess'));
+      toast.success(t('updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('userDiscountLimitManagement.updateError'));
+      toast.error(error.message || t('updateError'));
     },
   });
 };

@@ -68,19 +68,19 @@ interface SalesTypeTableProps {
 export const getColumnsConfig = (t: TFunction): ColumnDef<SalesTypeGetDto>[] => [
   {
     key: 'salesType',
-    label: t('salesTypeManagement.table.salesType'),
+    label: t('table.salesType'),
     type: 'text',
     className: 'w-[140px]',
   },
   {
     key: 'name',
-    label: t('salesTypeManagement.table.name'),
+    label: t('table.name'),
     type: 'text',
     className: 'min-w-[200px] font-medium',
   },
   {
     key: 'createdDate',
-    label: t('salesTypeManagement.table.createdDate'),
+    label: t('table.createdDate'),
     type: 'date',
     className: 'w-[180px]',
   },
@@ -138,7 +138,7 @@ export function SalesTypeTable({
   visibleColumns,
   pageSize,
 }: SalesTypeTableProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['sales-type-management', 'common']);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<SalesTypeGetDto | null>(null);
 
@@ -201,8 +201,8 @@ export function SalesTypeTable({
   };
 
   const salesTypeLabel = (value: string): string => {
-    if (value === OfferType.YURTICI) return t('common.offerType.yurtici');
-    if (value === OfferType.YURTDISI) return t('common.offerType.yurtdisi');
+    if (value === OfferType.YURTICI) return t('common.offerType.yurtici', { ns: 'common' });
+    if (value === OfferType.YURTDISI) return t('common.offerType.yurtdisi', { ns: 'common' });
     return value;
   };
 
@@ -315,7 +315,7 @@ export function SalesTypeTable({
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
           <div className="text-sm text-muted-foreground animate-pulse">
-            {t('common.loading')}
+            {t('common.loading', { ns: 'common' })}
           </div>
         </div>
       </div>
@@ -326,7 +326,7 @@ export function SalesTypeTable({
     return (
       <div className="flex items-center justify-center py-20 min-h-[400px]">
         <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('salesTypeManagement.noData')}
+          {t('common.noData', { ns: 'common' })}
         </div>
       </div>
     );
@@ -368,7 +368,7 @@ export function SalesTypeTable({
                     ))}
                   </SortableContext>
                   <TableHead className={`${headStyle} text-right w-[100px]`}>
-                    {t('common.actions')}
+                    {t('common.actions', { ns: 'common' })}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -417,6 +417,7 @@ export function SalesTypeTable({
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
           {t('common.table.showing', {
+            ns: 'common',
             from: (currentPage - 1) * pageSize + 1,
             to: Math.min(currentPage * pageSize, processedItems.length),
             total: processedItems.length,
@@ -430,10 +431,11 @@ export function SalesTypeTable({
             disabled={currentPage === 1}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
           >
-            {t('common.previous')}
+            {t('common.previous', { ns: 'common' })}
           </Button>
           <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">
             {t('common.table.page', {
+              ns: 'common',
               current: currentPage,
               total: totalPages,
             })}
@@ -445,7 +447,7 @@ export function SalesTypeTable({
             disabled={currentPage === totalPages}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
           >
-            {t('common.next')}
+            {t('common.next', { ns: 'common' })}
           </Button>
         </div>
       </div>
@@ -458,10 +460,11 @@ export function SalesTypeTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('salesTypeManagement.delete.title')}
+                {t('common.delete.confirmTitle', { ns: 'common' })}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('salesTypeManagement.delete.confirm', {
+                {t('common.delete.confirmMessage', {
+                  ns: 'common',
                   name: selectedItem?.name ?? '',
                 })}
               </DialogDescription>
@@ -474,7 +477,7 @@ export function SalesTypeTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('common.cancel')}
+              {t('common.cancel', { ns: 'common' })}
             </Button>
             <Button
               type="button"
@@ -486,7 +489,7 @@ export function SalesTypeTable({
               {deleteSalesType.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : null}
-              {t('common.delete.action')}
+              {t('common.delete.action', { ns: 'common' })}
             </Button>
           </DialogFooter>
         </DialogContent>
