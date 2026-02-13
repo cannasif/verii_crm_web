@@ -218,7 +218,7 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
                 disabled={uploadImages.isPending || uploading}
                 className="
                     w-full h-11 relative overflow-hidden
-                    bg-gradient-to-r from-pink-600 to-orange-600 
+                    bg-linear-to-r from-pink-600 to-orange-600 
                     hover:from-pink-500 hover:to-orange-500
                     text-white font-bold tracking-wide rounded-xl
                     shadow-lg shadow-pink-500/25 

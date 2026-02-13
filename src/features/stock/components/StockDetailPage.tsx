@@ -109,7 +109,7 @@ export function StockDetailPage(): ReactElement {
       </div>
 
       <div className="relative group">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 rounded-[20px] opacity-20 group-hover:opacity-40 blur transition duration-500"></div>
+        <div className="absolute -inset-0.5 bg-linear-to-r from-pink-500 via-purple-500 to-orange-500 rounded-[20px] opacity-20 group-hover:opacity-40 blur transition duration-500"></div>
         
         <div className="relative bg-white/80 dark:bg-[#1a1025]/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-2xl shadow-xl overflow-hidden">
             

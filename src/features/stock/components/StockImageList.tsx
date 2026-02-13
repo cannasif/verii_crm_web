@@ -106,7 +106,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
             <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                 {image.isPrimary && (
                   <Badge
-                    className="absolute top-3 left-3 z-10 bg-gradient-to-r from-pink-600 to-orange-600 border-0 shadow-lg shadow-pink-500/30 text-white px-2 py-1"
+                    className="absolute top-3 left-3 z-10 bg-linear-to-r from-pink-600 to-orange-600 border-0 shadow-lg shadow-pink-500/30 text-white px-2 py-1"
                   >
                     <Star className="h-3 w-3 mr-1 fill-white" />
                     {t('stock.images.primary')}

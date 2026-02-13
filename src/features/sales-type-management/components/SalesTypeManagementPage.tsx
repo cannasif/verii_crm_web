@@ -168,7 +168,6 @@ export function SalesTypeManagementPage(): ReactElement {
       })
     );
 
-    // @ts-expect-error jspdf-autotable typing mismatch
     autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
@@ -196,7 +195,6 @@ export function SalesTypeManagementPage(): ReactElement {
       })
     );
 
-    // @ts-expect-error pptxgenjs table typing mismatch
     const tableData = [
       headers.map(text => ({ text })),
       ...rows.map(row => row.map(text => ({ text }))),

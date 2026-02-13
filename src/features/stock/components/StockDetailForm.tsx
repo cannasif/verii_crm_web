@@ -139,7 +139,7 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
             className="
                 relative overflow-hidden
                 px-8 py-2 h-11
-                bg-gradient-to-r from-pink-600 to-orange-600 
+                bg-linear-to-r from-pink-600 to-orange-600 
                 hover:from-pink-500 hover:to-orange-500
                 text-white text-sm font-bold tracking-wide
                 rounded-xl
