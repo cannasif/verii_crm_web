@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect } from 'react';
+import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,31 @@ import { useUpdateDocumentSerialType } from '../hooks/useUpdateDocumentSerialTyp
 import type { DocumentSerialTypeDto } from '../types/document-serial-type-types';
 import type { DocumentSerialTypeFormSchema } from '../types/document-serial-type-types';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
-import { Plus } from 'lucide-react';
-import { PageToolbar } from '@/components/shared';
+import { Plus, Filter } from 'lucide-react';
+import { PageToolbar, AdvancedFilter } from '@/components/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { DOCUMENT_SERIAL_TYPE_QUERY_KEYS } from '../utils/query-keys';
 import type { PagedFilter } from '@/types/api';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  documentSerialTypeRowsToBackendFilters,
+  DOCUMENT_SERIAL_TYPE_FILTER_COLUMNS,
+} from '../types/document-serial-type-filter.types';
+import type { FilterRow } from '@/lib/advanced-filter-types';
+
+function buildSearchFilters(searchTerm: string): PagedFilter[] {
+  const trimmed = searchTerm.trim();
+  if (!trimmed) return [];
+  return [
+    { column: 'serialPrefix', operator: 'Contains', value: trimmed },
+    { column: 'customerTypeName', operator: 'Contains', value: trimmed },
+    { column: 'salesRepFullName', operator: 'Contains', value: trimmed },
+  ];
+}
 
 export function DocumentSerialTypeManagementPage(): ReactElement {
   const { t } = useTranslation();
@@ -25,11 +45,23 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
   const [sortBy, setSortBy] = useState('Id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState<Record<string, unknown>>({});
+  const [showFilters, setShowFilters] = useState(false);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
 
   const createDocumentSerialType = useCreateDocumentSerialType();
   const updateDocumentSerialType = useUpdateDocumentSerialType();
   const queryClient = useQueryClient();
+
+  const searchFilters = useMemo(() => buildSearchFilters(searchTerm), [searchTerm]);
+  const apiFilters = useMemo<PagedFilter[]>(
+    () => [...searchFilters, ...appliedAdvancedFilters],
+    [searchFilters, appliedAdvancedFilters]
+  );
+  const filtersParam = useMemo(
+    () => (apiFilters.length > 0 ? { filters: apiFilters } : {}),
+    [apiFilters]
+  );
 
   useEffect(() => {
     setPageTitle(t('documentSerialTypeManagement.menu'));
@@ -39,17 +71,8 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
   }, [t, setPageTitle]);
 
   useEffect(() => {
-    const newFilters: PagedFilter[] = [];
-    if (searchTerm) {
-      newFilters.push(
-        { column: 'serialPrefix', operator: 'contains', value: searchTerm },
-        { column: 'customerTypeName', operator: 'contains', value: searchTerm },
-        { column: 'salesRepFullName', operator: 'contains', value: searchTerm }
-      );
-    }
-    setFilters(newFilters.length > 0 ? { filters: newFilters } : {});
     setPageNumber(1);
-  }, [searchTerm]);
+  }, [searchTerm, appliedAdvancedFilters]);
 
   const handleAddClick = (): void => {
     setEditingDocumentSerialType(null);
@@ -65,8 +88,8 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
     if (editingDocumentSerialType) {
       await updateDocumentSerialType.mutateAsync({
         id: editingDocumentSerialType.id,
-        data: { 
-          ruleType: data.ruleType as PricingRuleType, 
+        data: {
+          ruleType: data.ruleType as PricingRuleType,
           customerTypeId: data.customerTypeId,
           salesRepId: data.salesRepId,
           serialPrefix: data.serialPrefix,
@@ -77,8 +100,8 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
         },
       });
     } else {
-      await createDocumentSerialType.mutateAsync({ 
-        ruleType: data.ruleType as PricingRuleType, 
+      await createDocumentSerialType.mutateAsync({
+        ruleType: data.ruleType as PricingRuleType,
         customerTypeId: data.customerTypeId,
         salesRepId: data.salesRepId,
         serialPrefix: data.serialPrefix,
@@ -104,51 +127,90 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
     });
   };
 
-  return (
-    <div className="relative min-h-screen space-y-6 p-4 md:p-8 overflow-hidden">
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
+  const handleAdvancedSearch = (): void => {
+    setAppliedAdvancedFilters(documentSerialTypeRowsToBackendFilters(draftFilterRows));
+    setSearchTerm('');
+    setShowFilters(false);
+  };
 
-      <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-foreground">
+  const handleAdvancedClear = (): void => {
+    setDraftFilterRows([]);
+    setAppliedAdvancedFilters([]);
+  };
+
+  const hasFiltersActive = appliedAdvancedFilters.length > 0;
+
+  return (
+    <div className="w-full space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('documentSerialTypeManagement.menu')}
           </h1>
-          <div className="flex flex-col gap-1">
-            <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-              <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-              {t('documentSerialTypeManagement.description')}
-            </p>
-          </div>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
+            {t('documentSerialTypeManagement.description')}
+          </p>
         </div>
 
-        <div className="w-full md:w-auto flex flex-col md:flex-row items-center gap-3">
-          <div className="w-full md:flex-1">
-            <PageToolbar
-              searchPlaceholder={t('documentSerialTypeManagement.search')}
-              searchValue={searchTerm}
-              onSearchChange={setSearchTerm}
-              onRefresh={handleRefresh}
-            />
-          </div>
-          <Button
-            onClick={handleAddClick}
-            className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white shrink-0"
-          >
-            <Plus size={18} className="mr-2" />
-            {t('documentSerialTypeManagement.addButton')}
-          </Button>
-        </div>
+        <Button
+          onClick={handleAddClick}
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
+        >
+          <Plus size={18} className="mr-2" />
+          {t('documentSerialTypeManagement.addButton')}
+        </Button>
       </div>
 
-      <div className="relative z-10 bg-white/50 dark:bg-card/30 backdrop-blur-xl border border-white/20 dark:border-border/50 rounded-2xl shadow-sm dark:shadow-2xl overflow-hidden">
+      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 transition-all duration-300">
+        <PageToolbar
+          searchPlaceholder={t('documentSerialTypeManagement.search')}
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          onRefresh={handleRefresh}
+          rightSlot={
+            <Popover open={showFilters} onOpenChange={setShowFilters}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={hasFiltersActive ? 'default' : 'outline'}
+                  size="sm"
+                  className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
+                    hasFiltersActive
+                      ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
+                      : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
+                  }`}
+                >
+                  <Filter className="mr-2 h-4 w-4" />
+                  {t('common.filters')}
+                  {hasFiltersActive && (
+                    <span className="ml-2 h-2 w-2 rounded-full bg-pink-500" />
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[420px] p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+                <AdvancedFilter
+                  columns={DOCUMENT_SERIAL_TYPE_FILTER_COLUMNS}
+                  defaultColumn="serialPrefix"
+                  draftRows={draftFilterRows}
+                  onDraftRowsChange={setDraftFilterRows}
+                  onSearch={handleAdvancedSearch}
+                  onClear={handleAdvancedClear}
+                  translationNamespace="documentSerialTypeManagement"
+                  embedded
+                />
+              </PopoverContent>
+            </Popover>
+          }
+        />
+      </div>
+
+      <div className="flex-1 overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0b0713] shadow-sm">
         <DocumentSerialTypeTable
           onEdit={handleEdit}
           pageNumber={pageNumber}
           pageSize={pageSize}
           sortBy={sortBy}
           sortDirection={sortDirection}
-          filters={filters}
+          filters={filtersParam}
           onPageChange={setPageNumber}
           onSortChange={handleSortChange}
         />
