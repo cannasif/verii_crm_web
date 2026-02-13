@@ -62,6 +62,11 @@ interface UserDiscountLimitTableProps {
   onEdit: (item: UserDiscountLimitDto) => void;
   visibleColumns: Array<keyof UserDiscountLimitDto>;
   pageSize: number;
+  totalCount?: number;
+  pageNumber?: number;
+  onPageChange?: (page: number) => void;
+  columnOrder?: string[];
+  onColumnOrderChange?: (order: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<UserDiscountLimitDto>[] => [
@@ -160,6 +165,11 @@ export function UserDiscountLimitTable({
   onEdit,
   visibleColumns,
   pageSize,
+  totalCount: externalTotalCount,
+  pageNumber: externalPageNumber,
+  onPageChange,
+  columnOrder: externalColumnOrder,
+  onColumnOrderChange,
 }: UserDiscountLimitTableProps): ReactElement {
   const { t, i18n } = useTranslation(['user-discount-limit-management', 'common']);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -167,11 +177,12 @@ export function UserDiscountLimitTable({
 
   const deleteUserDiscountLimit = useDeleteUserDiscountLimit();
 
+  const isServerPagination = externalTotalCount !== undefined && externalPageNumber !== undefined && onPageChange !== undefined;
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [items]);
+    if (!isServerPagination) setCurrentPage(1);
+  }, [items, isServerPagination]);
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserDiscountLimitDto;
@@ -180,22 +191,16 @@ export function UserDiscountLimitTable({
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
 
-  // Column Order State
-  const [columnOrder, setColumnOrder] = useState<string[]>(
-    tableColumns.map((c) => c.key)
-  );
+  const [internalColumnOrder, setInternalColumnOrder] = useState<string[]>([]);
 
-  // Sync columnOrder with tableColumns
   useEffect(() => {
-    setColumnOrder((prevOrder) => {
-      const newKeys = tableColumns.map((c) => c.key);
-      const existingKeys = prevOrder.filter((key) =>
-        newKeys.includes(key as keyof UserDiscountLimitDto)
-      );
-      const addedKeys = newKeys.filter((key) => !prevOrder.includes(key));
-      return [...existingKeys, ...addedKeys];
-    });
-  }, [tableColumns]);
+    if (externalColumnOrder) return;
+    if (tableColumns.length > 0 && internalColumnOrder.length === 0) {
+      setInternalColumnOrder(tableColumns.map((c) => c.key as string));
+    }
+  }, [tableColumns, internalColumnOrder.length, externalColumnOrder]);
+
+  const columnOrder = externalColumnOrder ?? internalColumnOrder;
 
   const orderedColumns = useMemo(() => {
     return columnOrder
@@ -215,11 +220,16 @@ export function UserDiscountLimitTable({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setColumnOrder((items) => {
+      const reorder = (items: string[]) => {
         const oldIndex = items.indexOf(active.id as string);
         const newIndex = items.indexOf(over.id as string);
         return arrayMove(items, oldIndex, newIndex);
-      });
+      };
+      if (onColumnOrderChange) {
+        onColumnOrderChange(reorder([...columnOrder]));
+      } else {
+        setInternalColumnOrder((items) => reorder(items));
+      }
     }
   };
 
@@ -246,11 +256,12 @@ export function UserDiscountLimitTable({
     return result;
   }, [items, sortConfig]);
 
-  const totalPages = Math.ceil(processedItems.length / pageSize) || 1;
-  const paginatedItems = processedItems.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const effectiveTotal = isServerPagination ? (externalTotalCount ?? 0) : processedItems.length;
+  const effectivePage = isServerPagination ? (externalPageNumber ?? 1) : currentPage;
+  const totalPages = Math.ceil(effectiveTotal / pageSize) || 1;
+  const paginatedItems = isServerPagination
+    ? processedItems
+    : processedItems.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleDeleteClick = (item: UserDiscountLimitDto): void => {
     setSelectedItem(item);
@@ -440,32 +451,40 @@ export function UserDiscountLimitTable({
       <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
         <div className="text-sm text-slate-500 dark:text-slate-400">
           {t('table.showing', {
-            from: (currentPage - 1) * pageSize + 1,
-            to: Math.min(currentPage * pageSize, processedItems.length),
-            total: processedItems.length,
+            from: effectiveTotal === 0 ? 0 : (effectivePage - 1) * pageSize + 1,
+            to: Math.min(effectivePage * pageSize, effectiveTotal),
+            total: effectiveTotal,
           })}
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            onClick={() =>
+              isServerPagination
+                ? onPageChange?.(Math.max(1, effectivePage - 1))
+                : setCurrentPage((p) => Math.max(1, p - 1))
+            }
+            disabled={effectivePage === 1}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
           >
             {t('common.previous', { ns: 'common' })}
           </Button>
           <div className="flex items-center px-4 text-sm font-medium text-slate-700 dark:text-slate-200">
             {t('table.page', {
-              current: currentPage,
+              current: effectivePage,
               total: totalPages,
             })}
           </div>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() =>
+              isServerPagination
+                ? onPageChange?.(Math.min(totalPages, effectivePage + 1))
+                : setCurrentPage((p) => Math.min(totalPages, p + 1))
+            }
+            disabled={effectivePage === totalPages || totalPages === 0}
             className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
           >
             {t('common.next', { ns: 'common' })}

@@ -13,7 +13,7 @@ export const queryKeys = {
     pageSize?: number;
     sortBy?: string;
     sortDirection?: string;
-    filters?: Record<string, unknown>;
+    filters?: import('@/types/api').PagedFilter[] | Record<string, unknown>;
   }) => [USER_DISCOUNT_LIMIT_QUERY_KEYS.LIST, params] as const,
   detail: (id: number) => [USER_DISCOUNT_LIMIT_QUERY_KEYS.DETAIL, id] as const,
   bySalesperson: (salespersonId: number) => [USER_DISCOUNT_LIMIT_QUERY_KEYS.BY_SALESPERSON, salespersonId] as const,

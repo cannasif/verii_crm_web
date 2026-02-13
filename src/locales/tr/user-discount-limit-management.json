@@ -67,5 +67,29 @@
     "updatedDate": "Güncellenme Tarihi",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "page": "Sayfa {{current}} / {{total}}"
+  },
+  "advancedFilter": {
+    "title": "Gelişmiş Filtre",
+    "add": "Filtre Ekle",
+    "column": "Sütun",
+    "operator": "Operatör",
+    "value": "Değer",
+    "search": "Ara",
+    "clear": "Temizle",
+    "remove": "Kaldır",
+    "columnSalespersonName": "Satış Temsilcisi Adı",
+    "columnErpProductGroupCode": "ERP Ürün Grubu Kodu",
+    "columnMaxDiscount1": "Maks. İskonto 1",
+    "columnMaxDiscount2": "Maks. İskonto 2",
+    "columnMaxDiscount3": "Maks. İskonto 3",
+    "columnCreatedDate": "Oluşturulma Tarihi",
+    "operatorContains": "İçerir",
+    "operatorStartsWith": "Şununla başlar",
+    "operatorEndsWith": "Şununla biter",
+    "operatorEquals": "Eşittir",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
   }
 }
