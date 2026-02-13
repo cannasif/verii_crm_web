@@ -60,11 +60,14 @@ export function UserGroupForm({
 
   const form = useForm<UserPowerBIGroupFormSchema>({
     resolver: zodResolver(userPowerbiGroupFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       userId: 0,
       groupId: 0,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (initial) {
@@ -163,7 +166,7 @@ export function UserGroupForm({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
                 {t('common.cancel')}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !isFormValid}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('common.save')}
               </Button>

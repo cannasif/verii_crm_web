@@ -67,11 +67,14 @@ export function SalesTypeForm({
 
   const form = useForm<SalesTypeFormSchema>({
     resolver: zodResolver(salesTypeFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       salesType: OfferType.YURTICI,
       name: '',
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (salesType) {
@@ -194,7 +197,7 @@ export function SalesTypeForm({
           </Button>
           <Button
             onClick={form.handleSubmit(handleSubmit)}
-            disabled={isLoading}
+            disabled={isLoading || !isFormValid}
             className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
           >
             {isLoading

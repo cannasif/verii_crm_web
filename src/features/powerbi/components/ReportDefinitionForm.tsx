@@ -48,6 +48,8 @@ export function ReportDefinitionForm({
   const { t } = useTranslation();
   const form = useForm<PowerBIReportDefinitionFormSchema>({
     resolver: zodResolver(powerbiReportDefinitionFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
@@ -61,6 +63,7 @@ export function ReportDefinitionForm({
       allowedRoleIds: '',
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (initial) {
@@ -251,7 +254,7 @@ export function ReportDefinitionForm({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
                 {t('common.cancel')}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !isFormValid}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('common.save')}
               </Button>

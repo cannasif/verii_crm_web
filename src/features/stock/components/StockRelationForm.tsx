@@ -55,6 +55,8 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
 
   const form = useForm<StockRelationFormSchema>({
     resolver: zodResolver(stockRelationSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       stockId,
       relatedStockId: 0,
@@ -63,6 +65,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
       isMandatory: false,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const handleSubmit = async (data: StockRelationFormSchema): Promise<void> => {
     await createRelation.mutateAsync({
@@ -259,7 +262,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
 
         <Button
           type="submit"
-          disabled={createRelation.isPending}
+          disabled={createRelation.isPending || !isFormValid}
           className="
             w-full h-12 relative overflow-hidden
             bg-gradient-to-r from-pink-600 to-orange-600 

@@ -68,12 +68,15 @@ export function ProductPricingForm({
 
   const form = useForm<ProductPricingFormSchema>({
     resolver: zodResolver(productPricingFormSchema) as Resolver<ProductPricingFormSchema>,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       erpProductCode: '', erpGroupCode: '', currency: 'TRY',
       listPrice: 0, costPrice: 0,
       discount1: 0, discount2: 0, discount3: 0
     }
   });
+  const isFormValid = form.formState.isValid;
 
   // Düzenleme modunda verileri doldur
   useEffect(() => {
@@ -280,7 +283,7 @@ export function ProductPricingForm({
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
               İptal
             </Button>
-            <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading} className="bg-linear-to-r from-pink-600 to-indigo-600 text-white border-0 hover:from-pink-700 hover:to-indigo-700">
+            <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading || !isFormValid} className="bg-linear-to-r from-pink-600 to-indigo-600 text-white border-0 hover:from-pink-700 hover:to-indigo-700">
               <Save size={16} className="mr-2" />
               {isLoading ? 'Kaydediliyor...' : 'Kaydet'}
             </Button>

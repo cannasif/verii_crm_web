@@ -60,12 +60,15 @@ export function PowerbiRlsForm({
 
   const form = useForm<PowerbiRlsFormSchema>({
     resolver: zodResolver(powerbiRlsFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       powerBIReportDefinitionId: 0,
       roleId: 0,
       rlsRoles: '',
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (initial) {
@@ -176,7 +179,7 @@ export function PowerbiRlsForm({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {t('powerbiRls.cancel')}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !isFormValid}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('powerbiRls.save')}
               </Button>

@@ -35,11 +35,14 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
 
   const form = useForm<StockDetailFormSchema>({
     resolver: zodResolver(stockDetailSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       stockId,
       htmlDescription: '',
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (stockDetail) {
@@ -132,7 +135,7 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
         <div className="flex justify-end pt-2 border-t border-zinc-100 dark:border-white/5">
           <Button
             type="submit"
-            disabled={isSaving}
+            disabled={isSaving || !isFormValid}
             className="
                 relative overflow-hidden
                 px-8 py-2 h-11

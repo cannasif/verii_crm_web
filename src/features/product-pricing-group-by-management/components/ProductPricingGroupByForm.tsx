@@ -59,6 +59,8 @@ export function ProductPricingGroupByForm({
 
   const form = useForm<ProductPricingGroupByFormSchema>({
     resolver: zodResolver(productPricingGroupByFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       erpGroupCode: '',
       currency: '1',
@@ -69,6 +71,7 @@ export function ProductPricingGroupByForm({
       discount3: undefined,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const watchedValues = form.watch(['listPrice', 'discount1', 'discount2', 'discount3', 'currency']);
 
@@ -408,7 +411,7 @@ export function ProductPricingGroupByForm({
                 <Button 
                   type="submit" 
                   form="product-pricing-group-form"
-                  disabled={isLoading}
+                  disabled={isLoading || !isFormValid}
                   className="h-11 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-500/20 border-0 px-8"
                 >
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

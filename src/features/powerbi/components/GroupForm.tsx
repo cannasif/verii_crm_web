@@ -48,12 +48,15 @@ export function GroupForm({
   const { t } = useTranslation();
   const form = useForm<PowerBIGroupFormSchema>({
     resolver: zodResolver(powerbiGroupFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
       isActive: true,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (initial) {
@@ -139,7 +142,7 @@ export function GroupForm({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
                 {t('common.cancel')}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !isFormValid}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('common.save')}
               </Button>

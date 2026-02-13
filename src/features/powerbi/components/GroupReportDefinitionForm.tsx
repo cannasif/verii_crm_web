@@ -62,11 +62,14 @@ export function GroupReportDefinitionForm({
 
   const form = useForm<PowerBIGroupReportDefinitionFormSchema>({
     resolver: zodResolver(powerbiGroupReportDefinitionFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       groupId: 0,
       reportDefinitionId: 0,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (initial) {
@@ -165,7 +168,7 @@ export function GroupReportDefinitionForm({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
                 {t('common.cancel')}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !isFormValid}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('common.save')}
               </Button>
