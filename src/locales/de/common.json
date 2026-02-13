@@ -2582,7 +2582,16 @@
     "deleteSuccess": "Aktivität erfolgreich gelöscht",
     "deleteError": "Beim Löschen der Aktivität ist ein Fehler aufgetreten",
     "updateSuccess": "Aktivität erfolgreich aktualisiert",
-    "updateError": "Beim Aktualisieren der Aktivität ist ein Fehler aufgetreten"
+    "updateError": "Beim Aktualisieren der Aktivität ist ein Fehler aufgetreten",
+    "advancedFilter": {
+      "filterButton": "Erweiterter Filter"
+    },
+    "columnCustomization": {
+      "hiddenColumns": "Ausgeblendete Spalten",
+      "visibleColumns": "Sichtbare Spalten",
+      "moveUp": "Hoch",
+      "moveDown": "Runter"
+    }
   },
   "status": {
     "active": "Aktiv",

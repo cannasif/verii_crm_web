@@ -2627,7 +2627,16 @@
     "deleteSuccess": "Actividad eliminada correctamente",
     "deleteError": "Ocurrió un error al eliminar la actividad",
     "updateSuccess": "Actividad actualizada correctamente",
-    "updateError": "Ocurrió un error al actualizar la actividad"
+    "updateError": "Ocurrió un error al actualizar la actividad",
+    "advancedFilter": {
+      "filterButton": "Filtro avanzado"
+    },
+    "columnCustomization": {
+      "hiddenColumns": "Columnas ocultas",
+      "visibleColumns": "Columnas visibles",
+      "moveUp": "Arriba",
+      "moveDown": "Abajo"
+    }
   },
   "status": {
     "active": "Active",

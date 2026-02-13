@@ -2656,7 +2656,16 @@
     "deleteSuccess": "Attività eliminata con successo",
     "deleteError": "Si è verificato un errore durante l'eliminazione dell'attività",
     "updateSuccess": "Attività aggiornata con successo",
-    "updateError": "Si è verificato un errore durante l'aggiornamento dell'attività"
+    "updateError": "Si è verificato un errore durante l'aggiornamento dell'attività",
+    "advancedFilter": {
+      "filterButton": "Filtro avanzato"
+    },
+    "columnCustomization": {
+      "hiddenColumns": "Colonne nascoste",
+      "visibleColumns": "Colonne visibili",
+      "moveUp": "Su",
+      "moveDown": "Giù"
+    }
   },
   "status": {
     "active": "Active",

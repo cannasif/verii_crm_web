@@ -98,6 +98,26 @@
     "refresh": "Refresh",
     "showing": "shown",
     "filters": "Detailed Filter",
+    "advancedFilter": {
+      "title": "Advanced Filter",
+      "add": "Add Filter",
+      "column": "Column",
+      "operator": "Operator",
+      "value": "Value",
+      "search": "Search",
+      "clear": "Clear",
+      "remove": "Remove",
+      "operatorContains": "Contains",
+      "operatorStartsWith": "Starts with",
+      "operatorEndsWith": "Ends with",
+      "operatorEquals": "Equals",
+      "operator>": ">",
+      "operator>=": ">=",
+      "operator<": "<",
+      "operator<=": "<=",
+      "true": "Yes",
+      "false": "No"
+    },
     "selectAll": "Select All",
     "export": "Export",
     "exportExcel": "Download Excel",
@@ -2584,7 +2604,16 @@
     "deleteSuccess": "Activity deleted successfully",
     "deleteError": "An error occurred while deleting the activity",
     "updateSuccess": "Activity updated successfully",
-    "updateError": "An error occurred while updating the activity"
+    "updateError": "An error occurred while updating the activity",
+    "advancedFilter": {
+      "filterButton": "Advanced Filter"
+    },
+    "columnCustomization": {
+      "hiddenColumns": "Hidden Columns",
+      "visibleColumns": "Visible Columns",
+      "moveUp": "Up",
+      "moveDown": "Down"
+    }
   },
   "status": {
     "active": "Active",

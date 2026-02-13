@@ -2627,7 +2627,16 @@
     "deleteSuccess": "تم حذف النشاط بنجاح",
     "deleteError": "حدث خطأ أثناء حذف النشاط",
     "updateSuccess": "تم تحديث النشاط بنجاح",
-    "updateError": "حدث خطأ أثناء تحديث النشاط"
+    "updateError": "حدث خطأ أثناء تحديث النشاط",
+    "advancedFilter": {
+      "filterButton": "تصفية متقدمة"
+    },
+    "columnCustomization": {
+      "hiddenColumns": "الأعمدة المخفية",
+      "visibleColumns": "الأعمدة المرئية",
+      "moveUp": "أعلى",
+      "moveDown": "أسفل"
+    }
   },
   "status": {
     "active": "Active",

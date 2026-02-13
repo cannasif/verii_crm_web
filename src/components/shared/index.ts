@@ -1,3 +1,7 @@
+export { PageToolbar } from './PageToolbar';
+export { AdvancedFilter } from './AdvancedFilter';
+export { ColumnPreferencesPopover } from './ColumnPreferencesPopover';
+export type { ColumnDef } from './ColumnPreferencesPopover';
 export { ProtectedRoute } from './ProtectedRoute';
 export { Navbar } from './Navbar';
 export { Sidebar } from './Sidebar';

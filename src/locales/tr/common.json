@@ -96,6 +96,26 @@
       "page": "Sayfa {{current}} / {{total}}"
     },
     "filters": "Detaylı Filtre",
+    "advancedFilter": {
+      "title": "Gelişmiş Filtre",
+      "add": "Filtre Ekle",
+      "column": "Sütun",
+      "operator": "Operatör",
+      "value": "Değer",
+      "search": "Ara",
+      "clear": "Temizle",
+      "remove": "Kaldır",
+      "operatorContains": "İçerir",
+      "operatorStartsWith": "Şununla başlar",
+      "operatorEndsWith": "Şununla biter",
+      "operatorEquals": "Eşittir",
+      "operator>": ">",
+      "operator>=": ">=",
+      "operator<": "<",
+      "operator<=": "<=",
+      "true": "Evet",
+      "false": "Hayır"
+    },
     "selectAll": "Tümünü Seç",
     "export": "Dışa Aktar",
     "exportExcel": "Excel İndir",
@@ -2586,7 +2606,16 @@
     "deleteSuccess": "Aktivite başarıyla silindi",
     "deleteError": "Aktivite silinirken bir hata oluştu",
     "updateSuccess": "Aktivite başarıyla güncellendi",
-    "updateError": "Aktivite güncellenirken bir hata oluştu"
+    "updateError": "Aktivite güncellenirken bir hata oluştu",
+    "advancedFilter": {
+      "filterButton": "Gelişmiş Filtre"
+    },
+    "columnCustomization": {
+      "hiddenColumns": "Gizlenen Sütunlar",
+      "visibleColumns": "Gösterilecek Sütunlar",
+      "moveUp": "Yukarı",
+      "moveDown": "Aşağı"
+    }
   },
   "status": {
     "active": "Aktif",
