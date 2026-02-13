@@ -92,6 +92,8 @@ export function UserDetailDialog({
 
   const form = useForm<UserDetailFormSchema>({
     resolver: zodResolver(userDetailFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       profilePictureUrl: '',
       height: undefined,
@@ -100,6 +102,7 @@ export function UserDetailDialog({
       gender: undefined,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -432,7 +435,7 @@ export function UserDetailDialog({
                     <div className="pt-2 flex justify-end">
                       <Button 
                         type="submit" 
-                        disabled={isSaving}
+                        disabled={isSaving || !isFormValid}
                         className="w-full md:w-auto bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-medium px-8 py-3 h-12 rounded-xl shadow-lg shadow-pink-600/20 active:scale-95 transition-all duration-200"
                       >
                         {isSaving ? (

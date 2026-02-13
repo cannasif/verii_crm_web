@@ -199,6 +199,8 @@ export function DocumentSerialTypeForm({
 
   const form = useForm<DocumentSerialTypeFormSchema>({
     resolver: zodResolver(documentSerialTypeFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       ruleType: PricingRuleType.Demand,
       customerTypeId: null,
@@ -210,6 +212,7 @@ export function DocumentSerialTypeForm({
       serialIncrement: 1,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (documentSerialType) {
@@ -496,7 +499,7 @@ export function DocumentSerialTypeForm({
               </Button>
               <Button 
                 type="submit" 
-                disabled={isLoading}
+                disabled={isLoading || !isFormValid}
                 className="h-11 px-8 bg-gradient-to-r from-pink-600 to-orange-600 text-white font-semibold shadow-lg shadow-pink-500/20 hover:scale-[1.02] transition-transform"
               >
                 {isLoading

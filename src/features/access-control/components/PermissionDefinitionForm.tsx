@@ -52,6 +52,8 @@ export function PermissionDefinitionForm({
 
   const form = useForm<CreatePermissionDefinitionSchema>({
     resolver: zodResolver(createPermissionDefinitionSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       code: '',
       name: '',
@@ -59,6 +61,7 @@ export function PermissionDefinitionForm({
       isActive: true,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (item) {
@@ -229,7 +232,7 @@ export function PermissionDefinitionForm({
           </Button>
           <span className="inline-flex items-center gap-1">
             <FieldHelpTooltip text={t('help.permissionDefinition.save')} side="top" />
-            <Button type="submit" form="permission-definition-form" disabled={isLoading}>
+            <Button type="submit" form="permission-definition-form" disabled={isLoading || !isFormValid}>
               {isLoading ? t('common.saving') : t('common.save')}
             </Button>
           </span>

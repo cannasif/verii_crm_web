@@ -40,6 +40,8 @@ export function MailSettingsForm({
 
   const form = useForm<SmtpSettingsFormSchema>({
     resolver: zodResolver(smtpSettingsFormSchema) as Resolver<SmtpSettingsFormSchema>,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       host: '',
       port: 587,
@@ -51,6 +53,7 @@ export function MailSettingsForm({
       timeout: 30,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (data) {
@@ -228,7 +231,7 @@ export function MailSettingsForm({
               ? t('mailSettings.TestMail.Sending')
               : t('mailSettings.TestMail.Send')}
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting || !isFormValid}>
             {isSubmitting ? t('common.saving') : t('mailSettings.Save')}
           </Button>
         </div>

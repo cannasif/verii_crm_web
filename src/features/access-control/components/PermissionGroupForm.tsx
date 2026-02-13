@@ -47,6 +47,8 @@ export function PermissionGroupForm({
 
   const form = useForm<CreatePermissionGroupSchema>({
     resolver: zodResolver(createPermissionGroupSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
@@ -55,6 +57,7 @@ export function PermissionGroupForm({
       permissionDefinitionIds: [],
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (item) {
@@ -190,7 +193,7 @@ export function PermissionGroupForm({
           </Button>
           <span className="inline-flex items-center gap-1">
             <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
-            <Button type="submit" form="permission-group-form" disabled={isLoading}>
+            <Button type="submit" form="permission-group-form" disabled={isLoading || !isFormValid}>
               {isLoading ? t('common.saving') : t('common.save')}
             </Button>
           </span>

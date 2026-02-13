@@ -76,6 +76,8 @@ export function UserForm({
 
   const form = useForm<UserFormSchema | UserUpdateFormSchema>({
     resolver: zodResolver(isEditMode ? userUpdateFormSchema : userFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       username: '',
       email: '',
@@ -88,6 +90,7 @@ export function UserForm({
       permissionGroupIds: [],
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (!open) {
@@ -415,7 +418,7 @@ export function UserForm({
               >
                 {t('userManagement.form.cancel')}
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading || !isFormValid}>
                 {isLoading
                   ? t('userManagement.form.saving')
                   : t('userManagement.form.save')}

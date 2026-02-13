@@ -91,10 +91,13 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
 
   const form = useForm<StepFormSchema>({
     resolver: zodResolver(stepFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       approvalRoleGroupId: 0,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const handleDragStart = (index: number): void => {
     dragItemRef.current = index;
@@ -347,7 +350,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                   </Button>
                   <Button
                     type="submit"
-                    disabled={createStep.isPending || updateStep.isPending}
+                    disabled={createStep.isPending || updateStep.isPending || !isFormValid}
                     className="h-10 px-6 rounded-lg bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-medium shadow-lg shadow-pink-500/20 border-0"
                   >
                     {createStep.isPending || updateStep.isPending
