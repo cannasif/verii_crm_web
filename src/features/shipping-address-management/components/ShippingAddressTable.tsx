@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useMemo, useEffect } from 'react';
+import { type ReactElement, type ReactNode, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
@@ -267,7 +267,7 @@ export function ShippingAddressTable({
   const headStyle = "cursor-pointer select-none text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors py-1.5 font-bold text-xs uppercase tracking-wider whitespace-nowrap";
   const cellStyle = "text-slate-600 dark:text-slate-400 text-sm py-1.5 border-b border-slate-100 dark:border-white/5 align-middle";
 
-  const renderCellContent = (row: ShippingAddressDto, columnKey: string) => {
+  const renderCellContent = (row: ShippingAddressDto, columnKey: string): ReactNode => {
     switch (columnKey) {
       case 'customerName':
         return <span className="font-medium text-slate-700 dark:text-slate-300">{row.customerName || '-'}</span>;
@@ -310,8 +310,12 @@ export function ShippingAddressTable({
             {row.createdDate ? format(new Date(row.createdDate), 'dd MMMM yyyy', { locale: tr }) : '-'}
           </div>
         );
-      default:
-        return (row as Record<string, unknown>)[columnKey];
+      default: {
+        const value = row[columnKey as keyof ShippingAddressDto];
+        if (typeof value === 'string' || typeof value === 'number') return value;
+        if (typeof value === 'boolean') return value ? t('common.yes') : t('common.no');
+        return value == null ? '-' : String(value);
+      }
     }
   };
 

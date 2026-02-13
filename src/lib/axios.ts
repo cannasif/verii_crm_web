@@ -109,7 +109,10 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => normalizeApiEnvelope(response.data),
+  (response) => {
+    response.data = normalizeApiEnvelope(response.data);
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token');
