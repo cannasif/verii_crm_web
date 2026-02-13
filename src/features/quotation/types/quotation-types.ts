@@ -94,7 +94,7 @@ export interface CreateQuotationDto {
   generalDiscountAmount?: number | null;
 }
 
-export interface UpdateQuotationDto extends CreateQuotationDto {}
+export type UpdateQuotationDto = CreateQuotationDto;
 
 export interface QuotationDto {
   id: number;

@@ -135,7 +135,7 @@ export function DashboardPage(): ReactElement {
     try {
         await refetch();
         toast.success(t('refreshed'), { id: toastId });
-    } catch (error) {
+    } catch {
         toast.error(t('refreshError'), { id: toastId });
     }
   };

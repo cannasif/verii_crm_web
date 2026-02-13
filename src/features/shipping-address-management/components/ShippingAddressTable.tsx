@@ -1,5 +1,6 @@
 import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   DndContext, 
   closestCenter,
@@ -78,7 +79,7 @@ export interface ColumnConfig {
   visible: boolean;
 }
 
-export const getColumnsConfig = (t: any): ColumnConfig[] => [
+export const getColumnsConfig = (t: TFunction): ColumnConfig[] => [
   { key: 'customerName', label: t('shippingAddressManagement.customerName'), visible: true },
   { key: 'name', label: t('shippingAddressManagement.name'), visible: true },
   { key: 'address', label: t('shippingAddressManagement.address'), visible: true },
@@ -310,7 +311,7 @@ export function ShippingAddressTable({
           </div>
         );
       default:
-        return (row as any)[columnKey];
+        return (row as Record<string, unknown>)[columnKey];
     }
   };
 

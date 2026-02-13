@@ -22,6 +22,13 @@ export const api = axios.create({
 });
 
 function normalizeApiEnvelope(payload: unknown): unknown {
+  if (
+    (typeof Blob !== 'undefined' && payload instanceof Blob) ||
+    payload instanceof ArrayBuffer
+  ) {
+    return payload;
+  }
+
   if (payload == null || typeof payload !== 'object' || Array.isArray(payload)) {
     return payload;
   }
@@ -102,7 +109,7 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => normalizeApiEnvelope(response.data) as any,
+  (response) => normalizeApiEnvelope(response.data),
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token');

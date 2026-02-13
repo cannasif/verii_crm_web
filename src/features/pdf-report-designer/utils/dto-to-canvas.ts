@@ -44,7 +44,7 @@ export function clampElementToSection(
   const h = Math.max(0, height);
   const cx = clampX(x, w);
   const cy = clampYToSection(section, y, h);
-  let maxW = A4_CANVAS_WIDTH;
+  const maxW = A4_CANVAS_WIDTH;
   let maxH = A4_CANVAS_HEIGHT;
   switch (section) {
     case 'header':

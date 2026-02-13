@@ -84,6 +84,8 @@ export function ProfilePage(): ReactElement {
 
   const form = useForm<UserDetailFormSchema>({
     resolver: zodResolver(userDetailFormSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       profilePictureUrl: '',
       height: undefined,
@@ -95,6 +97,7 @@ export function ProfilePage(): ReactElement {
       email: '',
     },
   });
+  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     setPageTitle(t('userDetailManagement.profilePageTitle'));
@@ -170,7 +173,7 @@ export function ProfilePage(): ReactElement {
       } else if (tempPreviewUrl) {
         setPreviewUrl(tempPreviewUrl);
       }
-    } catch (error) {
+    } catch {
       if (tempPreviewUrl) setPreviewUrl(tempPreviewUrl);
     }
   };
@@ -496,7 +499,7 @@ export function ProfilePage(): ReactElement {
                 )}
               />
               <div className="flex justify-end pt-2">
-                <Button type="submit" disabled={isSaving} className="min-w-[140px]">
+                <Button type="submit" disabled={isSaving || !isFormValid} className="min-w-[140px]">
                   {isSaving ? (
                     <>
                       <Loader2 size={18} className="animate-spin mr-2" />

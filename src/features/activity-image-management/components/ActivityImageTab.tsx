@@ -53,7 +53,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
       setIsCreatingActivity(true);
       try {
         await onCreateActivity();
-      } catch (error) {
+      } catch {
         setIsCreatingActivity(false);
         return;
       }

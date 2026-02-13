@@ -47,5 +47,6 @@ export function saveColumnPreferences(
   try {
     localStorage.setItem(key, JSON.stringify(prefs));
   } catch {
+    // Ignore localStorage write failures (quota/private mode)
   }
 }
