@@ -56,5 +56,29 @@
     "selectAll": "Tümünü Seç",
     "ok": "TAMAM",
     "totalRecords": "Toplam Kayıt"
+  },
+  "advancedFilter": {
+    "title": "Gelişmiş Filtre",
+    "add": "Filtre Ekle",
+    "column": "Sütun",
+    "operator": "Operatör",
+    "value": "Değer",
+    "search": "Ara",
+    "clear": "Temizle",
+    "remove": "Kaldır",
+    "columnCustomerCode": "Müşteri Kodu",
+    "columnCustomerName": "Müşteri Adı",
+    "columnBranchCode": "Şube Kodu",
+    "columnCity": "Şehir",
+    "columnDistrict": "İlçe",
+    "columnTaxNumber": "Vergi No",
+    "operatorContains": "İçerir",
+    "operatorStartsWith": "Şununla başlar",
+    "operatorEndsWith": "Şununla biter",
+    "operatorEquals": "Eşittir",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
   }
 }

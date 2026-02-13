@@ -19,6 +19,7 @@ interface ErpCustomerTableProps {
   customers: ErpCustomer[];
   isLoading: boolean;
   visibleColumns: string[];
+  columnOrder?: string[];
   sortConfig: { key: keyof ErpCustomer; direction: 'asc' | 'desc' } | null;
   onSort: (key: keyof ErpCustomer) => void;
   onRowClick?: (customer: ErpCustomer) => void;
@@ -41,10 +42,16 @@ export const getColumnsConfig = (t: TFunction) => [
     { key: 'tckn', label: t('table.tcknNumber'), className: 'font-mono text-xs whitespace-nowrap' },
 ];
 
-export function ErpCustomerTable({ customers, isLoading, visibleColumns, sortConfig, onSort, onRowClick }: ErpCustomerTableProps): ReactElement {
+export function ErpCustomerTable({ customers, isLoading, visibleColumns, columnOrder, sortConfig, onSort, onRowClick }: ErpCustomerTableProps): ReactElement {
   const { t } = useTranslation('erp-customer-management');
-  
+
   const allColumns = getColumnsConfig(t);
+  const displayedColumns = (() => {
+    const visible = allColumns.filter((col) => visibleColumns.includes(col.key));
+    if (!columnOrder || columnOrder.length === 0) return visible;
+    const orderMap = new Map(columnOrder.map((k, i) => [k, i]));
+    return [...visible].sort((a, b) => (orderMap.get(a.key) ?? 999) - (orderMap.get(b.key) ?? 999));
+  })();
 
   const headStyle = `
     text-slate-500 dark:text-slate-400 
@@ -91,7 +98,7 @@ export function ErpCustomerTable({ customers, isLoading, visibleColumns, sortCon
     <table className="w-full min-w-[680px] sm:min-w-[820px] lg:min-w-[1100px] caption-bottom text-sm relative">
         <TableHeader className="bg-[#151025] sticky top-0 z-10 shadow-sm">
             <TableRow className="h-10 hover:bg-transparent border-b border-slate-200 dark:border-white/10">
-                {allColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (
+                {displayedColumns.map((col) => (
                     <TableHead 
                         key={col.key} 
                         className={headStyle}
@@ -116,7 +123,7 @@ export function ErpCustomerTable({ customers, isLoading, visibleColumns, sortCon
                 className={`h-10 border-b border-slate-100 dark:border-white/5 transition-colors duration-200 hover:bg-pink-50/40 dark:hover:bg-pink-500/5 group last:border-0 ${onRowClick ? 'cursor-pointer' : ''}`}
                 onClick={() => onRowClick?.(customer)}
             >
-                {allColumns.filter(col => visibleColumns.includes(col.key)).map((col) => {
+                {displayedColumns.map((col) => {
                     const cellKey = col.key as keyof ErpCustomer;
                     return (
                         <TableCell key={col.key} className={`${cellStyle} ${col.className}`}>
