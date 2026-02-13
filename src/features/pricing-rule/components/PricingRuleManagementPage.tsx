@@ -111,7 +111,7 @@ export function PricingRuleManagementPage(): ReactElement {
         
         <Button 
           onClick={handleAddClick}
-          className="px-6 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
         >
           <Plus size={18} className="mr-2" />
           {t('pricingRule.list.add')}

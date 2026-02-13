@@ -270,7 +270,7 @@ export function PricingRuleLineTable({
           type="button"
           onClick={() => setProductDialogOpen(true)}
           size="sm"
-          className="bg-gradient-to-r from-pink-600 to-orange-600 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"
+          className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"
           disabled={isLoadingAction}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -447,7 +447,7 @@ export function PricingRuleLineTable({
               type="button"
               onClick={handleAddConfirm}
               disabled={isLoadingAction}
-              className="flex-1 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] font-bold"
+              className="flex-1 h-12 rounded-xl bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {t('pricingRule.form.confirm')}
             </Button>
@@ -495,7 +495,7 @@ export function PricingRuleLineTable({
               variant="destructive"
               onClick={handleDeleteConfirm}
               disabled={isLoadingAction}
-              className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
+              className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {isLoadingAction ? (
                 <>

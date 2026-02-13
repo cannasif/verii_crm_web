@@ -315,7 +315,7 @@ export function ExchangeRateDialog({
             type="button"
             onClick={() => void handleSave()}
             disabled={readOnly || isLoading || isSaving}
-            className="rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md hover:shadow-lg transition-all border-0"
+            className="rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md hover:shadow-lg transition-all border-0"
           >
             {isSaving ? (
               <>

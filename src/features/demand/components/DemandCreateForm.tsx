@@ -316,7 +316,7 @@ export function DemandCreateForm(): ReactElement {
                 {t('demand.create.subtitle', 'Yeni bir satış talebi oluşturun.')}
               </p>
 
-              <div className="h-1.5 w-24 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full mt-6 shadow-lg shadow-pink-500/20" />
+              <div className="h-1.5 w-24 bg-linear-to-r from-pink-500 to-purple-600 rounded-full mt-6 shadow-lg shadow-pink-500/20" />
             </div>
           </div>
 

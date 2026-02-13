@@ -202,7 +202,7 @@ export function DemandSummaryCard({
                   <Wallet className="h-4 w-4 text-pink-500" />
                   {t('demand.summary.grandTotal')}
                 </span>
-                <span className="font-black text-zinc-900 dark:text-white font-mono tabular-nums text-right text-lg text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
+                <span className="font-black text-zinc-900 dark:text-white font-mono tabular-nums text-right text-lg text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-purple-600">
                   {formatCurrency(totals.grandTotalAfterDiscount, currencyCode)}
                 </span>
               </div>

@@ -421,7 +421,7 @@ export function PricingRuleLineForm({
           <Button 
             type="submit"
             disabled={!isFormValid}
-            className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-orange-600 text-white font-bold border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"
+            className="w-full sm:w-auto bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"
           >
             {t('pricingRule.form.save')}
           </Button>

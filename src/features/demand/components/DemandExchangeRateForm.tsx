@@ -179,7 +179,7 @@ export function DemandExchangeRateForm({
               type="button" 
               onClick={handleAdd} 
               size="sm"
-              className="h-10 px-4 rounded-xl bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all border-0 flex-1 font-bold"
+              className="h-10 px-4 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all border-0 flex-1 font-bold"
             >
               <Plus className="h-4 w-4 mr-1.5" />
               {t('demand.add')}
