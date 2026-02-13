@@ -51,6 +51,7 @@ export interface CustomerTableProps {
   isLoading: boolean;
   onEdit: (customer: CustomerDto) => void;
   visibleColumns: Array<keyof CustomerDto>;
+  columnOrder?: string[];
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerDto>[] => [
@@ -77,6 +78,7 @@ export function CustomerTable({
   isLoading,
   onEdit,
   visibleColumns,
+  columnOrder,
 }: CustomerTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -126,7 +128,13 @@ export function CustomerTable({
   };
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  
+  const displayedColumns = useMemo(() => {
+    const visible = tableColumns.filter((col) => visibleColumns.includes(col.key));
+    if (!columnOrder || columnOrder.length === 0) return visible;
+    const orderMap = new Map(columnOrder.map((k, i) => [k, i]));
+    return [...visible].sort((a, b) => (orderMap.get(a.key) ?? 999) - (orderMap.get(b.key) ?? 999));
+  }, [tableColumns, visibleColumns, columnOrder]);
+
   const deleteCustomer = useDeleteCustomer();
 
   const processedData = useMemo(() => {
@@ -249,7 +257,7 @@ export function CustomerTable({
           <table className="w-full min-w-[680px] sm:min-w-[820px] lg:min-w-[1100px] caption-bottom text-sm">
             <TableHeader className="bg-slate-50 dark:bg-[#151025] sticky top-0 z-10 shadow-sm">
               <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
-                {tableColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (
+                {displayedColumns.map((col) => (
                     <TableHead 
                         key={col.key} 
                         onClick={() => handleSort(col.key as string)} 
@@ -272,7 +280,7 @@ export function CustomerTable({
                   key={customer.id || `customer-${index}`}
                   className="border-b border-slate-100 dark:border-white/5 transition-colors duration-200 hover:bg-pink-50/40 dark:hover:bg-pink-500/5 group last:border-0"
                 >
-                  {tableColumns.filter(col => visibleColumns.includes(col.key)).map((col) => (
+                  {displayedColumns.map((col) => (
                       <TableCell key={`${customer.id}-${col.key}`} className={`${cellStyle} ${col.className || ''}`}>
                           {renderCellContent(customer, col)}
                       </TableCell>

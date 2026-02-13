@@ -107,6 +107,14 @@
   "cancel": "İptal",
   "save": "Kaydet",
   "saving": "Kaydediliyor...",
+  "advancedFilter": {
+    "columnName": "Müşteri Adı",
+    "columnCustomerCode": "Müşteri Kodu",
+    "columnEmail": "E-posta",
+    "columnPhone": "Telefon",
+    "columnTaxNumber": "Vergi No",
+    "columnCityName": "Şehir"
+  },
   "messages": {
     "createSuccess": "Müşteri başarıyla oluşturuldu",
     "createError": "Müşteri oluşturulamadı",
