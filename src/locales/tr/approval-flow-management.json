@@ -1,5 +1,6 @@
 {
   "approvalFlow": {
+    "advancedFilter":{"columnDocumentType":"Belge Tipi","columnDescription":"Açıklama","columnIsActive":"Aktif","columnCreatedBy":"Oluşturan"},
     "menu": "Onay Akışı Yönetimi",
     "description": "Onay akışlarını yönetin ve düzenleyin",
     "addButton": "Yeni Onay Akışı Ekle",

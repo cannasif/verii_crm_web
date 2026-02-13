@@ -1,5 +1,6 @@
 {
   "approvalUserRole": {
+    "advancedFilter":{"columnUserFullName":"Kullanıcı","columnApprovalRoleName":"Onay Rolü","columnCreatedBy":"Oluşturan"},
     "menu": "Onay Kullanıcı Rolü Yönetimi",
     "description": "Onay kullanıcı rollerini yönetin ve düzenleyin",
     "addButton": "Yeni Rol Ekle",

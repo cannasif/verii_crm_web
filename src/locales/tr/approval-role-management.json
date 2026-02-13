@@ -1,5 +1,6 @@
 {
   "approvalRole": {
+    "advancedFilter":{"columnName":"Rol Adı","columnApprovalRoleGroupName":"Rol Grubu","columnMaxAmount":"Maks. Tutar"},
     "menu": "Onay Rolü Yönetimi",
     "description": "Onay rollerini yönetin ve düzenleyin",
     "addButton": "Yeni Onay Rolü Ekle",

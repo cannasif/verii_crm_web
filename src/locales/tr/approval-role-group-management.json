@@ -1,4 +1,5 @@
 {
+  "advancedFilter":{"columnName":"Grup Adı","columnCreatedBy":"Oluşturan"},
   "menu": "Onay Rol Grubu Yönetimi",
   "description": "Onay rol gruplarını yönetin ve düzenleyin",
   "addButton": "Yeni Grup Ekle",
