@@ -108,7 +108,14 @@
     "columnActivityTypeId": "Aktivite Tipi No",
     "columnPriority": "Öncelik",
     "columnDueDate": "Bitiş Tarihi",
-    "columnIsCompleted": "Tamamlandı"
+    "columnIsCompleted": "Tamamlandı",
+    "filterButton": "Gelişmiş Filtre"
+  },
+  "columnCustomization": {
+    "hiddenColumns": "Gizlenen Sütunlar",
+    "visibleColumns": "Gösterilecek Sütunlar",
+    "moveUp": "Yukarı",
+    "moveDown": "Aşağı"
   },
   "markAsCompleted": "Tamamla",
   "markAsInProgress": "Devam Et",

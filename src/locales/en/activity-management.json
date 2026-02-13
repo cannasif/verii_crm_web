@@ -108,7 +108,14 @@
     "columnActivityTypeId": "Activity Type ID",
     "columnPriority": "Priority",
     "columnDueDate": "Due Date",
-    "columnIsCompleted": "Completed"
+    "columnIsCompleted": "Completed",
+    "filterButton": "Advanced Filter"
+  },
+  "columnCustomization": {
+    "hiddenColumns": "Hidden Columns",
+    "visibleColumns": "Visible Columns",
+    "moveUp": "Up",
+    "moveDown": "Down"
   },
   "markAsCompleted": "Mark as Completed",
   "markAsInProgress": "Mark as In Progress",

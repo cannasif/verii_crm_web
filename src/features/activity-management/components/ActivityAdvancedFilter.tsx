@@ -27,6 +27,7 @@ export interface ActivityAdvancedFilterProps {
   onDraftRowsChange: (rows: ActivityFilterRow[]) => void;
   onSearch: () => void;
   onClear: () => void;
+  embedded?: boolean;
 }
 
 function generateId(): string {
@@ -38,6 +39,7 @@ export function ActivityAdvancedFilter({
   onDraftRowsChange,
   onSearch,
   onClear,
+  embedded = false,
 }: ActivityAdvancedFilterProps): ReactElement {
   const { t } = useTranslation(['activity-management']);
 
@@ -68,7 +70,7 @@ export function ActivityAdvancedFilter({
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-card/50 p-4 space-y-4">
+    <div className={embedded ? 'p-4 space-y-4' : 'rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-card/50 p-4 space-y-4'}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
           {t('advancedFilter.title')}

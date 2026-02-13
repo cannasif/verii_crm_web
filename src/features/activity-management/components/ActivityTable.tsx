@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useMemo } from 'react';
+import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import {
@@ -19,18 +19,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useDeleteActivity } from '../hooks/useDeleteActivity';
 import { useUpdateActivity } from '../hooks/useUpdateActivity';
 import type { ActivityDto } from '../types/activity-types';
 import { ActivityStatus } from '../types/activity-types';
 import { toUpdateActivityDto } from '../utils/to-update-activity-dto';
+import { loadColumnPreferences, saveColumnPreferences } from '../utils/column-preferences';
 import { ActivityStatusBadge } from './ActivityStatusBadge';
 import { ActivityPriorityBadge } from './ActivityPriorityBadge';
 import {
@@ -47,7 +45,8 @@ import {
   Briefcase,
   List,
   EyeOff,
-  ChevronDown,
+  Eye,
+  Columns3,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 
@@ -57,6 +56,8 @@ export interface ColumnDef<T> {
   type: 'text' | 'date' | 'user' | 'status' | 'priority' | 'customer' | 'contact' | 'actions';
   className?: string;
 }
+
+const ID_COLUMN_KEY = 'id';
 
 interface ActivityTableProps {
   activities: ActivityDto[];
@@ -69,6 +70,8 @@ interface ActivityTableProps {
   sortDirection: 'asc' | 'desc';
   onPageChange: (page: number) => void;
   onSortChange: (sortBy: string, sortDirection: 'asc' | 'desc') => void;
+  userId?: number;
+  toolbarSlot?: React.ReactNode;
 }
 
 const getColumnsConfig = (t: TFunction): ColumnDef<ActivityDto>[] => [
@@ -108,16 +111,67 @@ export function ActivityTable({
   sortDirection,
   onPageChange,
   onSortChange,
+  userId,
+  toolbarSlot,
 }: ActivityTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ActivityDto | null>(null);
+  const [columnPopoverOpen, setColumnPopoverOpen] = useState(false);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+  const defaultOrder = useMemo(() => tableColumns.map((c) => c.key as string), [tableColumns]);
 
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    tableColumns.map((column) => column.key as string)
-  );
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultOrder);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultOrder);
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences(userId, defaultOrder);
+    const order = prefs.order.filter((k) => defaultOrder.includes(k));
+    const missingInOrder = defaultOrder.filter((k) => !order.includes(k));
+    const mergedOrder = order.length > 0 ? [...order, ...missingInOrder] : defaultOrder;
+    const visible = prefs.visibleKeys.filter((k) => defaultOrder.includes(k));
+    const withId = visible.includes(ID_COLUMN_KEY) ? visible : [ID_COLUMN_KEY, ...visible.filter((k) => k !== ID_COLUMN_KEY)];
+    const finalVisible = withId.length > 0 ? withId : defaultOrder;
+    setColumnOrder(mergedOrder);
+    setVisibleColumns(finalVisible);
+  }, [userId, defaultOrder.join(',')]);
+
+  const persistColumnPrefs = (order: string[], visible: string[]): void => {
+    saveColumnPreferences(userId, { order, visibleKeys: visible });
+  };
+
+  const toggleColumn = (key: string): void => {
+    if (key === ID_COLUMN_KEY) return;
+    setVisibleColumns((prev) => {
+      const isVisible = prev.includes(key);
+      if (isVisible) {
+        const next = prev.filter((k) => k !== key);
+        persistColumnPrefs(columnOrder, next);
+        return next;
+      }
+      const insertIdx = columnOrder.indexOf(key);
+      const next = insertIdx >= 0 ? [...prev, key].sort((a, b) => columnOrder.indexOf(a) - columnOrder.indexOf(b)) : [...prev, key];
+      persistColumnPrefs(columnOrder, next);
+      return next;
+    });
+  };
+
+  const moveColumn = (key: string, direction: 'up' | 'down'): void => {
+    if (key === ID_COLUMN_KEY) return;
+    const visibleOrdered = columnOrder.filter((k) => visibleColumns.includes(k));
+    const idx = visibleOrdered.indexOf(key);
+    if (idx < 0) return;
+    const newIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (newIdx < 0 || newIdx >= visibleOrdered.length) return;
+    const next = [...visibleOrdered];
+    [next[idx], next[newIdx]] = [next[newIdx], next[idx]];
+    const hidden = columnOrder.filter((k) => !visibleColumns.includes(k));
+    const newOrder = [...next, ...hidden];
+    setColumnOrder(newOrder);
+    setVisibleColumns(next);
+    persistColumnPrefs(newOrder, next);
+  };
 
   const deleteActivity = useDeleteActivity();
   const updateActivity = useUpdateActivity();
@@ -152,11 +206,9 @@ export function ActivityTable({
     onSortChange(key, newDirection);
   };
 
-  const toggleColumn = (key: string): void => {
-    setVisibleColumns((prev) =>
-      prev.includes(key) ? prev.filter((columnKey) => columnKey !== key) : [...prev, key]
-    );
-  };
+  const displayColumns = columnOrder.filter((k) => visibleColumns.includes(k));
+  const hiddenColumns = columnOrder.filter((k) => !visibleColumns.includes(k));
+  const columnMap = useMemo(() => new Map(tableColumns.map((c) => [c.key as string, c])), [tableColumns]);
 
   const renderCellContent = (item: ActivityDto, column: ColumnDef<ActivityDto>): ReactElement | string => {
     const value = item[column.key as keyof ActivityDto];
@@ -247,33 +299,76 @@ export function ActivityTable({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end p-2 sm:p-0">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="ml-auto h-9 lg:flex border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm">
-              <EyeOff className="mr-2 h-4 w-4" />
-              {t('common.editColumns')}
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 max-h-[400px] overflow-y-auto bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50">
-            <DropdownMenuLabel className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-              {t('common.visibleColumns')}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-slate-200 dark:bg-white/10 my-1" />
-            {tableColumns.map((column) => (
-              <DropdownMenuCheckboxItem
-                key={column.key as string}
-                checked={visibleColumns.includes(column.key as string)}
-                onSelect={(event) => event.preventDefault()}
-                onCheckedChange={() => toggleColumn(column.key as string)}
-                className="text-sm text-slate-700 dark:text-slate-200 focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400 cursor-pointer rounded-lg px-2 py-1.5 pl-8 relative"
-              >
-                {column.label}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex justify-between items-center p-2 sm:p-0 gap-2">
+        <div className="flex items-center gap-2 shrink-0">{toolbarSlot}</div>
+        <div className="flex items-center gap-2">
+          <Popover open={columnPopoverOpen} onOpenChange={setColumnPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm">
+                <Columns3 className="mr-2 h-4 w-4" />
+                {t('common.editColumns')}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-72 p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50">
+              <div className="p-2 space-y-2">
+                <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
+                  {t('activityManagement.columnCustomization.visibleColumns')}
+                </div>
+                <div className="space-y-1 max-h-48 overflow-y-auto">
+                  {displayColumns.map((key) => {
+                    const col = columnMap.get(key);
+                    if (!col) return null;
+                    const isId = key === ID_COLUMN_KEY;
+                    const idx = displayColumns.indexOf(key);
+                    return (
+                      <div key={key} className="flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-white/5 group">
+                        <div className="flex items-center gap-1 flex-1 min-w-0">
+                          {!isId && (
+                            <>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100" onClick={() => moveColumn(key, 'up')} disabled={idx <= 1}>
+                                <ArrowUp className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100" onClick={() => moveColumn(key, 'down')} disabled={idx >= displayColumns.length - 1}>
+                                <ArrowDown className="h-3.5 w-3.5" />
+                              </Button>
+                            </>
+                          )}
+                          <span className="text-sm truncate">{col.label}</span>
+                        </div>
+                        {!isId && (
+                          <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-slate-400 hover:text-destructive" onClick={() => toggleColumn(key)} title={t('activityManagement.columnCustomization.hiddenColumns')}>
+                            <EyeOff className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {hiddenColumns.length > 0 && (
+                  <>
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5 pt-2 border-t border-slate-100 dark:border-white/10">
+                      {t('activityManagement.columnCustomization.hiddenColumns')}
+                    </div>
+                    <div className="space-y-1">
+                      {hiddenColumns.map((key) => {
+                        const col = columnMap.get(key);
+                        if (!col) return null;
+                        return (
+                          <div key={key} className="flex items-center justify-between rounded-lg px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-white/5">
+                            <span className="text-sm text-slate-500 dark:text-slate-400 truncate">{col.label}</span>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => toggleColumn(key)} title={t('activityManagement.columnCustomization.visibleColumns')}>
+                              <Eye className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-transparent overflow-hidden">
@@ -282,14 +377,18 @@ export function ActivityTable({
                  style={{ minWidth: '1100px' }}>
             <TableHeader className="bg-slate-50/50 dark:bg-white/5">
               <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
-                {tableColumns.filter((column) => visibleColumns.includes(column.key as string)).map((column) => (
-                  <TableHead key={column.key as string} onClick={() => handleSort(column.key as string)} className={headStyle}>
-                    <div className="flex items-center gap-2">
-                      {column.label}
-                      <SortIcon column={column.key as string} />
-                    </div>
-                  </TableHead>
-                ))}
+                {displayColumns.map((key) => {
+                  const column = columnMap.get(key);
+                  if (!column) return null;
+                  return (
+                    <TableHead key={column.key as string} onClick={() => handleSort(column.key as string)} className={headStyle}>
+                      <div className="flex items-center gap-2">
+                        {column.label}
+                        <SortIcon column={column.key as string} />
+                      </div>
+                    </TableHead>
+                  );
+                })}
                 <TableHead className={`${headStyle} text-right w-[110px] md:w-[140px]`}>
                   {t('common.actions')}
                 </TableHead>
@@ -309,11 +408,15 @@ export function ActivityTable({
                       ${isCompleted ? 'bg-slate-50/50 dark:bg-white/5 opacity-60 grayscale' : 'hover:bg-pink-50/40 dark:hover:bg-pink-500/5'}
                     `}
                   >
-                    {tableColumns.filter((column) => visibleColumns.includes(column.key as string)).map((column) => (
-                      <TableCell key={`${item.id}-${column.key}`} className={`${cellStyle} ${column.className || ''}`}>
-                        {renderCellContent(item, column)}
-                      </TableCell>
-                    ))}
+                    {displayColumns.map((key) => {
+                      const column = columnMap.get(key);
+                      if (!column) return null;
+                      return (
+                        <TableCell key={`${item.id}-${column.key}`} className={`${cellStyle} ${column.className || ''}`}>
+                          {renderCellContent(item, column)}
+                        </TableCell>
+                      );
+                    })}
 
                     <TableCell className={`${cellStyle} text-right`}>
                       <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
