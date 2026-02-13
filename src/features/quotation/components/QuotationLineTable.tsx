@@ -180,7 +180,7 @@ export function QuotationLineTable({
   });
 
   const styles = {
-    glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm",
+    glassCard: "relative overflow-hidden  border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm",
     tableHeadRow: "bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800",
     tableHead: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider",
     tableHeadRight: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right",

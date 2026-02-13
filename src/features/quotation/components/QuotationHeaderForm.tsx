@@ -59,8 +59,8 @@ import type { QuotationNotesDto } from '../types/quotation-types';
 import { 
   User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
-  Layers, SearchX, Coins, BookUser, Building2, Phone, Mail, Folder,
-  ListPlus, X
+  Layers, SearchX,  BookUser, Building2, Phone, Mail, Folder,
+  ListPlus, X, MapPin, Banknote,Search
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
@@ -129,7 +129,10 @@ export function QuotationHeaderForm({
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedCurrency = form.watch('quotation.currency');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
+  
+  // BURADA: watchedDocumentSerialTypeId artık kullanılıyor
   const watchedDocumentSerialTypeId = form.watch('quotation.documentSerialTypeId');
+  
   const watchedOfferType = form.watch('quotation.offerType');
 
   const { data: salesTypeListResponse } = useSalesTypeList({
@@ -139,11 +142,13 @@ export function QuotationHeaderForm({
       ? { filters: [{ column: 'salesType', operator: 'equals', value: watchedOfferType }] }
       : {}),
   });
+  
   const salesTypesByOfferType = useMemo(() => {
     const list = salesTypeListResponse?.data ?? [];
     if (!watchedOfferType) return list;
     return list.filter((item) => item.salesType === watchedOfferType);
   }, [salesTypeListResponse?.data, watchedOfferType]);
+  
   const prevOfferTypeRef = useRef(watchedOfferType);
   useEffect(() => {
     if (prevOfferTypeRef.current !== watchedOfferType) {
@@ -155,7 +160,10 @@ export function QuotationHeaderForm({
   const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useQuotationRelatedUsers(user?.id);
   const { data: paymentTypes } = usePaymentTypes();
+  
+  // BURADA: useCustomerOptions artık kullanılıyor
   const { data: customerOptions = [] } = useCustomerOptions();
+  
   const { data: customer } = useCustomer(watchedCustomerId ?? 0);
   const { data: projects = [] } = useErpProjects();
   
@@ -170,6 +178,7 @@ export function QuotationHeaderForm({
     PricingRuleType.Quotation
   );
 
+  // BURADA: watchedDocumentSerialTypeId kullanılarak seri tipi bulunuyor
   const selectedSerialType = useMemo(() => 
     availableDocumentSerialTypes.find(t => t.id === Number(watchedDocumentSerialTypeId)),
     [availableDocumentSerialTypes, watchedDocumentSerialTypeId]
@@ -189,6 +198,7 @@ export function QuotationHeaderForm({
     setCustomerSearchQuery(customerDisplayValue);
   }, [customerDisplayValue]);
 
+  // BURADA: customerOptions hook verisi mapleniyor
   const allCustomerOptions = useMemo(() => {
     return customerOptions.map((c) => ({
       value: `customer-${c.id}`,
@@ -205,9 +215,11 @@ export function QuotationHeaderForm({
     }));
   }, [customerOptions]);
 
+  // BURADA: selectedSerialType kullanılarak filtreleme yapılıyor
   const filteredCustomerOptions = useMemo(() => {
     let options = allCustomerOptions;
 
+    // Seri Numarası seçiliyse ve müşteri tipi kısıtlaması varsa listeyi filtrele
     if (selectedSerialType?.customerTypeId && !watchedCustomerId && !watchedErpCustomerCode) {
       options = options.filter(o => o.customerTypeId === selectedSerialType.customerTypeId);
     }
@@ -301,11 +313,24 @@ export function QuotationHeaderForm({
     setPendingCurrency(null);
   };
 
+  const currencyConfig = useMemo(() => {
+    const val = String(watchedCurrency);
+    switch (val) {
+      case '1': return { color: "text-red-500", bg: "bg-red-50/50 dark:bg-red-950/20", border: "border-red-200 dark:border-red-800/50" };
+      case '2': return { color: "text-blue-500", bg: "bg-blue-50/50 dark:bg-blue-950/20", border: "border-blue-200 dark:border-blue-800/50" };
+      case '3': return { color: "text-amber-500", bg: "bg-amber-50/50 dark:bg-amber-950/20", border: "border-amber-200 dark:border-amber-800/50" };
+      default: return { color: "text-emerald-500", bg: "bg-emerald-50/50 dark:bg-emerald-950/20", border: "border-emerald-200 dark:border-emerald-800/50" };
+    }
+  }, [watchedCurrency]);
+
   const styles = {
     glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl shadow-sm transition-all duration-300 hover:shadow-md",
-    inputBase: "!pl-12 h-11 bg-white dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:shadow transition-all duration-300 ease-out focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 w-full",
-    label: "text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 pl-1 flex items-center gap-1.5",
-    iconWrapper: "absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 pointer-events-none z-10 flex items-center justify-center",
+    inputBase: "h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none w-full",
+    label: "text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-2",
+    iconWrapper: "absolute left-3 top-1/2 -translate-y-1/2 transition-colors z-20 flex items-center justify-center pointer-events-none",
+    selectTrigger: "w-full h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 hover:border-pink-400 dark:hover:border-zinc-700 transition-all shadow-sm rounded-xl focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none",
+    selectContent: "rounded-xl border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl",
+    selectItem: "focus:bg-pink-50 dark:focus:bg-pink-900/10 focus:text-pink-600 cursor-pointer rounded-lg m-1"
   };
 
   const forcePaddingStyle = { paddingLeft: '3rem' };
@@ -315,591 +340,552 @@ export function QuotationHeaderForm({
       <div className="absolute -top-10 -left-10 w-96 h-96 bg-pink-500/10 blur-[100px] pointer-events-none rounded-full" />
       <div className="absolute top-20 right-0 w-80 h-80 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
       
-      <div className={cn(styles.glassCard, "flex flex-col")}>
-        <div className="p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-2">
+      <div className={styles.glassCard}>
+        <div className="p-4 sm:p-6">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8 items-start">
+                <div className="xl:col-span-2 space-y-2">
+                  <div className={styles.label}>
+                    <div className="p-1 rounded-md bg-pink-50 dark:bg-pink-900/20 text-pink-600">
+                      <User className="w-3.5 h-3.5" />
+                    </div>
+                    {t('quotation.header.customer')}
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1 group min-w-0">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 z-20 pointer-events-none group-focus-within:text-pink-500 transition-colors">
+                        <Search className="h-4 w-4" />
+                      </div>
+                      <FormControl>
+                        <Input
+                          className={cn(styles.inputBase, "!pl-12 font-medium truncate caret-pink-500")}
+                          style={forcePaddingStyle}
+                          value={customerSearchQuery}
+                          onChange={(e) => {
+                            setCustomerSearchQuery(e.target.value);
+                            if (!customerComboboxOpen) setCustomerComboboxOpen(true);
+                          }}
+                          onFocus={() => setCustomerComboboxOpen(true)}
+                          onBlur={() => {
+                            setTimeout(() => {
+                              if (customerSearchQuery !== customerDisplayValue) {
+                                if (!customerSearchQuery.trim()) {
+                                  form.setValue('quotation.potentialCustomerId', null);
+                                  form.setValue('quotation.erpCustomerCode', null);
+                                } else {
+                                  setCustomerSearchQuery(customerDisplayValue);
+                                }
+                              }
+                            }, 200);
+                          }}
+                          placeholder={t('quotation.header.selectCustomer')}
+                          disabled={readOnly}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <Popover open={customerComboboxOpen} onOpenChange={setCustomerComboboxOpen}>
+                        <PopoverTrigger asChild>
+                          <div className="absolute top-full left-0 w-full h-0" />
+                        </PopoverTrigger>
+                        <PopoverContent 
+                          className="p-0 w-[90vw] sm:w-[550px] max-h-[350px] overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl" 
+                          align="start"
+                          sideOffset={8}
+                          onOpenAutoFocus={(e) => e.preventDefault()}
+                        >
+                          <Command shouldFilter={false}>
+                            <CommandList className="max-h-[350px] overflow-y-auto p-2 space-y-1">
+                              {filteredCustomerOptions.length === 0 && (
+                                <CommandEmpty className="py-8 text-center flex flex-col items-center gap-2">
+                                  <SearchX className="w-5 h-5 text-zinc-400" />
+                                  <span className="text-sm font-medium text-zinc-500">{t('common.noResults')}</span>
+                                </CommandEmpty>
+                              )}
+                              <CommandGroup>
+                                {filteredCustomerOptions.map((option) => (
+                                  <CommandItem
+                                    key={option.value}
+                                    value={option.value}
+                                    onSelect={() => handleComboboxSelect(option)}
+                                    className="cursor-pointer mb-1 rounded-xl px-3 py-2 data-[selected=true]:bg-pink-50 dark:data-[selected=true]:bg-pink-900/20 transition-colors"
+                                  >
+                                    <div className="flex items-center gap-3 w-full">
+                                      <div className={cn(
+                                        "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                                        option.type === 'erp' ? "bg-purple-100 dark:bg-purple-900/40 text-purple-600" : "bg-pink-100 dark:bg-pink-900/40 text-pink-600"
+                                      )}>
+                                        {option.type === 'erp' ? <Building2 size={14} /> : <User size={14} />}
+                                      </div>
+                                      <div className="flex flex-col flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                          <span className="font-medium text-sm truncate">{option.name || option.label}</span>
+                                          {((option.type === 'crm' && watchedCustomerId === option.id) || (option.type === 'erp' && watchedErpCustomerCode === option.code)) && (
+                                            <Check className="w-3.5 h-3.5 text-pink-500" />
+                                          )}
+                                        </div>
+                                        {option.code && <span className="text-[11px] text-zinc-500 font-mono">{option.code}</span>}
+                                      </div>
+                                      <div className="hidden sm:flex flex-col items-end gap-0.5 text-[10px] text-zinc-400">
+                                        {option.phone && <div className="flex items-center gap-1"><Phone size={10} />{option.phone}</div>}
+                                        {option.email && <div className="flex items-center gap-1"><Mail size={10} />{option.email}</div>}
+                                      </div>
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setCustomerSelectDialogOpen(true)}
+                      className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-pink-600 hover:border-pink-600 hover:text-white transition-all duration-300 shadow-sm"
+                      disabled={readOnly}
+                    >
+                      <BookUser className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="xl:col-span-1 space-y-2">
+                  <div className={styles.label}>
+                    <div className="p-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600">
+                      <Briefcase className="w-3.5 h-3.5" />
+                    </div>
+                    {t('quotation.header.representative')}
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="quotation.representativeId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0">
+                        <Select
+                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                          value={field.value?.toString() || ''}
+                          disabled={readOnly}
+                        >
+                          <FormControl>
+                            <SelectTrigger className={cn(styles.selectTrigger, "px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
+                              <SelectValue placeholder={t('quotation.select')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className={styles.selectContent}>
+                            {relatedUsers.map((u) => (
+                              <SelectItem key={u.userId} value={u.userId.toString()} className={styles.selectItem}>
+                                {[u.firstName, u.lastName].filter(Boolean).join(' ')}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="text-[10px] mt-1" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+            </div>
+
+            {selectedCustomer && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-500">
+                <div className="space-y-2">
+                  <div className={styles.label}>
+                    <div className="p-1 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600">
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    {t('quotation.header.shippingAddress')}
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="quotation.shippingAddressId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 min-w-0">
+                        <Select
+                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                          value={field.value?.toString() || ''}
+                        >
+                          <FormControl>
+                            <SelectTrigger className={cn(styles.selectTrigger, "px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
+                              <SelectValue placeholder={t('quotation.header.selectShippingAddress')} className="truncate block" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className={cn(styles.selectContent, "max-w-[90vw] md:max-w-xl")}>
+                            {shippingAddresses.map((address) => (
+                              <SelectItem key={address.id} value={address.id.toString()} className={styles.selectItem}>
+                                <span className="text-xs sm:text-sm truncate block">{address.addressText}</span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={styles.glassCard}>
+          <div className="p-5 h-full flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200 flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">
+                  <CreditCard className="h-4 w-4" />
+                </div>
+                Finansal
+              </h4>
+              {onExchangeRatesChange && (
+                 <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setExchangeRateDialogOpen(true)}
+                    className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
+                 >
+                   <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
+                   Kurlar
+                 </Button>
+               )}
+            </div>
+            <div className="space-y-4 flex-1">
+              <FormField
+                control={form.control}
+                name="quotation.currency"
+                render={({ field }) => (
+                  <FormItem className="space-y-0 relative group">
+                    <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.currency')}>Para Birimi</FormLabel>
+                    <Select
+                      onValueChange={(value) => handleCurrencyChange(value)}
+                      value={field.value ? String(field.value) : ''}
+                      disabled={readOnly}
+                    >
+                      <FormControl>
+                        <div className="relative">
+                          <div className={cn(styles.iconWrapper, currencyConfig.color)}>
+                            <Banknote className="h-4 w-4" />
+                          </div>
+                          <SelectTrigger className={cn(
+                            styles.selectTrigger,
+                            "pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
+                            currencyConfig.color,
+                            currencyConfig.bg,
+                            currencyConfig.border,
+                            "hover:brightness-95 dark:hover:brightness-110"
+                          )}>
+                            <SelectValue placeholder={t('quotation.select')} />
+                          </SelectTrigger>
+                        </div>
+                      </FormControl>
+                      <SelectContent className={styles.selectContent}>
+                        {erpRates.map((currency: KurDto) => (
+                          <SelectItem key={currency.dovizTipi} value={String(currency.dovizTipi)} className={styles.selectItem}>
+                            <span className="font-bold">{currency.dovizIsmi || `Döviz ${currency.dovizTipi}`}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="mt-1" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="quotation.paymentTypeId"
+                render={({ field }) => (
+                  <FormItem className="space-y-0 relative group">
+                    <FormLabel className={styles.label}>Ödeme Planı</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                      value={field.value?.toString() || ''}
+                    >
+                      <FormControl>
+                        <div className="relative">
+                           <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}>
+                             <CreditCard className="h-4 w-4" />
+                           </div>
+                           <SelectTrigger className={cn(styles.selectTrigger, "pl-10 hover:border-pink-400 dark:hover:border-zinc-700 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
+                             <SelectValue placeholder={t('quotation.select')} />
+                           </SelectTrigger>
+                        </div>
+                      </FormControl>
+                      <SelectContent className={styles.selectContent}>
+                        {paymentTypes.map((pt) => (
+                          <SelectItem key={pt.id} value={pt.id.toString()} className={styles.selectItem}>
+                            {pt.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="mt-1" />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.glassCard}>
+          <div className="p-5 h-full flex flex-col">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-1.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-600">
+                <Globe className="h-4 w-4" />
+              </div>
+              <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Tip & Tarihler</h4>
+            </div>
+            <div className="space-y-4 flex-1">
+              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4">
+                <FormField
+                  control={form.control}
+                  name="quotation.offerType"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0 relative group">
+                      <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.offerType')}>
+                        {t('common.offerType.label')}
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ''} disabled={readOnly}>
+                        <FormControl>
+                           <div className="relative">
+                              <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Layers className="h-4 w-4" /></div>
+                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
+                                <SelectValue placeholder={t('common.offerType.selectPlaceholder')} />
+                              </SelectTrigger>
+                           </div>
+                        </FormControl>
+                        <SelectContent className={styles.selectContent}>
+                          <SelectItem value={OfferType.YURTICI} className={styles.selectItem}>{t('common.offerType.yurtici')}</SelectItem>
+                          <SelectItem value={OfferType.YURTDISI} className={styles.selectItem}>{t('common.offerType.yurtdisi')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="mt-1" />
+                    </FormItem>
+                  )}
+                />
+                {watchedOfferType && (
+                  <FormField
+                    control={form.control}
+                    name="quotation.deliveryMethod"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 relative group">
+                        <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>Teslim Şekli</FormLabel>
+                        <div className="relative">
+                          <div className={styles.iconWrapper}><Truck className="h-4 w-4 text-zinc-400 group-focus-within:text-pink-500" /></div>
+                          <Select disabled={readOnly} onValueChange={field.onChange} value={field.value || ''}>
+                            <FormControl>
+                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
+                                <SelectValue placeholder={t('quotation.select')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className={styles.selectContent}>
+                              {salesTypesByOfferType.map((item) => (
+                                <SelectItem key={item.id} value={String(item.id)} className={styles.selectItem}>{item.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <FormMessage className="mt-1" />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </div>
+              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 md:gap-4 pt-1">
+                 <FormField
+                  control={form.control}
+                  name="quotation.offerDate"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0 relative group">
+                      <FormLabel className={styles.label}>Teklif T.</FormLabel>
+                      <div className="relative">
+                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Calendar className="h-4 w-4" /></div>
+                        <FormControl>
+                          <Input 
+                            type="date" 
+                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")} 
+                            {...field}
+                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="mt-1" />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="quotation.deliveryDate"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0 relative group">
+                      <FormLabel className={styles.label}>Teslim T.</FormLabel>
+                      <div className="relative">
+                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Truck className="h-4 w-4" /></div>
+                        <FormControl>
+                          <Input 
+                            type="date" 
+                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")}
+                            {...field}
+                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            disabled={readOnly}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="mt-1" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.glassCard}>
+           <div className="p-5 h-full flex flex-col">
+              <div className="flex items-center gap-2 mb-4">
                 <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600">
                   <FileText className="h-4 w-4" />
                 </div>
                 <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Belge Detayı</h4>
               </div>
-
-              <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-4 flex-1">
                  {showDocumentSerialType && (
-                   <div>
-                     <FormField
-                      control={form.control}
-                      name="quotation.documentSerialTypeId"
-                      render={({ field }) => (
-                        <FormItem className="space-y-0 relative group">
-                          <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.documentSerialTypeId')}>Seri No</FormLabel>
-                          <div className="relative">
-                            <div className={styles.iconWrapper}><Hash className="h-4 w-4" /></div>
-                            <VoiceSearchCombobox
-                              className={styles.inputBase}
-                              value={field.value?.toString() || ''}
-                              onSelect={(value) => field.onChange(value ? Number(value) : null)}
-                              options={availableDocumentSerialTypes
-                                .filter((d) => d.serialPrefix?.trim() !== '')
-                                .map((d) => ({
-                                  value: d.id.toString(),
-                                  label: d.serialPrefix || ''
-                                }))}
-                              placeholder={t('quotation.select')}
-                              searchPlaceholder={t('common.search')}
-                              disabled={readOnly || !watchedRepresentativeId}
-                            />
-                          </div>
-                          <FormMessage className="mt-1" />
-                        </FormItem>
-                      )}
-                    />
-                   </div>
-                 )}
-
-                 <div>
                   <FormField
                     control={form.control}
-                    name="quotation.description"
+                    name="quotation.documentSerialTypeId"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <div className="flex items-center justify-between mb-2">
-                          <FormLabel className={cn(styles.label, "mb-0")}>
-                            Notlar
-                          </FormLabel>
-                        </div>
-                        
-                        {filledNoteKeys.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-2.5">
-                            {filledNoteKeys.map((key, idx) => (
-                              <Badge 
-                                key={key} 
-                                variant="secondary" 
-                                className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 h-6 text-xs border border-purple-200 dark:border-purple-500/20"
-                              >
-                                <span className="mr-1.5 truncate max-w-[200px]">
-                                  {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel')} ${idx + 1}`}
-                                </span>
-                                {!readOnly && onQuotationNotesChange && (
-                                  <button 
-                                    type="button"
-                                    onClick={() => handleRemoveNote(key)}
-                                    className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                )}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-
-                        <FormControl>
-                          <div className="relative">
-                            <Textarea
-                              {...field}
-                              value={field.value || ''}
-                              placeholder={t('quotation.header.descriptionPlaceholder')}
-                              className="min-h-[46px] rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10"
-                              disabled={readOnly}
-                            />
-                            {onQuotationNotesChange && (
-                              <Button 
-                                type="button"
-                                size="icon"
-                                variant="ghost"
-                                className="absolute right-1 top-1 h-7 w-7 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
-                                onClick={() => setNotesDialogOpen(true)}
-                                disabled={readOnly}
-                              >
-                                <ListPlus className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </FormControl>
-                        <FormMessage className="mt-1" />
-                      </FormItem>
-                    )}
-                  />
-                 </div>
-              </div>
-
-              <div>
-                <FormField
-                  control={form.control}
-                  name="quotation.projectCode"
-                  render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>
-                        <Folder className="h-3.5 w-3.5" />
-                        {t('quotation.header.projectCode')}
-                      </FormLabel>
-                      <div className="relative">
-                        <div className={styles.iconWrapper}><Folder className="h-4 w-4" /></div>
-                        <VoiceSearchCombobox
-                          className={styles.inputBase}
-                          value={field.value || ''}
-                          onSelect={(value) => field.onChange(value)}
-                          options={projects.map((p) => ({
-                            value: p.projeKod,
-                            label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
-                          }))}
-                          placeholder={t('quotation.header.projectCodePlaceholder')}
-                          searchPlaceholder={t('common.search')}
-                          disabled={readOnly}
-                        />
-                      </div>
-                      <FormMessage className="mt-1.5" />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Right Column: Customer & Sales Info */}
-            <div className="flex flex-col gap-6">
-              {/* Main Info Header */}
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                  <User className="h-4 w-4" />
-                </div>
-                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">
-                  {t('quotation.header.mainInfo')}
-                </h4>
-              </div>
-
-              <div className="space-y-6">
-                {/* Customer Account */}
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="quotation.potentialCustomerId"
-                    render={() => (
-                      <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>
-                          {t('quotation.header.customer')}
-                        </FormLabel>
-                        <div className="flex gap-2">
-                          <div className="relative flex-1 group">
-                            <div className={cn(styles.iconWrapper, "pointer-events-none")}>
-                              <User className="h-4 w-4" />
+                        <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.documentSerialTypeId')}>Seri No</FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                          value={field.value?.toString() || ''}
+                          disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
+                        >
+                          <FormControl>
+                            <div className="relative">
+                              <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Hash className="h-4 w-4" /></div>
+                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
+                                <SelectValue placeholder={t('quotation.select')} />
+                              </SelectTrigger>
                             </div>
-                            <FormControl>
-                              <Input
-                                className={cn(styles.inputBase, "font-semibold text-zinc-900 dark:text-zinc-100 z-10 relative caret-pink-500")}
-                                style={forcePaddingStyle}
-                                value={customerSearchQuery}
-                                onChange={(e) => {
-                                  setCustomerSearchQuery(e.target.value);
-                                  if (!customerComboboxOpen) setCustomerComboboxOpen(true);
-                                }}
-                                onFocus={() => setCustomerComboboxOpen(true)}
-                                onBlur={() => {
-                                  setTimeout(() => {
-                                    if (customerSearchQuery !== customerDisplayValue) {
-                                      if (!customerSearchQuery.trim()) {
-                                        form.setValue('quotation.potentialCustomerId', null);
-                                        form.setValue('quotation.erpCustomerCode', null);
-                                      } else {
-                                        setCustomerSearchQuery(customerDisplayValue);
-                                      }
-                                    }
-                                  }, 200);
-                                }}
-                                placeholder={t('quotation.header.selectCustomer')}
-                                disabled={readOnly}
-                                autoComplete="off"
-                              />
-                            </FormControl>
-                            <Popover open={customerComboboxOpen} onOpenChange={setCustomerComboboxOpen}>
-                              <PopoverTrigger asChild>
-                                <div className="absolute top-full left-0 w-full h-0" />
-                              </PopoverTrigger>
-                              <PopoverContent 
-                                className="p-0 w-[90vw] sm:w-[550px] max-h-[350px] overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl rounded-2xl" 
-                                align="start"
-                                sideOffset={8}
-                                onOpenAutoFocus={(e) => e.preventDefault()}
-                              >
-                                <Command shouldFilter={false} className="bg-transparent">
-                                  <CommandList className="max-h-[350px] overflow-y-auto p-2 custom-scrollbar space-y-1">
-                                    {filteredCustomerOptions.length === 0 && (
-                                      <CommandEmpty className="py-8 text-center flex flex-col items-center justify-center gap-2">
-                                        <div className="p-2.5 rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500">
-                                          <SearchX className="w-5 h-5" />
-                                        </div>
-                                        <div className="flex flex-col gap-0.5">
-                                          <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                            {t('common.noResults')}
-                                          </span>
-                                          <span className="text-xs text-slate-500 dark:text-slate-400">
-                                            {t('quotation.header.tryDifferentSearch')}
-                                          </span>
-                                        </div>
-                                      </CommandEmpty>
-                                    )}
-                                    <CommandGroup>
-                                      {filteredCustomerOptions.map((option) => (
-                                        <CommandItem
-                                          key={option.value}
-                                          value={option.value}
-                                          onSelect={() => handleComboboxSelect(option)}
-                                          className="cursor-pointer mb-1 last:mb-0 rounded-xl px-3 py-2 data-[selected=true]:bg-slate-100 dark:data-[selected=true]:bg-white/10 data-[selected=true]:text-slate-900 dark:data-[selected=true]:text-white transition-colors"
-                                        >
-                                          <div className="flex items-center gap-3 w-full">
-                                            <div className={cn(
-                                              "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                                              option.type === 'erp' 
-                                                ? "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400" 
-                                                : "bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400"
-                                            )}>
-                                              {option.type === 'erp' ? <Building2 size={16} /> : <User size={16} />}
-                                            </div>
-                                            
-                                            <div className="flex flex-col flex-1 min-w-0">
-                                              <div className="flex items-center gap-2">
-                                                <span className="font-medium text-sm text-slate-900 dark:text-zinc-200 truncate">
-                                                  {option.name || option.label}
-                                                </span>
-                                                {((option.type === 'crm' && watchedCustomerId === option.id) || (option.type === 'erp' && watchedErpCustomerCode === option.code)) && (
-                                                  <Check className="w-3.5 h-3.5 text-pink-500" />
-                                                )}
-                                              </div>
-                                              <div className="flex items-center gap-2">
-                                                {option.code && (
-                                                  <span className="text-[11px] text-slate-500 dark:text-zinc-500 font-mono truncate bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">
-                                                    {option.code}
-                                                  </span>
-                                                )}
-                                              </div>
-                                            </div>
-
-                                            <div className="hidden sm:flex flex-col items-end gap-0.5 min-w-[120px]">
-                                              {option.phone && (
-                                                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400">
-                                                  <Phone size={12} className="opacity-70" />
-                                                  <span>{option.phone}</span>
-                                                </div>
-                                              )}
-                                              {option.email && (
-                                                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400">
-                                                  <Mail size={12} className="opacity-70" />
-                                                  <span className="max-w-[120px] truncate text-right">{option.email}</span>
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                          <Button
-                            type="button"
-                            onClick={() => setCustomerSelectDialogOpen(true)}
-                            disabled={readOnly}
-                            className="h-11 w-11 p-0 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white shadow-md hover:shadow-lg transition-all border border-zinc-800 active:scale-95 flex items-center justify-center"
-                            title={t('quotation.guide')}
-                          >
-                            <BookUser className="h-5 w-5" />
-                          </Button>
-                        </div>
-                        <FormMessage className="mt-1.5" />
+                          </FormControl>
+                          <SelectContent className={styles.selectContent}>
+                            {availableDocumentSerialTypes.length === 0 ? (
+                              <div className="p-3 text-center text-xs text-muted-foreground">Uygun seri yok</div>
+                            ) : (
+                              availableDocumentSerialTypes
+                                .filter((d) => d.serialPrefix?.trim() !== '')
+                                .map((d) => (
+                                  <SelectItem key={d.id} value={d.id.toString()} className={styles.selectItem}>{d.serialPrefix}</SelectItem>
+                                ))
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="mt-1" />
                       </FormItem>
                     )}
                   />
-                </div>
-
-                {/* Representative */}
+                )}
                 <div>
                   <FormField
                     control={form.control}
-                    name="quotation.representativeId"
+                    name="quotation.projectCode"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
-                          {t('quotation.header.representative')}
+                          <Folder className="h-3.5 w-3.5" />
+                          {t('quotation.header.projectCode')}
                         </FormLabel>
                         <div className="relative">
-                            <div className={styles.iconWrapper}><Briefcase className="h-4 w-4" /></div>
-                            <VoiceSearchCombobox
-                              className={styles.inputBase}
-                              value={field.value?.toString() || ''}
-                              onSelect={(value) => field.onChange(value ? Number(value) : null)}
-                              options={relatedUsers.map((u) => ({
-                               value: u.userId.toString(),
-                               label: [u.firstName, u.lastName].filter(Boolean).join(' ')
-                              }))}
-                              placeholder={t('quotation.select')}
-                              searchPlaceholder={t('common.search')}
-                              disabled={readOnly}
-                            />
+                          <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Folder className="h-4 w-4" /></div>
+                          <VoiceSearchCombobox
+                            className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 [&_*]:pl-8")}
+                            value={field.value || ''}
+                            onSelect={(value) => field.onChange(value)}
+                            options={projects.map((p) => ({
+                              value: p.projeKod,
+                              label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
+                            }))}
+                            placeholder={t('quotation.header.projectCodePlaceholder')}
+                            searchPlaceholder={t('common.search')}
+                            disabled={readOnly}
+                          />
                         </div>
                         <FormMessage className="mt-1.5" />
                       </FormItem>
                     )}
                   />
                 </div>
-
-                {selectedCustomer && (
-                  <div className="animate-in slide-in-from-top-2 fade-in duration-500">
-                    <FormField
-                      control={form.control}
-                      name="quotation.shippingAddressId"
-                      render={({ field }) => (
-                        <FormItem className="space-y-0 relative group">
-                          <FormLabel className={styles.label}>
-                              <Truck className="h-3.5 w-3.5 text-orange-500" />
-                            {t('quotation.header.shippingAddress')}
-                          </FormLabel>
-                          <div className="relative">
-                              <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
-                              <VoiceSearchCombobox
-                                className={cn(styles.inputBase, "bg-orange-50/30 dark:bg-orange-950/10 border-orange-100 dark:border-orange-900/30")}
-                                value={field.value?.toString() || ''}
-                                onSelect={(value) => field.onChange(value ? Number(value) : null)}
-                                options={shippingAddresses.map((address) => ({
-                                  value: address.id.toString(),
-                                  label: address.addressText
-                                }))}
-                                placeholder={t('quotation.header.selectShippingAddress')}
-                                searchPlaceholder={t('common.search')}
-                                disabled={readOnly}
-                              />
-                          </div>
-                          <FormMessage className="mt-1.5" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Section: 2 Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        
-        {/* Left Column: Type & Dates */}
-        <div className={cn(styles.glassCard, "flex flex-col")}>
-            <div className="p-5 flex flex-col h-full">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 rounded-md bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400">
-                  <Globe className="h-4 w-4" />
-                </div>
-                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Tip & Tarihler</h4>
-              </div>
-
-              <div className="space-y-4 flex-1">
-                <div className={cn("grid gap-4", watchedOfferType ? "grid-cols-2" : "grid-cols-1")}>
-                  <FormField
-                    control={form.control}
-                    name="quotation.offerType"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.offerType')}>
-                          {t('common.offerType.label')}
-                        </FormLabel>
-                        <div className="relative">
-                           <div className={styles.iconWrapper}><Layers className="h-4 w-4" /></div>
-                           <VoiceSearchCombobox
-                             className={styles.inputBase}
-                             value={field.value || ''}
-                             onSelect={(value) => field.onChange(value)}
-                             options={[
-                               { value: OfferType.YURTICI, label: t('common.offerType.yurtici') },
-                               { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi') }
-                             ]}
-                             placeholder={t('common.offerType.selectPlaceholder')}
-                             searchPlaceholder={t('common.search')}
-                             disabled={readOnly}
-                           />
-                        </div>
-                        <FormMessage className="mt-1" />
-                      </FormItem>
-                    )}
-                  />
-
-                  {watchedOfferType && (
-                    <FormField
-                      control={form.control}
-                      name="quotation.deliveryMethod"
-                      render={({ field }) => (
-                        <FormItem className="space-y-0 relative group">
-                          <FormLabel className={styles.label}>
-                            Gönderim/Teslim Şekli
-                          </FormLabel>
-                          <div className="relative">
-                            <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
-                            <Select 
-                              disabled={readOnly} 
-                              onValueChange={field.onChange} 
-                              value={field.value || ''}
+                <FormField
+                  control={form.control}
+                  name="quotation.description"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0 relative group w-full min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <FormLabel className={cn(styles.label, "mb-0")}>Notlar</FormLabel>
+                        <span className={cn("text-[10px] transition-colors", (field.value?.length || 0) > 350 ? "text-red-500 font-bold" : "text-zinc-400")}>
+                          {field.value?.length || 0}/400
+                        </span>
+                      </div>
+                      {filledNoteKeys.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-2.5 overflow-hidden">
+                          {filledNoteKeys.map((key, idx) => (
+                            <Badge
+                              key={key}
+                              variant="secondary"
+                              className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 max-w-full h-auto py-1 text-xs border border-purple-200 dark:border-purple-500/20 shadow-sm"
                             >
-                              <FormControl>
-                                <SelectTrigger className={cn(styles.inputBase, "pl-10")}>
-                                  <SelectValue placeholder={t('quotation.select')} />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {salesTypesByOfferType.map((item) => (
-                                  <SelectItem key={item.id} value={String(item.id)}>
-                                    {item.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <FormMessage className="mt-1" />
-                        </FormItem>
+                              <span className="mr-1.5 break-all whitespace-normal">
+                                {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel')} ${idx + 1}`}
+                              </span>
+                              {!readOnly && onQuotationNotesChange && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveNote(key)}
+                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors flex-shrink-0"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
+                            </Badge>
+                          ))}
+                        </div>
                       )}
-                    />
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="quotation.offerDate"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>Teklif T.</FormLabel>
-                        <div className="relative">
-                          <div className={styles.iconWrapper}><Calendar className="h-4 w-4" /></div>
-                          <FormControl>
-                            <Input 
-                              type="date" 
-                              className={cn(styles.inputBase, "text-xs")} 
-                              style={forcePaddingStyle}
-                              {...field}
-                              value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                              onChange={(e) => field.onChange(e.target.value)}
+                      <FormControl>
+                        <div className="relative w-full min-w-0">
+                          <Textarea
+                            {...field}
+                            value={field.value || ''}
+                            maxLength={400}
+                            placeholder={t('quotation.header.descriptionPlaceholder')}
+                            className="min-h-[100px] max-h-[160px] overflow-y-auto w-full break-all whitespace-pre-wrap rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10 shadow-sm"
+                            disabled={readOnly}
+                          />
+                          {onQuotationNotesChange && (
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              className="absolute right-1 top-1 h-7 w-7 flex items-center justify-center text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+                              onClick={() => setNotesDialogOpen(true)}
                               disabled={readOnly}
-                            />
-                          </FormControl>
+                            >
+                              <ListPlus className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
-                        <FormMessage className="mt-1" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="quotation.deliveryDate"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.deliveryDate')}>Teslim T.</FormLabel>
-                        <div className="relative">
-                          <div className={styles.iconWrapper}><Truck className="h-4 w-4" /></div>
-                          <FormControl>
-                            <Input 
-                              type="date" 
-                              className={cn(styles.inputBase, "text-xs")}
-                              style={forcePaddingStyle}
-                              {...field}
-                              value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                              onChange={(e) => field.onChange(e.target.value)}
-                              disabled={readOnly}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage className="mt-1" />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-            </div>
-        </div>
-
-        {/* Right Column: Financial */}
-        <div className={cn(styles.glassCard, "flex flex-col")}>
-            <div className="p-5 flex flex-col h-full">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200 flex items-center gap-2">
-                  <div className="p-1.5 rounded-md bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">
-                    <CreditCard className="h-4 w-4" />
-                  </div>
-                  Finansal
-                </h4>
-                {onExchangeRatesChange && (
-                   <Button
-                     type="button"
-                     variant="ghost"
-                     size="sm"
-                     onClick={() => setExchangeRateDialogOpen(true)}
-                     className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20"
-                   >
-                     <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
-                     Kurlar
-                   </Button>
-                 )}
-              </div>
-
-              <div className="space-y-4 flex-1">
-                <FormField
-                  control={form.control}
-                  name="quotation.currency"
-                  render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.currency')}>Para Birimi</FormLabel>
-                      <div className="relative">
-                        <div className={styles.iconWrapper}><Coins className="h-4 w-4" /></div>
-                        <VoiceSearchCombobox
-                          className={styles.inputBase}
-                          value={field.value ? String(field.value) : ''}
-                          onSelect={(value) => value && handleCurrencyChange(value)}
-                          options={erpRates.map((currency: KurDto) => ({
-                            value: String(currency.dovizTipi),
-                            label: currency.dovizIsmi || `Döviz ${currency.dovizTipi}`
-                          }))}
-                          placeholder={t('quotation.select')}
-                          searchPlaceholder={t('common.search')}
-                          disabled={readOnly}
-                        />
-                      </div>
-                      <FormMessage className="mt-1" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="quotation.paymentTypeId"
-                  render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.paymentTypeId')}>Ödeme Planı</FormLabel>
-                      <div className="relative">
-                         <div className={styles.iconWrapper}><CreditCard className="h-4 w-4" /></div>
-                         <VoiceSearchCombobox
-                           className={styles.inputBase}
-                           value={field.value?.toString() || ''}
-                           onSelect={(value) => field.onChange(value ? Number(value) : null)}
-                           options={paymentTypes.map((pt) => ({
-                             value: pt.id.toString(),
-                             label: pt.name
-                           }))}
-                           placeholder={t('quotation.select')}
-                           searchPlaceholder={t('common.search')}
-                           disabled={readOnly}
-                         />
-                      </div>
+                      </FormControl>
                       <FormMessage className="mt-1" />
                     </FormItem>
                   )}
                 />
               </div>
-            </div>
+           </div>
         </div>
-
       </div>
 
       <CustomerSelectDialog
@@ -937,30 +923,21 @@ export function QuotationHeaderForm({
       )}
 
       <Dialog open={currencyChangeDialogOpen} onOpenChange={setCurrencyChangeDialogOpen}>
-        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 p-0 overflow-hidden shadow-2xl">
-          <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-            <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
-              <div className="bg-linear-to-br from-pink-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
-                <ArrowRightLeft className="h-5 w-5" />
-              </div>
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] rounded-2xl border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-pink-600">
+              <ArrowRightLeft className="h-5 w-5" />
               {t('quotation.header.currencyChange.title')}
             </DialogTitle>
-            <DialogDescription className="pt-2 text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+            <DialogDescription className="pt-2">
               {t('quotation.header.currencyChange.message')}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-3 p-6 bg-slate-50/30 dark:bg-black/20">
-            <Button 
-              variant="outline" 
-              onClick={handleCurrencyChangeCancel} 
-              className="h-11 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 font-medium transition-all"
-            >
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="outline" onClick={handleCurrencyChangeCancel} className="rounded-xl border-zinc-200 dark:border-zinc-800">
               {t('quotation.cancel')}
             </Button>
-            <Button 
-              onClick={handleCurrencyChangeConfirm} 
-              className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 border-0 font-medium transition-all"
-            >
+            <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-pink-600 hover:bg-pink-700 text-white shadow-lg shadow-pink-500/20 transition-all">
               {t('quotation.confirm')}
             </Button>
           </DialogFooter>
