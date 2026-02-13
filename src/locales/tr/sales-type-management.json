@@ -3,6 +3,10 @@
   "description": "Satış tiplerini yönetin ve düzenleyin",
   "addButton": "Yeni Satış Tipi Ekle",
   "searchPlaceholder": "Satış tipi ara...",
+  "advancedFilter": {
+    "columnName": "Ad",
+    "columnSalesType": "Teklif Tipi"
+  },
   "table": {
     "salesType": "Teklif Tipi",
     "name": "Ad",
