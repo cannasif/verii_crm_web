@@ -1,9 +1,9 @@
 import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
-import { Plus, Search, RefreshCw, X, Filter, FileSpreadsheet, FileText, Presentation, CheckSquare, ChevronDown, SlidersHorizontal, Check, Menu } from 'lucide-react';
+import { useAuthStore } from '@/stores/auth-store';
+import { Plus, Filter, FileSpreadsheet, FileText, Presentation, ChevronDown, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useQueryClient } from '@tanstack/react-query';
 import { CustomerTypeStats } from './CustomerTypeStats';
 import { CustomerTypeTable, getColumnsConfig } from './CustomerTypeTable';
@@ -12,7 +12,7 @@ import { useCreateCustomerType } from '../hooks/useCreateCustomerType';
 import { useUpdateCustomerType } from '../hooks/useUpdateCustomerType';
 import { useCustomerTypeList } from '../hooks/useCustomerTypeList';
 import type { CustomerTypeDto, CustomerTypeFormSchema } from '../types/customer-type-types';
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -23,48 +23,45 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { 
-  UserCircleIcon,
-  Note01Icon,
-} from 'hugeicons-react';
+import { PageToolbar, ColumnPreferencesPopover, AdvancedFilter } from '@/components/shared';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { CUSTOMER_TYPE_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
+import { applyCustomerTypeFilters, CUSTOMER_TYPE_FILTER_COLUMNS } from '../types/customer-type-filter.types';
+import type { FilterRow } from '@/lib/advanced-filter-types';
 
 const EMPTY_CUSTOMER_TYPES: CustomerTypeDto[] = [];
 
-interface CustomerTypeFilterState {
-  name: string;
-  description: string;
-}
-
 export function CustomerTypeManagementPage(): ReactElement {
   const { t } = useTranslation();
+  const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
-  
-  // State
+
   const [formOpen, setFormOpen] = useState(false);
   const [editingCustomerType, setEditingCustomerType] = useState<CustomerTypeDto | null>(null);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [pageSize, setPageSize] = useState(10);
   const [showFilters, setShowFilters] = useState(false);
-  const [showColumns, setShowColumns] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const initialFilters: CustomerTypeFilterState = {
-    name: '',
-    description: '',
-  };
-
-  const [draftFilters, setDraftFilters] = useState<CustomerTypeFilterState>(initialFilters);
-  const [appliedFilters, setAppliedFilters] = useState<CustomerTypeFilterState>(initialFilters);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
 
   const queryClient = useQueryClient();
   const createCustomerType = useCreateCustomerType();
   const updateCustomerType = useUpdateCustomerType();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+  const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key), [tableColumns]);
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<Array<keyof CustomerTypeDto>>(
-    tableColumns.map(col => col.key)
+    () => defaultColumnKeys as Array<keyof CustomerTypeDto>
   );
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences('customer-type-management', user?.id, defaultColumnKeys);
+    setVisibleColumns(prefs.visibleKeys as Array<keyof CustomerTypeDto>);
+    setColumnOrder(prefs.order);
+  }, [user?.id, defaultColumnKeys]);
 
   // --- VERİ ÇEKME (CLIENT SIDE FILTERING İÇİN TÜM DATA) ---
   const { data: apiResponse, isLoading } = useCustomerTypeList({
@@ -98,31 +95,20 @@ export function CustomerTypeManagementPage(): ReactElement {
         );
     }
 
-    // 2. Detaylı Filtreler
-    if (appliedFilters.name) {
-      result = result.filter(c => c.name.toLowerCase().includes(appliedFilters.name.toLowerCase()));
-    }
-    if (appliedFilters.description) {
-      result = result.filter(c => c.description?.toLowerCase().includes(appliedFilters.description.toLowerCase()));
-    }
+    result = applyCustomerTypeFilters(result, appliedFilterRows);
 
     return result;
-  }, [customerTypes, searchTerm, appliedFilters]);
+  }, [customerTypes, searchTerm, appliedFilterRows]);
 
-  // Handlers
-  const handleFilterChange = (key: keyof CustomerTypeFilterState, value: string) => {
-    setDraftFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const applyAdvancedFilters = () => {
-    setAppliedFilters(draftFilters);
-    setSearchTerm(''); 
+  const handleAdvancedSearch = () => {
+    setAppliedFilterRows(draftFilterRows);
+    setSearchTerm('');
     setShowFilters(false);
   };
 
-  const clearAdvancedFilters = () => {
-    setDraftFilters(initialFilters);
-    setAppliedFilters(initialFilters);
+  const handleAdvancedClear = () => {
+    setDraftFilterRows([]);
+    setAppliedFilterRows([]);
   };
 
   const handleAddClick = (): void => {
@@ -130,13 +116,18 @@ export function CustomerTypeManagementPage(): ReactElement {
     setFormOpen(true);
   };
 
-  const clearSearch = () => setSearchTerm('');
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await queryClient.invalidateQueries({ queryKey: ['customer-types'] });
-    setTimeout(() => setIsRefreshing(false), 500);
+  const handleRefresh = async (): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: [CUSTOMER_TYPE_MANAGEMENT_QUERY_KEYS.LIST] });
   };
+
+  const hasFiltersActive = appliedFilterRows.some((r) => r.value.trim() !== '');
+
+  const displayedColumnsForExport = useMemo(() => {
+    const orderMap = new Map(columnOrder.map((k, i) => [k, i]));
+    return tableColumns
+      .filter((col) => visibleColumns.includes(col.key))
+      .sort((a, b) => (orderMap.get(a.key) ?? 999) - (orderMap.get(b.key) ?? 999));
+  }, [tableColumns, visibleColumns, columnOrder]);
 
   const handleEdit = (customerType: CustomerTypeDto): void => {
     setEditingCustomerType(customerType);
@@ -162,26 +153,17 @@ export function CustomerTypeManagementPage(): ReactElement {
     setEditingCustomerType(null);
   };
 
-  const toggleColumn = (key: keyof CustomerTypeDto) => {
-    setVisibleColumns(prev => 
-      prev.includes(key) ? prev.filter(c => c !== key) : [...prev, key]
-    );
-  };
-
-  // Export Functions
   const handleExportExcel = async () => {
-    const dataToExport = filteredCustomerTypes.map(item => {
-        const row: Record<string, string | number | boolean | null | undefined> = {};
-        visibleColumns.forEach(key => {
-            const col = tableColumns.find(c => c.key === key);
-            if (col) {
-                const value = item[key];
-                row[col.label] = (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
-                  ? value
-                  : value ?? '';
-            }
-        });
-        return row;
+    const dataToExport = filteredCustomerTypes.map((item) => {
+      const row: Record<string, string | number | boolean | null | undefined> = {};
+      displayedColumnsForExport.forEach((col) => {
+        const value = item[col.key];
+        row[col.label] =
+          typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+            ? value
+            : value ?? '';
+      });
+      return row;
     });
 
     const XLSX = await import('xlsx');
@@ -198,15 +180,10 @@ export function CustomerTypeManagementPage(): ReactElement {
     ]);
     const doc = new JsPDF();
     
-    const tableColumn = tableColumns
-        .filter(col => visibleColumns.includes(col.key))
-        .map(col => col.label);
-
-    const tableRows = filteredCustomerTypes.map(item => {
-        return tableColumns
-            .filter(col => visibleColumns.includes(col.key))
-            .map(col => item[col.key] || '');
-    });
+    const tableColumn = displayedColumnsForExport.map((col) => col.label);
+    const tableRows = filteredCustomerTypes.map((item) =>
+      displayedColumnsForExport.map((col) => item[col.key] ?? '')
+    );
 
     autoTable(doc, {
         head: [tableColumn],
@@ -223,15 +200,10 @@ export function CustomerTypeManagementPage(): ReactElement {
     
     slide.addText("Customer Type Report", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
 
-    const headers = tableColumns
-        .filter(col => visibleColumns.includes(col.key))
-        .map(col => col.label);
-
-    const rows = filteredCustomerTypes.map(item => {
-        return tableColumns
-            .filter(col => visibleColumns.includes(col.key))
-            .map(col => String(item[col.key] || ''));
-    });
+    const headers = displayedColumnsForExport.map((col) => col.label);
+    const rows = filteredCustomerTypes.map((item) =>
+      displayedColumnsForExport.map((col) => String(item[col.key] ?? ''))
+    );
 
     const tableData = [
       headers.map(text => ({ text })),
@@ -270,45 +242,16 @@ export function CustomerTypeManagementPage(): ReactElement {
         <CustomerTypeStats />
       </div>
 
-      {/* TOOLBAR */}
       <div className="flex-1 flex flex-col min-h-0 bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-0 overflow-hidden transition-all duration-300">
-          
           <div className="flex-none p-4 border-b border-white/5 flex flex-col gap-4">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                <div className="relative group w-full sm:w-72 lg:w-96">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
-                  <Input
-                    placeholder={t('common.search')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all w-full"
-                  />
-                  {searchTerm && (
-                    <button
-                      onClick={clearSearch}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full transition-colors"
-                    >
-                      <X size={14} className="text-slate-400" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="h-10 w-10 flex items-center justify-center bg-white/50 dark:bg-card/50 border border-slate-200 dark:border-white/10 rounded-xl cursor-pointer hover:border-pink-500/30 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all group shrink-0"
-                    onClick={handleRefresh}
-                  >
-                    <RefreshCw 
-                      size={18} 
-                      className={`text-slate-500 dark:text-slate-400 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors ${isRefreshing ? 'animate-spin' : ''}`} 
-                    />
-                  </div>
-                </div>
-            </div>
-
-            <div className="flex items-center gap-2">
+              <PageToolbar
+                searchPlaceholder={t('common.search')}
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                onRefresh={handleRefresh}
+                rightSlot={
+                  <div className="flex items-center gap-2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button 
@@ -331,136 +274,44 @@ export function CustomerTypeManagementPage(): ReactElement {
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Popover open={showFilters} onOpenChange={setShowFilters}>
-                <PopoverTrigger asChild>
-                    <button 
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showFilters ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
-                    >
-                        <Filter size={16} />
-                        <span className="font-medium text-sm">{t('common.filters')}</span>
-                    </button>
-                </PopoverTrigger>
-                <PopoverContent side="bottom" align="end" className="w-96 p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
-                    
-                    {/* Header */}
-                    <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                      <h3 className="text-sm font-semibold text-gray-200">{t('common.filters')}</h3>
-                      <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-white transition-colors">
-                        <X size={16} />
-                      </button>
-                    </div>
-
-                    {/* Scrollable Content */}
-                    <div className="p-3 overflow-y-auto custom-scrollbar max-h-[400px]">
-                        <div className="grid grid-cols-2 gap-3">
-                            
-                            {/* Name - Col Span 2 */}
-                            <div className="col-span-2">
-                                <div className="relative group">
-                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
-                                        <UserCircleIcon size={14} />
-                                    </div>
-                                    <Input 
-                                        placeholder={t('customerTypeManagement.table.name')}
-                                        value={draftFilters.name}
-                                        onChange={(e) => handleFilterChange('name', e.target.value)}
-                                        className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Description - Col Span 2 */}
-                            <div className="col-span-2">
-                                <div className="relative group">
-                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
-                                        <Note01Icon size={14} />
-                                    </div>
-                                    <Input 
-                                        placeholder={t('customerTypeManagement.table.description')}
-                                        value={draftFilters.description}
-                                        onChange={(e) => handleFilterChange('description', e.target.value)}
-                                        className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="flex items-center justify-end gap-2 p-3 border-t border-white/5 bg-[#151025]">
-                      <Button 
-                        onClick={clearAdvancedFilters}
-                        variant="ghost" 
-                        size="sm"
-                        className="h-8 text-xs text-red-400 hover:text-red-300 hover:bg-red-400/10"
-                      >
-                        {t('common.clear')}
-                      </Button>
-                      <Button 
-                        onClick={applyAdvancedFilters}
-                        size="sm"
-                        className="h-8 px-4 text-xs bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:from-pink-500 hover:to-orange-500"
-                      >
-                        {t('common.apply')}
-                      </Button>
-                    </div>
+                    <Popover open={showFilters} onOpenChange={setShowFilters}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={hasFiltersActive ? 'default' : 'outline'}
+                          size="sm"
+                          className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
+                            hasFiltersActive
+                              ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
+                              : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          <Filter className="mr-2 h-4 w-4" />
+                          {t('common.filters')}
+                        </Button>
+                      </PopoverTrigger>
+                <PopoverContent side="bottom" align="end" className="w-[420px] p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+                  <AdvancedFilter
+                    columns={CUSTOMER_TYPE_FILTER_COLUMNS}
+                    defaultColumn="name"
+                    draftRows={draftFilterRows}
+                    onDraftRowsChange={setDraftFilterRows}
+                    onSearch={handleAdvancedSearch}
+                    onClear={handleAdvancedClear}
+                    translationNamespace="customerTypeManagement"
+                    embedded
+                  />
                 </PopoverContent>
-                </Popover>
-
-                <Popover open={showColumns} onOpenChange={setShowColumns}>
-                  <PopoverTrigger asChild>
-                    <button 
-                      onClick={() => setShowColumns(!showColumns)} 
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 ${showColumns ? 'bg-white/10 text-white border-white/20' : 'bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white'}`}
-                    >
-                      <SlidersHorizontal size={16} />
-                      <span className="font-medium text-sm">{t('contactManagement.columns')}</span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                      <h3 className="text-sm font-semibold text-gray-200">{t('contactManagement.visibleColumns')}</h3>
-                      <button onClick={() => setShowColumns(false)} className="text-gray-500 hover:text-white transition-colors">
-                        <X size={16} />
-                      </button>
-                    </div>
-                    <div className="p-3 max-h-[300px] overflow-y-auto custom-scrollbar bg-[#151025]">
-                      <div className="grid grid-cols-2 gap-2">
-                        {tableColumns.map((col) => (
-                          <label 
-                            key={col.key} 
-                            className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-all border border-transparent ${visibleColumns.includes(col.key) ? 'bg-pink-500/10 border-pink-500/20' : 'hover:bg-white/5'}`}
-                            onClick={(e) => { e.stopPropagation(); toggleColumn(col.key); }}
-                          >
-                            <div className={`w-4 h-4 rounded flex items-center justify-center transition-colors border ${visibleColumns.includes(col.key) ? 'bg-pink-500 border-pink-500' : 'bg-transparent border-gray-600'}`}>
-                              {visibleColumns.includes(col.key) && <Check size={10} className="text-white" />}
-                            </div>
-                            <span className={`text-xs font-medium ${visibleColumns.includes(col.key) ? 'text-white' : 'text-gray-400'} truncate`}>
-                              {col.label}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="p-3 border-t border-white/5 bg-[#0b0818]/50 flex justify-between items-center gap-3">
-                      <button 
-                        onClick={() => setVisibleColumns(tableColumns.map(c => c.key))}
-                        className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-white transition-colors px-1"
-                      >
-                        <CheckSquare size={14} />
-                        <span>{t('common.selectAll')}</span>
-                      </button>
-                      <button 
-                        onClick={() => setShowColumns(false)}
-                        className="bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2 px-6 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
-                      >
-                        TAMAM
-                      </button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-
-                <DropdownMenu>
+                    </Popover>
+                    <ColumnPreferencesPopover
+                      pageKey="customer-type-management"
+                      userId={user?.id}
+                      columns={tableColumns.map((c) => ({ key: c.key, label: c.label }))}
+                      visibleColumns={visibleColumns.map(String)}
+                      columnOrder={columnOrder}
+                      onVisibleColumnsChange={(next) => setVisibleColumns(next as Array<keyof CustomerTypeDto>)}
+                      onColumnOrderChange={setColumnOrder}
+                    />
+                    <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
                       <Menu size={18} className="text-slate-500 dark:text-slate-400" />
@@ -491,21 +342,30 @@ export function CustomerTypeManagementPage(): ReactElement {
                       </button>
                     </div>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                    </DropdownMenu>
+                  </div>
+                }
+              />
             </div>
           </div>
-        </div>
 
-        {/* TABLO */}
-        <div className="flex-1 overflow-auto px-4 pb-4">
-          <CustomerTypeTable
-            customerTypes={filteredCustomerTypes}
-            isLoading={isLoading}
-            onEdit={handleEdit}
-            visibleColumns={visibleColumns}
-          />
+          <div className="flex-1 overflow-auto px-4 pb-4">
+            <CustomerTypeTable
+              customerTypes={filteredCustomerTypes}
+              isLoading={isLoading}
+              onEdit={handleEdit}
+              visibleColumns={visibleColumns}
+              columnOrder={columnOrder}
+              onColumnOrderChange={(next) => {
+                setColumnOrder(next);
+                saveColumnPreferences('customer-type-management', user?.id, {
+                  order: next,
+                  visibleKeys: visibleColumns.map(String),
+                });
+              }}
+            />
+          </div>
         </div>
-      </div>
 
       <CustomerTypeForm
         open={formOpen}

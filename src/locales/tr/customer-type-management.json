@@ -7,6 +7,10 @@
   "actions": "İşlemler",
   "previous": "Önceki",
   "next": "Sonraki",
+  "advancedFilter": {
+    "columnName": "Müşteri Tipi Adı",
+    "columnDescription": "Açıklama"
+  },
   "stats": {
     "totalCustomerTypes": "Toplam Müşteri Tipi",
     "activeCustomerTypes": "Aktif Müşteri Tipi",

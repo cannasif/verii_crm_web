@@ -7,6 +7,10 @@
   "actions": "Actions",
   "previous": "Previous",
   "next": "Next",
+  "advancedFilter": {
+    "columnName": "Customer Type Name",
+    "columnDescription": "Description"
+  },
   "stats": {
     "totalCustomerTypes": "Total Customer Types",
     "activeCustomerTypes": "Active Customer Types",
