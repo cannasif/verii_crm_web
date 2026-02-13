@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/form';
 import { titleFormSchema, type TitleFormSchema } from '../types/title-types';
 import type { TitleDto } from '../types/title-types';
-import { Users } from 'lucide-react';
+import { Users, X } from 'lucide-react';
 
 interface TitleFormProps {
   open: boolean;
@@ -33,8 +33,8 @@ interface TitleFormProps {
 }
 
 const INPUT_STYLE = `
-  h-11 rounded-xl
-  bg-slate-50 dark:bg-[#0c0516] 
+  h-12 rounded-xl
+  bg-slate-50 dark:bg-[#0f0a18] 
   border border-slate-200 dark:border-white/10 
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-600 
@@ -45,7 +45,7 @@ const INPUT_STYLE = `
   focus:border-pink-500 
   focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)] 
 
-  dark:focus:bg-[#0c0516] 
+  dark:focus:bg-[#0f0a18] 
   dark:focus:border-pink-500/60 
   dark:focus:shadow-[0_0_0_3px_rgba(236,72,153,0.1)]
 
@@ -95,37 +95,47 @@ export function TitleForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-lg shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl max-h-[90vh] h-auto flex flex-col gap-0 p-0 overflow-hidden transition-colors duration-300">
-        <DialogHeader className="border-b border-slate-100 dark:border-white/5 px-6 py-5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md shrink-0 flex-row items-center justify-between space-y-0">
+      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl transition-all duration-200">
+        <DialogHeader className="sticky top-0 z-10 px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm flex-row items-center justify-between space-y-0">
           <div className="flex items-center gap-3">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                  <Users size={24} className="text-pink-600 dark:text-pink-500" />
+             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
+                  <Users size={20} className="text-pink-600 dark:text-pink-500" />
                 </div>
               </div>
              <div>
-                <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
+                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
                   {title
                     ? t('titleManagement.form.editTitle')
                     : t('titleManagement.form.addTitle')}
                 </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
+                <DialogDescription className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">
                   {title
                     ? t('titleManagement.form.editDescription')
                     : t('titleManagement.form.addDescription')}
                 </DialogDescription>
              </div>
           </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onOpenChange(false)}
+            className="h-8 w-8 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+          >
+            <X size={20} />
+            <span className="sr-only">Close</span>
+          </Button>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar bg-white dark:bg-[#130822]">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="titleName"
                 render={({ field }) => (
-                  <FormItem className="space-y-0">
+                  <FormItem className="space-y-1">
                     <FormLabel className={LABEL_STYLE}>
                       {t('titleManagement.form.titleName')} *
                     </FormLabel>
@@ -146,7 +156,7 @@ export function TitleForm({
                 control={form.control}
                 name="code"
                 render={({ field }) => (
-                  <FormItem className="space-y-0">
+                  <FormItem className="space-y-1">
                     <FormLabel className={LABEL_STYLE}>
                       {t('titleManagement.form.code')}
                     </FormLabel>
@@ -167,21 +177,21 @@ export function TitleForm({
           </Form>
         </div>
 
-        <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-6 py-5 bg-slate-50/50 dark:bg-[#130822] sm:justify-between sm:space-x-0">
-          <div className="flex items-center gap-2 w-full justify-end">
+        <DialogFooter className="sticky bottom-0 z-10 px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm sm:justify-between sm:space-x-0">
+          <div className="flex items-center gap-3 w-full justify-end">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
-              className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl"
+              className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl transition-colors"
             >
               {t('titleManagement.form.cancel')}
             </Button>
             <Button 
               onClick={form.handleSubmit(handleSubmit)}
               disabled={isLoading}
-              className="bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
+              className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               {isLoading
                 ? t('titleManagement.saving')

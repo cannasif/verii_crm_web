@@ -40,7 +40,7 @@
   },
   "delete": {
     "confirmTitle": "Ünvanı Sil",
-    "confirmMessage": "{{name}} ünvanını silmek istediğinizden emin misiniz?",
+    "confirmMessage": "{{titleName}} ünvanını silmek istediğinizden emin misiniz?",
     "button": "Sil"
   }
 }
