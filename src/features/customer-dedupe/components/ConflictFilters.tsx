@@ -10,7 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 export const MATCH_TYPE_ALL = '';
-const MATCH_TYPE_ALL_SELECT_VALUE = '__all__';
+export const MATCH_TYPE_ALL_SELECT_VALUE = '__all__';
 export const MATCH_TYPES = ['TaxNumber', 'TcknNumber', 'CustomerCode'] as const;
 export const MIN_SCORE_OPTIONS = [0.7, 0.8, 0.9, 0.95] as const;
 

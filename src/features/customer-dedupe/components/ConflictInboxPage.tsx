@@ -1,14 +1,28 @@
-import { type ReactElement, useState, useMemo } from 'react';
+import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ConflictFilters, type ConflictFiltersState } from './ConflictFilters';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ConflictInboxTable } from './ConflictInboxTable';
 import { useDuplicateCandidatesQuery } from '../hooks/useDuplicateCandidatesQuery';
+import { CANDIDATES_QUERY_KEY } from '../hooks/useDuplicateCandidatesQuery';
 import { useUIStore } from '@/stores/ui-store';
-import { useEffect } from 'react';
+import { PageToolbar } from '@/components/shared';
+import { Filter } from 'lucide-react';
+import { MATCH_TYPE_ALL, MATCH_TYPE_ALL_SELECT_VALUE, MATCH_TYPES, MIN_SCORE_OPTIONS, type ConflictFiltersState } from './ConflictFilters';
 
 const DEFAULT_FILTERS: ConflictFiltersState = {
   search: '',
@@ -19,6 +33,7 @@ const DEFAULT_FILTERS: ConflictFiltersState = {
 export function ConflictInboxPage(): ReactElement {
   const { t } = useTranslation(['customerDedupe', 'common']);
   const { setPageTitle } = useUIStore();
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState<ConflictFiltersState>(DEFAULT_FILTERS);
 
   const { data: candidates = [], isLoading, isError, refetch } = useDuplicateCandidatesQuery();
@@ -27,6 +42,12 @@ export function ConflictInboxPage(): ReactElement {
     setPageTitle(t('customerDedupe:title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
+
+  const handleRefresh = async (): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY });
+  };
+
+  const hasFiltersActive = filters.matchType !== MATCH_TYPE_ALL || filters.minScore !== 0.7;
 
   const isEmpty = useMemo(() => !isLoading && !isError && candidates.length === 0, [isLoading, isError, candidates.length]);
 
@@ -37,18 +58,75 @@ export function ConflictInboxPage(): ReactElement {
           <h1 className="text-2xl font-semibold tracking-tight">{t('customerDedupe:title')}</h1>
           <p className="text-muted-foreground">{t('customerDedupe:subtitle')}</p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => void refetch()}
-          disabled={isLoading}
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-          {t('customerDedupe:refresh')}
-        </Button>
       </div>
 
-      <ConflictFilters value={filters} onChange={setFilters} />
+      <div className="flex flex-col gap-4">
+        <PageToolbar
+          searchPlaceholder={t('customerDedupe:searchPlaceholder')}
+          searchValue={filters.search}
+          onSearchChange={(v) => setFilters((prev) => ({ ...prev, search: v }))}
+          onRefresh={handleRefresh}
+          rightSlot={
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={hasFiltersActive ? 'default' : 'outline'}
+                  size="sm"
+                  className={`h-10 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
+                    hasFiltersActive
+                      ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
+                      : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
+                  }`}
+                >
+                  <Filter className="mr-2 h-4 w-4" />
+                  {t('common:filters')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-72 p-4">
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-slate-600 dark:text-slate-400">{t('customerDedupe:matchType')}</label>
+                    <Select
+                      value={filters.matchType || MATCH_TYPE_ALL_SELECT_VALUE}
+                      onValueChange={(v) => setFilters((prev) => ({ ...prev, matchType: v === MATCH_TYPE_ALL_SELECT_VALUE ? MATCH_TYPE_ALL : v }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('customerDedupe:matchType')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={MATCH_TYPE_ALL_SELECT_VALUE}>{t('customerDedupe:all')}</SelectItem>
+                        {MATCH_TYPES.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {t(`customerDedupe:${type}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-slate-600 dark:text-slate-400">{t('customerDedupe:minScore')}</label>
+                    <Select
+                      value={String(filters.minScore)}
+                      onValueChange={(v) => setFilters((prev) => ({ ...prev, minScore: Number(v) }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('customerDedupe:minScore')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MIN_SCORE_OPTIONS.map((score) => (
+                          <SelectItem key={score} value={String(score)}>
+                            {(score * 100).toFixed(0)}%
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          }
+        />
+      </div>
 
       {isLoading && (
         <Card>
@@ -93,7 +171,7 @@ export function ConflictInboxPage(): ReactElement {
         <ConflictInboxTable
           candidates={candidates}
           filters={filters}
-          onMergeSuccess={() => void refetch()}
+          onMergeSuccess={() => void queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY })}
         />
       )}
     </div>
