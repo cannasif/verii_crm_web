@@ -2,8 +2,8 @@ import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Plus, Search, RefreshCw, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { PageToolbar } from '@/components/shared';
 import { ApprovalFlowTable } from './ApprovalFlowTable';
 import { ApprovalFlowForm } from './ApprovalFlowForm';
 import { useCreateApprovalFlow } from '../hooks/useCreateApprovalFlow';
@@ -25,7 +25,6 @@ export function ApprovalFlowManagementPage(): ReactElement {
   // Client-side filtering state
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const createApprovalFlow = useCreateApprovalFlow();
   const updateApprovalFlow = useUpdateApprovalFlow();
@@ -102,14 +101,8 @@ export function ApprovalFlowManagementPage(): ReactElement {
     setEditingApprovalFlow(null);
   };
 
-  const clearSearch = () => {
-    setSearchTerm('');
-  };
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
+  const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.list({ pageNumber: 1, pageSize: 10000 }) });
-    setTimeout(() => setIsRefreshing(false), 500);
   };
 
   return (
@@ -133,38 +126,14 @@ export function ApprovalFlowManagementPage(): ReactElement {
       </div>
 
       <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300">
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <div className="relative group w-full md:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
-            <Input
-              placeholder={t('common.search')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl transition-all"
-            />
-            {searchTerm && (
-              <button
-                onClick={clearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full transition-colors"
-              >
-                <X size={14} className="text-slate-400" />
-              </button>
-            )}
-          </div>
-          
-          <div 
-            className="h-10 w-10 flex items-center justify-center bg-white/50 dark:bg-card/50 border border-slate-200 dark:border-white/10 rounded-xl cursor-pointer hover:border-pink-500/30 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all group"
-            onClick={handleRefresh}
-          >
-            <RefreshCw 
-              size={18} 
-              className={`text-slate-500 dark:text-slate-400 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors ${isRefreshing ? 'animate-spin' : ''}`} 
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
-           {['all', 'active', 'inactive'].map((filter) => (
+        <PageToolbar
+          searchPlaceholder={t('common.search')}
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          onRefresh={handleRefresh}
+          rightSlot={
+            <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
+              {['all', 'active', 'inactive'].map((filter) => (
              <Button
                key={filter}
                variant="ghost"
@@ -178,8 +147,10 @@ export function ApprovalFlowManagementPage(): ReactElement {
              >
                {filter === 'all' ? t('common.all') : filter === 'active' ? t('approvalFlow.active') : t('approvalFlow.inactive')}
              </Button>
-           ))}
-        </div>
+              ))}
+            </div>
+          }
+        />
       </div>
 
       <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-6 transition-all duration-300">
