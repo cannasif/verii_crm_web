@@ -66,6 +66,8 @@ interface PaymentTypeTableProps {
   onEdit: (paymentType: PaymentTypeDto) => void;
   visibleColumns: Array<keyof PaymentTypeDto | 'status'>;
   pageSize: number;
+  columnOrder?: string[];
+  onColumnOrderChange?: (order: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<PaymentTypeDto>[] => [
@@ -128,33 +130,35 @@ export function PaymentTypeTable({
   onEdit,
   visibleColumns,
   pageSize,
+  columnOrder: externalColumnOrder,
+  onColumnOrderChange,
 }: PaymentTypeTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedPaymentType, setSelectedPaymentType] = useState<PaymentTypeDto | null>(null);
   const deletePaymentType = useDeletePaymentType();
-  
+
   const [currentPage, setCurrentPage] = useState(1);
 
   const [sortConfig, setSortConfig] = useState<{ key: keyof PaymentTypeDto | 'status'; direction: 'asc' | 'desc' } | null>(null);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  
-  const [columnOrder, setColumnOrder] = useState<string[]>(tableColumns.map(c => c.key));
+
+  const [internalColumnOrder, setInternalColumnOrder] = useState<string[]>([]);
 
   useEffect(() => {
-    setColumnOrder((prevOrder) => {
-      const newKeys = tableColumns.map(c => c.key);
-      const existingKeys = prevOrder.filter(key => newKeys.includes(key as any));
-      const addedKeys = newKeys.filter(key => !prevOrder.includes(key));
-      return [...existingKeys, ...addedKeys];
-    });
-  }, [tableColumns]);
+    if (externalColumnOrder) return;
+    if (tableColumns.length > 0 && internalColumnOrder.length === 0) {
+      setInternalColumnOrder(tableColumns.map((c) => c.key as string));
+    }
+  }, [tableColumns, internalColumnOrder.length, externalColumnOrder]);
+
+  const columnOrder = externalColumnOrder ?? internalColumnOrder;
 
   const orderedColumns = useMemo(() => {
     return columnOrder
-      .filter(key => visibleColumns.includes(key as any))
-      .map(key => tableColumns.find(col => col.key === key))
+      .filter((key) => visibleColumns.includes(key as keyof PaymentTypeDto | 'status'))
+      .map((key) => tableColumns.find((col) => col.key === key))
       .filter((col): col is ColumnDef<PaymentTypeDto> => !!col);
   }, [columnOrder, visibleColumns, tableColumns]);
 
@@ -169,11 +173,16 @@ export function PaymentTypeTable({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setColumnOrder((items) => {
+      const reorder = (items: string[]) => {
         const oldIndex = items.indexOf(active.id as string);
         const newIndex = items.indexOf(over.id as string);
         return arrayMove(items, oldIndex, newIndex);
-      });
+      };
+      if (onColumnOrderChange) {
+        onColumnOrderChange(reorder([...columnOrder]));
+      } else {
+        setInternalColumnOrder((items) => reorder(items));
+      }
     }
   };
 

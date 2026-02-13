@@ -19,6 +19,10 @@
   "loading": "Yükleniyor...",
   "previous": "Önceki",
   "next": "Sonraki",
+  "advancedFilter": {
+    "columnName": "Ad",
+    "columnDescription": "Açıklama"
+  },
   "cancel": "İptal",
   "save": "Kaydet",
   "saving": "Kaydediliyor...",

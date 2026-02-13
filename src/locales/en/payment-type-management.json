@@ -19,6 +19,10 @@
   "loading": "Loading...",
   "previous": "Previous",
   "next": "Next",
+  "advancedFilter": {
+    "columnName": "Name",
+    "columnDescription": "Description"
+  },
   "cancel": "Cancel",
   "save": "Save",
   "saving": "Saving...",
