@@ -58,6 +58,8 @@ export function QuotationCreateForm(): ReactElement {
 
   const form = useForm<CreateQuotationSchema>({
     resolver: zodResolver(createQuotationSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       quotation: {
         offerType: DEFAULT_OFFER_TYPE,
@@ -69,6 +71,7 @@ export function QuotationCreateForm(): ReactElement {
       },
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const watchedCurrency = Number(form.watch('quotation.currency') ?? '2');
   const watchedCustomerId = form.watch('quotation.potentialCustomerId');
@@ -509,7 +512,7 @@ export function QuotationCreateForm(): ReactElement {
 
             <Button
               type="submit"
-              disabled={createMutation.isPending}
+              disabled={createMutation.isPending || !isFormValid}
               className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
             >
               <Save className="mr-2 h-4 w-4" />

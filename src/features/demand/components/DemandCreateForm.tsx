@@ -51,6 +51,8 @@ export function DemandCreateForm(): ReactElement {
 
   const form = useForm<CreateDemandSchema>({
     resolver: zodResolver(createDemandSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       demand: {
         offerType: DEFAULT_OFFER_TYPE,
@@ -62,6 +64,7 @@ export function DemandCreateForm(): ReactElement {
       },
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const watchedCurrency = Number(form.watch('demand.currency') ?? '2');
   const watchedCustomerId = form.watch('demand.potentialCustomerId');
@@ -423,7 +426,7 @@ export function DemandCreateForm(): ReactElement {
             </Button>
             <Button
               type="submit"
-              disabled={createMutation.isPending}
+              disabled={createMutation.isPending || !isFormValid}
               className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
             >
               <Save className="mr-2 h-4 w-4" />

@@ -74,6 +74,8 @@ export function PricingRuleLineForm({
 
   const form = useForm({
     resolver: zodResolver(pricingRuleLineSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       ...line,
       minQuantity: line.minQuantity ?? 0,
@@ -86,6 +88,7 @@ export function PricingRuleLineForm({
       discountAmount3: line.discountAmount3 ?? 0,
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const watchedFixedUnitPrice = form.watch('fixedUnitPrice');
   const watchedMinQuantity = form.watch('minQuantity');
@@ -417,7 +420,7 @@ export function PricingRuleLineForm({
           </Button>
           <Button 
             type="submit"
-            disabled={!form.watch('stokCode') || form.watch('stokCode').trim() === ''}
+            disabled={!isFormValid}
             className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-orange-600 text-white font-bold border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"
           >
             {t('pricingRule.form.save')}

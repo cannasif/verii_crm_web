@@ -54,6 +54,8 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
 
   const form = useForm<PricingRuleFormSchema>({
     resolver: zodResolver(pricingRuleHeaderSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       ruleType: PricingRuleType.Quotation,
       ruleCode: '',
@@ -69,6 +71,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
       salesmen: [],
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const watchedLines = form.watch('lines');
   const watchedSalesmen = form.watch('salesmen');
@@ -340,7 +343,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
               <Button
                 type="submit"
                 className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white shadow-lg shadow-pink-500/20 border-0"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isFormValid}
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('pricingRule.form.save')}

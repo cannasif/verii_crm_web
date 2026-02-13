@@ -50,6 +50,8 @@ export function OrderCreateForm(): ReactElement {
 
   const form = useForm<CreateOrderSchema>({
     resolver: zodResolver(createOrderSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       order: {
         offerType: DEFAULT_OFFER_TYPE,
@@ -61,6 +63,7 @@ export function OrderCreateForm(): ReactElement {
       },
     },
   });
+  const isFormValid = form.formState.isValid;
 
   const watchedCurrency = Number(form.watch('order.currency') ?? '2');
   const watchedCustomerId = form.watch('order.potentialCustomerId');
@@ -420,7 +423,7 @@ export function OrderCreateForm(): ReactElement {
             </Button>
             <Button
               type="submit"
-              disabled={createMutation.isPending}
+              disabled={createMutation.isPending || !isFormValid}
               className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
             >
               <Save className="mr-2 h-4 w-4" />
