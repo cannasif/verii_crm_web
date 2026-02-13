@@ -2,13 +2,8 @@ import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Plus, 
-  Search, 
-  RefreshCw, 
-  X
-} from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { PageToolbar } from '@/components/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { pricingRuleQueryKeys } from '../utils/query-keys';
 import { PricingRuleTable } from './PricingRuleTable';
@@ -27,7 +22,6 @@ export function PricingRuleManagementPage(): ReactElement {
   
   // Client-side filtering state
   const [activeFilter, setActiveFilter] = useState('all');
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   
   const queryClient = useQueryClient();
@@ -98,10 +92,8 @@ export function PricingRuleManagementPage(): ReactElement {
     setEditingHeader(null);
   };
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
+  const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: pricingRuleQueryKeys.headerList({ pageNumber: 1, pageSize: 10000 }) });
-    setTimeout(() => setIsRefreshing(false), 500);
   };
 
   return (
@@ -127,40 +119,12 @@ export function PricingRuleManagementPage(): ReactElement {
       </div>
 
       <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 flex flex-col gap-5 transition-all duration-300">
-        
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                <div className="relative group w-full sm:w-72 lg:w-96">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
-                    <Input
-                        placeholder={t('common.search')}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all w-full"
-                    />
-                    {searchTerm && (
-                        <button
-                            onClick={() => setSearchTerm('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full transition-colors"
-                        >
-                            <X size={14} className="text-slate-400" />
-                        </button>
-                    )}
-                </div>
-
-                <div className="flex items-center gap-3">
-                    <div 
-                        className="h-10 w-10 flex items-center justify-center bg-white/50 dark:bg-card/50 border border-slate-200 dark:border-white/10 rounded-xl cursor-pointer hover:border-pink-500/30 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all group shrink-0"
-                        onClick={handleRefresh}
-                    >
-                        <RefreshCw 
-                            size={18} 
-                            className={`text-slate-500 dark:text-slate-400 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors ${isRefreshing ? 'animate-spin' : ''}`} 
-                        />
-                    </div>
-                </div>
-            </div>
-
+        <PageToolbar
+          searchPlaceholder={t('common.search')}
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          onRefresh={handleRefresh}
+          rightSlot={
             <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl w-full lg:w-auto overflow-x-auto">
                 {['all', 'active', 'inactive'].map((filter) => (
                     <button
@@ -177,7 +141,8 @@ export function PricingRuleManagementPage(): ReactElement {
                     </button>
                 ))}
             </div>
-        </div>
+          }
+        />
       </div>
 
       <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-0 sm:p-1 transition-all duration-300 overflow-hidden">
