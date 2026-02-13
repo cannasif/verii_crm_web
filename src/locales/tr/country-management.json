@@ -29,6 +29,11 @@
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "page": "Sayfa {{current}} / {{total}}"
   },
+  "advancedFilter": {
+    "columnName": "Ülke Adı",
+    "columnCode": "Ülke Kodu",
+    "columnErpCode": "ERP Kodu"
+  },
   "form": {
     "addCountry": "Yeni Ülke Ekle",
     "editCountry": "Ülke Düzenle",
