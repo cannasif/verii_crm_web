@@ -192,7 +192,7 @@ export function ApprovalUserRoleForm({
             <Button 
               onClick={form.handleSubmit(handleSubmit)}
               disabled={isLoading || !isFormValid}
-              className="bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
+              className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105"
             >
               {isLoading
                 ? t('approvalUserRole.form.saving')

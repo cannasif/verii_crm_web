@@ -500,7 +500,7 @@ export function DocumentSerialTypeForm({
               <Button 
                 type="submit" 
                 disabled={isLoading || !isFormValid}
-                className="h-11 px-8 bg-gradient-to-r from-pink-600 to-orange-600 text-white font-semibold shadow-lg shadow-pink-500/20 hover:scale-[1.02] transition-transform"
+                className="h-11 px-8 bg-linear-to-r from-pink-600 to-orange-600 text-white font-semibold shadow-lg shadow-pink-500/20 hover:scale-[1.02] transition-transform"
               >
                 {isLoading
                   ? t('documentSerialTypeManagement.saving')

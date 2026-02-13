@@ -214,7 +214,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
           <Button 
             onClick={handleAddClick} 
             size="sm"
-            className="px-4 py-2 bg-gradient-to-r from-pink-600 to-orange-600 rounded-lg text-white text-xs font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
+            className="px-4 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-xs font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             {t('approvalFlowStep.addButton')}
@@ -351,7 +351,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                   <Button
                     type="submit"
                     disabled={createStep.isPending || updateStep.isPending || !isFormValid}
-                    className="h-10 px-6 rounded-lg bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-medium shadow-lg shadow-pink-500/20 border-0"
+                    className="h-10 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-medium shadow-lg shadow-pink-500/20 border-0"
                   >
                     {createStep.isPending || updateStep.isPending
                       ? t('approvalFlowStep.form.saving')

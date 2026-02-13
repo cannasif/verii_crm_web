@@ -157,7 +157,6 @@ export function PaymentTypeManagementPage(): ReactElement {
       displayedColumnsForExport.map((col) => item[col.key as keyof PaymentTypeDto] ?? '')
     );
 
-    // @ts-expect-error jspdf-autotable typing mismatch
     autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
