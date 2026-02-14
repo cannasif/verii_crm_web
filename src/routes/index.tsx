@@ -81,6 +81,9 @@ const UserGroupAssignmentsPage = lazyImport(() => import('@/features/access-cont
 const HangfireMonitoringPage = lazyImport(() => import('@/features/hangfire-monitoring'), 'HangfireMonitoringPage');
 const ProfilePage = lazyImport(() => import('@/features/user-detail-management'), 'ProfilePage');
 
+const routerBase =
+  (import.meta.env.BASE_URL || '/').replace(/\/$/, '') || '/';
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -172,4 +175,6 @@ export const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [{ index: true, element: <ResetPasswordPage /> }],
   },
-]);
+], {
+  basename: routerBase,
+});

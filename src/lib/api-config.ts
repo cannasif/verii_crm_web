@@ -22,13 +22,19 @@ function normalizeBaseUrl(url: string): string {
 
 let cachedApiUrl = normalizeBaseUrl(DEFAULT_API_BASE_URL);
 let configPromise: Promise<string> | null = null;
+const runtimeBasePath = import.meta.env.BASE_URL || '/';
+
+function toBaseRelativePath(fileName: string): string {
+  const normalizedBase = runtimeBasePath.endsWith('/') ? runtimeBasePath : `${runtimeBasePath}/`;
+  return `${normalizedBase}${fileName}`;
+}
 
 async function fetchRuntimeConfig(): Promise<string> {
   const envUrl = import.meta.env.VITE_API_URL;
   if (isValidApiUrl(envUrl)) return normalizeBaseUrl(envUrl);
 
   try {
-    const response = await fetch('/config.json', {
+    const response = await fetch(toBaseRelativePath('config.json'), {
       cache: import.meta.env.PROD ? 'no-cache' : 'default',
     });
     if (!response.ok) return DEFAULT_API_BASE_URL;
