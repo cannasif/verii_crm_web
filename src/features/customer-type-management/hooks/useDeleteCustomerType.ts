@@ -18,6 +18,7 @@ export const useDeleteCustomerType = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.options() });
       toast.success(t('customerTypeManagement.messages.deleteSuccess'));
     },
     onError: (error: Error) => {

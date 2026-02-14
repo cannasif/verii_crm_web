@@ -20,6 +20,7 @@ export const useCreateCustomerType = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.options() });
       toast.success(t('customerTypeManagement.messages.createSuccess'));
     },
     onError: (error: Error) => {

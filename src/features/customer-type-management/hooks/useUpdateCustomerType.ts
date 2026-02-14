@@ -21,6 +21,7 @@ export const useUpdateCustomerType = () => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedCustomerType.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.options() });
       toast.success(t('customerTypeManagement.messages.updateSuccess'));
     },
     onError: (error: Error) => {

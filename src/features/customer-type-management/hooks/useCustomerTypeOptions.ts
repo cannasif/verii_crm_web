@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { customerTypeApi } from '../api/customer-type-api';
+import { queryKeys } from '../utils/query-keys';
 import type { CustomerTypeDto } from '../types/customer-type-types';
 
 export const useCustomerTypeOptions = () => {
   return useQuery({
-    queryKey: ['customerTypeOptions'],
+    queryKey: queryKeys.options(),
     queryFn: async (): Promise<CustomerTypeDto[]> => {
       const response = await customerTypeApi.getList({
         pageNumber: 1,
