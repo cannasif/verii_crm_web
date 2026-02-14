@@ -156,10 +156,15 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     return null
   }
 
-  const text =
-    typeof body === "string" && body.startsWith("auth.")
-      ? t(body, { ns: "auth" })
-      : t(String(body))
+  let text: string
+  if (typeof body === "string" && body.startsWith("auth.")) {
+    text = t(body, { ns: "auth" })
+  } else if (typeof body === "string" && body.startsWith("customerManagement.")) {
+    const customerKey = body.replace(/^customerManagement\./, "")
+    text = t(customerKey, { ns: "customer-management", defaultValue: t(body) })
+  } else {
+    text = t(String(body))
+  }
 
   return (
     <p
