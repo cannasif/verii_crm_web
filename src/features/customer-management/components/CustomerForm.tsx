@@ -244,7 +244,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="taxNumber" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxNumber')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Vergi numarası..." /></FormControl>
+                    <FormControl><Input {...field} maxLength={10} value={field.value || ''} className={INPUT_STYLE} placeholder="Vergi numarası..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -260,7 +260,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="tcknNumber" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.tcknNumber')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="TCKN..." /></FormControl>
+                    <FormControl><Input {...field} maxLength={11} value={field.value || ''} className={INPUT_STYLE} placeholder="TCKN..." /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />

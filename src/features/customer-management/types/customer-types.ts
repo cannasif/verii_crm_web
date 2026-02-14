@@ -134,7 +134,7 @@ export const customerFormSchema = z.object({
     .max(250, 'customerManagement.form.nameMaxLength'),
   taxNumber: z
     .string()
-    .max(15, 'customerManagement.form.taxNumberMaxLength')
+    .max(10, 'customerManagement.form.taxNumberMaxLength')
     .optional()
     .or(z.literal('')),
   taxOffice: z
