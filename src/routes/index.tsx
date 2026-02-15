@@ -81,8 +81,8 @@ const UserGroupAssignmentsPage = lazyImport(() => import('@/features/access-cont
 const HangfireMonitoringPage = lazyImport(() => import('@/features/hangfire-monitoring'), 'HangfireMonitoringPage');
 const ProfilePage = lazyImport(() => import('@/features/user-detail-management'), 'ProfilePage');
 
-const routerBase =
-  (import.meta.env.BASE_URL || '/').replace(/\/$/, '') || '/';
+// const WINDO_FORM_ROUTE = '/crm-ui';
+const WINDO_FORM_ROUTE = '/';
 
 export const router = createBrowserRouter([
   {
@@ -176,5 +176,5 @@ export const router = createBrowserRouter([
     children: [{ index: true, element: <ResetPasswordPage /> }],
   },
 ], {
-  basename: routerBase,
+  basename: WINDO_FORM_ROUTE,
 });
