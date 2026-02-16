@@ -1,14 +1,6 @@
-import { type ReactElement, useState, useMemo, useCallback } from 'react';
+import { type ReactElement, useState, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -165,6 +157,10 @@ export function QuotationLineTable({
 }: QuotationLineTableProps): ReactElement {
   const linesEditable = enabled;
   const { t } = useTranslation();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [lineToDelete, setLineToDelete] = useState<string | null>(null);
@@ -202,6 +198,28 @@ export function QuotationLineTable({
   }, [currency, currencyOptions]);
 
   const isCurrencySelected = currency !== undefined && currency !== null && !Number.isNaN(currency);
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
+    if (!scrollRef.current) return;
+    const target = e.target as HTMLElement | null;
+    if (target?.closest('button, input, textarea, select, a, [role="button"]')) return;
+
+    setIsDragging(true);
+    setStartX(e.clientX - scrollRef.current.getBoundingClientRect().left);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseUpOrLeave = (): void => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>): void => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.clientX - scrollRef.current.getBoundingClientRect().left;
+    const walkX = (x - startX) * 2.2;
+    scrollRef.current.scrollLeft = scrollLeft - walkX;
+  };
 
   const handleExportExcel = async () => {
     const dataToExport = lines.map(line => ({
@@ -645,38 +663,49 @@ export function QuotationLineTable({
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className={styles.tableHeadRow}>
-                    <TableHead className={cn(styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('quotation.lines.stock')}</TableHead>
-                    <TableHead className={cn(styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('quotation.lines.unitPrice')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('quotation.lines.quantity')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount1')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount2')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount3')}</TableHead>
-                    <TableHead className={cn(styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('quotation.lines.netPrice')}</TableHead>
+            <div
+              ref={scrollRef}
+              className={cn(
+                "w-full overflow-x-auto overscroll-x-contain",
+                isDragging ? "cursor-grabbing select-none" : "cursor-grab"
+              )}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUpOrLeave}
+              onMouseLeave={handleMouseUpOrLeave}
+            >
+              <table className="w-full caption-bottom text-sm min-w-[1600px] whitespace-nowrap">
+                <thead className="[&_tr]:border-b">
+                  <tr className={cn("hover:bg-transparent border-b", styles.tableHeadRow)}>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('quotation.lines.stock')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('quotation.lines.unitPrice')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('quotation.lines.quantity')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount1')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount2')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount3')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('quotation.lines.netPrice')}</th>
                     {linesEditable && (
-                    <TableHead className={cn(styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions')}</TableHead>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions')}</th>
                     )}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                  </tr>
+                </thead>
+                <tbody className="[&_tr:last-child]:border-0">
                   {lines.map((line) => {
                     const isRelatedProduct = line.relatedProductKey !== null && line.relatedProductKey !== undefined;
                     const isMainStock = line.isMainRelatedProduct === true;
                     const hasApprovalWarning = line.approvalStatus === 1;
 
                     return (
-                      <TableRow 
+                      <tr
                         key={line.id} 
                         className={cn(
+                          "border-b transition-colors",
                           styles.tableRow,
                           hasApprovalWarning && "bg-amber-50/60 dark:bg-amber-950/20 border-l-4 border-l-amber-500"
                         )}
                       >
                         {/* STOK BİLGİSİ */}
-                        <TableCell className={cn(styles.tableCell, "pl-6")}>
+                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "pl-6")}>
                           <div className="flex flex-col gap-1.5">
                             <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                               {line.productCode || '-'}
@@ -684,6 +713,14 @@ export function QuotationLineTable({
                             {line.productName && (
                               <div className="text-xs font-medium text-zinc-500 line-clamp-1" title={line.productName}>
                                 {line.productName}
+                              </div>
+                            )}
+
+                            {(line.description1 || line.description2 || line.description3) && (
+                              <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                                {line.description1 && <div className="line-clamp-1">Açıklama 1: {line.description1}</div>}
+                                {line.description2 && <div className="line-clamp-1">Açıklama 2: {line.description2}</div>}
+                                {line.description3 && <div className="line-clamp-1">Açıklama 3: {line.description3}</div>}
                               </div>
                             )}
                             
@@ -710,40 +747,54 @@ export function QuotationLineTable({
                               )}
                             </div>
                           </div>
-                        </TableCell>
+                        </td>
 
-                        <TableCell className={cn(styles.tableCellRight, "pr-4")}>
+                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-4")}>
                           <span className="font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm">
                             {formatCurrency(line.unitPrice, currencyCode)}
                           </span>
-                        </TableCell>
+                        </td>
 
-                        <TableCell className={cn(styles.tableCell, "text-center")}>
+                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}>
                           <span className="inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
                             {line.quantity}
                           </span>
-                        </TableCell>
+                        </td>
 
-                        {[line.discountRate1, line.discountRate2, line.discountRate3].map((rate, i) => (
-                          <TableCell key={i} className={cn(styles.tableCell, "text-center")}>
-                            {rate > 0 ? (
-                              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-900/30 px-1.5 py-0.5 rounded">
-                                %{rate}
-                              </span>
-                            ) : (
-                              <span className="text-zinc-300 dark:text-zinc-700 text-xs font-medium">-</span>
-                            )}
-                          </TableCell>
-                        ))}
+                        {[
+                          { rate: line.discountRate1, amount: line.discountAmount1 },
+                          { rate: line.discountRate2, amount: line.discountAmount2 },
+                          { rate: line.discountRate3, amount: line.discountAmount3 },
+                        ].map((discount, i) => {
+                          const hasDiscount = discount.rate > 0 || discount.amount > 0;
+                          return (
+                            <td key={i} className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}>
+                              {hasDiscount ? (
+                                <div className="inline-flex min-w-[96px] flex-col items-center gap-1 rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-2 py-1.5 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                                  <span className="text-[11px] font-black leading-none text-emerald-700 dark:text-emerald-300">
+                                    %{discount.rate}
+                                  </span>
+                                  <span className="text-[10px] font-semibold leading-none text-rose-600 dark:text-rose-400">
+                                    -{formatCurrency(discount.amount || 0, currencyCode)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="inline-flex min-w-[96px] justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-2 py-2 text-[11px] font-semibold text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600">
+                                  İndirim yok
+                                </span>
+                              )}
+                            </td>
+                          );
+                        })}
 
-                        <TableCell className={cn(styles.tableCellRight, "pr-6")}>
+                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-6")}>
                           <span className="font-bold text-zinc-900 dark:text-white text-sm tabular-nums">
                             {formatCurrency(line.lineTotal, currencyCode)}
                           </span>
-                        </TableCell>
+                        </td>
 
                         {linesEditable && (
-                        <TableCell className={cn(styles.tableCell, "text-center pr-4")}>
+                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center pr-4")}>
                           <div className="flex items-center justify-center gap-2">
                             <Button
                               type="button"
@@ -770,13 +821,13 @@ export function QuotationLineTable({
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
-                        </TableCell>
+                        </td>
                         )}
-                      </TableRow>
+                      </tr>
                     );
                   })}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
           )}
         </div>
