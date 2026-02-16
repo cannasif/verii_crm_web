@@ -85,7 +85,7 @@ export function QuotationNotesDialog({
       <DialogContent className="w-[95vw] sm:w-[calc(100vw-2rem)] max-w-[700px] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl flex flex-col max-h-[90vh]">
         <DialogHeader className="px-4 sm:px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm shrink-0">
           <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20 shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20 shrink-0">
               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
                 <FileText className="h-5 w-5 text-pink-600 dark:text-pink-500" />
               </div>
@@ -138,7 +138,7 @@ export function QuotationNotesDialog({
                     </div>
                     <span
                       className={cn(
-                        "text-[10px] sm:text-xs tabular-nums shrink-0 min-w-[3rem] text-right",
+                        "text-[10px] sm:text-xs tabular-nums shrink-0 min-w-12 text-right",
                         isOverLimit ? "text-red-600 dark:text-red-400 font-semibold" : "text-slate-500 dark:text-slate-400"
                       )}
                     >

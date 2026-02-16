@@ -352,7 +352,7 @@ export function QuotationHeaderForm({
                       </div>
                       <FormControl>
                         <Input
-                          className={cn(styles.inputBase, "!pl-12 font-medium truncate caret-pink-500")}
+                          className={cn(styles.inputBase, "pl-12! font-medium truncate caret-pink-500")}
                           style={forcePaddingStyle}
                           value={customerSearchQuery}
                           onChange={(e) => {
@@ -797,7 +797,7 @@ export function QuotationHeaderForm({
                         <div className="relative">
                           <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Folder className="h-4 w-4" /></div>
                           <VoiceSearchCombobox
-                            className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 [&_*]:pl-8")}
+                            className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 **:pl-8")}
                             value={field.value || ''}
                             onSelect={(value) => field.onChange(value)}
                             options={projects.map((p) => ({
@@ -840,7 +840,7 @@ export function QuotationHeaderForm({
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveNote(key)}
-                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors flex-shrink-0"
+                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors shrink-0"
                                 >
                                   <X className="h-3 w-3" />
                                 </button>
