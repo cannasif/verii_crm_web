@@ -122,6 +122,9 @@ export interface CreateQuotationLineDto {
   lineTotal: number;
   lineGrandTotal: number;
   description?: string | null;
+  description1?: string | null;
+  description2?: string | null;
+  description3?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -149,6 +152,9 @@ export interface UpdateQuotationLineDto {
   lineTotal: number;
   lineGrandTotal: number;
   description?: string | null;
+  description1?: string | null;
+  description2?: string | null;
+  description3?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -178,6 +184,9 @@ export interface QuotationLineGetDto {
   lineTotal: number;
   lineGrandTotal: number;
   description?: string | null;
+  description1?: string | null;
+  description2?: string | null;
+  description3?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;

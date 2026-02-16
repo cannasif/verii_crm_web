@@ -1020,6 +1020,52 @@ export function DemandLineForm({
           </div>
         </div>
 
+        <div className="space-y-3">
+          <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+            Açıklama Alanları
+          </h5>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                Açıklama 1
+              </label>
+              <Input
+                value={formData.description1 ?? ''}
+                onChange={(e) => handleFieldChange('description1', e.target.value || null)}
+                maxLength={200}
+                placeholder="Maksimum 200 karakter"
+                className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                Açıklama 2
+              </label>
+              <Input
+                value={formData.description2 ?? ''}
+                onChange={(e) => handleFieldChange('description2', e.target.value || null)}
+                maxLength={200}
+                placeholder="Maksimum 200 karakter"
+                className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                Açıklama 3
+              </label>
+              <Input
+                value={formData.description3 ?? ''}
+                onChange={(e) => handleFieldChange('description3', e.target.value || null)}
+                maxLength={200}
+                placeholder="Maksimum 200 karakter"
+                className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="bg-muted/30 rounded-lg p-3 space-y-2 border">
           <div className="flex items-center gap-2 mb-2">
             <Calculator className="h-3.5 w-3.5 text-primary" />

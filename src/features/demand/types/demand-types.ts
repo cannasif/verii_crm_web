@@ -92,6 +92,9 @@ export interface CreateDemandLineDto {
   lineTotal: number;
   lineGrandTotal: number;
   description?: string | null;
+  description1?: string | null;
+  description2?: string | null;
+  description3?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -119,6 +122,9 @@ export interface UpdateDemandLineDto {
   lineTotal: number;
   lineGrandTotal: number;
   description?: string | null;
+  description1?: string | null;
+  description2?: string | null;
+  description3?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -148,6 +154,9 @@ export interface DemandLineGetDto {
   lineTotal: number;
   lineGrandTotal: number;
   description?: string | null;
+  description1?: string | null;
+  description2?: string | null;
+  description3?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
