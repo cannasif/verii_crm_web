@@ -289,7 +289,7 @@ export function ApprovalRoleTable({
             {t('approvalRole.table.previous')}
           </Button>
           
-          <div className={`text-xs font-bold bg-white dark:bg-background px-3 py-1.5 rounded-md min-w-[3rem] text-center border ${borderClass}`}>
+          <div className={`text-xs font-bold bg-white dark:bg-background px-3 py-1.5 rounded-md min-w-10 text-center border ${borderClass}`}>
             {t('approvalRole.table.page', { current: pageNumber, total: totalPages })}
           </div>
 
