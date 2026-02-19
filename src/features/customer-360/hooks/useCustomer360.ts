@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import {
   executeCustomer360RecommendedAction,
+  getCustomerImages,
   getCustomer360Cohort,
   getCustomer360Overview,
   getCustomer360AnalyticsSummary,
@@ -14,6 +15,7 @@ const OVERVIEW_STALE_MS = 30_000;
 const SUMMARY_STALE_MS = 30_000;
 const CHARTS_STALE_MS = 45_000;
 const COHORT_STALE_MS = 300_000;
+const IMAGES_STALE_MS = 60_000;
 
 export function useCustomer360OverviewQuery(id: number, currency?: string) {
   return useQuery({
@@ -48,6 +50,15 @@ export function useCustomer360CohortQuery(id: number, months = 12) {
     queryKey: ['customer360', 'cohort', id, months],
     queryFn: ({ signal }) => getCustomer360Cohort({ id, months, signal }),
     staleTime: COHORT_STALE_MS,
+    enabled: id > 0,
+  });
+}
+
+export function useCustomerImagesQuery(id: number) {
+  return useQuery({
+    queryKey: ['customer360', 'images', id],
+    queryFn: ({ signal }) => getCustomerImages({ id, signal }),
+    staleTime: IMAGES_STALE_MS,
     enabled: id > 0,
   });
 }

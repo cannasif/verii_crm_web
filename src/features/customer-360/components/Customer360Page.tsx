@@ -1,7 +1,7 @@
 import { type ReactElement, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CircleHelp, RefreshCw, User, MapPin, FileText, ClipboardList, ShoppingCart, Activity, Clock } from 'lucide-react';
+import { CircleHelp, RefreshCw, User, MapPin, FileText, ClipboardList, ShoppingCart, Activity, Clock, Image as ImageIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,11 +24,13 @@ import {
   useCustomer360AnalyticsSummaryQuery,
   useCustomer360AnalyticsChartsQuery,
   useCustomer360CohortQuery,
+  useCustomerImagesQuery,
   useExecuteCustomer360ActionMutation,
 } from '../hooks/useCustomer360';
 import { CustomerCurrencySummaryCards } from './CustomerCurrencySummaryCards';
 import { CustomerAmountComparisonByCurrencyTable } from './CustomerAmountComparisonByCurrencyTable';
 import { useRechartsModule } from '@/lib/useRechartsModule';
+import { getApiBaseUrl } from '@/lib/axios';
 import type {
   CohortRetentionDto,
   Customer360SimpleItemDto,
@@ -493,6 +495,7 @@ export function Customer360Page(): ReactElement {
   const { data: chartsData, isLoading: isChartsLoading, isError: isChartsError } =
     useCustomer360AnalyticsChartsQuery(id, 12, currencyParam);
   const { data: cohortData, isLoading: isCohortLoading } = useCustomer360CohortQuery(id, 12);
+  const { data: customerImages = [], isLoading: isImagesLoading, isError: isImagesError } = useCustomerImagesQuery(id);
   const executeActionMutation = useExecuteCustomer360ActionMutation(id);
   const currencyOptions = useMemo(() => {
     const set = new Set<string>();
@@ -592,6 +595,18 @@ export function Customer360Page(): ReactElement {
     maximumFractionDigits: 2,
   });
   const recommendedActions = data.recommendedActions ?? [];
+  const apiBaseUrl = getApiBaseUrl().replace(/\/$/, '');
+  const imageItems = useMemo(
+    () =>
+      customerImages.map((item) => ({
+        ...item,
+        src:
+          item.imageUrl?.startsWith('http://') || item.imageUrl?.startsWith('https://')
+            ? item.imageUrl
+            : `${apiBaseUrl}${item.imageUrl?.startsWith('/') ? item.imageUrl : `/${item.imageUrl ?? ''}`}`,
+      })),
+    [customerImages, apiBaseUrl]
+  );
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={0}>
@@ -624,6 +639,7 @@ export function Customer360Page(): ReactElement {
         <TabsList>
           <TabsTrigger value="overview">{t('customer360.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="analytics">{t('customer360.tabs.analytics')}</TabsTrigger>
+          <TabsTrigger value="images">{t('customer360.tabs.images', { defaultValue: 'Görseller' })}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -803,6 +819,58 @@ export function Customer360Page(): ReactElement {
               ) : null}
             </>
           )}
+        </TabsContent>
+
+        <TabsContent value="images" className="space-y-4">
+          <Card className="rounded-xl border border-slate-200 dark:border-white/10">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                {t('customer360.tabs.images', { defaultValue: 'Görseller' })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isImagesLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Array.from({ length: 6 }).map((_, idx) => (
+                    <Skeleton key={idx} className="h-48 w-full rounded-lg" />
+                  ))}
+                </div>
+              ) : isImagesError ? (
+                <p className="text-sm text-muted-foreground">
+                  {t('customer360.analytics.error')}
+                </p>
+              ) : imageItems.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t('common.noData')}
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {imageItems.map((img) => (
+                    <a
+                      key={img.id}
+                      href={img.src}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group block rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:shadow-md transition"
+                    >
+                      <img
+                        src={img.src}
+                        alt={img.imageDescription ?? `customer-image-${img.id}`}
+                        className="h-44 w-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="p-3">
+                        <p className="text-sm font-medium line-clamp-2">
+                          {img.imageDescription || t('customer360.tabs.images', { defaultValue: 'Kartvizit Görseli' })}
+                        </p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
       </div>

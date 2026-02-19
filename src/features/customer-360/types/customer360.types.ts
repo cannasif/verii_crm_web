@@ -150,3 +150,18 @@ export interface Customer360AnalyticsChartsDto {
   amountComparison: Customer360AmountComparisonDto;
   amountComparisonByCurrency: Customer360AmountComparisonDto[];
 }
+
+export interface CustomerImageDto {
+  id: number;
+  customerId: number;
+  customerName?: string | null;
+  imageUrl: string;
+  imageDescription?: string | null;
+  createdDate?: string;
+  updatedDate?: string | null;
+  deletedDate?: string | null;
+  isDeleted?: boolean;
+  createdByFullUser?: string | null;
+  updatedByFullUser?: string | null;
+  deletedByFullUser?: string | null;
+}

@@ -2,6 +2,7 @@ import type { ApiResponse } from '@/types/api';
 import type {
   ActivityDto,
   CohortRetentionDto,
+  CustomerImageDto,
   Customer360AnalyticsChartsDto,
   Customer360AnalyticsSummaryDto,
   Customer360OverviewDto,
@@ -104,4 +105,14 @@ export async function executeCustomer360RecommendedAction(params: {
   const url = `/api/customers/${id}/recommended-actions/execute`;
   const response = await api.post<ApiResponse<ActivityDto | null>>(url, payload, { signal });
   return ensureData(response, 'Recommended action could not be executed');
+}
+
+export async function getCustomerImages(params: {
+  id: number;
+  signal?: AbortSignal;
+}): Promise<CustomerImageDto[]> {
+  const { id, signal } = params;
+  const url = `/api/CustomerImage/by-customer/${id}`;
+  const response = await api.get<ApiResponse<CustomerImageDto[] | null>>(url, { signal });
+  return ensureData(response, 'Customer images could not be loaded');
 }
