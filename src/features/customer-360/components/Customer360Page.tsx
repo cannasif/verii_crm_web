@@ -497,6 +497,18 @@ export function Customer360Page(): ReactElement {
   const { data: cohortData, isLoading: isCohortLoading } = useCustomer360CohortQuery(id, 12);
   const { data: customerImages = [], isLoading: isImagesLoading, isError: isImagesError } = useCustomerImagesQuery(id);
   const executeActionMutation = useExecuteCustomer360ActionMutation(id);
+  const apiBaseUrl = getApiBaseUrl().replace(/\/$/, '');
+  const imageItems = useMemo(
+    () =>
+      customerImages.map((item) => ({
+        ...item,
+        src:
+          item.imageUrl?.startsWith('http://') || item.imageUrl?.startsWith('https://')
+            ? item.imageUrl
+            : `${apiBaseUrl}${item.imageUrl?.startsWith('/') ? item.imageUrl : `/${item.imageUrl ?? ''}`}`,
+      })),
+    [customerImages, apiBaseUrl]
+  );
   const currencyOptions = useMemo(() => {
     const set = new Set<string>();
     analytics?.totalsByCurrency?.forEach((r) => set.add(r.currency));
@@ -595,18 +607,6 @@ export function Customer360Page(): ReactElement {
     maximumFractionDigits: 2,
   });
   const recommendedActions = data.recommendedActions ?? [];
-  const apiBaseUrl = getApiBaseUrl().replace(/\/$/, '');
-  const imageItems = useMemo(
-    () =>
-      customerImages.map((item) => ({
-        ...item,
-        src:
-          item.imageUrl?.startsWith('http://') || item.imageUrl?.startsWith('https://')
-            ? item.imageUrl
-            : `${apiBaseUrl}${item.imageUrl?.startsWith('/') ? item.imageUrl : `/${item.imageUrl ?? ''}`}`,
-      })),
-    [customerImages, apiBaseUrl]
-  );
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={0}>
