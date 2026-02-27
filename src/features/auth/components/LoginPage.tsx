@@ -89,7 +89,7 @@ export function LoginPage(): React.JSX.Element {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#0f0518] text-white font-['Plus_Jakarta_Sans']">
+    <div className="relative w-full min-h-dvh h-[100dvh] overflow-hidden bg-[#0f0518] text-white font-['Plus_Jakarta_Sans']">
       
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
@@ -143,7 +143,7 @@ export function LoginPage(): React.JSX.Element {
 
       <div className="relative z-10 w-full h-full flex flex-col justify-between items-center px-4 py-8 overflow-y-auto">
 
-        <div className="w-full max-w-md p-10 rounded-3xl bg-[#140a1e]/70 backdrop-blur-xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_0_20px_rgba(255,255,255,0.07)] animate-[fadeIn_0.8s_ease-out] my-auto mt-20 md:mt-auto">
+        <div className="w-full max-w-md p-8 md:p-10 rounded-3xl bg-[#140a1e]/70 backdrop-blur-xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_0_20px_rgba(255,255,255,0.07)] animate-[fadeIn_0.8s_ease-out] mt-10 md:mt-auto mb-auto">
           <div className="text-center mb-8">
             <img
               src={loginImage}
@@ -164,30 +164,38 @@ export function LoginPage(): React.JSX.Element {
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormControl>
-                      <div className="relative group">
-                        <Location01Icon 
-                          className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${fieldState.invalid ? 'text-red-500' : 'text-slate-400 group-focus-within:text-orange-400'}`} 
-                          size={18} 
-                        />
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <SelectTrigger 
-                            className={`w-full h-auto bg-black/10 rounded-xl px-4 py-6 pl-12 text-sm text-white focus:ring-0 focus:ring-offset-0 transition-all duration-300
-                              ${fieldState.invalid 
-                                ? 'border-red-500/80 focus:border-red-500 hover:border-red-500 bg-red-950/10' 
-                                : 'border border-white/10 focus:border-pink-500 focus:bg-black/30'
-                              }`}
-                          >
-                            <SelectValue placeholder={t('auth.login.branchPlaceholder')} />
-                          </SelectTrigger>
-                          <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/10 text-white">
-                            {branches?.map((branch) => (
-                              <SelectItem key={branch.id} value={branch.id} className="focus:bg-pink-500/20 focus:text-white cursor-pointer">
-                                {branch.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                     <div className="relative group">
+                      <Location01Icon 
+                        className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${fieldState.invalid ? 'text-red-500' : 'text-slate-400 group-focus-within:text-orange-400'}`} 
+                        size={18} 
+                      />
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger 
+                          className={`w-full h-auto bg-black/10 rounded-xl px-4 py-6 pl-12 text-base md:text-sm text-white focus:ring-0 focus:ring-offset-0 transition-all duration-300 
+                          /* İçerideki span'i kes ve sola daya, sağdaki boşluğu ikon için koru */
+                          [&>span]:truncate [&>span]:text-left [&>span]:pr-4
+                            ${fieldState.invalid 
+                              ? 'border-red-500/80 focus:border-red-500 hover:border-red-500 bg-red-950/10' 
+                              : 'border border-white/10 focus:border-pink-500 focus:bg-black/30'
+                            }`}
+                        >
+                          <SelectValue placeholder={t('auth.login.branchPlaceholder')} />
+                        </SelectTrigger>
+
+                        <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/10 text-white max-w-[var(--radix-select-trigger-width)]">
+                          {branches?.map((branch) => (
+                            
+                            <SelectItem 
+                              key={branch.id} 
+                              value={branch.id} 
+                              className="focus:bg-pink-500/20 focus:text-white cursor-pointer truncate"
+                            >
+                              {branch.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                          </div>
                     </FormControl>
                     <FormMessage className="text-red-500 text-xs font-medium pl-1 mt-1" />
                   </FormItem>
@@ -206,15 +214,16 @@ export function LoginPage(): React.JSX.Element {
                           size={18} 
                         />
                         <Input
-                          {...field}
-                          type="email"
-                          placeholder={t('auth.login.emailPlaceholder')}
-                          className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300
-                            ${fieldState.invalid 
-                              ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' 
-                              : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'
-                            }`}
-                        />
+                              {...field}
+                              type="email"
+                              autoComplete="username" 
+                              placeholder={t('auth.login.emailPlaceholder')}
+                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300
+                                ${fieldState.invalid 
+                                  ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' 
+                                  : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'
+                                }`}
+                            />
                       </div>
                     </FormControl>
                     <FormMessage className="text-red-500 text-xs font-medium pl-1 mt-1" />
@@ -234,16 +243,17 @@ export function LoginPage(): React.JSX.Element {
                           size={18} 
                         />
                         <Input
-                          {...field}
-                          type={isPasswordVisible ? 'text' : 'password'}
-                          placeholder={t('auth.login.passwordPlaceholder')}
-                          className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300
-                            ${fieldState.invalid 
-                              ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' 
-                              : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'
-                            }`}
-                          onKeyDown={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
-                          onKeyUp={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
+                              {...field}
+                              type={isPasswordVisible ? 'text' : 'password'}
+                              autoComplete="current-password" 
+                              placeholder={t('auth.login.passwordPlaceholder')}
+                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300
+                                ${fieldState.invalid 
+                                  ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' 
+                                  : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'
+                                }`}
+                              onKeyDown={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
+                              onKeyUp={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
                         />
                         <button
                           type="button"
@@ -330,17 +340,29 @@ export function LoginPage(): React.JSX.Element {
               <WhatsappIcon size={20} />
             </a>
 
-            <a href="https://t.me/v3rii" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-sky-400 hover:bg-zinc-800 hover:border-sky-500/30 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+           <button 
+              type="button"
+              onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))} 
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-sky-400 hover:bg-zinc-800 hover:border-sky-500/30 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+            >
               <TelegramIcon size={20} />
-            </a>
+            </button>
 
-            <a href="https://instagram.com/v3rii" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-fuchsia-400 hover:bg-zinc-800 hover:border-fuchsia-500/30 hover:shadow-[0_0_15px_rgba(232,121,249,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+            <button 
+              type="button"
+              onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))} 
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-fuchsia-400 hover:bg-zinc-800 hover:border-fuchsia-500/30 hover:shadow-[0_0_15px_rgba(232,121,249,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+            >
               <InstagramIcon size={20} />
-            </a>
+            </button>
 
-            <a href="https://x.com/v3rii" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-white hover:bg-zinc-800 hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+            <button 
+              type="button"
+              onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))} 
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-white hover:bg-zinc-800 hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+            >
               <NewTwitterIcon size={20} />
-            </a>
+            </button>
           </div>
         </div>
       </div>

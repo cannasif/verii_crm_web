@@ -10,7 +10,7 @@ import { RoutePermissionGuard } from '@/features/access-control/components/Route
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { filterNavItemsByPermission } from '@/features/access-control/utils/filterNavItems';
 import { 
-  DashboardSquare02Icon, 
+  DashboardCircleIcon, 
   UserGroupIcon, 
   Calendar03Icon, 
   PackageIcon, 
@@ -45,7 +45,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       {
         title: t('sidebar.home'),
         href: '/',
-        icon: <DashboardSquare02Icon size={iconSize} className="text-blue-500" />,
+        icon: <DashboardCircleIcon size={iconSize} className="text-blue-500" />,
       },
       {
         title: t('sidebar.salesManagement'),
@@ -207,10 +207,10 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   }, [navItems, defaultNavItems, permissions, isLoading, isError]);
 
   return (
-    <div className="relative flex h-screen w-full overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0516] font-['Outfit'] transition-colors duration-300">
+    <div className="relative flex min-h-dvh h-[100dvh] w-full overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0516] font-['Outfit'] transition-colors duration-300">
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-         <div className="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] rounded-full bg-pink-300/30 dark:bg-pink-600/5 blur-[120px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
-         <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-orange-300/30 dark:bg-orange-600/5 blur-[100px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
+         <div className="absolute top-[-10%] left-[-10%] w-[80vw] max-w-[800px] aspect-square rounded-full bg-pink-300/30 dark:bg-pink-600/5 blur-[80px] md:blur-[120px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
+         <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] max-w-[600px] aspect-square rounded-full bg-orange-300/30 dark:bg-orange-600/5 blur-[60px] md:blur-[100px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
       </div>
 
       <div className="relative z-20 h-full">
@@ -220,7 +220,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       <div className="flex flex-1 flex-col h-full overflow-hidden relative z-10">
         <Navbar />
         <TooltipProvider delayDuration={200}>
-          <main className="flex-1 overflow-y-auto p-4 text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+          <main className="flex-1 overflow-y-auto p-3 md:p-6 text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent">
             <div className="w-full min-h-full">
               <Suspense fallback={<PageLoader />}>
                 <RoutePermissionGuard />

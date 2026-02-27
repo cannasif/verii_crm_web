@@ -59,9 +59,9 @@ function CardWrapper({ children, className = '', noPadding = false, onClick, int
             "cursor-pointer transition-all duration-300 ease-out",
             "hover:shadow-lg hover:shadow-pink-500/10 hover:-translate-y-0.5",
             "hover:border-pink-500/30 dark:hover:border-pink-500/30",
-            "active:scale-[0.99]",
+            "active:scale-[0.98]",
         ],
-        noPadding ? 'p-0' : 'p-6',
+        noPadding ? 'p-0' : 'p-5 md:p-6',
         className
       )}
     >
@@ -142,7 +142,7 @@ export function DashboardPage(): ReactElement {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center min-h-dvh w-full">
         <div className="flex flex-col items-center gap-4">
             <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-pink-600" />
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('loading')}</p>
@@ -214,11 +214,11 @@ export function DashboardPage(): ReactElement {
   const chartData = Array(12).fill(0);
 
   return (
-    <div className="flex flex-col h-full gap-6 p-4 md:p-8 overflow-x-hidden overflow-y-auto w-full">
+    <div className="flex flex-col gap-6 p-1 md:p-4 overflow-x-hidden w-full pb-10">
       
-      <div className="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 px-1">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1 flex flex-wrap items-center gap-2">
             <span>{t(`greeting.${timeOfDay}`)},</span>
             <span className="text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-orange-500">
               <span className="md:hidden">{firstName}</span>
@@ -237,7 +237,7 @@ export function DashboardPage(): ReactElement {
                 onClick={handleRefresh}
                 disabled={isRefetching}
                 className={cn(
-                  "bg-white dark:bg-[#120c18] border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 h-10 shadow-sm min-w-[100px] transition-all duration-300",
+                  "flex-1 md:flex-none bg-white dark:bg-[#120c18] border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 h-10 shadow-sm min-w-[100px] transition-all duration-300",
                   "hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:border-pink-200 dark:hover:border-pink-500/30 hover:text-pink-600 dark:hover:text-pink-400",
                   "group"
                 )}
@@ -249,13 +249,13 @@ export function DashboardPage(): ReactElement {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
-                    className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 hover:scale-[1.02] transition-all h-10 px-6"
+                    className="flex-1 md:flex-none bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 hover:scale-[1.02] transition-all h-10 px-6"
                 >
                     <Zap size={16} className="mr-2" />
                     {t('quickAction')}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-[#120c18] border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-1.5">
+              <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-[#120c18] border border-slate-200 dark:border-white/10 shadow-xl rounded-xl p-1.5 pt-[env(safe-area-inset-top)]">
                 
                 <DropdownMenuLabel className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 opacity-70">
                   {t('sidebar.customers')}
@@ -348,30 +348,30 @@ export function DashboardPage(): ReactElement {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 shrink-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 shrink-0">
         {stats.map((s, i) => (
           <CardWrapper 
             key={i} 
             interactive={false} 
-            className="min-h-[180px]"
+            className="min-h-[160px] md:min-h-[180px]"
           >
             <div className="flex flex-col justify-between h-full">
               <div className="flex justify-between items-start">
-                <div className={`p-3.5 rounded-xl ${s.bg} ${s.color}`}>
-                  <s.i size={24} />
+                <div className={`p-3 rounded-xl ${s.bg} ${s.color}`}>
+                  <s.i size={22} />
                 </div>
                 {s.c !== '0%' && (
-                  <span className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border ${s.p ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' : 'bg-red-50 text-red-600 border-red-100 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'}`}>
-                    {s.p ? <ArrowUpRight size={12} strokeWidth={3} /> : <ArrowDownRight size={12} strokeWidth={3} />}
+                  <span className={`flex items-center gap-1 text-[10px] md:text-[11px] font-bold px-2 py-1 rounded-full border ${s.p ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' : 'bg-red-50 text-red-600 border-red-100 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'}`}>
+                    {s.p ? <ArrowUpRight size={10} strokeWidth={3} /> : <ArrowDownRight size={10} strokeWidth={3} />}
                     {s.c}
                   </span>
                 )}
               </div>
               
               <div>
-                <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wide">{s.l}</h3>
+                <h3 className="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-medium uppercase tracking-wide">{s.l}</h3>
                 <p 
-                  className="text-3xl font-bold text-slate-900 dark:text-white mt-2 truncate font-sans" 
+                  className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mt-1.5 md:mt-2 truncate font-sans" 
                   title={s.v}
                 >
                   {s.v}
@@ -382,16 +382,16 @@ export function DashboardPage(): ReactElement {
         ))}
       </div>
 
-      <div className="grid grid-cols-12 gap-6 min-h-[400px]">
+      <div className="grid grid-cols-12 gap-5 md:gap-6 min-h-[400px]">
         
-        <CardWrapper className="col-span-12 lg:col-span-8 p-0 overflow-hidden min-h-[400px]">
-            <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#120c18] shrink-0">
+        <CardWrapper className="col-span-12 lg:col-span-8 p-0 overflow-hidden min-h-[350px] md:min-h-[400px]">
+            <div className="p-5 md:p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#120c18] shrink-0">
                 <div>
-                    <h3 className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
-                        <TrendingUp size={20} className="text-pink-500" />
+                    <h3 className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                        <TrendingUp size={18} className="text-pink-500" />
                         {t('salesAnalysis')}
                     </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 ml-7">{t('targetVsActual')}</p>
+                    <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1 ml-6.5">{t('targetVsActual')}</p>
                 </div>
                 
                 <div className="relative" ref={chartMenuRef}>
@@ -408,27 +408,27 @@ export function DashboardPage(): ReactElement {
                 </div>
             </div>
             
-            <div className="relative flex-1 w-full bg-white dark:bg-[#120c18] h-[340px] flex flex-col">
+            <div className="relative flex-1 w-full bg-white dark:bg-[#120c18] min-h-[280px] flex flex-col">
                 {!hasChartData ? (
-                    <div className="flex-1 w-full flex flex-col items-center justify-center gap-4">
+                    <div className="flex-1 w-full flex flex-col items-center justify-center gap-4 p-8">
                             <div className="bg-slate-50 dark:bg-white/5 p-5 rounded-full border border-slate-100 dark:border-white/5">
-                                <BarChart3 size={36} className="text-slate-300 dark:text-slate-500" />
+                                <BarChart3 size={32} className="text-slate-300 dark:text-slate-500" />
                             </div>
-                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('noSalesData')}</p>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 text-center">{t('noSalesData')}</p>
                     </div>
                 ) : (
-                    <div className="w-full h-full px-8 pb-6 pt-8 flex items-end justify-between gap-4">
+                    <div className="w-full h-full px-4 md:px-8 pb-6 pt-8 flex items-end justify-between gap-2 md:gap-4 overflow-x-auto">
                         {monthKeys.map((key, i) => {
                             const height = hasChartData ? chartData[i] : 0; 
                             return (
-                                <div key={i} className="flex-1 flex flex-col items-center gap-3 h-full justify-end group">
+                                <div key={i} className="flex-1 min-w-[30px] flex flex-col items-center gap-3 h-full justify-end group">
                                     <div className="w-full h-full flex items-end justify-center relative bg-slate-50 dark:bg-white/5 rounded-t-lg transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10">
                                         <div
                                             style={{ height: `${height}%` }} 
-                                            className="w-full mx-1 bg-gradient-to-t from-pink-600 to-orange-400 opacity-90 rounded-t-md shadow-[0_0_15px_rgba(236,72,153,0.3)]"
+                                            className="w-full mx-0.5 md:mx-1 bg-gradient-to-t from-pink-600 to-orange-400 opacity-90 rounded-t-md shadow-[0_0_15px_rgba(236,72,153,0.3)]"
                                         />
                                     </div>
-                                    <span className="text-xs font-semibold text-slate-400 uppercase">
+                                    <span className="text-[10px] font-semibold text-slate-400 uppercase">
                                         {t(`monthsShort.${key}`).substring(0, 3)}
                                     </span>
                                 </div>
@@ -439,10 +439,10 @@ export function DashboardPage(): ReactElement {
             </div>
         </CardWrapper>
 
-        <CardWrapper className="col-span-12 lg:col-span-4 p-0 overflow-hidden min-h-[400px]">
-            <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#120c18] shrink-0">
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <Activity size={20} className="text-orange-500" />
+        <CardWrapper className="col-span-12 lg:col-span-4 p-0 overflow-hidden min-h-[350px] md:min-h-[400px]">
+            <div className="p-5 md:p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#120c18] shrink-0">
+                <h3 className="text-base md:text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <Activity size={18} className="text-orange-500" />
                     {t('latestActivities')}
                 </h3>
                 <Button 
@@ -455,13 +455,13 @@ export function DashboardPage(): ReactElement {
                 </Button>
             </div>
             
-            <div className="flex-1 w-full bg-white dark:bg-[#120c18] h-[340px] overflow-y-auto flex flex-col">
+            <div className="flex-1 w-full bg-white dark:bg-[#120c18] h-[340px] overflow-y-auto flex flex-col touch-pan-y">
                 {deals.length > 0 ? (
-                    <div className="p-4 space-y-2">
+                    <div className="p-3 md:p-4 space-y-1 md:space-y-2">
                         {deals.map((d, i) => (
-                            <div key={i} className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-white/5 cursor-default group">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-transform group-hover:scale-105 ${
+                            <div key={i} className="flex items-center justify-between p-3 md:p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-white/5 cursor-default group">
+                                <div className="flex items-center gap-3 md:gap-4 min-w-0">
+                                    <div className={`w-9 h-9 md:w-10 md:h-10 shrink-0 rounded-full flex items-center justify-center text-[10px] md:text-xs font-bold border-2 transition-transform group-hover:scale-105 ${
                                         i % 2 === 0
                                             ? 'bg-pink-50 border-pink-100 text-pink-600 dark:bg-pink-500/10 dark:border-pink-500/20 dark:text-pink-400'
                                             : 'bg-orange-50 border-orange-100 text-orange-600 dark:bg-orange-500/10 dark:border-orange-500/20 dark:text-orange-400'
@@ -469,7 +469,7 @@ export function DashboardPage(): ReactElement {
                                             {d.c ? d.c.substring(0, 2).toUpperCase() : '??'}
                                     </div>
                                     <div className="min-w-0">
-                                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[150px]">{d.c}</h4>
+                                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate pr-2">{d.c}</h4>
                                         <p className="text-xs text-slate-500 mt-0.5 truncate">{d.s}</p>
                                     </div>
                                 </div>
@@ -492,7 +492,7 @@ export function DashboardPage(): ReactElement {
         </CardWrapper>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 shrink-0">
         {[
             { 
               t: t('quickStats.pendingTasks'), 
@@ -523,15 +523,18 @@ export function DashboardPage(): ReactElement {
                 key={k} 
                 onClick={() => navigate(x.link)}
                 interactive={true}
-                className="min-h-[140px]"
+                className="min-h-[120px] md:min-h-[140px]"
             >
-                <div className="flex items-center gap-8 h-full px-2">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${x.bg} ${x.c} shrink-0 transition-transform group-hover:scale-105`}>
-                        <x.i size={28} strokeWidth={1.5} />
+                <div className="flex items-center gap-5 md:gap-8 h-full px-1">
+                    <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center ${x.bg} ${x.c} shrink-0 transition-transform group-hover:scale-105`}>
+                        <x.i 
+                          strokeWidth={1.5} 
+                          className="w-6 h-6 md:w-7 md:h-7" 
+                        />
                     </div>
-                    <div>
-                      <h4 className="text-slate-900 dark:text-white font-bold text-lg">{x.t}</h4>
-                      <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{x.d}</p>
+                    <div className="min-w-0">
+                      <h4 className="text-slate-900 dark:text-white font-bold text-base md:text-lg truncate">{x.t}</h4>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm mt-0.5 md:mt-1 line-clamp-1 md:line-clamp-none">{x.d}</p>
                     </div>
                 </div>
             </CardWrapper>

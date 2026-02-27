@@ -14,7 +14,6 @@ interface NavItem {
   children?: NavItem[];
   defaultExpanded?: boolean;
 }
-
 interface SidebarProps {
   items: NavItem[];
 }
@@ -34,6 +33,8 @@ const normalizeText = (text: string): string => {
 };
 
 function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; pathname: string; searchQuery: string }): ReactElement {
+  const { setSearchQuery, setSidebarOpen } = useUIStore();
+  
   const hasActiveChild = item.children?.some(child => child.href === pathname) || false;
   
   const hasMatchingChild = useMemo(() => {
@@ -89,7 +90,11 @@ function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; path
                      : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5'
                  )}
                  onClick={() => {
-                   if (window.innerWidth < 1024) useUIStore.getState().setSidebarOpen(false);
+                   
+                   if (window.innerWidth < 1024) {
+                     setSearchQuery('');
+                     setSidebarOpen(false);
+                   }
                  }}
                >
                  <span className="whitespace-normal leading-tight text-left wrap-break-word">{child.title}</span>
@@ -117,7 +122,7 @@ function NavItemComponent({
   isManualClick: boolean;
 }): ReactElement {
   const location = useLocation();
-  const { isSidebarOpen, setSidebarOpen } = useUIStore();
+  const { isSidebarOpen, setSidebarOpen, setSearchQuery } = useUIStore();
   
   const checkIsActive = (navItem: NavItem): boolean => {
     if (navItem.href === location.pathname) return true;
@@ -234,7 +239,13 @@ function NavItemComponent({
                       "flex items-center justify-between px-3 py-2 rounded-lg transition-colors text-sm w-full relative",
                       location.pathname === child.href ? 'bg-purple-50 text-purple-700 font-semibold dark:bg-white/10 dark:text-white' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5'
                     )}
-                    onClick={() => { if (window.innerWidth < 1024) useUIStore.getState().setSidebarOpen(false); }}
+                    onClick={() => { 
+                 
+                      if (window.innerWidth < 1024) {
+                        setSearchQuery('');
+                        setSidebarOpen(false); 
+                      }
+                    }}
                   >
                     <span className="whitespace-normal leading-tight text-left wrap-break-word">{child.title}</span>
                     {location.pathname === child.href && <span className="w-2 h-2 rounded-full bg-purple-600 dark:bg-pink-500 shrink-0 ml-2" />}
@@ -252,8 +263,12 @@ function NavItemComponent({
           to={item.href || '#'} 
           className={cn("relative flex items-center gap-3 rounded-xl px-3 py-2 transition-colors group", isActive ? 'bg-purple-50 dark:bg-white/5' : 'hover:bg-slate-100 dark:hover:bg-white/5', !isSidebarOpen && "justify-center px-0")}
           onClick={(e) => {
+           
+            if (window.innerWidth < 1024) {
+              setSearchQuery('');
+              setSidebarOpen(false);
+            }
             if (!isSidebarOpen) handleOpenAndExpand(e);
-            else if (window.innerWidth < 1024) setSidebarOpen(false);
           }}
         >
             {item.icon && (
@@ -269,8 +284,16 @@ function NavItemComponent({
 }
 
 export function Sidebar({ items }: SidebarProps): ReactElement {
-  const { isSidebarOpen, setSidebarOpen, searchQuery } = useUIStore();
+
+  const { isSidebarOpen, setSidebarOpen, searchQuery, setSearchQuery } = useUIStore();
   const location = useLocation();
+
+
+  useEffect(() => {
+    if (!isSidebarOpen) {
+      setSearchQuery('');
+    }
+  }, [isSidebarOpen, setSearchQuery]);
   
   const getDefaultKeys = useCallback(() => {
     const keys = new Set<string>();
@@ -320,21 +343,38 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
 
   return (
     <>
-      {isSidebarOpen && <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => useUIStore.getState().setSidebarOpen(false)} />}
-      <aside className={cn('fixed lg:sticky top-0 h-screen z-50 flex flex-col transition-all duration-300 ease-in-out shrink-0 overflow-hidden shadow-2xl bg-white border-r border-slate-200 dark:bg-[#130822]/90 dark:border-white/5 dark:backdrop-blur-2xl', isSidebarOpen ? "w-72 translate-x-0" : "w-72 -translate-x-full lg:w-20 lg:translate-x-0")}>
-        <div className={cn("h-24 flex items-center justify-center border-b border-slate-100 dark:border-white/5 shrink-0 relative", isSidebarOpen ? "px-4" : "px-0")}>
+      {isSidebarOpen && <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+      
+      <aside className={cn(
+        'fixed lg:sticky top-0 min-h-dvh h-[100dvh] z-50 flex flex-col transition-all duration-300 ease-in-out shrink-0 overflow-hidden shadow-2xl bg-white border-r border-slate-200 dark:bg-[#130822]/90 dark:border-white/5 dark:backdrop-blur-2xl',
+        'pb-[env(safe-area-inset-bottom)]',
+        isSidebarOpen ? "w-72 translate-x-0" : "w-72 -translate-x-full lg:w-20 lg:translate-x-0"
+      )}>
+        
+        <div className={cn(
+          "h-24 flex items-center justify-center border-b border-slate-100 dark:border-white/5 shrink-0 relative",
+          "pt-[env(safe-area-inset-top)]",
+          isSidebarOpen ? "px-4" : "px-0"
+        )}>
           {isSidebarOpen ? (
             <div className="w-full flex items-center justify-between">
               <div className="w-8 lg:hidden" />
-              <div className="flex justify-center flex-1"><img src={VERII_LOGO_URL} alt="Logo" className="h-35 object-contain" /></div>
-              <button onClick={() => useUIStore.getState().setSidebarOpen(false)} className="lg:hidden p-2 text-slate-500 hover:text-red-500 rounded-lg"><X size={24} /></button>
+              <div className="flex justify-center flex-1">
+                <img src={VERII_LOGO_URL} alt="Logo" className="h-32 object-contain" />
+              </div>
+              <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-2 text-slate-500 hover:text-red-500 rounded-lg">
+                <X size={24} />
+              </button>
               <div className="w-8 hidden lg:block" />
             </div>
           ) : (
-            <div className="w-full h-full flex items-center justify-center p-1"><img src={LOGO_URL} alt="V3" className="w-full h-full object-contain scale-150" /></div>
+            <div className="w-full h-full flex items-center justify-center p-1">
+              <img src={LOGO_URL} alt="V3" className="w-full h-full object-contain scale-150" />
+            </div>
           )}
         </div>
-        <nav className="flex-1 min-h-0 pt-12 pb-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
+
+        <nav className="flex-1 min-h-0 pt-6 pb-6 px-3 space-y-2 overflow-y-auto custom-scrollbar overscroll-contain touch-pan-y">
           {items.map((item, idx) => (
             <NavItemComponent key={item.href || item.title || idx} item={item} searchQuery={searchQuery} expandedItemKeys={expandedItemKeys} onToggle={handleToggle} isManualClick={isManualClick} />
           ))}
