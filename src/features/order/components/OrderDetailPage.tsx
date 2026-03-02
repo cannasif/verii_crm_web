@@ -463,11 +463,11 @@ export function OrderDetailPage(): ReactElement {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-muted/50 h-auto p-1 rounded-xl gap-1">
+        <TabsList className="bg-muted/50 h-auto p-1 rounded-xl gap-1 w-full overflow-x-auto scrollbar-hide justify-start">
           <TabsTrigger
             value="detail"
             className={cn(
-              'rounded-lg px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
               activeTab === 'detail' && 'text-pink-600 dark:text-pink-500 font-medium'
             )}
           >
@@ -477,7 +477,7 @@ export function OrderDetailPage(): ReactElement {
           <TabsTrigger
             value="approval-flow"
             className={cn(
-              'rounded-lg px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
               activeTab === 'approval-flow' && 'text-pink-600 dark:text-pink-500 font-medium'
             )}
           >
@@ -487,7 +487,7 @@ export function OrderDetailPage(): ReactElement {
           <TabsTrigger
             value="report"
             className={cn(
-              'rounded-lg px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
               activeTab === 'report' && 'text-pink-600 dark:text-pink-500 font-medium'
             )}
           >

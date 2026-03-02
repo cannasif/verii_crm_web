@@ -548,11 +548,11 @@ export function QuotationDetailPage(): ReactElement {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-muted/50 h-auto p-1 rounded-xl gap-1">
+        <TabsList className="bg-muted/50 h-auto p-1 rounded-xl gap-1 w-full overflow-x-auto scrollbar-hide justify-start">
           <TabsTrigger
             value="detail"
             className={cn(
-              'rounded-lg px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
               activeTab === 'detail' && 'text-pink-600 dark:text-pink-500 font-medium'
             )}
           >
@@ -562,7 +562,7 @@ export function QuotationDetailPage(): ReactElement {
           <TabsTrigger
             value="approval-flow"
             className={cn(
-              'rounded-lg px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
               activeTab === 'approval-flow' && 'text-pink-600 dark:text-pink-500 font-medium'
             )}
           >
@@ -572,7 +572,7 @@ export function QuotationDetailPage(): ReactElement {
           <TabsTrigger
             value="report"
             className={cn(
-              'rounded-lg px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
               activeTab === 'report' && 'text-pink-600 dark:text-pink-500 font-medium'
             )}
           >
@@ -687,12 +687,12 @@ export function QuotationDetailPage(): ReactElement {
                 </aside>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+              <div className="flex flex-wrap items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => navigate('/quotations')}
-                  className="group"
+                  className="group w-full sm:w-auto"
                 >
                   <X className="mr-2 h-4 w-4" />
                   {t('quotation.cancel')}
@@ -700,7 +700,7 @@ export function QuotationDetailPage(): ReactElement {
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="outline" className="group">
+                    <Button type="button" variant="outline" className="group w-full sm:w-auto">
                       <Share2 className="mr-2 h-4 w-4" />
                       {t('quotation.export')}
                     </Button>
@@ -725,7 +725,7 @@ export function QuotationDetailPage(): ReactElement {
                   <Button
                     type="submit"
                     disabled={updateMutation.isPending || !isFormValid}
-                    className="group bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white min-w-[140px]"
+                    className="group w-full sm:w-auto bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white sm:min-w-[140px]"
                   >
                     <Save className="mr-2 h-4 w-4" />
                     {updateMutation.isPending
@@ -741,7 +741,7 @@ export function QuotationDetailPage(): ReactElement {
                     variant="secondary"
                     onClick={handleStartApprovalFlow}
                     disabled={startApprovalFlow.isPending || !quotation}
-                    className="h-10"
+                    className="h-10 w-full sm:w-auto"
                   >
                     {startApprovalFlow.isPending ? (
                       <>

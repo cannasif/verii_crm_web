@@ -70,7 +70,7 @@ export function DemandListPage(): ReactElement {
   };
 
   return (
-    <div className="relative min-h-screen space-y-8 p-4 md:p-8 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-700">
+    <div className="relative min-h-screen space-y-6 p-3 md:p-8 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-700">
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
@@ -97,7 +97,7 @@ export function DemandListPage(): ReactElement {
           </Button>
         </div>
 
-        <div className="relative z-10 bg-white/80 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-xl shadow-zinc-200/50 dark:shadow-none overflow-hidden p-6">
+        <div className="relative z-10 bg-white/80 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-xl shadow-zinc-200/50 dark:shadow-none overflow-hidden p-3 sm:p-6">
           <div className="flex flex-col gap-4 mb-4">
             <PageToolbar
               searchPlaceholder={t('demand.list.searchPlaceholder')}
