@@ -220,7 +220,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       <div className="flex flex-1 flex-col h-full overflow-hidden relative z-10">
         <Navbar />
         <TooltipProvider delayDuration={200}>
-          <main className="flex-1 overflow-y-auto p-3 md:p-6 text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+          <main className="flex-1 overflow-auto p-2 sm:p-3 md:p-6 text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent">
             <div className="w-full min-h-full">
               <Suspense fallback={<PageLoader />}>
                 <RoutePermissionGuard />
