@@ -21,7 +21,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import {
   createPermissionDefinitionSchema,
@@ -39,6 +38,7 @@ interface PermissionDefinitionFormProps {
   onSubmit: (data: CreatePermissionDefinitionSchema) => void | Promise<void>;
   item?: PermissionDefinitionDto | null;
   isLoading?: boolean;
+  usedCodes?: string[];
 }
 
 export function PermissionDefinitionForm({
@@ -47,6 +47,7 @@ export function PermissionDefinitionForm({
   onSubmit,
   item,
   isLoading = false,
+  usedCodes = [],
 }: PermissionDefinitionFormProps): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
 
@@ -82,12 +83,19 @@ export function PermissionDefinitionForm({
   }, [item, form, open]);
 
   const permissionCodeOptions: ComboboxOption[] = useMemo(() => {
-    return PERMISSION_CODE_CATALOG.map((code) => {
+    const usedSet = new Set(usedCodes.map((code) => code.toLowerCase()));
+    const currentCode = item?.code?.toLowerCase();
+
+    return PERMISSION_CODE_CATALOG.filter((code) => {
+      const lowerCode = code.toLowerCase();
+      if (currentCode && lowerCode === currentCode) return true;
+      return !usedSet.has(lowerCode);
+    }).map((code) => {
       const meta = getPermissionDisplayMeta(code);
       const title = meta ? t(meta.key, meta.fallback) : code;
       return { value: code, label: `${title} (${code})` };
     });
-  }, [t]);
+  }, [t, usedCodes, item?.code]);
 
   const handleSubmit = async (data: CreatePermissionDefinitionSchema): Promise<void> => {
     await onSubmit(data);
@@ -99,7 +107,7 @@ export function PermissionDefinitionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
+      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-visible flex flex-col max-h-[90vh]">
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
           <div className="space-y-1">
             <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -128,25 +136,22 @@ export function PermissionDefinitionForm({
                       <FieldHelpTooltip text={t('help.permissionDefinition.code')} />
                     </FormLabel>
                     <FormControl>
-                      {item ? (
-                        <Input {...field} maxLength={120} disabled />
-                      ) : (
-                        <Combobox
-                          options={permissionCodeOptions}
-                          value={field.value}
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            const meta = getPermissionDisplayMeta(value);
-                            const title = meta ? t(meta.key, meta.fallback) : '';
-                            if (!form.getValues('name') && title) {
-                              form.setValue('name', title, { shouldDirty: true });
-                            }
-                          }}
-                          placeholder={t('permissionDefinitions.form.codePlaceholder')}
-                          searchPlaceholder={t('permissionDefinitions.form.codeSearchPlaceholder')}
-                          emptyText={t('permissionDefinitions.form.codeEmpty')}
-                        />
-                      )}
+                      <Combobox
+                        options={permissionCodeOptions}
+                        value={field.value}
+                        modal
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          const meta = getPermissionDisplayMeta(value);
+                          const title = meta ? t(meta.key, meta.fallback) : '';
+                          if (!form.getValues('name') && title) {
+                            form.setValue('name', title, { shouldDirty: true });
+                          }
+                        }}
+                        placeholder={t('permissionDefinitions.form.codePlaceholder')}
+                        searchPlaceholder={t('permissionDefinitions.form.codeSearchPlaceholder')}
+                        emptyText={t('permissionDefinitions.form.codeEmpty')}
+                      />
                     </FormControl>
                     <FormMessage />
                     {field.value ? (
@@ -201,22 +206,6 @@ export function PermissionDefinitionForm({
                     </FormLabel>
                     <FormControl>
                       <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionDefinitions.form.descriptionPlaceholder')} maxLength={500} className="min-h-[80px]" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <FormLabel className="inline-flex items-center">
-                      {t('permissionDefinitions.form.isActive')}
-                      <FieldHelpTooltip text={t('help.permissionDefinition.isActive')} />
-                    </FormLabel>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

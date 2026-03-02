@@ -137,22 +137,6 @@ export function PermissionGroupForm({
               />
               <FormField
                 control={form.control}
-                name="isSystemAdmin"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <FormLabel className="inline-flex items-center">
-                      {t('permissionGroups.form.isSystemAdmin')}
-                      <FieldHelpTooltip text={t('help.permissionGroup.isSystemAdmin')} />
-                    </FormLabel>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="isActive"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">

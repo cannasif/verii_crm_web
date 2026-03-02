@@ -32,6 +32,7 @@ export function GroupPermissionsPanel({
   const { data: group } = usePermissionGroupQuery(groupId);
   const setPermissions = useSetPermissionGroupPermissionsMutation();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const isSystemAdminGroup = group?.isSystemAdmin === true;
 
   const serverIds = useMemo(() => group?.permissionDefinitionIds ?? EMPTY_IDS, [group?.permissionDefinitionIds]);
 
@@ -58,6 +59,11 @@ export function GroupPermissionsPanel({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto p-6 sm:p-8">
+          {isSystemAdminGroup && (
+            <div className="mb-4 rounded-lg border border-amber-300/50 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300">
+              {t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez')}
+            </div>
+          )}
           {group?.permissionCodes && group.permissionCodes.length > 0 && (
             <div className="mb-4">
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
@@ -77,7 +83,7 @@ export function GroupPermissionsPanel({
               {t('permissionGroups.form.permissions')}
               <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
             </p>
-            <PermissionDefinitionMultiSelect value={selectedIds} onChange={setSelectedIds} disabled={setPermissions.isPending} />
+            <PermissionDefinitionMultiSelect value={selectedIds} onChange={setSelectedIds} disabled={setPermissions.isPending || isSystemAdminGroup} />
           </div>
         </div>
 
@@ -87,7 +93,7 @@ export function GroupPermissionsPanel({
           </Button>
           <span className="inline-flex items-center gap-1">
             <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
-            <Button onClick={handleSave} disabled={setPermissions.isPending}>
+            <Button onClick={handleSave} disabled={setPermissions.isPending || isSystemAdminGroup}>
               {setPermissions.isPending ? t('common.saving') : t('common.save')}
             </Button>
           </span>

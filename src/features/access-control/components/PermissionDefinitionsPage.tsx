@@ -110,7 +110,11 @@ export function PermissionDefinitionsPage(): ReactElement {
   };
 
   const handleFormSubmit = async (formData: CreatePermissionDefinitionSchema): Promise<void> => {
-    const dto = { ...formData, description: formData.description ?? undefined };
+    const dto = {
+      ...formData,
+      isActive: editingItem?.isActive ?? true,
+      description: formData.description ?? undefined,
+    };
     if (editingItem) {
       await updateMutation.mutateAsync({ id: editingItem.id, dto });
     } else {
@@ -279,6 +283,7 @@ export function PermissionDefinitionsPage(): ReactElement {
         onOpenChange={setFormOpen}
         onSubmit={handleFormSubmit}
         item={editingItem}
+        usedCodes={items.map((x) => x.code)}
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
 
