@@ -37,6 +37,9 @@ interface MainLayoutProps {
 export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   const { t } = useTranslation();
   const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
+  const canManageGoogleAuth =
+    permissions?.isSystemAdmin === true ||
+    ['tenantadmin', 'systemadmin'].includes((permissions?.roleTitle ?? '').trim().toLowerCase());
 
   const defaultNavItems: NavItem[] = useMemo(() => {
     const iconSize = 22;
@@ -180,6 +183,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           { title: t('sidebar.googleIntegrationConnection'), href: '/settings/integrations/google' },
           { title: t('sidebar.googleIntegrationSync'), href: '/settings/integrations/google/sync' },
           { title: t('sidebar.googleIntegrationLogs'), href: '/settings/integrations/google/logs' },
+          { title: t('sidebar.googleIntegrationAuthInformation'), href: '/settings/integrations/google/auth' },
         ],
       },
       {
@@ -209,11 +213,28 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
 
   const items = useMemo(() => {
     const raw = navItems ?? defaultNavItems;
-    if (isLoading) return raw;
-    if (permissions) return filterNavItemsByPermission(raw, permissions);
-    if (isError) return raw;
-    return raw;
-  }, [navItems, defaultNavItems, permissions, isLoading, isError]);
+    const normalized = raw.map((item) => {
+      if (item.title !== t('sidebar.googleIntegration') || !item.children) {
+        return item;
+      }
+
+      return {
+        ...item,
+        children: item.children.filter((child) => {
+          if (child.href !== '/settings/integrations/google/auth') {
+            return true;
+          }
+
+          return canManageGoogleAuth;
+        }),
+      };
+    });
+
+    if (isLoading) return normalized;
+    if (permissions) return filterNavItemsByPermission(normalized, permissions);
+    if (isError) return normalized;
+    return normalized;
+  }, [navItems, defaultNavItems, permissions, isLoading, isError, canManageGoogleAuth, t]);
 
   return (
     <div className="relative flex min-h-dvh h-[100dvh] w-full overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0516] font-['Outfit'] transition-colors duration-300">

@@ -83,6 +83,7 @@ const ProfilePage = lazyImport(() => import('@/features/user-detail-management')
 const GoogleConnectionPage = lazyImport(() => import('@/features/google-integration'), 'GoogleConnectionPage');
 const GoogleSyncPage = lazyImport(() => import('@/features/google-integration'), 'GoogleSyncPage');
 const GoogleLogsPage = lazyImport(() => import('@/features/google-integration'), 'GoogleLogsPage');
+const GoogleAuthInformationPage = lazyImport(() => import('@/features/google-integration'), 'GoogleAuthInformationPage');
 
 // const WINDO_FORM_ROUTE = '/crm-ui';
 const WINDO_FORM_ROUTE = '/';
@@ -164,6 +165,7 @@ export const router = createBrowserRouter([
       { path: 'settings/integrations/google', element: <GoogleConnectionPage /> },
       { path: 'settings/integrations/google/sync', element: <GoogleSyncPage /> },
       { path: 'settings/integrations/google/logs', element: <GoogleLogsPage /> },
+      { path: 'settings/integrations/google/auth', element: <GoogleAuthInformationPage /> },
       { path: 'profile', element: <ProfilePage /> },
     ],
   },
