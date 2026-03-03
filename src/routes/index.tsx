@@ -80,6 +80,9 @@ const PermissionGroupsPage = lazyImport(() => import('@/features/access-control'
 const UserGroupAssignmentsPage = lazyImport(() => import('@/features/access-control'), 'UserGroupAssignmentsPage');
 const HangfireMonitoringPage = lazyImport(() => import('@/features/hangfire-monitoring'), 'HangfireMonitoringPage');
 const ProfilePage = lazyImport(() => import('@/features/user-detail-management'), 'ProfilePage');
+const GoogleConnectionPage = lazyImport(() => import('@/features/google-integration'), 'GoogleConnectionPage');
+const GoogleSyncPage = lazyImport(() => import('@/features/google-integration'), 'GoogleSyncPage');
+const GoogleLogsPage = lazyImport(() => import('@/features/google-integration'), 'GoogleLogsPage');
 
 // const WINDO_FORM_ROUTE = '/crm-ui';
 const WINDO_FORM_ROUTE = '/';
@@ -158,6 +161,9 @@ export const router = createBrowserRouter([
       { path: 'access-control/permission-groups', element: <PermissionGroupsPage /> },
       { path: 'access-control/user-group-assignments', element: <UserGroupAssignmentsPage /> },
       { path: 'hangfire-monitoring', element: <HangfireMonitoringPage /> },
+      { path: 'settings/integrations/google', element: <GoogleConnectionPage /> },
+      { path: 'settings/integrations/google/sync', element: <GoogleSyncPage /> },
+      { path: 'settings/integrations/google/logs', element: <GoogleLogsPage /> },
       { path: 'profile', element: <ProfilePage /> },
     ],
   },

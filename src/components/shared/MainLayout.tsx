@@ -174,6 +174,15 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         ],
       },
       {
+        title: t('sidebar.googleIntegration'),
+        icon: <Settings02Icon size={iconSize} className="text-rose-500" />,
+        children: [
+          { title: t('sidebar.googleIntegrationConnection'), href: '/settings/integrations/google' },
+          { title: t('sidebar.googleIntegrationSync'), href: '/settings/integrations/google/sync' },
+          { title: t('sidebar.googleIntegrationLogs'), href: '/settings/integrations/google/logs' },
+        ],
+      },
+      {
         title: t('sidebar.accessControl'),
         icon: <Shield01Icon size={iconSize} className="text-violet-500" />,
         children: [
