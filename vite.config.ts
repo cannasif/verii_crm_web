@@ -5,8 +5,8 @@ import { defineConfig } from "vite"
 
 const allowedHosts = ["https://crm.v3rii.com"];
 export default defineConfig({
-  base: "/crm-ui/",
-  //base: "/",
+  // base: "/crm-ui/",
+  base: "/",
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
