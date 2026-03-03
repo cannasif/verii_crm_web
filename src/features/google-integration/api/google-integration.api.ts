@@ -3,10 +3,13 @@ import type { ApiResponse } from '@/types/api';
 import type {
   GoogleAuthorizeUrlDto,
   GoogleStatusDto,
+  TenantGoogleOAuthSettingsDto,
   GoogleTestEventDto,
+  UpdateTenantGoogleOAuthSettingsDto,
 } from '../types/google-integration.types';
 
 const GOOGLE_INTEGRATION_BASE = '/api/integrations/google';
+const GOOGLE_TENANT_ADMIN_BASE = '/api/admin/tenants/google-oauth/settings';
 
 function getErrorMessage(response: ApiResponse<unknown>, fallback: string): string {
   if (response.message?.trim()) return response.message;
@@ -47,5 +50,25 @@ export const googleIntegrationApi = {
     }
 
     throw new Error(getErrorMessage(response, 'Google test event could not be created.'));
+  },
+
+  getTenantOAuthSettings: async (): Promise<TenantGoogleOAuthSettingsDto> => {
+    const response = await api.get<ApiResponse<TenantGoogleOAuthSettingsDto>>(GOOGLE_TENANT_ADMIN_BASE);
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(getErrorMessage(response, 'Google OAuth settings could not be loaded.'));
+  },
+
+  updateTenantOAuthSettings: async (
+    payload: UpdateTenantGoogleOAuthSettingsDto
+  ): Promise<TenantGoogleOAuthSettingsDto> => {
+    const response = await api.put<ApiResponse<TenantGoogleOAuthSettingsDto>>(GOOGLE_TENANT_ADMIN_BASE, payload);
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(getErrorMessage(response, 'Google OAuth settings could not be updated.'));
   },
 };
