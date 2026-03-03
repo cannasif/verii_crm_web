@@ -21,6 +21,25 @@ export const api = axios.create({
   },
 });
 
+function resolveBranchCodeFromPersistedState(): string | null {
+  try {
+    const raw = localStorage.getItem('auth-storage');
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as {
+      state?: { branch?: { code?: string | number; id?: string | number } };
+    };
+
+    const code = parsed?.state?.branch?.code ?? parsed?.state?.branch?.id;
+    if (code == null) return null;
+
+    const normalized = String(code).trim();
+    return normalized.length > 0 ? normalized : null;
+  } catch {
+    return null;
+  }
+}
+
 function normalizeApiEnvelope(payload: unknown): unknown {
   if (
     (typeof Blob !== 'undefined' && payload instanceof Blob) ||
@@ -101,8 +120,9 @@ api.interceptors.request.use((config) => {
   config.headers['X-Language'] = i18n.language || 'tr';
 
   const branch = useAuthStore.getState().branch;
-  if (branch?.code) {
-    config.headers['X-Branch-Code'] = branch.code;
+  const branchCode = branch?.code || resolveBranchCodeFromPersistedState();
+  if (branchCode) {
+    config.headers['X-Branch-Code'] = branchCode;
   }
 
   return config;
