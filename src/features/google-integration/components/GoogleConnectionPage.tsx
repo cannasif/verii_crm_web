@@ -54,6 +54,7 @@ export function GoogleConnectionPage(): ReactElement {
   }, [navigate, searchParams, t]);
 
   const isConnected = status?.isConnected === true;
+  const isOAuthConfigured = status?.isOAuthConfigured === true;
 
   const scopesText = useMemo(() => {
     if (!status?.scopes) return '-';
@@ -107,10 +108,15 @@ export function GoogleConnectionPage(): ReactElement {
               </div>
 
               <div className="flex flex-wrap gap-2 pt-2">
+                {!isOAuthConfigured && (
+                  <div className="w-full rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                    {t('connection.oauthNotConfiguredWarning')}
+                  </div>
+                )}
                 {!isConnected ? (
                   <Button
                     onClick={() => authorizeMutation.mutate()}
-                    disabled={authorizeMutation.isPending}
+                    disabled={authorizeMutation.isPending || !isOAuthConfigured}
                   >
                     {authorizeMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                     {t('connection.connectButton')}
