@@ -1,0 +1,45 @@
+{
+  "page": {
+    "connectionTitle": "Google Bağlantısı",
+    "connectionDescription": "Google hesabınızı CRM ile bağlayıp takvim entegrasyonunu yönetin.",
+    "syncTitle": "Google Senkron",
+    "syncDescription": "Senkron kapsamını ve izinleri bu ekrandan takip edin.",
+    "logsTitle": "Google Loglar",
+    "logsDescription": "Google entegrasyonu ile ilgili log akışı bu ekranda listelenecek."
+  },
+  "connection": {
+    "statusCardTitle": "Bağlantı Durumu",
+    "statusLabel": "Durum",
+    "connected": "Bağlı",
+    "notConnected": "Bağlı Değil",
+    "googleEmailLabel": "Google E-posta",
+    "expiresAtLabel": "Token Bitiş Tarihi",
+    "scopeLabel": "Yetki (Scope)",
+    "connectButton": "Google ile Bağlan",
+    "disconnectButton": "Bağlantıyı Kaldır",
+    "testEventButton": "Test Etkinliği Oluştur",
+    "connectedSuccess": "Google hesabı başarıyla bağlandı.",
+    "connectedError": "Google bağlantısı tamamlanamadı.",
+    "connectError": "Google bağlantı URL'i alınamadı.",
+    "disconnectSuccess": "Google bağlantısı kaldırıldı.",
+    "disconnectError": "Google bağlantısı kaldırılamadı.",
+    "testEventSuccess": "Test etkinliği oluşturuldu. EventId: {{eventId}}",
+    "testEventError": "Test etkinliği oluşturulamadı."
+  },
+  "sync": {
+    "scopeCardTitle": "Senkron Durumu ve İzinler",
+    "statusLabel": "Bağlantı",
+    "connected": "Bağlı",
+    "notConnected": "Bağlı Değil",
+    "scopeLabel": "Aktif Scope",
+    "flowCardTitle": "Senkron Kapsamı",
+    "flowMeeting": "Meeting aktiviteleri Google Calendar tarafına senkronize edilir.",
+    "flowCall": "Call aktiviteleri Google Calendar tarafına senkronize edilir.",
+    "flowPlaceholder": "Detaylı senkron ayarları bir sonraki sürümde açılacaktır.",
+    "loading": "Yükleniyor..."
+  },
+  "logs": {
+    "placeholderTitle": "Log Sayfası Hazırlanıyor",
+    "placeholderText": "Bu bölümde OAuth callback, token yenileme ve senkron kayıtları listelenecek."
+  }
+}
