@@ -3,9 +3,11 @@
     "connectionTitle": "Google Connection",
     "connectionDescription": "Connect your Google account to CRM and manage calendar integration.",
     "syncTitle": "Google Sync",
-    "syncDescription": "Track sync scope and permissions from this page.",
+    "syncDescription": "Monitor sync scope and permissions from this screen.",
     "logsTitle": "Google Logs",
-    "logsDescription": "Integration logs will be listed on this page."
+    "logsDescription": "Google integration logs will be listed on this page.",
+    "authInformationTitle": "Google Auth Information",
+    "authInformationDescription": "Manage tenant-level Google OAuth settings from this page."
   },
   "connection": {
     "statusCardTitle": "Connection Status",
@@ -13,18 +15,43 @@
     "connected": "Connected",
     "notConnected": "Not Connected",
     "googleEmailLabel": "Google Email",
-    "expiresAtLabel": "Token Expiration",
-    "scopeLabel": "Scope",
+    "expiresAtLabel": "Token Expiry",
+    "scopeLabel": "Scopes",
     "connectButton": "Connect with Google",
     "disconnectButton": "Disconnect",
     "testEventButton": "Create Test Event",
     "connectedSuccess": "Google account connected successfully.",
     "connectedError": "Google connection could not be completed.",
-    "connectError": "Google authorize URL could not be retrieved.",
+    "connectError": "Google authorize URL could not be fetched.",
     "disconnectSuccess": "Google connection removed.",
     "disconnectError": "Google connection could not be removed.",
     "testEventSuccess": "Test event created. EventId: {{eventId}}",
-    "testEventError": "Test event could not be created."
+    "testEventError": "Test event could not be created.",
+    "oauthNotConfiguredWarning": "Google OAuth is not configured. Your admin must configure it on 'Google Auth Information'."
+  },
+  "authInformation": {
+    "cardTitle": "Tenant Google OAuth Settings",
+    "clientSecretPlaceholder": "Enter to change",
+    "currentSecretLabel": "Current Secret",
+    "enableLabel": "Enable Google OAuth",
+    "enableDescription": "If disabled, users cannot connect their Google accounts.",
+    "configStatusLabel": "Configuration Status",
+    "configured": "Configured",
+    "notConfigured": "Not Configured",
+    "saveButton": "Save",
+    "saveSuccess": "Google OAuth settings saved.",
+    "saveError": "Google OAuth settings could not be saved.",
+    "loadError": "Google OAuth settings could not be loaded.",
+    "setupGuideTitle": "Google OAuth Setup Guide",
+    "setupGuideDescription": "Get Client ID and Client Secret from Google Cloud Console.",
+    "setupStep1": "Open Google Cloud Console and select the correct project.",
+    "setupStep2": "Complete app details on APIs & Services > OAuth consent screen.",
+    "setupStep3": "Create a Web application from APIs & Services > Credentials > Create credentials > OAuth client ID.",
+    "setupStep4": "Add the callback URL below into Authorized redirect URIs and save.",
+    "setupStep5": "Copy generated Client ID and Client Secret and save them on this page.",
+    "setupStep6": "If IsEnabled is off, users cannot connect with Google.",
+    "callbackLabel": "Callback URL",
+    "consoleLinkLabel": "Open Google Cloud Console"
   },
   "sync": {
     "scopeCardTitle": "Sync Status and Permissions",
@@ -32,14 +59,14 @@
     "connected": "Connected",
     "notConnected": "Not Connected",
     "scopeLabel": "Active Scope",
-    "flowCardTitle": "Sync Coverage",
+    "flowCardTitle": "Sync Scope",
     "flowMeeting": "Meeting activities are synchronized to Google Calendar.",
     "flowCall": "Call activities are synchronized to Google Calendar.",
     "flowPlaceholder": "Detailed sync settings will be available in the next release.",
     "loading": "Loading..."
   },
   "logs": {
-    "placeholderTitle": "Logs Page is Preparing",
-    "placeholderText": "OAuth callback, token refresh, and sync records will be listed here."
+    "placeholderTitle": "Logs Page Coming Soon",
+    "placeholderText": "OAuth callback, token refresh, and sync logs will be listed here."
   }
 }

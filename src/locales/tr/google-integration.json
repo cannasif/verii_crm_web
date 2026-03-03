@@ -5,7 +5,9 @@
     "syncTitle": "Google Senkron",
     "syncDescription": "Senkron kapsamını ve izinleri bu ekrandan takip edin.",
     "logsTitle": "Google Loglar",
-    "logsDescription": "Google entegrasyonu ile ilgili log akışı bu ekranda listelenecek."
+    "logsDescription": "Google entegrasyonu ile ilgili log akışı bu ekranda listelenecek.",
+    "authInformationTitle": "Google Auth Information",
+    "authInformationDescription": "Tenant bazlı Google OAuth ayarlarını bu ekrandan yönetin."
   },
   "connection": {
     "statusCardTitle": "Bağlantı Durumu",
@@ -24,7 +26,32 @@
     "disconnectSuccess": "Google bağlantısı kaldırıldı.",
     "disconnectError": "Google bağlantısı kaldırılamadı.",
     "testEventSuccess": "Test etkinliği oluşturuldu. EventId: {{eventId}}",
-    "testEventError": "Test etkinliği oluşturulamadı."
+    "testEventError": "Test etkinliği oluşturulamadı.",
+    "oauthNotConfiguredWarning": "Google OAuth yapılandırılmamış. Yöneticiniz 'Google Auth Information' sayfasından ayarlamalı."
+  },
+  "authInformation": {
+    "cardTitle": "Tenant Google OAuth Ayarları",
+    "clientSecretPlaceholder": "Değiştirmek için girin",
+    "currentSecretLabel": "Mevcut Secret",
+    "enableLabel": "Google OAuth'u Etkinleştir",
+    "enableDescription": "Kapalıysa kullanıcılar Google hesaplarını bağlayamaz.",
+    "configStatusLabel": "Yapılandırma Durumu",
+    "configured": "Yapılandırıldı",
+    "notConfigured": "Yapılandırılmadı",
+    "saveButton": "Kaydet",
+    "saveSuccess": "Google OAuth ayarları kaydedildi.",
+    "saveError": "Google OAuth ayarları kaydedilemedi.",
+    "loadError": "Google OAuth ayarları yüklenemedi.",
+    "setupGuideTitle": "Google OAuth Kurulum Rehberi",
+    "setupGuideDescription": "Client ID ve Client Secret bilgilerini Google Cloud Console üzerinden alın.",
+    "setupStep1": "Google Cloud Console'a girin ve doğru projeyi seçin.",
+    "setupStep2": "APIs & Services > OAuth consent screen ekranında uygulama bilgilerini tamamlayın.",
+    "setupStep3": "APIs & Services > Credentials > Create credentials > OAuth client ID adımıyla Web application oluşturun.",
+    "setupStep4": "Authorized redirect URIs alanına aşağıdaki callback URL'ini ekleyin ve kaydedin.",
+    "setupStep5": "Oluşan Client ID ve Client Secret değerlerini bu sayfaya girip kaydedin.",
+    "setupStep6": "IsEnabled açık değilse kullanıcılar Google ile bağlanamaz.",
+    "callbackLabel": "Callback URL",
+    "consoleLinkLabel": "Google Cloud Console'u aç"
   },
   "sync": {
     "scopeCardTitle": "Senkron Durumu ve İzinler",

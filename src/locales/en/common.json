@@ -283,6 +283,7 @@
     "googleIntegrationConnection": "Connection",
     "googleIntegrationSync": "Sync",
     "googleIntegrationLogs": "Logs",
+    "googleIntegrationAuthInformation": "Google Auth Information",
     "mailSettings": "Mail Settings",
     "productPricingGroupByManagement": "Product Pricing Group By Management",
     "quotationLineManagement": "Quotation Line Management",

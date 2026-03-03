@@ -284,6 +284,7 @@
     "googleIntegrationConnection": "Bağlantı",
     "googleIntegrationSync": "Senkron",
     "googleIntegrationLogs": "Loglar",
+    "googleIntegrationAuthInformation": "Google Auth Information",
     "mailSettings": "Mail Ayarları",
     "productPricingGroupByManagement": "Ürün Fiyatlandırma Grubu Yönetimi",
     "quotationLineManagement": "Teklif Satırı Yönetimi",
