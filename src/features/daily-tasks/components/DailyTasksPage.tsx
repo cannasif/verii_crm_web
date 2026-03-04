@@ -17,6 +17,7 @@ import { ActivityStatusBadge } from '@/features/activity-management/components/A
 import { ActivityPriorityBadge } from '@/features/activity-management/components/ActivityPriorityBadge';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
+import { buildUpdateActivityPayload } from '@/features/activity-management/utils/build-update-payload';
 import { toUpdateActivityDto } from '@/features/activity-management/utils/to-update-activity-dto';
 import type { ActivityDto } from '@/features/activity-management/types/activity-types';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
@@ -52,6 +53,7 @@ export function DailyTasksPage(): ReactElement {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [assignedUserFilter, setAssignedUserFilter] = useState<number | undefined>(undefined);
   const [formOpen, setFormOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState<ActivityDto | null>(null);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [calendarViewMode, setCalendarViewMode] = useState<'weekly' | 'monthly'>('monthly');
   const [calendarWeekStart, setCalendarWeekStart] = useState<Date>(() => {
@@ -125,12 +127,12 @@ export function DailyTasksPage(): ReactElement {
 
   // --- Filters ---
   const calendarRange = activeTab === 'calendar' && calendarViewMode === 'weekly' ? weeklyDateRange : calendarDateRange;
+  const apiDateRange = activeTab === 'list' ? weekDateRange : activeTab === 'calendar' ? calendarRange : weekDateRange;
   const filters: Array<{ column: string; operator: string; value: string }> = [
     statusFilter !== 'all' ? { column: 'Status', operator: 'eq', value: statusFilter } : undefined,
     assignedUserFilter ? { column: 'AssignedUserId', operator: 'eq', value: assignedUserFilter.toString() } : undefined,
-    activeTab === 'tasks' ? { column: 'StartDateTime', operator: 'gte', value: weekDateRange.startDate } : undefined,
-    activeTab === 'tasks' ? { column: 'StartDateTime', operator: 'lte', value: weekDateRange.endDate } : undefined,
-    activeTab === 'list' ? { column: 'StartDateTime', operator: 'eq', value: todayDate } : undefined,
+    (activeTab === 'tasks' || activeTab === 'list') ? { column: 'StartDateTime', operator: 'gte', value: apiDateRange.startDate } : undefined,
+    (activeTab === 'tasks' || activeTab === 'list') ? { column: 'StartDateTime', operator: 'lte', value: apiDateRange.endDate } : undefined,
     activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'gte', value: calendarRange.startDate } : undefined,
     activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'lte', value: calendarRange.endDate } : undefined,
   ].filter((f): f is { column: string; operator: string; value: string } => f !== undefined);
@@ -174,8 +176,8 @@ export function DailyTasksPage(): ReactElement {
     if (activeTab === 'list') {
       filtered = filtered.filter((activity) => {
         if (!activity.activityDate) return false;
-        const activityDate = new Date(activity.activityDate).toISOString().split('T')[0];
-        return activityDate === todayDate;
+        const activityDate = new Date(activity.activityDate);
+        return activityDate >= new Date(weekDateRange.startDate) && activityDate <= new Date(weekDateRange.endDate);
       });
     }
     if (activeTab === 'calendar') {
@@ -187,7 +189,7 @@ export function DailyTasksPage(): ReactElement {
       });
     }
     return filtered;
-  }, [activities, statusFilter, assignedUserFilter, activeTab, weekDateRange, todayDate, calendarDateRange, calendarViewMode, weeklyDateRange]);
+  }, [activities, statusFilter, assignedUserFilter, activeTab, weekDateRange, calendarDateRange, calendarViewMode, weeklyDateRange]);
 
   // --- Handlers ---
   const handleToggleComplete = async (activity: ActivityDto) => {
@@ -200,13 +202,34 @@ export function DailyTasksPage(): ReactElement {
     void refetch();
   };
   const handleDelete = async (id: number) => { await deleteActivity.mutateAsync(id); void refetch(); };
-  const handleNewTask = () => setFormOpen(true);
+  const handleNewTask = () => {
+    setEditingActivity(null);
+    setSelectedDate(null);
+    setSlotStart(null);
+    setSlotEnd(null);
+    setFormOpen(true);
+  };
+  const handleEdit = (activity: ActivityDto) => {
+    setEditingActivity(activity);
+    setSelectedDate(null);
+    setSlotStart(null);
+    setSlotEnd(null);
+    setFormOpen(true);
+  };
 
   const handleFormSubmit = async (data: ActivityFormSchema) => {
-    await createActivity.mutateAsync(
-      buildCreateActivityPayload(data, { assignedUserIdFallback: user?.id })
-    );
+    if (editingActivity) {
+      await updateActivity.mutateAsync({
+        id: editingActivity.id,
+        data: buildUpdateActivityPayload(data, editingActivity.assignedUserId),
+      });
+    } else {
+      await createActivity.mutateAsync(
+        buildCreateActivityPayload(data, { assignedUserIdFallback: user?.id })
+      );
+    }
     setFormOpen(false);
+    setEditingActivity(null);
     void refetch();
   };
   const handleStartTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Scheduled }) }); void refetch(); };
@@ -480,7 +503,11 @@ export function DailyTasksPage(): ReactElement {
                 filteredActivities.map((activity) => (
                     <div
                     key={activity.id}
-                    className="group relative bg-white/80 dark:bg-[#150d22]/80 backdrop-blur-md border border-white/50 dark:border-white/5 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-3 md:gap-4 overflow-hidden"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleEdit(activity)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleEdit(activity)}
+                    className="group relative bg-white/80 dark:bg-[#150d22]/80 backdrop-blur-md border border-white/50 dark:border-white/5 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-3 md:gap-4 overflow-hidden cursor-pointer"
                     >
                         {/* Sol Kenar Öncelik Çizgisi */}
                         <div className={`absolute left-0 top-0 bottom-0 w-1 ${activity.priority === 'High' ? 'bg-red-500' : activity.priority === 'Medium' ? 'bg-orange-500' : 'bg-blue-500'}`} />
@@ -500,7 +527,7 @@ export function DailyTasksPage(): ReactElement {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                onClick={() => handleDelete(activity.id)}
+                                onClick={(e) => { e.stopPropagation(); handleDelete(activity.id); }}
                             >
                                 <Trash2 size={16} />
                             </Button>
@@ -541,7 +568,7 @@ export function DailyTasksPage(): ReactElement {
                             </div>
 
                             {/* Hızlı Aksiyonlar */}
-                            <div className="flex gap-2">
+                            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                                 {Number(activity.status) === ActivityStatus.Scheduled && (
                                     <Button size="sm" className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 hover:bg-blue-600 hover:text-white p-0 transition-colors shadow-none" onClick={() => handleStartTask(activity)}>
                                         <Play size={12} className="md:w-3.5 md:h-3.5" fill="currentColor" />
@@ -571,13 +598,22 @@ export function DailyTasksPage(): ReactElement {
                     ) : (
                         <div className="divide-y divide-slate-100 dark:divide-white/5">
                             {filteredActivities.map((activity) => (
-                                <div key={activity.id} className="group flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4 p-4 hover:bg-slate-50/80 dark:hover:bg-white/5 transition-colors">
+                                <div
+                                    key={activity.id}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => handleEdit(activity)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleEdit(activity)}
+                                    className="group flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4 p-4 hover:bg-slate-50/80 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                                >
                                     <div className="flex items-start gap-3 w-full md:w-auto">
-                                        <Checkbox
-                                            checked={activity.isCompleted}
-                                            onCheckedChange={() => handleToggleComplete(activity)}
-                                            className="mt-1 md:mt-0 h-5 w-5 border-2 rounded-md data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                                        />
+                                        <div onClick={(e) => e.stopPropagation()}>
+                                            <Checkbox
+                                                checked={activity.isCompleted}
+                                                onCheckedChange={() => handleToggleComplete(activity)}
+                                                className="mt-1 md:mt-0 h-5 w-5 border-2 rounded-md data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                                            />
+                                        </div>
                                         <div className="flex-1 md:hidden">
                                             <span className={`font-semibold text-sm line-clamp-1 ${activity.isCompleted ? 'line-through text-slate-400' : 'text-slate-800 dark:text-slate-200'}`}>
                                                 {activity.subject}
@@ -602,7 +638,7 @@ export function DailyTasksPage(): ReactElement {
                                             {activity.description && <span className="hidden md:inline truncate max-w-md opacity-70 border-l pl-2 border-slate-300 dark:border-white/10">{activity.description}</span>}
                                         </div>
                                     </div>
-                                    <div className="flex justify-end w-full md:w-auto pl-8 md:pl-0 mt-2 md:mt-0">
+                                    <div className="flex justify-end w-full md:w-auto pl-8 md:pl-0 mt-2 md:mt-0" onClick={(e) => e.stopPropagation()}>
                                         <Button variant="ghost" size="sm" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => handleDelete(activity.id)}>
                                             <Trash2 size={16} />
                                         </Button>
@@ -695,10 +731,12 @@ export function DailyTasksPage(): ReactElement {
                                         {slotActivities.slice(0, 2).map((activity) => (
                                           <div
                                             key={activity.id}
-                                            className={`text-[9px] px-1 py-0.5 rounded truncate border font-medium
+                                            role="button"
+                                            tabIndex={0}
+                                            className={`text-[9px] px-1 py-0.5 rounded truncate border font-medium cursor-pointer
                                               ${activity.isCompleted ? 'bg-green-100/80 dark:bg-green-900/30 text-green-700 dark:text-green-400 line-through' : 'bg-indigo-100/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-200/50'}`}
                                             title={activity.subject}
-                                            onClick={(e) => e.stopPropagation()}
+                                            onClick={(e) => { e.stopPropagation(); handleEdit(activity); }}
                                           >
                                             {activity.subject}
                                           </div>
@@ -753,11 +791,14 @@ export function DailyTasksPage(): ReactElement {
                                     {dayData.activities.slice(0, 3).map((activity) => (
                                       <div
                                         key={activity.id}
-                                        className={`text-[9px] md:text-[10px] px-1 md:px-2 py-0.5 md:py-1 rounded-md truncate flex items-center gap-1 border font-medium transition-all
+                                        role="button"
+                                        tabIndex={0}
+                                        className={`text-[9px] md:text-[10px] px-1 md:px-2 py-0.5 md:py-1 rounded-md truncate flex items-center gap-1 border font-medium transition-all cursor-pointer
                                           ${activity.isCompleted 
                                             ? 'bg-green-50/50 text-green-700 border-green-200/50 line-through opacity-70' 
                                             : 'bg-indigo-50/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-500/20 hover:scale-105'}`}
                                         title={activity.subject}
+                                        onClick={(e) => { e.stopPropagation(); handleEdit(activity); }}
                                       >
                                         <div className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full shrink-0 ${activity.priority === 'High' ? 'bg-red-500' : activity.isCompleted ? 'bg-green-500' : 'bg-indigo-500'}`} />
                                         <span className="truncate">{activity.subject}</span>
@@ -786,17 +827,18 @@ export function DailyTasksPage(): ReactElement {
         onOpenChange={(open) => {
           setFormOpen(open);
           if (!open) {
+            setEditingActivity(null);
             setSelectedDate(null);
             setSlotStart(null);
             setSlotEnd(null);
           }
         }}
         onSubmit={handleFormSubmit}
-        activity={null}
-        isLoading={createActivity.isPending}
-        initialDate={slotStart ? null : selectedDate}
-        initialStartDateTime={slotStart ?? undefined}
-        initialEndDateTime={slotEnd ?? undefined}
+        activity={editingActivity}
+        isLoading={createActivity.isPending || updateActivity.isPending}
+        initialDate={editingActivity ? null : (slotStart ? null : selectedDate)}
+        initialStartDateTime={editingActivity ? undefined : (slotStart ?? undefined)}
+        initialEndDateTime={editingActivity ? undefined : (slotEnd ?? undefined)}
       />
     </div>
   );
