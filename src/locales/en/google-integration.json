@@ -65,8 +65,52 @@
     "flowPlaceholder": "Detailed sync settings will be available in the next release.",
     "loading": "Loading..."
   },
+  "filters": "Filters",
+  "export": "Export",
+  "exportExcel": "Download Excel",
+  "exportPdf": "Download PDF",
+  "advancedFilter": {
+    "title": "Advanced Filter",
+    "add": "Add Filter",
+    "column": "Column",
+    "operator": "Operator",
+    "value": "Value",
+    "clear": "Clear",
+    "search": "Search",
+    "remove": "Remove",
+    "operatorContains": "Contains",
+    "operatorStartsWith": "Starts with",
+    "operatorEndsWith": "Ends with",
+    "operatorEquals": "Equals",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<=",
+    "true": "Yes",
+    "false": "No"
+  },
   "logs": {
-    "placeholderTitle": "Logs Page Coming Soon",
-    "placeholderText": "OAuth callback, token refresh, and sync logs will be listed here."
+    "cardTitle": "Google Integration Logs",
+    "errorsOnly": "Errors only",
+    "refresh": "Refresh",
+    "loading": "Loading logs...",
+    "loadError": "Logs could not be loaded.",
+    "empty": "No records found.",
+    "success": "Success",
+    "failed": "Failed",
+    "previous": "Previous",
+    "next": "Next",
+    "pageInfo": "Page: {{current}} • Total records: {{loaded}}",
+    "columns": {
+      "date": "Date",
+      "operation": "Operation",
+      "status": "Status",
+      "severity": "Severity",
+      "message": "Message",
+      "errorCode": "Error Code",
+      "userId": "User Id",
+      "activityId": "Activity Id",
+      "googleCalendarEventId": "Google Event Id"
+    }
   }
 }

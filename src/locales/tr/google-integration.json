@@ -65,8 +65,52 @@
     "flowPlaceholder": "Detaylı senkron ayarları bir sonraki sürümde açılacaktır.",
     "loading": "Yükleniyor..."
   },
+  "filters": "Filtreler",
+  "export": "Dışa Aktar",
+  "exportExcel": "Excel İndir",
+  "exportPdf": "PDF İndir",
+  "advancedFilter": {
+    "title": "Gelişmiş Filtre",
+    "add": "Filtre Ekle",
+    "column": "Sütun",
+    "operator": "Operatör",
+    "value": "Değer",
+    "clear": "Temizle",
+    "search": "Ara",
+    "remove": "Kaldır",
+    "operatorContains": "İçerir",
+    "operatorStartsWith": "Şununla başlar",
+    "operatorEndsWith": "Şununla biter",
+    "operatorEquals": "Eşittir",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<=",
+    "true": "Evet",
+    "false": "Hayır"
+  },
   "logs": {
-    "placeholderTitle": "Log Sayfası Hazırlanıyor",
-    "placeholderText": "Bu bölümde OAuth callback, token yenileme ve senkron kayıtları listelenecek."
+    "cardTitle": "Google Entegrasyon Logları",
+    "errorsOnly": "Sadece hatalar",
+    "refresh": "Yenile",
+    "loading": "Loglar yükleniyor...",
+    "loadError": "Loglar yüklenemedi.",
+    "empty": "Kayıt bulunamadı.",
+    "success": "Başarılı",
+    "failed": "Hata",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "pageInfo": "Sayfa: {{current}} • Toplam kayıt: {{loaded}}",
+    "columns": {
+      "date": "Tarih",
+      "operation": "İşlem",
+      "status": "Durum",
+      "severity": "Seviye",
+      "message": "Mesaj",
+      "errorCode": "Hata Kodu",
+      "userId": "Kullanıcı Id",
+      "activityId": "Aktivite Id",
+      "googleCalendarEventId": "Google Event Id"
+    }
   }
 }
