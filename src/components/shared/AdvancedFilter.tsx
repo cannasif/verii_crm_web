@@ -27,6 +27,17 @@ export interface AdvancedFilterProps {
   embedded?: boolean;
 }
 
+const OPERATOR_LABEL_KEY_MAP: Record<string, string> = {
+  contains: 'Contains',
+  startsWith: 'StartsWith',
+  endsWith: 'EndsWith',
+  equals: 'Equals',
+  '>': '>',
+  '>=': '>=',
+  '<': '<',
+  '<=': '<=',
+};
+
 function generateId(): string {
   return `filter-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
@@ -75,23 +86,36 @@ export function AdvancedFilter({
     return fallback ?? key;
   };
 
+  const getOperatorLabel = (operator: string): string => {
+    const mapped = OPERATOR_LABEL_KEY_MAP[operator] ?? operator;
+    const key = `advancedFilter.operator${mapped}`;
+
+    const commonVal = t(key, { ns: 'common' });
+    if (commonVal && commonVal !== key) return commonVal;
+
+    const nsVal = t(key, { ns: translationNamespace });
+    if (nsVal && nsVal !== key) return nsVal;
+
+    return operator;
+  };
+
   return (
     <div className={embedded ? 'p-4 space-y-4' : 'rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-card/50 p-4 space-y-4'}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-          {getLabel('title', 'Gelişmiş Filtre')}
+          {getLabel('title', 'Advanced Filter')}
         </h3>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={addRow}>
             <Plus className="h-4 w-4 mr-1" />
-            {getLabel('add', 'Filtre Ekle')}
+            {getLabel('add', 'Add Filter')}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={onClear}>
-            {getLabel('clear', 'Temizle')}
+            {getLabel('clear', 'Clear')}
           </Button>
           <Button type="button" size="sm" onClick={onSearch}>
             <Search className="h-4 w-4 mr-1" />
-            {getLabel('search', 'Ara')}
+            {getLabel('search', 'Search')}
           </Button>
         </div>
       </div>
@@ -99,7 +123,7 @@ export function AdvancedFilter({
         <div className="space-y-2">
           {draftRows.map((row) => {
             const colConfig = columns.find((c) => c.value === row.column);
-            const isDate = colConfig?.type === 'date';
+            const inputType = colConfig?.type === 'date' ? 'date' : colConfig?.type === 'number' ? 'number' : 'text';
             return (
               <div key={row.id} className="flex flex-wrap items-center gap-2">
                 <Select
@@ -127,7 +151,7 @@ export function AdvancedFilter({
                   <SelectContent>
                     {getOperatorsForColumn(row.column, columns).map((op) => (
                       <SelectItem key={op} value={op}>
-                        {t(`advancedFilter.operator${op}`, { ns: 'common', defaultValue: op })}
+                        {getOperatorLabel(op)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -148,7 +172,7 @@ export function AdvancedFilter({
                   </Select>
                 ) : (
                   <Input
-                    type={isDate ? 'date' : 'text'}
+                    type={inputType}
                     placeholder={getLabel('value')}
                     value={row.value}
                     onChange={(e) => updateRow(row.id, { value: e.target.value })}
