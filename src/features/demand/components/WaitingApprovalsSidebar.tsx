@@ -2,11 +2,10 @@ import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useWaitingApprovals } from '../hooks/useWaitingApprovals';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Clock, FileText } from 'lucide-react';
+import { Clock, CheckCircle2, User, CalendarDays, ListOrdered, Hash } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function WaitingApprovalsSidebar(): ReactElement {
   const { t, i18n } = useTranslation();
@@ -17,91 +16,127 @@ export function WaitingApprovalsSidebar(): ReactElement {
     navigate(`/demands/${approvalRequestId}`);
   };
 
+  // Tasarım bütünlüğü için ortak kapsayıcı bileşeni
+  const SidebarContainer = ({ children }: { children: React.ReactNode }) => (
+    <div className="relative flex flex-col h-full min-h-[500px] overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl shadow-sm transition-all duration-300">
+      {children}
+    </div>
+  );
+
+  // Ortak Header
+  const SidebarHeader = ({ count }: { count?: number }) => (
+    <div className="px-5 py-4 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+          <Clock className="h-4 w-4" />
+        </div>
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+          {t('demand.waitingApprovals.title')}
+        </h3>
+      </div>
+      {count !== undefined && count > 0 && (
+        <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/20 dark:text-indigo-400 dark:border-indigo-500/30 font-bold px-2 py-0.5">
+          {count}
+        </Badge>
+      )}
+    </div>
+  );
+
   if (isLoading) {
     return (
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            {t('demand.waitingApprovals.title')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-16 w-full" />
+      <SidebarContainer>
+        <SidebarHeader />
+        <div className="p-4 space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-[120px] w-full rounded-xl bg-slate-100 dark:bg-white/5" />
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </SidebarContainer>
     );
   }
 
   if (!approvals || approvals.length === 0) {
     return (
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            {t('demand.waitingApprovals.title')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-            <FileText className="h-12 w-12 mb-2 opacity-50" />
-            <p className="text-sm">
-              {t('demand.waitingApprovals.noApprovals')}
-            </p>
+      <SidebarContainer>
+        <SidebarHeader count={0} />
+        <div className="flex flex-col items-center justify-center flex-1 p-6 text-center border-t border-transparent">
+          <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-4 ring-1 ring-emerald-100 dark:ring-emerald-500/20">
+            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
           </div>
-        </CardContent>
-      </Card>
+          <h4 className="text-base font-bold text-slate-900 dark:text-white mb-1">
+            İşlem Yok
+          </h4>
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            {t('demand.waitingApprovals.noApprovals')}
+          </p>
+        </div>
+      </SidebarContainer>
     );
   }
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Clock className="h-5 w-5" />
-          {t('demand.waitingApprovals.title')}
-          <Badge variant="secondary" className="ml-auto">
-            {approvals.length}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2 max-h-[600px] overflow-y-auto">
+    <SidebarContainer>
+      <SidebarHeader count={approvals.length} />
+      
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 max-h-[calc(100vh-200px)]">
         {approvals.map((approval) => (
-          <Button
+          <button
             key={approval.id}
-            variant="outline"
-            className="w-full justify-start h-auto p-3 flex flex-col items-start gap-1 hover:bg-accent"
             onClick={() => handleApprovalClick(approval.approvalRequestId)}
+            className="group relative flex flex-col w-full text-left p-4 rounded-xl border border-slate-100 dark:border-white/5 bg-white dark:bg-transparent hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10 hover:border-indigo-100 dark:hover:border-indigo-500/20 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
-            <div className="flex items-center justify-between w-full">
-              <span className="text-sm font-medium truncate">
-                {approval.approvalRequestDescription || `#${approval.approvalRequestId}`}
-              </span>
+            {/* Üst Kısım: ID, Başlık ve Durum */}
+            <div className="flex items-start justify-between w-full mb-3 gap-2">
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-1 text-[10px] font-mono font-bold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase mb-1">
+                  <Hash size={10} className="opacity-70" />
+                  {approval.approvalRequestId}
+                </div>
+                <span className="text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-1">
+                  {approval.approvalRequestDescription || t('demand.untitled', 'İsimsiz Talep')}
+                </span>
+              </div>
               <Badge 
-                variant={approval.status === 1 ? 'default' : 'secondary'}
-                className="ml-2 shrink-0"
+                variant="outline"
+                className={cn(
+                  "shrink-0 px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold border-0 shadow-sm",
+                  approval.status === 1 
+                    ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" 
+                    : "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300"
+                )}
               >
                 {approval.statusName || t('demand.waitingApprovals.waiting')}
               </Badge>
             </div>
-            <div className="text-xs text-muted-foreground w-full">
-              <div>
-                {t('demand.waitingApprovals.stepOrder')}: {approval.stepOrder}
+
+            {/* Alt Kısım: Detay Bilgileri */}
+            <div className="flex flex-col gap-2 pt-3 border-t border-slate-50 dark:border-white/5 w-full">
+              <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                <ListOrdered className="h-3.5 w-3.5 text-indigo-500/60" />
+                <span className="truncate">
+                  <span className="font-medium text-slate-500">{t('demand.waitingApprovals.stepOrder')}:</span> {approval.stepOrder}
+                </span>
               </div>
+              
               {approval.approvedByUserFullName && (
-                <div>
-                  {t('demand.waitingApprovals.approvedBy')}: {approval.approvedByUserFullName}
+                <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                  <User className="h-3.5 w-3.5 text-indigo-500/60" />
+                  <span className="truncate">
+                    <span className="font-medium text-slate-500">{t('demand.waitingApprovals.approvedBy')}:</span> {approval.approvedByUserFullName}
+                  </span>
                 </div>
               )}
-              <div>
-                {t('demand.waitingApprovals.actionDate')}: {new Date(approval.actionDate).toLocaleDateString(i18n.language)}
+              
+              <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                <CalendarDays className="h-3.5 w-3.5 text-indigo-500/60" />
+                <span className="truncate">
+                  <span className="font-medium text-slate-500">{t('demand.waitingApprovals.actionDate')}:</span> {new Date(approval.actionDate).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                </span>
               </div>
             </div>
-          </Button>
+          </button>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </SidebarContainer>
   );
 }

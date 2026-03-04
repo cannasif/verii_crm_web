@@ -4,7 +4,6 @@ import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
@@ -19,7 +18,8 @@ import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { demandApi } from '../api/demand-api';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/demand-types';
-import { X, Check, Package, Calculator, Percent, DollarSign, Info, Folder } from 'lucide-react';
+import { X, Check, Package, Calculator, Percent, DollarSign, Info, Folder, FileText, Layers } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TemporaryStockData {
   productCode: string;
@@ -52,7 +52,7 @@ const areTemporaryStockDataEqual = (
     if (left.currencyCode !== right.currencyCode) return false;
   }
   return true;
-};
+}
 
 function normalizeGroupCode(code?: string | null): string {
   return (code ?? '').trim().toUpperCase();
@@ -124,7 +124,6 @@ export function DemandLineForm({
     return temporaryStockData.find((data) => data.productCode === formData.productCode);
   }, [temporaryStockData, formData.productCode]);
 
-
   const activeGroupCode = useMemo(
     () => mainStockData?.groupCode || formData.groupCode || undefined,
     [mainStockData?.groupCode, formData.groupCode]
@@ -155,7 +154,6 @@ export function DemandLineForm({
   );
 
   const ruleInsightCount = matchingPricingRules.length + (matchingDiscountLimit ? 1 : 0);
-
 
   useEffect(() => {
     setFormData(line);
@@ -688,7 +686,12 @@ export function DemandLineForm({
     }
   };
 
-  const handleSave = (): void => {
+ const handleSave = (e?: React.MouseEvent): void => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (onSaveMultiple && relatedLines.length > 0) {
       const linesToSave = [formData, ...relatedLines];
       onSaveMultiple(linesToSave);
@@ -697,94 +700,124 @@ export function DemandLineForm({
     }
   };
 
-
   const totalDiscount = (formData.discountAmount1 || 0) + (formData.discountAmount2 || 0) + (formData.discountAmount3 || 0);
   const hasDiscount = totalDiscount > 0;
   const hasApprovalWarning = discountValidation.exceedsLimit || formData.approvalStatus === 1;
 
+  const styles = {
+    inputBase: "h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500 outline-none w-full px-3 text-sm",
+    label: "text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-2",
+    iconWrapper: "p-1.5 rounded-lg flex items-center justify-center shrink-0",
+    sectionCard: "rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-4 sm:p-5 shadow-sm",
+  };
+
   return (
-    <Card className={`border-2 ${hasApprovalWarning ? 'border-red-500 bg-red-50/50 dark:bg-red-950/20' : 'border-primary/20'} bg-card`}>
-      <CardContent className="p-4 space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b">
-          <h4 className="text-base font-semibold flex items-center gap-2">
-            <Package className="h-4 w-4 text-primary" />
-            {t('demand.lines.editLine')}
-          </h4>
-          <div className="flex items-center gap-2">
+    <div className={cn(
+      "relative space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",
+      hasApprovalWarning ? "rounded-2xl border-2 border-amber-500 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)] bg-amber-50/10 dark:bg-amber-950/10" : ""
+    )}>
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-linear-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/20 text-white shrink-0">
+              <Package className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+                {t('demand.lines.editLine')}
+              </h3>
+              <p className="text-xs text-zinc-500 font-medium">Stok kalemi detaylarını düzenleyin</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-2">
             {hasApprovalWarning && (
-              <Badge variant="outline" className="text-red-600 border-red-600 bg-red-50 dark:bg-red-950/30 text-xs">
+              <Badge className="h-7 px-3 bg-amber-100 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 rounded-full font-bold shadow-sm">
+                <span className="relative flex h-2 w-2 mr-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
                 {t('demand.lines.approvalRequired')}
               </Badge>
             )}
             {(!formData.productCode || !formData.productName) && (
-              <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs">
+              <Badge className="h-7 px-3 bg-orange-100 text-orange-700 hover:bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50 rounded-full font-bold shadow-sm">
                 {t('demand.lines.selectStockFirst')}
               </Badge>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="space-y-1.5 md:col-span-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <Package className="h-3.5 w-3.5" />
-                {t('demand.lines.stock')} *
-              </label>
-              <Button
-                type="button"
-                variant="default"
-                onClick={() => setProductDialogOpen(true)}
-                className="gap-2"
-                size="sm"
-              >
-                <Package className="h-3.5 w-3.5" />
-                {t('demand.lines.selectStock')}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setPricingInfoOpen(true)}
-                disabled={!formData.productCode}
-                className="gap-2"
-                size="sm"
-              >
-                <Info className="h-3.5 w-3.5" />
-                {t('common.pricingInsights.button')}
-                {ruleInsightCount > 0 && (
-                  <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">
-                    {ruleInsightCount}
-                  </span>
-                )}
-              </Button>
+        <div className={styles.sectionCard}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4 md:col-span-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <label className={cn(styles.label, "mb-0")}>
+                  <div className={cn(styles.iconWrapper, "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600")}>
+                    <Package className="w-3.5 h-3.5" />
+                  </div>
+                  {t('demand.lines.stock')} *
+                </label>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                  <Button
+                    type="button"
+                    onClick={() => setProductDialogOpen(true)}
+                    className="w-full sm:w-auto h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
+                    size="sm"
+                  >
+                    <Package className="h-4 w-4 mr-2" />
+                    {t('demand.lines.selectStock')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setPricingInfoOpen(true)}
+                    disabled={!formData.productCode}
+                    className="w-full sm:w-auto h-10 rounded-xl border-zinc-200 dark:border-zinc-800 hover:border-pink-500 hover:text-pink-600 transition-colors bg-white dark:bg-zinc-950"
+                    size="sm"
+                  >
+                    <Info className="h-4 w-4 mr-2" />
+                    {t('common.pricingInsights.button')}
+                    {ruleInsightCount > 0 && (
+                      <span className="ml-2 inline-flex h-5 items-center justify-center rounded-full bg-pink-100 dark:bg-pink-900/30 px-2 text-[10px] font-bold text-pink-600 dark:text-pink-400 border border-pink-200 dark:border-pink-800/50">
+                        {ruleInsightCount} Fırsat
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <Input
+                  value={formData.productCode || ''}
+                  placeholder={t('demand.lines.productCode')}
+                  readOnly
+                  className={cn(styles.inputBase, "bg-zinc-50 dark:bg-zinc-900 font-mono text-zinc-500")}
+                />
+                <Input
+                  value={formData.groupCode || ''}
+                  placeholder={t('demand.lines.groupCode')}
+                  readOnly
+                  className={cn(styles.inputBase, "bg-zinc-50 dark:bg-zinc-900 font-mono text-zinc-500")}
+                />
+                <Input
+                  value={formData.productName || ''}
+                  placeholder={t('demand.lines.productName')}
+                  readOnly
+                  className={cn(styles.inputBase, "bg-zinc-50 dark:bg-zinc-900 text-zinc-500")}
+                />
+              </div>
             </div>
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-              <Input
-                value={formData.productCode || ''}
-                placeholder={t('demand.lines.productCode')}
-                readOnly
-                className="bg-muted/50 font-mono text-sm h-9"
-              />
-              <Input
-                value={formData.groupCode || ''}
-                placeholder={t('demand.lines.groupCode')}
-                readOnly
-                className="bg-muted/50 font-mono text-sm h-9"
-              />
-              <Input
-                value={formData.productName || ''}
-                placeholder={t('demand.lines.productName')}
-                readOnly
-                className="bg-muted/50 text-sm h-9"
-              />
-            </div>
-            <div className="w-full">
-              <label className="text-sm font-medium flex items-center gap-2 mb-1.5">
-                <Folder className="h-3.5 w-3.5 text-slate-500" />
+
+            <div className="md:col-span-2">
+              <label className={styles.label}>
+                <div className={cn(styles.iconWrapper, "bg-slate-100 dark:bg-slate-800/50 text-slate-500")}>
+                  <Folder className="w-3.5 h-3.5" />
+                </div>
                 {t('quotation.header.projectCode')}
               </label>
               <VoiceSearchCombobox
-                className="h-11 bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 rounded-xl"
+                className={styles.inputBase}
                 value={formData.projectCode || ''}
                 onSelect={(value) => handleFieldChange('projectCode', value)}
                 options={projects.map((p) => ({
@@ -796,368 +829,314 @@ export function DemandLineForm({
               />
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <DollarSign className="h-3.5 w-3.5" />
-                {t('demand.lines.unitPrice')} *
-              </label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.unitPrice}
-                readOnly
-                className="bg-muted/50 font-medium"
-              />
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  {t('demand.lines.quantity')} *
-                </label>
-                <Input
-                  type="number"
-                  step="0.001"
-                  min="0.01"
-                  value={quantityInputValue}
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    setQuantityInputValue(inputValue);
-                    if (inputValue === '' || inputValue === '.') {
-                      handleFieldChange('quantity', 0);
-                    } else {
-                      const numValue = parseFloat(inputValue);
-                      if (!isNaN(numValue)) {
-                        handleFieldChange('quantity', numValue);
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className={cn(styles.sectionCard, "space-y-4")}>
+             <label className={styles.label}>
+               <div className={cn(styles.iconWrapper, "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600")}>
+                 <DollarSign className="w-3.5 h-3.5" />
+               </div>
+               Fiyat & Miktar
+             </label>
+             
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+               <div>
+                  <label className="text-xs font-semibold text-zinc-500 mb-1.5 block">
+                    {t('demand.lines.unitPrice')} *
+                  </label>
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.unitPrice}
+                      readOnly
+                      className={cn(styles.inputBase, "pr-14 bg-zinc-50 dark:bg-zinc-900 font-mono font-bold text-zinc-700 dark:text-zinc-300")}
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm font-bold pointer-events-none">
+                      {currencyCode}
+                    </span>
+                  </div>
+               </div>
+               <div>
+                  <label className="text-xs font-semibold text-zinc-500 mb-1.5 block">
+                    {t('demand.lines.quantity')} *
+                  </label>
+                  <Input
+                    type="number"
+                    step="0.001"
+                    min="0.01"
+                    value={quantityInputValue}
+                    onChange={(e) => {
+                      const inputValue = e.target.value;
+                      setQuantityInputValue(inputValue);
+                      if (inputValue === '' || inputValue === '.') {
+                        handleFieldChange('quantity', 0);
+                      } else {
+                        const numValue = parseFloat(inputValue);
+                        if (!isNaN(numValue)) handleFieldChange('quantity', numValue);
                       }
-                    }
-                  }}
-                  onBlur={() => {
-                    if (quantityInputValue === '' || quantityInputValue === '.') {
-                      setQuantityInputValue('0');
-                      handleFieldChange('quantity', 0);
-                    } else {
-                      const numValue = parseFloat(quantityInputValue);
-                      if (!isNaN(numValue)) {
-                        setQuantityInputValue(String(numValue));
+                    }}
+                    onBlur={() => {
+                      if (quantityInputValue === '' || quantityInputValue === '.') {
+                        setQuantityInputValue('0');
+                        handleFieldChange('quantity', 0);
+                      } else {
+                        const numValue = parseFloat(quantityInputValue);
+                        if (!isNaN(numValue)) setQuantityInputValue(String(numValue));
                       }
-                    }
-                  }}
-                  className="font-medium"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {t('demand.lines.vatRate')}
-              </label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                max="100"
-                value={vatRateInputValue}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  setVatRateInputValue(inputValue);
-                  if (inputValue === '' || inputValue === '.') {
-                    handleFieldChange('vatRate', 0);
-                  } else {
-                    const numValue = parseFloat(inputValue);
-                    if (!isNaN(numValue)) {
-                      handleFieldChange('vatRate', numValue);
-                    }
-                  }
-                }}
-                onBlur={() => {
-                  if (vatRateInputValue === '' || vatRateInputValue === '.') {
-                    setVatRateInputValue('0');
-                    handleFieldChange('vatRate', 0);
-                  } else {
-                    const numValue = parseFloat(vatRateInputValue);
-                    if (!isNaN(numValue)) {
-                      setVatRateInputValue(String(numValue));
-                    }
-                  }
-                }}
-              />
-            </div>
+                    }}
+                    className={cn(styles.inputBase, "font-bold")}
+                  />
+               </div>
+               <div className="sm:col-span-2">
+                  <label className="text-xs font-semibold text-zinc-500 mb-1.5 block">
+                    {t('demand.lines.vatRate')} (%)
+                  </label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    value={vatRateInputValue}
+                    onChange={(e) => {
+                      const inputValue = e.target.value;
+                      setVatRateInputValue(inputValue);
+                      if (inputValue === '' || inputValue === '.') {
+                        handleFieldChange('vatRate', 0);
+                      } else {
+                        const numValue = parseFloat(inputValue);
+                        if (!isNaN(numValue)) handleFieldChange('vatRate', numValue);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (vatRateInputValue === '' || vatRateInputValue === '.') {
+                        setVatRateInputValue('0');
+                        handleFieldChange('vatRate', 0);
+                      } else {
+                        const numValue = parseFloat(vatRateInputValue);
+                        if (!isNaN(numValue)) setVatRateInputValue(String(numValue));
+                      }
+                    }}
+                    className={styles.inputBase}
+                  />
+               </div>
+             </div>
           </div>
 
-          <div className="space-y-2 md:col-span-2">
-            <label className="text-sm font-medium flex items-center gap-2">
-              <Percent className="h-3.5 w-3.5" />
-              {t('demand.lines.discounts')}
-            </label>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              <div className="space-y-1.5 p-2 border rounded-md bg-muted/10">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-muted-foreground">
-                    {t('demand.lines.discount1')}
-                  </label>
-                  <span className="text-xs font-semibold text-red-600 dark:text-red-400">
-                    {formData.discountAmount1 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount1 || 0, currencyCode)}
-                  </span>
-                </div>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  value={discountRate1InputValue}
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    setDiscountRate1InputValue(inputValue);
-                    if (inputValue === '' || inputValue === '.') {
-                      handleFieldChange('discountRate1', 0);
-                    } else {
-                      const numValue = parseFloat(inputValue);
-                      if (!isNaN(numValue)) {
-                        handleFieldChange('discountRate1', numValue);
-                      }
-                    }
-                  }}
-                  onBlur={() => {
-                    if (discountRate1InputValue === '' || discountRate1InputValue === '.') {
-                      setDiscountRate1InputValue('0');
-                      handleFieldChange('discountRate1', 0);
-                    } else {
-                      const numValue = parseFloat(discountRate1InputValue);
-                      if (!isNaN(numValue)) {
-                        setDiscountRate1InputValue(String(numValue));
-                      }
-                    }
-                  }}
-                  placeholder="0"
-                  className="text-sm h-9"
-                />
-              </div>
-              <div className="space-y-1.5 p-2 border rounded-md bg-muted/10">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-muted-foreground">
-                    {t('demand.lines.discount2')}
-                  </label>
-                  <span className="text-xs font-semibold text-red-600 dark:text-red-400">
-                    {formData.discountAmount2 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount2 || 0, currencyCode)}
-                  </span>
-                </div>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  value={discountRate2InputValue}
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    setDiscountRate2InputValue(inputValue);
-                    if (inputValue === '' || inputValue === '.') {
-                      handleFieldChange('discountRate2', 0);
-                    } else {
-                      const numValue = parseFloat(inputValue);
-                      if (!isNaN(numValue)) {
-                        handleFieldChange('discountRate2', numValue);
-                      }
-                    }
-                  }}
-                  onBlur={() => {
-                    if (discountRate2InputValue === '' || discountRate2InputValue === '.') {
-                      setDiscountRate2InputValue('0');
-                      handleFieldChange('discountRate2', 0);
-                    } else {
-                      const numValue = parseFloat(discountRate2InputValue);
-                      if (!isNaN(numValue)) {
-                        setDiscountRate2InputValue(String(numValue));
-                      }
-                    }
-                  }}
-                  placeholder="0"
-                  className="text-sm h-9"
-                />
-              </div>
-              <div className="space-y-1.5 p-2 border rounded-md bg-muted/10">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-muted-foreground">
-                    {t('demand.lines.discount3')}
-                  </label>
-                  <span className="text-xs font-semibold text-red-600 dark:text-red-400">
-                    {formData.discountAmount3 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount3 || 0, currencyCode)}
-                  </span>
-                </div>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  value={discountRate3InputValue}
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    setDiscountRate3InputValue(inputValue);
-                    if (inputValue === '' || inputValue === '.') {
-                      handleFieldChange('discountRate3', 0);
-                    } else {
-                      const numValue = parseFloat(inputValue);
-                      if (!isNaN(numValue)) {
-                        handleFieldChange('discountRate3', numValue);
-                      }
-                    }
-                  }}
-                  onBlur={() => {
-                    if (discountRate3InputValue === '' || discountRate3InputValue === '.') {
-                      setDiscountRate3InputValue('0');
-                      handleFieldChange('discountRate3', 0);
-                    } else {
-                      const numValue = parseFloat(discountRate3InputValue);
-                      if (!isNaN(numValue)) {
-                        setDiscountRate3InputValue(String(numValue));
-                      }
-                    }
-                  }}
-                  placeholder="0"
-                  className="text-sm h-9"
-                />
-              </div>
-            </div>
+          <div className={cn(styles.sectionCard, "space-y-4")}>
+             <label className={styles.label}>
+               <div className={cn(styles.iconWrapper, "bg-rose-50 dark:bg-rose-900/20 text-rose-600")}>
+                 <Percent className="w-3.5 h-3.5" />
+               </div>
+               {t('demand.lines.discounts')}
+             </label>
+
+             <div className="grid grid-cols-1 gap-3">
+               <div className="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 p-3">
+                 <div className="flex items-center justify-between mb-2">
+                   <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                     {t('demand.lines.discount1')} (%)
+                   </label>
+                   <span className="text-xs font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 px-2 py-0.5 rounded-md border border-rose-100 dark:border-rose-900/50">
+                     {formData.discountAmount1 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount1 || 0, currencyCode)}
+                   </span>
+                 </div>
+                 <Input
+                   type="number"
+                   step="0.01"
+                   min="0"
+                   max="100"
+                   value={discountRate1InputValue}
+                   onChange={(e) => {
+                     const inputValue = e.target.value;
+                     setDiscountRate1InputValue(inputValue);
+                     if (inputValue === '' || inputValue === '.') {
+                       handleFieldChange('discountRate1', 0);
+                     } else {
+                       const numValue = parseFloat(inputValue);
+                       if (!isNaN(numValue)) handleFieldChange('discountRate1', numValue);
+                     }
+                   }}
+                   onBlur={() => {
+                     if (discountRate1InputValue === '' || discountRate1InputValue === '.') {
+                       setDiscountRate1InputValue('0');
+                       handleFieldChange('discountRate1', 0);
+                     } else {
+                       const numValue = parseFloat(discountRate1InputValue);
+                       if (!isNaN(numValue)) setDiscountRate1InputValue(String(numValue));
+                     }
+                   }}
+                   placeholder="0"
+                   className={cn(styles.inputBase, "h-10 bg-white dark:bg-zinc-950")}
+                 />
+               </div>
+
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                 <div className="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 p-3">
+                   <div className="flex items-center justify-between mb-2">
+                     <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                       İnd. 2 (%)
+                     </label>
+                     <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400">
+                       {formData.discountAmount2 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount2 || 0, currencyCode)}
+                     </span>
+                   </div>
+                   <Input
+                     type="number"
+                     step="0.01"
+                     min="0"
+                     max="100"
+                     value={discountRate2InputValue}
+                     onChange={(e) => {
+                       const inputValue = e.target.value;
+                       setDiscountRate2InputValue(inputValue);
+                       if (inputValue === '' || inputValue === '.') {
+                         handleFieldChange('discountRate2', 0);
+                       } else {
+                         const numValue = parseFloat(inputValue);
+                         if (!isNaN(numValue)) handleFieldChange('discountRate2', numValue);
+                       }
+                     }}
+                     onBlur={() => {
+                       if (discountRate2InputValue === '' || discountRate2InputValue === '.') {
+                         setDiscountRate2InputValue('0');
+                         handleFieldChange('discountRate2', 0);
+                       } else {
+                         const numValue = parseFloat(discountRate2InputValue);
+                         if (!isNaN(numValue)) setDiscountRate2InputValue(String(numValue));
+                       }
+                     }}
+                     placeholder="0"
+                     className={cn(styles.inputBase, "h-9 bg-white dark:bg-zinc-950")}
+                   />
+                 </div>
+                 <div className="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 p-3">
+                   <div className="flex items-center justify-between mb-2">
+                     <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                       İnd. 3 (%)
+                     </label>
+                     <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400">
+                       {formData.discountAmount3 > 0 ? '-' : ''}{formatCurrency(formData.discountAmount3 || 0, currencyCode)}
+                     </span>
+                   </div>
+                   <Input
+                     type="number"
+                     step="0.01"
+                     min="0"
+                     max="100"
+                     value={discountRate3InputValue}
+                     onChange={(e) => {
+                       const inputValue = e.target.value;
+                       setDiscountRate3InputValue(inputValue);
+                       if (inputValue === '' || inputValue === '.') {
+                         handleFieldChange('discountRate3', 0);
+                       } else {
+                         const numValue = parseFloat(inputValue);
+                         if (!isNaN(numValue)) handleFieldChange('discountRate3', numValue);
+                       }
+                     }}
+                     onBlur={() => {
+                       if (discountRate3InputValue === '' || discountRate3InputValue === '.') {
+                         setDiscountRate3InputValue('0');
+                         handleFieldChange('discountRate3', 0);
+                       } else {
+                         const numValue = parseFloat(discountRate3InputValue);
+                         if (!isNaN(numValue)) setDiscountRate3InputValue(String(numValue));
+                       }
+                     }}
+                     placeholder="0"
+                     className={cn(styles.inputBase, "h-9 bg-white dark:bg-zinc-950")}
+                   />
+                 </div>
+               </div>
+             </div>
           </div>
         </div>
 
-        <div className="space-y-3">
-          <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-            Açıklama Alanları
-          </h5>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className={styles.sectionCard}>
+          <label className={styles.label}>
+            <div className={cn(styles.iconWrapper, "bg-purple-50 dark:bg-purple-900/20 text-purple-600")}>
+              <FileText className="w-3.5 h-3.5" />
+            </div>
+            Satır Açıklamaları
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                Açıklama 1
-              </label>
+              <label className="text-xs font-medium text-zinc-500 ml-1">Açıklama 1</label>
               <Input
                 value={formData.description1 ?? ''}
                 onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                 maxLength={200}
-                placeholder="Maksimum 200 karakter"
-                className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+                placeholder="Açıklama giriniz..."
+                className={styles.inputBase}
               />
             </div>
-
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                Açıklama 2
-              </label>
+              <label className="text-xs font-medium text-zinc-500 ml-1">Açıklama 2</label>
               <Input
                 value={formData.description2 ?? ''}
                 onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                 maxLength={200}
-                placeholder="Maksimum 200 karakter"
-                className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+                placeholder="Açıklama giriniz..."
+                className={styles.inputBase}
               />
             </div>
-
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                Açıklama 3
-              </label>
+              <label className="text-xs font-medium text-zinc-500 ml-1">Açıklama 3</label>
               <Input
                 value={formData.description3 ?? ''}
                 onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                 maxLength={200}
-                placeholder="Maksimum 200 karakter"
-                className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+                placeholder="Açıklama giriniz..."
+                className={styles.inputBase}
               />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-muted/30 rounded-lg p-3 space-y-2 border">
-          <div className="flex items-center gap-2 mb-2">
-            <Calculator className="h-3.5 w-3.5 text-primary" />
-            <span className="text-sm font-semibold">
-              {t('demand.lines.calculations')}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 gap-2 text-sm">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">
-                {t('demand.lines.discountAmount')}:
-              </span>
-              <span className={`font-medium ${hasDiscount ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
-                {hasDiscount ? '-' : ''}{formatCurrency(totalDiscount, currencyCode)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">
-                {t('demand.lines.netPrice')}:
-              </span>
-              <span className="font-medium text-green-600 dark:text-green-400">
-                {formatCurrency(formData.lineTotal || 0, currencyCode)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center pt-2 border-t font-semibold">
-              <span>
-                {t('demand.lines.lineTotal')}:
-              </span>
-              <span className="text-primary text-base">
-                {formatCurrency(formData.lineGrandTotal, currencyCode)}
-              </span>
             </div>
           </div>
         </div>
 
         {relatedLines.length > 0 && (
-          <div className="space-y-4 pt-4 border-t">
-            <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-primary" />
-              <h5 className="text-sm font-semibold">
-                {t('demand.lines.relatedStocks')} ({relatedLines.length})
-              </h5>
-            </div>
-            <div className="space-y-3">
+          <div className={styles.sectionCard}>
+            <label className={styles.label}>
+              <div className={cn(styles.iconWrapper, "bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600")}>
+                <Layers className="w-3.5 h-3.5" />
+              </div>
+              {t('demand.lines.relatedStocks')} ({relatedLines.length})
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
               {relatedLines.map((relatedLine) => (
-                <div key={relatedLine.id} className="p-3 border rounded-md bg-muted/30">
-                  <div className="grid grid-cols-1 gap-2 md:grid-cols-2 mb-2">
+                <div key={relatedLine.id} className="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 p-4 transition-all hover:border-cyan-200 dark:hover:border-cyan-900/50">
+                  <div className="grid grid-cols-1 gap-2 mb-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
                     <div>
-                      <div className="text-xs text-muted-foreground mb-1">
-                        {t('demand.lines.productCode')}
-                      </div>
-                      <div className="font-mono text-sm font-medium">
-                        {relatedLine.productCode || '-'}
-                      </div>
+                      <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">{t('demand.lines.productCode')}</div>
+                      <div className="font-mono text-sm font-bold text-zinc-700 dark:text-zinc-300">{relatedLine.productCode || '-'}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground mb-1">
-                        {t('demand.lines.productName')}
-                      </div>
-                      <div className="text-sm font-medium">
-                        {relatedLine.productName || '-'}
-                      </div>
+                      <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">{t('demand.lines.productName')}</div>
+                      <div className="text-xs font-medium text-zinc-600 dark:text-zinc-400 line-clamp-1">{relatedLine.productName || '-'}</div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-2 gap-3 text-xs">
                     <div>
-                      <span className="text-muted-foreground">
-                        {t('demand.lines.quantity')}:
-                      </span>
-                      <span className="ml-2 font-medium">{relatedLine.quantity}</span>
+                      <span className="text-zinc-400 font-medium block mb-1">{t('demand.lines.quantity')}</span>
+                      <span className="font-bold text-zinc-700 dark:text-zinc-200">{relatedLine.quantity}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">
-                        {t('demand.lines.unitPrice')}:
-                      </span>
-                      <span className="ml-2 font-medium">
+                      <span className="text-zinc-400 font-medium block mb-1">{t('demand.lines.unitPrice')}</span>
+                      <span className="font-mono font-bold text-zinc-700 dark:text-zinc-200">
                         {formatCurrency(relatedLine.unitPrice, currencyCode)}
                       </span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">
-                        {t('demand.lines.netPrice')}:
-                      </span>
-                      <span className="ml-2 font-medium text-green-600 dark:text-green-400">
+                      <span className="text-zinc-400 font-medium block mb-1">{t('demand.lines.netPrice')}</span>
+                      <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
                         {formatCurrency(relatedLine.lineTotal || 0, currencyCode)}
                       </span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">
-                        {t('demand.lines.lineTotal')}:
-                      </span>
-                      <span className="ml-2 font-medium text-primary">
+                      <span className="text-zinc-400 font-medium block mb-1">{t('demand.lines.lineTotal')}</span>
+                      <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
                         {formatCurrency(relatedLine.lineGrandTotal, currencyCode)}
                       </span>
                     </div>
@@ -1168,21 +1147,57 @@ export function DemandLineForm({
           </div>
         )}
 
-        <div className="flex justify-end gap-2 pt-2 border-t">
-          <Button type="button" variant="outline" onClick={onCancel} size="sm" className="gap-2">
-            <X className="h-4 w-4" />
-            {t('demand.cancel')}
-          </Button>
-          <Button 
-            type="button" 
-            onClick={handleSave} 
-            size="sm" 
-            className="gap-2"
-            disabled={!formData.productCode || !formData.productName}
-          >
-            <Check className="h-4 w-4" />
-            {t('demand.save')}
-          </Button>
+        <div className="mt-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#0f0a18] p-5 shadow-sm flex flex-col md:flex-row md:items-end justify-between gap-6">
+          
+          <div className="flex-1 space-y-4 md:space-y-3">
+            <label className={styles.label}>
+              <div className={cn(styles.iconWrapper, "bg-amber-50 dark:bg-amber-900/20 text-amber-600")}>
+                <Calculator className="w-3.5 h-3.5" />
+              </div>
+              {t('demand.lines.calculations')}
+            </label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+              <div>
+                <span className="text-xs font-medium text-zinc-500 block mb-1">{t('demand.lines.discountAmount')}</span>
+                <span className={cn("text-lg font-mono font-black", hasDiscount ? "text-rose-600 dark:text-rose-400" : "text-zinc-400")}>
+                  {hasDiscount ? '-' : ''}{formatCurrency(totalDiscount, currencyCode)}
+                </span>
+              </div>
+              <div className="sm:border-l sm:border-zinc-200 dark:sm:border-zinc-800 sm:pl-6">
+                <span className="text-xs font-medium text-zinc-500 block mb-1">{t('demand.lines.netPrice')} (KDV Hariç)</span>
+                <span className="text-lg font-mono font-black text-emerald-600 dark:text-emerald-400">
+                  {formatCurrency(formData.lineTotal || 0, currencyCode)}
+                </span>
+              </div>
+              <div className="sm:border-l sm:border-zinc-200 dark:sm:border-zinc-800 sm:pl-6">
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-1">{t('demand.lines.lineTotal')}</span>
+                <span className="text-2xl font-mono font-black bg-clip-text text-transparent bg-linear-to-r from-pink-600 to-purple-600">
+                  {formatCurrency(formData.lineGrandTotal, currencyCode)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onCancel} 
+              className="flex-1 sm:flex-none h-12 px-6 rounded-xl border-zinc-200 dark:border-zinc-800 font-bold hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              <X className="h-4 w-4 mr-2" />
+              {t('demand.cancel')}
+            </Button>
+            <Button 
+              type="button" 
+              onClick={handleSave} 
+              disabled={!formData.productCode || !formData.productName}
+              className="flex-1 sm:flex-none h-12 px-8 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-all duration-300 border-0"
+            >
+              <Check className="h-5 w-5 mr-2" />
+              {t('demand.save')}
+            </Button>
+          </div>
         </div>
 
         <ProductSelectDialog
@@ -1198,7 +1213,7 @@ export function DemandLineForm({
           rules={matchingPricingRules}
           discountLimit={matchingDiscountLimit}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

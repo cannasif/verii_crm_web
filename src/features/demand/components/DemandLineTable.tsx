@@ -503,9 +503,14 @@ export function DemandLineTable({
             </div>
           </div>
           
-          {linesEditable && (
+         {linesEditable && (
           <Button 
-            onClick={handleAddLine} 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddLine();
+            }} 
             size="sm"
             className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
           >
@@ -513,6 +518,7 @@ export function DemandLineTable({
             {t('demand.lines.add')}
           </Button>
           )}
+          
         </div>
 
         <div className="p-0">
