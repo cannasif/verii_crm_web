@@ -1,11 +1,12 @@
 import { api } from '@/lib/axios';
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   GoogleAuthorizeUrlDto,
   GoogleStatusDto,
   TenantGoogleOAuthSettingsDto,
   GoogleTestEventDto,
   UpdateTenantGoogleOAuthSettingsDto,
+  GoogleIntegrationLogDto,
 } from '../types/google-integration.types';
 
 const GOOGLE_INTEGRATION_BASE = '/api/integrations/google';
@@ -50,6 +51,54 @@ export const googleIntegrationApi = {
     }
 
     throw new Error(getErrorMessage(response, 'Google test event could not be created.'));
+  },
+
+  getLogs: async (
+    query: Omit<PagedParams, 'filters'> & { filters?: PagedParams['filters'] | Record<string, unknown>; errorsOnly?: boolean } = {}
+  ): Promise<PagedResponse<GoogleIntegrationLogDto>> => {
+    const queryParams = new URLSearchParams();
+    if (query.pageNumber && query.pageNumber > 0) {
+      queryParams.set('pageNumber', String(query.pageNumber));
+    }
+    if (query.pageSize && query.pageSize > 0) {
+      queryParams.set('pageSize', String(query.pageSize));
+    }
+    if (query.errorsOnly) {
+      queryParams.set('errorsOnly', 'true');
+    }
+    if (query.sortBy) {
+      queryParams.set('sortBy', query.sortBy);
+    }
+    if (query.sortDirection) {
+      queryParams.set('sortDirection', query.sortDirection);
+    }
+    if (Array.isArray(query.filters) && query.filters.length > 0) {
+      queryParams.set('filters', JSON.stringify(query.filters));
+      queryParams.set('filterLogic', query.filterLogic ?? 'and');
+    } else if (query.filters && Object.keys(query.filters).length > 0) {
+      queryParams.set('filters', JSON.stringify(query.filters));
+      queryParams.set('filterLogic', query.filterLogic ?? 'and');
+    }
+
+    const suffix = queryParams.toString();
+    const endpoint = `${GOOGLE_INTEGRATION_BASE}/logs${suffix ? `?${suffix}` : ''}`;
+    const response = await api.get<ApiResponse<PagedResponse<GoogleIntegrationLogDto>>>(endpoint);
+    if (response.success && response.data) {
+      const pagedData = response.data as PagedResponse<GoogleIntegrationLogDto> & {
+        items?: GoogleIntegrationLogDto[];
+      };
+
+      if (pagedData.items && !pagedData.data) {
+        return {
+          ...pagedData,
+          data: pagedData.items,
+        };
+      }
+
+      return pagedData;
+    }
+
+    throw new Error(getErrorMessage(response, 'Google integration logs could not be loaded.'));
   },
 
   getTenantOAuthSettings: async (): Promise<TenantGoogleOAuthSettingsDto> => {

@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse, PagedResponse } from '@/types/api';
 
 export interface GoogleStatusDto {
   isConnected: boolean;
@@ -14,6 +14,22 @@ export interface GoogleAuthorizeUrlDto {
 
 export interface GoogleTestEventDto {
   eventId: string;
+}
+
+export interface GoogleIntegrationLogDto {
+  id: number;
+  tenantId: string;
+  userId?: number | null;
+  operation: string;
+  isSuccess: boolean;
+  severity: string;
+  provider: string;
+  message?: string | null;
+  errorCode?: string | null;
+  activityId?: number | null;
+  googleCalendarEventId?: string | null;
+  metadataJson?: string | null;
+  createdDate: string;
 }
 
 export interface TenantGoogleOAuthSettingsDto {
@@ -39,3 +55,4 @@ export type GoogleStatusResponse = ApiResponse<GoogleStatusDto>;
 export type GoogleAuthorizeUrlResponse = ApiResponse<GoogleAuthorizeUrlDto>;
 export type GoogleTestEventResponse = ApiResponse<GoogleTestEventDto>;
 export type TenantGoogleOAuthSettingsResponse = ApiResponse<TenantGoogleOAuthSettingsDto>;
+export type GoogleIntegrationLogsResponse = ApiResponse<PagedResponse<GoogleIntegrationLogDto>>;
