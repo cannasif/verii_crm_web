@@ -130,8 +130,6 @@ function toDefaultEndDateTime(initialEnd?: string | null, startValue?: string): 
 const REMINDER_CHANNEL_OPTIONS = [
   { value: String(ReminderChannel.InApp), label: 'In-App' },
   { value: String(ReminderChannel.Email), label: 'Email' },
-  { value: String(ReminderChannel.Sms), label: 'SMS' },
-  { value: String(ReminderChannel.Push), label: 'Push' },
 ] as const;
 
 export function ActivityForm({
