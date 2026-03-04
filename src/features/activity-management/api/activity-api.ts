@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import i18n from '@/lib/i18n';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { ActivityDto, CreateActivityDto, UpdateActivityDto } from '../types/activity-types';
 
@@ -35,7 +36,7 @@ export const activityApi = {
       
       return pagedData;
     }
-    throw new Error(response.message || 'Aktivite listesi yüklenemedi');
+    throw new Error(response.message || i18n.t('activityManagement.listLoadError'));
   },
 
   getById: async (id: number): Promise<ActivityDto> => {
@@ -43,7 +44,7 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Aktivite detayı yüklenemedi');
+    throw new Error(response.message || i18n.t('activityManagement.detailLoadError'));
   },
 
   create: async (data: CreateActivityDto): Promise<ActivityDto> => {
@@ -51,7 +52,7 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Aktivite oluşturulamadı');
+    throw new Error(response.message || i18n.t('activityManagement.createError'));
   },
 
   update: async (id: number, data: UpdateActivityDto): Promise<ActivityDto> => {
@@ -59,13 +60,13 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Aktivite güncellenemedi');
+    throw new Error(response.message || i18n.t('activityManagement.updateError'));
   },
 
   delete: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<object>>(`/api/Activity/${id}`);
     if (!response.success) {
-      throw new Error(response.message || 'Aktivite silinemedi');
+      throw new Error(response.message || i18n.t('activityManagement.deleteError'));
     }
   },
 };

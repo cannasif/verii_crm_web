@@ -1,4 +1,5 @@
 import type { CreateActivityDto } from '../types/activity-types';
+import i18n from '@/lib/i18n';
 import { ActivityPriority, ActivityStatus, ReminderChannel, type ActivityFormSchema, type ReminderChannel as ReminderChannelType } from '../types/activity-types';
 
 function toActivityTypeId(value: string): number | undefined {
@@ -19,12 +20,17 @@ export function buildCreateActivityPayload(
 ): CreateActivityDto {
   const activityTypeId = toActivityTypeId(data.activityType);
   if (activityTypeId === undefined) {
-    throw new Error('Aktivite tipi seçilmelidir.');
+    throw new Error(i18n.t('activityManagement.activityTypeRequired'));
   }
 
   const assignedUserId = data.assignedUserId ?? options.assignedUserIdFallback;
-  if (assignedUserId === undefined) {
-    throw new Error('Atanan kullanıcı zorunludur.');
+  if (!assignedUserId || assignedUserId <= 0) {
+    throw new Error(i18n.t('activityManagement.assignedUserRequired'));
+  }
+
+  const endDateTime = toIsoDateTime(data.endDateTime);
+  if (!endDateTime) {
+    throw new Error(i18n.t('activityManagement.endDateRequired'));
   }
 
   return {
@@ -32,7 +38,7 @@ export function buildCreateActivityPayload(
     description: data.description,
     activityTypeId,
     startDateTime: toIsoDateTime(data.startDateTime) || new Date().toISOString(),
-    endDateTime: toIsoDateTime(data.endDateTime),
+    endDateTime,
     isAllDay: data.isAllDay,
     status: data.status ?? ActivityStatus.Scheduled,
     priority: data.priority ?? ActivityPriority.Medium,

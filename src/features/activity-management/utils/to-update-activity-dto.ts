@@ -15,12 +15,14 @@ function toPriority(value: ActivityDto['priority']): number {
 }
 
 export function toUpdateActivityDto(activity: ActivityDto, overrides?: Partial<UpdateActivityDto>): UpdateActivityDto {
+  const endDateTime = activity.endDateTime ?? activity.startDateTime;
+
   return {
     subject: activity.subject,
     description: activity.description,
     activityTypeId: activity.activityTypeId,
     startDateTime: activity.startDateTime,
-    endDateTime: activity.endDateTime,
+    endDateTime,
     isAllDay: activity.isAllDay,
     status: toStatus(activity.status),
     priority: toPriority(activity.priority),

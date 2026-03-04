@@ -128,7 +128,7 @@ export interface CreateActivityDto {
   description?: string;
   activityTypeId: number;
   startDateTime: string;
-  endDateTime?: string;
+  endDateTime: string;
   isAllDay: boolean;
   status: ActivityStatus | number;
   priority: ActivityPriority | number;
@@ -144,7 +144,7 @@ export interface UpdateActivityDto {
   description?: string;
   activityTypeId: number;
   startDateTime: string;
-  endDateTime?: string;
+  endDateTime: string;
   isAllDay: boolean;
   status: ActivityStatus | number;
   priority: ActivityPriority | number;
@@ -175,9 +175,9 @@ export interface ActivityFormData {
   status: number;
   priority?: number;
   contactId?: number;
-  assignedUserId?: number;
+  assignedUserId: number;
   startDateTime: string;
-  endDateTime?: string;
+  endDateTime: string;
   isAllDay: boolean;
   reminders: CreateActivityReminderDto[];
 }
@@ -210,15 +210,13 @@ export const activityFormSchema = z.object({
     .nullable(),
   assignedUserId: z
     .number()
-    .optional()
-    .nullable(),
+    .min(1, 'activityManagement.assignedUserRequired'),
   startDateTime: z
     .string()
     .min(1, 'activityManagement.activityDateRequired'),
   endDateTime: z
     .string()
-    .optional()
-    .nullable(),
+    .min(1, 'activityManagement.endDateRequired'),
   isAllDay: z.boolean(),
   reminders: z.array(
     z.object({
