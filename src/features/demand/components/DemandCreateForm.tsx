@@ -417,28 +417,28 @@ export function DemandCreateForm(): ReactElement {
             </aside>
           </div>
 
-          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate(-1)}
-              className="group w-full sm:w-auto"
-            >
-              <X className="mr-2 h-4 w-4" />
-              {t('demand.cancel', 'İptal')}
-            </Button>
-            <Button
-              type="submit"
-              disabled={createMutation.isPending || !isFormValid}
-              className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              {createMutation.isPending
-                ? t('demand.saving', 'Kaydediliyor...')
-                : t('demand.save', 'Kaydet')
-              }
-            </Button>
-          </div>
+           <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate(-1)}
+                  className="group w-full sm:w-auto h-11 px-6 rounded-xl border-zinc-200 dark:border-zinc-800 font-bold text-zinc-600 dark:text-zinc-300 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 dark:hover:border-rose-800/50 transition-all duration-300"
+                >
+                  <X className="mr-2 h-4 w-4 transition-colors" />
+                  {t('demand.cancel', 'İptal')}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={createMutation.isPending || !isFormValid}
+                  className="group w-full sm:w-auto sm:min-w-[140px] h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 disabled:opacity-50 disabled:hover:scale-100"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  {createMutation.isPending
+                    ? t('demand.saving', 'Kaydediliyor...')
+                    : t('demand.save', 'Kaydet')
+                  }
+                </Button>
+            </div>
         </form>
       </FormProvider>
     </div>
