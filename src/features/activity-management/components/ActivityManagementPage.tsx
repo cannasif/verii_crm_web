@@ -147,12 +147,17 @@ export function ActivityManagementPage(): ReactElement {
   const buildUpdatePayload = (data: ActivityFormSchema, fallbackAssignedUserId?: number) => {
     const activityTypeId = toActivityTypeId(data.activityType);
     if (activityTypeId === undefined) {
-      throw new Error('Aktivite tipi seçilmelidir.');
+      throw new Error(t('activityManagement.activityTypeRequired'));
     }
 
     const assignedUserId = data.assignedUserId ?? fallbackAssignedUserId;
-    if (assignedUserId === undefined) {
-      throw new Error('Atanan kullanıcı zorunludur.');
+    if (!assignedUserId || assignedUserId <= 0) {
+      throw new Error(t('activityManagement.assignedUserRequired'));
+    }
+
+    const endDateTime = toIsoDateTime(data.endDateTime);
+    if (!endDateTime) {
+      throw new Error(t('activityManagement.endDateRequired'));
     }
 
     return {
@@ -166,7 +171,7 @@ export function ActivityManagementPage(): ReactElement {
       contactId: data.contactId || undefined,
       assignedUserId,
       startDateTime: toIsoDateTime(data.startDateTime) || new Date().toISOString(),
-      endDateTime: toIsoDateTime(data.endDateTime),
+      endDateTime,
       isAllDay: data.isAllDay,
       reminders: (data.reminders || []).map((reminder) => ({
         offsetMinutes: reminder.offsetMinutes,
