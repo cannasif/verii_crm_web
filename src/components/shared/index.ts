@@ -2,6 +2,8 @@ export { PageToolbar } from './PageToolbar';
 export { AdvancedFilter } from './AdvancedFilter';
 export { ColumnPreferencesPopover } from './ColumnPreferencesPopover';
 export type { ColumnDef } from './ColumnPreferencesPopover';
+export { GridExportMenu } from './GridExportMenu';
+export { DataTableActionBar } from './DataTableActionBar';
 export { ProtectedRoute } from './ProtectedRoute';
 export { Navbar } from './Navbar';
 export { Sidebar } from './Sidebar';
