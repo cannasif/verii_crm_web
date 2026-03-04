@@ -37,6 +37,7 @@ import { useCustomerOptions } from '@/features/customer-management/hooks/useCust
 import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
 import { useQuery } from '@tanstack/react-query';
 import { contactApi } from '@/features/contact-management/api/contact-api';
+import { useAuthStore } from '@/stores/auth-store';
 import type { PagedFilter } from '@/types/api';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
 import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell, Plus, Trash2, Image } from 'lucide-react';
@@ -112,9 +113,18 @@ function toDefaultStartDateTime(initialDate?: string | null, initialStart?: stri
   return toDateTimeInputValue(now.toISOString());
 }
 
-function toDefaultEndDateTime(initialEnd?: string | null): string | undefined {
+function toDefaultEndDateTime(initialEnd?: string | null, startValue?: string): string {
   if (initialEnd && initialEnd.length >= 16) return initialEnd;
-  return undefined;
+
+  const start = startValue && startValue.length >= 16 ? new Date(startValue) : new Date();
+  if (Number.isNaN(start.getTime())) {
+    const fallback = new Date();
+    fallback.setHours(fallback.getHours() + 1, 0, 0, 0);
+    return toDateTimeInputValue(fallback.toISOString());
+  }
+
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  return toDateTimeInputValue(end.toISOString());
 }
 
 const REMINDER_CHANNEL_OPTIONS = [
@@ -135,11 +145,15 @@ export function ActivityForm({
   initialEndDateTime,
 }: ActivityFormProps): ReactElement {
   const { t } = useTranslation();
+  const { user } = useAuthStore();
   const { data: customerOptions = [] } = useCustomerOptions();
   const { data: userOptions = [] } = useUserOptions();
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [selectedCustomerDisplayName, setSelectedCustomerDisplayName] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('details');
+
+  const defaultStartDateTime = toDefaultStartDateTime(initialDate, initialStartDateTime);
+  const defaultEndDateTime = toDefaultEndDateTime(initialEndDateTime, defaultStartDateTime);
 
   const form = useForm<ActivityFormSchema>({
     resolver: zodResolver(activityFormSchema),
@@ -150,8 +164,9 @@ export function ActivityForm({
       activityType: '',
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
-      startDateTime: toDefaultStartDateTime(initialDate, initialStartDateTime),
-      endDateTime: toDefaultEndDateTime(initialEndDateTime),
+      assignedUserId: user?.id ?? 0,
+      startDateTime: defaultStartDateTime,
+      endDateTime: defaultEndDateTime,
       isAllDay: false,
       reminders: [],
     },
@@ -199,9 +214,9 @@ export function ActivityForm({
     if (open) {
       setActiveTab('details');
       if (!activity && (initialStartDateTime || initialDate)) {
-        form.setValue('startDateTime', toDefaultStartDateTime(initialDate, initialStartDateTime));
-        const end = toDefaultEndDateTime(initialEndDateTime);
-        if (end) form.setValue('endDateTime', end);
+        const start = toDefaultStartDateTime(initialDate, initialStartDateTime);
+        form.setValue('startDateTime', start);
+        form.setValue('endDateTime', toDefaultEndDateTime(initialEndDateTime, start));
       }
     }
   }, [open, initialDate, initialStartDateTime, initialEndDateTime, activity, form]);
@@ -219,7 +234,7 @@ export function ActivityForm({
         contactId: activity.contactId || undefined,
         assignedUserId: activity.assignedUserId || undefined,
         startDateTime: toDateTimeInputValue(activity.startDateTime) || toDefaultStartDateTime(),
-        endDateTime: toDateTimeInputValue(activity.endDateTime),
+        endDateTime: toDateTimeInputValue(activity.endDateTime) || toDefaultEndDateTime(undefined, toDateTimeInputValue(activity.startDateTime)),
         isAllDay: activity.isAllDay,
         reminders: (activity.reminders || []).map((reminder) => ({
           offsetMinutes: reminder.offsetMinutes,
@@ -239,14 +254,14 @@ export function ActivityForm({
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
       contactId: undefined,
-      assignedUserId: undefined,
-      startDateTime: toDefaultStartDateTime(initialDate, initialStartDateTime),
-      endDateTime: toDefaultEndDateTime(initialEndDateTime),
+      assignedUserId: user?.id ?? 0,
+      startDateTime: defaultStartDateTime,
+      endDateTime: toDefaultEndDateTime(initialEndDateTime, defaultStartDateTime),
       isAllDay: false,
       reminders: [],
     });
     setSelectedCustomerDisplayName(null);
-  }, [activity, form, initialDate, initialStartDateTime, initialEndDateTime]);
+  }, [activity, form, initialDate, initialStartDateTime, initialEndDateTime, user?.id, defaultStartDateTime]);
 
   useEffect(() => {
     if (!watchedCustomerId) form.setValue('contactId', undefined);
@@ -268,7 +283,7 @@ export function ActivityForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-4xl w-[95vw] sm:w-full max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-xl">
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-4xl w-[95vw] sm:w-full max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-xl">
         <DialogHeader className="px-6 py-4 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
@@ -354,8 +369,8 @@ export function ActivityForm({
                   )} />
                   <FormField control={form.control} name="endDateTime" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
-                      <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || undefined)} /></FormControl>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
+                      <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || '')} /></FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
                   )} />
@@ -452,12 +467,12 @@ export function ActivityForm({
                   )} />
                   <FormField control={form.control} name="assignedUserId" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser')}</FormLabel>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'assignedUserId')}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser')}</FormLabel>
                       <FormControl>
                         <Combobox
-                          options={[{ value: 'none', label: t('activityManagement.noUserSelected') }, ...userOptions.map((userOption) => ({ value: userOption.id.toString(), label: userOption.fullName }))]}
-                          value={field.value && field.value !== 0 ? field.value.toString() : 'none'}
-                          onValueChange={(value) => field.onChange(value && value !== 'none' ? Number(value) : undefined)}
+                          options={userOptions.map((userOption) => ({ value: userOption.id.toString(), label: userOption.fullName }))}
+                          value={field.value && field.value !== 0 ? field.value.toString() : ''}
+                          onValueChange={(value) => field.onChange(value ? Number(value) : 0)}
                           placeholder={t('activityManagement.select')}
                           className={INPUT_STYLE}
                         />
