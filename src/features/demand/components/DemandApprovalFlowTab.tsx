@@ -10,7 +10,6 @@ import {
   Time02Icon, 
   CancelCircleIcon, 
   CircleIcon, 
-  Loading02Icon, 
   Alert02Icon, 
   UserIcon, 
   Mail01Icon, 
@@ -49,20 +48,20 @@ function StepStatusIcon({ stepStatus }: { stepStatus: ApprovalFlowStepReportDto[
   switch (stepStatus) {
     case 'Completed':
       return (
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 border border-emerald-300 dark:border-emerald-500/50">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 border border-emerald-300 dark:border-emerald-500/50">
           <TickDouble02Icon size={24} className="text-white" />
         </div>
       );
     case 'InProgress':
       return (
-        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30 border border-amber-300 dark:border-amber-500/50">
+        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30 border border-amber-300 dark:border-amber-500/50">
           <div className="absolute inset-0 rounded-2xl border-2 border-amber-400 animate-ping opacity-20"></div>
           <Time02Icon size={24} className="text-white animate-pulse"  />
         </div>
       );
     case 'Rejected':
       return (
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 shadow-lg shadow-rose-500/30 border border-rose-300 dark:border-rose-500/50">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-rose-500 to-red-600 shadow-lg shadow-rose-500/30 border border-rose-300 dark:border-rose-500/50">
           <CancelCircleIcon size={24} className="text-white" />
         </div>
       );
@@ -323,7 +322,7 @@ export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps):
       {/* Timeline Adımları */}
       <div className={cn('relative space-y-8 pt-4', !dto.steps?.length && 'hidden')}>
         {/* Dikey Çizgi (Timeline) */}
-        <div className="absolute left-[19px] sm:left-[43px] top-6 bottom-10 w-[2px] bg-gradient-to-b from-slate-200 via-slate-200 to-transparent dark:from-white/10 dark:via-white/10"></div>
+        <div className="absolute left-[19px] sm:left-[43px] top-6 bottom-10 w-[2px] bg-linear-to-b from-slate-200 via-slate-200 to-transparent dark:from-white/10 dark:via-white/10"></div>
         
         {dto.steps?.map((step) => (
           <div key={step.stepOrder} className="relative z-10">
