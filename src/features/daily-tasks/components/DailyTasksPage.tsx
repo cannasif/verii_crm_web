@@ -98,8 +98,6 @@ export function DailyTasksPage(): ReactElement {
     return { startDate: monday.toISOString().split('T')[0], endDate: sunday.toISOString().split('T')[0] };
   };
 
-  const getTodayDate = (): string => new Date().toISOString().split('T')[0];
-
   const getCalendarDateRange = (): { startDate: string; endDate: string } => {
     const year = calendarMonth.getFullYear();
     const month = calendarMonth.getMonth();
@@ -121,7 +119,6 @@ export function DailyTasksPage(): ReactElement {
   };
 
   const weekDateRange = getWeekDateRange();
-  const todayDate = getTodayDate();
   const calendarDateRange = getCalendarDateRange();
   const weeklyDateRange = getWeeklyDateRange();
 
