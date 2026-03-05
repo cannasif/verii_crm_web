@@ -57,6 +57,7 @@
   "getByGroup": "Ürün Grubuna Göre Getir",
   "getBySalespersonAndGroup": "Satış Temsilcisi ve Gruba Göre Getir",
   "table": {
+    "title": "İskonto Limiti Listesi",
     "id": "ID",
     "salespersonName": "Satış Temsilcisi Adı",
     "erpProductGroupCode": "ERP Ürün Grubu Kodu",
