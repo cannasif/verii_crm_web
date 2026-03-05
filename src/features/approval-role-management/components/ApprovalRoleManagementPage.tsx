@@ -114,7 +114,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
     filters: apiFilters.length > 0 ? apiFilters : undefined,
   });
 
-  const roles = apiResponse?.data ?? [];
+  const roles = useMemo(() => apiResponse?.data ?? [], [apiResponse?.data]);
   const totalCount = apiResponse?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;

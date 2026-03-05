@@ -111,7 +111,7 @@ export function UserManagementPage(): ReactElement {
     filters: filtersParam,
   });
 
-  const users = apiResponse?.data ?? [];
+  const users = useMemo(() => apiResponse?.data ?? [], [apiResponse?.data]);
   const totalCount = apiResponse?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;

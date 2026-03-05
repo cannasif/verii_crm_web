@@ -121,7 +121,7 @@ export function GoogleLogsPage(): ReactElement {
   });
 
   const pagedLogs = logsQuery.data;
-  const currentPageRows = pagedLogs?.data ?? [];
+  const currentPageRows = useMemo(() => pagedLogs?.data ?? [], [pagedLogs?.data]);
   const totalCount = pagedLogs?.totalCount ?? 0;
   const hasNextPage = pagedLogs?.hasNextPage ?? false;
   const hasPreviousPage = pagedLogs?.hasPreviousPage ?? pageNumber > 1;

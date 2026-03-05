@@ -107,7 +107,10 @@ export function ActivityManagementPage(): ReactElement {
     filters: apiFilters,
   });
 
-  const activities = activitiesResponse?.data || [];
+  const activities = useMemo(
+    () => activitiesResponse?.data || [],
+    [activitiesResponse?.data]
+  );
   const totalCount = activitiesResponse?.totalCount || 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;

@@ -120,7 +120,7 @@ export function StockListPage(): ReactElement {
   });
 
   const pagedData = stockQuery.data;
-  const currentPageRows = pagedData?.data ?? [];
+  const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;
   const hasNextPage = pagedData?.hasNextPage ?? false;
   const hasPreviousPage = pagedData?.hasPreviousPage ?? pageNumber > 1;
