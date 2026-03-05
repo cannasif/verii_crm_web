@@ -18,7 +18,22 @@
   "save": "Save",
   "confirm": "Confirm",
   "saveAndApply": "Save and Apply",
+  "loadError": "An error occurred while loading data.",
   "list": {
+    "title": "Quotation List",
+    "description": "View and manage quotation records",
+    "createNew": "Create New Quotation",
+    "cardTitle": "Quotation list",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "id": "ID",
+    "offerNo": "Offer No",
+    "customer": "Customer",
+    "representative": "Representative",
+    "offerDate": "Offer Date",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status",
     "revise": "Revise",
     "showing": "Showing {{from}}-{{to}} / {{total}}"
   },
@@ -163,5 +178,5 @@
       }
     }
   },
-  "guide": "Directory"
+  "guide": "Guide"
 }

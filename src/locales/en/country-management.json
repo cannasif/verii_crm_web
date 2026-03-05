@@ -11,7 +11,10 @@
   "deleteConfirmTitle": "Delete Confirmation",
   "cancel": "Cancel",
   "deleting": "Deleting...",
-  "delete": "Delete",
+  "delete": {
+    "confirmTitle": "Delete Country",
+    "confirmMessage": "Are you sure you want to delete {{name}}?"
+  },
   "saving": "Saving...",
   "save": "Save",
   "stats": {

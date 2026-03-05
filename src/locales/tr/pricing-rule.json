@@ -91,7 +91,11 @@
     "deleteSuccess": "Satışçı Kaldırıldı",
     "deleteSuccessMessage": "Satışçı fiyat kuralından başarıyla kaldırıldı",
     "deleteError": "Hata",
-    "deleteErrorMessage": "Satışçı kaldırılırken bir hata oluştu"
+    "deleteErrorMessage": "Satışçı kaldırılırken bir hata oluştu",
+    "add": "Satışçı Ekle",
+    "empty": "Henüz satışçı eklenmedi",
+    "emptyDescription": "Tüm satışçılar için geçerli olacaktır",
+    "salesman": "Satışçı"
   },
   "header": {
     "ruleType": "Kural Tipi",

@@ -5,7 +5,12 @@
   "edit": "Edit Payment Type",
   "editDescription": "Edit payment type information",
   "createDescription": "Enter new payment type information",
-  "delete": "Delete",
+  "delete": {
+    "confirmTitle": "Delete Payment Type",
+    "confirmMessage": "Are you sure you want to delete {{name}} payment type? This action cannot be undone.",
+    "success": "Payment type deleted successfully",
+    "error": "An error occurred while deleting payment type"
+  },
   "deleteTitle": "Delete Payment Type",
   "name": "Name",
   "namePlaceholder": "Enter payment type name",

@@ -1,12 +1,36 @@
 {
   "userManagement": {
-    "menu": "Kullanıcı Yönetimi",
-    "description": "Kullanıcıları yönetin ve düzenleyin",
-    "addButton": "Yeni Kullanıcı Ekle",
-    "searchPlaceholder": "Ara...",
-    "loading": "Yükleniyor...",
+    "form": {
+      "editUser": "Kullanıcı Düzenle",
+      "addUser": "Yeni Kullanıcı Ekle",
+      "editDescription": "Kullanıcı bilgilerini düzenleyin",
+      "addDescription": "Yeni kullanıcı bilgilerini girin",
+      "username": "Kullanıcı Adı",
+      "usernamePlaceholder": "Kullanıcı adını girin",
+      "email": "E-posta",
+      "emailPlaceholder": "E-posta adresini girin",
+      "password": "Şifre",
+      "passwordPlaceholder": "Boş bırakılırsa geçici şifre oluşturulur",
+      "firstName": "Ad",
+      "firstNamePlaceholder": "Adı girin",
+      "lastName": "Soyad",
+      "lastNamePlaceholder": "Soyadı girin",
+      "phoneNumber": "Telefon",
+      "phoneNumberPlaceholder": "Telefon numarasını girin",
+      "role": "Rol",
+      "rolePlaceholder": "Rol seçin",
+      "permissionGroups": "İzin Grupları",
+      "isActive": "Aktif",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet",
+      "selectAll": "Tümünü seç",
+      "permissionGroupsNoData": "İzin grubu bulunamadı"
+    },
     "table": {
+      "loading": "Yükleniyor...",
       "title": "Kullanıcı Listesi",
+      "noData": "Veri yok",
       "id": "ID",
       "username": "Kullanıcı Adı",
       "email": "E-posta",
@@ -17,15 +41,20 @@
       "active": "Aktif",
       "inactive": "Pasif",
       "confirmed": "Onaylı",
-      "noData": "Veri yok",
-      "loading": "Yükleniyor..."
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}",
+      "previous": "Önceki",
+      "next": "Sonraki"
     },
-    "messages": {
-      "error": "Hata oluştu",
-      "createSuccess": "Kullanıcı başarıyla oluşturuldu",
-      "createError": "Kullanıcı oluşturulamadı",
-      "deleteSuccess": "Kullanıcı başarıyla silindi",
-      "deleteError": "Kullanıcı silinemedi"
+    "menu": "Kullanıcı Yönetimi",
+    "description": "Kullanıcıları yönetin ve düzenleyin",
+    "addButton": "Yeni Kullanıcı Ekle",
+    "searchPlaceholder": "Kullanıcılarda ara...",
+    "advancedFilter": {
+      "columnUsername": "Kullanıcı Adı",
+      "columnEmail": "E-posta",
+      "columnFullName": "Ad Soyad",
+      "columnRole": "Rol"
     },
     "stats": {
       "totalUsers": "Toplam Kullanıcı",
@@ -33,6 +62,9 @@
       "newThisMonth": "Bu Ay Yeni",
       "confirmedUsers": "Onaylı Kullanıcı",
       "loading": "Yükleniyor..."
+    },
+    "messages": {
+      "error": "Bir hata oluştu"
     }
   },
   "menu": "Kullanıcı Yönetimi",
@@ -101,37 +133,5 @@
   "delete": {
     "confirmTitle": "Kullanıcıyı Sil",
     "confirmMessage": "{{username}} kullanıcısını silmek istediğinizden emin misiniz?"
-  },
-  "userManagement": {
-    "form": {
-      "editUser": "Kullanıcı Düzenle",
-      "addUser": "Yeni Kullanıcı Ekle",
-      "editDescription": "Kullanıcı bilgilerini düzenleyin",
-      "addDescription": "Yeni kullanıcı bilgilerini girin",
-      "username": "Kullanıcı Adı",
-      "usernamePlaceholder": "Kullanıcı adını girin",
-      "email": "E-posta",
-      "emailPlaceholder": "E-posta adresini girin",
-      "password": "Şifre",
-      "passwordPlaceholder": "Boş bırakılırsa geçici şifre oluşturulur",
-      "firstName": "Ad",
-      "firstNamePlaceholder": "Adı girin",
-      "lastName": "Soyad",
-      "lastNamePlaceholder": "Soyadı girin",
-      "phoneNumber": "Telefon",
-      "phoneNumberPlaceholder": "Telefon numarasını girin",
-      "role": "Rol",
-      "rolePlaceholder": "Rol seçin",
-      "permissionGroups": "İzin Grupları",
-      "isActive": "Aktif",
-      "cancel": "İptal",
-      "saving": "Kaydediliyor...",
-      "save": "Kaydet",
-      "selectAll": "Tümünü seç",
-      "permissionGroupsNoData": "İzin grubu bulunamadı"
-    },
-    "table": {
-      "loading": "Yükleniyor..."
-    }
   }
 }
