@@ -5,7 +5,12 @@
   "edit": "Ödeme Tipi Düzenle",
   "editDescription": "Ödeme tipi bilgilerini düzenleyin",
   "createDescription": "Yeni ödeme tipi bilgilerini girin",
-  "delete": "Sil",
+  "delete": {
+    "confirmTitle": "Ödeme Tipini Sil",
+    "confirmMessage": "{{name}} ödeme tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "success": "Ödeme tipi başarıyla silindi",
+    "error": "Ödeme tipi silinirken bir hata oluştu"
+  },
   "deleteTitle": "Ödeme Tipini Sil",
   "name": "Ad",
   "namePlaceholder": "Ödeme tipi adını girin",
@@ -27,6 +32,7 @@
   "save": "Kaydet",
   "saving": "Kaydediliyor...",
   "noData": "Veri bulunamadı",
+  "error": "Hata oluştu",
   "confirmDelete": "Bu ödeme tipini silmek istediğinizden emin misiniz?",
   "createSuccess": "Ödeme tipi başarıyla oluşturuldu",
   "updateSuccess": "Ödeme tipi başarıyla güncellendi",
@@ -35,6 +41,8 @@
   "updateError": "Ödeme tipi güncellenirken bir hata oluştu",
   "deleteError": "Ödeme tipi silinirken bir hata oluştu",
   "table": {
+    "title": "Ödeme Tipleri",
+    "status": "Durum",
     "id": "ID",
     "name": "Ad",
     "description": "Açıklama",
