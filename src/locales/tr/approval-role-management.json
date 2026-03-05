@@ -9,6 +9,7 @@
     "loading": "Yükleniyor...",
     "noData": "Veri yok",
     "table": {
+      "title": "Onay Rolü Listesi",
       "id": "ID",
       "approvalRoleGroupName": "Rol Grubu",
       "name": "Rol Adı",
@@ -27,6 +28,9 @@
       "cancelButton": "İptal",
       "confirmButton": "Sil",
       "deleting": "Siliniyor..."
+    },
+    "messages": {
+      "error": "Hata oluştu"
     },
     "form": {
       "editTitle": "Onay Rolü Düzenle",
