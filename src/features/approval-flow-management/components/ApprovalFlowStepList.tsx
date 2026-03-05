@@ -80,21 +80,18 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
 
   const sortedSteps = [...steps].sort((a, b) => a.stepOrder - b.stepOrder);
 
-  const usedRoleGroupIds = new Set(
-    sortedSteps
-      .filter((step) => step.approvalRoleGroupId !== 0)
-      .map((step) => step.approvalRoleGroupId)
-  );
-
-  const availableRoleGroupOptions = useMemo(
-    () =>
-      roleGroupDropdown.options.filter(
-        (opt) =>
-          !usedRoleGroupIds.has(parseInt(opt.value)) ||
-          (editingStep && editingStep.approvalRoleGroupId === parseInt(opt.value))
-      ),
-    [roleGroupDropdown.options, usedRoleGroupIds, editingStep]
-  );
+  const availableRoleGroupOptions = useMemo(() => {
+    const usedRoleGroupIds = new Set(
+      sortedSteps
+        .filter((step) => step.approvalRoleGroupId !== 0)
+        .map((step) => step.approvalRoleGroupId)
+    );
+    return roleGroupDropdown.options.filter(
+      (opt) =>
+        !usedRoleGroupIds.has(parseInt(opt.value)) ||
+        (editingStep && editingStep.approvalRoleGroupId === parseInt(opt.value))
+    );
+  }, [sortedSteps, roleGroupDropdown.options, editingStep]);
 
   const form = useForm<StepFormSchema>({
     resolver: zodResolver(stepFormSchema),
