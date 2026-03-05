@@ -2,38 +2,41 @@ import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { Plus, Filter, Menu, FileSpreadsheet, FileText, Presentation, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { CustomerStats } from './CustomerStats';
+import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { loadColumnPreferences } from '@/lib/column-preferences';
+import { CUSTOMER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { CustomerTable, getColumnsConfig } from './CustomerTable';
 import { CustomerForm } from './CustomerForm';
+import { CustomerStats } from './CustomerStats';
 import { useCreateCustomer } from '../hooks/useCreateCustomer';
 import { useUpdateCustomer } from '../hooks/useUpdateCustomer';
 import { useCustomerList } from '../hooks/useCustomerList';
 import type { CustomerDto, CustomerFormData } from '../types/customer-types';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { PageToolbar, ColumnPreferencesPopover, AdvancedFilter } from '@/components/shared';
-import { loadColumnPreferences } from '@/lib/column-preferences';
-import { CUSTOMER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { applyCustomerFilters, CUSTOMER_FILTER_COLUMNS } from '../types/customer-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 
 const EMPTY_CUSTOMERS: CustomerDto[] = [];
+const PAGE_KEY = 'customer-management';
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+
+type CustomerColumnKey = keyof CustomerDto;
+
+function resolveLabel(
+  t: (key: string) => string,
+  key: string,
+  fallback: string
+): string {
+  const translated = t(key);
+  return translated && translated !== key ? translated : fallback;
+}
 
 export function CustomerManagementPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(['customer-management', 'common']);
   const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
 
@@ -42,8 +45,10 @@ export function CustomerManagementPage(): ReactElement {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
-
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortBy, setSortBy] = useState<CustomerColumnKey>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
 
@@ -52,17 +57,35 @@ export function CustomerManagementPage(): ReactElement {
   const updateCustomer = useUpdateCustomer();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key), [tableColumns]);
-  const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
-  const [visibleColumns, setVisibleColumns] = useState<Array<keyof CustomerDto>>(
-    () => defaultColumnKeys as Array<keyof CustomerDto>
+  const baseColumns = useMemo(
+    () =>
+      tableColumns.map((c) => ({
+        key: c.key as string,
+        label: c.label,
+      })),
+    [tableColumns]
   );
+  const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key as string), [tableColumns]);
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    const prefs = loadColumnPreferences('customer-management', user?.id, defaultColumnKeys);
-    setVisibleColumns(prefs.visibleKeys as Array<keyof CustomerDto>);
+    setPageTitle(t('customerManagement.menu'));
+    return () => setPageTitle(null);
+  }, [t, setPageTitle]);
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
+    setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const { data: apiResponse, isLoading } = useCustomerList({
     pageNumber: 1,
@@ -74,24 +97,9 @@ export function CustomerManagementPage(): ReactElement {
     [apiResponse?.data]
   );
 
-  useEffect(() => {
-    setPageTitle(t('customerManagement.menu'));
-    return () => setPageTitle(null);
-  }, [t, setPageTitle]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
   const filteredCustomers = useMemo(() => {
-    if (!customers) return [];
-
-    let result: CustomerDto[] = [...customers];
-
+    if (!customers.length) return [];
+    let result = [...customers];
     if (debouncedSearch) {
       const lowerSearch = debouncedSearch.toLowerCase();
       result = result.filter(
@@ -103,105 +111,94 @@ export function CustomerManagementPage(): ReactElement {
           (item.taxNumber && item.taxNumber?.includes(lowerSearch))
       );
     }
-
     result = applyCustomerFilters(result, appliedFilterRows);
     return result;
   }, [customers, debouncedSearch, appliedFilterRows]);
 
-  const handleAdvancedSearch = () => {
-    setAppliedFilterRows(draftFilterRows);
-    setShowFilters(false);
-  };
+  const sortedCustomers = useMemo(() => {
+    const result = [...filteredCustomers];
+    result.sort((a, b) => {
+      const aVal = a[sortBy] != null ? String(a[sortBy]).toLowerCase() : '';
+      const bVal = b[sortBy] != null ? String(b[sortBy]).toLowerCase() : '';
+      const cmp = aVal.localeCompare(bVal);
+      return sortDirection === 'asc' ? cmp : -cmp;
+    });
+    return result;
+  }, [filteredCustomers, sortBy, sortDirection]);
 
-  const handleAdvancedClear = () => {
-    setDraftFilterRows([]);
-    setAppliedFilterRows([]);
-  };
+  const totalCount = sortedCustomers.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const currentPageRows = useMemo(
+    () => sortedCustomers.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
+    [sortedCustomers, pageNumber, pageSize]
+  );
 
-  const displayedColumnsForExport = useMemo(() => {
-    const orderMap = new Map(columnOrder.map((k, i) => [k, i]));
-    return tableColumns
-      .filter((col) => visibleColumns.includes(col.key))
-      .sort((a, b) => (orderMap.get(a.key) ?? 999) - (orderMap.get(b.key) ?? 999));
-  }, [tableColumns, visibleColumns, columnOrder]);
+  const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as CustomerColumnKey[];
 
-  const handleExportExcel = async () => {
-    const dataToExport = filteredCustomers.map((item) => {
-      const row: Record<string, string | number | boolean | null | undefined> = {};
-      displayedColumnsForExport.forEach((col) => {
-            const value = item[col.key];
-            row[col.label] = (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
-              ? value
-              : value ?? '';
+  const filterColumns = useMemo(
+    () =>
+      CUSTOMER_FILTER_COLUMNS.map((col) => ({
+        value: col.value,
+        type: col.type,
+        labelKey: col.labelKey,
+      })),
+    []
+  );
+
+  const exportColumns = useMemo(
+    () =>
+      orderedVisibleColumns.map((key) => {
+        const col = tableColumns.find((c) => c.key === key);
+        return { key, label: col?.label ?? key };
+      }),
+    [tableColumns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(
+    () =>
+      filteredCustomers.map((c) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
         });
-      return row;
-    });
+        return row;
+      }),
+    [filteredCustomers, orderedVisibleColumns, i18n.language]
+  );
 
-    const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(dataToExport);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Müşteriler");
-    XLSX.writeFile(wb, "musteriler.xlsx");
-  };
+  const appliedFilterCount = useMemo(
+    () => appliedFilterRows.filter((r) => r.value.trim()).length,
+    [appliedFilterRows]
+  );
 
-  const handleExportPDF = async () => {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable'),
-    ]);
-    const doc = new JsPDF();
-    
-    const tableColumn = displayedColumnsForExport.map((col) => col.label);
-    const tableRows = filteredCustomers.map((item) =>
-      displayedColumnsForExport.map((col) => item[col.key] ?? '')
-    );
-
-    autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-    });
-
-    doc.save("musteriler.pdf");
-  };
-
-  type PptxTableRow = Array<{ text: string }>;
-
-  const handleExportPowerPoint = async () => {
-    const { default: PptxGenJS } = await import('pptxgenjs');
-    const pptx = new PptxGenJS();
-    const slide = pptx.addSlide();
-    
-    slide.addText("Müşteri Raporu", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
-
-    const headers = displayedColumnsForExport.map((col) => col.label);
-    const rows = filteredCustomers.map((item) =>
-      displayedColumnsForExport.map((col) => String(item[col.key] ?? ''))
-    );
-
-    const tableData: PptxTableRow[] = [
-      headers.map(text => ({ text })),
-      ...rows.map(row => row.map(text => ({ text }))),
-    ];
-
-    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
-
-    pptx.writeFile({ fileName: "musteriler.pptx" });
-  };
+  useEffect(() => {
+    setPageNumber(1);
+  }, [pageSize, debouncedSearch, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingCustomer(null);
     setFormOpen(true);
   };
 
-  const handleRefresh = async (): Promise<void> => {
-    await queryClient.invalidateQueries({ queryKey: [CUSTOMER_MANAGEMENT_QUERY_KEYS.LIST] });
-  };
-
-  const hasFiltersActive = appliedFilterRows.some((r) => r.value.trim() !== '');
-
   const handleEdit = (customer: CustomerDto): void => {
     setEditingCustomer(customer);
     setFormOpen(true);
+  };
+
+  const handleFormClose = (open: boolean): void => {
+    setFormOpen(open);
+    if (!open) setEditingCustomer(null);
+  };
+
+  const handleRefresh = async (): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: [CUSTOMER_MANAGEMENT_QUERY_KEYS.LIST] });
   };
 
   const handleFormSubmit = async (data: CustomerFormData): Promise<void> => {
@@ -217,22 +214,30 @@ export function CustomerManagementPage(): ReactElement {
     setEditingCustomer(null);
   };
 
+  const columns = useMemo<DataTableGridColumn<CustomerColumnKey>[]>(
+    () =>
+      tableColumns.map((c) => ({
+        key: c.key as CustomerColumnKey,
+        label: c.label,
+        cellClassName: c.className,
+      })),
+    [tableColumns]
+  );
+
   return (
-    <div className="w-full space-y-6">
-      
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
-        <div className="flex flex-col gap-2">
+    <div className="w-full space-y-6 relative">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+        <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('customerManagement.menu')}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
             {t('customerManagement.description')}
           </p>
         </div>
-        
-        <Button 
+        <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
         >
           <Plus size={18} className="mr-2" />
           {t('customerManagement.addButton')}
@@ -241,102 +246,115 @@ export function CustomerManagementPage(): ReactElement {
 
       <CustomerStats />
 
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-0 overflow-hidden transition-all duration-300">
-        <div className="flex-none p-4 border-b border-white/5 flex flex-col gap-4">
-          <PageToolbar
-            searchPlaceholder={t('common.search')}
-            searchValue={searchTerm}
-            onSearchChange={setSearchTerm}
-            onRefresh={handleRefresh}
-            rightSlot={
-              <div className="flex items-center gap-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-9 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
-                      <Menu size={16} className="text-slate-500 dark:text-slate-400" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
-                    <DropdownMenuLabel className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('common.export')}</DropdownMenuLabel>
-                    <DropdownMenuSeparator className="bg-white/5 my-1" />
-                    <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <FileSpreadsheet size={16} className="text-emerald-500" />
-                      <span>{t('common.exportExcel')}</span>
-                    </button>
-                    <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <FileText size={16} className="text-red-400" />
-                      <span>{t('common.exportPDF')}</span>
-                    </button>
-                    <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <Presentation size={16} className="text-orange-400" />
-                      <span>{t('common.exportPPT')}</span>
-                    </button>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <Popover open={showFilters} onOpenChange={setShowFilters}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={hasFiltersActive ? 'default' : 'outline'}
-                      size="sm"
-                      className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
-                        hasFiltersActive
-                          ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
-                          : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
-                      }`}
-                    >
-                      <Filter className="mr-2 h-4 w-4" />
-                      {t('common.filters')}
-                    </Button>
-                  </PopoverTrigger>
-                    <PopoverContent side="bottom" align="end" className="w-96 p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
-                        
-                        <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                          <h3 className="text-sm font-semibold text-gray-200">{t('common.filters')}</h3>
-                          <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-white transition-colors">
-                            <X size={16} />
-                          </button>
-                        </div>
-
-                        <div className="p-3 overflow-y-auto custom-scrollbar max-h-[420px]">
-                          <AdvancedFilter
-                            columns={CUSTOMER_FILTER_COLUMNS}
-                            defaultColumn="name"
-                            draftRows={draftFilterRows}
-                            onDraftRowsChange={setDraftFilterRows}
-                            onSearch={handleAdvancedSearch}
-                            onClear={handleAdvancedClear}
-                            translationNamespace="customer-management"
-                            embedded
-                          />
-                        </div>
-                    </PopoverContent>
-                </Popover>
-                <ColumnPreferencesPopover
-                  pageKey="customer-management"
-                  userId={user?.id}
-                  columns={tableColumns.map((c) => ({ key: c.key, label: c.label }))}
-                  visibleColumns={visibleColumns.map(String)}
-                  columnOrder={columnOrder}
-                  onVisibleColumnsChange={(next) => setVisibleColumns(next as Array<keyof CustomerDto>)}
-                  onColumnOrderChange={setColumnOrder}
+      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
+        <CardHeader className="space-y-4">
+          <CardTitle>{t('customerManagement.table.title', { defaultValue: t('table.title') })}</CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={setColumnOrder}
+            exportFileName="customers"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            filterColumns={filterColumns}
+            defaultFilterColumn="name"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+            }}
+            translationNamespace="customer-management"
+            appliedFilterCount={appliedFilterCount}
+            leftSlot={
+              <>
+                <Input
+                  placeholder={t('common.search')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-9 w-[200px]"
                 />
-              </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRefresh()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  {resolveLabel(t, 'common.refresh', 'Yenile')}
+                </Button>
+              </>
             }
           />
-        </div>
-
-        <CustomerTable
-          customers={filteredCustomers}
-          isLoading={isLoading}
-          onEdit={handleEdit}
-          visibleColumns={visibleColumns}
-          columnOrder={columnOrder}
-        />
-      </div>
+        </CardHeader>
+        <CardContent>
+          <CustomerTable
+            columns={columns}
+            visibleColumnKeys={orderedVisibleColumns}
+            rows={currentPageRows}
+            rowKey={(r) => r.id}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            onSort={(k) => {
+              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+              else {
+                setSortBy(k);
+                setSortDirection('asc');
+              }
+            }}
+            renderSortIcon={(k) => {
+              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+              return sortDirection === 'asc' ? (
+                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+              ) : (
+                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+              );
+            }}
+            isLoading={isLoading}
+            loadingText={t('customerManagement.loading')}
+            errorText={t('customerManagement.error', { defaultValue: 'Hata oluştu' })}
+            emptyText={t('customerManagement.noData')}
+            minTableWidthClassName="min-w-[800px] lg:min-w-[1100px]"
+            showActionsColumn
+            actionsHeaderLabel={t('customerManagement.actions')}
+            onEdit={handleEdit}
+            rowClassName="group"
+            pageSize={pageSize}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            onPageSizeChange={(s) => {
+              setPageSize(s);
+              setPageNumber(1);
+            }}
+            pageNumber={pageNumber}
+            totalPages={totalPages}
+            hasPreviousPage={pageNumber > 1}
+            hasNextPage={pageNumber < totalPages}
+            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('common.table.showing', {
+              from: startRow,
+              to: endRow,
+              total: totalCount,
+            })}
+            disablePaginationButtons={false}
+          />
+        </CardContent>
+      </Card>
 
       <CustomerForm
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={handleFormClose}
         onSubmit={handleFormSubmit}
         customer={editingCustomer}
         isLoading={createCustomer.isPending || updateCustomer.isPending}
