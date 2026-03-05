@@ -1,4 +1,32 @@
 {
+  "districtManagement": {
+    "menu": "İlçe Yönetimi",
+    "description": "İlçeleri yönetin ve düzenleyin",
+    "addButton": "Yeni İlçe Ekle",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok",
+    "table": {
+      "id": "ID",
+      "name": "İlçe Adı",
+      "erpCode": "ERP Kodu",
+      "city": "Şehir",
+      "cityName": "Şehir Adı",
+      "status": "Durum",
+      "title": "İlçe Listesi"
+    },
+    "delete": {
+      "confirmTitle": "İlçeyi Sil",
+      "confirmMessage": "{{name}} ilçesini silmek istediğinizden emin misiniz?",
+      "success": "İlçe başarıyla silindi",
+      "error": "İlçe silinirken hata oluştu"
+    },
+    "messages": {
+      "createSuccess": "İlçe başarıyla oluşturuldu",
+      "createError": "İlçe oluşturulamadı",
+      "updateSuccess": "İlçe başarıyla güncellendi",
+      "updateError": "İlçe güncellenemedi"
+    }
+  },
   "menu": "İlçe Yönetimi",
   "description": "İlçeleri yönetin ve düzenleyin",
   "addButton": "Yeni İlçe Ekle",
