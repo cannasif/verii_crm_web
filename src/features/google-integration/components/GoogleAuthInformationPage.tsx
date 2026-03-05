@@ -90,7 +90,7 @@ export function GoogleAuthInformationPage(): ReactElement {
           <CardContent className="py-8">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>{t('common:common.loading')}</span>
+              <span>{t('common:loading')}</span>
             </div>
           </CardContent>
         </Card>
@@ -103,7 +103,7 @@ export function GoogleAuthInformationPage(): ReactElement {
       {!canManage && (
         <Card>
           <CardContent className="py-6 text-sm text-muted-foreground">
-            {t('common:common.forbidden')}
+            {t('common:forbiddenDescription')}
           </CardContent>
         </Card>
       )}
