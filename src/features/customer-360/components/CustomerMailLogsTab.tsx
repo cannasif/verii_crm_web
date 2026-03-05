@@ -1,26 +1,17 @@
-import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Eye, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
-import { DataTableActionBar } from '@/components/shared';
+import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { googleIntegrationApi } from '@/features/google-integration/api/google-integration.api';
 import type { GoogleCustomerMailLogDto } from '@/features/google-integration/types/google-integration.types';
 
@@ -69,17 +60,8 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
   const [errorsOnly, setErrorsOnly] = useState(false);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
-  const tableScrollRef = useRef<HTMLDivElement | null>(null);
-  const dragStateRef = useRef({
-    isDragging: false,
-    startX: 0,
-    startScrollLeft: 0,
-    moved: false,
-    pointerId: -1,
-  });
 
-  const columns = useMemo(
+  const baseColumns = useMemo(
     () =>
       MAIL_LOG_COLUMN_CONFIG.map((col) => ({
         key: col.key,
@@ -88,7 +70,12 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
     [t]
   );
 
-  const defaultColumnKeys = useMemo(() => columns.map((col) => col.key), [columns]);
+  const columns = useMemo<DataTableGridColumn<MailLogColumnKey>[]>(
+    () => baseColumns,
+    [baseColumns]
+  );
+
+  const defaultColumnKeys = useMemo(() => baseColumns.map((col) => col.key), [baseColumns]);
   const [columnOrder, setColumnOrder] = useState<string[]>(defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
@@ -139,13 +126,13 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
   const exportColumns = useMemo(
     () =>
       orderedVisibleColumns.map((key) => {
-        const column = columns.find((item) => item.key === key);
+        const column = baseColumns.find((item) => item.key === key);
         return {
           key,
           label: column?.label ?? key,
         };
       }),
-    [columns, orderedVisibleColumns]
+    [baseColumns, orderedVisibleColumns]
   );
 
   const exportRows = useMemo<Record<string, unknown>[]>(
@@ -166,8 +153,6 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
     setPageNumber(1);
   }, [pageSize, sortBy, sortDirection, errorsOnly, appliedFilters]);
 
-  const onRefresh = () => logsQuery.refetch();
-
   const onSort = (column: MailLogColumnKey): void => {
     if (sortBy === column) {
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
@@ -184,58 +169,6 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
     return sortDirection === 'asc'
       ? <ArrowUp className="h-3.5 w-3.5 text-foreground" />
       : <ArrowDown className="h-3.5 w-3.5 text-foreground" />;
-  };
-
-  const isInteractiveTarget = (target: EventTarget | null): boolean => {
-    if (!(target instanceof HTMLElement)) return false;
-    return Boolean(
-      target.closest(
-        'button, a, input, select, textarea, label, [role="button"], [data-no-drag-scroll="true"]'
-      )
-    );
-  };
-
-  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>): void => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
-    if (isInteractiveTarget(event.target)) return;
-
-    const container = tableScrollRef.current;
-    if (!container) return;
-
-    dragStateRef.current = {
-      isDragging: true,
-      startX: event.clientX,
-      startScrollLeft: container.scrollLeft,
-      moved: false,
-      pointerId: event.pointerId,
-    };
-    setIsDragging(true);
-    container.setPointerCapture(event.pointerId);
-  };
-
-  const handleDragMove = (event: ReactPointerEvent<HTMLDivElement>): void => {
-    const container = tableScrollRef.current;
-    if (!container || !dragStateRef.current.isDragging) return;
-    if (dragStateRef.current.pointerId !== event.pointerId) return;
-
-    const deltaX = event.clientX - dragStateRef.current.startX;
-    if (Math.abs(deltaX) > 4) {
-      dragStateRef.current.moved = true;
-    }
-    container.scrollLeft = dragStateRef.current.startScrollLeft - deltaX;
-  };
-
-  const handleDragEnd = (): void => {
-    dragStateRef.current.isDragging = false;
-    dragStateRef.current.pointerId = -1;
-    setIsDragging(false);
-  };
-
-  const handleClickCapture = (event: ReactMouseEvent<HTMLDivElement>): void => {
-    if (!dragStateRef.current.moved) return;
-    event.preventDefault();
-    event.stopPropagation();
-    dragStateRef.current.moved = false;
   };
 
   const [selectedLog, setSelectedLog] = useState<GoogleCustomerMailLogDto | null>(null);
@@ -269,7 +202,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
         <DataTableActionBar
           pageKey={PAGE_KEY}
           userId={user?.id}
-          columns={columns}
+          columns={baseColumns}
           visibleColumns={visibleColumns}
           columnOrder={columnOrder}
           onVisibleColumnsChange={setVisibleColumns}
@@ -300,7 +233,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
                   {t('google-integration:logs.errorsOnly')}
                 </Label>
               </div>
-              <Button variant="outline" size="sm" onClick={onRefresh} disabled={logsQuery.isFetching}>
+              <Button variant="outline" size="sm" onClick={() => logsQuery.refetch()} disabled={logsQuery.isFetching}>
                 {logsQuery.isFetching ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
@@ -312,134 +245,57 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
           )}
         />
 
-        <div
-          ref={tableScrollRef}
-          className={`rounded-md border overflow-x-auto ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
-          onPointerDown={handleDragStart}
-          onPointerMove={handleDragMove}
-          onPointerUp={handleDragEnd}
-          onPointerCancel={handleDragEnd}
-          onClickCapture={handleClickCapture}
-        >
-          <Table className="min-w-[1100px]">
-            <TableHeader>
-              <TableRow>
-                {orderedVisibleColumns.map((key) => {
-                  const column = columns.find((item) => item.key === key);
-                  return (
-                    <TableHead key={key}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onSort(key)}
-                        className="h-7 px-1 -ml-1 hover:bg-transparent"
-                      >
-                        <span>{column?.label ?? key}</span>
-                        {renderSortIcon(key)}
-                      </Button>
-                    </TableHead>
-                  );
-                })}
-                <TableHead className="text-right w-[84px]">
-                  {t('google-integration:logs.actions')}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {logsQuery.isLoading && (
-                <TableRow>
-                  <TableCell colSpan={orderedVisibleColumns.length + 1} className="text-center text-muted-foreground py-8">
-                    <div className="inline-flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>{t('google-integration:logs.loading')}</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {!logsQuery.isLoading && logsQuery.isError && (
-                <TableRow>
-                  <TableCell colSpan={orderedVisibleColumns.length + 1} className="text-center text-red-600 py-8">
-                    {t('google-integration:logs.loadError')}
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {!logsQuery.isLoading && !logsQuery.isError && currentPageRows.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={orderedVisibleColumns.length + 1} className="text-center text-muted-foreground py-8">
-                    {t('google-integration:logs.empty')}
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {currentPageRows.map((log) => (
-                <TableRow key={log.id} className="group">
-                  {orderedVisibleColumns.map((key) => (
-                    <TableCell key={`${log.id}-${key}`}>{renderCell(log, key)}</TableCell>
-                  ))}
-                  <TableCell className="text-right" data-no-drag-scroll="true">
-                    <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-                        onClick={() => handleOpenDetails(log)}
-                        title={t('google-integration:logs.viewDetails')}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3 text-sm">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 px-3">
-                  {pageSize}
-                  <ChevronDown className="h-4 w-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                {PAGE_SIZE_OPTIONS.map((size) => (
-                  <DropdownMenuItem key={size} onClick={() => setPageSize(size)}>
-                    {size}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <span className="text-muted-foreground">
-              {startRow}-{endRow}/{totalCount} kayıt
-            </span>
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
-              disabled={!hasPreviousPage || logsQuery.isFetching}
-            >
-              {t('google-integration:logs.previous')}
-            </Button>
-            <span className="text-sm text-muted-foreground min-w-[56px] text-center">
-              {pageNumber}/{Math.max(totalPages, 1)}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPageNumber((prev) => prev + 1)}
-              disabled={!hasNextPage || logsQuery.isFetching}
-            >
-              {t('google-integration:logs.next')}
-            </Button>
-          </div>
-        </div>
+        <DataTableGrid<GoogleCustomerMailLogDto, MailLogColumnKey>
+          columns={columns}
+          visibleColumnKeys={orderedVisibleColumns}
+          rows={currentPageRows}
+          rowKey={(row) => row.id}
+          renderCell={renderCell}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSort={onSort}
+          renderSortIcon={renderSortIcon}
+          isLoading={logsQuery.isLoading}
+          isError={logsQuery.isError}
+          loadingText={t('google-integration:logs.loading')}
+          errorText={t('google-integration:logs.loadError')}
+          emptyText={t('google-integration:logs.empty')}
+          minTableWidthClassName="min-w-[1100px]"
+          showActionsColumn
+          actionsHeaderLabel={t('google-integration:logs.actions')}
+          renderActionsCell={(log) => (
+            <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                onClick={() => handleOpenDetails(log)}
+                title={t('google-integration:logs.viewDetails')}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+          rowClassName="group"
+          pageSize={pageSize}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
+          onPageSizeChange={setPageSize}
+          pageNumber={pageNumber}
+          totalPages={totalPages}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          onPreviousPage={() => setPageNumber((prev) => Math.max(1, prev - 1))}
+          onNextPage={() => setPageNumber((prev) => prev + 1)}
+          previousLabel={t('google-integration:logs.previous')}
+          nextLabel={t('google-integration:logs.next')}
+          paginationInfoText={t('common.paginationInfo', {
+            start: startRow,
+            end: endRow,
+            total: totalCount,
+            ns: 'common',
+          })}
+          disablePaginationButtons={logsQuery.isFetching}
+        />
       </CardContent>
 
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
@@ -459,7 +315,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
               <div><span className="font-medium">{t('mail.columns.subject', { ns: 'customer360' })}:</span> {selectedLog.subject || '-'}</div>
               <div>
                 <span className="font-medium">{t('mail.columns.body', { ns: 'customer360' })}:</span>
-                <div className="mt-1 rounded-md border bg-muted/30 p-3 whitespace-pre-wrap break-words">
+                <div className="mt-1 rounded-md border bg-muted/30 p-3 whitespace-pre-wrap wrap-break-words">
                   {selectedLog.body || selectedLog.bodyPreview || '-'}
                 </div>
               </div>
@@ -467,7 +323,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
                 <div className="text-red-600">
                   <span className="font-medium">{t('mail.columns.errorCode', { ns: 'customer360' })}:</span> {selectedLog.errorCode || '-'}
                   {selectedLog.errorMessage ? (
-                    <div className="mt-1 rounded-md border border-red-200 bg-red-50 p-2 text-red-700 whitespace-pre-wrap break-words">
+                    <div className="mt-1 rounded-md border border-red-200 bg-red-50 p-2 text-red-700 whitespace-pre-wrap wrap-break-words">
                       {selectedLog.errorMessage}
                     </div>
                   ) : null}
