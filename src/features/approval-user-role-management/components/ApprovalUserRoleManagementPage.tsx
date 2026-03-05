@@ -3,34 +3,47 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { loadColumnPreferences } from '@/lib/column-preferences';
+import { APPROVAL_USER_ROLE_QUERY_KEYS } from '../utils/query-keys';
 import { ApprovalUserRoleTable, getColumnsConfig } from './ApprovalUserRoleTable';
 import { ApprovalUserRoleForm } from './ApprovalUserRoleForm';
-import { useCreateApprovalUserRole } from '../hooks/useCreateApprovalUserRole';
-import { useUpdateApprovalUserRole } from '../hooks/useUpdateApprovalUserRole';
 import { useApprovalUserRoleList } from '../hooks/useApprovalUserRoleList';
 import type { ApprovalUserRoleDto } from '../types/approval-user-role-types';
 import type { ApprovalUserRoleFormSchema } from '../types/approval-user-role-types';
-import { Plus, Filter } from 'lucide-react';
-import { PageToolbar, ColumnPreferencesPopover, AdvancedFilter } from '@/components/shared';
-import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
-import { useQueryClient } from '@tanstack/react-query';
-import { APPROVAL_USER_ROLE_QUERY_KEYS } from '../utils/query-keys';
+import { useCreateApprovalUserRole } from '../hooks/useCreateApprovalUserRole';
+import { useUpdateApprovalUserRole } from '../hooks/useUpdateApprovalUserRole';
 import { applyApprovalUserRoleFilters, APPROVAL_USER_ROLE_FILTER_COLUMNS } from '../types/approval-user-role-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+
+const EMPTY_USER_ROLES: ApprovalUserRoleDto[] = [];
+const PAGE_KEY = 'approval-user-role-management';
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+
+type ApprovalUserRoleColumnKey = keyof ApprovalUserRoleDto;
+
+function resolveLabel(t: (key: string) => string, key: string, fallback: string): string {
+  const translated = t(key);
+  return translated && translated !== key ? translated : fallback;
+}
 
 export function ApprovalUserRoleManagementPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(['approval-user-role-management', 'common']);
   const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
+
   const [formOpen, setFormOpen] = useState(false);
   const [editingUserRole, setEditingUserRole] = useState<ApprovalUserRoleDto | null>(null);
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortBy, setSortBy] = useState<ApprovalUserRoleColumnKey>('userFullName');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
 
@@ -39,47 +52,120 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
   const queryClient = useQueryClient();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  const defaultColumnKeys = useMemo(
-    () => [...tableColumns.map((c) => c.key), 'actions'],
+  const baseColumns = useMemo(
+    () =>
+      tableColumns.map((c) => ({
+        key: c.key as string,
+        label: c.label,
+      })),
     [tableColumns]
   );
+  const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key as string), [tableColumns]);
   const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    const prefs = loadColumnPreferences('approval-user-role-management', user?.id, defaultColumnKeys);
+    setPageTitle(t('approvalUserRole.menu'));
+    return () => setPageTitle(null);
+  }, [t, setPageTitle]);
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
     setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
-  const { data, isLoading } = useApprovalUserRoleList({
+  const { data: apiResponse, isLoading } = useApprovalUserRoleList({
     pageNumber: 1,
     pageSize: 10000,
   });
 
-  const filteredUserRoles = useMemo(() => {
-    const userRoles = data?.data || [];
-    let result = [...userRoles];
+  const userRoles = useMemo<ApprovalUserRoleDto[]>(
+    () => apiResponse?.data ?? EMPTY_USER_ROLES,
+    [apiResponse?.data]
+  );
 
+  const filteredUserRoles = useMemo(() => {
+    if (!userRoles.length) return [];
+    let result = [...userRoles];
     if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
+      const lower = searchTerm.toLowerCase();
       result = result.filter(
-        (role) =>
-          (role.userFullName && role.userFullName.toLowerCase().includes(lowerSearch)) ||
-          (role.approvalRoleName && role.approvalRoleName.toLowerCase().includes(lowerSearch))
+        (r) =>
+          (r.userFullName && r.userFullName.toLowerCase().includes(lower)) ||
+          (r.approvalRoleName && r.approvalRoleName.toLowerCase().includes(lower))
       );
     }
-
     result = applyApprovalUserRoleFilters(result, appliedFilterRows);
     return result;
-  }, [data?.data, searchTerm, appliedFilterRows]);
+  }, [userRoles, searchTerm, appliedFilterRows]);
+
+  const sortedUserRoles = useMemo(() => {
+    const result = [...filteredUserRoles];
+    result.sort((a, b) => {
+      const aVal = a[sortBy] != null ? String(a[sortBy]).toLowerCase() : '';
+      const bVal = b[sortBy] != null ? String(b[sortBy]).toLowerCase() : '';
+      const cmp = aVal.localeCompare(bVal);
+      return sortDirection === 'asc' ? cmp : -cmp;
+    });
+    return result;
+  }, [filteredUserRoles, sortBy, sortDirection]);
+
+  const totalCount = sortedUserRoles.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const currentPageRows = useMemo(
+    () => sortedUserRoles.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
+    [sortedUserRoles, pageNumber, pageSize]
+  );
+
+  const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ApprovalUserRoleColumnKey[];
+
+  const filterColumns = useMemo(
+    () =>
+      APPROVAL_USER_ROLE_FILTER_COLUMNS.map((col) => ({
+        value: col.value,
+        type: col.type,
+        labelKey: col.labelKey,
+      })),
+    []
+  );
+
+  const exportColumns = useMemo(
+    () =>
+      orderedVisibleColumns.map((key) => {
+        const col = tableColumns.find((c) => c.key === key);
+        return { key, label: col?.label ?? key };
+      }),
+    [tableColumns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(
+    () =>
+      filteredUserRoles.map((r) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = r[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    [filteredUserRoles, orderedVisibleColumns, i18n.language]
+  );
+
+  const appliedFilterCount = useMemo(
+    () => appliedFilterRows.filter((r) => r.value.trim()).length,
+    [appliedFilterRows]
+  );
 
   useEffect(() => {
-    setPageTitle(t('approvalUserRole.menu'));
-    return () => {
-      setPageTitle(null);
-    };
-  }, [t, setPageTitle]);
+    setPageNumber(1);
+  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingUserRole(null);
@@ -108,117 +194,149 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: [APPROVAL_USER_ROLE_QUERY_KEYS.LIST] });
   };
 
-  const handleAdvancedSearch = (): void => {
-    setAppliedFilterRows(draftFilterRows);
-    setSearchTerm('');
-    setShowFilters(false);
-  };
-
-  const handleAdvancedClear = (): void => {
-    setDraftFilterRows([]);
-    setAppliedFilterRows([]);
-  };
-
-  const hasFiltersActive = appliedFilterRows.some((r) => r.value.trim() !== '');
+  const columns = useMemo<DataTableGridColumn<ApprovalUserRoleColumnKey>[]>(
+    () =>
+      tableColumns.map((c) => ({
+        key: c.key as ApprovalUserRoleColumnKey,
+        label: c.label,
+        cellClassName: c.className,
+      })),
+    [tableColumns]
+  );
 
   return (
-    <div className="w-full space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
-        <div className="flex flex-col gap-2">
+    <div className="w-full space-y-6 relative">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+        <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('approvalUserRole.menu')}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
             {t('approvalUserRole.description')}
           </p>
         </div>
-
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
         >
           <Plus size={18} className="mr-2" />
           {t('approvalUserRole.addButton')}
         </Button>
       </div>
 
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 transition-all duration-300">
-        <PageToolbar
-          searchPlaceholder={t('approvalUserRole.searchPlaceholder')}
-          searchValue={searchTerm}
-          onSearchChange={setSearchTerm}
-          onRefresh={handleRefresh}
-          rightSlot={
-            <div className="flex items-center gap-2">
-              <Popover open={showFilters} onOpenChange={setShowFilters}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={hasFiltersActive ? 'default' : 'outline'}
-                    size="sm"
-                    className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
-                      hasFiltersActive
-                        ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
-                        : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filters')}
-                    {hasFiltersActive && (
-                      <span className="ml-2 h-2 w-2 rounded-full bg-pink-500" />
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="end" className="w-[420px] p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
-                  <AdvancedFilter
-                    columns={APPROVAL_USER_ROLE_FILTER_COLUMNS}
-                    defaultColumn="userFullName"
-                    draftRows={draftFilterRows}
-                    onDraftRowsChange={setDraftFilterRows}
-                    onSearch={handleAdvancedSearch}
-                    onClear={handleAdvancedClear}
-                    translationNamespace="approvalUserRole"
-                    embedded
-                  />
-                </PopoverContent>
-              </Popover>
-              <ColumnPreferencesPopover
-                pageKey="approval-user-role-management"
-                userId={user?.id}
-                columns={[
-                  ...tableColumns.map((c) => ({ key: c.key as string, label: c.label })),
-                  { key: 'actions', label: t('approvalUserRole.table.actions') },
-                ]}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={(next) => {
-                  setVisibleColumns(next);
-                  saveColumnPreferences('approval-user-role-management', user?.id, {
-                    order: columnOrder,
-                    visibleKeys: next,
-                  });
-                }}
-                onColumnOrderChange={(next) => {
-                  setColumnOrder(next);
-                  saveColumnPreferences('approval-user-role-management', user?.id, {
-                    order: next,
-                    visibleKeys: visibleColumns,
-                  });
-                }}
-              />
-            </div>
-          }
-        />
-      </div>
-
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-0 sm:p-1 transition-all duration-300 overflow-hidden">
-        <ApprovalUserRoleTable
-          userRoles={filteredUserRoles}
-          isLoading={isLoading}
-          onEdit={handleEdit}
-          visibleColumns={visibleColumns}
-          columnOrder={columnOrder}
-        />
-      </div>
+      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
+        <CardHeader className="space-y-4">
+          <CardTitle>{t('approvalUserRole.table.title', { defaultValue: t('approvalUserRole.menu') })}</CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={setColumnOrder}
+            exportFileName="approval-user-roles"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            filterColumns={filterColumns}
+            defaultFilterColumn="userFullName"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+            }}
+            translationNamespace="approval-user-role-management"
+            appliedFilterCount={appliedFilterCount}
+            leftSlot={
+              <>
+                <Input
+                  placeholder={t('approvalUserRole.searchPlaceholder')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-9 w-[200px]"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRefresh()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  {resolveLabel(t, 'common.refresh', 'Yenile')}
+                </Button>
+              </>
+            }
+          />
+        </CardHeader>
+        <CardContent>
+          <ApprovalUserRoleTable
+            onEdit={handleEdit}
+            columns={columns}
+            visibleColumnKeys={orderedVisibleColumns}
+            rows={currentPageRows}
+            rowKey={(r) => r.id}
+            renderCell={(row, key) => {
+              const val = row[key];
+              if (val == null && val !== 0) return '-';
+              if (key === 'id') return `#${val}`;
+              if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
+              if (key === 'createdByFullUser') return row.createdByFullUser || row.createdByFullName || row.createdBy || '-';
+              return String(val);
+            }}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            onSort={(k) => {
+              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+              else {
+                setSortBy(k);
+                setSortDirection('asc');
+              }
+            }}
+            renderSortIcon={(k) => {
+              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+              return sortDirection === 'asc' ? (
+                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+              ) : (
+                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+              );
+            }}
+            isLoading={isLoading}
+            loadingText={t('approvalUserRole.loading', { defaultValue: t('common.loading') })}
+            errorText={t('approvalUserRole.error', { defaultValue: 'Hata oluştu' })}
+            emptyText={t('approvalUserRole.noData')}
+            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+            showActionsColumn
+            actionsHeaderLabel={t('approvalUserRole.table.actions')}
+            rowClassName="group"
+            pageSize={pageSize}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            onPageSizeChange={(s) => {
+              setPageSize(s);
+              setPageNumber(1);
+            }}
+            pageNumber={pageNumber}
+            totalPages={totalPages}
+            hasPreviousPage={pageNumber > 1}
+            hasNextPage={pageNumber < totalPages}
+            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('common.table.showing', {
+              from: startRow,
+              to: endRow,
+              total: totalCount,
+            })}
+            disablePaginationButtons={false}
+          />
+        </CardContent>
+      </Card>
 
       <ApprovalUserRoleForm
         open={formOpen}
