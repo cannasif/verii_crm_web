@@ -1,6 +1,8 @@
 import { api } from '@/lib/axios';
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse, PagedFilter, PagedResponse } from '@/types/api';
 import type { ErpCustomer, ErpProject, ProjeDto, ErpWarehouse, ErpProduct, BranchErp, CariDto, KurDto, StokGroupDto } from './erp-types';
+
+let cachedProjectCodes: ProjeDto[] | null = null;
 
 export const erpCommonApi = {
   getCustomers: async (): Promise<ErpCustomer[]> => {
@@ -38,6 +40,46 @@ export const erpCommonApi = {
       return response.data;
     }
     throw new Error(response.message || 'Proje kodları yüklenemedi');
+  },
+
+  getProjectCodesPage: async (params: {
+    pageNumber: number;
+    pageSize: number;
+    filters?: PagedFilter[] | Record<string, unknown>;
+    signal: AbortSignal;
+  }): Promise<PagedResponse<ProjeDto>> => {
+    const { pageNumber, pageSize, filters } = params;
+    if (!cachedProjectCodes) {
+      const response = await api.get<ApiResponse<ProjeDto[]>>('/api/Erp/getProjectCodes', { signal: params.signal });
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Proje kodları yüklenemedi');
+      }
+      cachedProjectCodes = response.data;
+    }
+    let filtered = cachedProjectCodes;
+    if (filters && Array.isArray(filters)) {
+      const searchFilter = filters.find((f: PagedFilter) => f.column === 'search' || f.column === 'projeKod' || f.column === 'projeAciklama');
+      const searchTerm = searchFilter?.value?.toLowerCase() ?? '';
+      if (searchTerm) {
+        filtered = filtered.filter(
+          (p) =>
+            (p.projeKod?.toLowerCase() ?? '').includes(searchTerm) ||
+            (p.projeAciklama?.toLowerCase() ?? '').includes(searchTerm)
+        );
+      }
+    }
+    const totalCount = filtered.length;
+    const start = (pageNumber - 1) * pageSize;
+    const data = filtered.slice(start, start + pageSize);
+    return {
+      data,
+      totalCount,
+      pageNumber,
+      pageSize,
+      totalPages: Math.ceil(totalCount / pageSize) || 1,
+      hasPreviousPage: pageNumber > 1,
+      hasNextPage: start + data.length < totalCount,
+    };
   },
 
   getWarehouses: async (depoKodu?: number): Promise<ErpWarehouse[]> => {
