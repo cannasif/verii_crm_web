@@ -8,8 +8,14 @@ import type { StockGetDto } from '../types';
 export const useStockList = (
   params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }
 ): UseQueryResult<PagedResponse<StockGetDto>, Error> => {
+  const keyParams = {
+    ...normalizeQueryParams(params),
+    ...(Array.isArray(params.filters) && params.filters.length > 0
+      ? { filtersSignature: JSON.stringify(params.filters) }
+      : {}),
+  };
   return useQuery({
-    queryKey: queryKeys.list(normalizeQueryParams(params)),
+    queryKey: queryKeys.list(keyParams),
     queryFn: () => stockApi.getList(params),
     staleTime: 5 * 60 * 1000,
   });

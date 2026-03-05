@@ -2,8 +2,13 @@
   "list": {
     "title": "Stock Management",
     "description": "View and manage stocks",
+    "cardTitle": "Stock list",
     "syncedFromErp": "Stocks are automatically synchronized from the ERP system",
     "search": "Search by stock name or ERP code...",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "loadError": "An error occurred while loading data.",
+    "noData": "No records found.",
     "id": "ID",
     "erpStockCode": "ERP Stock Code",
     "stockName": "Stock Name",

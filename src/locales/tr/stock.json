@@ -2,8 +2,13 @@
   "list": {
     "title": "Stok Yönetimi",
     "description": "Stokları görüntüleyin ve yönetin",
+    "cardTitle": "Stok listesi",
     "syncedFromErp": "Stoklar ERP sisteminden otomatik olarak senkronize edilir",
     "search": "Stok adı veya ERP kodu ile ara...",
+    "refresh": "Yenile",
+    "loading": "Yükleniyor...",
+    "loadError": "Veriler yüklenirken hata oluştu.",
+    "noData": "Kayıt bulunamadı.",
     "id": "ID",
     "erpStockCode": "ERP Stok Kodu",
     "stockName": "Stok Adı",
