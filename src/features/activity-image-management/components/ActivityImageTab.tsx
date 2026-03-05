@@ -326,7 +326,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
                   {t('common.deleting')}
                 </>
               ) : (
-                t('common.delete')
+                t('common.delete.action')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
