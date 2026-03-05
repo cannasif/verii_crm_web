@@ -41,6 +41,8 @@
     "next": "Sonraki",
     "delete": {
       "action": "Sil",
+      "title": "Onay Akışını Sil",
+      "confirm": "Bu onay akışını silmek istediğinizden emin misiniz?",
       "cancel": "İptal",
       "confirmTitle": "Onay Akışını Sil",
       "confirmMessage": "Bu onay akışını silmek istediğinizden emin misiniz?"
@@ -48,7 +50,13 @@
     "documentType": {
       "offer": "Teklif",
       "request": "Talep",
+      "demand": "Talep",
+      "quotation": "Teklif",
       "order": "Sipariş"
+    },
+    "messages": {
+      "deleteSuccess": "Onay akışı başarıyla silindi",
+      "deleteError": "Onay akışı silinirken hata oluştu"
     }
   },
   "approvalFlowStep": {
