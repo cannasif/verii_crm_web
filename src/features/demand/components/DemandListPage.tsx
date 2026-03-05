@@ -1,7 +1,14 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
+import { useAuthStore } from '@/stores/auth-store';
+import { loadColumnPreferences } from '@/lib/column-preferences';
+import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
+import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -10,29 +17,95 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { DemandTable } from './DemandTable';
-import { PageToolbar } from '@/components/shared';
-import { Plus, Filter } from 'lucide-react';
-import type { PagedFilter } from '@/types/api';
-import { useQueryClient } from '@tanstack/react-query';
+import { useDemandList } from '../hooks/useDemandList';
 import { DEMAND_QUERY_KEYS } from '../utils/query-keys';
+import type { DemandGetDto } from '../types/demand-types';
+import type { PagedFilter } from '@/types/api';
+import { formatCurrency } from '../utils/format-currency';
+import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
+import type { ApprovalStatus } from '@/features/approval/types/approval-types';
+
+const PAGE_KEY = 'demand-list';
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
+
+type DemandColumnKey =
+  | 'Id'
+  | 'OfferNo'
+  | 'PotentialCustomerName'
+  | 'RepresentativeName'
+  | 'OfferDate'
+  | 'Currency'
+  | 'GrandTotal'
+  | 'Status';
+type SortDirection = 'asc' | 'desc';
+
+type DemandColumnConfig = {
+  key: DemandColumnKey;
+  labelKey: string;
+  fallbackLabel: string;
+  filterType: FilterColumnConfig['type'];
+};
+
+const DEMAND_COLUMN_CONFIG: readonly DemandColumnConfig[] = [
+  { key: 'Id', labelKey: 'demand.list.id', fallbackLabel: 'ID', filterType: 'number' },
+  { key: 'OfferNo', labelKey: 'demand.list.offerNo', fallbackLabel: 'Teklif No', filterType: 'string' },
+  { key: 'PotentialCustomerName', labelKey: 'demand.list.customer', fallbackLabel: 'Müşteri', filterType: 'string' },
+  { key: 'RepresentativeName', labelKey: 'demand.list.representative', fallbackLabel: 'Temsilci', filterType: 'string' },
+  { key: 'OfferDate', labelKey: 'demand.list.offerDate', fallbackLabel: 'Tarih', filterType: 'date' },
+  { key: 'Currency', labelKey: 'demand.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
+  { key: 'GrandTotal', labelKey: 'demand.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
+  { key: 'Status', labelKey: 'demand.list.status', fallbackLabel: 'Durum', filterType: 'number' },
+];
+
+function resolveLabel(
+  t: (key: string, options?: Record<string, unknown>) => string,
+  key: string,
+  fallback: string
+): string {
+  const translated = t(key);
+  return translated && translated !== key ? translated : fallback;
+}
 
 export function DemandListPage(): ReactElement {
-  const { t } = useTranslation();
-  const { setPageTitle } = useUIStore();
+  const { t, i18n } = useTranslation(['demand', 'common', 'approval', 'google-integration']);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { setPageTitle } = useUIStore();
+  const { user } = useAuthStore();
+
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(20);
-  const [sortBy, setSortBy] = useState('Id');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [pageSize, setPageSize] = useState(20);
+  const [sortBy, setSortBy] = useState<DemandColumnKey>('Id');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [approvalStatusFilter, setApprovalStatusFilter] = useState<string>('all');
-  const [filters, setFilters] = useState<Record<string, unknown>>({});
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+
+  const baseColumns = useMemo(
+    () =>
+      DEMAND_COLUMN_CONFIG.map((col) => ({
+        key: col.key,
+        label: resolveLabel(t, col.labelKey, col.fallbackLabel),
+      })),
+    [t]
+  );
+
+  const columns = useMemo<DataTableGridColumn<DemandColumnKey>[]>(
+    () =>
+      baseColumns.map((col) => ({
+        ...col,
+        headClassName: col.key === 'GrandTotal' ? 'text-right' : undefined,
+        cellClassName:
+          col.key === 'GrandTotal' ? 'text-right font-semibold' : col.key === 'Id' ? 'font-medium' : undefined,
+        sortable: true,
+      })),
+    [baseColumns]
+  );
+
+  const defaultColumnKeys = useMemo(() => baseColumns.map((col) => col.key), [baseColumns]);
+  const [columnOrder, setColumnOrder] = useState<string[]>(defaultColumnKeys);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
   useEffect(() => {
     setPageTitle(t('demand.list.title'));
@@ -40,33 +113,130 @@ export function DemandListPage(): ReactElement {
   }, [t, setPageTitle]);
 
   useEffect(() => {
-    const newFilters: PagedFilter[] = [];
-    if (searchTerm) {
-      newFilters.push(
-        { column: 'OfferNo', operator: 'contains', value: searchTerm },
-        { column: 'PotentialCustomerName', operator: 'contains', value: searchTerm }
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'Id');
+    setColumnOrder(prefs.order);
+    setVisibleColumns(prefs.visibleKeys);
+  }, [defaultColumnKeys, user?.id]);
+
+  const appliedFilters = useMemo(() => {
+    const fromRows = rowsToBackendFilters(appliedFilterRows);
+    if (approvalStatusFilter !== 'all') {
+      return [...fromRows, { column: 'Status', operator: 'equals', value: approvalStatusFilter }];
+    }
+    return fromRows;
+  }, [appliedFilterRows, approvalStatusFilter]);
+
+  const filtersParam: { filters?: PagedFilter[] } =
+    appliedFilters.length > 0 ? { filters: appliedFilters } : {};
+
+  const demandQuery = useDemandList({
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
+    ...filtersParam,
+  });
+
+  const pagedData = demandQuery.data;
+  const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
+  const totalCount = pagedData?.totalCount ?? 0;
+  const hasNextPage = pagedData?.hasNextPage ?? false;
+  const hasPreviousPage = pagedData?.hasPreviousPage ?? pageNumber > 1;
+  const totalPages = pagedData?.totalPages ?? 1;
+  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const orderedVisibleColumns = columnOrder.filter((key) => visibleColumns.includes(key)) as DemandColumnKey[];
+
+  const filterColumns = useMemo<FilterColumnConfig[]>(
+    () =>
+      DEMAND_COLUMN_CONFIG.map((col) => ({
+        value: col.key,
+        type: col.filterType,
+        labelKey: col.labelKey,
+      })),
+    []
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(
+    () =>
+      currentPageRows.map((demand) => ({
+        Id: demand.id,
+        OfferNo: demand.offerNo ?? '-',
+        PotentialCustomerName: demand.potentialCustomerName ?? '-',
+        RepresentativeName: demand.representativeName ?? '-',
+        OfferDate: demand.offerDate ? new Date(demand.offerDate).toLocaleDateString(i18n.language) : '-',
+        Currency: demand.currency ?? '-',
+        GrandTotal: formatCurrency(demand.grandTotal, demand.currency ?? 'TRY'),
+        Status:
+          typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4
+            ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
+            : '-',
+      })),
+    [currentPageRows, t, i18n.language]
+  );
+
+  const exportColumns = useMemo(
+    () =>
+      orderedVisibleColumns.map((key) => {
+        const column = baseColumns.find((item) => item.key === key);
+        return { key, label: column?.label ?? key };
+      }),
+    [baseColumns, orderedVisibleColumns]
+  );
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters]);
+
+  const onSort = (column: DemandColumnKey): void => {
+    if (sortBy === column) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+    setSortBy(column);
+    setSortDirection('asc');
+  };
+
+  const renderSortIcon = (column: DemandColumnKey): ReactElement => {
+    if (sortBy !== column) {
+      return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+    ) : (
+      <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+    );
+  };
+
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString(i18n.language);
+  };
+
+  const renderCell = (demand: DemandGetDto, key: DemandColumnKey): ReactElement | string | number => {
+    if (key === 'Id') return demand.id;
+    if (key === 'OfferNo') return demand.offerNo || '-';
+    if (key === 'PotentialCustomerName') return demand.potentialCustomerName || '-';
+    if (key === 'RepresentativeName') return demand.representativeName || '-';
+    if (key === 'OfferDate') return formatDate(demand.offerDate);
+    if (key === 'Currency') return demand.currency || '-';
+    if (key === 'GrandTotal') return formatCurrency(demand.grandTotal, demand.currency || 'TRY');
+    if (key === 'Status') {
+      return typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4 ? (
+        <ApprovalStatusBadge status={demand.status as ApprovalStatus} />
+      ) : (
+        <span className="text-muted-foreground text-sm">-</span>
       );
     }
-    if (approvalStatusFilter !== 'all') {
-      newFilters.push({ column: 'Status', operator: 'equals', value: approvalStatusFilter });
-    }
-    setFilters(newFilters.length > 0 ? { filters: newFilters } : {});
-    setPageNumber(1);
-  }, [searchTerm, approvalStatusFilter]);
+    return '-';
+  };
 
-  const handleSortChange = (newSortBy: string, newSortDirection: 'asc' | 'desc'): void => {
-    setSortBy(newSortBy);
-    setSortDirection(newSortDirection);
-    setPageNumber(1);
+  const handleRefresh = async (): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] });
   };
 
   const handleRowClick = (demandId: number): void => {
     navigate(`/demands/${demandId}`);
-  };
-
-  const queryClient = useQueryClient();
-  const handleRefresh = async (): Promise<void> => {
-    await queryClient.invalidateQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] });
   };
 
   return (
@@ -80,16 +250,13 @@ export function DemandListPage(): ReactElement {
             <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
               {t('demand.list.title')}
             </h1>
-            <div className="flex flex-col gap-1">
-              <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-                {t('demand.list.description')}
-              </p>
-            </div>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+              {t('demand.list.description')}
+            </p>
           </div>
-          
-          <Button 
-            onClick={() => navigate('/demands/create')} 
+          <Button
+            onClick={() => navigate('/demands/create')}
             className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group"
           >
             <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
@@ -98,65 +265,105 @@ export function DemandListPage(): ReactElement {
         </div>
 
         <div className="relative z-10 bg-white/80 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-xl shadow-zinc-200/50 dark:shadow-none overflow-hidden p-3 sm:p-6">
-          <div className="flex flex-col gap-4 mb-4">
-            <PageToolbar
-              searchPlaceholder={t('demand.list.searchPlaceholder')}
-              searchValue={searchTerm}
-              onSearchChange={setSearchTerm}
-              onRefresh={handleRefresh}
-              rightSlot={
-                <Popover>
-                  <PopoverTrigger asChild>
+          <Card className="border-0 bg-transparent shadow-none">
+            <CardHeader className="space-y-4">
+              <CardTitle>{t('demand.list.cardTitle', { defaultValue: 'Talep listesi' })}</CardTitle>
+              <DataTableActionBar
+                pageKey={PAGE_KEY}
+                userId={user?.id}
+                columns={baseColumns}
+                visibleColumns={visibleColumns}
+                columnOrder={columnOrder}
+                onVisibleColumnsChange={setVisibleColumns}
+                onColumnOrderChange={setColumnOrder}
+                exportFileName="demand-list"
+                exportColumns={exportColumns}
+                exportRows={exportRows}
+                filterColumns={filterColumns}
+                defaultFilterColumn="OfferNo"
+                draftFilterRows={draftFilterRows}
+                onDraftFilterRowsChange={setDraftFilterRows}
+                onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+                onClearFilters={() => {
+                  setDraftFilterRows([]);
+                  setAppliedFilterRows([]);
+                }}
+                translationNamespace="demand"
+                appliedFilterCount={appliedFilters.length}
+                leftSlot={
+                  <>
+                    <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
+                      <SelectTrigger className="w-[180px] h-9">
+                        <SelectValue placeholder={t('approval.statusFilterLabel')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('common.all')}</SelectItem>
+                        <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                        <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+                        <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+                        <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+                        <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <Button
-                      variant={approvalStatusFilter !== 'all' ? 'default' : 'outline'}
+                      variant="outline"
                       size="sm"
-                      className={`h-10 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
-                        approvalStatusFilter !== 'all'
-                          ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
-                          : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
-                      }`}
+                      onClick={() => handleRefresh()}
+                      disabled={demandQuery.isFetching}
                     >
-                      <Filter className="mr-2 h-4 w-4" />
-                      {t('approval.statusFilterLabel')}
-                      {approvalStatusFilter !== 'all' && (
-                        <span className="ml-2 h-2 w-2 rounded-full bg-pink-500" />
+                      {demandQuery.isFetching ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : (
+                        <RefreshCw className="h-4 w-4 mr-2" />
                       )}
+                      {t('demand.list.refresh', { defaultValue: 'Yenile' })}
                     </Button>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" className="w-[220px] p-4 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl z-50">
-                    <div className="space-y-2">
-                      <div className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('approval.statusFilterLabel')}
-                      </div>
-                      <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-                        <SelectTrigger className="h-10 w-full rounded-xl">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{t('common.all')}</SelectItem>
-                          <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
-                          <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-                          <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-                          <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-                          <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              }
-            />
-          </div>
-          <DemandTable
-            pageNumber={pageNumber}
-            pageSize={pageSize}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            filters={filters}
-            onPageChange={setPageNumber}
-            onSortChange={handleSortChange}
-            onRowClick={handleRowClick}
-          />
+                  </>
+                }
+              />
+            </CardHeader>
+            <CardContent>
+              <DemandTable
+                columns={columns}
+                visibleColumnKeys={orderedVisibleColumns}
+                rows={currentPageRows}
+                rowKey={(row: DemandGetDto) => String(row.id)}
+                renderCell={renderCell}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={onSort}
+                renderSortIcon={renderSortIcon}
+                isLoading={demandQuery.isLoading}
+                isError={demandQuery.isError}
+                loadingText={t('demand.loading')}
+                errorText={t('demand.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                emptyText={t('demand.noData')}
+                minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
+                showActionsColumn
+                actionsHeaderLabel={t('demand.list.actions')}
+                rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
+                onRowClick={(order: DemandGetDto) => handleRowClick(order.id)}
+                pageSize={pageSize}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                onPageSizeChange={setPageSize}
+                pageNumber={pageNumber}
+                totalPages={totalPages}
+                hasPreviousPage={hasPreviousPage}
+                hasNextPage={hasNextPage}
+                onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                onNextPage={() => setPageNumber((prev) => prev + 1)}
+                previousLabel={t('demand.previous')}
+                nextLabel={t('demand.next')}
+                paginationInfoText={t('common.paginationInfo', {
+                  start: startRow,
+                  end: endRow,
+                  total: totalCount,
+                  ns: 'common',
+                })}
+                disablePaginationButtons={demandQuery.isFetching}
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

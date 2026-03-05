@@ -1,59 +1,99 @@
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
-import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
-import type { ApprovalStatus } from '@/features/approval/types/approval-types';
-import { useDemandList } from '../hooks/useDemandList';
 import { useCreateRevisionOfDemand } from '../hooks/useCreateRevisionOfDemand';
 import type { DemandGetDto } from '../types/demand-types';
-import type { PagedFilter } from '@/types/api';
-import { formatCurrency } from '../utils/format-currency';
-import { ChevronUp, ChevronDown, ChevronsUpDown, Mail } from 'lucide-react';
+import { Mail, PencilLine } from 'lucide-react';
 import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
 
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
+
+type DemandColumnKey =
+  | 'Id'
+  | 'OfferNo'
+  | 'PotentialCustomerName'
+  | 'RepresentativeName'
+  | 'OfferDate'
+  | 'Currency'
+  | 'GrandTotal'
+  | 'Status';
+
 interface DemandTableProps {
-  pageNumber: number;
+  columns: DataTableGridColumn<DemandColumnKey>[];
+  visibleColumnKeys: DemandColumnKey[];
+  rows: DemandGetDto[];
+  rowKey: (row: DemandGetDto) => string | number;
+  renderCell: (row: DemandGetDto, columnKey: DemandColumnKey) => React.ReactNode;
+  sortBy: DemandColumnKey;
+  sortDirection: 'asc' | 'desc';
+  onSort: (columnKey: DemandColumnKey) => void;
+  renderSortIcon: (columnKey: DemandColumnKey) => React.ReactNode;
+  isLoading?: boolean;
+  isError?: boolean;
+  loadingText?: string;
+  errorText?: string;
+  emptyText?: string;
+  minTableWidthClassName?: string;
+  showActionsColumn?: boolean;
+  actionsHeaderLabel?: string;
+  rowClassName?: string | ((row: DemandGetDto) => string | undefined);
+  onRowClick?: (row: DemandGetDto) => void;
   pageSize: number;
-  sortBy?: string;
-  sortDirection?: 'asc' | 'desc';
-  filters?: PagedFilter[] | Record<string, unknown>;
-  onPageChange: (page: number) => void;
-  onSortChange: (sortBy: string, sortDirection: 'asc' | 'desc') => void;
-  onRowClick: (demandId: number) => void;
+  pageSizeOptions: readonly number[];
+  onPageSizeChange: (size: number) => void;
+  pageNumber: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  onPreviousPage: () => void;
+  onNextPage: () => void;
+  previousLabel: string;
+  nextLabel: string;
+  paginationInfoText: string;
+  disablePaginationButtons?: boolean;
 }
 
 export function DemandTable({
-  pageNumber,
-  pageSize,
-  sortBy = 'Id',
-  sortDirection = 'desc',
-  filters = {},
-  onPageChange,
-  onSortChange,
+  columns,
+  visibleColumnKeys,
+  rows,
+  rowKey,
+  renderCell,
+  sortBy,
+  sortDirection,
+  onSort,
+  renderSortIcon,
+  isLoading = false,
+  isError = false,
+  loadingText = 'Loading...',
+  errorText = 'An error occurred.',
+  emptyText = 'No data.',
+  minTableWidthClassName = 'min-w-[920px] lg:min-w-[1100px]',
+  showActionsColumn = true,
+  actionsHeaderLabel = '',
+  rowClassName,
   onRowClick,
+  pageSize,
+  pageSizeOptions = PAGE_SIZE_OPTIONS,
+  onPageSizeChange,
+  pageNumber,
+  totalPages,
+  hasPreviousPage,
+  hasNextPage,
+  onPreviousPage,
+  onNextPage,
+  previousLabel,
+  nextLabel,
+  paginationInfoText,
+  disablePaginationButtons = false,
 }: DemandTableProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation(['demand', 'google-integration']);
   const navigate = useNavigate();
   const createRevisionMutation = useCreateRevisionOfDemand();
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
   const [selectedDemand, setSelectedDemand] = useState<DemandGetDto | null>(null);
-
-  const { data, isLoading, isFetching } = useDemandList({
-    pageNumber,
-    pageSize,
-    sortBy,
-    sortDirection,
-    filters: filters as PagedFilter[] | undefined,
-  });
 
   const handleRevision = async (e: React.MouseEvent, demandId: number): Promise<void> => {
     e.stopPropagation();
@@ -67,228 +107,75 @@ export function DemandTable({
     }
   };
 
-  const handleSort = (column: string): void => {
-    const newDirection = sortBy === column && sortDirection === 'asc' ? 'desc' : 'asc';
-    onSortChange(column, newDirection);
-  };
-
   const handleOpenMailDialog = (event: React.MouseEvent, demand: DemandGetDto): void => {
     event.stopPropagation();
     setSelectedDemand(demand);
     setMailDialogOpen(true);
   };
 
-  const SortIcon = ({ column }: { column: string }): ReactElement => {
-    if (sortBy !== column) {
-      return <ChevronsUpDown className="ml-2 w-3 h-3 opacity-30" />;
-    }
-    return sortDirection === 'asc' ? (
-      <ChevronUp className="ml-2 w-3 h-3 text-pink-600 dark:text-pink-500" />
-    ) : (
-      <ChevronDown className="ml-2 w-3 h-3 text-pink-600 dark:text-pink-500" />
-    );
-  };
-
-  if (isLoading || isFetching) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
-        <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
-        <span className="text-muted-foreground animate-pulse text-sm font-medium">
-          {t('demand.loading')}
-        </span>
-      </div>
-    );
-  }
-
-  const demands = data?.data || [];
-
-  if (!data || demands.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 text-muted-foreground border border-zinc-300 dark:border-zinc-700/80 border-dashed rounded-xl bg-white/50 dark:bg-card/50">
-        <p className="text-sm font-medium">{t('demand.noData')}</p>
-      </div>
-    );
-  }
-
-  const totalPages = Math.ceil((data.totalCount || 0) / pageSize);
-
-  const formatDate = (dateString: string | null | undefined): string => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString(i18n.language);
-  };
+  const renderActionsCell = (demand: DemandGetDto): ReactElement => (
+    <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+      <Button
+        variant="ghost"
+        size="icon"
+        title={t('google-integration:mailDialog.openButton')}
+        onClick={(e) => handleOpenMailDialog(e, demand)}
+        className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
+      >
+        <Mail className="h-4 w-4" />
+      </Button>
+      {(demand.status === 0 || demand.status === 1) && (
+        <Button
+          variant="ghost"
+          size="icon"
+          title={t('demand.list.revise')}
+          onClick={(e) => handleRevision(e, demand.id)}
+          disabled={createRevisionMutation.isPending}
+          className="h-8 w-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
+        >
+          <PencilLine className={createRevisionMutation.isPending ? 'h-4 w-4 animate-pulse' : 'h-4 w-4'} />
+        </Button>
+      )}
+    </div>
+  );
 
   return (
     <>
-      <div className="rounded-md border border-zinc-300 dark:border-zinc-700/80 overflow-hidden bg-white/50 dark:bg-card/50">
-        <div className="overflow-x-auto">
-        <Table className="min-w-[920px] lg:min-w-[1100px]">
-          <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('Id')}
-              >
-                <div className="flex items-center">
-                  {t('demand.list.id')}
-                  <SortIcon column="Id" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('OfferNo')}
-              >
-                <div className="flex items-center">
-                  {t('demand.list.offerNo')}
-                  <SortIcon column="OfferNo" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('PotentialCustomerName')}
-              >
-                <div className="flex items-center">
-                  {t('demand.list.customer')}
-                  <SortIcon column="PotentialCustomerName" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('RepresentativeName')}
-              >
-                <div className="flex items-center">
-                  {t('demand.list.representative')}
-                  <SortIcon column="RepresentativeName" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('OfferDate')}
-              >
-                <div className="flex items-center">
-                  {t('demand.list.offerDate')}
-                  <SortIcon column="OfferDate" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('Currency')}
-              >
-                <div className="flex items-center">
-                  {t('demand.list.currency')}
-                  <SortIcon column="Currency" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none text-right"
-                onClick={() => handleSort('GrandTotal')}
-              >
-                <div className="flex items-center justify-end">
-                  {t('demand.list.grandTotal')}
-                  <SortIcon column="GrandTotal" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('Status')}
-              >
-                <div className="flex items-center">
-                  {t('demand.list.status')}
-                  <SortIcon column="Status" />
-                </div>
-              </TableHead>
-              <TableHead className="text-center">
-                {t('demand.list.actions')}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {demands.map((demand: DemandGetDto) => (
-              <TableRow
-                key={demand.id}
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() => onRowClick(demand.id)}
-              >
-                <TableCell className="font-medium">{demand.id}</TableCell>
-                <TableCell>{demand.offerNo || '-'}</TableCell>
-                <TableCell>{demand.potentialCustomerName || '-'}</TableCell>
-                <TableCell>{demand.representativeName || '-'}</TableCell>
-                <TableCell>{formatDate(demand.offerDate)}</TableCell>
-                <TableCell>{demand.currency || '-'}</TableCell>
-                <TableCell className="text-right font-semibold">
-                  {formatCurrency(demand.grandTotal, demand.currency || 'TRY')}
-                </TableCell>
-                <TableCell>
-                  {typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4 ? (
-                    <ApprovalStatusBadge status={demand.status as ApprovalStatus} />
-                  ) : (
-                    <span className="text-muted-foreground text-sm">-</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => handleOpenMailDialog(e, demand)}
-                    >
-                      <Mail className="h-4 w-4 mr-1" />
-                      {t('google-integration:mailDialog.openButton')}
-                    </Button>
-                    {(demand.status === 0 || demand.status === 1) && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => handleRevision(e, demand.id)}
-                        disabled={createRevisionMutation.isPending}
-                      >
-                        {createRevisionMutation.isPending
-                          ? t('demand.loading')
-                          : t('demand.list.revise')}
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between py-4">
-        <div className="text-sm text-muted-foreground">
-          {t('demand.list.showing', {
-            from: (pageNumber - 1) * pageSize + 1,
-            to: Math.min(pageNumber * pageSize, data.totalCount || 0),
-            total: data.totalCount || 0,
-          })}
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(pageNumber - 1)}
-            disabled={pageNumber <= 1}
-          >
-            {t('demand.previous')}
-          </Button>
-          <div className="flex items-center px-4 text-sm">
-            {t('demand.list.page', {
-              current: pageNumber,
-              total: totalPages,
-            })}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(pageNumber + 1)}
-            disabled={pageNumber >= totalPages}
-          >
-            {t('demand.next')}
-          </Button>
-        </div>
-      </div>
-
+      <DataTableGrid<DemandGetDto, DemandColumnKey>
+        columns={columns}
+        visibleColumnKeys={visibleColumnKeys}
+        rows={rows}
+        rowKey={rowKey}
+        renderCell={renderCell}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        onSort={onSort}
+        renderSortIcon={renderSortIcon}
+        isLoading={isLoading}
+        isError={isError}
+        loadingText={loadingText}
+        errorText={errorText}
+        emptyText={emptyText}
+        minTableWidthClassName={minTableWidthClassName}
+        showActionsColumn={showActionsColumn}
+        actionsHeaderLabel={actionsHeaderLabel}
+        renderActionsCell={renderActionsCell}
+        rowClassName={rowClassName}
+        onRowClick={onRowClick}
+        pageSize={pageSize}
+        pageSizeOptions={pageSizeOptions}
+        onPageSizeChange={onPageSizeChange}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+        hasPreviousPage={hasPreviousPage}
+        hasNextPage={hasNextPage}
+        onPreviousPage={onPreviousPage}
+        onNextPage={onNextPage}
+        previousLabel={previousLabel}
+        nextLabel={nextLabel}
+        paginationInfoText={paginationInfoText}
+        disablePaginationButtons={disablePaginationButtons}
+      />
       <GoogleCustomerMailDialog
         open={mailDialogOpen}
         onOpenChange={setMailDialogOpen}

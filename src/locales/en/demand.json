@@ -24,10 +24,19 @@
     "title": "Demand List",
     "description": "View and manage all demands",
     "createNew": "Create New Demand",
-    "searchPlaceholder": "Search by demand no or customer name..."
+    "searchPlaceholder": "Search by demand no or customer name...",
+    "cardTitle": "Demand list",
+    "refresh": "Refresh",
+    "actions": "Actions"
   },
   "detail": {
-    "title": "Demand Detail"
+    "title": "Demand Detail",
+    "subtitle": "View and manage demand details.",
+    "notFound": "Demand not found.",
+    "revisionNo": "Revision No",
+    "tabDetail": "Detail",
+    "tabApprovalFlow": "Approval Flow",
+    "tabReport": "Report"
   },
   "create": {
     "title": "Create New Demand",
@@ -35,7 +44,12 @@
     "success": "Demand Created Successfully",
     "successMessage": "Demand has been sent to the approval process.",
     "error": "Demand Could Not Be Created",
-    "errorMessage": "An error occurred while creating the demand."
+    "errorMessage": "An error occurred while creating the demand.",
+    "subtitle": "Fill in demand details and save.",
+    "deliveryDateRequired": "Delivery date is required.",
+    "paymentTypeRequired": "Payment type is required.",
+    "invalidCurrency": "Invalid currency.",
+    "validationError": "Please check required fields."
   },
   "header": {
     "title": "Demand Information",
@@ -93,8 +107,22 @@
     "noProductsFound": "No products found",
     "delete": {
       "confirmTitle": "Delete Line",
-      "confirmMessage": "Are you sure you want to delete this line?"
-    }
+      "confirmMessage": "Are you sure you want to delete this line?",
+      "confirmTitleMultiple": "Delete Lines",
+      "confirmMessageMultiple": "Are you sure you want to delete selected lines?"
+    },
+    "noItems": "No lines yet.",
+    "addLine": "Add Line",
+    "relatedStocks": "Related Stocks",
+    "groupCode": "Group Code",
+    "approvalRequired": "Approval required",
+    "requiredFieldsMissing": "Required line fields are missing.",
+    "createSuccess": "Line created.",
+    "createError": "Line could not be created.",
+    "updateSuccess": "Line updated.",
+    "updateError": "Line could not be updated.",
+    "deleteSuccess": "Line deleted.",
+    "deleteError": "Line could not be deleted."
   },
   "exchangeRates": {
     "title": "Exchange Rates",
@@ -108,14 +136,23 @@
     "status": "Status",
     "dialog": {
       "title": "Exchange Rates",
-      "description": "View and edit exchange rate values if needed. Modified rates will not be marked as official rates."
-    }
+      "description": "View and edit exchange rate values if needed. Modified rates will not be marked as official rates.",
+      "subtitle": "You can edit and save exchange rates.",
+      "info": "Manual update is possible for non-official rates."
+    },
+    "updateSuccess": "Exchange rates updated.",
+    "updateError": "Exchange rates could not be updated.",
+    "cannotEditUsedCurrency": "Used currency cannot be edited."
   },
   "summary": {
     "title": "Summary",
     "subtotal": "Subtotal",
     "totalVat": "Total VAT",
-    "grandTotal": "Grand Total"
+    "grandTotal": "Grand Total",
+    "generalDiscount": "General Discount",
+    "generalDiscountRate": "General Discount Rate",
+    "generalDiscountAmount": "General Discount Amount",
+    "generalDiscountHelp": "Applied on total amount."
   },
   "offerType": {
     "domestic": "Domestic",
@@ -166,5 +203,60 @@
         "info": "The demand will be automatically sent to the approval process after saving"
       }
     }
+  },
+  "loadError": "An error occurred while loading data.",
+  "backToDemands": "Back to Demands",
+  "untitled": "Untitled",
+  "sections": {
+    "header": "Header Information",
+    "lines": "Lines",
+    "summary": "Summary"
+  },
+  "approval": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "sending": "Sending...",
+    "sendForApproval": "Send for Approval",
+    "approveSuccess": "Approval succeeded.",
+    "approveError": "Approval failed.",
+    "rejectSuccess": "Rejection succeeded.",
+    "rejectError": "Rejection failed.",
+    "startSuccess": "Approval flow started.",
+    "startError": "Approval flow could not be started.",
+    "rejectTitle": "Reject Demand",
+    "rejectDescription": "Enter the rejection reason.",
+    "rejectReasonPlaceholder": "Rejection reason"
+  },
+  "approvalFlow": {
+    "noData": "No approval step found.",
+    "notStarted": "Not started",
+    "stepCompleted": "Step completed",
+    "stepInProgress": "Step in progress",
+    "stepNotStarted": "Step pending",
+    "stepRejected": "Step rejected"
+  },
+  "update": {
+    "success": "Demand updated.",
+    "successMessage": "Demand updated successfully.",
+    "error": "Demand could not be updated.",
+    "errorMessage": "An error occurred while updating demand.",
+    "invalidCurrency": "Invalid currency.",
+    "validationError": "Form validation error."
+  },
+  "revision": {
+    "success": "Revision created.",
+    "error": "Revision could not be created."
+  },
+  "waitingApprovals": {
+    "title": "Pending Demand Approvals",
+    "list": "Pending Approval List",
+    "noApprovals": "No pending approvals found.",
+    "requestId": "Demand No",
+    "description": "Description",
+    "stepOrder": "Step",
+    "approvedBy": "Approved By",
+    "actionDate": "Action Date",
+    "status": "Status",
+    "waiting": "Waiting"
   }
 }
