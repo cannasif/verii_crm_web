@@ -2,6 +2,17 @@ import { api } from '@/lib/axios';
 import type { ApiResponse, PagedFilter, PagedResponse } from '@/types/api';
 import type { CustomerDto } from '@/features/customer-management/types/customer-types';
 import type { StockGetDto, StockGetWithMainImageDto } from '@/features/stock/types';
+import type { CountryDto } from '@/features/country-management/types/country-types';
+import type { CityDto } from '@/features/city-management/types/city-types';
+import type { DistrictDto } from '@/features/district-management/types/district-types';
+import type { UserDto } from '@/features/user-management/types/user-types';
+import type { ApprovalRoleDto } from '@/features/approval-role-management/types/approval-role-types';
+import type { ApprovalRoleGroupDto } from '@/features/approval-role-group-management/types/approval-role-group-types';
+import type { TitleDto } from '@/features/title-management/types/title-types';
+import type { CustomerTypeDto } from '@/features/customer-type-management/types/customer-type-types';
+import type { ActivityTypeDto } from '@/features/activity-type/types/activity-type-types';
+import type { PaymentTypeDto } from '@/features/payment-type-management/types/payment-type-types';
+import type { SalesTypeGetDto } from '@/features/sales-type-management/types/sales-type-types';
 
 interface DropdownPageRequest {
   pageNumber: number;
@@ -9,6 +20,7 @@ interface DropdownPageRequest {
   sortBy?: string;
   sortDirection?: string;
   filters?: PagedFilter[] | Record<string, unknown>;
+  filterLogic?: 'and' | 'or';
   signal: AbortSignal;
 }
 
@@ -41,7 +53,7 @@ function buildPagedQueryParams(
 
   if (request.filters) {
     queryParams.append('filters', JSON.stringify(request.filters));
-    queryParams.append('filterLogic', 'or');
+    queryParams.append('filterLogic', request.filterLogic ?? 'or');
   }
 
   return queryParams;
@@ -74,7 +86,39 @@ export const dropdownApi = {
     return getDropdownPage<StockGetDto>('/api/Stock', request, 'page');
   },
   getStockWithImagesPage: (request: DropdownPageRequest): Promise<PagedResponse<StockGetWithMainImageDto>> => {
-    // Stock-with-images endpoint follows the same `page` contract.
     return getDropdownPage<StockGetWithMainImageDto>('/api/Stock/withImages', request, 'page');
+  },
+  getCountryPage: (request: DropdownPageRequest): Promise<PagedResponse<CountryDto>> => {
+    return getDropdownPage<CountryDto>('/api/Country', request, 'pageNumber');
+  },
+  getCityPage: (request: DropdownPageRequest): Promise<PagedResponse<CityDto>> => {
+    return getDropdownPage<CityDto>('/api/City', request, 'pageNumber');
+  },
+  getDistrictPage: (request: DropdownPageRequest): Promise<PagedResponse<DistrictDto>> => {
+    return getDropdownPage<DistrictDto>('/api/District', request, 'pageNumber');
+  },
+  getUserPage: (request: DropdownPageRequest): Promise<PagedResponse<UserDto>> => {
+    return getDropdownPage<UserDto>('/api/User', request, 'pageNumber');
+  },
+  getApprovalRolePage: (request: DropdownPageRequest): Promise<PagedResponse<ApprovalRoleDto>> => {
+    return getDropdownPage<ApprovalRoleDto>('/api/ApprovalRole', request, 'pageNumber');
+  },
+  getApprovalRoleGroupPage: (request: DropdownPageRequest): Promise<PagedResponse<ApprovalRoleGroupDto>> => {
+    return getDropdownPage<ApprovalRoleGroupDto>('/api/ApprovalRoleGroup', request, 'pageNumber');
+  },
+  getTitlePage: (request: DropdownPageRequest): Promise<PagedResponse<TitleDto>> => {
+    return getDropdownPage<TitleDto>('/api/Title', request, 'pageNumber');
+  },
+  getCustomerTypePage: (request: DropdownPageRequest): Promise<PagedResponse<CustomerTypeDto>> => {
+    return getDropdownPage<CustomerTypeDto>('/api/CustomerType', request, 'pageNumber');
+  },
+  getActivityTypePage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
+    return getDropdownPage<ActivityTypeDto>('/api/ActivityType', request, 'pageNumber');
+  },
+  getPaymentTypePage: (request: DropdownPageRequest): Promise<PagedResponse<PaymentTypeDto>> => {
+    return getDropdownPage<PaymentTypeDto>('/api/PaymentType', request, 'pageNumber');
+  },
+  getSalesTypePage: (request: DropdownPageRequest): Promise<PagedResponse<SalesTypeGetDto>> => {
+    return getDropdownPage<SalesTypeGetDto>('/api/SalesType', request, 'pageNumber');
   },
 };
