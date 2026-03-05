@@ -10,7 +10,7 @@ import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
-import { useErpProjects } from '@/services/hooks/useErpProjects';
+import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { useProductSelection } from '../hooks/useProductSelection';
@@ -97,7 +97,8 @@ export function DemandLineForm({
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
-  const { data: projects = [] } = useErpProjects();
+  const [projectSearchTerm, setProjectSearchTerm] = useState('');
+  const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
     currency,
     exchangeRates,
@@ -820,10 +821,12 @@ export function DemandLineForm({
                 className={styles.inputBase}
                 value={formData.projectCode || ''}
                 onSelect={(value) => handleFieldChange('projectCode', value)}
-                options={projects.map((p) => ({
-                  value: p.projeKod,
-                  label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
-                }))}
+                options={projectDropdown.options}
+                onDebouncedSearchChange={setProjectSearchTerm}
+                onFetchNextPage={projectDropdown.fetchNextPage}
+                hasNextPage={projectDropdown.hasNextPage}
+                isLoading={projectDropdown.isLoading}
+                isFetchingNextPage={projectDropdown.isFetchingNextPage}
                 placeholder={t('quotation.header.projectCodePlaceholder')}
                 searchPlaceholder={t('common.search')}
               />

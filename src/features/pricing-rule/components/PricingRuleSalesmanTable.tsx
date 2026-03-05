@@ -1,4 +1,4 @@
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useFormContext, useFieldArray } from 'react-hook-form';
@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
+import { useUsersForPricingRule } from '../hooks/useUsersForPricingRule';
 import {
   Dialog,
   DialogContent,
@@ -20,7 +22,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useUsersForPricingRule } from '../hooks/useUsersForPricingRule';
 import { useCreatePricingRuleSalesman } from '../hooks/useCreatePricingRuleSalesman';
 import { useDeletePricingRuleSalesman } from '../hooks/useDeletePricingRuleSalesman';
 import { usePricingRuleSalesmenByHeaderId } from '../hooks/usePricingRuleSalesmenByHeaderId';
@@ -51,7 +52,16 @@ export function PricingRuleSalesmanTable({
 
   const salesmen = fields as unknown as PricingRuleSalesmanFormState[];
 
-  const { data: users, isLoading } = useUsersForPricingRule();
+  const { data: users, isLoading: isLoadingUsers } = useUsersForPricingRule();
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const userDropdown = useUserOptionsInfinite(userSearchTerm, true);
+  const availableUserOptions = useMemo(
+    () =>
+      userDropdown.options.filter(
+        (opt) => !salesmen.some((s) => s.salesmanId === parseInt(opt.value))
+      ),
+    [userDropdown.options, salesmen]
+  );
   const createMutation = useCreatePricingRuleSalesman();
   const deleteMutation = useDeletePricingRuleSalesman();
   const { data: existingSalesmen } = usePricingRuleSalesmenByHeaderId(header?.id || 0);
@@ -147,8 +157,6 @@ export function PricingRuleSalesmanTable({
     }
   };
 
-  const availableUsers = users?.filter((user) => !salesmen.some((s) => s.salesmanId === user.id)) || [];
-  const isLoadingUsers = isLoading;
   const isLoadingAction = createMutation.isPending || deleteMutation.isPending;
   const selectedUser = selectedSalesmanId ? users?.find((u) => u.id === selectedSalesmanId) : null;
   const userToDelete = selectedSalesmanToDelete ? users?.find((u) => u.id === salesmen.find((s) => s.id === selectedSalesmanToDelete.id)?.salesmanId) : null;
@@ -176,17 +184,19 @@ export function PricingRuleSalesmanTable({
           {t('pricingRule.salesmen.title')}
         </h3>
         
-        {availableUsers.length > 0 && (
+        {availableUserOptions.length > 0 && (
           <div className="flex items-center gap-2">
             <VoiceSearchCombobox
-                options={availableUsers.map((user) => ({
-                    value: user.id.toString(),
-                    label: user.fullName || ''
-                }))}
+                options={availableUserOptions}
                 value={null}
                 onSelect={(value) => {
                     if (value) handleAddSalesman(parseInt(value));
                 }}
+                onDebouncedSearchChange={setUserSearchTerm}
+                onFetchNextPage={userDropdown.fetchNextPage}
+                hasNextPage={userDropdown.hasNextPage}
+                isLoading={userDropdown.isLoading}
+                isFetchingNextPage={userDropdown.isFetchingNextPage}
                 placeholder={t('pricingRule.salesmen.add')}
                 searchPlaceholder={t('pricingRule.salesmen.search')}
                 className="w-[240px] h-9 bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-xs"

@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -19,10 +19,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { VoiceSearchCombobox, type ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { useCityOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { districtFormSchema, type DistrictFormSchema } from '../types/district-types';
 import type { DistrictDto } from '../types/district-types';
-import { useCityOptions } from '@/features/city-management/hooks/useCityOptions';
 import { MapPin } from 'lucide-react';
 import { Cancel01Icon } from 'hugeicons-react';
 
@@ -60,12 +60,8 @@ export function DistrictForm({
   isLoading = false,
 }: DistrictFormProps): ReactElement {
   const { t } = useTranslation();
-  const { data: cities, isLoading: citiesLoading } = useCityOptions();
-
-  const cityOptions: ComboboxOption[] = cities?.map(city => ({
-    value: city.id.toString(),
-    label: city.name,
-  })) || [];
+  const [citySearchTerm, setCitySearchTerm] = useState('');
+  const cityDropdown = useCityOptionsInfinite(citySearchTerm, open);
 
   const form = useForm<DistrictFormSchema>({
     resolver: zodResolver(districtFormSchema),
@@ -163,14 +159,18 @@ export function DistrictForm({
                       {t('districtManagement.form.city')} *
                     </FormLabel>
                     <VoiceSearchCombobox
-                      options={cityOptions}
+                      options={cityDropdown.options}
                       value={field.value?.toString()}
                       onSelect={(value) => field.onChange(value ? Number(value) : 0)}
+                      onDebouncedSearchChange={setCitySearchTerm}
+                      onFetchNextPage={cityDropdown.fetchNextPage}
+                      hasNextPage={cityDropdown.hasNextPage}
+                      isLoading={cityDropdown.isLoading}
+                      isFetchingNextPage={cityDropdown.isFetchingNextPage}
                       placeholder={t('districtManagement.form.selectCity')}
                       searchPlaceholder={t('districtManagement.form.searchCity')}
                       className={INPUT_STYLE}
                       modal={true}
-                      disabled={citiesLoading}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>

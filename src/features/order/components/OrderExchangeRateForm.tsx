@@ -12,13 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { Plus, Trash2, DollarSign, Calendar, Calculator } from 'lucide-react';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import type { OrderExchangeRateFormState } from '../types/order-types';
@@ -106,24 +100,18 @@ export function OrderExchangeRateForm({
           {/* Para Birimi Seçimi */}
           <div className="md:col-span-3">
             <Label className={styles.label}>{t('order.exchangeRates.currency')}</Label>
-            <Select
-              value={newDovizTipi === '' ? undefined : String(newDovizTipi)}
-              onValueChange={(value) => setNewDovizTipi(parseInt(value, 10))}
-            >
-              <SelectTrigger className={styles.inputBase}>
-                <SelectValue placeholder={t('order.select')} />
-              </SelectTrigger>
-              <SelectContent>
-                {currencyOptions
-                  .filter((opt) => !exchangeRates.some((er) => er.dovizTipi === opt.dovizTipi))
-                  .map((opt) => (
-                    <SelectItem key={opt.dovizTipi} value={String(opt.dovizTipi)}>
-                      <span className="font-medium">{opt.code}</span>
-                      <span className="text-muted-foreground ml-2 text-xs">{opt.label}</span>
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+            <VoiceSearchCombobox
+              options={currencyOptions
+                .filter((opt) => !exchangeRates.some((er) => er.dovizTipi === opt.dovizTipi))
+                .map((opt) => ({
+                  value: String(opt.dovizTipi),
+                  label: `${opt.code} - ${opt.label}`,
+                }))}
+              value={newDovizTipi === '' ? '' : String(newDovizTipi)}
+              onSelect={(v) => setNewDovizTipi(v ? parseInt(v, 10) : '')}
+              placeholder={t('order.select')}
+              className={styles.inputBase}
+            />
           </div>
 
           {/* Kur Değeri */}

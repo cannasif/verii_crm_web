@@ -8,7 +8,7 @@ import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
-import { useErpProjects } from '@/services/hooks/useErpProjects';
+import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
@@ -99,7 +99,8 @@ export function QuotationLineForm({
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
   const [pricingInfoOpen, setPricingInfoOpen] = useState(false);
-  const { data: projects = [] } = useErpProjects();
+  const [projectSearchTerm, setProjectSearchTerm] = useState('');
+  const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
@@ -791,10 +792,12 @@ export function QuotationLineForm({
               className="h-11 bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 rounded-xl"
               value={formData.projectCode || ''}
               onSelect={(value) => handleFieldChange('projectCode', value)}
-              options={projects.map((p) => ({
-                value: p.projeKod,
-                label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
-              }))}
+              options={projectDropdown.options}
+              onDebouncedSearchChange={setProjectSearchTerm}
+              onFetchNextPage={projectDropdown.fetchNextPage}
+              hasNextPage={projectDropdown.hasNextPage}
+              isLoading={projectDropdown.isLoading}
+              isFetchingNextPage={projectDropdown.isFetchingNextPage}
               placeholder={t('quotation.header.projectCode')}
               searchPlaceholder={t('common.search')}
             />

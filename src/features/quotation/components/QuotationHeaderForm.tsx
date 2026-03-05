@@ -27,13 +27,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -44,13 +37,15 @@ import {
 import { CustomerSelectDialog } from '@/components/shared/CustomerSelectDialog';
 import { useShippingAddresses } from '../hooks/useShippingAddresses';
 import { useQuotationRelatedUsers } from '../hooks/useQuotationRelatedUsers';
-import { usePaymentTypes } from '../hooks/usePaymentTypes';
+import {
+  usePaymentTypeOptionsInfinite,
+  useSalesTypeOptionsInfinite,
+} from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
-import { useErpProjects } from '@/services/hooks/useErpProjects';
+import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
-import { useSalesTypeList } from '@/features/sales-type-management/hooks/useSalesTypeList';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
 import { ExchangeRateDialog } from './ExchangeRateDialog';
@@ -113,6 +108,9 @@ export function QuotationHeaderForm({
   const [customerComboboxOpen, setCustomerComboboxOpen] = useState(false);
   const [customerSearchQuery, setCustomerSearchQuery] = useState("");
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [projectSearchTerm, setProjectSearchTerm] = useState('');
+  const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
+  const [deliveryMethodSearchTerm, setDeliveryMethodSearchTerm] = useState('');
   const isInitialLoadRef = useRef(true);
 
   const filledNoteKeys = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).filter(
@@ -134,20 +132,12 @@ export function QuotationHeaderForm({
   
   const watchedOfferType = form.watch('quotation.offerType');
 
-  const { data: salesTypeListResponse } = useSalesTypeList({
-    pageNumber: 1,
-    pageSize: 500,
-    ...(watchedOfferType
-      ? { filters: [{ column: 'salesType', operator: 'equals', value: watchedOfferType }] }
-      : {}),
-  });
-  
-  const salesTypesByOfferType = useMemo(() => {
-    const list = salesTypeListResponse?.data ?? [];
-    if (!watchedOfferType) return list;
-    return list.filter((item) => item.salesType === watchedOfferType);
-  }, [salesTypeListResponse?.data, watchedOfferType]);
-  
+  const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, true);
+  const deliveryMethodDropdown = useSalesTypeOptionsInfinite(
+    deliveryMethodSearchTerm,
+    !!watchedOfferType,
+    watchedOfferType ?? null
+  );
   const prevOfferTypeRef = useRef(watchedOfferType);
   useEffect(() => {
     if (prevOfferTypeRef.current !== watchedOfferType) {
@@ -158,12 +148,11 @@ export function QuotationHeaderForm({
 
   const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useQuotationRelatedUsers(user?.id);
-  const { data: paymentTypes } = usePaymentTypes();
   
   const { data: customerOptions = [] } = useCustomerOptions();
   
   const { data: customer } = useCustomer(watchedCustomerId ?? 0);
-  const { data: projects = [] } = useErpProjects();
+  const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
   
   const customerTypeId = useMemo(() => {
     if (watchedErpCustomerCode) return 0;
@@ -456,24 +445,19 @@ export function QuotationHeaderForm({
                     name="quotation.representativeId"
                     render={({ field }) => (
                       <FormItem className="space-y-0">
-                        <Select
-                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                          value={field.value?.toString() || ''}
-                          disabled={readOnly}
-                        >
-                          <FormControl>
-                            <SelectTrigger className={cn(styles.selectTrigger, "px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
-                              <SelectValue placeholder={t('quotation.select')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className={styles.selectContent}>
-                            {relatedUsers.map((u) => (
-                              <SelectItem key={u.userId} value={u.userId.toString()} className={styles.selectItem}>
-                                {[u.firstName, u.lastName].filter(Boolean).join(' ')}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <VoiceSearchCombobox
+                            options={relatedUsers.map((u) => ({
+                              value: u.userId.toString(),
+                              label: [u.firstName, u.lastName].filter(Boolean).join(' ') || String(u.userId),
+                            }))}
+                            value={field.value?.toString() || ''}
+                            onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                            placeholder={t('quotation.select')}
+                            className={cn(styles.selectTrigger, "px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            disabled={readOnly}
+                          />
+                        </FormControl>
                         <FormMessage className="text-[10px] mt-1" />
                       </FormItem>
                     )}
@@ -495,23 +479,18 @@ export function QuotationHeaderForm({
                     name="quotation.shippingAddressId"
                     render={({ field }) => (
                       <FormItem className="space-y-0 min-w-0">
-                        <Select
-                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                          value={field.value?.toString() || ''}
-                        >
-                          <FormControl>
-                            <SelectTrigger className={cn(styles.selectTrigger, "px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
-                              <SelectValue placeholder={t('quotation.header.selectShippingAddress')} className="truncate block" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className={cn(styles.selectContent, "max-w-[90vw] md:max-w-xl")}>
-                            {shippingAddresses.map((address) => (
-                              <SelectItem key={address.id} value={address.id.toString()} className={styles.selectItem}>
-                                <span className="text-xs sm:text-sm truncate block">{address.addressText}</span>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <VoiceSearchCombobox
+                            options={shippingAddresses.map((a) => ({
+                              value: a.id.toString(),
+                              label: a.addressText || String(a.id),
+                            }))}
+                            value={field.value?.toString() || ''}
+                            onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                            placeholder={t('quotation.header.selectShippingAddress')}
+                            className={cn(styles.selectTrigger, "px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -553,36 +532,31 @@ export function QuotationHeaderForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.currency')}>Para Birimi</FormLabel>
-                    <Select
-                      onValueChange={(value) => handleCurrencyChange(value)}
-                      value={field.value ? String(field.value) : ''}
-                      disabled={readOnly}
-                    >
+                    <div className="relative">
+                      <div className={cn(styles.iconWrapper, currencyConfig.color)}>
+                        <Banknote className="h-4 w-4" />
+                      </div>
                       <FormControl>
-                        <div className="relative">
-                          <div className={cn(styles.iconWrapper, currencyConfig.color)}>
-                            <Banknote className="h-4 w-4" />
-                          </div>
-                          <SelectTrigger className={cn(
+                        <VoiceSearchCombobox
+                          options={erpRates.map((c: KurDto) => ({
+                            value: String(c.dovizTipi),
+                            label: c.dovizIsmi || `Döviz ${c.dovizTipi}`,
+                          }))}
+                          value={field.value ? String(field.value) : ''}
+                          onSelect={(v) => v && handleCurrencyChange(v)}
+                          placeholder={t('quotation.select')}
+                          className={cn(
                             styles.selectTrigger,
                             "pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
                             currencyConfig.color,
                             currencyConfig.bg,
                             currencyConfig.border,
                             "hover:brightness-95 dark:hover:brightness-110"
-                          )}>
-                            <SelectValue placeholder={t('quotation.select')} />
-                          </SelectTrigger>
-                        </div>
+                          )}
+                          disabled={readOnly}
+                        />
                       </FormControl>
-                      <SelectContent className={styles.selectContent}>
-                        {erpRates.map((currency: KurDto) => (
-                          <SelectItem key={currency.dovizTipi} value={String(currency.dovizTipi)} className={styles.selectItem}>
-                            <span className="font-bold">{currency.dovizIsmi || `Döviz ${currency.dovizTipi}`}</span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    </div>
                     <FormMessage className="mt-1" />
                   </FormItem>
                 )}
@@ -593,28 +567,25 @@ export function QuotationHeaderForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>Ödeme Planı</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                      value={field.value?.toString() || ''}
-                    >
+                    <div className="relative">
+                      <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}>
+                        <CreditCard className="h-4 w-4" />
+                      </div>
                       <FormControl>
-                        <div className="relative">
-                           <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}>
-                             <CreditCard className="h-4 w-4" />
-                           </div>
-                           <SelectTrigger className={cn(styles.selectTrigger, "pl-10 hover:border-pink-400 dark:hover:border-zinc-700 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
-                             <SelectValue placeholder={t('quotation.select')} />
-                           </SelectTrigger>
-                        </div>
+                        <VoiceSearchCombobox
+                          options={paymentTypeDropdown.options}
+                          value={field.value?.toString() || ''}
+                          onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                          onDebouncedSearchChange={setPaymentTypeSearchTerm}
+                          onFetchNextPage={paymentTypeDropdown.fetchNextPage}
+                          hasNextPage={paymentTypeDropdown.hasNextPage}
+                          isLoading={paymentTypeDropdown.isLoading}
+                          isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
+                          placeholder={t('quotation.select')}
+                          className={cn(styles.selectTrigger, "pl-10 hover:border-pink-400 dark:hover:border-zinc-700 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                        />
                       </FormControl>
-                      <SelectContent className={styles.selectContent}>
-                        {paymentTypes.map((pt) => (
-                          <SelectItem key={pt.id} value={pt.id.toString()} className={styles.selectItem}>
-                            {pt.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    </div>
                     <FormMessage className="mt-1" />
                   </FormItem>
                 )}
@@ -641,20 +612,22 @@ export function QuotationHeaderForm({
                       <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.offerType')}>
                         {t('common.offerType.label')}
                       </FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ''} disabled={readOnly}>
+                      <div className="relative">
+                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Layers className="h-4 w-4" /></div>
                         <FormControl>
-                           <div className="relative">
-                              <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Layers className="h-4 w-4" /></div>
-                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
-                                <SelectValue placeholder={t('common.offerType.selectPlaceholder')} />
-                              </SelectTrigger>
-                           </div>
+                          <VoiceSearchCombobox
+                            options={[
+                              { value: OfferType.YURTICI, label: t('common.offerType.yurtici') },
+                              { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi') },
+                            ]}
+                            value={field.value || ''}
+                            onSelect={(v) => field.onChange(v ?? '')}
+                            placeholder={t('common.offerType.selectPlaceholder')}
+                            className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            disabled={readOnly}
+                          />
                         </FormControl>
-                        <SelectContent className={styles.selectContent}>
-                          <SelectItem value={OfferType.YURTICI} className={styles.selectItem}>{t('common.offerType.yurtici')}</SelectItem>
-                          <SelectItem value={OfferType.YURTDISI} className={styles.selectItem}>{t('common.offerType.yurtdisi')}</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      </div>
                       <FormMessage className="mt-1" />
                     </FormItem>
                   )}
@@ -668,18 +641,21 @@ export function QuotationHeaderForm({
                         <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>Teslim Şekli</FormLabel>
                         <div className="relative">
                           <div className={styles.iconWrapper}><Truck className="h-4 w-4 text-zinc-400 group-focus-within:text-pink-500" /></div>
-                          <Select disabled={readOnly} onValueChange={field.onChange} value={field.value || ''}>
-                            <FormControl>
-                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
-                                <SelectValue placeholder={t('quotation.select')} />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className={styles.selectContent}>
-                              {salesTypesByOfferType.map((item) => (
-                                <SelectItem key={item.id} value={String(item.id)} className={styles.selectItem}>{item.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormControl>
+                            <VoiceSearchCombobox
+                              options={deliveryMethodDropdown.options}
+                              value={field.value || ''}
+                              onSelect={(v) => field.onChange(v ?? '')}
+                              onDebouncedSearchChange={setDeliveryMethodSearchTerm}
+                              onFetchNextPage={deliveryMethodDropdown.fetchNextPage}
+                              hasNextPage={deliveryMethodDropdown.hasNextPage}
+                              isLoading={deliveryMethodDropdown.isLoading}
+                              isFetchingNextPage={deliveryMethodDropdown.isFetchingNextPage}
+                              placeholder={t('quotation.select')}
+                              className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                              disabled={readOnly}
+                            />
+                          </FormControl>
                         </div>
                         <FormMessage className="mt-1" />
                       </FormItem>
@@ -754,31 +730,21 @@ export function QuotationHeaderForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.documentSerialTypeId')}>Seri No</FormLabel>
-                        <Select
-                          onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                          value={field.value?.toString() || ''}
-                          disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
-                        >
+                        <div className="relative">
+                          <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Hash className="h-4 w-4" /></div>
                           <FormControl>
-                            <div className="relative">
-                              <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Hash className="h-4 w-4" /></div>
-                              <SelectTrigger className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}>
-                                <SelectValue placeholder={t('quotation.select')} />
-                              </SelectTrigger>
-                            </div>
-                          </FormControl>
-                          <SelectContent className={styles.selectContent}>
-                            {availableDocumentSerialTypes.length === 0 ? (
-                              <div className="p-3 text-center text-xs text-muted-foreground">Uygun seri yok</div>
-                            ) : (
-                              availableDocumentSerialTypes
+                            <VoiceSearchCombobox
+                              options={availableDocumentSerialTypes
                                 .filter((d) => d.serialPrefix?.trim() !== '')
-                                .map((d) => (
-                                  <SelectItem key={d.id} value={d.id.toString()} className={styles.selectItem}>{d.serialPrefix}</SelectItem>
-                                ))
-                            )}
-                          </SelectContent>
-                        </Select>
+                                .map((d) => ({ value: d.id.toString(), label: d.serialPrefix || String(d.id) }))}
+                              value={field.value?.toString() || ''}
+                              onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                              placeholder={t('quotation.select')}
+                              className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                              disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
+                            />
+                          </FormControl>
+                        </div>
                         <FormMessage className="mt-1" />
                       </FormItem>
                     )}
@@ -800,10 +766,12 @@ export function QuotationHeaderForm({
                             className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 **:pl-8")}
                             value={field.value || ''}
                             onSelect={(value) => field.onChange(value)}
-                            options={projects.map((p) => ({
-                              value: p.projeKod,
-                              label: p.projeAciklama ? `${p.projeKod} - ${p.projeAciklama}` : p.projeKod
-                            }))}
+                            options={projectDropdown.options}
+                            onDebouncedSearchChange={setProjectSearchTerm}
+                            onFetchNextPage={projectDropdown.fetchNextPage}
+                            hasNextPage={projectDropdown.hasNextPage}
+                            isLoading={projectDropdown.isLoading}
+                            isFetchingNextPage={projectDropdown.isFetchingNextPage}
                             placeholder={t('quotation.header.projectCodePlaceholder')}
                             searchPlaceholder={t('common.search')}
                             disabled={readOnly}

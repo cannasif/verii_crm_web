@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -23,13 +23,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Cancel01Icon } from 'hugeicons-react';
-import { VoiceSearchCombobox, type ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import {
+  useCustomerOptionsInfinite,
+  useCountryOptionsInfinite,
+  useCityOptionsInfinite,
+  useDistrictOptionsInfinite,
+} from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { shippingAddressFormSchema, type ShippingAddressFormSchema } from '../types/shipping-address-types';
 import type { ShippingAddressDto } from '../types/shipping-address-types';
-import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
-import { useCountryOptions } from '@/features/country-management/hooks/useCountryOptions';
-import { useCityOptions } from '@/features/city-management/hooks/useCityOptions';
-import { useDistrictOptions } from '@/features/district-management/hooks/useDistrictOptions';
 
 import { MapPin, Loader2, User, Phone, FileText, Hash, Globe, Building } from 'lucide-react';
 interface ShippingAddressFormProps {
@@ -66,8 +68,10 @@ export function ShippingAddressForm({
   isLoading = false,
 }: ShippingAddressFormProps): ReactElement {
   const { t } = useTranslation();
-  const { data: customerOptions = [] } = useCustomerOptions();
-  const { data: countryOptions = [] } = useCountryOptions();
+  const [customerSearchTerm, setCustomerSearchTerm] = useState('');
+  const [countrySearchTerm, setCountrySearchTerm] = useState('');
+  const [citySearchTerm, setCitySearchTerm] = useState('');
+  const [districtSearchTerm, setDistrictSearchTerm] = useState('');
 
   const form = useForm<ShippingAddressFormSchema>({
     resolver: zodResolver(shippingAddressFormSchema),
@@ -93,13 +97,10 @@ export function ShippingAddressForm({
   const watchedCountryId = form.watch('countryId');
   const watchedCityId = form.watch('cityId');
 
-  const { data: cityOptions = [] } = useCityOptions();
-  const { data: districtOptions = [] } = useDistrictOptions(watchedCityId ?? undefined);
-
-  const customerComboboxOptions: ComboboxOption[] = customerOptions.map(c => ({ value: c.id.toString(), label: c.name }));
-  const countryComboboxOptions: ComboboxOption[] = countryOptions.map(c => ({ value: c.id.toString(), label: c.name }));
-  const cityComboboxOptions: ComboboxOption[] = cityOptions.map(c => ({ value: c.id.toString(), label: c.name }));
-  const districtComboboxOptions: ComboboxOption[] = districtOptions.map(c => ({ value: c.id.toString(), label: c.name }));
+  const customerDropdown = useCustomerOptionsInfinite(customerSearchTerm, open);
+  const countryDropdown = useCountryOptionsInfinite(countrySearchTerm, open);
+  const cityDropdown = useCityOptionsInfinite(citySearchTerm, open, watchedCountryId ?? undefined);
+  const districtDropdown = useDistrictOptionsInfinite(districtSearchTerm, open, watchedCityId ?? undefined);
 
   useEffect(() => {
     if (shippingAddress) {
@@ -208,9 +209,14 @@ export function ShippingAddressForm({
                       {t('shippingAddressManagement.customerId')} *
                     </FormLabel>
                     <VoiceSearchCombobox
-                      options={customerComboboxOptions}
+                      options={customerDropdown.options}
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}
                       onSelect={(value) => field.onChange(value && value !== '' ? parseInt(value) : undefined)}
+                      onDebouncedSearchChange={setCustomerSearchTerm}
+                      onFetchNextPage={customerDropdown.fetchNextPage}
+                      hasNextPage={customerDropdown.hasNextPage}
+                      isLoading={customerDropdown.isLoading}
+                      isFetchingNextPage={customerDropdown.isFetchingNextPage}
                       placeholder={t('shippingAddressManagement.selectCustomer')}
                       searchPlaceholder={t('shippingAddressManagement.searchCustomer')}
                       className={INPUT_STYLE}
@@ -366,9 +372,14 @@ export function ShippingAddressForm({
                         {t('shippingAddressManagement.country')}
                       </FormLabel>
                       <VoiceSearchCombobox
-                        options={countryComboboxOptions}
+                        options={countryDropdown.options}
                         value={field.value ? field.value.toString() : ''}
                         onSelect={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                        onDebouncedSearchChange={setCountrySearchTerm}
+                        onFetchNextPage={countryDropdown.fetchNextPage}
+                        hasNextPage={countryDropdown.hasNextPage}
+                        isLoading={countryDropdown.isLoading}
+                        isFetchingNextPage={countryDropdown.isFetchingNextPage}
                         placeholder={t('shippingAddressManagement.selectCountry')}
                         searchPlaceholder={t('shippingAddressManagement.searchCountry')}
                         className={INPUT_STYLE}
@@ -389,9 +400,14 @@ export function ShippingAddressForm({
                         {t('shippingAddressManagement.city')}
                       </FormLabel>
                       <VoiceSearchCombobox
-                        options={cityComboboxOptions}
+                        options={cityDropdown.options}
                         value={field.value ? field.value.toString() : ''}
                         onSelect={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                        onDebouncedSearchChange={setCitySearchTerm}
+                        onFetchNextPage={cityDropdown.fetchNextPage}
+                        hasNextPage={cityDropdown.hasNextPage}
+                        isLoading={cityDropdown.isLoading}
+                        isFetchingNextPage={cityDropdown.isFetchingNextPage}
                         placeholder={t('shippingAddressManagement.selectCity')}
                         searchPlaceholder={t('shippingAddressManagement.searchCity')}
                         className={INPUT_STYLE}
@@ -413,9 +429,14 @@ export function ShippingAddressForm({
                         {t('shippingAddressManagement.district')}
                       </FormLabel>
                       <VoiceSearchCombobox
-                        options={districtComboboxOptions}
+                        options={districtDropdown.options}
                         value={field.value ? field.value.toString() : ''}
                         onSelect={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                        onDebouncedSearchChange={setDistrictSearchTerm}
+                        onFetchNextPage={districtDropdown.fetchNextPage}
+                        hasNextPage={districtDropdown.hasNextPage}
+                        isLoading={districtDropdown.isLoading}
+                        isFetchingNextPage={districtDropdown.isFetchingNextPage}
                         placeholder={t('shippingAddressManagement.selectDistrict')}
                         searchPlaceholder={t('shippingAddressManagement.searchDistrict')}
                         className={INPUT_STYLE}

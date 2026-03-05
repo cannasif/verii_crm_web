@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +21,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { useApprovalRoleGroupOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { approvalRoleFormSchema, type ApprovalRoleFormSchema } from '../types/approval-role-types';
 import type { ApprovalRoleDto } from '../types/approval-role-types';
-import { useApprovalRoleGroupOptions } from '../hooks/useApprovalRoleGroupOptions';
 
 interface ApprovalRoleFormProps {
   open: boolean;
@@ -41,7 +41,8 @@ export function ApprovalRoleForm({
   isLoading = false,
 }: ApprovalRoleFormProps): ReactElement {
   const { t } = useTranslation();
-  const { data: approvalRoleGroupOptions = [] } = useApprovalRoleGroupOptions();
+  const [roleGroupSearchTerm, setRoleGroupSearchTerm] = useState('');
+  const roleGroupDropdown = useApprovalRoleGroupOptionsInfinite(roleGroupSearchTerm, open);
 
   const form = useForm<ApprovalRoleFormSchema>({
     resolver: zodResolver(approvalRoleFormSchema),
@@ -107,10 +108,12 @@ export function ApprovalRoleForm({
                   <VoiceSearchCombobox
                     value={field.value && field.value !== 0 ? field.value.toString() : ''}
                     onSelect={(value) => field.onChange(value ? parseInt(value) : 0)}
-                    options={approvalRoleGroupOptions.map((group) => ({
-                      value: group.id.toString(),
-                      label: group.name,
-                    }))}
+                    options={roleGroupDropdown.options}
+                    onDebouncedSearchChange={setRoleGroupSearchTerm}
+                    onFetchNextPage={roleGroupDropdown.fetchNextPage}
+                    hasNextPage={roleGroupDropdown.hasNextPage}
+                    isLoading={roleGroupDropdown.isLoading}
+                    isFetchingNextPage={roleGroupDropdown.isFetchingNextPage}
                     placeholder={t('approvalRole.form.selectApprovalRoleGroup')}
                     searchPlaceholder={t('common.search')}
                     className={inputClass}

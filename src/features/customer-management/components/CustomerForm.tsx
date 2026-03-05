@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import {
+  useCountryOptionsInfinite,
+  useCityOptionsInfinite,
+  useDistrictOptionsInfinite,
+  useCustomerTypeOptionsInfinite,
+} from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import {
   Form,
   FormControl,
@@ -31,10 +38,6 @@ import {
 import { customerFormSchema, type CustomerFormData, type CustomerDto } from '../types/customer-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { useShippingAddressesByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesByCustomer';
-import { useCountryOptions } from '@/features/country-management/hooks/useCountryOptions';
-import { useCityOptions } from '@/features/city-management/hooks/useCityOptions';
-import { useDistrictOptions } from '@/features/district-management/hooks/useDistrictOptions';
-import { useCustomerTypeOptions } from '@/features/customer-type-management/hooks/useCustomerTypeOptions';
 import {
   Building2,
   Hash,
@@ -80,9 +83,10 @@ export function CustomerForm({
 }: CustomerFormProps): ReactElement {
   const { t } = useTranslation();
   const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
-  const { data: countries = [] } = useCountryOptions();
-  const { data: allCities = [] } = useCityOptions();
-  const { data: customerTypes = [] } = useCustomerTypeOptions();
+  const [countrySearchTerm, setCountrySearchTerm] = useState('');
+  const [citySearchTerm, setCitySearchTerm] = useState('');
+  const [districtSearchTerm, setDistrictSearchTerm] = useState('');
+  const [customerTypeSearchTerm, setCustomerTypeSearchTerm] = useState('');
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
@@ -117,8 +121,11 @@ export function CustomerForm({
 
   const selectedCountryId = form.watch('countryId');
   const selectedCityId = form.watch('cityId');
-  const { data: districts = [] } = useDistrictOptions(selectedCityId);
-  const cities = allCities.filter((city) => !selectedCountryId || city.countryId === selectedCountryId);
+
+  const countryDropdown = useCountryOptionsInfinite(countrySearchTerm, open);
+  const cityDropdown = useCityOptionsInfinite(citySearchTerm, open, selectedCountryId ?? undefined);
+  const districtDropdown = useDistrictOptionsInfinite(districtSearchTerm, open, selectedCityId ?? undefined);
+  const customerTypeDropdown = useCustomerTypeOptionsInfinite(customerTypeSearchTerm, open);
 
   useEffect(() => {
     if (customer) {
@@ -233,10 +240,19 @@ export function CustomerForm({
                 <FormField control={form.control} name="customerTypeId" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.customerType')}</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value ? String(field.value) : ''}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.customerTypePlaceholder')} /></SelectTrigger></FormControl>
-                      <SelectContent>{customerTypes.map((type) => <SelectItem key={type.id} value={String(type.id)}>{type.name}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <VoiceSearchCombobox
+                      options={customerTypeDropdown.options}
+                      value={field.value ? String(field.value) : ''}
+                      onSelect={(value) => field.onChange(value ? Number(value) : undefined)}
+                      onDebouncedSearchChange={setCustomerTypeSearchTerm}
+                      onFetchNextPage={customerTypeDropdown.fetchNextPage}
+                      hasNextPage={customerTypeDropdown.hasNextPage}
+                      isLoading={customerTypeDropdown.isLoading}
+                      isFetchingNextPage={customerTypeDropdown.isFetchingNextPage}
+                      placeholder={t('customerManagement.form.customerTypePlaceholder')}
+                      searchPlaceholder={t('common.search')}
+                      className={INPUT_STYLE}
+                    />
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -300,10 +316,23 @@ export function CustomerForm({
                 <FormField control={form.control} name="countryId" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.country')}</FormLabel>
-                    <Select onValueChange={(value) => { field.onChange(Number(value)); form.setValue('cityId', undefined); form.setValue('districtId', undefined); }} value={field.value ? String(field.value) : ''}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.countryPlaceholder')} /></SelectTrigger></FormControl>
-                      <SelectContent>{countries.map((country) => <SelectItem key={country.id} value={String(country.id)}>{country.name}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <VoiceSearchCombobox
+                      options={countryDropdown.options}
+                      value={field.value ? String(field.value) : ''}
+                      onSelect={(value) => {
+                        field.onChange(value ? Number(value) : undefined);
+                        form.setValue('cityId', undefined);
+                        form.setValue('districtId', undefined);
+                      }}
+                      onDebouncedSearchChange={setCountrySearchTerm}
+                      onFetchNextPage={countryDropdown.fetchNextPage}
+                      hasNextPage={countryDropdown.hasNextPage}
+                      isLoading={countryDropdown.isLoading}
+                      isFetchingNextPage={countryDropdown.isFetchingNextPage}
+                      placeholder={t('customerManagement.form.countryPlaceholder')}
+                      searchPlaceholder={t('common.search')}
+                      className={INPUT_STYLE}
+                    />
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -311,10 +340,23 @@ export function CustomerForm({
                 <FormField control={form.control} name="cityId" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.city')}</FormLabel>
-                    <Select onValueChange={(value) => { field.onChange(Number(value)); form.setValue('districtId', undefined); }} value={field.value ? String(field.value) : ''} disabled={!selectedCountryId}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.cityPlaceholder')} /></SelectTrigger></FormControl>
-                      <SelectContent>{cities.map((city) => <SelectItem key={city.id} value={String(city.id)}>{city.name}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <VoiceSearchCombobox
+                      options={cityDropdown.options}
+                      value={field.value ? String(field.value) : ''}
+                      onSelect={(value) => {
+                        field.onChange(value ? Number(value) : undefined);
+                        form.setValue('districtId', undefined);
+                      }}
+                      onDebouncedSearchChange={setCitySearchTerm}
+                      onFetchNextPage={cityDropdown.fetchNextPage}
+                      hasNextPage={cityDropdown.hasNextPage}
+                      isLoading={cityDropdown.isLoading}
+                      isFetchingNextPage={cityDropdown.isFetchingNextPage}
+                      placeholder={t('customerManagement.form.cityPlaceholder')}
+                      searchPlaceholder={t('common.search')}
+                      className={INPUT_STYLE}
+                      disabled={!selectedCountryId}
+                    />
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -322,10 +364,20 @@ export function CustomerForm({
                 <FormField control={form.control} name="districtId" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.district')}</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value ? String(field.value) : ''} disabled={!selectedCityId}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.districtPlaceholder')} /></SelectTrigger></FormControl>
-                      <SelectContent>{districts.map((district) => <SelectItem key={district.id} value={String(district.id)}>{district.name}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <VoiceSearchCombobox
+                      options={districtDropdown.options}
+                      value={field.value ? String(field.value) : ''}
+                      onSelect={(value) => field.onChange(value ? Number(value) : undefined)}
+                      onDebouncedSearchChange={setDistrictSearchTerm}
+                      onFetchNextPage={districtDropdown.fetchNextPage}
+                      hasNextPage={districtDropdown.hasNextPage}
+                      isLoading={districtDropdown.isLoading}
+                      isFetchingNextPage={districtDropdown.isFetchingNextPage}
+                      placeholder={t('customerManagement.form.districtPlaceholder')}
+                      searchPlaceholder={t('common.search')}
+                      className={INPUT_STYLE}
+                      disabled={!selectedCityId}
+                    />
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />

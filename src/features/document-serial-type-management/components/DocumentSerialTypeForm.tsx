@@ -27,26 +27,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { documentSerialTypeFormSchema, type DocumentSerialTypeFormSchema } from '../types/document-serial-type-types';
 import type { DocumentSerialTypeDto } from '../types/document-serial-type-types';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
-import { useCustomerTypeOptions } from '../hooks/useCustomerTypeOptions';
-import { useSalesRepOptions } from '../hooks/useSalesRepOptions';
-import { FileText, Check, ChevronsUpDown, Mic, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import {
+  useCustomerTypeOptionsInfinite,
+  useUserOptionsInfinite,
+} from '@/components/shared/dropdown/useDropdownEntityInfinite';
+import { FileText } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface DocumentSerialTypeFormProps {
@@ -57,135 +46,6 @@ interface DocumentSerialTypeFormProps {
   isLoading?: boolean;
 }
 
-interface SearchableSelectProps {
-  value: number | null;
-  onChange: (value: number | null) => void;
-  options: { id: number; name: string }[];
-  placeholder: string;
-  searchPlaceholder: string;
-  emptyMessage: string;
-}
-
-function SearchableSelect({
-  value,
-  onChange,
-  options,
-  placeholder,
-  searchPlaceholder,
-  emptyMessage,
-}: SearchableSelectProps) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [isListening, setIsListening] = useState(false);
-
-  const startListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition =
-        (window as Window & { webkitSpeechRecognition?: new () => SpeechRecognition }).SpeechRecognition ||
-        (window as Window & { webkitSpeechRecognition?: new () => SpeechRecognition }).webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert('Tarayıcınız sesli aramayı desteklemiyor.');
-        return;
-      }
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'tr-TR';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = event.results[0][0].transcript;
-        setSearch(transcript);
-      };
-
-      recognition.start();
-    } else {
-      alert('Tarayıcınız sesli aramayı desteklemiyor.');
-    }
-  };
-
-  const selectedLabel = options.find((opt) => opt.id === value)?.name;
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className={cn(
-            "w-full justify-between h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-800",
-            !value && "text-muted-foreground"
-          )}
-        >
-          <span className="truncate">{selectedLabel || placeholder}</span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[400px] max-w-[400px] p-0" align="start">
-        <Command>
-          <CommandInput 
-            placeholder={searchPlaceholder} 
-            value={search}
-            onValueChange={setSearch}
-          >
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                startListening();
-              }}
-              className={cn(
-                "p-2 rounded-full transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800",
-                isListening ? "text-red-500 animate-pulse" : "text-zinc-500"
-              )}
-              title="Sesli Arama"
-            >
-              <Mic className="h-4 w-4" />
-            </button>
-          </CommandInput>
-          <CommandList>
-            <CommandEmpty>{emptyMessage}</CommandEmpty>
-            <CommandGroup>
-              <CommandItem
-                value="sys_clear_selection"
-                onSelect={() => {
-                  onChange(null);
-                  setOpen(false);
-                }}
-                className="text-muted-foreground italic"
-              >
-                <X className="mr-2 h-4 w-4" />
-                Sechimi Temizle
-              </CommandItem>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.id}
-                  value={option.name}
-                  onSelect={() => {
-                    onChange(option.id);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === option.id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.name}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
 export function DocumentSerialTypeForm({
   open,
   onOpenChange,
@@ -194,8 +54,10 @@ export function DocumentSerialTypeForm({
   isLoading = false,
 }: DocumentSerialTypeFormProps): ReactElement {
   const { t } = useTranslation();
-  const { data: customerTypeOptions = [] } = useCustomerTypeOptions();
-  const { data: salesRepOptions = [] } = useSalesRepOptions();
+  const [customerTypeSearchTerm, setCustomerTypeSearchTerm] = useState('');
+  const [salesRepSearchTerm, setSalesRepSearchTerm] = useState('');
+  const customerTypeDropdown = useCustomerTypeOptionsInfinite(customerTypeSearchTerm, open);
+  const salesRepDropdown = useUserOptionsInfinite(salesRepSearchTerm, open);
 
   const form = useForm<DocumentSerialTypeFormSchema>({
     resolver: zodResolver(documentSerialTypeFormSchema),
@@ -319,13 +181,18 @@ export function DocumentSerialTypeForm({
                       {t('documentSerialTypeManagement.form.customerType')}
                     </FormLabel>
                     <FormControl>
-                      <SearchableSelect
-                        value={field.value ?? null}
-                        onChange={field.onChange}
-                        options={customerTypeOptions.map(ct => ({ id: ct.id, name: ct.name }))}
+                      <VoiceSearchCombobox
+                        options={customerTypeDropdown.options}
+                        value={field.value != null ? String(field.value) : ''}
+                        onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                        onDebouncedSearchChange={setCustomerTypeSearchTerm}
+                        onFetchNextPage={customerTypeDropdown.fetchNextPage}
+                        hasNextPage={customerTypeDropdown.hasNextPage}
+                        isLoading={customerTypeDropdown.isLoading}
+                        isFetchingNextPage={customerTypeDropdown.isFetchingNextPage}
                         placeholder={t('documentSerialTypeManagement.form.selectCustomerType')}
                         searchPlaceholder={t('documentSerialTypeManagement.form.searchCustomerType')}
-                        emptyMessage={t('documentSerialTypeManagement.form.noCustomerTypeFound')}
+                        className="h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
                       />
                     </FormControl>
                     <FormMessage />
@@ -344,13 +211,18 @@ export function DocumentSerialTypeForm({
                       {t('documentSerialTypeManagement.form.salesRep')}
                     </FormLabel>
                     <FormControl>
-                      <SearchableSelect
-                        value={field.value ?? null}
-                        onChange={field.onChange}
-                        options={salesRepOptions.map(sr => ({ id: sr.id, name: sr.fullName }))}
+                      <VoiceSearchCombobox
+                        options={salesRepDropdown.options}
+                        value={field.value != null ? String(field.value) : ''}
+                        onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                        onDebouncedSearchChange={setSalesRepSearchTerm}
+                        onFetchNextPage={salesRepDropdown.fetchNextPage}
+                        hasNextPage={salesRepDropdown.hasNextPage}
+                        isLoading={salesRepDropdown.isLoading}
+                        isFetchingNextPage={salesRepDropdown.isFetchingNextPage}
                         placeholder={t('documentSerialTypeManagement.form.selectSalesRep')}
                         searchPlaceholder={t('documentSerialTypeManagement.form.searchSalesRep')}
-                        emptyMessage={t('documentSerialTypeManagement.form.noSalesRepFound')}
+                        className="h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
                       />
                     </FormControl>
                     <FormMessage />

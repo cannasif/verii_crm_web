@@ -1,13 +1,7 @@
 import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useActivities } from '@/features/activity-management/hooks/useActivities';
 import { useUpdateActivity } from '@/features/activity-management/hooks/useUpdateActivity';
@@ -23,6 +17,7 @@ import type { ActivityDto } from '@/features/activity-management/types/activity-
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
 import { ActivityStatus } from '@/features/activity-management/types/activity-types';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
 import { useAuthStore } from '@/stores/auth-store';
 // Modern İkon Seti
@@ -69,7 +64,13 @@ export function DailyTasksPage(): ReactElement {
   const [slotEnd, setSlotEnd] = useState<string | null>(null);
   const [greeting, setGreeting] = useState('');
 
+  const [userFilterSearchTerm, setUserFilterSearchTerm] = useState('');
   const { data: userOptions = [] } = useUserOptions();
+  const userDropdown = useUserOptionsInfinite(userFilterSearchTerm, true);
+  const userFilterOptions = [
+    { value: 'all', label: t('dailyTasks.allEmployees') },
+    ...userDropdown.options,
+  ];
 
   // Dinamik Selamlama
   useEffect(() => {
@@ -461,23 +462,21 @@ export function DailyTasksPage(): ReactElement {
                     </div>
 
                     {/* Personel Seçimi */}
-                    <Select
+                    <div className="flex items-center gap-2 w-full sm:w-[160px]">
+                      <User size={14} className="shrink-0 text-pink-500" />
+                      <VoiceSearchCombobox
+                        options={userFilterOptions}
                         value={assignedUserFilter?.toString() || 'all'}
-                        onValueChange={(value) => setAssignedUserFilter(value === 'all' ? undefined : parseInt(value))}
-                    >
-                        <SelectTrigger className="w-full sm:w-[160px] h-10 rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 focus:ring-pink-500">
-                            <div className="flex items-center text-xs">
-                                <User size={14} className="mr-2 text-pink-500" />
-                                <SelectValue placeholder={t('dailyTasks.allEmployees')} />
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-slate-200 dark:border-white/10">
-                            <SelectItem value="all">{t('dailyTasks.allEmployees')}</SelectItem>
-                            {userOptions.map((u) => (
-                                <SelectItem key={u.id} value={u.id.toString()}>{u.fullName}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        onSelect={(v) => setAssignedUserFilter(v === 'all' || !v ? undefined : parseInt(v, 10))}
+                        onDebouncedSearchChange={setUserFilterSearchTerm}
+                        onFetchNextPage={userDropdown.fetchNextPage}
+                        hasNextPage={userDropdown.hasNextPage}
+                        isLoading={userDropdown.isLoading}
+                        isFetchingNextPage={userDropdown.isFetchingNextPage}
+                        placeholder={t('dailyTasks.allEmployees')}
+                        className="h-10 rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 focus:ring-pink-500 flex-1 min-w-0"
+                      />
+                    </div>
                 </div>
             </div>
         </div>

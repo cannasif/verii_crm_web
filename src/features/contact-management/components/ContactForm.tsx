@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -28,11 +28,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import {
+  useCustomerOptionsInfinite,
+  useTitleOptionsInfinite,
+} from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { contactFormSchema, SALUTATION_TYPE, type ContactFormSchema } from '../types/contact-types';
 import type { ContactDto } from '../types/contact-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
-import { useTitleOptions } from '@/features/title-management/hooks/useTitleOptions';
 import { 
   AddTeamIcon,
   UserCircleIcon,
@@ -93,8 +96,10 @@ export function ContactForm({
   isLoading = false,
 }: ContactFormProps): ReactElement {
   const { t } = useTranslation();
-  const { data: customers, isLoading: customersLoading } = useCustomerOptions();
-  const { data: titles, isLoading: titlesLoading } = useTitleOptions();
+  const [customerSearchTerm, setCustomerSearchTerm] = useState('');
+  const [titleSearchTerm, setTitleSearchTerm] = useState('');
+  const customerDropdown = useCustomerOptionsInfinite(customerSearchTerm, open);
+  const titleDropdown = useTitleOptionsInfinite(titleSearchTerm, open);
 
   const form = useForm<ContactFormSchema>({
     resolver: zodResolver(contactFormSchema),
@@ -278,27 +283,19 @@ export function ContactForm({
                           <Briefcase01Icon size={16} className="text-pink-500" />
                           {t('contactManagement.form.title')}
                         </FormLabel>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))}
-                          value={field.value !== undefined && field.value !== null ? field.value.toString() : "0"}
-                          disabled={titlesLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                              <SelectValue placeholder={t('contactManagement.form.selectTitle')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className={DROPDOWN_CONTENT_STYLE}>
-                            <SelectItem value="0" className={DROPDOWN_ITEM_STYLE}>
-                              {t('contactManagement.form.titleNone')}
-                            </SelectItem>
-                            {titles?.map((title) => (
-                              <SelectItem key={title.id} value={title.id.toString()} className={DROPDOWN_ITEM_STYLE}>
-                                {title.titleName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <VoiceSearchCombobox
+                          options={[{ value: '0', label: t('contactManagement.form.titleNone') }, ...titleDropdown.options]}
+                          value={field.value !== undefined && field.value !== null && field.value !== 0 ? field.value.toString() : ''}
+                          onSelect={(value) => field.onChange(value ? Number(value) : 0)}
+                          onDebouncedSearchChange={setTitleSearchTerm}
+                          onFetchNextPage={titleDropdown.fetchNextPage}
+                          hasNextPage={titleDropdown.hasNextPage}
+                          isLoading={titleDropdown.isLoading}
+                          isFetchingNextPage={titleDropdown.isFetchingNextPage}
+                          placeholder={t('contactManagement.form.selectTitle')}
+                          searchPlaceholder={t('common.search')}
+                          className={INPUT_STYLE}
+                        />
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )}
@@ -313,24 +310,19 @@ export function ContactForm({
                           <Building03Icon size={16} className="text-pink-500" />
                           {t('contactManagement.form.customer')}
                         </FormLabel>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))}
-                          value={field.value && field.value !== 0 ? field.value.toString() : ""}
-                          disabled={customersLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                              <SelectValue placeholder={t('contactManagement.form.selectCustomer')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className={DROPDOWN_CONTENT_STYLE}>
-                            {customers?.map((customer) => (
-                              <SelectItem key={customer.id} value={customer.id.toString()} className={DROPDOWN_ITEM_STYLE}>
-                                {customer.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <VoiceSearchCombobox
+                          options={customerDropdown.options}
+                          value={field.value && field.value !== 0 ? field.value.toString() : ''}
+                          onSelect={(value) => field.onChange(value ? Number(value) : 0)}
+                          onDebouncedSearchChange={setCustomerSearchTerm}
+                          onFetchNextPage={customerDropdown.fetchNextPage}
+                          hasNextPage={customerDropdown.hasNextPage}
+                          isLoading={customerDropdown.isLoading}
+                          isFetchingNextPage={customerDropdown.isFetchingNextPage}
+                          placeholder={t('contactManagement.form.selectCustomer')}
+                          searchPlaceholder={t('common.search')}
+                          className={INPUT_STYLE}
+                        />
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )}

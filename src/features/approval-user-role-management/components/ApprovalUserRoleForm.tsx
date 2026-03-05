@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -19,10 +19,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { useUserOptionsInfinite, useApprovalRoleOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { approvalUserRoleFormSchema, type ApprovalUserRoleFormSchema } from '../types/approval-user-role-types';
 import type { ApprovalUserRoleDto } from '../types/approval-user-role-types';
-import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
-import { useApprovalRoleOptions } from '@/features/approval-role-management/hooks/useApprovalRoleOptions';
 import { ShieldCheck } from 'lucide-react';
 
 interface ApprovalUserRoleFormProps {
@@ -63,8 +62,10 @@ export function ApprovalUserRoleForm({
   isLoading = false,
 }: ApprovalUserRoleFormProps): ReactElement {
   const { t } = useTranslation();
-  const { data: userOptions = [] } = useUserOptions();
-  const { data: approvalRoleOptions = [] } = useApprovalRoleOptions();
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [approvalRoleSearchTerm, setApprovalRoleSearchTerm] = useState('');
+  const userDropdown = useUserOptionsInfinite(userSearchTerm, open);
+  const approvalRoleDropdown = useApprovalRoleOptionsInfinite(approvalRoleSearchTerm, open);
 
   const form = useForm<ApprovalUserRoleFormSchema>({
     resolver: zodResolver(approvalUserRoleFormSchema),
@@ -138,10 +139,12 @@ export function ApprovalUserRoleForm({
                     <VoiceSearchCombobox
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}
                       onSelect={(value) => field.onChange(value ? parseInt(value) : 0)}
-                      options={userOptions.map((user) => ({
-                        value: user.id.toString(),
-                        label: user.fullName || user.username || ''
-                      }))}
+                      options={userDropdown.options}
+                      onDebouncedSearchChange={setUserSearchTerm}
+                      onFetchNextPage={userDropdown.fetchNextPage}
+                      hasNextPage={userDropdown.hasNextPage}
+                      isLoading={userDropdown.isLoading}
+                      isFetchingNextPage={userDropdown.isFetchingNextPage}
                       placeholder={t('approvalUserRole.form.selectUser')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
@@ -162,10 +165,12 @@ export function ApprovalUserRoleForm({
                     <VoiceSearchCombobox
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}
                       onSelect={(value) => field.onChange(value ? parseInt(value) : 0)}
-                      options={approvalRoleOptions.map((role) => ({
-                        value: role.id.toString(),
-                        label: `${role.name} ${role.approvalRoleGroupName ? `(${role.approvalRoleGroupName})` : ''}`
-                      }))}
+                      options={approvalRoleDropdown.options}
+                      onDebouncedSearchChange={setApprovalRoleSearchTerm}
+                      onFetchNextPage={approvalRoleDropdown.fetchNextPage}
+                      hasNextPage={approvalRoleDropdown.hasNextPage}
+                      isLoading={approvalRoleDropdown.isLoading}
+                      isFetchingNextPage={approvalRoleDropdown.isFetchingNextPage}
                       placeholder={t('approvalUserRole.form.selectApprovalRole')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}

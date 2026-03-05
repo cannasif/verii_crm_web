@@ -21,10 +21,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { VoiceSearchCombobox, type ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { useCountryOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { cityFormSchema, type CityFormSchema } from '../types/city-types';
 import type { CityDto } from '../types/city-types';
-import { useCountryOptions } from '@/features/country-management/hooks/useCountryOptions';
 import { useCreateCity } from '../hooks/useCreateCity';
 import { useUpdateCity } from '../hooks/useUpdateCity';
 import { Map, Hash, Globe, Loader2, FileText } from 'lucide-react';
@@ -61,17 +61,13 @@ export function CityForm({
 }: CityFormProps): ReactElement {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'header'>('header');
-  const { data: countries, isLoading: countriesLoading } = useCountryOptions();
+  const [countrySearchTerm, setCountrySearchTerm] = useState('');
+  const countryDropdown = useCountryOptionsInfinite(countrySearchTerm, open);
 
   const createMutation = useCreateCity();
   const updateMutation = useUpdateCity();
 
   const isLoading = createMutation.isPending || updateMutation.isPending;
-
-  const countryOptions: ComboboxOption[] = countries?.map(country => ({
-    value: country.id.toString(),
-    label: country.name,
-  })) || [];
 
   const form = useForm<CityFormSchema>({
     resolver: zodResolver(cityFormSchema),
@@ -203,16 +199,20 @@ export function CityForm({
                                 {t('cityManagement.form.country')} *
                               </FormLabel>
                               <VoiceSearchCombobox
-                                options={countryOptions}
+                                options={countryDropdown.options}
                                 value={field.value && field.value > 0 ? field.value.toString() : undefined}
                                 onSelect={(value) => {
                                   field.onChange(value ? Number(value) : 0);
                                 }}
+                                onDebouncedSearchChange={setCountrySearchTerm}
+                                onFetchNextPage={countryDropdown.fetchNextPage}
+                                hasNextPage={countryDropdown.hasNextPage}
+                                isLoading={countryDropdown.isLoading}
+                                isFetchingNextPage={countryDropdown.isFetchingNextPage}
                                 placeholder={t('cityManagement.form.selectCountry')}
                                 searchPlaceholder={t('cityManagement.form.searchCountry')}
                                 className={INPUT_STYLE}
                                 modal={true}
-                                disabled={countriesLoading}
                               />
                               <FormMessage />
                             </FormItem>

@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useRef } from 'react';
+import { type ReactElement, useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GripVertical, Plus, Trash2, Edit2, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ import { useApprovalFlowStepList } from '../hooks/useApprovalFlowStepList';
 import { useCreateApprovalFlowStep } from '../hooks/useCreateApprovalFlowStep';
 import { useUpdateApprovalFlowStep } from '../hooks/useUpdateApprovalFlowStep';
 import { useDeleteApprovalFlowStep } from '../hooks/useDeleteApprovalFlowStep';
-import { useApprovalRoleGroupOptions } from '../hooks/useApprovalRoleGroupOptions';
+import { useApprovalRoleGroupOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import type { ApprovalFlowStepGetDto } from '../types/approval-flow-step-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
@@ -72,7 +72,8 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
   const dragItemRef = useRef<number | null>(null);
 
   const { data: steps = [], isLoading } = useApprovalFlowStepList(approvalFlowId);
-  const { data: roleGroupOptions = [] } = useApprovalRoleGroupOptions();
+  const [roleGroupSearchTerm, setRoleGroupSearchTerm] = useState('');
+  const roleGroupDropdown = useApprovalRoleGroupOptionsInfinite(roleGroupSearchTerm, formOpen);
   const createStep = useCreateApprovalFlowStep();
   const updateStep = useUpdateApprovalFlowStep();
   const deleteStep = useDeleteApprovalFlowStep();
@@ -85,8 +86,14 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
       .map((step) => step.approvalRoleGroupId)
   );
 
-  const availableRoleGroups = roleGroupOptions.filter(
-    (group) => !usedRoleGroupIds.has(group.id) || (editingStep && editingStep.approvalRoleGroupId === group.id)
+  const availableRoleGroupOptions = useMemo(
+    () =>
+      roleGroupDropdown.options.filter(
+        (opt) =>
+          !usedRoleGroupIds.has(parseInt(opt.value)) ||
+          (editingStep && editingStep.approvalRoleGroupId === parseInt(opt.value))
+      ),
+    [roleGroupDropdown.options, usedRoleGroupIds, editingStep]
   );
 
   const form = useForm<StepFormSchema>({
@@ -325,10 +332,12 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                       <VoiceSearchCombobox
                         value={field.value && field.value !== 0 ? field.value.toString() : ''}
                         onSelect={(value) => field.onChange(value ? Number(value) : 0)}
-                        options={availableRoleGroups.map((group) => ({
-                          value: group.id.toString(),
-                          label: group.name,
-                        }))}
+                        options={availableRoleGroupOptions}
+                        onDebouncedSearchChange={setRoleGroupSearchTerm}
+                        onFetchNextPage={roleGroupDropdown.fetchNextPage}
+                        hasNextPage={roleGroupDropdown.hasNextPage}
+                        isLoading={roleGroupDropdown.isLoading}
+                        isFetchingNextPage={roleGroupDropdown.isFetchingNextPage}
                         placeholder={t('approvalFlowStep.form.selectRoleGroup')}
                         searchPlaceholder={t('common.search')}
                         className={INPUT_STYLE}

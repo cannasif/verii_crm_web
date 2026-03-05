@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +21,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { VoiceSearchCombobox, type ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
+import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { userDiscountLimitFormSchema, type UserDiscountLimitFormSchema } from '../types/user-discount-limit-types';
 import type { UserDiscountLimitDto } from '../types/user-discount-limit-types';
-import { useUserOptions } from '../hooks/useUserOptions';
 import { useStokGroup } from '@/services/hooks/useStokGroup';
 import { toast } from 'sonner';
 import { userDiscountLimitApi } from '../api/user-discount-limit-api';
@@ -61,7 +61,8 @@ export function UserDiscountLimitForm({
   isLoading = false,
 }: UserDiscountLimitFormProps): ReactElement {
   const { t } = useTranslation('user-discount-limit-management');
-  const { data: users, isLoading: usersLoading } = useUserOptions();
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const userDropdown = useUserOptionsInfinite(userSearchTerm, open);
   const { data: stokGroups = [], isLoading: isLoadingGroups } = useStokGroup();
 
   const form = useForm<UserDiscountLimitFormSchema>({
@@ -116,11 +117,6 @@ export function UserDiscountLimitForm({
       onOpenChange(false);
     }
   };
-
-  const userComboboxOptions: ComboboxOption[] = users?.map(user => ({
-    value: user.id.toString(),
-    label: user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username
-  })) || [];
 
   const groupComboboxOptions: ComboboxOption[] = stokGroups.map(group => {
     const groupCode = group.grupKodu || `__group_${group.isletmeKodu}_${group.subeKodu}`;
@@ -178,16 +174,20 @@ export function UserDiscountLimitForm({
                       {t('salesperson')}
                     </FormLabel>
                     <VoiceSearchCombobox
-                      options={userComboboxOptions}
+                      options={userDropdown.options}
                       value={field.value && field.value > 0 ? field.value.toString() : ''}
                       onSelect={(value) => {
                         field.onChange(value ? Number(value) : 0);
                       }}
+                      onDebouncedSearchChange={setUserSearchTerm}
+                      onFetchNextPage={userDropdown.fetchNextPage}
+                      hasNextPage={userDropdown.hasNextPage}
+                      isLoading={userDropdown.isLoading}
+                      isFetchingNextPage={userDropdown.isFetchingNextPage}
                       placeholder={t('selectSalesperson')}
                       searchPlaceholder={t('common.search', { ns: 'common' })}
                       className={INPUT_STYLE}
                       modal={true}
-                      disabled={usersLoading}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>

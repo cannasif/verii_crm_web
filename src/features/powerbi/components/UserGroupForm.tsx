@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -19,20 +19,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import {
   userPowerbiGroupFormSchema,
   type UserPowerBIGroupFormSchema,
 } from '../types/userPowerbiGroup.types';
 import type { UserPowerBIGroupGetDto } from '../types/userPowerbiGroup.types';
 import { usePowerbiGroupList } from '../hooks/usePowerbiGroup';
-import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
+import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { Loader2 } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
@@ -54,8 +48,9 @@ export function UserGroupForm({
   isSubmitting,
 }: UserGroupFormProps): ReactElement {
   const { t } = useTranslation();
+  const [userSearchTerm, setUserSearchTerm] = useState('');
   const { data: groupsData } = usePowerbiGroupList(GROUP_LIST_PARAMS);
-  const { data: userOptions = [] } = useUserOptions();
+  const userDropdown = useUserOptionsInfinite(userSearchTerm, open);
   const groups = groupsData?.data ?? [];
 
   const form = useForm<UserPowerBIGroupFormSchema>({
@@ -114,23 +109,19 @@ export function UserGroupForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel required={isZodFieldRequired(userPowerbiGroupFormSchema, 'userId')}>{t('powerbi.userGroup.userId')}</FormLabel>
-                  <Select
-                    onValueChange={(v) => field.onChange(Number(v))}
-                    value={field.value ? String(field.value) : ''}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('powerbi.userGroup.selectUser')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {userOptions.map((u) => (
-                        <SelectItem key={u.id} value={String(u.id)}>
-                          {u.fullName ?? u.username ?? String(u.id)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <VoiceSearchCombobox
+                      options={userDropdown.options}
+                      value={field.value ? String(field.value) : ''}
+                      onSelect={(v) => field.onChange(v ? Number(v) : 0)}
+                      onDebouncedSearchChange={setUserSearchTerm}
+                      onFetchNextPage={userDropdown.fetchNextPage}
+                      hasNextPage={userDropdown.hasNextPage}
+                      isLoading={userDropdown.isLoading}
+                      isFetchingNextPage={userDropdown.isFetchingNextPage}
+                      placeholder={t('powerbi.userGroup.selectUser')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -141,23 +132,14 @@ export function UserGroupForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel required={isZodFieldRequired(userPowerbiGroupFormSchema, 'groupId')}>{t('powerbi.userGroup.groupId')}</FormLabel>
-                  <Select
-                    onValueChange={(v) => field.onChange(Number(v))}
-                    value={field.value ? String(field.value) : ''}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('powerbi.userGroup.selectGroup')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {groups.map((g) => (
-                        <SelectItem key={g.id} value={String(g.id)}>
-                          {g.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <VoiceSearchCombobox
+                      options={groups.map((g) => ({ value: String(g.id), label: g.name }))}
+                      value={field.value ? String(field.value) : ''}
+                      onSelect={(v) => field.onChange(v ? Number(v) : 0)}
+                      placeholder={t('powerbi.userGroup.selectGroup')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
-import { Combobox } from '@/components/ui/combobox';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useUserPermissionGroupsQuery } from '../hooks/useUserPermissionGroupsQuery';
 import { useSetUserPermissionGroupsMutation } from '../hooks/useSetUserPermissionGroupsMutation';
 import { PermissionGroupMultiSelect } from './PermissionGroupMultiSelect';
@@ -17,7 +17,8 @@ export function UserGroupAssignmentsPage(): ReactElement {
   const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const { data: users = [], isLoading: usersLoading } = useUserOptions();
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const userDropdown = useUserOptionsInfinite(userSearchTerm, true);
   const { data: userGroups, isLoading: userGroupsLoading } = useUserPermissionGroupsQuery(selectedUserId);
   const setUserGroups = useSetUserPermissionGroupsMutation(selectedUserId ?? 0);
 
@@ -48,11 +49,6 @@ export function UserGroupAssignmentsPage(): ReactElement {
     setHasChanges(false);
   };
 
-  const userOptions = users.map((u) => ({
-    value: u.id.toString(),
-    label: u.fullName || u.username || u.email || `User ${u.id}`,
-  }));
-
   return (
     <div className="w-full space-y-6">
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.userGroupAssignments'), isActive: true }]} />
@@ -75,14 +71,17 @@ export function UserGroupAssignmentsPage(): ReactElement {
             {t('userGroupAssignments.selectUser')}
             <FieldHelpTooltip text={t('help.userAssignment.user')} />
           </label>
-          <Combobox
-            options={userOptions}
+          <VoiceSearchCombobox
+            options={userDropdown.options}
             value={selectedUserId?.toString() ?? ''}
-            onValueChange={(v) => setSelectedUserId(v ? parseInt(v, 10) : null)}
+            onSelect={(v) => setSelectedUserId(v ? parseInt(v, 10) : null)}
+            onDebouncedSearchChange={setUserSearchTerm}
+            onFetchNextPage={userDropdown.fetchNextPage}
+            hasNextPage={userDropdown.hasNextPage}
+            isLoading={userDropdown.isLoading}
+            isFetchingNextPage={userDropdown.isFetchingNextPage}
             placeholder={t('userGroupAssignments.selectUserPlaceholder')}
             searchPlaceholder={t('common.search')}
-            emptyText={t('userGroupAssignments.noUsers')}
-            disabled={usersLoading}
           />
         </div>
 

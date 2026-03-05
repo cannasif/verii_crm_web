@@ -22,6 +22,11 @@ import {
 } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Combobox } from '@/components/ui/combobox';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import {
+  useActivityTypeOptionsInfinite,
+  useUserOptionsInfinite,
+} from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   activityFormSchema,
@@ -32,9 +37,7 @@ import {
   type ActivityFormSchema,
 } from '../types/activity-types';
 import { ACTIVITY_STATUSES, ACTIVITY_PRIORITIES, REMINDER_MINUTE_PRESETS } from '../utils/activity-constants';
-import { activityTypeApi } from '@/features/activity-type/api/activity-type-api';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
-import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
 import { useQuery } from '@tanstack/react-query';
 import { contactApi } from '@/features/contact-management/api/contact-api';
 import { useAuthStore } from '@/stores/auth-store';
@@ -145,7 +148,10 @@ export function ActivityForm({
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const { data: customerOptions = [] } = useCustomerOptions();
-  const { data: userOptions = [] } = useUserOptions();
+  const [activityTypeSearchTerm, setActivityTypeSearchTerm] = useState('');
+  const [assignedUserSearchTerm, setAssignedUserSearchTerm] = useState('');
+  const activityTypeDropdown = useActivityTypeOptionsInfinite(activityTypeSearchTerm, open);
+  const assignedUserDropdown = useUserOptionsInfinite(assignedUserSearchTerm, open);
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [selectedCustomerDisplayName, setSelectedCustomerDisplayName] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('details');
@@ -180,16 +186,6 @@ export function ActivityForm({
 
   const watchedCustomerId = form.watch('potentialCustomerId');
   const watchedReminders = form.watch('reminders') || [];
-
-  const { data: activityTypesResponse } = useQuery({
-    queryKey: ['activityTypes'],
-    queryFn: async () => {
-      const response = await activityTypeApi.getList({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' });
-      return response.data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-  const activityTypes = activityTypesResponse || [];
 
   const { data: contactData } = useQuery({
     queryKey: ['contactOptions', watchedCustomerId],
@@ -330,10 +326,15 @@ export function ActivityForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'activityType')}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType')}</FormLabel>
                       <FormControl>
-                        <Combobox
-                          options={activityTypes.map((type) => ({ value: String(type.id), label: type.name }))}
+                        <VoiceSearchCombobox
+                          options={activityTypeDropdown.options}
                           value={field.value ? String(field.value) : ''}
-                          onValueChange={field.onChange}
+                          onSelect={(v) => field.onChange(v ?? '')}
+                          onDebouncedSearchChange={setActivityTypeSearchTerm}
+                          onFetchNextPage={activityTypeDropdown.fetchNextPage}
+                          hasNextPage={activityTypeDropdown.hasNextPage}
+                          isLoading={activityTypeDropdown.isLoading}
+                          isFetchingNextPage={activityTypeDropdown.isFetchingNextPage}
                           placeholder={t('activityManagement.select')}
                           className={INPUT_STYLE}
                         />
@@ -467,10 +468,15 @@ export function ActivityForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'assignedUserId')}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser')}</FormLabel>
                       <FormControl>
-                        <Combobox
-                          options={userOptions.map((userOption) => ({ value: userOption.id.toString(), label: userOption.fullName }))}
+                        <VoiceSearchCombobox
+                          options={assignedUserDropdown.options}
                           value={field.value && field.value !== 0 ? field.value.toString() : ''}
-                          onValueChange={(value) => field.onChange(value ? Number(value) : 0)}
+                          onSelect={(v) => field.onChange(v ? Number(v) : 0)}
+                          onDebouncedSearchChange={setAssignedUserSearchTerm}
+                          onFetchNextPage={assignedUserDropdown.fetchNextPage}
+                          hasNextPage={assignedUserDropdown.hasNextPage}
+                          isLoading={assignedUserDropdown.isLoading}
+                          isFetchingNextPage={assignedUserDropdown.isFetchingNextPage}
                           placeholder={t('activityManagement.select')}
                           className={INPUT_STYLE}
                         />
