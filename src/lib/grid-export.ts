@@ -94,10 +94,19 @@ const fallbackExportPdf = (params: GridExportParams): void => {
   popup.print();
 };
 
+interface XLSXModule {
+  utils: {
+    json_to_sheet: (data: Record<string, string | number>[]) => unknown;
+    book_new: () => unknown;
+    book_append_sheet: (workbook: unknown, sheet: unknown, name: string) => void;
+  };
+  writeFile: (workbook: unknown, filename: string) => void;
+}
+
 export async function exportGridToExcel(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
   try {
-    const XLSX = await dynamicImport('xlsx');
+    const XLSX = (await dynamicImport('xlsx')) as XLSXModule;
     const worksheet = XLSX.utils.json_to_sheet(exportRows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -107,13 +116,20 @@ export async function exportGridToExcel(params: GridExportParams): Promise<void>
   }
 }
 
+interface JsPDFConstructor {
+  new (options?: { orientation?: 'landscape' }): { save: (filename: string) => void };
+}
+type AutoTableFn = (doc: unknown, options: Record<string, unknown>) => void;
+
 export async function exportGridToPdf(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
   try {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      dynamicImport('jspdf'),
-      dynamicImport('jspdf-autotable'),
+    const [jspdfMod, autoTableMod] = await Promise.all([
+      dynamicImport('jspdf') as Promise<{ default: JsPDFConstructor }>,
+      dynamicImport('jspdf-autotable') as Promise<{ default: AutoTableFn }>,
     ]);
+    const JsPDF = jspdfMod.default;
+    const autoTable = autoTableMod.default;
 
     const doc = new JsPDF({ orientation: 'landscape' });
     const head = [params.columns.map((column) => column.label)];

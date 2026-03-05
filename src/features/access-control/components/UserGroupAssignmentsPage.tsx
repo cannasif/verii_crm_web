@@ -113,7 +113,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
           </div>
         )}
 
-        {!selectedUserId && !usersLoading && (
+        {!selectedUserId && !userDropdown.isLoading && (
           <div className="py-12 text-center text-slate-500 dark:text-slate-400">
             {t('userGroupAssignments.selectUserHint')}
           </div>

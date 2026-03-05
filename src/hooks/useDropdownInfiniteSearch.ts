@@ -13,7 +13,7 @@ interface DropdownFetchPageParams {
 }
 
 interface UseDropdownInfiniteSearchOptions<TItem> {
-  entityKey: string;
+  entityKey: string | readonly (string | number)[];
   searchTerm: string;
   enabled?: boolean;
   minChars: number;
