@@ -1,12 +1,13 @@
 import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Eye, Loader2, RefreshCw } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import { DataTableActionBar } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -56,6 +57,10 @@ const LOG_COLUMN_CONFIG: readonly LogColumnConfig[] = [
   { key: 'activityId', labelKey: 'logs.columns.activityId', fallbackLabel: 'Activity Id', filterType: 'number' },
   { key: 'googleCalendarEventId', labelKey: 'logs.columns.googleCalendarEventId', fallbackLabel: 'Google Event Id', filterType: 'string' },
 ];
+
+type RowActionType = 'delete' | 'update' | 'edit';
+const ROW_ACTIONS: readonly RowActionType[] = [];
+const SHOW_ACTIONS_COLUMN = ROW_ACTIONS.length > 0;
 
 function resolveLabel(
   t: (key: string, options?: Record<string, unknown>) => string,
@@ -274,6 +279,23 @@ export function GoogleLogsPage(): ReactElement {
     return '-';
   };
 
+  const [selectedLog, setSelectedLog] = useState<GoogleIntegrationLogDto | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const handleOpenDetails = (log: GoogleIntegrationLogDto): void => {
+    setSelectedLog(log);
+    setDetailsOpen(true);
+  };
+
+  const handleCloseDetails = (nextOpen: boolean): void => {
+    if (!nextOpen) {
+      setDetailsOpen(false);
+      setSelectedLog(null);
+    } else {
+      setDetailsOpen(true);
+    }
+  };
+
   return (
     <div className="w-full space-y-6">
       <div>
@@ -359,12 +381,17 @@ export function GoogleLogsPage(): ReactElement {
                       </TableHead>
                     );
                   })}
+                  {SHOW_ACTIONS_COLUMN && (
+                    <TableHead className="text-right w-[84px]">
+                      {t('logs.actions')}
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {logsQuery.isLoading && (
                   <TableRow>
-                    <TableCell colSpan={orderedVisibleColumns.length || 1} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={orderedVisibleColumns.length + (SHOW_ACTIONS_COLUMN ? 1 : 0) || 1} className="text-center text-muted-foreground py-8">
                       <div className="inline-flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         <span>{t('logs.loading')}</span>
@@ -375,7 +402,7 @@ export function GoogleLogsPage(): ReactElement {
 
                 {!logsQuery.isLoading && logsQuery.isError && (
                   <TableRow>
-                    <TableCell colSpan={orderedVisibleColumns.length || 1} className="text-center text-red-600 py-8">
+                    <TableCell colSpan={orderedVisibleColumns.length + (SHOW_ACTIONS_COLUMN ? 1 : 0) || 1} className="text-center text-red-600 py-8">
                       {t('logs.loadError')}
                     </TableCell>
                   </TableRow>
@@ -383,14 +410,18 @@ export function GoogleLogsPage(): ReactElement {
 
                 {!logsQuery.isLoading && !logsQuery.isError && currentPageRows.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={orderedVisibleColumns.length || 1} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={orderedVisibleColumns.length + (SHOW_ACTIONS_COLUMN ? 1 : 0) || 1} className="text-center text-muted-foreground py-8">
                       {t('logs.empty')}
                     </TableCell>
                   </TableRow>
                 )}
 
                 {currentPageRows.map((log) => (
-                  <TableRow key={log.id}>
+                  <TableRow
+                    key={log.id}
+                    className={`group hover:bg-pink-50/40 dark:hover:bg-pink-500/5 transition-colors duration-200 ${!SHOW_ACTIONS_COLUMN ? 'cursor-pointer' : ''}`}
+                    onClick={!SHOW_ACTIONS_COLUMN ? () => handleOpenDetails(log) : undefined}
+                  >
                     {orderedVisibleColumns.map((key) => (
                       <TableCell
                         key={`${log.id}-${key}`}
@@ -400,6 +431,21 @@ export function GoogleLogsPage(): ReactElement {
                         {renderCell(log, key)}
                       </TableCell>
                     ))}
+                    {SHOW_ACTIONS_COLUMN && (
+                      <TableCell className="text-right align-middle" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                            onClick={() => handleOpenDetails(log)}
+                            title={t('logs.viewDetails')}
+                          >
+                            <Eye size={16} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -456,6 +502,101 @@ export function GoogleLogsPage(): ReactElement {
           </div>
         </CardContent>
       </Card>
+
+      {selectedLog && (
+        <Dialog open={detailsOpen} onOpenChange={handleCloseDetails}>
+          <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
+            <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
+              <DialogTitle className="text-lg font-semibold">
+                {t('logs.detailsTitle')}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+                {t('logs.detailsDescription')}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="p-6 space-y-4 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('logs.columns.date')}
+                  </span>
+                  <span className="font-mono">
+                    {new Date(selectedLog.createdDate).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('logs.columns.operation')}
+                  </span>
+                  <span className="break-all">
+                    {selectedLog.operation}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('logs.columns.status')}
+                  </span>
+                  <div>
+                    {selectedLog.isSuccess ? (
+                      <Badge variant="default">{t('logs.success')}</Badge>
+                    ) : (
+                      <Badge variant="destructive">{t('logs.failed')}</Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('logs.columns.severity')}
+                  </span>
+                  <Badge variant="secondary" className="w-fit">
+                    {selectedLog.severity}
+                  </Badge>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('logs.columns.errorCode')}
+                  </span>
+                  <span className="break-all">
+                    {selectedLog.errorCode || '-'}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('logs.columns.userId')}
+                  </span>
+                  <span>
+                    {selectedLog.userId ?? '-'}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('logs.columns.activityId')}
+                  </span>
+                  <span>
+                    {selectedLog.activityId ?? '-'}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 md:col-span-2">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('logs.columns.googleCalendarEventId')}
+                  </span>
+                  <span className="break-all">
+                    {selectedLog.googleCalendarEventId || '-'}
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  {t('logs.columns.message')}
+                </span>
+                <div className="rounded-lg border border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-3 max-h-60 overflow-auto text-xs whitespace-pre-wrap">
+                  {selectedLog.message || '-'}
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
