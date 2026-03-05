@@ -67,6 +67,16 @@
     "confirmMessage": "Are you sure you want to delete user {{username}}?"
   },
   "userManagement": {
+    "menu": "User Management",
+    "description": "Manage and edit users",
+    "addButton": "Add New User",
+    "searchPlaceholder": "Search users...",
+    "advancedFilter": {
+      "columnUsername": "Username",
+      "columnEmail": "Email",
+      "columnFullName": "Full Name",
+      "columnRole": "Role"
+    },
     "form": {
       "editUser": "Edit User",
       "addUser": "Add New User",
@@ -95,7 +105,33 @@
       "permissionGroupsNoData": "Permission group not found"
     },
     "table": {
+      "title": "User List",
+      "loading": "Loading...",
+      "noData": "No data",
+      "id": "ID",
+      "username": "Username",
+      "email": "Email",
+      "fullName": "Full Name",
+      "role": "Role",
+      "status": "Status",
+      "createdDate": "Created Date",
+      "active": "Active",
+      "inactive": "Inactive",
+      "confirmed": "Confirmed",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "newThisMonth": "New This Month",
+      "confirmedUsers": "Confirmed Users",
       "loading": "Loading..."
+    },
+    "messages": {
+      "error": "An error occurred"
     }
   }
 }

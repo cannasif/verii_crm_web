@@ -11,7 +11,7 @@ export const queryKeys = {
     pageSize?: number;
     sortBy?: string;
     sortDirection?: string;
-    filters?: Record<string, unknown>;
+    filters?: unknown;
   }) => [USER_MANAGEMENT_QUERY_KEYS.LIST, params] as const,
   detail: (id: number) => [USER_MANAGEMENT_QUERY_KEYS.DETAIL, id] as const,
   stats: () => [USER_MANAGEMENT_QUERY_KEYS.STATS] as const,

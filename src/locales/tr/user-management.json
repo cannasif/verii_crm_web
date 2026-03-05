@@ -1,4 +1,40 @@
 {
+  "userManagement": {
+    "menu": "Kullanıcı Yönetimi",
+    "description": "Kullanıcıları yönetin ve düzenleyin",
+    "addButton": "Yeni Kullanıcı Ekle",
+    "searchPlaceholder": "Ara...",
+    "loading": "Yükleniyor...",
+    "table": {
+      "title": "Kullanıcı Listesi",
+      "id": "ID",
+      "username": "Kullanıcı Adı",
+      "email": "E-posta",
+      "fullName": "Ad Soyad",
+      "role": "Rol",
+      "status": "Durum",
+      "createdDate": "Oluşturulma Tarihi",
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "confirmed": "Onaylı",
+      "noData": "Veri yok",
+      "loading": "Yükleniyor..."
+    },
+    "messages": {
+      "error": "Hata oluştu",
+      "createSuccess": "Kullanıcı başarıyla oluşturuldu",
+      "createError": "Kullanıcı oluşturulamadı",
+      "deleteSuccess": "Kullanıcı başarıyla silindi",
+      "deleteError": "Kullanıcı silinemedi"
+    },
+    "stats": {
+      "totalUsers": "Toplam Kullanıcı",
+      "activeUsers": "Aktif Kullanıcı",
+      "newThisMonth": "Bu Ay Yeni",
+      "confirmedUsers": "Onaylı Kullanıcı",
+      "loading": "Yükleniyor..."
+    }
+  },
   "menu": "Kullanıcı Yönetimi",
   "description": "Kullanıcıları yönetin ve düzenleyin",
   "addButton": "Yeni Kullanıcı Ekle",

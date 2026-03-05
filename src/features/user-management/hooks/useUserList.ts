@@ -13,7 +13,7 @@ export const useUserList = (
     pageSize: params.pageSize,
     sortBy: params.sortBy,
     sortDirection: params.sortDirection,
-    filters: params.filters && Array.isArray(params.filters) ? {} : undefined,
+    filters: params.filters,
   };
   return useQuery({
     queryKey: queryKeys.list(queryParams),
