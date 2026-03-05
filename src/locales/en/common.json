@@ -45,6 +45,7 @@
     "selectDate": "Select date",
     "UnexpectedError": "An unexpected error occurred",
     "forbiddenTitle": "Access denied",
+    "forbidden": "You are not authorized to view this page.",
     "forbiddenDescription": "You are not authorized to view this page.",
     "forbiddenFrom": "desired path",
     "goBack": "come back",

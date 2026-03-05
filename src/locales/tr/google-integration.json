@@ -6,7 +6,7 @@
     "syncDescription": "Senkron kapsamını ve izinleri bu ekrandan takip edin.",
     "logsTitle": "Google Loglar",
     "logsDescription": "Google entegrasyonu ile ilgili log akışı bu ekranda listelenecek.",
-    "authInformationTitle": "Google Auth Information",
+    "authInformationTitle": "Google Kimlik Bilgileri",
     "authInformationDescription": "Tenant bazlı Google OAuth ayarlarını bu ekrandan yönetin."
   },
   "connection": {
@@ -46,11 +46,11 @@
     "setupGuideDescription": "Client ID ve Client Secret bilgilerini Google Cloud Console üzerinden alın.",
     "setupStep1": "Google Cloud Console'a girin ve doğru projeyi seçin.",
     "setupStep2": "APIs & Services > OAuth consent screen ekranında uygulama bilgilerini tamamlayın.",
-    "setupStep3": "APIs & Services > Credentials > Create credentials > OAuth client ID adımıyla Web application oluşturun.",
+    "setupStep3": "Google Cloud panelinde API ve Hizmetler > Kimlik Bilgileri > Kimlik bilgisi oluştur > OAuth istemci kimliği adımından Web uygulaması oluşturun.",
     "setupStep4": "Authorized redirect URIs alanına aşağıdaki callback URL'ini ekleyin ve kaydedin.",
     "setupStep5": "Oluşan Client ID ve Client Secret değerlerini bu sayfaya girip kaydedin.",
     "setupStep6": "IsEnabled açık değilse kullanıcılar Google ile bağlanamaz.",
-    "callbackLabel": "Callback URL",
+    "callbackLabel": "Geri Donus URL",
     "consoleLinkLabel": "Google Cloud Console'u aç",
     "apiEnableTitle": "Gerekli Google API'leri Etkinleştirin",
     "apiEnableHint": "Mail ve takvim işlemlerinin çalışması için aynı Google projesinde hem Calendar API hem Gmail API açık olmalıdır.",
@@ -163,7 +163,7 @@
       "errorCode": "Hata Kodu",
       "userId": "Kullanıcı Id",
       "activityId": "Aktivite Id",
-      "googleCalendarEventId": "Google Event Id"
+      "googleCalendarEventId": "Google Takvim Etkinlik Kimligi"
     }
   }
 }

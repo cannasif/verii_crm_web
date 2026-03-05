@@ -10,7 +10,7 @@
     "failed": "Başarısız"
   },
   "table": {
-    "jobId": "Job ID",
+    "jobId": "Is Kimligi",
     "jobName": "Job",
     "state": "Durum",
     "time": "Zaman",

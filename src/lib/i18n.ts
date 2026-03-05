@@ -23,6 +23,47 @@ const DEFAULT_LANG = 'tr';
 const fallbackLng = DEFAULT_LANG;
 const supportedLngs = Object.keys(loaders);
 
+const toCamelCase = (value: string): string =>
+  value.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
+
+const humanizeToken = (token: string): string => {
+  const normalized = token
+    .replace(/[_-]+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .trim();
+
+  if (!normalized) return token;
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+};
+
+const formatMissingKey = (rawKey: string): string => {
+  const withoutNs = rawKey.includes(':') ? rawKey.split(':').slice(1).join(':') : rawKey;
+  const parts = withoutNs.split('.').filter(Boolean);
+  const candidate = parts.length > 0 ? parts[parts.length - 1] : withoutNs;
+  return humanizeToken(candidate);
+};
+
+const withNamespaceCompatibility = (
+  ns: string,
+  bundle: Record<string, unknown>
+): Record<string, unknown> => {
+  const camelNs = toCamelCase(ns);
+  const nsScopedBundle =
+    typeof bundle[ns] === 'object' && bundle[ns] !== null
+      ? (bundle[ns] as Record<string, unknown>)
+      : bundle;
+  const camelScopedBundle =
+    typeof bundle[camelNs] === 'object' && bundle[camelNs] !== null
+      ? (bundle[camelNs] as Record<string, unknown>)
+      : nsScopedBundle;
+
+  return {
+    ...bundle,
+    [ns]: nsScopedBundle,
+    [camelNs]: camelScopedBundle,
+  };
+};
+
 const normalizeLang = (lng?: string | null): string | undefined => {
   if (!lng) return undefined;
   const lower = lng.toLowerCase();
@@ -44,7 +85,7 @@ export async function loadLanguage(lang: string): Promise<void> {
   await Promise.all(
     entries.map(async ([ns, loader]) => {
       const mod = await loader();
-      i18n.addResourceBundle(target, ns, mod.default, true, true);
+      i18n.addResourceBundle(target, ns, withNamespaceCompatibility(ns, mod.default), true, true);
     })
   );
 }
@@ -54,7 +95,7 @@ const initPromise = (async () => {
   const defaultNS = namespaces.includes('common') ? 'common' : namespaces[0] ?? 'translation';
   await i18n.use(initReactI18next).init({
     lng: resolvedLng,
-    fallbackLng: supportedLngs.includes('en') ? [fallbackLng, 'en'] : fallbackLng,
+    fallbackLng,
     supportedLngs,
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,
@@ -62,6 +103,8 @@ const initPromise = (async () => {
     defaultNS,
     resources: {},
     interpolation: { escapeValue: false },
+    parseMissingKeyHandler: (key) => formatMissingKey(key),
+    returnEmptyString: false,
     detection: {
       order: [],
       caches: [],
