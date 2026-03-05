@@ -29,6 +29,7 @@ import {
 } from '../hooks/useCustomer360';
 import { CustomerCurrencySummaryCards } from './CustomerCurrencySummaryCards';
 import { CustomerAmountComparisonByCurrencyTable } from './CustomerAmountComparisonByCurrencyTable';
+import { CustomerMailLogsTab } from './CustomerMailLogsTab';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { getApiBaseUrl } from '@/lib/axios';
 import type {
@@ -639,6 +640,7 @@ export function Customer360Page(): ReactElement {
         <TabsList>
           <TabsTrigger value="overview">{t('customer360.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="analytics">{t('customer360.tabs.analytics')}</TabsTrigger>
+          <TabsTrigger value="mailLogs">{t('customer360.tabs.mailLogs', { defaultValue: 'Mail Geçmişi' })}</TabsTrigger>
           <TabsTrigger value="images">{t('customer360.tabs.images', { defaultValue: 'Görseller' })}</TabsTrigger>
         </TabsList>
 
@@ -871,6 +873,10 @@ export function Customer360Page(): ReactElement {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="mailLogs" className="space-y-4">
+          <CustomerMailLogsTab customerId={id} />
         </TabsContent>
       </Tabs>
       </div>

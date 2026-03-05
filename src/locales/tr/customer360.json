@@ -9,7 +9,20 @@
   },
   "tabs": {
     "overview": "Özet",
-    "analytics": "Analitik"
+    "analytics": "Analitik",
+    "mailLogs": "Mail Geçmişi"
+  },
+  "mail": {
+    "columns": {
+      "date": "Tarih",
+      "sender": "Gönderen",
+      "to": "Alıcı",
+      "subject": "Konu",
+      "status": "Durum",
+      "template": "Şablon",
+      "errorCode": "Hata Kodu",
+      "body": "Mesaj"
+    }
   },
   "kpi": {
     "totalDemands": "Toplam Teklif",

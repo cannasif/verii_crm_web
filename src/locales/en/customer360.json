@@ -9,7 +9,20 @@
   },
   "tabs": {
     "overview": "Overview",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "mailLogs": "Mail History"
+  },
+  "mail": {
+    "columns": {
+      "date": "Date",
+      "sender": "Sender",
+      "to": "Recipient",
+      "subject": "Subject",
+      "status": "Status",
+      "template": "Template",
+      "errorCode": "Error Code",
+      "body": "Message"
+    }
   },
   "kpi": {
     "totalDemands": "Total Demands",
