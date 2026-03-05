@@ -193,7 +193,7 @@ export function ReportDesignerListPage(): ReactElement {
                           onClick={() => handleDeleteClick(template)}
                         >
                           <Trash2 className="size-4" />
-                          {t('common.delete')}
+                          {t('common.delete.action')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -222,7 +222,7 @@ export function ReportDesignerListPage(): ReactElement {
               onClick={handleDeleteConfirm}
               disabled={deleteMutation.isPending}
             >
-              {t('common.delete')}
+              {t('common.delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>
