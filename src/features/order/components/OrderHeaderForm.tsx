@@ -660,7 +660,7 @@ export function OrderHeaderForm({
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveNote(key)}
-                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors flex-shrink-0"
+                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors shrink-0"
                                 >
                                   <X className="h-3 w-3" />
                                 </button>

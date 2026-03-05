@@ -253,7 +253,7 @@ export function UserDetailDialog({
         <div className="flex flex-col md:flex-row h-full overflow-hidden">
           
           {/* --- SOL TARAFLAR (SIDEBAR) --- */}
-          <div className="w-full md:w-80 bg-zinc-50/80 dark:bg-[#150a1f]/90 backdrop-blur-md border-b md:border-b-0 md:border-r border-zinc-100 dark:border-white/5 p-8 flex flex-col flex-shrink-0 gap-8 relative">
+          <div className="w-full md:w-80 bg-zinc-50/80 dark:bg-[#150a1f]/90 backdrop-blur-md border-b md:border-b-0 md:border-r border-zinc-100 dark:border-white/5 p-8 flex flex-col shrink-0 gap-8 relative">
             
             {/* Profil Resmi ve İsim */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
