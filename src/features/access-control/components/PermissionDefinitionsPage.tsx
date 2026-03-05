@@ -1,19 +1,14 @@
 import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
-import { Plus, Search, RefreshCw, X } from 'lucide-react';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -22,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
 import { useSyncPermissionDefinitionsMutation } from '../hooks/useSyncPermissionDefinitionsMutation';
 import { useCreatePermissionDefinitionMutation } from '../hooks/useCreatePermissionDefinitionMutation';
@@ -32,20 +26,33 @@ import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
 import { getPermissionDisplayMeta, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
-const EMPTY_PERMISSION_DEFINITIONS: PermissionDefinitionDto[] = [];
 
+const EMPTY_PERMISSION_DEFINITIONS: PermissionDefinitionDto[] = [];
+const PAGE_KEY = 'permission-definitions';
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+
+type PermissionDefinitionColumnKey = keyof PermissionDefinitionDto;
+
+function resolveLabel(t: (key: string) => string, key: string, fallback: string): string {
+  const translated = t(key);
+  return translated && translated !== key ? translated : fallback;
+}
 
 export function PermissionDefinitionsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
+  const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
+
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PermissionDefinitionDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(20);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionDefinitionDto | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(['code', 'name', 'isActive', 'updatedDate']);
+  const [columnOrder, setColumnOrder] = useState<string[]>(['code', 'name', 'isActive', 'updatedDate']);
 
   const { data, isLoading } = usePermissionDefinitionsQuery({
     pageNumber,
@@ -57,7 +64,6 @@ export function PermissionDefinitionsPage(): ReactElement {
   const createMutation = useCreatePermissionDefinitionMutation();
   const updateMutation = useUpdatePermissionDefinitionMutation();
   const deleteMutation = useDeletePermissionDefinitionMutation();
-
   const syncMutation = useSyncPermissionDefinitionsMutation();
 
   const items = data?.data ?? EMPTY_PERMISSION_DEFINITIONS;
@@ -88,15 +94,13 @@ export function PermissionDefinitionsPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: ['permissions', 'definitions'] });
   };
 
-
   const handleSyncFromRoutes = async (): Promise<void> => {
-    const items = PERMISSION_CODE_CATALOG.map((code) => {
+    const syncItems = PERMISSION_CODE_CATALOG.map((code) => {
       const meta = getPermissionDisplayMeta(code);
       const name = meta ? t(meta.key, meta.fallback) : code;
       return { code, name, isActive: true };
     });
-
-    await syncMutation.mutateAsync({ items });
+    await syncMutation.mutateAsync({ items: syncItems });
   };
 
   const handleAddClick = (): void => {
@@ -137,146 +141,198 @@ export function PermissionDefinitionsPage(): ReactElement {
     }
   };
 
+  const baseColumns = [
+    { key: 'code', label: t('permissionDefinitions.table.code') },
+    { key: 'name', label: t('permissionDefinitions.table.name') },
+    { key: 'isActive', label: t('permissionDefinitions.table.isActive') },
+    { key: 'updatedDate', label: t('permissionDefinitions.table.updatedDate') },
+  ];
+
+  const filterColumns = useMemo(() => [], []);
+  const exportColumns = baseColumns;
+  const exportRows = useMemo<Record<string, unknown>[]>(
+    () =>
+      filteredItems.map((item) => ({
+        code: item.code,
+        name: (() => {
+          const meta = getPermissionDisplayMeta(item.code);
+          return meta ? t(meta.key, meta.fallback) : item.name;
+        })(),
+        isActive: item.isActive ? t('common.yes') : t('common.no'),
+        updatedDate: item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-',
+      })),
+    [filteredItems, t]
+  );
+
+  const columns: DataTableGridColumn<PermissionDefinitionColumnKey>[] = useMemo(
+    () => [
+      { key: 'code', label: t('permissionDefinitions.table.code'), cellClassName: 'font-mono text-sm' },
+      { key: 'name', label: t('permissionDefinitions.table.name') },
+      { key: 'isActive', label: t('permissionDefinitions.table.isActive') },
+      { key: 'updatedDate', label: t('permissionDefinitions.table.updatedDate'), cellClassName: 'text-slate-500 text-sm' },
+    ],
+    [t]
+  );
+
+  const renderActionsCell = (item: PermissionDefinitionDto): ReactElement => (
+    <div className="flex justify-end gap-2">
+      <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>
+        {t('common.edit')}
+      </Button>
+      <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDeleteClick(item)}>
+        {t('common.delete.action')}
+      </Button>
+    </div>
+  );
+
   return (
     <div className="w-full space-y-6">
-      <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.permissionDefinitions'), isActive: true }]} />
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+        <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('permissionDefinitions.title')}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
             {t('permissionDefinitions.description')}
           </p>
         </div>
-        <Button onClick={handleAddClick}>
+        <Button
+          onClick={handleAddClick}
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+        >
           <Plus size={18} className="mr-2" />
           {t('permissionDefinitions.add')}
         </Button>
       </div>
 
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-5">
-        <div className="relative group w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder={t('common.search')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-10"
+      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
+        <CardHeader className="space-y-4">
+          <CardTitle>{t('permissionDefinitions.table.title', { defaultValue: t('permissionDefinitions.title') })}</CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={setColumnOrder}
+            exportFileName="permission-definitions"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            filterColumns={filterColumns}
+            defaultFilterColumn="code"
+            draftFilterRows={[]}
+            onDraftFilterRowsChange={() => {}}
+            onApplyFilters={() => {}}
+            onClearFilters={() => {}}
+            translationNamespace="access-control"
+            appliedFilterCount={0}
+            leftSlot={
+              <>
+                <Input
+                  placeholder={t('common.search')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-9 w-[200px]"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSyncFromRoutes}
+                  disabled={isLoading || syncMutation.isPending}
+                >
+                  <RefreshCw size={16} className={syncMutation.isPending ? 'animate-spin mr-2' : 'mr-2'} />
+                  {t('permissionDefinitions.syncFromRoutes')}
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  {resolveLabel(t, 'common.refresh', 'Yenile')}
+                </Button>
+              </>
+            }
           />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full"
-            >
-              <X size={14} className="text-slate-400" />
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          onClick={handleSyncFromRoutes}
-          disabled={isLoading || syncMutation.isPending}
-        >
-          <RefreshCw size={18} className={syncMutation.isPending ? 'animate-spin mr-2' : 'mr-2'} />
-          {t('permissionDefinitions.syncFromRoutes')}
-        </Button>
-        <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isLoading}>
-          <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
-        </Button>
-      </div>
-      </div>
-
-      <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white dark:bg-[#0b0713] shadow-sm">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20 min-h-[300px]">
-            <div className="animate-pulse text-slate-500">{t('common.loading')}</div>
-          </div>
-        ) : filteredItems.length === 0 ? (
-          <div className="flex items-center justify-center py-20 min-h-[300px]">
-            <p className="text-slate-500 dark:text-slate-400">{t('common.noData')}</p>
-          </div>
-        ) : (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('permissionDefinitions.table.code')}</TableHead>
-                  <TableHead>{t('permissionDefinitions.table.name')}</TableHead>
-                  <TableHead>{t('permissionDefinitions.table.isActive')}</TableHead>
-                  <TableHead>{t('permissionDefinitions.table.updatedDate')}</TableHead>
-                  <TableHead className="text-right">{t('common.actions')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-mono text-sm">{item.code}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span>
-                          {(() => {
-                            const meta = getPermissionDisplayMeta(item.code);
-                            return meta ? t(meta.key, meta.fallback) : item.name;
-                          })()}
-                        </span>
-                        {(() => {
-                          const meta = getPermissionDisplayMeta(item.code);
-                          const displayName = meta ? t(meta.key, meta.fallback) : item.name;
-                          const storedName = item.name;
-                          if (!meta) return null;
-                          if (storedName.trim().toLowerCase() === displayName.trim().toLowerCase()) return null;
-                          return (
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
-                              {storedName}
-                            </span>
-                          );
-                        })()}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={item.isActive ? 'default' : 'secondary'}>
-                        {item.isActive ? t('common.yes') : t('common.no')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-slate-500 text-sm">
-                      {item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>
-                        {t('common.edit')}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDeleteClick(item)}>
-                        {t('common.delete')}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between p-4 border-t">
-                <span className="text-sm text-slate-500">
-                  {t('permissionDefinitions.table.showing', {
-                    from: (pageNumber - 1) * pageSize + 1,
-                    to: Math.min(pageNumber * pageSize, totalCount),
-                    total: totalCount,
-                  })}
-                </span>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setPageNumber((p) => Math.max(1, p - 1))} disabled={pageNumber <= 1}>
-                    {t('common.previous')}
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setPageNumber((p) => Math.min(totalPages, p + 1))} disabled={pageNumber >= totalPages}>
-                    {t('common.next')}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+        </CardHeader>
+        <CardContent>
+          <DataTableGrid<PermissionDefinitionDto, PermissionDefinitionColumnKey>
+            columns={columns}
+            visibleColumnKeys={visibleColumns as PermissionDefinitionColumnKey[]}
+            rows={filteredItems}
+            rowKey={(r) => r.id}
+            renderCell={(row, key) => {
+              if (key === 'code') return <span className="font-mono text-sm">{row.code}</span>;
+              if (key === 'name') {
+                return (
+                  <div className="flex flex-col">
+                    <span>
+                      {(() => {
+                        const meta = getPermissionDisplayMeta(row.code);
+                        return meta ? t(meta.key, meta.fallback) : row.name;
+                      })()}
+                    </span>
+                    {(() => {
+                      const meta = getPermissionDisplayMeta(row.code);
+                      const displayName = meta ? t(meta.key, meta.fallback) : row.name;
+                      const storedName = row.name;
+                      if (!meta) return null;
+                      if (storedName.trim().toLowerCase() === displayName.trim().toLowerCase()) return null;
+                      return (
+                        <span className="text-xs text-slate-500 dark:text-slate-400">{storedName}</span>
+                      );
+                    })()}
+                  </div>
+                );
+              }
+              if (key === 'isActive') {
+                return (
+                  <Badge variant={row.isActive ? 'default' : 'secondary'}>
+                    {row.isActive ? t('common.yes') : t('common.no')}
+                  </Badge>
+                );
+              }
+              if (key === 'updatedDate') {
+                return (
+                  <span className="text-slate-500 text-sm">
+                    {row.updatedDate ? new Date(row.updatedDate).toLocaleDateString() : '-'}
+                  </span>
+                );
+              }
+              return '-';
+            }}
+            isLoading={isLoading}
+            isError={false}
+            loadingText={t('common.loading')}
+            errorText={t('common.error', { defaultValue: 'An error occurred' })}
+            emptyText={t('common.noData')}
+            minTableWidthClassName="min-w-[700px]"
+            showActionsColumn
+            actionsHeaderLabel={t('common.actions')}
+            renderActionsCell={renderActionsCell}
+            pageSize={pageSize}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            onPageSizeChange={(s) => {
+              setPageSize(s);
+              setPageNumber(1);
+            }}
+            pageNumber={pageNumber}
+            totalPages={totalPages}
+            hasPreviousPage={pageNumber > 1}
+            hasNextPage={pageNumber < totalPages}
+            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('permissionDefinitions.table.showing', {
+              from: (pageNumber - 1) * pageSize + 1,
+              to: Math.min(pageNumber * pageSize, totalCount),
+              total: totalCount,
+            })}
+          />
+        </CardContent>
+      </Card>
 
       <PermissionDefinitionForm
         open={formOpen}
@@ -302,7 +358,7 @@ export function PermissionDefinitionsPage(): ReactElement {
               {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? t('common.processing') : t('common.delete')}
+              {deleteMutation.isPending ? t('common.processing') : t('common.delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,19 +1,14 @@
 import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
-import { Plus, Search, RefreshCw, X, Settings } from 'lucide-react';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Loader2, Plus, RefreshCw, Settings } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -22,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
 import { usePermissionGroupsQuery } from '../hooks/usePermissionGroupsQuery';
 import { useCreatePermissionGroupMutation } from '../hooks/useCreatePermissionGroupMutation';
 import { useUpdatePermissionGroupMutation } from '../hooks/useUpdatePermissionGroupMutation';
@@ -33,20 +27,33 @@ import type { PermissionGroupDto } from '../types/access-control.types';
 import type { CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
 
 const EMPTY_ITEMS: PermissionGroupDto[] = [];
+const PAGE_KEY = 'permission-groups';
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+
+type PermissionGroupColumnKey = keyof PermissionGroupDto | 'permissionCount';
+
+function resolveLabel(t: (key: string) => string, key: string, fallback: string): string {
+  const translated = t(key);
+  return translated && translated !== key ? translated : fallback;
+}
 
 export function PermissionGroupsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
+  const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
+
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PermissionGroupDto | null>(null);
   const [permissionsPanelOpen, setPermissionsPanelOpen] = useState(false);
   const [permissionsPanelGroupId, setPermissionsPanelGroupId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(20);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionGroupDto | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
+  const [columnOrder, setColumnOrder] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
 
   const { data, isLoading } = usePermissionGroupsQuery({
     pageNumber,
@@ -131,139 +138,189 @@ export function PermissionGroupsPage(): ReactElement {
     }
   };
 
+  const baseColumns = [
+    { key: 'name', label: t('permissionGroups.table.name') },
+    { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin') },
+    { key: 'isActive', label: t('permissionGroups.table.isActive') },
+    { key: 'permissionCount', label: t('permissionGroups.table.permissionCount') },
+  ];
+
+  const filterColumns = useMemo(() => [], []);
+  const exportColumns = baseColumns;
+  const exportRows = useMemo<Record<string, unknown>[]>(
+    () =>
+      filteredItems.map((item) => ({
+        name: item.name,
+        isSystemAdmin: item.isSystemAdmin ? t('common.yes') : t('common.no'),
+        isActive: item.isActive ? t('common.yes') : t('common.no'),
+        permissionCount: item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0,
+      })),
+    [filteredItems, t]
+  );
+
+  const columns: DataTableGridColumn<PermissionGroupColumnKey>[] = useMemo(
+    () => [
+      { key: 'name', label: t('permissionGroups.table.name'), cellClassName: 'font-medium' },
+      { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin') },
+      { key: 'isActive', label: t('permissionGroups.table.isActive') },
+      { key: 'permissionCount', label: t('permissionGroups.table.permissionCount') },
+    ],
+    [t]
+  );
+
+  const renderActionsCell = (item: PermissionGroupDto): ReactElement => (
+    <div className="flex justify-end gap-2">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handlePermissionsClick(item)}
+        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
+        disabled={item.isSystemAdmin}
+      >
+        <Settings size={16} />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleEditClick(item)}
+        disabled={item.isSystemAdmin}
+        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+      >
+        {t('common.edit')}
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-red-600"
+        onClick={() => handleDeleteClick(item)}
+        disabled={item.isSystemAdmin}
+        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+      >
+        {t('common.delete.action')}
+      </Button>
+    </div>
+  );
+
   return (
     <div className="w-full space-y-6">
-      <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.permissionGroups'), isActive: true }]} />
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+        <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('permissionGroups.title')}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
             {t('permissionGroups.description')}
           </p>
         </div>
-        <Button onClick={handleAddClick}>
+        <Button
+          onClick={handleAddClick}
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+        >
           <Plus size={18} className="mr-2" />
           {t('permissionGroups.add')}
         </Button>
       </div>
 
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-5">
-        <div className="relative group w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder={t('common.search')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-10"
+      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
+        <CardHeader className="space-y-4">
+          <CardTitle>{t('permissionGroups.table.title', { defaultValue: t('permissionGroups.title') })}</CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={setColumnOrder}
+            exportFileName="permission-groups"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            filterColumns={filterColumns}
+            defaultFilterColumn="name"
+            draftFilterRows={[]}
+            onDraftFilterRowsChange={() => {}}
+            onApplyFilters={() => {}}
+            onClearFilters={() => {}}
+            translationNamespace="access-control"
+            appliedFilterCount={0}
+            leftSlot={
+              <>
+                <Input
+                  placeholder={t('common.search')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-9 w-[200px]"
+                />
+                <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  {resolveLabel(t, 'common.refresh', 'Yenile')}
+                </Button>
+              </>
+            }
           />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full"
-            >
-              <X size={14} className="text-slate-400" />
-            </button>
-          )}
-        </div>
-        <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isLoading}>
-          <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
-        </Button>
-      </div>
-
-      <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white dark:bg-[#0b0713] shadow-sm">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20 min-h-[300px]">
-            <div className="animate-pulse text-slate-500">{t('common.loading')}</div>
-          </div>
-        ) : filteredItems.length === 0 ? (
-          <div className="flex items-center justify-center py-20 min-h-[300px]">
-            <p className="text-slate-500 dark:text-slate-400">{t('common.noData')}</p>
-          </div>
-        ) : (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('permissionGroups.table.name')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.isSystemAdmin')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.isActive')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.permissionCount')}</TableHead>
-                  <TableHead className="text-right">{t('common.actions')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell>
-                      <Badge variant={item.isSystemAdmin ? 'default' : 'secondary'}>
-                        {item.isSystemAdmin ? t('common.yes') : t('common.no')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={item.isActive ? 'default' : 'secondary'}>
-                        {item.isActive ? t('common.yes') : t('common.no')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{(item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0)}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handlePermissionsClick(item)}
-                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
-                        disabled={item.isSystemAdmin}
-                      >
-                        <Settings size={16} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditClick(item)}
-                        disabled={item.isSystemAdmin}
-                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
-                      >
-                        {t('common.edit')}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-600"
-                        onClick={() => handleDeleteClick(item)}
-                        disabled={item.isSystemAdmin}
-                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
-                      >
-                        {t('common.delete')}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between p-4 border-t">
-                <span className="text-sm text-slate-500">
-                  {t('permissionGroups.table.showing', {
-                    from: (pageNumber - 1) * pageSize + 1,
-                    to: Math.min(pageNumber * pageSize, totalCount),
-                    total: totalCount,
-                  })}
-                </span>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setPageNumber((p) => Math.max(1, p - 1))} disabled={pageNumber <= 1}>
-                    {t('common.previous')}
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setPageNumber((p) => Math.min(totalPages, p + 1))} disabled={pageNumber >= totalPages}>
-                    {t('common.next')}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+        </CardHeader>
+        <CardContent>
+          <DataTableGrid<PermissionGroupDto, PermissionGroupColumnKey>
+            columns={columns}
+            visibleColumnKeys={visibleColumns as PermissionGroupColumnKey[]}
+            rows={filteredItems}
+            rowKey={(r) => r.id}
+            renderCell={(row, key) => {
+              if (key === 'name') return <span className="font-medium">{row.name}</span>;
+              if (key === 'isSystemAdmin') {
+                return (
+                  <Badge variant={row.isSystemAdmin ? 'default' : 'secondary'}>
+                    {row.isSystemAdmin ? t('common.yes') : t('common.no')}
+                  </Badge>
+                );
+              }
+              if (key === 'isActive') {
+                return (
+                  <Badge variant={row.isActive ? 'default' : 'secondary'}>
+                    {row.isActive ? t('common.yes') : t('common.no')}
+                  </Badge>
+                );
+              }
+              if (key === 'permissionCount') {
+                return row.permissionDefinitionIds?.length ?? row.permissionCodes?.length ?? 0;
+              }
+              return '-';
+            }}
+            isLoading={isLoading}
+            isError={false}
+            loadingText={t('common.loading')}
+            errorText={t('common.error', { defaultValue: 'An error occurred' })}
+            emptyText={t('common.noData')}
+            minTableWidthClassName="min-w-[700px]"
+            showActionsColumn
+            actionsHeaderLabel={t('common.actions')}
+            renderActionsCell={renderActionsCell}
+            pageSize={pageSize}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            onPageSizeChange={(s) => {
+              setPageSize(s);
+              setPageNumber(1);
+            }}
+            pageNumber={pageNumber}
+            totalPages={totalPages}
+            hasPreviousPage={pageNumber > 1}
+            hasNextPage={pageNumber < totalPages}
+            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('permissionGroups.table.showing', {
+              from: (pageNumber - 1) * pageSize + 1,
+              to: Math.min(pageNumber * pageSize, totalCount),
+              total: totalCount,
+            })}
+          />
+        </CardContent>
+      </Card>
 
       <PermissionGroupForm
         open={formOpen}
@@ -290,7 +347,7 @@ export function PermissionGroupsPage(): ReactElement {
               {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? t('common.processing') : t('common.delete')}
+              {deleteMutation.isPending ? t('common.processing') : t('common.delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>
