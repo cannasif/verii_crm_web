@@ -8,6 +8,7 @@
     "columnSalesType": "Teklif Tipi"
   },
   "table": {
+    "title": "Satış Tipi Listesi",
     "salesType": "Teklif Tipi",
     "name": "Ad",
     "createdDate": "Oluşturulma Tarihi"
