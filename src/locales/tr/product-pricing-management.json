@@ -103,7 +103,13 @@
   "profitPercentage": "Kar Yüzdesi",
   "searchProductCode": "Ürün Kodu Ara",
   "searchGroupCode": "Grup Kodu Ara",
+  "advancedFilter": {
+    "columnErpProductCode": "ERP Ürün Kodu",
+    "columnErpGroupCode": "ERP Grup Kodu",
+    "columnCurrency": "Para Birimi"
+  },
   "table": {
+    "title": "Fiyatlandırma Listesi",
     "id": "ID",
     "erpProductCode": "ERP Ürün Kodu",
     "erpGroupCode": "ERP Ürün Grubu Kodu",
@@ -118,7 +124,8 @@
     "createdDate": "Oluşturulma Tarihi",
     "updatedDate": "Güncellenme Tarihi",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-    "page": "Sayfa {{current}} / {{total}}"
+    "page": "Sayfa {{current}} / {{total}}",
+    "noData": "Veri bulunamadı"
   },
   "previous": "Önceki",
   "next": "Sonraki",
