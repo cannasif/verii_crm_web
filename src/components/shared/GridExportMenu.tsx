@@ -50,7 +50,7 @@ export function GridExportMenu({ fileName, columns, rows, translationNamespace }
           className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
         >
           <FileDown className="mr-2 h-4 w-4" />
-          {t('export')}
+          {t('export', { ns: 'common' })}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
@@ -60,7 +60,7 @@ export function GridExportMenu({ fileName, columns, rows, translationNamespace }
           className="cursor-pointer"
         >
           <FileSpreadsheet className="mr-2 h-4 w-4" />
-          {t('exportExcel')}
+          {t('exportExcel', { ns: 'common' })}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={handlePdfExport}
@@ -68,7 +68,7 @@ export function GridExportMenu({ fileName, columns, rows, translationNamespace }
           className="cursor-pointer"
         >
           <FileType className="mr-2 h-4 w-4" />
-          {t('exportPdf')}
+          {t('exportPdf', { ns: 'common' })}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

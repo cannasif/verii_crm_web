@@ -82,7 +82,7 @@ export function ColumnPreferencesPopover({
       <PopoverContent align="end" className="w-72 p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50">
         <div className="p-2 space-y-2">
           <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-            {t('activityManagement.columnCustomization.visibleColumns')}
+            {t('common.visibleColumns')}
           </div>
           <div className="space-y-1 max-h-48 overflow-y-auto">
             {displayColumns.map((key) => {
@@ -126,7 +126,7 @@ export function ColumnPreferencesPopover({
                       size="icon"
                       className="h-6 w-6 shrink-0 text-slate-400 hover:text-destructive"
                       onClick={() => toggleColumn(key)}
-                      title={t('activityManagement.columnCustomization.hiddenColumns')}
+                      title={t('common.hide')}
                     >
                       <EyeOff className="h-3.5 w-3.5" />
                     </Button>
@@ -138,7 +138,7 @@ export function ColumnPreferencesPopover({
           {hiddenColumns.length > 0 && (
             <>
               <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5 pt-2 border-t border-slate-100 dark:border-white/10">
-                {t('activityManagement.columnCustomization.hiddenColumns')}
+                {t('common.hiddenColumns')}
               </div>
               <div className="space-y-1">
                 {hiddenColumns.map((key) => {
@@ -157,7 +157,7 @@ export function ColumnPreferencesPopover({
                         size="icon"
                         className="h-6 w-6 shrink-0"
                         onClick={() => toggleColumn(key)}
-                        title={t('activityManagement.columnCustomization.visibleColumns')}
+                        title={t('common.visibleColumns')}
                       >
                         <Eye className="h-3.5 w-3.5" />
                       </Button>

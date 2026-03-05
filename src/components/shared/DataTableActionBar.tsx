@@ -71,7 +71,7 @@ export function DataTableActionBar({
               }`}
             >
               <Filter className="mr-2 h-4 w-4" />
-              {t('filters')}
+              {t('filters', { ns: 'common' })}
               {appliedFilterCount > 0 && (
                 <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
                   {appliedFilterCount}
