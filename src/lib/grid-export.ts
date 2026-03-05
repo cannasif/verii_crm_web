@@ -11,8 +11,8 @@ interface GridExportParams {
   rows: GridExportRow[];
 }
 
-const dynamicImport = (moduleName: string): Promise<any> => {
-  return new Function('m', 'return import(m)')(moduleName) as Promise<any>;
+const dynamicImport = (moduleName: string): Promise<unknown> => {
+  return new Function('m', 'return import(m)')(moduleName) as Promise<unknown>;
 };
 
 const normalizeCellValue = (value: unknown): string | number => {
