@@ -1,13 +1,6 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { CustomerDuplicateCandidateDto } from '../types/customerDedupe.types';
@@ -16,7 +9,6 @@ import { MATCH_TYPES } from './ConflictFilters';
 import { MergePreviewDialog } from './MergePreviewDialog';
 import { useMergeCustomersMutation } from '../hooks/useMergeCustomersMutation';
 import { Eye, Merge } from 'lucide-react';
-import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 function filterAndSort(
@@ -46,13 +38,13 @@ function scoreVariant(score: number): 'destructive' | 'default' | 'secondary' {
   return 'secondary';
 }
 
-function matchTypeVariant(
-  matchType: string
-): 'destructive' | 'default' | 'secondary' {
+function matchTypeVariant(matchType: string): 'destructive' | 'default' | 'secondary' {
   if (matchType === 'TaxNumber') return 'destructive';
   if (matchType === 'TcknNumber') return 'default';
   return 'secondary';
 }
+
+export type ConflictInboxColumnKey = 'masterCustomer' | 'duplicateCustomer' | 'matchType' | 'score';
 
 export interface ConflictInboxTableProps {
   candidates: CustomerDuplicateCandidateDto[];
@@ -69,98 +61,133 @@ export function ConflictInboxTable({
   const [previewRow, setPreviewRow] = useState<CustomerDuplicateCandidateDto | null>(null);
   const mergeMutation = useMergeCustomersMutation();
 
+  const allRows = useMemo(() => filterAndSort(candidates, filters), [candidates, filters]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const totalPages = Math.max(1, Math.ceil(allRows.length / pageSize));
   const rows = useMemo(
-    () => filterAndSort(candidates, filters),
-    [candidates, filters]
+    () => allRows.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
+    [allRows, pageNumber, pageSize]
   );
+
+  const columns: DataTableGridColumn<ConflictInboxColumnKey>[] = useMemo(
+    () => [
+      { key: 'masterCustomer', label: t('masterCustomer') },
+      { key: 'duplicateCustomer', label: t('duplicateCustomer') },
+      { key: 'matchType', label: t('matchType') },
+      { key: 'score', label: t('score') },
+    ],
+    [t]
+  );
+
+  const renderCell = (row: CustomerDuplicateCandidateDto, key: ConflictInboxColumnKey): React.ReactNode => {
+    if (key === 'masterCustomer') {
+      return (
+        <div>
+          <div className="font-medium">{row.masterCustomerName}</div>
+          <div className="text-xs text-muted-foreground">ID: {row.masterCustomerId}</div>
+        </div>
+      );
+    }
+    if (key === 'duplicateCustomer') {
+      return (
+        <div>
+          <div className="font-medium">{row.duplicateCustomerName}</div>
+          <div className="text-xs text-muted-foreground">ID: {row.duplicateCustomerId}</div>
+        </div>
+      );
+    }
+    if (key === 'matchType') {
+      return MATCH_TYPES.includes(row.matchType as (typeof MATCH_TYPES)[number]) ? (
+        <Badge variant={matchTypeVariant(row.matchType)}>{t(row.matchType)}</Badge>
+      ) : (
+        <Badge variant="outline">{row.matchType}</Badge>
+      );
+    }
+    if (key === 'score') {
+      return (
+        <Badge
+          variant={scoreVariant(row.score)}
+          className={cn(
+            row.score >= 0.95 && 'bg-red-500/90',
+            row.score >= 0.85 && row.score < 0.95 && 'bg-amber-500/90'
+          )}
+        >
+          {(row.score * 100).toFixed(0)}%
+        </Badge>
+      );
+    }
+    return '-';
+  };
+
+  const renderActionsCell = (row: CustomerDuplicateCandidateDto): ReactElement => (
+    <div className="flex gap-2">
+      <Button variant="outline" size="sm" onClick={() => setPreviewRow(row)}>
+        <Eye className="h-4 w-4 mr-1" />
+        {t('previewMerge')}
+      </Button>
+      <Button
+        variant="default"
+        size="sm"
+        disabled={mergeMutation.isPending}
+        onClick={() => {
+          mergeMutation.mutate(
+            {
+              masterCustomerId: row.masterCustomerId,
+              duplicateCustomerId: row.duplicateCustomerId,
+              preferMasterValues: true,
+            },
+            { onSuccess: onMergeSuccess }
+          );
+        }}
+      >
+        <Merge className="h-4 w-4 mr-1" />
+        {t('merge')}
+      </Button>
+    </div>
+  );
+
+  const rowKey = (row: CustomerDuplicateCandidateDto): string =>
+    `${row.masterCustomerId}-${row.duplicateCustomerId}`;
 
   return (
     <>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t('masterCustomer')}</TableHead>
-              <TableHead>{t('duplicateCustomer')}</TableHead>
-              <TableHead>{t('matchType')}</TableHead>
-              <TableHead>{t('score')}</TableHead>
-              <TableHead className="w-[200px]">{t('actions')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                  {t('emptyDescription')}
-                </TableCell>
-              </TableRow>
-            ) : (
-              rows.map((row) => (
-                <TableRow key={`${row.masterCustomerId}-${row.duplicateCustomerId}`}>
-                  <TableCell>
-                    <div className="font-medium">{row.masterCustomerName}</div>
-                    <div className="text-xs text-muted-foreground">ID: {row.masterCustomerId}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{row.duplicateCustomerName}</div>
-                    <div className="text-xs text-muted-foreground">ID: {row.duplicateCustomerId}</div>
-                  </TableCell>
-                  <TableCell>
-                    {MATCH_TYPES.includes(row.matchType as (typeof MATCH_TYPES)[number]) ? (
-                      <Badge variant={matchTypeVariant(row.matchType)}>
-                        {t(row.matchType)}
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline">{row.matchType}</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={scoreVariant(row.score)}
-                      className={cn(
-                        row.score >= 0.95 && 'bg-red-500/90',
-                        row.score >= 0.85 && row.score < 0.95 && 'bg-amber-500/90'
-                      )}
-                    >
-                      {(row.score * 100).toFixed(0)}%
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPreviewRow(row)}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        {t('previewMerge')}
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        disabled={mergeMutation.isPending}
-                        onClick={() => {
-                          mergeMutation.mutate(
-                            {
-                              masterCustomerId: row.masterCustomerId,
-                              duplicateCustomerId: row.duplicateCustomerId,
-                              preferMasterValues: true,
-                            },
-                            { onSuccess: onMergeSuccess }
-                          );
-                        }}
-                      >
-                        <Merge className="h-4 w-4 mr-1" />
-                        {t('merge')}
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTableGrid<CustomerDuplicateCandidateDto, ConflictInboxColumnKey>
+        columns={columns}
+        visibleColumnKeys={['masterCustomer', 'duplicateCustomer', 'matchType', 'score']}
+        rows={rows}
+        rowKey={rowKey}
+        renderCell={renderCell}
+        isLoading={false}
+        isError={false}
+        loadingText={t('loading', { defaultValue: 'Loading...' })}
+        errorText={t('loadError', { defaultValue: 'An error occurred' })}
+        emptyText={t('emptyDescription')}
+        minTableWidthClassName="min-w-[800px]"
+        showActionsColumn
+        actionsHeaderLabel={t('actions')}
+        renderActionsCell={renderActionsCell}
+        pageSize={pageSize}
+        pageSizeOptions={[10, 20, 50]}
+        onPageSizeChange={(s) => {
+          setPageSize(s);
+          setPageNumber(1);
+        }}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+        hasPreviousPage={pageNumber > 1}
+        hasNextPage={pageNumber < totalPages}
+        onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+        onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+        previousLabel={t('common:previous', { ns: 'common', defaultValue: 'Previous' })}
+        nextLabel={t('common:next', { ns: 'common', defaultValue: 'Next' })}
+        paginationInfoText={t('common.table.showing', {
+          from: allRows.length === 0 ? 0 : (pageNumber - 1) * pageSize + 1,
+          to: Math.min(pageNumber * pageSize, allRows.length),
+          total: allRows.length,
+        })}
+      />
+
       {previewRow && (
         <MergePreviewDialog
           candidate={previewRow}
