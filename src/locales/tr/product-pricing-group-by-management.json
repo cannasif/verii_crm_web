@@ -25,7 +25,7 @@
   "filterByPriceRange": "Fiyat Aralığına Göre Filtrele",
   "filterByDiscountRange": "İskonto Aralığına Göre Filtrele",
   "noData": "Veri bulunamadı",
-  "confirmDelete": "Bu fiyatlandırma grubunu silmek istediğinizden emin misiniz?",
+  "confirmDelete": "{{name}} fiyatlandırma grubunu silmek istediğinizden emin misiniz?",
   "createSuccess": "Fiyatlandırma grubu başarıyla oluşturuldu",
   "updateSuccess": "Fiyatlandırma grubu başarıyla güncellendi",
   "deleteSuccess": "Fiyatlandırma grubu başarıyla silindi",
@@ -83,7 +83,12 @@
   "mediumProfit": "Orta Kar",
   "lowProfit": "Düşük Kar",
   "negativeProfit": "Zarar",
+  "advancedFilter": {
+    "columnErpGroupCode": "ERP Grup Kodu",
+    "columnCurrency": "Para Birimi"
+  },
   "table": {
+    "title": "Fiyatlandırma Grubu Listesi",
     "id": "ID",
     "erpGroupCode": "ERP Ürün Grubu Kodu",
     "currency": "Para Birimi",
