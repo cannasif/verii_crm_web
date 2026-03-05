@@ -3,21 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Plus, X, ChevronDown, Filter, FileSpreadsheet, FileText, Presentation, Menu } from 'lucide-react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { PageToolbar, ColumnPreferencesPopover, AdvancedFilter } from '@/components/shared';
-import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { loadColumnPreferences } from '@/lib/column-preferences';
 import { COUNTRY_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { CountryTable, getColumnsConfig } from './CountryTable';
 import { CountryForm } from './CountryForm';
@@ -27,9 +18,22 @@ import { applyCountryFilters, COUNTRY_FILTER_COLUMNS } from '../types/country-fi
 import type { FilterRow } from '@/lib/advanced-filter-types';
 
 const EMPTY_COUNTRIES: CountryDto[] = [];
+const PAGE_KEY = 'country-management';
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+
+type CountryColumnKey = keyof CountryDto;
+
+function resolveLabel(
+  t: (key: string) => string,
+  key: string,
+  fallback: string
+): string {
+  const translated = t(key);
+  return translated && translated !== key ? translated : fallback;
+}
 
 export function CountryManagementPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(['country-management', 'common']);
   const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
 
@@ -37,30 +41,42 @@ export function CountryManagementPage(): ReactElement {
   const [editingCountry, setEditingCountry] = useState<CountryDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<CountryColumnKey>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
-  
+
   const queryClient = useQueryClient();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
-  const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key), [tableColumns]);
-  const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
-  const [visibleColumns, setVisibleColumns] = useState<Array<keyof CountryDto>>(
-    () => defaultColumnKeys as Array<keyof CountryDto>
+  const baseColumns = useMemo(
+    () =>
+      tableColumns.map((c) => ({
+        key: c.key as string,
+        label: c.label,
+      })),
+    [tableColumns]
   );
+  const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key as string), [tableColumns]);
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    const prefs = loadColumnPreferences('country-management', user?.id, defaultColumnKeys);
-    setVisibleColumns(prefs.visibleKeys as Array<keyof CountryDto>);
+    setPageTitle(t('countryManagement.menu'));
+    return () => setPageTitle(null);
+  }, [t, setPageTitle]);
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
+    setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
-  // Fetch all countries for client-side filtering
   const { data: apiResponse, isLoading } = useCountryList({
     pageNumber: 1,
-    pageSize: 10000
+    pageSize: 10000,
   });
 
   const countries = useMemo<CountryDto[]>(
@@ -68,111 +84,88 @@ export function CountryManagementPage(): ReactElement {
     [apiResponse?.data]
   );
 
-  useEffect(() => {
-    setPageTitle(t('countryManagement.menu'));
-    return () => setPageTitle(null);
-  }, [t, setPageTitle]);
-
   const filteredCountries = useMemo<CountryDto[]>(() => {
-    if (!countries) return [];
-
-    let result: CountryDto[] = [...countries];
-
-    // Quick Search
+    if (!countries.length) return [];
+    let result = [...countries];
     if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter((c) => 
-        (c.name && c.name.toLowerCase().includes(lowerSearch)) ||
-        (c.code && c.code.toLowerCase().includes(lowerSearch)) ||
-        (c.erpCode && c.erpCode.toLowerCase().includes(lowerSearch))
+      const lower = searchTerm.toLowerCase();
+      result = result.filter(
+        (c) =>
+          (c.name && c.name.toLowerCase().includes(lower)) ||
+          (c.code && c.code.toLowerCase().includes(lower)) ||
+          (c.erpCode && c.erpCode.toLowerCase().includes(lower))
       );
     }
-
     result = applyCountryFilters(result, appliedFilterRows);
     return result;
   }, [countries, searchTerm, appliedFilterRows]);
 
-  const handleAdvancedSearch = () => {
-    setAppliedFilterRows(draftFilterRows);
-    setShowFilters(false);
-  };
-
-  const handleAdvancedClear = () => {
-    setDraftFilterRows([]);
-    setAppliedFilterRows([]);
-  };
-
-  const displayedColumnsForExport = useMemo(() => {
-    const orderMap = new Map(columnOrder.map((k, i) => [k, i]));
-    return tableColumns
-      .filter((col) => visibleColumns.includes(col.key))
-      .sort((a, b) => (orderMap.get(a.key) ?? 999) - (orderMap.get(b.key) ?? 999));
-  }, [tableColumns, visibleColumns, columnOrder]);
-
-  const handleExportExcel = async () => {
-    const dataToExport = filteredCountries.map((country) => {
-      const row: Record<string, string | number | boolean | null | undefined> = {};
-      displayedColumnsForExport.forEach((col) => {
-        const value = country[col.key];
-        row[col.label] =
-          typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
-            ? value
-            : value ?? '';
-      });
-      return row;
+  const sortedCountries = useMemo(() => {
+    const result = [...filteredCountries];
+    result.sort((a, b) => {
+      const aVal = a[sortBy] != null ? String(a[sortBy]).toLowerCase() : '';
+      const bVal = b[sortBy] != null ? String(b[sortBy]).toLowerCase() : '';
+      const cmp = aVal.localeCompare(bVal);
+      return sortDirection === 'asc' ? cmp : -cmp;
     });
+    return result;
+  }, [filteredCountries, sortBy, sortDirection]);
 
-    const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(dataToExport);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Countries");
-    XLSX.writeFile(wb, "countries.xlsx");
-  };
+  const totalCount = sortedCountries.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const currentPageRows = useMemo(
+    () => sortedCountries.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
+    [sortedCountries, pageNumber, pageSize]
+  );
 
-  const handleExportPDF = async () => {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable'),
-    ]);
-    const doc = new JsPDF();
-    
-    const tableColumn = displayedColumnsForExport.map((col) => col.label);
-    const tableRows = filteredCountries.map((country) =>
-      displayedColumnsForExport.map((col) => country[col.key] ?? '')
-    );
+  const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as CountryColumnKey[];
 
-    autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-    });
+  const filterColumns = useMemo(
+    () =>
+      COUNTRY_FILTER_COLUMNS.map((col) => ({
+        value: col.value,
+        type: col.type,
+        labelKey: col.labelKey,
+      })),
+    []
+  );
 
-    doc.save("countries.pdf");
-  };
+  const exportColumns = useMemo(
+    () =>
+      orderedVisibleColumns.map((key) => {
+        const col = tableColumns.find((c) => c.key === key);
+        return { key, label: col?.label ?? key };
+      }),
+    [tableColumns, orderedVisibleColumns]
+  );
 
-  type PptxTableRow = Array<{ text: string }>;
+  const exportRows = useMemo<Record<string, unknown>[]>(
+    () =>
+      filteredCountries.map((c) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    [filteredCountries, orderedVisibleColumns, i18n.language]
+  );
 
-  const handleExportPowerPoint = async () => {
-    const { default: PptxGenJS } = await import('pptxgenjs');
-    const pptx = new PptxGenJS();
-    const slide = pptx.addSlide();
-    
-    // Add Title
-    slide.addText("Country Report", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
+  const appliedFilterCount = useMemo(
+    () => appliedFilterRows.filter((r) => r.value.trim()).length,
+    [appliedFilterRows]
+  );
 
-    const headers = displayedColumnsForExport.map((col) => col.label);
-    const rows = filteredCountries.map((country) =>
-      displayedColumnsForExport.map((col) => String(country[col.key] ?? ''))
-    );
-
-    const tableData: PptxTableRow[] = [
-      headers.map(text => ({ text })),
-      ...rows.map(row => row.map(text => ({ text }))),
-    ];
-
-    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
-
-    pptx.writeFile({ fileName: "countries.pptx" });
-  };
+  useEffect(() => {
+    setPageNumber(1);
+  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingCountry(null);
@@ -186,16 +179,22 @@ export function CountryManagementPage(): ReactElement {
 
   const handleFormClose = (open: boolean): void => {
     setFormOpen(open);
-    if (!open) {
-      setEditingCountry(null);
-    }
+    if (!open) setEditingCountry(null);
   };
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: [COUNTRY_MANAGEMENT_QUERY_KEYS.LIST] });
   };
 
-  const hasFiltersActive = appliedFilterRows.some((r) => r.value.trim() !== '');
+  const columns = useMemo<DataTableGridColumn<CountryColumnKey>[]>(
+    () =>
+      tableColumns.map((c) => ({
+        key: c.key as CountryColumnKey,
+        label: c.label,
+        cellClassName: c.className,
+      })),
+    [tableColumns]
+  );
 
   return (
     <div className="w-full space-y-6 relative">
@@ -208,153 +207,130 @@ export function CountryManagementPage(): ReactElement {
             {t('countryManagement.description')}
           </p>
         </div>
-
-        <Button 
-              onClick={handleAddClick}
-              className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
-            >
+        <Button
+          onClick={handleAddClick}
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+        >
           <Plus size={18} className="mr-2" />
           {t('countryManagement.addButton')}
         </Button>
       </div>
 
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 flex flex-col gap-5 transition-all duration-300">
-        <PageToolbar
-          searchPlaceholder={t('countryManagement.searchPlaceholder')}
-          searchValue={searchTerm}
-          onSearchChange={setSearchTerm}
-          onRefresh={handleRefresh}
-          rightSlot={
-            <div className="flex items-center gap-2">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button 
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white"
-                        >
-                            <span className="font-medium text-sm">{pageSize}</span>
-                            <ChevronDown size={16} />
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-20 bg-[#151025] border border-white/10 shadow-2xl rounded-xl overflow-hidden p-1">
-                        {[10, 20, 50].map((size) => (
-                            <DropdownMenuItem 
-                                key={size} 
-                                onClick={() => setPageSize(size)}
-                                className={`flex items-center justify-center text-xs font-medium px-2 py-1.5 rounded-lg cursor-pointer transition-colors ${pageSize === size ? 'bg-pink-500/10 text-pink-500' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-                            >
-                                {size}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
+        <CardHeader className="space-y-4">
+          <CardTitle>{t('table.title')}</CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={setColumnOrder}
+            exportFileName="countries"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            filterColumns={filterColumns}
+            defaultFilterColumn="name"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+            }}
+            translationNamespace="country-management"
+            appliedFilterCount={appliedFilterCount}
+            leftSlot={
+              <>
+                <Input
+                  placeholder={t('countryManagement.searchPlaceholder')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-9 w-[200px]"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRefresh()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  {resolveLabel(t, 'common.refresh', 'Yenile')}
+                </Button>
+              </>
+            }
+          />
+        </CardHeader>
+        <CardContent>
+          <CountryTable
+            columns={columns}
+            visibleColumnKeys={orderedVisibleColumns}
+            rows={currentPageRows}
+            rowKey={(r) => r.id}
+            renderCell={(row, key) => {
+              const val = row[key];
+              if (val == null && val !== 0) return '-';
+              if (key === 'id') return `#${val}`;
+              if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
+              if (key === 'createdByFullUser') return String(val);
+              return String(val);
+            }}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            onSort={(k) => {
+              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+              else {
+                setSortBy(k);
+                setSortDirection('asc');
+              }
+            }}
+            renderSortIcon={(k) => {
+              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+              return sortDirection === 'asc' ? (
+                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+              ) : (
+                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+              );
+            }}
+            isLoading={isLoading}
+            loadingText={t('countryManagement.loading')}
+            errorText={t('countryManagement.error', { defaultValue: 'Hata oluştu' })}
+            emptyText={t('countryManagement.table.noData')}
+            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+            showActionsColumn
+            actionsHeaderLabel={t('common.actions')}
+            onEdit={handleEdit}
+            rowClassName="group"
+            pageSize={pageSize}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            onPageSizeChange={(s) => {
+              setPageSize(s);
+              setPageNumber(1);
+            }}
+            pageNumber={pageNumber}
+            totalPages={totalPages}
+            hasPreviousPage={pageNumber > 1}
+            hasNextPage={pageNumber < totalPages}
+            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('common.table.showing', {
+              from: startRow,
+              to: endRow,
+              total: totalCount,
+            })}
+            disablePaginationButtons={false}
+          />
+        </CardContent>
+      </Card>
 
-              <Popover open={showFilters} onOpenChange={setShowFilters}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={hasFiltersActive ? 'default' : 'outline'}
-                    size="sm"
-                    className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
-                      hasFiltersActive
-                        ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
-                        : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filters')}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
-                    <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                      <h3 className="text-sm font-semibold text-gray-200">{t('common.filters')}</h3>
-                      <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-white transition-colors">
-                        <X size={16} />
-                      </button>
-                    </div>
-                    <div className="p-3 overflow-y-auto custom-scrollbar max-h-[420px]">
-                      <AdvancedFilter
-                        columns={COUNTRY_FILTER_COLUMNS}
-                        defaultColumn="name"
-                        draftRows={draftFilterRows}
-                        onDraftRowsChange={setDraftFilterRows}
-                        onSearch={handleAdvancedSearch}
-                        onClear={handleAdvancedClear}
-                        translationNamespace="country-management"
-                        embedded
-                      />
-                    </div>
-                </PopoverContent>
-              </Popover>
-              <ColumnPreferencesPopover
-                pageKey="country-management"
-                userId={user?.id}
-                columns={tableColumns.map((c) => ({ key: c.key, label: c.label }))}
-                visibleColumns={visibleColumns.map(String)}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={(next) => setVisibleColumns(next as Array<keyof CountryDto>)}
-                onColumnOrderChange={setColumnOrder}
-              />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
-                    <Menu size={18} className="text-slate-500 dark:text-slate-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
-                  <div className="p-2">
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.actions')}
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-white/5 my-1"></div>
-
-                  <div className="p-2">
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.export')}
-                    </div>
-                    <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <FileSpreadsheet size={16} className="text-emerald-500" />
-                      <span>{t('common.exportExcel')}</span>
-                    </button>
-                    <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <FileText size={16} className="text-red-400" />
-                      <span>{t('common.exportPDF')}</span>
-                    </button>
-                    <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <Presentation size={16} className="text-orange-400" />
-                      <span>{t('common.exportPPT')}</span>
-                    </button>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          }
-        />
-      </div>
-
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-0 sm:p-1 transition-all duration-300 overflow-hidden">
-        <CountryTable
-          countries={filteredCountries}
-          isLoading={isLoading}
-          onEdit={handleEdit}
-          visibleColumns={visibleColumns}
-          pageSize={pageSize}
-          columnOrder={columnOrder}
-          onColumnOrderChange={(next) => {
-            setColumnOrder(next);
-            saveColumnPreferences('country-management', user?.id, {
-              order: next,
-              visibleKeys: visibleColumns.map(String),
-            });
-          }}
-        />
-      </div>
-
-      <CountryForm
-        open={formOpen}
-        onOpenChange={handleFormClose}
-        country={editingCountry}
-      />
+      <CountryForm open={formOpen} onOpenChange={handleFormClose} country={editingCountry} />
     </div>
   );
 }
