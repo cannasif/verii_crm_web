@@ -11,6 +11,7 @@
     "newThisMonth": "Bu Ay Yeni"
   },
   "table": {
+    "title": "Şehir Listesi",
     "id": "ID",
     "name": "Şehir Adı",
     "erpCode": "ERP Kodu",
@@ -19,6 +20,13 @@
     "createdBy": "Oluşturan",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "page": "Sayfa {{current}} / {{total}}"
+  },
+  "cityManagement": {
+    "form": {
+      "tabs": {
+        "header": "Genel Bilgiler"
+      }
+    }
   },
   "form": {
     "editCity": "Şehir Düzenle",
