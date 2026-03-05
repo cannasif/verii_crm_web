@@ -21,6 +21,7 @@
     "description": "Ünvan tanımlarını buradan yönetebilirsiniz."
   },
   "table": {
+    "title": "Ünvan Listesi",
     "id": "ID",
     "name": "Ünvan Adı",
     "code": "Kod",
