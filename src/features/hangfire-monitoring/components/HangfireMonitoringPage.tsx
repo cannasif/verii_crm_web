@@ -136,10 +136,10 @@ export function HangfireMonitoringPage(): ReactElement {
             </span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled={failedPage <= 1} onClick={() => setFailedPage((p) => Math.max(1, p - 1))}>
-                {t('common:common.previous')}
+                {t('common:previous')}
               </Button>
               <Button variant="outline" size="sm" disabled={failedPage >= failedTotalPages} onClick={() => setFailedPage((p) => Math.min(failedTotalPages, p + 1))}>
-                {t('common:common.next')}
+                {t('common:next')}
               </Button>
             </div>
           </div>
@@ -190,10 +190,10 @@ export function HangfireMonitoringPage(): ReactElement {
 
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="outline" size="sm" disabled={deadLetterPage <= 1} onClick={() => setDeadLetterPage((p) => Math.max(1, p - 1))}>
-              {t('common:common.previous')}
+              {t('common:previous')}
             </Button>
             <Button variant="outline" size="sm" disabled={!deadLetterHasNext} onClick={() => setDeadLetterPage((p) => p + 1)}>
-              {t('common:common.next')}
+              {t('common:next')}
             </Button>
           </div>
         </CardContent>
