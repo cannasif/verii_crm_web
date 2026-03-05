@@ -20,7 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useTranslation } from 'react-i18next';
 import {
   DROPDOWN_DEBOUNCE_MS,
-  DROPDOWN_MAX_VISIBLE_ITEMS_CLASS,
+  DROPDOWN_MAX_HEIGHT_PX,
   DROPDOWN_MIN_CHARS,
   DROPDOWN_SCROLL_THRESHOLD,
 } from '@/components/shared/dropdown/constants';
@@ -61,7 +61,7 @@ export function VoiceSearchCombobox({
   searchPlaceholder,
   className,
   disabled = false,
-  modal = false,
+  modal = true,
 }: VoiceSearchComboboxProps) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -209,7 +209,7 @@ export function VoiceSearchCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl rounded-2xl" align="start">
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl rounded-2xl" align="start">
         <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
           <CommandInput 
             placeholder={searchPlaceholder || t('common.search')} 
@@ -251,10 +251,8 @@ export function VoiceSearchCombobox({
           </CommandInput>
           <CommandList
             onScroll={handleListScroll}
-            className={cn(
-              DROPDOWN_MAX_VISIBLE_ITEMS_CLASS,
-              "overflow-y-auto p-2 custom-scrollbar space-y-1"
-            )}
+            className="p-2 custom-scrollbar space-y-1"
+            style={{ maxHeight: DROPDOWN_MAX_HEIGHT_PX, overflowY: 'auto', overscrollBehavior: 'contain' }}
           >
             <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
               {isThresholdMode ? minCharsHint : t('common.noResults')}

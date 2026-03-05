@@ -8,6 +8,7 @@ interface DropdownFetchPageParams {
   sortBy?: string;
   sortDirection?: string;
   filters?: PagedFilter[] | Record<string, unknown>;
+  filterLogic?: 'and' | 'or';
   signal: AbortSignal;
 }
 
@@ -21,6 +22,7 @@ interface UseDropdownInfiniteSearchOptions<TItem> {
   sortDirection?: string;
   extraQueryKey?: readonly unknown[];
   buildFilters: (searchTerm: string) => PagedFilter[] | Record<string, unknown> | undefined;
+  filterLogic?: 'and' | 'or';
   fetchPage: (params: DropdownFetchPageParams) => Promise<PagedResponse<TItem>>;
 }
 
@@ -48,6 +50,7 @@ export function useDropdownInfiniteSearch<TItem>({
   extraQueryKey,
   buildFilters,
   fetchPage,
+  filterLogic = 'or',
 }: UseDropdownInfiniteSearchOptions<TItem>): UseDropdownInfiniteSearchResult<TItem> {
   const normalizedSearchTerm = searchTerm.trim();
   const isBrowseMode = normalizedSearchTerm.length === 0;
@@ -72,12 +75,14 @@ export function useDropdownInfiniteSearch<TItem>({
     enabled,
     initialPageParam: 1,
     queryFn: async ({ pageParam, signal }) => {
+      const filters = buildFilters(activeSearchTerm);
       return fetchPage({
         pageNumber: pageParam,
         pageSize,
         sortBy,
         sortDirection,
-        filters: isSearchMode ? buildFilters(activeSearchTerm) : undefined,
+        filters: filters ?? undefined,
+        filterLogic: filters ? filterLogic : undefined,
         signal,
       });
     },
