@@ -1,5 +1,6 @@
 {
   "title": "Sevk Adresi Yönetimi",
+  "description": "Sevk adreslerini yönetin ve düzenleyin",
   "create": "Yeni Sevk Adresi",
   "edit": "Sevk Adresi Düzenle",
   "delete": "Sil",
@@ -25,6 +26,12 @@
   "createdDate": "Oluşturulma Tarihi",
   "updatedDate": "Güncellenme Tarihi",
   "actions": "İşlemler",
+  "advancedFilter": {
+    "columnCustomerName": "Müşteri Adı",
+    "columnName": "Adres Adı",
+    "columnPostalCode": "Posta Kodu",
+    "columnPhone": "Telefon"
+  },
   "search": "Ara",
   "refresh": "Yenile",
   "noData": "Veri bulunamadı",
@@ -61,6 +68,7 @@
   "createDescription": "Yeni sevk adresi bilgilerini girin",
   "editDescription": "Sevk adresi bilgilerini düzenleyin",
   "table": {
+    "title": "Sevk Adresi Listesi",
     "id": "ID",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "page": "Sayfa {{current}} / {{total}}",

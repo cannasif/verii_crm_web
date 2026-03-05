@@ -1,139 +1,195 @@
 import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Plus,
-  X,
-  ChevronDown,
-  Filter,
-  Trash2,
-  Menu,
-  FileSpreadsheet,
-  FileText,
-  Presentation,
-  User,
-  MapPin,
-  Phone
-} from 'lucide-react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ShippingAddressForm } from './ShippingAddressForm';
-import { ShippingAddressTable, getColumnsConfig } from './ShippingAddressTable';
-import { useCreateShippingAddress } from '../hooks/useCreateShippingAddress';
-import { useUpdateShippingAddress } from '../hooks/useUpdateShippingAddress';
-import { useShippingAddresses } from '../hooks/useShippingAddresses';
-import type { ShippingAddressDto, ShippingAddressFormSchema } from '../types/shipping-address-types';
-import { useQueryClient } from '@tanstack/react-query';
-import { SHIPPING_ADDRESS_QUERY_KEYS } from '../utils/query-keys';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { PageToolbar } from '@/components/shared';
-import { ColumnPreferencesPopover } from '@/components/shared';
-import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { loadColumnPreferences } from '@/lib/column-preferences';
+import { SHIPPING_ADDRESS_QUERY_KEYS } from '../utils/query-keys';
+import { ShippingAddressTable, getColumnsConfig } from './ShippingAddressTable';
+import { ShippingAddressForm } from './ShippingAddressForm';
+import type { ShippingAddressDto, ShippingAddressFormSchema } from '../types/shipping-address-types';
+import { useShippingAddresses } from '../hooks/useShippingAddresses';
+import { useCreateShippingAddress } from '../hooks/useCreateShippingAddress';
+import { useUpdateShippingAddress } from '../hooks/useUpdateShippingAddress';
+import { applyShippingAddressFilters, SHIPPING_ADDRESS_FILTER_COLUMNS } from '../types/shipping-address-filter.types';
+import type { FilterRow } from '@/lib/advanced-filter-types';
+
+const EMPTY_SHIPPING_ADDRESSES: ShippingAddressDto[] = [];
+const PAGE_KEY = 'shipping-address-management';
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+
+type ShippingAddressColumnKey = keyof ShippingAddressDto | 'location';
+
+function resolveLabel(
+  t: (key: string) => string,
+  key: string,
+  fallback: string
+): string {
+  const translated = t(key);
+  return translated && translated !== key ? translated : fallback;
+}
 
 export function ShippingAddressManagementPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(['shipping-address-management', 'common']);
   const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
+
   const [formOpen, setFormOpen] = useState(false);
   const [selectedShippingAddress, setSelectedShippingAddress] = useState<ShippingAddressDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [showFilters, setShowFilters] = useState(false);
-  const [draftFilters, setDraftFilters] = useState({
-    customerName: '',
-    name: '',
-    postalCode: '',
-    phone: ''
-  });
-  const [activeFilters, setActiveFilters] = useState({
-    customerName: '',
-    name: '',
-    postalCode: '',
-    phone: ''
-  });
+  const [sortBy, setSortBy] = useState<ShippingAddressColumnKey>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+
+  const queryClient = useQueryClient();
+  const createShippingAddress = useCreateShippingAddress();
+  const updateShippingAddress = useUpdateShippingAddress();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   const defaultColumnKeys = useMemo(
     () => tableColumns.filter((c) => c.visible).map((c) => c.key),
     [tableColumns]
   );
+  const baseColumns = useMemo(
+    () =>
+      tableColumns.map((c) => ({
+        key: c.key,
+        label: c.label,
+      })),
+    [tableColumns]
+  );
   const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    const prefs = loadColumnPreferences('shipping-address-management', user?.id, defaultColumnKeys);
+    setPageTitle(t('shippingAddressManagement.title'));
+    return () => setPageTitle(null);
+  }, [t, setPageTitle]);
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
     setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
-
-  const createShippingAddress = useCreateShippingAddress();
-  const updateShippingAddress = useUpdateShippingAddress();
-  const queryClient = useQueryClient();
 
   const { data: apiResponse, isLoading } = useShippingAddresses({
     pageNumber: 1,
     pageSize: 10000,
   });
 
-  const allShippingAddresses = useMemo(() => {
-    return apiResponse?.data ?? [];
-  }, [apiResponse]);
+  const shippingAddresses = useMemo<ShippingAddressDto[]>(
+    () => apiResponse?.data ?? EMPTY_SHIPPING_ADDRESSES,
+    [apiResponse?.data]
+  );
 
-  const filteredShippingAddresses = useMemo(() => {
-    let result: ShippingAddressDto[] = [...allShippingAddresses];
-
-    // Quick Search
+  const filteredShippingAddresses = useMemo<ShippingAddressDto[]>(() => {
+    if (!shippingAddresses.length) return [];
+    let result = [...shippingAddresses];
     if (searchTerm) {
-      const lowerTerm = searchTerm.toLowerCase();
+      const lower = searchTerm.toLowerCase();
       result = result.filter(
-        (d) =>
-          (d.name && d.name.toLowerCase().includes(lowerTerm)) ||
-          (d.address && d.address.toLowerCase().includes(lowerTerm)) ||
-          (d.customerName && d.customerName.toLowerCase().includes(lowerTerm)) ||
-          (d.contactPerson && d.contactPerson.toLowerCase().includes(lowerTerm)) ||
-          (d.phone && d.phone.toLowerCase().includes(lowerTerm))
+        (c) =>
+          (c.name && c.name.toLowerCase().includes(lower)) ||
+          (c.address && c.address.toLowerCase().includes(lower)) ||
+          (c.customerName && c.customerName.toLowerCase().includes(lower)) ||
+          (c.contactPerson && c.contactPerson?.toLowerCase().includes(lower)) ||
+          (c.phone && c.phone.toLowerCase().includes(lower))
       );
     }
-
-    // Advanced Filters
-    if (activeFilters.customerName) {
-      const lower = activeFilters.customerName.toLowerCase();
-      result = result.filter(d => d.customerName?.toLowerCase().includes(lower));
-    }
-    if (activeFilters.name) {
-      const lower = activeFilters.name.toLowerCase();
-      result = result.filter(d => d.name?.toLowerCase().includes(lower));
-    }
-    if (activeFilters.postalCode) {
-      const lower = activeFilters.postalCode.toLowerCase();
-      result = result.filter(d => d.postalCode?.toLowerCase().includes(lower));
-    }
-    if (activeFilters.phone) {
-      const lower = activeFilters.phone.toLowerCase();
-      result = result.filter(d => d.phone?.toLowerCase().includes(lower));
-    }
-
+    result = applyShippingAddressFilters(result, appliedFilterRows);
     return result;
-  }, [allShippingAddresses, searchTerm, activeFilters]);
+  }, [shippingAddresses, searchTerm, appliedFilterRows]);
+
+  const sortedShippingAddresses = useMemo(() => {
+    const result = [...filteredShippingAddresses];
+    result.sort((a, b) => {
+      let aVal: string;
+      let bVal: string;
+      if (sortBy === 'location') {
+        aVal = [a.countryName, a.cityName, a.districtName].filter(Boolean).join(' / ').toLowerCase();
+        bVal = [b.countryName, b.cityName, b.districtName].filter(Boolean).join(' / ').toLowerCase();
+      } else {
+        const aRaw = a[sortBy as keyof ShippingAddressDto];
+        const bRaw = b[sortBy as keyof ShippingAddressDto];
+        aVal = aRaw != null ? String(aRaw).toLowerCase() : '';
+        bVal = bRaw != null ? String(bRaw).toLowerCase() : '';
+      }
+      const cmp = aVal.localeCompare(bVal);
+      return sortDirection === 'asc' ? cmp : -cmp;
+    });
+    return result;
+  }, [filteredShippingAddresses, sortBy, sortDirection]);
+
+  const totalCount = sortedShippingAddresses.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const currentPageRows = useMemo(
+    () => sortedShippingAddresses.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
+    [sortedShippingAddresses, pageNumber, pageSize]
+  );
+
+  const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ShippingAddressColumnKey[];
+
+  const filterColumns = useMemo(
+    () =>
+      SHIPPING_ADDRESS_FILTER_COLUMNS.map((col) => ({
+        value: col.value,
+        type: col.type,
+        labelKey: col.labelKey,
+      })),
+    []
+  );
+
+  const exportColumns = useMemo(
+    () =>
+      orderedVisibleColumns.map((key) => {
+        const col = tableColumns.find((c) => c.key === key);
+        return { key, label: col?.label ?? key };
+      }),
+    [tableColumns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(
+    () =>
+      filteredShippingAddresses.map((c) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          if (key === 'location') {
+            row[key] = [c.countryName, c.cityName, c.districtName].filter(Boolean).join(' / ');
+          } else if (key === 'createdDate' && c.createdDate) {
+            row[key] = new Date(String(c.createdDate)).toLocaleDateString(i18n.language);
+          } else if (key === 'isDefault') {
+            row[key] = c.isDefault ? t('shippingAddressManagement.defaultBadge') : '-';
+          } else if (key === 'isActive') {
+            row[key] = c.isActive ? t('common.active') : t('common.inactive');
+          } else {
+            const val = c[key as keyof ShippingAddressDto];
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    [filteredShippingAddresses, orderedVisibleColumns, i18n.language, t]
+  );
+
+  const appliedFilterCount = useMemo(
+    () => appliedFilterRows.filter((r) => r.value.trim()).length,
+    [appliedFilterRows]
+  );
 
   useEffect(() => {
-    setPageTitle(t('shippingAddressManagement.title'));
-    return () => {
-      setPageTitle(null);
-    };
-  }, [t, setPageTitle]);
+    setPageNumber(1);
+  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
 
   const handleCreateClick = (): void => {
     setSelectedShippingAddress(null);
@@ -143,6 +199,11 @@ export function ShippingAddressManagementPage(): ReactElement {
   const handleEditClick = (shippingAddress: ShippingAddressDto): void => {
     setSelectedShippingAddress(shippingAddress);
     setFormOpen(true);
+  };
+
+  const handleFormClose = (open: boolean): void => {
+    setFormOpen(open);
+    if (!open) setSelectedShippingAddress(null);
   };
 
   const handleFormSubmit = async (data: ShippingAddressFormSchema): Promise<void> => {
@@ -175,96 +236,59 @@ export function ShippingAddressManagementPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: [SHIPPING_ADDRESS_QUERY_KEYS.LIST] });
   };
 
-  const hasFiltersActive =
-    activeFilters.customerName !== '' ||
-    activeFilters.name !== '' ||
-    activeFilters.postalCode !== '' ||
-    activeFilters.phone !== '';
+  const columns = useMemo<DataTableGridColumn<ShippingAddressColumnKey>[]>(
+    () =>
+      tableColumns.map((c) => ({
+        key: c.key as ShippingAddressColumnKey,
+        label: c.label,
+        cellClassName: c.className,
+      })),
+    [tableColumns]
+  );
 
-  const displayedColumnsForExport = useMemo(() => {
-    const orderMap = new Map(columnOrder.map((k, i) => [k, i]));
-    return tableColumns
-      .filter((col) => visibleColumns.includes(col.key))
-      .sort((a, b) => (orderMap.get(a.key) ?? 999) - (orderMap.get(b.key) ?? 999));
-  }, [tableColumns, visibleColumns, columnOrder]);
-
-  const handleFilterChange = (key: keyof typeof draftFilters, value: string) => {
-    setDraftFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const applyAdvancedFilters = () => {
-    setActiveFilters(draftFilters);
-    setShowFilters(false);
-  };
-
-  const clearAdvancedFilters = () => {
-    const empty = { customerName: '', name: '', postalCode: '', phone: '' };
-    setDraftFilters(empty);
-    setActiveFilters(empty);
-  };
-
-  const handleExportExcel = async () => {
-    const dataToExport = filteredShippingAddresses.map((item) => {
-      const row: Record<string, string | number | boolean | null | undefined> = {};
-      displayedColumnsForExport.forEach((col) => {
-        const value = item[col.key as keyof ShippingAddressDto];
-        row[col.label] =
-          typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
-            ? value
-            : value ?? '';
-      });
-      return row;
-    });
-
-    const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(dataToExport);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Shipping Addresses");
-    XLSX.writeFile(wb, "shipping_addresses.xlsx");
-  };
-
-  const handleExportPDF = async () => {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable'),
-    ]);
-    const doc = new JsPDF();
-    
-    const tableColumnLabels = displayedColumnsForExport.map((col) => col.label);
-    const tableRows = filteredShippingAddresses.map((item) =>
-      displayedColumnsForExport.map((col) => item[col.key as keyof ShippingAddressDto] ?? '')
-    );
-
-    autoTable(doc, {
-        head: [tableColumnLabels],
-        body: tableRows,
-    });
-
-    doc.save("shipping_addresses.pdf");
-  };
-
-  const handleExportPowerPoint = async () => {
-    const { default: PptxGenJS } = await import('pptxgenjs');
-    const pptx = new PptxGenJS();
-    const slide = pptx.addSlide();
-    
-    slide.addText("Shipping Address Report", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
-
-    const headers = displayedColumnsForExport.map((col) => col.label);
-    const rows = filteredShippingAddresses.map((item) =>
-      displayedColumnsForExport.map((col) =>
-        String(item[col.key as keyof ShippingAddressDto] ?? '')
-      )
-    );
-
-    const tableData = [
-      headers.map(text => ({ text })),
-      ...rows.map(row => row.map(text => ({ text }))),
-    ];
-
-    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
-
-    pptx.writeFile({ fileName: "shipping_addresses.pptx" });
+  const renderCell = (row: ShippingAddressDto, key: ShippingAddressColumnKey): React.ReactNode => {
+    switch (key) {
+      case 'customerName':
+        return <span className="font-medium text-slate-700 dark:text-slate-300">{row.customerName || '-'}</span>;
+      case 'name':
+        return row.name || '-';
+      case 'address':
+        return <div className="max-w-xs truncate" title={row.address}>{row.address}</div>;
+      case 'postalCode':
+        return row.postalCode || '-';
+      case 'contactPerson':
+        return row.contactPerson || '-';
+      case 'phone':
+        return row.phone || '-';
+      case 'location':
+        return [row.countryName, row.cityName, row.districtName].filter(Boolean).join(' / ') || '-';
+      case 'isDefault':
+        return row.isDefault ? (
+          <span className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300">
+            {t('defaultBadge')}
+          </span>
+        ) : '-';
+      case 'isActive':
+        return (
+          <span
+            className={`inline-flex items-center gap-1.5 pl-1.5 pr-2.5 py-0.5 rounded-md border text-xs font-medium ${
+              row.isActive
+                ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20'
+                : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20'
+            }`}
+          >
+            {row.isActive ? t('common.active') : t('common.inactive')}
+          </span>
+        );
+      case 'createdDate':
+        return row.createdDate ? new Date(row.createdDate).toLocaleDateString(i18n.language) : '-';
+      default: {
+        const value = row[key as keyof ShippingAddressDto];
+        if (typeof value === 'string' || typeof value === 'number') return value;
+        if (typeof value === 'boolean') return value ? t('common.yes') : t('common.no');
+        return value == null ? '-' : String(value);
+      }
+    }
   };
 
   return (
@@ -275,11 +299,10 @@ export function ShippingAddressManagementPage(): ReactElement {
             {t('shippingAddressManagement.title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('shippingAddressManagement.description')}
+            {t('description', { defaultValue: 'Sevk adreslerini yönetin' })}
           </p>
         </div>
-
-        <Button 
+        <Button
           onClick={handleCreateClick}
           className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
         >
@@ -288,221 +311,116 @@ export function ShippingAddressManagementPage(): ReactElement {
         </Button>
       </div>
 
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 flex flex-col gap-5 transition-all duration-300">
-        <PageToolbar
-          searchPlaceholder={t('shippingAddressManagement.search')}
-          searchValue={searchTerm}
-          onSearchChange={setSearchTerm}
-          onRefresh={handleRefresh}
-          rightSlot={
-            <div className="flex items-center gap-2">
-              <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button 
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 bg-transparent text-gray-400 border-white/10 hover:bg-white/5 hover:text-white"
-                        >
-                            <span className="font-medium text-sm">{pageSize}</span>
-                            <ChevronDown size={16} />
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-20 bg-[#151025] border border-white/10 shadow-2xl rounded-xl overflow-hidden p-1">
-                        {[10, 20, 50].map((size) => (
-                            <DropdownMenuItem 
-                                key={size} 
-                                onClick={() => setPageSize(size)}
-                                className={`flex items-center justify-center text-xs font-medium px-2 py-1.5 rounded-lg cursor-pointer transition-colors ${pageSize === size ? 'bg-pink-500/10 text-pink-500' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-                            >
-                                {size}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-
-                <Popover open={showFilters} onOpenChange={setShowFilters}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={hasFiltersActive ? 'default' : 'outline'}
-                    size="sm"
-                    className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
-                      hasFiltersActive
-                        ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
-                        : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filters')}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent side="bottom" align="end" className="w-96 p-0 bg-[#151025] border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
-                    
-                    {/* Header */}
-                    <div className="flex items-center justify-between p-3 border-b border-white/5 bg-[#151025]">
-                      <h3 className="text-sm font-semibold text-gray-200">{t('common.filters')}</h3>
-                      <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-white transition-colors">
-                        <X size={16} />
-                      </button>
-                    </div>
-
-                    {/* Scrollable Content */}
-                    <div className="p-3 overflow-y-auto custom-scrollbar max-h-[400px]">
-                        <div className="grid grid-cols-2 gap-3">
-                            
-                            {/* Customer Name - Col Span 2 */}
-                            <div className="col-span-2">
-                                <div className="relative group">
-                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
-                                        <User size={14} />
-                                    </div>
-                                    <Input 
-                                        placeholder={t('shippingAddressManagement.customerName')}
-                                        value={draftFilters.customerName}
-                                        onChange={(e) => handleFilterChange('customerName', e.target.value)}
-                                        className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Name */}
-                            <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
-                                    <MapPin size={14} />
-                                </div>
-                                <Input 
-                                    placeholder={t('shippingAddressManagement.name')}
-                                    value={draftFilters.name}
-                                    onChange={(e) => handleFilterChange('name', e.target.value)}
-                                    className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
-                                />
-                            </div>
-
-                            {/* Postal Code */}
-                            <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
-                                    <MapPin size={14} />
-                                </div>
-                                <Input 
-                                    placeholder={t('shippingAddressManagement.postalCode')}
-                                    value={draftFilters.postalCode}
-                                    onChange={(e) => handleFilterChange('postalCode', e.target.value)}
-                                    className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
-                                />
-                            </div>
-
-                             {/* Phone */}
-                             <div className="relative group col-span-2">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
-                                    <Phone size={14} />
-                                </div>
-                                <Input 
-                                    placeholder={t('shippingAddressManagement.phone')}
-                                    value={draftFilters.phone}
-                                    onChange={(e) => handleFilterChange('phone', e.target.value)}
-                                    className="w-full bg-[#0b0818] border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all h-9"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="p-3 border-t border-white/5 bg-[#0b0818]/50 flex justify-between items-center gap-3">
-                        <button 
-                            onClick={clearAdvancedFilters}
-                            className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-red-400 transition-colors px-2 py-2"
-                        >
-                            <Trash2 size={14} />
-                            <span>{t('common.clear')}</span>
-                        </button>
-                        
-                        <button 
-                            onClick={applyAdvancedFilters}
-                            className="flex-1 bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-500 hover:to-orange-400 text-white text-xs font-bold py-2.5 rounded-lg shadow-lg shadow-pink-900/20 transition-all active:scale-95"
-                        >
-                            {t('common.filter')}
-                        </button>
-                    </div>
-                </PopoverContent>
-              </Popover>
-              <ColumnPreferencesPopover
-                pageKey="shipping-address-management"
-                userId={user?.id}
-                columns={tableColumns.map((c) => ({ key: c.key, label: c.label }))}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={(next) => {
-                  setVisibleColumns(next);
-                  saveColumnPreferences('shipping-address-management', user?.id, {
-                    order: columnOrder,
-                    visibleKeys: next,
-                  });
-                }}
-                onColumnOrderChange={(next) => {
-                  setColumnOrder(next);
-                  saveColumnPreferences('shipping-address-management', user?.id, {
-                    order: next,
-                    visibleKeys: visibleColumns,
-                  });
-                }}
-              />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
-                    <Menu size={18} className="text-slate-500 dark:text-slate-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
-                  <div className="p-2">
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.actions')}
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-white/5 my-1"></div>
-
-                  <div className="p-2">
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {t('common.export')}
-                    </div>
-                    <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <FileSpreadsheet size={16} className="text-emerald-500" />
-                      <span>{t('common.exportExcel')}</span>
-                    </button>
-                    <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <FileText size={16} className="text-red-400" />
-                      <span>{t('common.exportPDF')}</span>
-                    </button>
-                    <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                      <Presentation size={16} className="text-orange-400" />
-                      <span>{t('common.exportPPT')}</span>
-                    </button>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          }
-        />
-      </div>
-
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-0 sm:p-1 transition-all duration-300 overflow-hidden">
-        <ShippingAddressTable
-          data={filteredShippingAddresses}
-          isLoading={isLoading}
-          onEdit={handleEditClick}
-          pageSize={pageSize}
-          visibleColumns={visibleColumns}
-          columnOrder={columnOrder}
-          onColumnOrderChange={(next) => {
-            setColumnOrder(next);
-            saveColumnPreferences('shipping-address-management', user?.id, {
-              order: next,
-              visibleKeys: visibleColumns,
-            });
-          }}
-        />
-      </div>
+      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
+        <CardHeader className="space-y-4">
+          <CardTitle>{t('table.title')}</CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={setColumnOrder}
+            exportFileName="shipping-addresses"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            filterColumns={filterColumns}
+            defaultFilterColumn="name"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+            }}
+            translationNamespace="shipping-address-management"
+            appliedFilterCount={appliedFilterCount}
+            leftSlot={
+              <>
+                <Input
+                  placeholder={t('shippingAddressManagement.search')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-9 w-[200px]"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRefresh()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  {resolveLabel(t, 'common.refresh', 'Yenile')}
+                </Button>
+              </>
+            }
+          />
+        </CardHeader>
+        <CardContent>
+          <ShippingAddressTable
+            columns={columns}
+            visibleColumnKeys={orderedVisibleColumns}
+            rows={currentPageRows}
+            rowKey={(r) => r.id}
+            renderCell={renderCell}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            onSort={(k) => {
+              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+              else {
+                setSortBy(k);
+                setSortDirection('asc');
+              }
+            }}
+            renderSortIcon={(k) => {
+              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+              return sortDirection === 'asc' ? (
+                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+              ) : (
+                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+              );
+            }}
+            isLoading={isLoading}
+            loadingText={t('common.loading')}
+            errorText={t('shippingAddressManagement.error', { defaultValue: 'Hata oluştu' })}
+            emptyText={t('shippingAddressManagement.noData')}
+            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+            showActionsColumn
+            actionsHeaderLabel={t('common.actions')}
+            onEdit={handleEditClick}
+            rowClassName="group"
+            pageSize={pageSize}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            onPageSizeChange={(s) => {
+              setPageSize(s);
+              setPageNumber(1);
+            }}
+            pageNumber={pageNumber}
+            totalPages={totalPages}
+            hasPreviousPage={pageNumber > 1}
+            hasNextPage={pageNumber < totalPages}
+            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('common.table.showing', {
+              from: startRow,
+              to: endRow,
+              total: totalCount,
+            })}
+            disablePaginationButtons={false}
+          />
+        </CardContent>
+      </Card>
 
       <ShippingAddressForm
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={handleFormClose}
         shippingAddress={selectedShippingAddress}
         onSubmit={handleFormSubmit}
       />
