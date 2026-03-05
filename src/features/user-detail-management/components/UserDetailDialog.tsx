@@ -232,8 +232,9 @@ export function UserDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
-        className="sm:max-w-[95vw] md:max-w-6xl lg:max-w-5xl w-full h-[90vh] md:h-[700px] p-0 overflow-hidden bg-white dark:bg-[#1a1025] border-none text-zinc-900 dark:text-slate-300 shadow-2xl rounded-2xl flex flex-col focus:outline-none [&>button]:hidden"
+      <DialogContent
+        showCloseButton={false}
+        className="sm:max-w-[95vw] md:max-w-6xl lg:max-w-5xl w-full h-[90vh] md:h-[700px] p-0 overflow-hidden bg-white dark:bg-[#1a1025] border-none text-zinc-900 dark:text-slate-300 shadow-2xl rounded-2xl flex flex-col focus:outline-none"
       >
         <DialogTitle className="sr-only">Kullanıcı Detayları</DialogTitle>
 
