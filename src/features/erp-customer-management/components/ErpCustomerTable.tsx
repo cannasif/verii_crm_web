@@ -1,143 +1,125 @@
 import { type ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { 
-  ArrowUpDown, 
-  ArrowUp, 
-  ArrowDown, 
-} from 'lucide-react';
+import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import type { ErpCustomer } from '../types/erp-customer-types';
 
+type ErpCustomerColumnKey = keyof ErpCustomer;
+
 interface ErpCustomerTableProps {
-  customers: ErpCustomer[];
-  isLoading: boolean;
-  visibleColumns: string[];
-  columnOrder?: string[];
-  sortConfig: { key: keyof ErpCustomer; direction: 'asc' | 'desc' } | null;
-  onSort: (key: keyof ErpCustomer) => void;
+  columns: DataTableGridColumn<ErpCustomerColumnKey>[];
+  visibleColumnKeys: ErpCustomerColumnKey[];
+  rows: ErpCustomer[];
+  rowKey: (row: ErpCustomer) => string | number;
+  renderCell: (row: ErpCustomer, key: ErpCustomerColumnKey) => React.ReactNode;
+  sortBy: ErpCustomerColumnKey;
+  sortDirection: 'asc' | 'desc';
+  onSort: (key: ErpCustomerColumnKey) => void;
+  renderSortIcon: (key: ErpCustomerColumnKey) => React.ReactNode;
+  isLoading?: boolean;
+  loadingText?: string;
+  errorText?: string;
+  emptyText?: string;
+  minTableWidthClassName?: string;
+  showActionsColumn?: boolean;
   onRowClick?: (customer: ErpCustomer) => void;
+  rowClassName?: string | ((row: ErpCustomer) => string | undefined);
+  pageSize: number;
+  pageSizeOptions: readonly number[];
+  onPageSizeChange: (size: number) => void;
+  pageNumber: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  onPreviousPage: () => void;
+  onNextPage: () => void;
+  previousLabel: string;
+  nextLabel: string;
+  paginationInfoText: string;
+  disablePaginationButtons?: boolean;
 }
 
 export const getColumnsConfig = (t: TFunction) => [
-    { key: 'branchCode', label: t('table.branchCode'), className: 'font-medium whitespace-nowrap' },
-    { key: 'businessUnit', label: t('table.businessUnitCode'), className: 'whitespace-nowrap' },
-    { key: 'customerCode', label: t('table.customerCode'), className: 'font-semibold text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors whitespace-nowrap' },
-    { key: 'customerName', label: t('table.customerName'), className: 'text-slate-800 dark:text-slate-200 font-medium min-w-[160px] md:min-w-[200px]' },
-    { key: 'phone', label: t('table.phone'), className: 'whitespace-nowrap' },
-    { key: 'email', label: t('table.email'), className: 'min-w-[160px] md:min-w-[200px] break-all' },
-    { key: 'city', label: t('table.city'), className: 'whitespace-nowrap' },
-    { key: 'district', label: t('table.district'), className: 'whitespace-nowrap' },
-    { key: 'address', label: t('table.address'), className: 'min-w-[220px] md:min-w-[300px] leading-relaxed' },
-    { key: 'countryCode', label: t('table.countryCode'), className: '' },
-    { key: 'website', label: t('table.website'), className: 'text-blue-500 hover:underline min-w-[120px] md:min-w-[150px] break-all', isLink: true },
-    { key: 'taxNumber', label: t('table.taxNumber'), className: 'font-mono text-xs whitespace-nowrap' },
-    { key: 'taxOffice', label: t('table.taxOffice'), className: 'whitespace-nowrap' },
-    { key: 'tckn', label: t('table.tcknNumber'), className: 'font-mono text-xs whitespace-nowrap' },
+  { key: 'branchCode', label: t('table.branchCode'), className: 'font-medium whitespace-nowrap' },
+  { key: 'businessUnit', label: t('table.businessUnitCode'), className: 'whitespace-nowrap' },
+  { key: 'customerCode', label: t('table.customerCode'), className: 'font-semibold text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors whitespace-nowrap' },
+  { key: 'customerName', label: t('table.customerName'), className: 'text-slate-800 dark:text-slate-200 font-medium min-w-[160px] md:min-w-[200px]' },
+  { key: 'phone', label: t('table.phone'), className: 'whitespace-nowrap' },
+  { key: 'email', label: t('table.email'), className: 'min-w-[160px] md:min-w-[200px] break-all' },
+  { key: 'city', label: t('table.city'), className: 'whitespace-nowrap' },
+  { key: 'district', label: t('table.district'), className: 'whitespace-nowrap' },
+  { key: 'address', label: t('table.address'), className: 'min-w-[220px] md:min-w-[300px] leading-relaxed' },
+  { key: 'countryCode', label: t('table.countryCode'), className: '' },
+  { key: 'website', label: t('table.website'), className: 'text-blue-500 hover:underline min-w-[120px] md:min-w-[150px] break-all' },
+  { key: 'taxNumber', label: t('table.taxNumber'), className: 'font-mono text-xs whitespace-nowrap' },
+  { key: 'taxOffice', label: t('table.taxOffice'), className: 'whitespace-nowrap' },
+  { key: 'tckn', label: t('table.tcknNumber'), className: 'font-mono text-xs whitespace-nowrap' },
 ];
 
-export function ErpCustomerTable({ customers, isLoading, visibleColumns, columnOrder, sortConfig, onSort, onRowClick }: ErpCustomerTableProps): ReactElement {
-  const { t } = useTranslation('erp-customer-management');
-
-  const allColumns = getColumnsConfig(t);
-  const displayedColumns = (() => {
-    const visible = allColumns.filter((col) => visibleColumns.includes(col.key));
-    if (!columnOrder || columnOrder.length === 0) return visible;
-    const orderMap = new Map(columnOrder.map((k, i) => [k, i]));
-    return [...visible].sort((a, b) => (orderMap.get(a.key) ?? 999) - (orderMap.get(b.key) ?? 999));
-  })();
-
-  const headStyle = `
-    text-slate-500 dark:text-slate-400 
-    font-bold text-xs uppercase tracking-wider 
-    py-2 px-4 
-    hover:text-pink-600 dark:hover:text-pink-400 
-    transition-colors cursor-pointer select-none
-    border-r border-slate-200 dark:border-white/[0.03] last:border-r-0
-    whitespace-nowrap bg-slate-50/90 dark:bg-[#130822]/90
-    text-left
-  `;
-
-  const cellStyle = `
-    text-slate-600 dark:text-slate-400 
-    px-4 py-2
-    border-r border-slate-100 dark:border-white/[0.03] last:border-r-0
-    text-sm align-middle
-  `;
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20 h-full">
-        <div className="flex flex-col items-center gap-3">
-           <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-current text-pink-500" />
-           <span className="text-sm font-medium text-muted-foreground animate-pulse">
-             {t('loading')}
-           </span>
-        </div>
-      </div>
-    );
-  }
-
-  if (customers.length === 0) {
-    return (
-      <div className="flex items-center justify-center py-20 h-full">
-        <div className="text-muted-foreground bg-slate-50 dark:bg-white/5 px-8 py-6 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-sm font-medium">
-          {t('noData')}
-        </div>
-      </div>
-    );
-  }
-
+export function ErpCustomerTable({
+  columns,
+  visibleColumnKeys,
+  rows,
+  rowKey,
+  renderCell,
+  sortBy,
+  sortDirection,
+  onSort,
+  renderSortIcon,
+  disablePaginationButtons = false,
+  isLoading = false,
+  loadingText = 'Loading...',
+  errorText = 'An error occurred.',
+  emptyText = 'No data.',
+  minTableWidthClassName = 'min-w-[800px] lg:min-w-[1100px]',
+  showActionsColumn = false,
+  onRowClick,
+  rowClassName,
+  pageSize,
+  pageSizeOptions,
+  onPageSizeChange,
+  pageNumber,
+  totalPages,
+  hasPreviousPage,
+  hasNextPage,
+  onPreviousPage,
+  onNextPage,
+  previousLabel,
+  nextLabel,
+  paginationInfoText,
+}: ErpCustomerTableProps): ReactElement {
   return (
-    <table className="w-full min-w-[680px] sm:min-w-[820px] lg:min-w-[1100px] caption-bottom text-sm relative">
-        <TableHeader className="bg-[#151025] sticky top-0 z-10 shadow-sm">
-            <TableRow className="h-10 hover:bg-transparent border-b border-slate-200 dark:border-white/10">
-                {displayedColumns.map((col) => (
-                    <TableHead 
-                        key={col.key} 
-                        className={headStyle}
-                        onClick={() => onSort(col.key as keyof ErpCustomer)}
-                    >
-                        <div className="flex items-center gap-2">
-                            {col.label}
-                            {sortConfig?.key === col.key ? (
-                                sortConfig.direction === 'asc' ? <ArrowUp size={14} className="text-pink-500" /> : <ArrowDown size={14} className="text-pink-500" />
-                            ) : (
-                                <ArrowUpDown size={14} className="opacity-30 group-hover:opacity-100" />
-                            )}
-                        </div>
-                    </TableHead>
-                ))}
-            </TableRow>
-        </TableHeader>
-        <TableBody>
-            {customers.map((customer, index) => (
-            <TableRow 
-                key={`${customer.customerCode}-${index}`}
-                className={`h-10 border-b border-slate-100 dark:border-white/5 transition-colors duration-200 hover:bg-pink-50/40 dark:hover:bg-pink-500/5 group last:border-0 ${onRowClick ? 'cursor-pointer' : ''}`}
-                onClick={() => onRowClick?.(customer)}
-            >
-                {displayedColumns.map((col) => {
-                    const cellKey = col.key as keyof ErpCustomer;
-                    return (
-                        <TableCell key={col.key} className={`${cellStyle} ${col.className}`}>
-                            {col.isLink && customer[cellKey] ? (
-                                <a href={String(customer[cellKey])} target="_blank" rel="noreferrer">{customer[cellKey]}</a>
-                            ) : (
-                                customer[cellKey] || '-'
-                            )}
-                        </TableCell>
-                    );
-                })}
-            </TableRow>
-            ))}
-        </TableBody>
-    </table>
+    <DataTableGrid<ErpCustomer, ErpCustomerColumnKey>
+      columns={columns}
+      visibleColumnKeys={visibleColumnKeys}
+      rows={rows}
+      rowKey={rowKey}
+      renderCell={renderCell}
+      sortBy={sortBy}
+      sortDirection={sortDirection}
+      onSort={onSort}
+      renderSortIcon={renderSortIcon}
+      isLoading={isLoading}
+      isError={false}
+      loadingText={loadingText}
+      errorText={errorText}
+      emptyText={emptyText}
+      minTableWidthClassName={minTableWidthClassName}
+      showActionsColumn={showActionsColumn}
+      onRowClick={onRowClick}
+      rowClassName={rowClassName}
+      pageSize={pageSize}
+      pageSizeOptions={pageSizeOptions}
+      onPageSizeChange={onPageSizeChange}
+      pageNumber={pageNumber}
+      totalPages={totalPages}
+      hasPreviousPage={hasPreviousPage}
+      hasNextPage={hasNextPage}
+      onPreviousPage={onPreviousPage}
+      onNextPage={onNextPage}
+      previousLabel={previousLabel}
+      nextLabel={nextLabel}
+      paginationInfoText={paginationInfoText}
+      disablePaginationButtons={disablePaginationButtons}
+    />
   );
 }

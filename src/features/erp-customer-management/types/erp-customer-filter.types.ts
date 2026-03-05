@@ -1,11 +1,10 @@
-export type ErpCustomerFilterRow = {
-  id: string;
-  column: string;
-  operator: string;
-  value: string;
-};
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import { applyFilterRowsClient } from '@/lib/advanced-filter-types';
+import type { FilterRow } from '@/lib/advanced-filter-types';
 
-export const ERP_CUSTOMER_FILTER_COLUMNS = [
+export type ErpCustomerFilterRow = FilterRow;
+
+export const ERP_CUSTOMER_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'customerCode', type: 'string', labelKey: 'advancedFilter.columnCustomerCode' },
   { value: 'customerName', type: 'string', labelKey: 'advancedFilter.columnCustomerName' },
   { value: 'branchCode', type: 'number', labelKey: 'advancedFilter.columnBranchCode' },
@@ -31,48 +30,9 @@ export function getDefaultOperatorForColumn(column: string): string {
   return 'Equals';
 }
 
-export function applyFilterRow<T extends object>(
-  item: T,
-  row: ErpCustomerFilterRow
-): boolean {
-  const value = row.value.trim();
-  if (!value) return true;
-
-  const raw = (item as Record<string, unknown>)[row.column];
-  const cellStr = raw == null ? '' : String(raw).toLowerCase();
-  const filterLower = value.toLowerCase();
-
-  const config = ERP_CUSTOMER_FILTER_COLUMNS.find((c) => c.value === row.column);
-  const isNumeric = config?.type === 'number';
-
-  if (isNumeric) {
-    const cellNum = Number(raw);
-    const filterNum = Number(value);
-    if (Number.isNaN(cellNum) || Number.isNaN(filterNum)) return false;
-    switch (row.operator) {
-      case 'Equals': return cellNum === filterNum;
-      case '>': return cellNum > filterNum;
-      case '>=': return cellNum >= filterNum;
-      case '<': return cellNum < filterNum;
-      case '<=': return cellNum <= filterNum;
-      default: return cellNum === filterNum;
-    }
-  }
-
-  switch (row.operator) {
-    case 'Contains': return cellStr.includes(filterLower);
-    case 'StartsWith': return cellStr.startsWith(filterLower);
-    case 'EndsWith': return cellStr.endsWith(filterLower);
-    case 'Equals': return cellStr === filterLower;
-    default: return cellStr.includes(filterLower);
-  }
-}
-
 export function applyFilterRows<T extends object>(
   items: T[],
-  rows: ErpCustomerFilterRow[]
+  rows: FilterRow[]
 ): T[] {
-  const validRows = rows.filter((r) => r.value.trim());
-  if (validRows.length === 0) return items;
-  return items.filter((item) => validRows.every((row) => applyFilterRow(item, row)));
+  return applyFilterRowsClient(items, rows, ERP_CUSTOMER_FILTER_COLUMNS);
 }

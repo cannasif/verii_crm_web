@@ -4,6 +4,7 @@
   "loading": "Yükleniyor...",
   "noData": "Müşteri bulunamadı",
   "table": {
+    "title": "Müşteri Listesi",
     "branchCode": "Şube Kodu",
     "businessUnitCode": "İş Birimi Kodu",
     "customerCode": "Müşteri Kodu",
