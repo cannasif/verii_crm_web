@@ -47,8 +47,10 @@ import {
   EyeOff,
   Eye,
   Columns3,
+  Mail,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
+import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
 
 export interface ColumnDef<T> {
   key: keyof T | string;
@@ -116,6 +118,7 @@ export function ActivityTable({
 }: ActivityTableProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [mailDialogOpen, setMailDialogOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ActivityDto | null>(null);
   const [columnPopoverOpen, setColumnPopoverOpen] = useState(false);
 
@@ -181,6 +184,11 @@ export function ActivityTable({
   const handleDeleteClick = (activity: ActivityDto): void => {
     setSelectedActivity(activity);
     setDeleteDialogOpen(true);
+  };
+
+  const handleMailClick = (activity: ActivityDto): void => {
+    setSelectedActivity(activity);
+    setMailDialogOpen(true);
   };
 
   const handleDeleteConfirm = async (): Promise<void> => {
@@ -429,6 +437,9 @@ export function ActivityTable({
                         )}
 
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:bg-blue-50 dark:text-blue-400" onClick={() => onEdit(item)}><Edit2 size={16} /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400" onClick={() => handleMailClick(item)} title={t('google-integration:mailDialog.openButton')}>
+                          <Mail size={16} />
+                        </Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-red-600 hover:bg-red-50 dark:text-red-400" onClick={() => handleDeleteClick(item)}><Trash2 size={16} /></Button>
                       </div>
                     </TableCell>
@@ -482,6 +493,17 @@ export function ActivityTable({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <GoogleCustomerMailDialog
+        open={mailDialogOpen}
+        onOpenChange={setMailDialogOpen}
+        moduleKey="activity"
+        recordId={selectedActivity?.id ?? 0}
+        customerId={selectedActivity?.potentialCustomerId}
+        contactId={selectedActivity?.contactId}
+        customerName={selectedActivity?.potentialCustomer?.name}
+        contactName={selectedActivity?.contact?.fullName}
+      />
     </div>
   );
 }

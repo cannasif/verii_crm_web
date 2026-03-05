@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -17,7 +17,8 @@ import { useCreateRevisionOfDemand } from '../hooks/useCreateRevisionOfDemand';
 import type { DemandGetDto } from '../types/demand-types';
 import type { PagedFilter } from '@/types/api';
 import { formatCurrency } from '../utils/format-currency';
-import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronsUpDown, Mail } from 'lucide-react';
+import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
 
 interface DemandTableProps {
   pageNumber: number;
@@ -43,6 +44,8 @@ export function DemandTable({
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const createRevisionMutation = useCreateRevisionOfDemand();
+  const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [selectedDemand, setSelectedDemand] = useState<DemandGetDto | null>(null);
 
   const { data, isLoading, isFetching } = useDemandList({
     pageNumber,
@@ -67,6 +70,12 @@ export function DemandTable({
   const handleSort = (column: string): void => {
     const newDirection = sortBy === column && sortDirection === 'asc' ? 'desc' : 'asc';
     onSortChange(column, newDirection);
+  };
+
+  const handleOpenMailDialog = (event: React.MouseEvent, demand: DemandGetDto): void => {
+    event.stopPropagation();
+    setSelectedDemand(demand);
+    setMailDialogOpen(true);
   };
 
   const SortIcon = ({ column }: { column: string }): ReactElement => {
@@ -216,19 +225,28 @@ export function DemandTable({
                   )}
                 </TableCell>
                 <TableCell>
-                  {(demand.status === 0 || demand.status === 1) && (
+                  <div className="flex items-center justify-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={(e) => handleRevision(e, demand.id)}
-                      disabled={createRevisionMutation.isPending}
-                      className="w-full"
+                      onClick={(e) => handleOpenMailDialog(e, demand)}
                     >
-                      {createRevisionMutation.isPending
-                        ? t('demand.loading')
-                        : t('demand.list.revise')}
+                      <Mail className="h-4 w-4 mr-1" />
+                      {t('google-integration:mailDialog.openButton')}
                     </Button>
-                  )}
+                    {(demand.status === 0 || demand.status === 1) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => handleRevision(e, demand.id)}
+                        disabled={createRevisionMutation.isPending}
+                      >
+                        {createRevisionMutation.isPending
+                          ? t('demand.loading')
+                          : t('demand.list.revise')}
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -270,6 +288,16 @@ export function DemandTable({
           </Button>
         </div>
       </div>
+
+      <GoogleCustomerMailDialog
+        open={mailDialogOpen}
+        onOpenChange={setMailDialogOpen}
+        moduleKey="demand"
+        recordId={selectedDemand?.id ?? 0}
+        customerId={selectedDemand?.potentialCustomerId}
+        contactId={selectedDemand?.contactId}
+        customerName={selectedDemand?.potentialCustomerName}
+      />
     </>
   );
 }

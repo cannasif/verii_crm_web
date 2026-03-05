@@ -16,6 +16,57 @@ export interface GoogleTestEventDto {
   eventId: string;
 }
 
+export interface SendGoogleCustomerMailDto {
+  customerId: number;
+  contactId?: number;
+  to?: string;
+  cc?: string;
+  bcc?: string;
+  subject: string;
+  body: string;
+  isHtml: boolean;
+  templateKey?: string;
+  templateName?: string;
+  templateVersion?: string;
+}
+
+export interface GoogleCustomerMailSendResultDto {
+  logId: number;
+  isSuccess: boolean;
+  googleMessageId?: string | null;
+  googleThreadId?: string | null;
+  sentAt?: string | null;
+}
+
+export interface GoogleCustomerMailLogDto {
+  id: number;
+  customerId: number;
+  customerName?: string | null;
+  contactId?: number | null;
+  contactName?: string | null;
+  sentByUserId: number;
+  sentByUserName?: string | null;
+  provider: string;
+  senderEmail?: string | null;
+  toEmails: string;
+  ccEmails?: string | null;
+  bccEmails?: string | null;
+  subject: string;
+  body?: string | null;
+  bodyPreview?: string | null;
+  isHtml: boolean;
+  templateKey?: string | null;
+  templateName?: string | null;
+  templateVersion?: string | null;
+  isSuccess: boolean;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  googleMessageId?: string | null;
+  googleThreadId?: string | null;
+  sentAt?: string | null;
+  createdDate: string;
+}
+
 export interface GoogleIntegrationLogDto {
   id: number;
   tenantId: string;
@@ -56,3 +107,5 @@ export type GoogleAuthorizeUrlResponse = ApiResponse<GoogleAuthorizeUrlDto>;
 export type GoogleTestEventResponse = ApiResponse<GoogleTestEventDto>;
 export type TenantGoogleOAuthSettingsResponse = ApiResponse<TenantGoogleOAuthSettingsDto>;
 export type GoogleIntegrationLogsResponse = ApiResponse<PagedResponse<GoogleIntegrationLogDto>>;
+export type GoogleCustomerMailSendResponse = ApiResponse<GoogleCustomerMailSendResultDto>;
+export type GoogleCustomerMailLogsResponse = ApiResponse<PagedResponse<GoogleCustomerMailLogDto>>;

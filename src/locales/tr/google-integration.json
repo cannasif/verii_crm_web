@@ -51,7 +51,11 @@
     "setupStep5": "Oluşan Client ID ve Client Secret değerlerini bu sayfaya girip kaydedin.",
     "setupStep6": "IsEnabled açık değilse kullanıcılar Google ile bağlanamaz.",
     "callbackLabel": "Callback URL",
-    "consoleLinkLabel": "Google Cloud Console'u aç"
+    "consoleLinkLabel": "Google Cloud Console'u aç",
+    "apiEnableTitle": "Gerekli Google API'leri Etkinleştirin",
+    "apiEnableHint": "Mail ve takvim işlemlerinin çalışması için aynı Google projesinde hem Calendar API hem Gmail API açık olmalıdır.",
+    "enableCalendarApi": "Calendar API'yi Aç",
+    "enableGmailApi": "Gmail API'yi Aç"
   },
   "sync": {
     "scopeCardTitle": "Senkron Durumu ve İzinler",
@@ -89,6 +93,51 @@
     "true": "Evet",
     "false": "Hayır"
   },
+  "mailDialog": {
+    "openButton": "Mail Gönder",
+    "title": "Google Mail Gönder",
+    "description": "{{module}} #{{id}} kaydı için gönderilecek maili düzenleyin.",
+    "missingCustomer": "Bu kayıtla ilişkili müşteri bulunamadı. Mail gönderilebilmesi için müşteri zorunludur.",
+    "templateLabel": "Şablon",
+    "toLabel": "Alıcı (To)",
+    "ccLabel": "Bilgi (Cc)",
+    "bccLabel": "Gizli (Bcc)",
+    "subjectLabel": "Konu",
+    "bodyLabel": "Mesaj",
+    "isHtmlLabel": "HTML olarak gönder",
+    "autoRecipientHint": "Boş bırakılırsa contact/customer e-postası otomatik kullanılır",
+    "recipientPlaceholder": "mail1@example.com; mail2@example.com",
+    "cancel": "Vazgeç",
+    "send": "Gönder",
+    "sending": "Gönderiliyor...",
+    "sendSuccess": "Mail başarıyla gönderildi.",
+    "sendError": "Mail gönderilemedi.",
+    "modules": {
+      "activity": "Aktivite",
+      "demand": "Talep",
+      "quotation": "Teklif",
+      "order": "Sipariş"
+    },
+    "templateNames": {
+      "generic-info": "Bilgilendirme",
+      "follow-up": "Takip",
+      "reminder": "Hatırlatma"
+    },
+    "templates": {
+      "generic": {
+        "subject": "{{module}} #{{id}} hakkında bilgilendirme",
+        "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı hakkında bilgi paylaşmak istiyorum.\n\nİyi çalışmalar."
+      },
+      "followUp": {
+        "subject": "{{module}} #{{id}} takip bilgisi",
+        "body": "Merhaba,\n\n{{customer}} / {{contact}} için {{module}} #{{id}} kaydının takibi kapsamında sizinle iletişime geçiyoruz.\n\nUygun olduğunuzda geri dönüş yapabilir misiniz?"
+      },
+      "reminder": {
+        "subject": "{{module}} #{{id}} hatırlatma",
+        "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı için hatırlatma iletisi.\n\nTeşekkürler."
+      }
+    }
+  },
   "logs": {
     "cardTitle": "Google Entegrasyon Logları",
     "errorsOnly": "Sadece hatalar",
@@ -101,6 +150,10 @@
     "previous": "Önceki",
     "next": "Sonraki",
     "pageInfo": "Sayfa: {{current}} • Toplam kayıt: {{loaded}}",
+    "actions": "İşlemler",
+    "viewDetails": "Detayları görüntüle",
+    "detailsTitle": "Log detayları",
+    "detailsDescription": "Seçili Google entegrasyon log kaydına ait detaylı bilgiler.",
     "columns": {
       "date": "Tarih",
       "operation": "İşlem",

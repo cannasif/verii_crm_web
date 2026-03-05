@@ -217,6 +217,28 @@ export function GoogleAuthInformationPage(): ReactElement {
           >
             {t('authInformation.consoleLinkLabel')}
           </a>
+          <div className="rounded-md border bg-muted/40 px-3 py-2 text-xs text-muted-foreground space-y-1">
+            <p className="font-medium text-foreground">{t('authInformation.apiEnableTitle')}</p>
+            <p>{t('authInformation.apiEnableHint')}</p>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com"
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2 text-primary"
+              >
+                {t('authInformation.enableCalendarApi')}
+              </a>
+              <a
+                href="https://console.cloud.google.com/apis/library/gmail.googleapis.com"
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2 text-primary"
+              >
+                {t('authInformation.enableGmailApi')}
+              </a>
+            </div>
+          </div>
         </CardContent>
       </Card>
       </>

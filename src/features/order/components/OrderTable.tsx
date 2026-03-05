@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -17,7 +17,8 @@ import { useCreateRevisionOfOrder } from '../hooks/useCreateRevisionOfOrder';
 import type { OrderGetDto } from '../types/order-types';
 import type { PagedFilter } from '@/types/api';
 import { formatCurrency } from '../utils/format-currency';
-import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronsUpDown, Mail } from 'lucide-react';
+import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
 
 interface OrderTableProps {
   pageNumber: number;
@@ -43,6 +44,8 @@ export function OrderTable({
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const createRevisionMutation = useCreateRevisionOfOrder();
+  const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderGetDto | null>(null);
 
   const { data, isLoading, isFetching } = useOrderList({
     pageNumber,
@@ -67,6 +70,12 @@ export function OrderTable({
   const handleSort = (column: string): void => {
     const newDirection = sortBy === column && sortDirection === 'asc' ? 'desc' : 'asc';
     onSortChange(column, newDirection);
+  };
+
+  const handleOpenMailDialog = (event: React.MouseEvent, order: OrderGetDto): void => {
+    event.stopPropagation();
+    setSelectedOrder(order);
+    setMailDialogOpen(true);
   };
 
   const SortIcon = ({ column }: { column: string }): ReactElement => {
@@ -216,19 +225,28 @@ export function OrderTable({
                   )}
                 </TableCell>
                 <TableCell>
-                  {(order.status === 0 || order.status === 1) && (
+                  <div className="flex items-center justify-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={(e) => handleRevision(e, order.id)}
-                      disabled={createRevisionMutation.isPending}
-                      className="w-full"
+                      onClick={(e) => handleOpenMailDialog(e, order)}
                     >
-                      {createRevisionMutation.isPending
-                        ? t('order.loading')
-                        : t('order.list.revise')}
+                      <Mail className="h-4 w-4 mr-1" />
+                      {t('google-integration:mailDialog.openButton')}
                     </Button>
-                  )}
+                    {(order.status === 0 || order.status === 1) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => handleRevision(e, order.id)}
+                        disabled={createRevisionMutation.isPending}
+                      >
+                        {createRevisionMutation.isPending
+                          ? t('order.loading')
+                          : t('order.list.revise')}
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -270,6 +288,16 @@ export function OrderTable({
           </Button>
         </div>
       </div>
+
+      <GoogleCustomerMailDialog
+        open={mailDialogOpen}
+        onOpenChange={setMailDialogOpen}
+        moduleKey="order"
+        recordId={selectedOrder?.id ?? 0}
+        customerId={selectedOrder?.potentialCustomerId}
+        contactId={selectedOrder?.contactId}
+        customerName={selectedOrder?.potentialCustomerName}
+      />
     </>
   );
 }

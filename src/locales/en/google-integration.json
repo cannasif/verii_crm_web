@@ -51,7 +51,11 @@
     "setupStep5": "Copy generated Client ID and Client Secret and save them on this page.",
     "setupStep6": "If IsEnabled is off, users cannot connect with Google.",
     "callbackLabel": "Callback URL",
-    "consoleLinkLabel": "Open Google Cloud Console"
+    "consoleLinkLabel": "Open Google Cloud Console",
+    "apiEnableTitle": "Enable Required Google APIs",
+    "apiEnableHint": "For mail and calendar operations, both Calendar API and Gmail API must be enabled in the same Google project.",
+    "enableCalendarApi": "Enable Calendar API",
+    "enableGmailApi": "Enable Gmail API"
   },
   "sync": {
     "scopeCardTitle": "Sync Status and Permissions",
@@ -89,6 +93,51 @@
     "true": "Yes",
     "false": "No"
   },
+  "mailDialog": {
+    "openButton": "Send Mail",
+    "title": "Send Google Mail",
+    "description": "Edit the outgoing email for {{module}} #{{id}}.",
+    "missingCustomer": "No customer is linked to this record. Customer is required to send mail.",
+    "templateLabel": "Template",
+    "toLabel": "Recipient (To)",
+    "ccLabel": "CC",
+    "bccLabel": "BCC",
+    "subjectLabel": "Subject",
+    "bodyLabel": "Message",
+    "isHtmlLabel": "Send as HTML",
+    "autoRecipientHint": "If empty, contact/customer email will be used automatically",
+    "recipientPlaceholder": "mail1@example.com; mail2@example.com",
+    "cancel": "Cancel",
+    "send": "Send",
+    "sending": "Sending...",
+    "sendSuccess": "Mail sent successfully.",
+    "sendError": "Mail could not be sent.",
+    "modules": {
+      "activity": "Activity",
+      "demand": "Demand",
+      "quotation": "Quotation",
+      "order": "Order"
+    },
+    "templateNames": {
+      "generic-info": "Information",
+      "follow-up": "Follow Up",
+      "reminder": "Reminder"
+    },
+    "templates": {
+      "generic": {
+        "subject": "Information about {{module}} #{{id}}",
+        "body": "Hello,\n\nI would like to share information about {{module}} #{{id}} for customer {{customer}}.\n\nBest regards."
+      },
+      "followUp": {
+        "subject": "Follow-up for {{module}} #{{id}}",
+        "body": "Hello,\n\nWe are reaching out for follow-up regarding {{module}} #{{id}} for {{customer}} / {{contact}}.\n\nCould you please get back to us when available?"
+      },
+      "reminder": {
+        "subject": "Reminder for {{module}} #{{id}}",
+        "body": "Hello,\n\nThis is a reminder for {{module}} #{{id}} related to customer {{customer}}.\n\nThank you."
+      }
+    }
+  },
   "logs": {
     "cardTitle": "Google Integration Logs",
     "errorsOnly": "Errors only",
@@ -101,6 +150,10 @@
     "previous": "Previous",
     "next": "Next",
     "pageInfo": "Page: {{current}} • Total records: {{loaded}}",
+    "actions": "Actions",
+    "viewDetails": "View details",
+    "detailsTitle": "Log details",
+    "detailsDescription": "Detailed information about the selected Google integration log entry.",
     "columns": {
       "date": "Date",
       "operation": "Operation",

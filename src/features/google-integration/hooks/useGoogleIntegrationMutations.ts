@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { googleIntegrationApi } from '../api/google-integration.api';
 import { GOOGLE_STATUS_QUERY_KEY } from './useGoogleStatusQuery';
+import type { SendGoogleCustomerMailDto } from '../types/google-integration.types';
 
 export function useGoogleAuthorizeMutation() {
   const { t } = useTranslation('google-integration');
@@ -46,6 +47,20 @@ export function useGoogleTestEventMutation() {
     },
     onError: (error: Error) => {
       toast.error(error.message || t('connection.testEventError'));
+    },
+  });
+}
+
+export function useSendGoogleCustomerMailMutation() {
+  const { t } = useTranslation('google-integration');
+
+  return useMutation({
+    mutationFn: (payload: SendGoogleCustomerMailDto) => googleIntegrationApi.sendCustomerMail(payload),
+    onSuccess: () => {
+      toast.success(t('mailDialog.sendSuccess'));
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('mailDialog.sendError'));
     },
   });
 }
