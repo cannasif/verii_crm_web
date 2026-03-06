@@ -63,6 +63,7 @@ export interface ReportTemplateElementDto {
 }
 
 export interface ReportTemplateDataDto {
+  schemaVersion: number;
   page: ReportTemplatePageDto;
   elements: ReportTemplateElementDto[];
 }

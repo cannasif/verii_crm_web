@@ -145,7 +145,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   const isFormValid = form.formState.isValid;
 
   const { data: templateById, isSuccess: templateByIdLoaded } = usePdfReportTemplateById(
-    isEdit ? editId! : null
+    isEdit && editId != null ? editId : null
   );
   const appliedEditIdRef = useRef<number | null>(null);
   const justAppliedCopyRef = useRef(false);
@@ -199,6 +199,17 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         path: f.path,
         type: 'table-column' as const,
       })),
+    [fieldsData?.lineFields]
+  );
+  const imageFields: PdfFieldPaletteItem[] = useMemo(
+    () =>
+      (fieldsData?.lineFields ?? [])
+        .filter((f) => f.path.endsWith('DefaultImagePath'))
+        .map((f) => ({
+          label: f.label,
+          path: f.path,
+          type: 'image' as const,
+        })),
     [fieldsData?.lineFields]
   );
   const exchangeRateFields: PdfFieldPaletteItem[] = useMemo(
@@ -296,6 +307,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       ruleType: ruleTypeForApi(values.ruleType) as DocumentRuleType,
       title: values.title,
       templateData: {
+        schemaVersion: 1,
         page: { width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT, unit: 'px' },
         elements: pdfCanvasElementsToDto(elements),
       },
@@ -417,7 +429,8 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         y,
         width: 120,
         height: 80,
-        value: data.value ?? data.label ?? '',
+        value: data.value ?? '',
+        path: data.path || undefined,
       };
       addElement(newElement);
     }
@@ -554,11 +567,12 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       <div className="flex min-h-0 flex-1 flex-col">
         <DndContext onDragEnd={handleDragEnd}>
           <div className="flex min-h-0 flex-1">
-            <PdfSidebar
-              headerFields={headerFields}
-              lineFields={lineFields}
-              exchangeRateFields={exchangeRateFields}
-            />
+          <PdfSidebar
+            headerFields={headerFields}
+            lineFields={lineFields}
+            exchangeRateFields={exchangeRateFields}
+            imageFields={imageFields}
+          />
             <PdfA4Canvas canvasRef={canvasRef} />
             <PdfInspectorPanel />
             <PdfLayersPanel />

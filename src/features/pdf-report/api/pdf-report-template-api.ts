@@ -26,12 +26,20 @@ function normalizeTemplateItem(item: unknown): ReportTemplateGetDto {
       try {
         templateData = JSON.parse(templateJson) as ReportTemplateDataDto;
       } catch {
-        templateData = { page: { width: 794, height: 1123, unit: 'px' }, elements: [] };
+        templateData = {
+          schemaVersion: 1,
+          page: { width: 794, height: 1123, unit: 'px' },
+          elements: [],
+        };
       }
     } else if (templateJson != null && typeof templateJson === 'object') {
       templateData = templateJson as ReportTemplateDataDto;
     } else {
-      templateData = { page: { width: 794, height: 1123, unit: 'px' }, elements: [] };
+      templateData = {
+        schemaVersion: 1,
+        page: { width: 794, height: 1123, unit: 'px' },
+        elements: [],
+      };
     }
   }
   const elements =
@@ -45,6 +53,12 @@ function normalizeTemplateItem(item: unknown): ReportTemplateGetDto {
       unit: 'px',
     };
   const normalizedData: ReportTemplateDataDto = {
+    schemaVersion:
+      Number(
+        (templateData as unknown as Record<string, unknown>).schemaVersion ??
+          (templateData as unknown as Record<string, unknown>).SchemaVersion ??
+          1
+      ) || 1,
     page: page as ReportTemplateDataDto['page'],
     elements: Array.isArray(elements) ? elements : [],
   };

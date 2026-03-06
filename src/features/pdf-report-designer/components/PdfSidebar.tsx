@@ -37,6 +37,7 @@ export interface PdfSidebarProps {
   headerFields?: PdfFieldPaletteItem[];
   lineFields?: PdfFieldPaletteItem[];
   exchangeRateFields?: PdfFieldPaletteItem[];
+  imageFields?: PdfFieldPaletteItem[];
 }
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
@@ -353,14 +354,14 @@ function ImagePropertiesPanel(): ReactElement | null {
       <div className="flex flex-col gap-2">
         <Label className="text-xs">{t('reportDesigner.properties.uploadFromFile')}</Label>
         <input
-          id="pdf-report-designer-image-upload"
+          id={`pdf-report-designer-image-upload-${selectedElement.id}`}
           type="file"
           accept="image/*"
           className="sr-only"
           onChange={handleFileChange}
         />
         <Label
-          htmlFor="pdf-report-designer-image-upload"
+          htmlFor={`pdf-report-designer-image-upload-${selectedElement.id}`}
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-medium ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <Upload className="size-3.5" />
@@ -385,11 +386,13 @@ export function PdfSidebar({
   headerFields,
   lineFields,
   exchangeRateFields,
+  imageFields,
 }: PdfSidebarProps = {}): ReactElement {
   const { t } = useTranslation();
   const fieldsItems = headerFields ?? [];
   const tableColumnsItems = lineFields ?? [];
   const exchangeRateColumnsItems = exchangeRateFields ?? [];
+  const imageFieldsItems = imageFields ?? [];
   const textItem: PdfFieldPaletteItem = {
     label: t('reportDesigner.palette.text'),
     path: '',
@@ -406,6 +409,7 @@ export function PdfSidebar({
     type: 'image',
     value: 'Logo',
   };
+  const allImageItems = [logoImageItem, ...imageFieldsItems];
   return (
     <div className="flex w-64 flex-col gap-6 border-r border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/30">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -422,7 +426,7 @@ export function PdfSidebar({
         />
       )}
       <Section title={t('reportDesigner.palette.addTable')} items={[addTableItem]} idPrefix="pdf-palette-add-table" />
-      <Section title={t('reportDesigner.palette.images')} items={[logoImageItem]} idPrefix="pdf-palette-images" />
+      <Section title={t('reportDesigner.palette.images')} items={allImageItems} idPrefix="pdf-palette-images" />
       <TextPropertiesPanel />
       <FieldPropertiesPanel />
       <ImagePropertiesPanel />
