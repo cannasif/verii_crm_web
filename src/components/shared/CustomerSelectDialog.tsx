@@ -125,7 +125,7 @@ function CustomerCard({
         "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10"
       )}
     >
-      <div className="flex items-center gap-3 min-w-[30%] max-w-[40%]">
+      <div className="flex items-center gap-3 min-w-[88px] sm:min-w-[30%] max-w-full sm:max-w-[40%]">
         <div className={cn(
           "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
           type === 'erp' 
