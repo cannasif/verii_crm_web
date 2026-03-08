@@ -37,7 +37,7 @@ interface MainLayoutProps {
 export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   const { t } = useTranslation();
   const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
-  const canManageGoogleAuth =
+  const canManageIntegrationAuth =
     permissions?.isSystemAdmin === true ||
     ['tenantadmin', 'systemadmin'].includes((permissions?.roleTitle ?? '').trim().toLowerCase());
 
@@ -177,16 +177,6 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         ],
       },
       {
-        title: t('sidebar.googleIntegration'),
-        icon: <Settings02Icon size={iconSize} className="text-rose-500" />,
-        children: [
-          { title: t('sidebar.googleIntegrationConnection'), href: '/settings/integrations/google' },
-          { title: t('sidebar.googleIntegrationSync'), href: '/settings/integrations/google/sync' },
-          { title: t('sidebar.googleIntegrationLogs'), href: '/settings/integrations/google/logs' },
-          { title: t('sidebar.googleIntegrationAuthInformation'), href: '/settings/integrations/google/auth' },
-        ],
-      },
-      {
         title: t('sidebar.accessControl'),
         icon: <Shield01Icon size={iconSize} className="text-violet-500" />,
         children: [
@@ -204,7 +194,26 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       {
         title: t('sidebar.settings'),
         icon: <Settings02Icon size={iconSize} className="text-gray-500" />,
-        href: '#',
+        children: [
+          {
+            title: t('sidebar.googleIntegration'),
+            children: [
+              { title: t('sidebar.googleIntegrationConnection'), href: '/settings/integrations/google' },
+              { title: t('sidebar.googleIntegrationSync'), href: '/settings/integrations/google/sync' },
+              { title: t('sidebar.googleIntegrationLogs'), href: '/settings/integrations/google/logs' },
+              { title: t('sidebar.googleIntegrationAuthInformation'), href: '/settings/integrations/google/auth' },
+            ],
+          },
+          {
+            title: t('sidebar.outlookIntegration'),
+            children: [
+              { title: t('sidebar.outlookIntegrationConnection'), href: '/settings/integrations/outlook' },
+              { title: t('sidebar.outlookIntegrationSync'), href: '/settings/integrations/outlook/sync' },
+              { title: t('sidebar.outlookIntegrationLogs'), href: '/settings/integrations/outlook/logs' },
+              { title: t('sidebar.outlookIntegrationAuthInformation'), href: '/settings/integrations/outlook/auth' },
+            ],
+          },
+        ],
       },
     ];
 
@@ -213,28 +222,36 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
 
   const items = useMemo(() => {
     const raw = navItems ?? defaultNavItems;
-    const normalized = raw.map((item) => {
-      if (item.title !== t('sidebar.googleIntegration') || !item.children) {
-        return item;
-      }
+    const hideRestrictedAuthItems = (items: NavItem[]): NavItem[] =>
+      items
+        .map((item) => {
+          if (!item.children) return item;
 
-      return {
-        ...item,
-        children: item.children.filter((child) => {
-          if (child.href !== '/settings/integrations/google/auth') {
-            return true;
-          }
+          const filteredChildren = hideRestrictedAuthItems(item.children).filter((child) => {
+            if (
+              child.href !== '/settings/integrations/google/auth' &&
+              child.href !== '/settings/integrations/outlook/auth'
+            ) {
+              return true;
+            }
 
-          return canManageGoogleAuth;
-        }),
-      };
-    });
+            return canManageIntegrationAuth;
+          });
+
+          return {
+            ...item,
+            children: filteredChildren,
+          };
+        })
+        .filter((item) => !item.children || item.children.length > 0);
+
+    const normalized = hideRestrictedAuthItems(raw);
 
     if (isLoading) return normalized;
     if (permissions) return filterNavItemsByPermission(normalized, permissions);
     if (isError) return normalized;
     return normalized;
-  }, [navItems, defaultNavItems, permissions, isLoading, isError, canManageGoogleAuth, t]);
+  }, [navItems, defaultNavItems, permissions, isLoading, isError, canManageIntegrationAuth, t]);
 
   return (
     <div className="relative flex min-h-dvh h-[100dvh] w-full overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0516] font-['Outfit'] transition-colors duration-300">

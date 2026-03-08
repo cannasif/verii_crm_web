@@ -84,6 +84,10 @@ const GoogleConnectionPage = lazyImport(() => import('@/features/google-integrat
 const GoogleSyncPage = lazyImport(() => import('@/features/google-integration'), 'GoogleSyncPage');
 const GoogleLogsPage = lazyImport(() => import('@/features/google-integration'), 'GoogleLogsPage');
 const GoogleAuthInformationPage = lazyImport(() => import('@/features/google-integration'), 'GoogleAuthInformationPage');
+const OutlookConnectionPage = lazyImport(() => import('@/features/outlook-integration'), 'OutlookConnectionPage');
+const OutlookSyncPage = lazyImport(() => import('@/features/outlook-integration'), 'OutlookSyncPage');
+const OutlookLogsPage = lazyImport(() => import('@/features/outlook-integration'), 'OutlookLogsPage');
+const OutlookAuthInformationPage = lazyImport(() => import('@/features/outlook-integration'), 'OutlookAuthInformationPage');
 
 // const WINDO_FORM_ROUTE = '/crm-ui';
 const WINDO_FORM_ROUTE = '/';
@@ -166,6 +170,10 @@ export const router = createBrowserRouter([
       { path: 'settings/integrations/google/sync', element: <GoogleSyncPage /> },
       { path: 'settings/integrations/google/logs', element: <GoogleLogsPage /> },
       { path: 'settings/integrations/google/auth', element: <GoogleAuthInformationPage /> },
+      { path: 'settings/integrations/outlook', element: <OutlookConnectionPage /> },
+      { path: 'settings/integrations/outlook/sync', element: <OutlookSyncPage /> },
+      { path: 'settings/integrations/outlook/logs', element: <OutlookLogsPage /> },
+      { path: 'settings/integrations/outlook/auth', element: <OutlookAuthInformationPage /> },
       { path: 'profile', element: <ProfilePage /> },
     ],
   },
