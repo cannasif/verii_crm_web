@@ -36,7 +36,7 @@ export function DemandExchangeRateForm({
   setExchangeRates,
 }: DemandExchangeRateFormProps): ReactElement {
   const { t } = useTranslation();
-  const { currencyOptions } = useCurrencyOptions();
+  const { currencyOptions, isLoading: isCurrencyLoading } = useCurrencyOptions();
   const [newDovizTipi, setNewDovizTipi] = useState<number | ''>('');
   const [newExchangeRate, setNewExchangeRate] = useState('');
   const [newExchangeRateDate, setNewExchangeRateDate] = useState(
@@ -89,7 +89,7 @@ export function DemandExchangeRateForm({
       {/* HEADER & FORM SECTION */}
       <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/20">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 text-white">
+          <div className="p-2 rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 text-white">
             <DollarSign className="h-5 w-5" />
           </div>
           <div>
@@ -109,9 +109,10 @@ export function DemandExchangeRateForm({
             <Select
               value={newDovizTipi === '' ? undefined : String(newDovizTipi)}
               onValueChange={(value) => setNewDovizTipi(parseInt(value, 10))}
+              disabled={isCurrencyLoading}
             >
               <SelectTrigger className={styles.inputBase}>
-                <SelectValue placeholder={t('demand.select')} />
+                <SelectValue placeholder={isCurrencyLoading ? t('common.loading') : t('demand.select')} />
               </SelectTrigger>
               <SelectContent>
                 {currencyOptions

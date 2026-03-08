@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import {
   useHangfireDeadLetterQuery,
   useHangfireFailedJobsQuery,
@@ -49,6 +49,8 @@ export function HangfireMonitoringPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const isRefreshing = statsQuery.isRefetching || failedQuery.isRefetching || deadLetterQuery.isRefetching;
+  const isInitialLoading =
+    statsQuery.isLoading || failedQuery.isLoading || deadLetterQuery.isLoading;
 
   const handleRefresh = async (): Promise<void> => {
     await Promise.all([
@@ -60,6 +62,15 @@ export function HangfireMonitoringPage(): ReactElement {
 
   const failedTotalPages = Math.max(1, Math.ceil((failedQuery.data?.total ?? 0) / PAGE_SIZE));
   const deadLetterHasNext = (deadLetterQuery.data?.items?.length ?? 0) === PAGE_SIZE;
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">{t('common:loading')}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">

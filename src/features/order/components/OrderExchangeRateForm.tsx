@@ -30,7 +30,7 @@ export function OrderExchangeRateForm({
   setExchangeRates,
 }: OrderExchangeRateFormProps): ReactElement {
   const { t } = useTranslation();
-  const { currencyOptions } = useCurrencyOptions();
+  const { currencyOptions, isLoading: isCurrencyLoading } = useCurrencyOptions();
   const [newDovizTipi, setNewDovizTipi] = useState<number | ''>('');
   const [newExchangeRate, setNewExchangeRate] = useState('');
   const [newExchangeRateDate, setNewExchangeRateDate] = useState(
@@ -109,6 +109,7 @@ export function OrderExchangeRateForm({
                 }))}
               value={newDovizTipi === '' ? '' : String(newDovizTipi)}
               onSelect={(v) => setNewDovizTipi(v ? parseInt(v, 10) : '')}
+              isLoading={isCurrencyLoading}
               placeholder={t('order.select')}
               className={styles.inputBase}
             />
