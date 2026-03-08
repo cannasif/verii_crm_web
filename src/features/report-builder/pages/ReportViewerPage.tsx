@@ -7,8 +7,10 @@ import { reportsApi } from '../api';
 import { PreviewPanel } from '../components/PreviewPanel';
 import { Loader2, Pencil, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export function ReportViewerPage(): ReactElement {
+  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { meta, config, preview, ui, setPreview, setUi, hydrateFromReportDetail } = useReportBuilderStore();
@@ -59,7 +61,7 @@ export function ReportViewerPage(): ReactElement {
   if (Number.isNaN(reportId)) {
     return (
       <div className="p-6">
-        <p className="text-destructive">Geçersiz rapor ID</p>
+        <p className="text-destructive">{t('common.reportBuilder.invalidReportId')}</p>
       </div>
     );
   }
@@ -77,7 +79,7 @@ export function ReportViewerPage(): ReactElement {
       <div className="p-6">
         <p className="text-destructive">{ui.error}</p>
         <Button variant="outline" className="mt-2" onClick={() => navigate('/reports')}>
-          Listeye dön
+          {t('common.reportBuilder.backToList')}
         </Button>
       </div>
     );
@@ -90,11 +92,11 @@ export function ReportViewerPage(): ReactElement {
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={runPreview} disabled={ui.previewLoading}>
             <RefreshCw className={cn('mr-2 size-4', ui.previewLoading && 'animate-spin')} />
-            Yenile
+            {t('common.refresh')}
           </Button>
           <Button size="sm" onClick={() => navigate(`/reports/${reportId}/edit`)}>
             <Pencil className="mr-2 size-4" />
-            Düzenle
+            {t('common.edit')}
           </Button>
         </div>
       </div>

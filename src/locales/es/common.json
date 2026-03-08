@@ -128,7 +128,62 @@
     "imageSettings": "Propiedades de la imagen",
     "imageUrl": "URL de la imagen",
     "uploadFromFile": "Cargar desde archivo",
-    "imageUrlPlaceholder": "https://... veya /logo.png"
+    "imageUrlPlaceholder": "https://... veya /logo.png",
+    "forbidden": "You are not authorized to view this page.",
+    "dropdown": {
+      "minCharsHint": "Minimum {{count}} characters"
+    },
+    "advancedFilter": {
+      "title": "Advanced Filter",
+      "add": "Add Filter",
+      "column": "Column",
+      "operator": "Operator",
+      "value": "Valor",
+      "search": "Search",
+      "clear": "Clear",
+      "remove": "Remove",
+      "operatorContains": "Contains",
+      "operatorStartsWith": "Starts with",
+      "operatorEndsWith": "Ends with",
+      "operatorEquals": "Equals",
+      "operator>": ">",
+      "operator>=": ">=",
+      "operator<": "<",
+      "operator<=": "<=",
+      "true": "Yes",
+      "false": "No"
+    },
+    "inactive": "Pasif",
+    "routeError": {
+      "title": "Ocurrió un error",
+      "chunkError": "Se produjo un problema al cargar la página. Actualiza la página.",
+      "unexpected": "Ocurrió un error inesperado.",
+      "refresh": "Actualizar página",
+      "goBack": "Volver"
+    },
+    "reportBuilder": {
+      "reportName": "Nombre del informe",
+      "properties": "Propiedades",
+      "invalidReportId": "ID de informe no válido",
+      "backToList": "Volver a la lista",
+      "newReport": "Crear nuevo",
+      "searchReport": "Buscar informe...",
+      "noReports": "Aún no hay informes.",
+      "fields": "Campos",
+      "searchFields": "Buscar campos...",
+      "checkFirst": "Ejecute primero la verificación",
+      "noFields": "Sin campos",
+      "chartType": "Tipo de gráfico",
+      "dateGrouping": "Agrupación por fecha",
+      "sorting": "Ordenación",
+      "sortBy": "Ordenar por",
+      "axis": "Eje",
+      "value": "Valor",
+      "asc": "Ascendente",
+      "desc": "Descendente",
+      "valuesAggregation": "Agregación de valores",
+      "filtersOperator": "Operador de filtro"
+    }
   },
   "auth": {
     "login": {
@@ -287,7 +342,17 @@
     "waitingApprovalOrders": "Pedidos pendientes de aprobación",
     "orderList": "Lista de pedidos",
     "reportsList": "Lista",
-    "reportsCreate": "Crear nuevo"
+    "reportsCreate": "Crear nuevo",
+    "googleIntegration": "Google Integration",
+    "googleIntegrationConnection": "Connection",
+    "googleIntegrationSync": "Sync",
+    "googleIntegrationLogs": "Logs",
+    "googleIntegrationAuthInformation": "Google Auth Information",
+    "outlookIntegration": "Outlook Integration",
+    "outlookIntegrationConnection": "Connection",
+    "outlookIntegrationSync": "Sync",
+    "outlookIntegrationLogs": "Logs",
+    "outlookIntegrationAuthInformation": "Outlook Auth Information"
   },
   "dashboard": {
     "title": "Tablero",

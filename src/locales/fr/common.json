@@ -128,7 +128,62 @@
     "imageSettings": "Propriétés de l'image",
     "imageUrl": "URL de l'image",
     "uploadFromFile": "Charger à partir d'un fichier",
-    "imageUrlPlaceholder": "https://... veya /logo.png"
+    "imageUrlPlaceholder": "https://... veya /logo.png",
+    "forbidden": "You are not authorized to view this page.",
+    "dropdown": {
+      "minCharsHint": "Minimum {{count}} characters"
+    },
+    "advancedFilter": {
+      "title": "Advanced Filter",
+      "add": "Add Filter",
+      "column": "Column",
+      "operator": "Operator",
+      "value": "Valeur",
+      "search": "Search",
+      "clear": "Clear",
+      "remove": "Remove",
+      "operatorContains": "Contains",
+      "operatorStartsWith": "Starts with",
+      "operatorEndsWith": "Ends with",
+      "operatorEquals": "Equals",
+      "operator>": ">",
+      "operator>=": ">=",
+      "operator<": "<",
+      "operator<=": "<=",
+      "true": "Yes",
+      "false": "No"
+    },
+    "inactive": "Pasif",
+    "routeError": {
+      "title": "Une erreur est survenue",
+      "chunkError": "Un problème est survenu lors du chargement de la page. Veuillez actualiser la page.",
+      "unexpected": "Une erreur inattendue est survenue.",
+      "refresh": "Actualiser la page",
+      "goBack": "Retour"
+    },
+    "reportBuilder": {
+      "reportName": "Nom du rapport",
+      "properties": "Propriétés",
+      "invalidReportId": "ID de rapport invalide",
+      "backToList": "Retour à la liste",
+      "newReport": "Créer nouveau",
+      "searchReport": "Rechercher un rapport...",
+      "noReports": "Aucun rapport pour le moment.",
+      "fields": "Champs",
+      "searchFields": "Rechercher des champs...",
+      "checkFirst": "Exécutez d'abord le contrôle",
+      "noFields": "Aucun champ",
+      "chartType": "Type de graphique",
+      "dateGrouping": "Regroupement de date",
+      "sorting": "Tri",
+      "sortBy": "Trier par",
+      "axis": "Axe",
+      "value": "Valeur",
+      "asc": "Croissant",
+      "desc": "Décroissant",
+      "valuesAggregation": "Agrégation des valeurs",
+      "filtersOperator": "Opérateur de filtre"
+    }
   },
   "auth": {
     "login": {
@@ -287,7 +342,17 @@
     "reportsList": "Liste",
     "reportsCreate": "Créer nouveau",
     "definitions": "Définitions",
-    "users": "Utilisateurs"
+    "users": "Utilisateurs",
+    "googleIntegration": "Google Integration",
+    "googleIntegrationConnection": "Connection",
+    "googleIntegrationSync": "Sync",
+    "googleIntegrationLogs": "Logs",
+    "googleIntegrationAuthInformation": "Google Auth Information",
+    "outlookIntegration": "Outlook Integration",
+    "outlookIntegrationConnection": "Connection",
+    "outlookIntegrationSync": "Sync",
+    "outlookIntegrationLogs": "Logs",
+    "outlookIntegrationAuthInformation": "Outlook Auth Information"
   },
   "dashboard": {
     "title": "Tableau de bord",

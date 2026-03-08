@@ -152,7 +152,38 @@
     "selectImage": "select image",
     "imageSettings": "Image Properties",
     "imageUrl": "Image URL",
-    "uploadFromFile": "Load from file"
+    "uploadFromFile": "Load from file",
+    "inactive": "Pasif",
+    "routeError": {
+      "title": "An error occurred",
+      "chunkError": "A problem occurred while loading the page. Please refresh the page.",
+      "unexpected": "An unexpected error occurred.",
+      "refresh": "Refresh page",
+      "goBack": "Go back"
+    },
+    "reportBuilder": {
+      "reportName": "Report name",
+      "properties": "Properties",
+      "invalidReportId": "Invalid report ID",
+      "backToList": "Back to list",
+      "newReport": "Create New",
+      "searchReport": "Search report...",
+      "noReports": "No reports yet.",
+      "fields": "Fields",
+      "searchFields": "Search fields...",
+      "checkFirst": "Run Check first",
+      "noFields": "No fields",
+      "chartType": "Chart type",
+      "dateGrouping": "Date grouping",
+      "sorting": "Sorting",
+      "sortBy": "Sort by",
+      "axis": "Axis",
+      "value": "Value",
+      "asc": "Asc",
+      "desc": "Desc",
+      "valuesAggregation": "Values aggregation",
+      "filtersOperator": "Filter operator"
+    }
   },
   "auth": {
     "login": {

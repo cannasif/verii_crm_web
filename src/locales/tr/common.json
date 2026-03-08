@@ -153,7 +153,37 @@
     "imageSettings": "Resim Özellikleri",
     "imageUrl": "Resim URL",
     "uploadFromFile": "Dosyadan yükle",
-    "imageUrlPlaceholder": "https://... veya /logo.png"
+    "imageUrlPlaceholder": "https://... veya /logo.png",
+    "routeError": {
+      "title": "Bir hata oluştu",
+      "chunkError": "Sayfa yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.",
+      "unexpected": "Beklenmeyen bir hata oluştu.",
+      "refresh": "Sayfayı yenile",
+      "goBack": "Geri dön"
+    },
+    "reportBuilder": {
+      "reportName": "Rapor adı",
+      "properties": "Özellikler",
+      "invalidReportId": "Geçersiz rapor ID",
+      "backToList": "Listeye dön",
+      "newReport": "Yeni Oluştur",
+      "searchReport": "Rapor ara...",
+      "noReports": "Henüz rapor yok.",
+      "fields": "Alanlar",
+      "searchFields": "Alanlarda ara...",
+      "checkFirst": "Önce Kontrol yapın",
+      "noFields": "Alan yok",
+      "chartType": "Grafik tipi",
+      "dateGrouping": "Tarih grupla",
+      "sorting": "Sıralama",
+      "sortBy": "Sıralama ölçütü",
+      "axis": "Eksen",
+      "value": "Değer",
+      "asc": "Artan",
+      "desc": "Azalan",
+      "valuesAggregation": "Değer özetleme",
+      "filtersOperator": "Filtre operatörü"
+    }
   },
   "auth": {
     "login": {
@@ -650,7 +680,7 @@
       "churnRisk": "Churn Risk; son sipariş günü, son aktivite günü ve son 12 ay sipariş sıklığı sinyalleriyle 0-100 hesaplanır. Yüksek skor daha yüksek kayıp riski demektir.",
       "upsellPropensity": "Upsell Propensity; sipariş adedi, tekliften siparişe dönüşüm oranı ve ortalama sipariş tutarı sinyalleriyle 0-100 hesaplanır. Yüksek skor satış fırsatı anlamına gelir.",
       "paymentBehavior": "Payment Behavior şu an ERP tahsilat geçmişi yerine proxy sinyallerle (sipariş devamlılığı, teklif red oranı, son sipariş recency) 0-100 hesaplanır.",
-      "rfmSegment": "RFM Segment; recency (yakınlık), frequency (sıklık), monetary (tutar) kurallarına göre Champions/Loyal/AtRisk/Potential sınıfı üretir.",
+      "rfmSegment": "RFM Segment; recency (yakınlık), frequency (sıklık), monetary (tutar) kurallarına göre Şampiyonlar/Sadık/Risk Altında/Potansiyel sınıfı üretir.",
       "cohortRetentionTitle": "Cohort Retention, ilk temas/sipariş ayını cohort kabul eder; takip eden aylarda sipariş varsa retained sayar ve aylık retention yüzdesi üretir.",
       "recommendedActionsTitle": "Önerilen Aksiyonlar, kural motorunun ürettiği öncelikli takip önerileridir (örn. uzun süre aktivite yok, açık teklif var, churn yüksek). Her aksiyon gerekçe + kural kodu ile izlenebilir.",
       "executeAction": "Execute, bu öneriyi aktivite/göreve çevirir: backend `POST /api/customer360/{id}/actions/execute` çağrılır ve yeni Activity kaydı oluşur.",

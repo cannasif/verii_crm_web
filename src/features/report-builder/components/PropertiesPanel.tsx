@@ -13,6 +13,7 @@ import type { ChartType, Aggregation, DateGrouping } from '../types';
 import { getOperatorsForField } from '../utils';
 import type { Field } from '../types';
 import { GripVertical, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const CHART_TYPES: { value: ChartType; label: string }[] = [
   { value: 'table', label: 'Table' },
@@ -43,6 +44,7 @@ interface PropertiesPanelProps {
 }
 
 export function PropertiesPanel({ schema, slotError: _slotError, disabled }: PropertiesPanelProps): ReactElement {
+  const { t } = useTranslation('common');
   const {
     config,
     setChartType,
@@ -60,7 +62,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
   if (disabled) {
     return (
       <div className="space-y-4">
-        <p className="text-muted-foreground text-sm">Önce Kontrol yapın</p>
+        <p className="text-muted-foreground text-sm">{t('common.reportBuilder.checkFirst')}</p>
       </div>
     );
   }
@@ -68,7 +70,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
   return (
     <div className="flex flex-col gap-4 overflow-y-auto">
       <div className="space-y-2">
-        <Label>Chart type</Label>
+        <Label>{t('common.reportBuilder.chartType')}</Label>
         <Select value={config.chartType} onValueChange={(v) => setChartType(v as ChartType)}>
           <SelectTrigger className="w-full">
             <SelectValue />
@@ -87,7 +89,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
         axisSchema &&
         (axisSchema.dotNetType?.includes('DateTime') ?? axisSchema.sqlType?.toLowerCase().includes('date')) && (
           <div className="space-y-2">
-            <Label>Date grouping</Label>
+            <Label>{t('common.reportBuilder.dateGrouping')}</Label>
             <Select
               value={config.axis.dateGrouping ?? 'day'}
               onValueChange={(v) => setDateGrouping(v as DateGrouping)}
@@ -107,7 +109,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
         )}
 
       <div className="space-y-2">
-        <Label>Sorting</Label>
+        <Label>{t('common.reportBuilder.sorting')}</Label>
         <div className="flex gap-2">
           <Select
             value={config.sorting?.by ?? 'axis'}
@@ -120,11 +122,11 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
             }
           >
             <SelectTrigger className="flex-1">
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder={t('common.reportBuilder.sortBy')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="axis">Axis</SelectItem>
-              <SelectItem value="value">Value</SelectItem>
+              <SelectItem value="axis">{t('common.reportBuilder.axis')}</SelectItem>
+              <SelectItem value="value">{t('common.reportBuilder.value')}</SelectItem>
             </SelectContent>
           </Select>
           <Select
@@ -141,8 +143,8 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="asc">Asc</SelectItem>
-              <SelectItem value="desc">Desc</SelectItem>
+              <SelectItem value="asc">{t('common.reportBuilder.asc')}</SelectItem>
+              <SelectItem value="desc">{t('common.reportBuilder.desc')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -150,7 +152,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
 
       {config.values.length > 0 && (
         <div className="space-y-2">
-          <Label>Values aggregation</Label>
+          <Label>{t('common.reportBuilder.valuesAggregation')}</Label>
           <div className="space-y-1">
             {config.values.map((v, i) => (
               <div key={`${v.field}-${i}`} className="flex items-center gap-1 rounded bg-muted/50 px-2 py-1 text-sm">
@@ -179,7 +181,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
 
       {config.filters.length > 0 && (
         <div className="space-y-2">
-          <Label>Filters operator</Label>
+          <Label>{t('common.reportBuilder.filtersOperator')}</Label>
           <div className="space-y-1">
             {config.filters.map((f, i) => {
               const fieldSchema = schema.find((s) => s.name === f.field);

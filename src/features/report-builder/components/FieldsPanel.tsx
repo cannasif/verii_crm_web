@@ -4,6 +4,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 import type { Field } from '../types';
 
 interface FieldItemProps {
@@ -40,6 +41,7 @@ interface FieldsPanelProps {
 }
 
 export function FieldsPanel({ schema, search, onSearchChange, disabled }: FieldsPanelProps): ReactElement {
+  const { t } = useTranslation('common');
   const filtered = useMemo(() => {
     if (!search.trim()) return schema;
     const q = search.trim().toLowerCase();
@@ -51,9 +53,9 @@ export function FieldsPanel({ schema, search, onSearchChange, disabled }: Fields
   return (
     <div className="flex h-full flex-col gap-2">
       <div className="space-y-1">
-        <Label>Fields</Label>
+        <Label>{t('common.reportBuilder.fields')}</Label>
         <Input
-          placeholder="Search fields..."
+          placeholder={t('common.reportBuilder.searchFields')}
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           className="h-8"
@@ -67,10 +69,10 @@ export function FieldsPanel({ schema, search, onSearchChange, disabled }: Fields
         )}
       >
         {disabled && (
-          <p className="text-muted-foreground py-4 text-center text-sm">Önce Kontrol yapın</p>
+          <p className="text-muted-foreground py-4 text-center text-sm">{t('common.reportBuilder.checkFirst')}</p>
         )}
         {!disabled && filtered.length === 0 && (
-          <p className="text-muted-foreground py-4 text-center text-sm">Alan yok</p>
+          <p className="text-muted-foreground py-4 text-center text-sm">{t('common.reportBuilder.noFields')}</p>
         )}
         {!disabled &&
           filtered.map((f) => (

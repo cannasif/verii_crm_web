@@ -128,7 +128,62 @@
     "imageSettings": "Bildeigenschaften",
     "imageUrl": "Bild-URL",
     "uploadFromFile": "Aus Datei laden",
-    "imageUrlPlaceholder": "https://... veya /logo.png"
+    "imageUrlPlaceholder": "https://... veya /logo.png",
+    "forbidden": "You are not authorized to view this page.",
+    "dropdown": {
+      "minCharsHint": "Minimum {{count}} characters"
+    },
+    "advancedFilter": {
+      "title": "Advanced Filter",
+      "add": "Add Filter",
+      "column": "Column",
+      "operator": "Operator",
+      "value": "Wert",
+      "search": "Search",
+      "clear": "Clear",
+      "remove": "Remove",
+      "operatorContains": "Contains",
+      "operatorStartsWith": "Starts with",
+      "operatorEndsWith": "Ends with",
+      "operatorEquals": "Equals",
+      "operator>": ">",
+      "operator>=": ">=",
+      "operator<": "<",
+      "operator<=": "<=",
+      "true": "Yes",
+      "false": "No"
+    },
+    "inactive": "Pasif",
+    "routeError": {
+      "title": "Ein Fehler ist aufgetreten",
+      "chunkError": "Beim Laden der Seite ist ein Problem aufgetreten. Bitte aktualisieren Sie die Seite.",
+      "unexpected": "Ein unerwarteter Fehler ist aufgetreten.",
+      "refresh": "Seite aktualisieren",
+      "goBack": "Zurück"
+    },
+    "reportBuilder": {
+      "reportName": "Berichtsname",
+      "properties": "Eigenschaften",
+      "invalidReportId": "Ungültige Bericht-ID",
+      "backToList": "Zur Liste",
+      "newReport": "Neu erstellen",
+      "searchReport": "Bericht suchen...",
+      "noReports": "Noch keine Berichte.",
+      "fields": "Felder",
+      "searchFields": "Felder suchen...",
+      "checkFirst": "Führen Sie zuerst die Prüfung aus",
+      "noFields": "Keine Felder",
+      "chartType": "Diagrammtyp",
+      "dateGrouping": "Datumsgruppierung",
+      "sorting": "Sortierung",
+      "sortBy": "Sortieren nach",
+      "axis": "Achse",
+      "value": "Wert",
+      "asc": "Aufsteigend",
+      "desc": "Absteigend",
+      "valuesAggregation": "Werte-Aggregation",
+      "filtersOperator": "Filteroperator"
+    }
   },
   "auth": {
     "login": {
@@ -287,7 +342,17 @@
     "reportsList": "Liste",
     "reportsCreate": "Neu erstellen",
     "definitions": "Definitionen",
-    "users": "Benutzer"
+    "users": "Benutzer",
+    "googleIntegration": "Google Integration",
+    "googleIntegrationConnection": "Connection",
+    "googleIntegrationSync": "Sync",
+    "googleIntegrationLogs": "Logs",
+    "googleIntegrationAuthInformation": "Google Auth Information",
+    "outlookIntegration": "Outlook Integration",
+    "outlookIntegrationConnection": "Connection",
+    "outlookIntegrationSync": "Sync",
+    "outlookIntegrationLogs": "Logs",
+    "outlookIntegrationAuthInformation": "Outlook Auth Information"
   },
   "dashboard": {
     "title": "Armaturenbrett",

@@ -21,7 +21,7 @@ export function ReportsListPage(): ReactElement {
         <h1 className="text-2xl font-bold">{t('sidebar.reportBuilder')}</h1>
         <Button onClick={() => navigate('/reports/new')}>
           <Plus className="mr-2 size-4" />
-          Yeni Oluştur
+          {t('common.reportBuilder.newReport')}
         </Button>
       </div>
 
@@ -29,7 +29,7 @@ export function ReportsListPage(): ReactElement {
         <div className="relative flex-1">
           <Search className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
-            placeholder="Rapor ara..."
+            placeholder={t('common.reportBuilder.searchReport')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -48,9 +48,9 @@ export function ReportsListPage(): ReactElement {
       {!loading && items.length === 0 && !error && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-            <p>Henüz rapor yok.</p>
+            <p>{t('common.reportBuilder.noReports')}</p>
             <Button variant="outline" className="mt-2" onClick={() => navigate('/reports/new')}>
-              Yeni Oluştur
+              {t('common.reportBuilder.newReport')}
             </Button>
           </CardContent>
         </Card>

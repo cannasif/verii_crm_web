@@ -128,7 +128,62 @@
     "imageSettings": "خصائص الصورة",
     "imageUrl": "عنوان URL للصورة",
     "uploadFromFile": "تحميل من الملف",
-    "imageUrlPlaceholder": "https://... veya /logo.png"
+    "imageUrlPlaceholder": "https://... veya /logo.png",
+    "forbidden": "You are not authorized to view this page.",
+    "dropdown": {
+      "minCharsHint": "Minimum {{count}} characters"
+    },
+    "advancedFilter": {
+      "title": "Advanced Filter",
+      "add": "Add Filter",
+      "column": "Column",
+      "operator": "Operator",
+      "value": "القيمة",
+      "search": "Search",
+      "clear": "Clear",
+      "remove": "Remove",
+      "operatorContains": "Contains",
+      "operatorStartsWith": "Starts with",
+      "operatorEndsWith": "Ends with",
+      "operatorEquals": "Equals",
+      "operator>": ">",
+      "operator>=": ">=",
+      "operator<": "<",
+      "operator<=": "<=",
+      "true": "Yes",
+      "false": "No"
+    },
+    "inactive": "Pasif",
+    "routeError": {
+      "title": "حدث خطأ",
+      "chunkError": "حدثت مشكلة أثناء تحميل الصفحة. يرجى تحديث الصفحة.",
+      "unexpected": "حدث خطأ غير متوقع.",
+      "refresh": "تحديث الصفحة",
+      "goBack": "العودة"
+    },
+    "reportBuilder": {
+      "reportName": "اسم التقرير",
+      "properties": "الخصائص",
+      "invalidReportId": "معرّف تقرير غير صالح",
+      "backToList": "العودة إلى القائمة",
+      "newReport": "إنشاء جديد",
+      "searchReport": "بحث في التقارير...",
+      "noReports": "لا توجد تقارير بعد.",
+      "fields": "الحقول",
+      "searchFields": "ابحث في الحقول...",
+      "checkFirst": "قم بالتدقيق أولاً",
+      "noFields": "لا توجد حقول",
+      "chartType": "نوع المخطط",
+      "dateGrouping": "تجميع التاريخ",
+      "sorting": "الترتيب",
+      "sortBy": "ترتيب حسب",
+      "axis": "المحور",
+      "value": "القيمة",
+      "asc": "تصاعدي",
+      "desc": "تنازلي",
+      "valuesAggregation": "تجميع القيم",
+      "filtersOperator": "عامل التصفية"
+    }
   },
   "auth": {
     "login": {
@@ -287,7 +342,17 @@
     "waitingApprovalOrders": "الطلبات في انتظار الموافقة",
     "orderList": "قائمة الطلبات",
     "reportsList": "قائمة",
-    "reportsCreate": "إنشاء جديد"
+    "reportsCreate": "إنشاء جديد",
+    "googleIntegration": "Google Integration",
+    "googleIntegrationConnection": "Connection",
+    "googleIntegrationSync": "Sync",
+    "googleIntegrationLogs": "Logs",
+    "googleIntegrationAuthInformation": "Google Auth Information",
+    "outlookIntegration": "Outlook Integration",
+    "outlookIntegrationConnection": "Connection",
+    "outlookIntegrationSync": "Sync",
+    "outlookIntegrationLogs": "Logs",
+    "outlookIntegrationAuthInformation": "Outlook Auth Information"
   },
   "dashboard": {
     "title": "لوحة التحكم",

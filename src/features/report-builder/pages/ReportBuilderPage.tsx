@@ -28,6 +28,7 @@ import {
 } from '../utils';
 import type { Field } from '../types';
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 function getSlotTypeFromId(id: string): 'axis' | 'values' | 'legend' | 'filters' | null {
   if (id === 'slot-axis') return 'axis';
@@ -38,6 +39,7 @@ function getSlotTypeFromId(id: string): 'axis' | 'values' | 'legend' | 'filters'
 }
 
 export function ReportBuilderPage(): ReactElement {
+  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = id != null && id !== 'new';
@@ -174,9 +176,9 @@ export function ReportBuilderPage(): ReactElement {
 
         <div className="flex flex-wrap items-center gap-4 border-b pb-4">
           <div className="flex-1 space-y-1 min-w-[200px]">
-            <Label>Rapor adı</Label>
+            <Label>{t('common.reportBuilder.reportName')}</Label>
             <Input
-              placeholder="Rapor adı"
+              placeholder={t('common.reportBuilder.reportName')}
               value={meta.name}
               onChange={(e) => setMeta({ name: e.target.value })}
               className="max-w-md"
@@ -185,11 +187,11 @@ export function ReportBuilderPage(): ReactElement {
           <div className="flex items-end gap-2">
             <Button onClick={handleSave} disabled={ui.saveLoading}>
               {ui.saveLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-              {isEdit ? 'Güncelle' : 'Kaydet'}
+              {isEdit ? t('common.update') : t('common.save')}
             </Button>
             {isEdit && (
               <Button variant="outline" onClick={() => navigate(`/reports/${reportId}`)}>
-                İptal
+                {t('common.cancel')}
               </Button>
             )}
           </div>
@@ -227,7 +229,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
 
           <div className="sticky top-0 flex flex-col overflow-hidden rounded-lg border bg-card p-4">
-            <h3 className="text-muted-foreground mb-2 text-sm font-medium">Properties</h3>
+            <h3 className="text-muted-foreground mb-2 text-sm font-medium">{t('common.reportBuilder.properties')}</h3>
             <SlotsPanel
               axis={config.axis}
               values={config.values}
