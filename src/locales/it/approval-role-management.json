@@ -18,7 +18,8 @@
       "totalRecords": "Totale {{count}} record.",
       "page": "Pagina {{current}} / {{total}}",
       "previous": "Precedente",
-      "next": "Successivo"
+      "next": "Successivo",
+      "title": "Onay Rolü Listesi"
     },
     "delete": {
       "confirmTitle": "Conferma Eliminazione",
@@ -46,6 +47,14 @@
       "cancel": "Annulla",
       "save": "Salva",
       "saving": "Salvataggio..."
+    },
+    "advancedFilter": {
+      "columnName": "Rol Adı",
+      "columnApprovalRoleGroupName": "Rol Grubu",
+      "columnMaxAmount": "Maks. Tutar"
+    },
+    "messages": {
+      "error": "Hata oluştu"
     }
   }
 }

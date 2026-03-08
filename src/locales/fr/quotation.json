@@ -20,7 +20,21 @@
   "saveAndApply": "Enregistrer et Appliquer",
   "list": {
     "revise": "Réviser",
-    "showing": "Affichage de {{from}} à {{to}} sur {{total}}"
+    "showing": "Affichage de {{from}} à {{to}} sur {{total}}",
+    "title": "Quotation List",
+    "description": "View and manage quotation records",
+    "createNew": "Create New Quotation",
+    "cardTitle": "Quotation list",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "id": "ID",
+    "offerNo": "Offer No",
+    "customer": "Customer",
+    "representative": "Representative",
+    "offerDate": "Offer Date",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status"
   },
   "detail": {
     "title": "Détail du Devis"
@@ -57,7 +71,9 @@
     "currencyChange": {
       "title": "Changement de Devise",
       "message": "Lorsque la devise est modifiée, toutes les lignes existantes seront recalculées en fonction de la nouvelle devise. Confirmez-vous cette opération ?"
-    }
+    },
+    "deliveryMethod": "Mode de livraison",
+    "documentDetail": "Détails du document"
   },
   "lines": {
     "title": "Lignes de Devis",
@@ -90,7 +106,11 @@
     "delete": {
       "confirmTitle": "Supprimer Ligne",
       "confirmMessage": "Êtes-vous sûr de vouloir supprimer cette ligne ?"
-    }
+    },
+    "discountLimitExceeded": "Discount rates exceed your authorization limits.",
+    "max200Chars": "Maximum 200 characters",
+    "totalDiscount": "Remise totale",
+    "vatAmount": "Montant TVA"
   },
   "exchangeRates": {
     "title": "Taux de Change",
@@ -163,5 +183,6 @@
       }
     }
   },
-  "guide": "Annuaire"
+  "guide": "Annuaire",
+  "loadError": "An error occurred while loading data."
 }

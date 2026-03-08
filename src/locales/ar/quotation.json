@@ -20,7 +20,21 @@
   "saveAndApply": "حفظ وتطبيق",
   "list": {
     "revise": "مراجعة",
-    "showing": "عرض {{from}}-{{to}} من {{total}}"
+    "showing": "عرض {{from}}-{{to}} من {{total}}",
+    "title": "Quotation List",
+    "description": "View and manage quotation records",
+    "createNew": "Create New Quotation",
+    "cardTitle": "Quotation list",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "id": "ID",
+    "offerNo": "Offer No",
+    "customer": "Customer",
+    "representative": "Representative",
+    "offerDate": "Offer Date",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status"
   },
   "detail": {
     "title": "تفاصيل عرض السعر"
@@ -57,7 +71,9 @@
     "currencyChange": {
       "title": "تغيير العملة",
       "message": "عند تغيير العملة، سيتم إعادة حساب جميع الأسطر الموجودة وفقًا للعملة الجديدة. هل توافق على هذه العملية؟"
-    }
+    },
+    "deliveryMethod": "طريقة التسليم",
+    "documentDetail": "تفاصيل المستند"
   },
   "lines": {
     "title": "بنود عرض السعر",
@@ -90,7 +106,11 @@
     "delete": {
       "confirmTitle": "حذف البند",
       "confirmMessage": "هل أنت متأكد أنك تريد حذف هذا البند؟"
-    }
+    },
+    "discountLimitExceeded": "Discount rates exceed your authorization limits.",
+    "max200Chars": "Maximum 200 characters",
+    "totalDiscount": "إجمالي الخصم",
+    "vatAmount": "مبلغ ضريبة القيمة المضافة"
   },
   "exchangeRates": {
     "title": "أسعار الصرف",
@@ -163,5 +183,6 @@
       }
     }
   },
-  "guide": "دليل"
+  "guide": "دليل",
+  "loadError": "An error occurred while loading data."
 }

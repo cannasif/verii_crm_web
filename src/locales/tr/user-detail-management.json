@@ -52,5 +52,11 @@
   "enterEmail": "ornek@sirket.com",
   "invalidUrl": "Geçerli bir URL giriniz",
   "invalidEmail": "Geçerli bir e-posta adresi giriniz",
-  "phoneNumberMaxLength": "Telefon numarası en fazla 20 karakter olabilir"
+  "phoneNumberMaxLength": "Telefon numarası en fazla 20 karakter olabilir",
+  "profileEditTitle": "Profil Düzenle",
+  "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
+  "heightPlaceholderExample": "Örn: 175",
+  "weightPlaceholderExample": "Örn: 70",
+  "weightPlaceholderExampleDecimal": "Örn: 70.5",
+  "newPasswordPlaceholderShort": "Yeni şifreniz"
 }

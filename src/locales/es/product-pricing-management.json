@@ -109,7 +109,9 @@
     "createdDate": "Fecha de Creación",
     "updatedDate": "Fecha de Actualización",
     "showing": "Mostrando {{from}}-{{to}} de {{total}}",
-    "page": "Página {{current}} de {{total}}"
+    "page": "Página {{current}} de {{total}}",
+    "title": "Fiyatlandırma Listesi",
+    "noData": "Veri bulunamadı"
   },
   "previous": "Anterior",
   "next": "Siguiente",
@@ -123,5 +125,10 @@
     "active": "Activo",
     "critical": "Stock crítico",
     "archive": "Archivo"
+  },
+  "advancedFilter": {
+    "columnErpProductCode": "ERP Ürün Kodu",
+    "columnErpGroupCode": "ERP Grup Kodu",
+    "columnCurrency": "Para Birimi"
   }
 }

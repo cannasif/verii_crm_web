@@ -95,7 +95,43 @@
       "permissionGroupsNoData": "Berechtigungsgruppe nicht gefunden"
     },
     "table": {
-      "loading": "Laden..."
+      "loading": "Laden...",
+      "title": "User List",
+      "noData": "No data",
+      "id": "ID",
+      "username": "Username",
+      "email": "Email",
+      "fullName": "Full Name",
+      "role": "Role",
+      "status": "Status",
+      "createdDate": "Created Date",
+      "active": "Active",
+      "inactive": "Inactive",
+      "confirmed": "Confirmed",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "menu": "User Management",
+    "description": "Manage and edit users",
+    "addButton": "Add New User",
+    "searchPlaceholder": "Search users...",
+    "advancedFilter": {
+      "columnUsername": "Username",
+      "columnEmail": "Email",
+      "columnFullName": "Full Name",
+      "columnRole": "Role"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "newThisMonth": "New This Month",
+      "confirmedUsers": "Confirmed Users",
+      "loading": "Loading..."
+    },
+    "messages": {
+      "error": "Ein Fehler ist aufgetreten"
     }
   }
 }

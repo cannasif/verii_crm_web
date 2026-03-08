@@ -74,5 +74,11 @@
   "enterEmail": "esempio@azienda.com",
   "invalidUrl": "Inserisci un URL valido",
   "invalidEmail": "Inserisci un indirizzo email valido",
-  "phoneNumberMaxLength": "Il numero di telefono deve avere al massimo 20 caratteri"
+  "phoneNumberMaxLength": "Il numero di telefono deve avere al massimo 20 caratteri",
+  "profileEditTitle": "Modifica profilo",
+  "profileEditDescription": "You can manage your personal information and account settings here.",
+  "heightPlaceholderExample": "Ex: 175",
+  "weightPlaceholderExample": "Ex: 70",
+  "weightPlaceholderExampleDecimal": "Ex: 70.5",
+  "newPasswordPlaceholderShort": "Your new password"
 }

@@ -52,5 +52,9 @@
     "updateError": "تعذر تحديث نوع العميل",
     "deleteSuccess": "تم حذف نوع العميل بنجاح",
     "deleteError": "تعذر حذف نوع العميل"
+  },
+  "advancedFilter": {
+    "columnName": "Customer Type Name",
+    "columnDescription": "Description"
   }
 }

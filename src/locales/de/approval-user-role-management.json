@@ -41,6 +41,11 @@
       "cancel": "Abbrechen",
       "userIdRequired": "User selection is required",
       "approvalRoleIdRequired": "Approval role selection is required"
+    },
+    "advancedFilter": {
+      "columnUserFullName": "Kullanıcı",
+      "columnApprovalRoleName": "Onay Rolü",
+      "columnCreatedBy": "Oluşturan"
     }
   }
 }

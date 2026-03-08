@@ -53,7 +53,10 @@
     "created": "Created",
     "updated": "Updated",
     "copied": "Copied",
-    "copy": "Copy"
+    "copy": "Copy",
+    "tipTitle": "Tip",
+    "tipDescription": "Do not forget to save after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
+    "relationHint": "Define lower or upper related products for this stock."
   },
   "images": {
     "upload": "Drag and drop images here or click",

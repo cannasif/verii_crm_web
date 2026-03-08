@@ -976,7 +976,7 @@ export function QuotationLineForm({
               </div>
               <div>
                 <h4 className="text-sm font-bold text-red-800 dark:text-red-300">Onay Gerekiyor</h4>
-                <p className="text-xs text-red-600 dark:text-red-400 mt-1">İndirim oranları yetki limitlerinizi aşıyor.</p>
+                <p className="text-xs text-red-600 dark:text-red-400 mt-1">{t('quotation.lines.discountLimitExceeded', { defaultValue: 'İndirim oranları yetki limitlerinizi aşıyor.' })}</p>
               </div>
             </div>
           )}
@@ -994,7 +994,7 @@ export function QuotationLineForm({
                   value={formData.description1 ?? ''}
                   onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                   maxLength={200}
-                  placeholder="Maksimum 200 karakter"
+                  placeholder={t('quotation.lines.max200Chars', { defaultValue: 'Maksimum 200 karakter' })}
                   className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
                 />
               </div>
@@ -1007,7 +1007,7 @@ export function QuotationLineForm({
                   value={formData.description2 ?? ''}
                   onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                   maxLength={200}
-                  placeholder="Maksimum 200 karakter"
+                  placeholder={t('quotation.lines.max200Chars', { defaultValue: 'Maksimum 200 karakter' })}
                   className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
                 />
               </div>
@@ -1020,7 +1020,7 @@ export function QuotationLineForm({
                   value={formData.description3 ?? ''}
                   onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                   maxLength={200}
-                  placeholder="Maksimum 200 karakter"
+                  placeholder={t('quotation.lines.max200Chars', { defaultValue: 'Maksimum 200 karakter' })}
                   className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
                 />
               </div>
@@ -1035,13 +1035,13 @@ export function QuotationLineForm({
               <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(formData.lineTotal || 0, currencyCode)}</span>
             </div>
             <div className="flex justify-between items-center text-sm gap-4">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Toplam İndirim</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.totalDiscount', { defaultValue: 'Toplam İndirim' })}</span>
               <span className="font-semibold text-red-500 dark:text-red-400">
                 {hasDiscount ? '-' : ''}{formatCurrency(totalDiscount, currencyCode)}
               </span>
             </div>
             <div className="flex justify-between items-center text-sm gap-4">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">KDV Tutarı</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.vatAmount', { defaultValue: 'KDV Tutarı' })}</span>
               <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(formData.vatAmount || 0, currencyCode)}</span>
             </div>
             <div className="h-px bg-slate-200 dark:bg-white/10 my-2 border-dashed" />

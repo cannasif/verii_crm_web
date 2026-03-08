@@ -236,7 +236,7 @@ export function UserDetailDialog({
         showCloseButton={false}
         className="sm:max-w-[95vw] md:max-w-6xl lg:max-w-5xl w-full h-[90vh] md:h-[700px] p-0 overflow-hidden bg-white dark:bg-[#1a1025] border-none text-zinc-900 dark:text-slate-300 shadow-2xl rounded-2xl flex flex-col focus:outline-none"
       >
-        <DialogTitle className="sr-only">Kullanıcı Detayları</DialogTitle>
+        <DialogTitle className="sr-only">{t('userDetailManagement.title')}</DialogTitle>
 
         {/* --- ÜST KAPATMA BUTONU --- */}
         <div className="absolute top-4 right-4 z-50">
@@ -304,9 +304,9 @@ export function UserDetailDialog({
                 
                 {/* Başlık Alanı */}
                 <div className="border-b border-zinc-100 dark:border-white/5 pb-6 pr-8">
-                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">Profil Düzenle</h3>
+                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">{t('userDetailManagement.profileEditTitle', { defaultValue: 'Profil Düzenle' })}</h3>
                   <p className="text-sm text-zinc-500 dark:text-slate-400 leading-relaxed">
-                    Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.
+                    {t('userDetailManagement.profileEditDescription', { defaultValue: 'Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.' })}
                   </p>
                 </div>
 
@@ -335,7 +335,7 @@ export function UserDetailDialog({
                                   onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                                   value={field.value || ''}
                                   className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-12 shadow-sm transition-all"
-                                  placeholder="Örn: 175"
+                                  placeholder={t('userDetailManagement.heightPlaceholderExample', { defaultValue: 'Örn: 175' })}
                                 />
                               </div>
                             </FormControl>
@@ -362,7 +362,7 @@ export function UserDetailDialog({
                                         onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                                         value={field.value || ''}
                                         className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-12 shadow-sm transition-all"
-                                        placeholder="Örn: 70.5"
+                                        placeholder={t('userDetailManagement.weightPlaceholderExampleDecimal', { defaultValue: 'Örn: 70.5' })}
                                     />
                                 </div>
                             </FormControl>
@@ -518,7 +518,7 @@ export function UserDetailDialog({
                                                         {...field}
                                                         type={isNewPasswordVisible ? 'text' : 'password'}
                                                         className="pl-12 pr-12 bg-zinc-50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-11 transition-all"
-                                                        placeholder="Yeni şifreniz"
+                                                        placeholder={t('userDetailManagement.newPasswordPlaceholderShort', { defaultValue: 'Yeni şifreniz' })}
                                                     />
                                                     <button
                                                         type="button"

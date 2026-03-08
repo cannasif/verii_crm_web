@@ -92,7 +92,11 @@
     "deleteSuccess": "تم حذف المندوب",
     "deleteSuccessMessage": "تم حذف المندوب بنجاح",
     "deleteError": "فشل الحذف",
-    "deleteErrorMessage": "تعذر حذف المندوب"
+    "deleteErrorMessage": "تعذر حذف المندوب",
+    "add": "Add Salesman",
+    "empty": "No salesmen added yet",
+    "emptyDescription": "Will be valid for all salesmen",
+    "salesman": "Salesman"
   },
   "header": {
     "ruleType": "نوع القاعدة",
@@ -166,5 +170,30 @@
     "active": "نشط",
     "inactive": "غير نشط",
     "expired": "منتهي"
+  },
+  "pricingRule": {
+    "loading": "Yükleniyor...",
+    "loadingDescription": "Veriler yükleniyor, lütfen bekleyin",
+    "noData": "Veri yok",
+    "error": "Hata oluştu",
+    "actions": "İşlemler",
+    "list": {
+      "title": "Fiyat Kuralları",
+      "description": "Fiyat kurallarını yönetin ve düzenleyin",
+      "add": "Yeni Kural Ekle"
+    },
+    "table": {
+      "title": "Fiyat Kuralı Listesi"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif"
+    },
+    "ruleType": {
+      "demand": "Talep",
+      "quotation": "Teklif",
+      "order": "Sipariş",
+      "unknown": "Bilinmiyor"
+    }
   }
 }

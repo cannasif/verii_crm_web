@@ -52,5 +52,9 @@
     "updateError": "Impossibile aggiornare il tipo cliente",
     "deleteSuccess": "Tipo cliente eliminato con successo",
     "deleteError": "Impossibile eliminare il tipo cliente"
+  },
+  "advancedFilter": {
+    "columnName": "Customer Type Name",
+    "columnDescription": "Description"
   }
 }

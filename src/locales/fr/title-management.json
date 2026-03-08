@@ -27,7 +27,8 @@
     "createdDate": "Date de Création",
     "createdBy": "Créé par",
     "showing": "Affichage {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}"
+    "page": "Page {{current}} / {{total}}",
+    "title": "Ünvan Listesi"
   },
   "form": {
     "addTitle": "Ajouter un Nouveau Titre",
@@ -41,5 +42,9 @@
     "cancel": "Annuler",
     "save": "Enregistrer",
     "saving": "Enregistrement..."
+  },
+  "advancedFilter": {
+    "columnTitleName": "Title Name",
+    "columnCode": "Code"
   }
 }

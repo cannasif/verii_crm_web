@@ -109,7 +109,9 @@
     "createdDate": "تاريخ الإنشاء",
     "updatedDate": "تاريخ التحديث",
     "showing": "عرض {{from}}-{{to}} من {{total}}",
-    "page": "صفحة {{current}} من {{total}}"
+    "page": "صفحة {{current}} من {{total}}",
+    "title": "Fiyatlandırma Listesi",
+    "noData": "Veri bulunamadı"
   },
   "previous": "السابق",
   "next": "التالي",
@@ -123,5 +125,10 @@
     "active": "نشط",
     "critical": "مخزون حرج",
     "archive": "أرشيف"
+  },
+  "advancedFilter": {
+    "columnErpProductCode": "ERP Ürün Kodu",
+    "columnErpGroupCode": "ERP Grup Kodu",
+    "columnCurrency": "Para Birimi"
   }
 }

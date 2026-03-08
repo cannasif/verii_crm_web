@@ -42,12 +42,26 @@
       "action": "حذف",
       "cancel": "إلغاء",
       "confirmTitle": "حذف تدفق الموافقة",
-      "confirmMessage": "هل أنت متأكد من أنك تريد حذف تدفق الموافقة هذا؟"
+      "confirmMessage": "هل أنت متأكد من أنك تريد حذف تدفق الموافقة هذا؟",
+      "title": "Onay Akışını Sil",
+      "confirm": "Bu onay akışını silmek istediğinizden emin misiniz?"
     },
     "documentType": {
       "offer": "عرض",
       "request": "طلب",
-      "order": "طلب شراء"
+      "order": "طلب شراء",
+      "demand": "Talep",
+      "quotation": "Teklif"
+    },
+    "advancedFilter": {
+      "columnDocumentType": "Belge Tipi",
+      "columnDescription": "Açıklama",
+      "columnIsActive": "Aktif",
+      "columnCreatedBy": "Oluşturan"
+    },
+    "messages": {
+      "deleteSuccess": "Onay akışı başarıyla silindi",
+      "deleteError": "Onay akışı silinirken hata oluştu"
     }
   },
   "approvalFlowStep": {

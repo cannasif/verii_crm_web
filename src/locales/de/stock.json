@@ -14,7 +14,11 @@
     "page": "Seite",
     "noData": "Keine Datensätze gefunden",
     "previous": "Previous",
-    "next": "Weiter"
+    "next": "Weiter",
+    "cardTitle": "Stock list",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "loadError": "An error occurred while loading data."
   },
   "detail": {
     "title": "Produktdetails",
@@ -53,7 +57,10 @@
     "htmlDescriptionPlaceholder": "HTML‑Beschreibung eingeben",
     "htmlDescription.required": "HTML‑Beschreibung ist erforderlich",
     "technicalSpecs": "Technische Spezifikationen",
-    "technicalSpecsPlaceholder": "Technische Spezifikationen eingeben"
+    "technicalSpecsPlaceholder": "Technische Spezifikationen eingeben",
+    "tipTitle": "Tipp",
+    "tipDescription": "Do not forget to save after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
+    "relationHint": "Define lower or upper related products for this stock."
   },
   "images": {
     "upload": "Hochladen",

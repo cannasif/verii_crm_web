@@ -332,7 +332,7 @@ export function ProfilePage(): ReactElement {
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value ?? ''}
                             className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder="Örn: 175"
+                            placeholder={t('userDetailManagement.heightPlaceholderExample', { defaultValue: 'Örn: 175' })}
                           />
                         </div>
                       </FormControl>
@@ -358,7 +358,7 @@ export function ProfilePage(): ReactElement {
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value ?? ''}
                             className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder="Örn: 70"
+                            placeholder={t('userDetailManagement.weightPlaceholderExample', { defaultValue: 'Örn: 70' })}
                           />
                         </div>
                       </FormControl>

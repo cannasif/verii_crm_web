@@ -3,7 +3,12 @@
   "description": "Descrizione",
   "create": "Nuovo tipo di pagamento",
   "edit": "Modifica tipo di pagamento",
-  "delete": "Elimina",
+  "delete": {
+    "confirmTitle": "Delete Payment Type",
+    "confirmMessage": "Are you sure you want to delete {{name}} payment type? This action cannot be undone.",
+    "success": "Payment type deleted successfully",
+    "error": "An error occurred while deleting payment type"
+  },
   "table": {
     "id": "ID",
     "name": "Nome",
@@ -14,7 +19,9 @@
     "createdDate": "Data di creazione",
     "updatedDate": "Data di aggiornamento",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Pagina {{current}} / {{total}}"
+    "page": "Pagina {{current}} / {{total}}",
+    "title": "Ödeme Tipleri",
+    "status": "Durum"
   },
   "form": {
     "name": {
@@ -60,5 +67,10 @@
   "deleteSuccess": "Tipo di pagamento eliminato correttamente",
   "createError": "Errore durante la creazione del tipo di pagamento",
   "updateError": "Errore durante l'aggiornamento del tipo di pagamento",
-  "deleteError": "Errore durante l'eliminazione del tipo di pagamento"
+  "deleteError": "Errore durante l'eliminazione del tipo di pagamento",
+  "advancedFilter": {
+    "columnName": "Name",
+    "columnDescription": "Description"
+  },
+  "error": "Hata oluştu"
 }

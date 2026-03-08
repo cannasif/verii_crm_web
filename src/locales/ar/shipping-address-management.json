@@ -65,7 +65,8 @@
     "phone": "الهاتف",
     "location": "الموقع",
     "createdDate": "تاريخ الإنشاء",
-    "actions": "إجراءات"
+    "actions": "إجراءات",
+    "title": "Sevk Adresi Listesi"
   },
   "loading": "جاري التحميل...",
   "previous": "السابق",
@@ -79,5 +80,12 @@
   "isDefault": "عنوان الشحن الافتراضي",
   "isDefaultShort": "تقصير",
   "defaultBadge": "تقصير",
-  "nameMaxLength": "يمكن أن يصل اسم العنوان إلى 150 حرفًا"
+  "nameMaxLength": "يمكن أن يصل اسم العنوان إلى 150 حرفًا",
+  "description": "Sevk adreslerini yönetin ve düzenleyin",
+  "advancedFilter": {
+    "columnCustomerName": "Müşteri Adı",
+    "columnName": "Adres Adı",
+    "columnPostalCode": "Posta Kodu",
+    "columnPhone": "Telefon"
+  }
 }

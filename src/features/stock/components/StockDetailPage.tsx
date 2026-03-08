@@ -135,8 +135,8 @@ export function StockDetailPage(): ReactElement {
                                     <StockBasicInfo stock={stock} />
                                 </div>
                                 <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/20 text-orange-800 dark:text-orange-200 text-sm">
-                                    <p className="font-medium">İpucu</p>
-                                    <p className="opacity-90 mt-1">Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.</p>
+                                    <p className="font-medium">{t('stock.detail.tipTitle', { defaultValue: 'İpucu' })}</p>
+                                    <p className="opacity-90 mt-1">{t('stock.detail.tipDescription', { defaultValue: 'Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.' })}</p>
                                 </div>
                             </div>
                             
@@ -172,7 +172,7 @@ export function StockDetailPage(): ReactElement {
                              <div className="lg:col-span-4">
                                 <div className="bg-gradient-to-br from-white to-zinc-50 dark:from-white/5 dark:to-transparent rounded-xl p-6 border border-zinc-100 dark:border-white/5 shadow-sm sticky top-6">
                                     <h3 className="font-semibold text-lg mb-2">{t('stock.detail.addRelation')}</h3>
-                                    <p className="text-sm text-muted-foreground mb-6">Bu stoka ait alt veya üst ürün tanımlayın.</p>
+                                    <p className="text-sm text-muted-foreground mb-6">{t('stock.detail.relationHint', { defaultValue: 'Bu stoka ait alt veya üst ürün tanımlayın.' })}</p>
                                     <StockRelationForm stockId={stockId} />
                                 </div>
                              </div>

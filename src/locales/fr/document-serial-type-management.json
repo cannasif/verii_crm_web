@@ -21,7 +21,8 @@
     "salesRep": "Représentant commercial",
     "serialPrefix": "Préfixe de série",
     "serialLength": "Longueur de série",
-    "createdDate": "Date de création"
+    "createdDate": "Date de création",
+    "title": "Dosya Tip Listesi"
   },
   "form": {
     "addTitle": "Ajouter un nouveau type de fichier",
@@ -55,5 +56,11 @@
     "serialIncrement.min": "L'incrément de série doit être d'au moins 1",
     "serialIncrementPlaceholder": "Entrez la valeur d'incrément de série"
   },
-  "totalRecords": "Total {{count}} enregistrements"
+  "totalRecords": "Total {{count}} enregistrements",
+  "advancedFilter": {
+    "columnSerialPrefix": "Serial Prefix",
+    "columnCustomerTypeName": "Customer Type",
+    "columnSalesRepFullName": "Sales Rep",
+    "columnRuleType": "Rule Type"
+  }
 }

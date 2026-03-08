@@ -75,7 +75,9 @@
     "currencyChange": {
       "title": "Currency Change",
       "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
-    }
+    },
+    "deliveryMethod": "Delivery Method",
+    "documentDetail": "Document Details"
   },
   "lines": {
     "title": "Demand Lines",
@@ -122,7 +124,12 @@
     "updateSuccess": "Line updated.",
     "updateError": "Line could not be updated.",
     "deleteSuccess": "Line deleted.",
-    "deleteError": "Line could not be deleted."
+    "deleteError": "Line could not be deleted.",
+    "editStockItemDetails": "Edit stock item details",
+    "description1": "Description 1",
+    "description2": "Description 2",
+    "description3": "Description 3",
+    "descriptionPlaceholder": "Enter description..."
   },
   "exchangeRates": {
     "title": "Exchange Rates",
@@ -233,7 +240,8 @@
     "stepCompleted": "Step completed",
     "stepInProgress": "Step in progress",
     "stepNotStarted": "Step pending",
-    "stepRejected": "Step rejected"
+    "stepRejected": "Step rejected",
+    "errorTitle": "An error occurred"
   },
   "update": {
     "success": "Demand updated.",

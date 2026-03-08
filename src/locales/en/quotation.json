@@ -72,7 +72,9 @@
     "currencyChange": {
       "title": "Currency Change",
       "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
-    }
+    },
+    "deliveryMethod": "Delivery Method",
+    "documentDetail": "Document Details"
   },
   "lines": {
     "title": "Quotation Lines",
@@ -105,7 +107,11 @@
     "delete": {
       "confirmTitle": "Delete Line",
       "confirmMessage": "Are you sure you want to delete this line?"
-    }
+    },
+    "discountLimitExceeded": "Discount rates exceed your authorization limits.",
+    "max200Chars": "Maximum 200 characters",
+    "totalDiscount": "Total Discount",
+    "vatAmount": "VAT Amount"
   },
   "exchangeRates": {
     "title": "Exchange Rates",

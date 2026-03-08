@@ -5,7 +5,12 @@
   "edit": "Modifier le Type de Paiement",
   "editDescription": "Modifier les informations du type de paiement",
   "createDescription": "Entrez les informations du nouveau type de paiement",
-  "delete": "Supprimer",
+  "delete": {
+    "confirmTitle": "Delete Payment Type",
+    "confirmMessage": "Are you sure you want to delete {{name}} payment type? This action cannot be undone.",
+    "success": "Payment type deleted successfully",
+    "error": "An error occurred while deleting payment type"
+  },
   "deleteTitle": "Supprimer le Type de Paiement",
   "name": "Nom",
   "namePlaceholder": "Entrer le nom du type de paiement",
@@ -36,7 +41,9 @@
     "createdDate": "Date de Création",
     "updatedDate": "Date de Mise à Jour",
     "showing": "Affichage de {{from}}-{{to}} sur {{total}}",
-    "page": "Page {{current}} sur {{total}}"
+    "page": "Page {{current}} sur {{total}}",
+    "title": "Ödeme Tipleri",
+    "status": "Durum"
   },
   "form": {
     "name": {
@@ -47,5 +54,10 @@
       "maxLength": "La description peut comporter au plus 500 caractères"
     }
   },
-  "headerDescription": "Gérez et modifiez les types de paiement"
+  "headerDescription": "Gérez et modifiez les types de paiement",
+  "advancedFilter": {
+    "columnName": "Name",
+    "columnDescription": "Description"
+  },
+  "error": "Hata oluştu"
 }

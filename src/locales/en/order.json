@@ -57,7 +57,9 @@
     "currencyChange": {
       "title": "Currency Change",
       "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
-    }
+    },
+    "deliveryMethod": "Delivery Method",
+    "documentDetail": "Document Details"
   },
   "lines": {
     "title": "Order Lines",
@@ -111,7 +113,8 @@
     "title": "Summary",
     "subtotal": "Subtotal",
     "totalVat": "Total VAT",
-    "grandTotal": "Grand Total"
+    "grandTotal": "Grand Total",
+    "orderTotalAnalysis": "Order Total Analysis"
   },
   "offerType": {
     "domestic": "Domestic",

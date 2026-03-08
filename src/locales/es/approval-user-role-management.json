@@ -41,6 +41,11 @@
       "save": "Guardar",
       "saving": "Guardando...",
       "cancel": "Cancelar"
+    },
+    "advancedFilter": {
+      "columnUserFullName": "Kullanıcı",
+      "columnApprovalRoleName": "Onay Rolü",
+      "columnCreatedBy": "Oluşturan"
     }
   }
 }

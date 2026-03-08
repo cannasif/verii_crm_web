@@ -18,7 +18,8 @@
     "rowsPerPage": "Righe per pagina",
     "id": "ID",
     "createdDate": "Data di creazione",
-    "createdBy": "Creato da"
+    "createdBy": "Creato da",
+    "title": "Ünvan Listesi"
   },
   "form": {
     "addTitle": "Aggiungi nuovo titolo",
@@ -62,5 +63,9 @@
   "header": {
     "title": "Gestione titoli",
     "description": "Puoi gestire qui le definizioni dei titoli."
+  },
+  "advancedFilter": {
+    "columnTitleName": "Title Name",
+    "columnCode": "Code"
   }
 }

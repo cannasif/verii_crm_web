@@ -3,7 +3,12 @@
   "description": "إعداد وإدارة طرق الدفع",
   "create": "نوع دفع جديد",
   "edit": "تعديل نوع الدفع",
-  "delete": "حذف",
+  "delete": {
+    "confirmTitle": "Delete Payment Type",
+    "confirmMessage": "Are you sure you want to delete {{name}} payment type? This action cannot be undone.",
+    "success": "Payment type deleted successfully",
+    "error": "An error occurred while deleting payment type"
+  },
   "table": {
     "id": "المعرف",
     "name": "الاسم",
@@ -14,7 +19,9 @@
     "createdDate": "Created Date",
     "updatedDate": "Updated Date",
     "showing": "Showing {{from}}-{{to}} of {{total}}",
-    "page": "Page {{current}} of {{total}}"
+    "page": "Page {{current}} of {{total}}",
+    "title": "Ödeme Tipleri",
+    "status": "Durum"
   },
   "form": {
     "name": {
@@ -60,5 +67,10 @@
   "deleteSuccess": "تم حذف نوع الدفع بنجاح",
   "createError": "حدث خطأ أثناء إنشاء نوع الدفع",
   "updateError": "حدث خطأ أثناء تحديث نوع الدفع",
-  "deleteError": "حدث خطأ أثناء حذف نوع الدفع"
+  "deleteError": "حدث خطأ أثناء حذف نوع الدفع",
+  "advancedFilter": {
+    "columnName": "Name",
+    "columnDescription": "Description"
+  },
+  "error": "Hata oluştu"
 }

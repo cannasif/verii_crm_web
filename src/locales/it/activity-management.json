@@ -166,6 +166,17 @@
     "columnActivityTypeId": "Tipo di attività n",
     "columnPriority": "Priorità",
     "columnDueDate": "Data di fine",
-    "columnIsCompleted": "Completato"
+    "columnIsCompleted": "Completato",
+    "filterButton": "Advanced Filter"
+  },
+  "endDateRequired": "End date is required",
+  "listLoadError": "Failed to load activity list",
+  "detailLoadError": "Failed to load activity detail",
+  "assignedUserRequired": "Assigned user is required",
+  "columnCustomization": {
+    "hiddenColumns": "Hidden Columns",
+    "visibleColumns": "Visible Columns",
+    "moveUp": "Up",
+    "moveDown": "Down"
   }
 }

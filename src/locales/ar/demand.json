@@ -24,10 +24,19 @@
     "title": "قائمة الطلبات",
     "description": "عرض وإدارة جميع الطلبات",
     "createNew": "إنشاء طلب جديد",
-    "searchPlaceholder": "بحث برقم الطلب أو اسم العميل..."
+    "searchPlaceholder": "بحث برقم الطلب أو اسم العميل...",
+    "cardTitle": "Demand list",
+    "refresh": "Refresh",
+    "actions": "Actions"
   },
   "detail": {
-    "title": "تفاصيل الطلب"
+    "title": "تفاصيل الطلب",
+    "subtitle": "View and manage demand details.",
+    "notFound": "Demand not found.",
+    "revisionNo": "Revision No",
+    "tabDetail": "Detail",
+    "tabApprovalFlow": "Approval Flow",
+    "tabReport": "Report"
   },
   "create": {
     "title": "إنشاء طلب جديد",
@@ -35,7 +44,12 @@
     "success": "تم إنشاء الطلب بنجاح",
     "successMessage": "تم إرسال الطلب إلى عملية الموافقة.",
     "error": "تعذر إنشاء الطلب",
-    "errorMessage": "حدث خطأ أثناء إنشاء الطلب."
+    "errorMessage": "حدث خطأ أثناء إنشاء الطلب.",
+    "subtitle": "Fill in demand details and save.",
+    "deliveryDateRequired": "Delivery date is required.",
+    "paymentTypeRequired": "Payment type is required.",
+    "invalidCurrency": "Invalid currency.",
+    "validationError": "Please check required fields."
   },
   "header": {
     "title": "معلومات الطلب",
@@ -61,7 +75,9 @@
     "currencyChange": {
       "title": "تغيير العملة",
       "message": "عند تغيير العملة، ستتم إعادة حساب جميع الأسطر الموجودة وفقًا للعملة الجديدة. هل توافق على هذه العملية؟"
-    }
+    },
+    "deliveryMethod": "طريقة التسليم",
+    "documentDetail": "تفاصيل المستند"
   },
   "lines": {
     "title": "بنود الطلب",
@@ -93,8 +109,27 @@
     "noProductsFound": "لم يتم العثور على منتجات",
     "delete": {
       "confirmTitle": "حذف البند",
-      "confirmMessage": "هل أنت متأكد أنك تريد حذف هذا البند؟"
-    }
+      "confirmMessage": "هل أنت متأكد أنك تريد حذف هذا البند؟",
+      "confirmTitleMultiple": "Delete Lines",
+      "confirmMessageMultiple": "Are you sure you want to delete selected lines?"
+    },
+    "noItems": "No lines yet.",
+    "addLine": "Add Line",
+    "relatedStocks": "Related Stocks",
+    "groupCode": "Group Code",
+    "approvalRequired": "Approval required",
+    "requiredFieldsMissing": "Required line fields are missing.",
+    "createSuccess": "Line created.",
+    "createError": "Line could not be created.",
+    "updateSuccess": "Line updated.",
+    "updateError": "Line could not be updated.",
+    "deleteSuccess": "Line deleted.",
+    "deleteError": "Line could not be deleted.",
+    "editStockItemDetails": "Edit stock item details",
+    "description1": "الوصف 1",
+    "description2": "الوصف 2",
+    "description3": "الوصف 3",
+    "descriptionPlaceholder": "أدخل الوصف..."
   },
   "exchangeRates": {
     "title": "أسعار الصرف",
@@ -108,14 +143,23 @@
     "status": "الحالة",
     "dialog": {
       "title": "أسعار الصرف",
-      "description": "عرض وتعديل قيم أسعار الصرف إذا لزم الأمر. لن يتم وضع علامة على الأسعار المعدلة كأسعار رسمية."
-    }
+      "description": "عرض وتعديل قيم أسعار الصرف إذا لزم الأمر. لن يتم وضع علامة على الأسعار المعدلة كأسعار رسمية.",
+      "subtitle": "You can edit and save exchange rates.",
+      "info": "Manual update is possible for non-official rates."
+    },
+    "updateSuccess": "Exchange rates updated.",
+    "updateError": "Exchange rates could not be updated.",
+    "cannotEditUsedCurrency": "Used currency cannot be edited."
   },
   "summary": {
     "title": "الملخص",
     "subtotal": "المجموع الفرعي",
     "totalVat": "إجمالي الضريبة",
-    "grandTotal": "المجموع الكلي"
+    "grandTotal": "المجموع الكلي",
+    "generalDiscount": "General Discount",
+    "generalDiscountRate": "General Discount Rate",
+    "generalDiscountAmount": "General Discount Amount",
+    "generalDiscountHelp": "Applied on total amount."
   },
   "offerType": {
     "domestic": "محلي",
@@ -166,5 +210,61 @@
         "info": "سيتم إرسال الطلب تلقائيًا إلى عملية الموافقة بعد الحفظ"
       }
     }
+  },
+  "loadError": "An error occurred while loading data.",
+  "backToDemands": "Back to Demands",
+  "untitled": "Untitled",
+  "sections": {
+    "header": "Header Information",
+    "lines": "Lines",
+    "summary": "Summary"
+  },
+  "approval": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "sending": "Sending...",
+    "sendForApproval": "Send for Approval",
+    "approveSuccess": "Approval succeeded.",
+    "approveError": "Approval failed.",
+    "rejectSuccess": "Rejection succeeded.",
+    "rejectError": "Rejection failed.",
+    "startSuccess": "Approval flow started.",
+    "startError": "Approval flow could not be started.",
+    "rejectTitle": "Reject Demand",
+    "rejectDescription": "Enter the rejection reason.",
+    "rejectReasonPlaceholder": "Rejection reason"
+  },
+  "approvalFlow": {
+    "noData": "No approval step found.",
+    "notStarted": "Not started",
+    "stepCompleted": "Step completed",
+    "stepInProgress": "Step in progress",
+    "stepNotStarted": "Step pending",
+    "stepRejected": "Step rejected",
+    "errorTitle": "حدث خطأ"
+  },
+  "update": {
+    "success": "Demand updated.",
+    "successMessage": "Demand updated successfully.",
+    "error": "Demand could not be updated.",
+    "errorMessage": "An error occurred while updating demand.",
+    "invalidCurrency": "Invalid currency.",
+    "validationError": "Form validation error."
+  },
+  "revision": {
+    "success": "Revision created.",
+    "error": "Revision could not be created."
+  },
+  "waitingApprovals": {
+    "title": "Pending Demand Approvals",
+    "list": "Pending Approval List",
+    "noApprovals": "No pending approvals found.",
+    "requestId": "Demand No",
+    "description": "Description",
+    "stepOrder": "Step",
+    "approvedBy": "Approved By",
+    "actionDate": "Action Date",
+    "status": "Status",
+    "waiting": "Waiting"
   }
 }

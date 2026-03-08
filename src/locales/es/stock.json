@@ -42,7 +42,12 @@
     "showing": "Mostrando",
     "page": "Página",
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "cardTitle": "Stock list",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "loadError": "An error occurred while loading data.",
+    "noData": "No records found."
   },
   "detail": {
     "title": "Detalle del producto",
@@ -77,7 +82,10 @@
     "created": "Creado",
     "updated": "Actualizado",
     "copied": "Copiado",
-    "copy": "Copiar"
+    "copy": "Copiar",
+    "tipTitle": "Sugerencia",
+    "tipDescription": "Do not forget to save after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
+    "relationHint": "Define lower or upper related products for this stock."
   },
   "images": {
     "upload": "Subir",

@@ -42,7 +42,12 @@
     "showing": "عرض",
     "page": "الصفحة",
     "previous": "السابق",
-    "next": "التالي"
+    "next": "التالي",
+    "cardTitle": "Stock list",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "loadError": "An error occurred while loading data.",
+    "noData": "No records found."
   },
   "detail": {
     "title": "تفاصيل المنتج",
@@ -77,7 +82,10 @@
     "created": "تم الإنشاء",
     "updated": "تم التحديث",
     "copied": "تم النسخ",
-    "copy": "نسخ"
+    "copy": "نسخ",
+    "tipTitle": "نصيحة",
+    "tipDescription": "Do not forget to save after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
+    "relationHint": "Define lower or upper related products for this stock."
   },
   "images": {
     "upload": "رفع",

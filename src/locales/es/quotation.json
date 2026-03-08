@@ -20,7 +20,21 @@
   "saveAndApply": "Guardar y Aplicar",
   "list": {
     "revise": "Revisar",
-    "showing": "Mostrando {{from}}-{{to}} de {{total}}"
+    "showing": "Mostrando {{from}}-{{to}} de {{total}}",
+    "title": "Quotation List",
+    "description": "View and manage quotation records",
+    "createNew": "Create New Quotation",
+    "cardTitle": "Quotation list",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "id": "ID",
+    "offerNo": "Offer No",
+    "customer": "Customer",
+    "representative": "Representative",
+    "offerDate": "Offer Date",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status"
   },
   "detail": {
     "title": "Detalle de Cotización"
@@ -57,7 +71,9 @@
     "currencyChange": {
       "title": "Cambio de Moneda",
       "message": "Cuando cambia la moneda, todas las líneas existentes se recalcularán según la nueva moneda. ¿Aprueba esta operación?"
-    }
+    },
+    "deliveryMethod": "Método de entrega",
+    "documentDetail": "Detalles del documento"
   },
   "lines": {
     "title": "Líneas de Cotización",
@@ -90,7 +106,11 @@
     "delete": {
       "confirmTitle": "Eliminar Línea",
       "confirmMessage": "¿Está seguro de que desea eliminar esta línea?"
-    }
+    },
+    "discountLimitExceeded": "Discount rates exceed your authorization limits.",
+    "max200Chars": "Maximum 200 characters",
+    "totalDiscount": "Descuento total",
+    "vatAmount": "Importe de IVA"
   },
   "exchangeRates": {
     "title": "Tasas de Cambio",
@@ -163,5 +183,6 @@
       }
     }
   },
-  "guide": "Directorio"
+  "guide": "Directorio",
+  "loadError": "An error occurred while loading data."
 }

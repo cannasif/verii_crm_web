@@ -66,6 +66,31 @@
     "createdDate": "Date de Création",
     "updatedDate": "Date de Mise à Jour",
     "showing": "Affichage de {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}"
+    "page": "Page {{current}} / {{total}}",
+    "title": "İskonto Limiti Listesi"
+  },
+  "advancedFilter": {
+    "title": "Advanced Filter",
+    "add": "Add Filter",
+    "column": "Column",
+    "operator": "Operator",
+    "value": "Valeur",
+    "search": "Search",
+    "clear": "Clear",
+    "remove": "Remove",
+    "columnSalespersonName": "Salesperson Name",
+    "columnErpProductGroupCode": "ERP Product Group Code",
+    "columnMaxDiscount1": "Max Discount 1",
+    "columnMaxDiscount2": "Max Discount 2",
+    "columnMaxDiscount3": "Max Discount 3",
+    "columnCreatedDate": "Created Date",
+    "operatorContains": "Contains",
+    "operatorStartsWith": "Starts with",
+    "operatorEndsWith": "Ends with",
+    "operatorEquals": "Equals",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
   }
 }

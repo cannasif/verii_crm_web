@@ -18,7 +18,8 @@
     "rowsPerPage": "Filas por página",
     "id": "IDENTIFICACIÓN",
     "createdDate": "Fecha de creación",
-    "createdBy": "Creado por"
+    "createdBy": "Creado por",
+    "title": "Ünvan Listesi"
   },
   "form": {
     "addTitle": "Agregar nuevo título",
@@ -62,5 +63,9 @@
   "header": {
     "title": "Gestión de títulos",
     "description": "Puede gestionar las definiciones de títulos aquí."
+  },
+  "advancedFilter": {
+    "columnTitleName": "Title Name",
+    "columnCode": "Code"
   }
 }

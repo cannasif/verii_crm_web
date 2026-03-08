@@ -91,7 +91,8 @@
     "isCompletedDescription": "هل تم ملء جميع المعلومات الخاصة بهذا العميل بالكامل؟",
     "none": "لا يوجد",
     "defaultShippingAddress": "عنوان الشحن الافتراضي",
-    "selectDefaultShippingAddress": "اختر عنوان الشحن الافتراضي"
+    "selectDefaultShippingAddress": "اختر عنوان الشحن الافتراضي",
+    "salesRepCodePlaceholder": "رمز مندوب المبيعات..."
   },
   "delete": {
     "action": "حذف",
@@ -114,5 +115,66 @@
     "updateError": "تعذر تحديث العميل",
     "deleteSuccess": "تم حذف العميل بنجاح",
     "deleteError": "تعذر حذف العميل"
+  },
+  "customerManagement": {
+    "menu": "Müşteri Yönetimi",
+    "description": "Müşterileri yönetin ve düzenleyin",
+    "addButton": "Yeni Müşteri Ekle",
+    "loading": "Yükleniyor...",
+    "table": {
+      "id": "ID",
+      "customerCode": "Müşteri Kodu",
+      "name": "Müşteri Adı",
+      "customerType": "Müşteri Tipi",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "city": "Şehir",
+      "district": "İlçe",
+      "country": "Ülke",
+      "creditLimit": "Kredi Limiti",
+      "defaultShippingAddressId": "Varsayılan Sevk Adresi",
+      "salesRep": "Satış Temsilcisi",
+      "tckn": "TCKN",
+      "tax": "Vergi No",
+      "website": "Web Sitesi",
+      "createdDate": "Oluşturulma Tarihi"
+    },
+    "delete": {
+      "confirmTitle": "Müşteriyi Sil",
+      "confirmMessage": "{{name}} müşterisini silmek istediğinizden emin misiniz?",
+      "action": "Sil",
+      "success": "Müşteri başarıyla silindi",
+      "error": "Müşteri silinemedi"
+    },
+    "messages": {
+      "createSuccess": "Müşteri başarıyla oluşturuldu",
+      "createError": "Müşteri oluşturulamadı",
+      "updateSuccess": "Müşteri başarıyla güncellendi",
+      "updateError": "Müşteri güncellenemedi",
+      "deleteSuccess": "Müşteri başarıyla silindi",
+      "deleteError": "Müşteri silinemedi"
+    },
+    "stats": {
+      "totalCustomers": "Toplam Müşteri",
+      "approvedCustomers": "Onaylı Müşteri",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "form": {
+      "branchCode": {
+        "label": "Şube Kodu"
+      },
+      "businessUnitCode": {
+        "label": "İş Birimi Kodu"
+      },
+      "salesRepCodePlaceholder": "رمز مندوب المبيعات..."
+    }
+  },
+  "advancedFilter": {
+    "columnName": "Müşteri Adı",
+    "columnCustomerCode": "Müşteri Kodu",
+    "columnEmail": "E-posta",
+    "columnPhone": "Telefon",
+    "columnTaxNumber": "Vergi No",
+    "columnCityName": "Şehir"
   }
 }

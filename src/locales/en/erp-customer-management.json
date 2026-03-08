@@ -19,7 +19,8 @@
     "taxOffice": "Tax Office",
     "tcknNumber": "TCKN Number",
     "visibleColumns": "Visible Columns",
-    "editColumns": "Edit Columns"
+    "editColumns": "Edit Columns",
+    "title": "Müşteri Listesi"
   },
   "filterLabels": {
     "branchCode": "Branch Code",

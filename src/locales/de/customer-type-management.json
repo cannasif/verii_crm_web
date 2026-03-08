@@ -52,5 +52,9 @@
     "updateError": "Kundentyp konnte nicht aktualisiert werden",
     "deleteSuccess": "Customer type deleted successfully",
     "deleteError": "Customer type could not be deleted"
+  },
+  "advancedFilter": {
+    "columnName": "Customer Type Name",
+    "columnDescription": "Description"
   }
 }

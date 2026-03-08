@@ -92,7 +92,11 @@
     "deleteSuccess": "Vendedor eliminado",
     "deleteSuccessMessage": "El vendedor se eliminó correctamente",
     "deleteError": "Error al eliminar",
-    "deleteErrorMessage": "No se pudo eliminar el vendedor"
+    "deleteErrorMessage": "No se pudo eliminar el vendedor",
+    "add": "Add Salesman",
+    "empty": "No salesmen added yet",
+    "emptyDescription": "Will be valid for all salesmen",
+    "salesman": "Salesman"
   },
   "header": {
     "ruleType": "Tipo de regla",
@@ -166,5 +170,30 @@
     "active": "Activo",
     "inactive": "Inactivo",
     "expired": "Vencido"
+  },
+  "pricingRule": {
+    "loading": "Yükleniyor...",
+    "loadingDescription": "Veriler yükleniyor, lütfen bekleyin",
+    "noData": "Veri yok",
+    "error": "Hata oluştu",
+    "actions": "İşlemler",
+    "list": {
+      "title": "Fiyat Kuralları",
+      "description": "Fiyat kurallarını yönetin ve düzenleyin",
+      "add": "Yeni Kural Ekle"
+    },
+    "table": {
+      "title": "Fiyat Kuralı Listesi"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif"
+    },
+    "ruleType": {
+      "demand": "Talep",
+      "quotation": "Teklif",
+      "order": "Sipariş",
+      "unknown": "Bilinmiyor"
+    }
   }
 }

@@ -13,7 +13,12 @@
     "showing": "Affichage {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
     "previous": "Précédent",
-    "next": "Suivant"
+    "next": "Suivant",
+    "cardTitle": "Stock list",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "loadError": "An error occurred while loading data.",
+    "noData": "No records found."
   },
   "detail": {
     "title": "Détail du stock",
@@ -48,7 +53,10 @@
     "created": "Créé",
     "updated": "Mis à jour",
     "copied": "Copié",
-    "copy": "Copier"
+    "copy": "Copier",
+    "tipTitle": "Astuce",
+    "tipDescription": "Do not forget to save after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
+    "relationHint": "Define lower or upper related products for this stock."
   },
   "images": {
     "upload": "Glisser-déposer les images ici ou cliquer",

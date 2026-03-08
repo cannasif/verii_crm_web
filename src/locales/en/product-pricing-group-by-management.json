@@ -96,6 +96,11 @@
     "createdDate": "Created Date",
     "updatedDate": "Updated Date",
     "showing": "Showing {{from}}-{{to}} of {{total}}",
-    "page": "Page {{current}} of {{total}}"
+    "page": "Page {{current}} of {{total}}",
+    "title": "Fiyatlandırma Grubu Listesi"
+  },
+  "advancedFilter": {
+    "columnErpGroupCode": "ERP Grup Kodu",
+    "columnCurrency": "Para Birimi"
   }
 }

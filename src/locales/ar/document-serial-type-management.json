@@ -22,7 +22,8 @@
     "salesRep": "Sales Representative",
     "serialPrefix": "Serial Prefix",
     "serialLength": "Serial Length",
-    "createdDate": "Created Date"
+    "createdDate": "Created Date",
+    "title": "Dosya Tip Listesi"
   },
   "form": {
     "addTitle": "إضافة نوع تسلسل مستندات جديد",
@@ -79,5 +80,11 @@
   "deleting": "جارٍ الحذف...",
   "deleteConfirmTitle": "تأكيد الحذف",
   "deleteConfirmDescription": "هل أنت متأكد من حذف هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.",
-  "totalRecords": "الإجمالي {{count}} سجل"
+  "totalRecords": "الإجمالي {{count}} سجل",
+  "advancedFilter": {
+    "columnSerialPrefix": "Serial Prefix",
+    "columnCustomerTypeName": "Customer Type",
+    "columnSalesRepFullName": "Sales Rep",
+    "columnRuleType": "Rule Type"
+  }
 }

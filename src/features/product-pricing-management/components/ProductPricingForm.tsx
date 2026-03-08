@@ -63,7 +63,7 @@ export function ProductPricingForm({
   isLoading,
   excludeProductCodes,
 }: ProductPricingFormProps): ReactElement {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('product-pricing-management');
   const [productDialogOpen, setProductDialogOpen] = useState(false);
 
   const form = useForm<ProductPricingFormSchema>({
@@ -115,8 +115,8 @@ export function ProductPricingForm({
             <Tag size={20} />
           </div>
           <div>
-            <DialogTitle className="text-lg font-bold">{productPricing ? 'Fiyatlandırma Düzenle' : 'Yeni Fiyatlandırma'}</DialogTitle>
-            <DialogDescription className="text-xs mt-0.5">Ürün fiyat ve maliyet bilgilerini giriniz.</DialogDescription>
+            <DialogTitle className="text-lg font-bold">{productPricing ? t('edit') : t('create')}</DialogTitle>
+            <DialogDescription className="text-xs mt-0.5">{t('createDescription')}</DialogDescription>
           </div>
         </DialogHeader>
 
@@ -130,11 +130,11 @@ export function ProductPricingForm({
                   <FormField control={form.control} name="erpProductCode" render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'erpProductCode')}>
-                        <Package size={12} className="text-pink-500" /> Stok Kodu
+                        <Package size={12} className="text-pink-500" /> {t('selectStok')}
                       </FormLabel>
                       <div className="flex gap-2">
                         <FormControl>
-                          <Input {...field} readOnly placeholder="Ürün seçiniz" className={INPUT_STYLE} />
+                          <Input {...field} readOnly placeholder={t('selectStokCode')} className={INPUT_STYLE} />
                         </FormControl>
                         <Button 
                           type="button" 
@@ -142,7 +142,7 @@ export function ProductPricingForm({
                           onClick={() => setProductDialogOpen(true)}
                           className="h-10 shrink-0 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 px-4"
                         >
-                          <Package size={16} className="mr-2" /> Seç
+                          <Package size={16} className="mr-2" /> {t('common.select', { ns: 'common', defaultValue: 'Seç' })}
                         </Button>
                       </div>
                       <FormMessage className="text-red-500 text-[10px]" />
@@ -152,7 +152,7 @@ export function ProductPricingForm({
                   <FormField control={form.control} name="erpGroupCode" render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE}>
-                        <Layers size={12} className="text-pink-500" /> Grup Kodu
+                        <Layers size={12} className="text-pink-500" /> {t('searchGroupCode')}
                       </FormLabel>
                       <FormControl>
                         <Input {...field} readOnly className={`${INPUT_STYLE} bg-slate-100 dark:bg-slate-800/50`} />
@@ -163,12 +163,12 @@ export function ProductPricingForm({
                   <FormField control={form.control} name="currency" render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'currency')}>
-                        <Banknote size={12} className="text-pink-500" /> Para Birimi
+                        <Banknote size={12} className="text-pink-500" /> {t('currency')}
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className={INPUT_STYLE}>
-                            <SelectValue placeholder="Seçiniz" />
+                            <SelectValue placeholder={t('common.select', { ns: 'common', defaultValue: 'Seçiniz' })} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -184,21 +184,21 @@ export function ProductPricingForm({
                   {/* HESAPLAMA ÖZETİ KARTI */}
                   <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-[#0c0516] p-4 transition-colors space-y-3 mt-4">
                     <div className="flex items-center gap-2 text-sm font-semibold text-pink-600 border-b border-slate-200 dark:border-white/10 pb-2 mb-2">
-                      <Calculator size={16} /> Hesaplama Özeti
+                      <Calculator size={16} /> {t('priceCalculation')}
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-500 dark:text-slate-400">Son Fiyat:</span>
+                        <span className="text-slate-500 dark:text-slate-400">{t('finalPrice')}:</span>
                         <span className="font-bold text-slate-900 dark:text-white">{formatPrice(calculations.final, values.currency, i18n.language)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-500 dark:text-slate-400">Kar Tutarı:</span>
+                        <span className="text-slate-500 dark:text-slate-400">{t('profitAmount')}:</span>
                         <span className={calculations.profit.amount >= 0 ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
                           {formatPrice(calculations.profit.amount, values.currency, i18n.language)}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-500 dark:text-slate-400">Kar Marjı:</span>
+                        <span className="text-slate-500 dark:text-slate-400">{t('profitMargin')}:</span>
                         <span className={calculations.profit.percentage >= 0 ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
                           %{calculations.profit.percentage.toFixed(2)}
                         </span>

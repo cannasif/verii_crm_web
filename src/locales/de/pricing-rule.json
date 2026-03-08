@@ -144,5 +144,30 @@
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "expired": "Abgelaufen"
+  },
+  "pricingRule": {
+    "loading": "Yükleniyor...",
+    "loadingDescription": "Veriler yükleniyor, lütfen bekleyin",
+    "noData": "Veri yok",
+    "error": "Hata oluştu",
+    "actions": "İşlemler",
+    "list": {
+      "title": "Fiyat Kuralları",
+      "description": "Fiyat kurallarını yönetin ve düzenleyin",
+      "add": "Yeni Kural Ekle"
+    },
+    "table": {
+      "title": "Fiyat Kuralı Listesi"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif"
+    },
+    "ruleType": {
+      "demand": "Talep",
+      "quotation": "Teklif",
+      "order": "Sipariş",
+      "unknown": "Bilinmiyor"
+    }
   }
 }

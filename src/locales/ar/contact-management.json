@@ -91,5 +91,15 @@
     "updateError": "تعذر تحديث جهة الاتصال",
     "deleteSuccess": "تم حذف جهة الاتصال بنجاح",
     "deleteError": "تعذر حذف جهة الاتصال"
+  },
+  "advancedFilter": {
+    "columnFullName": "Full Name",
+    "columnFirstName": "First Name",
+    "columnLastName": "Last Name",
+    "columnEmail": "Email",
+    "columnPhone": "Phone",
+    "columnMobile": "Mobile",
+    "columnCustomerName": "Customer",
+    "columnTitleName": "Title"
   }
 }

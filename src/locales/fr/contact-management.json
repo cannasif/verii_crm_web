@@ -91,5 +91,15 @@
     "updateError": "Le contact n'a pas pu être mis à jour",
     "deleteSuccess": "Contact supprimé avec succès",
     "deleteError": "Le contact n'a pas pu être supprimé"
+  },
+  "advancedFilter": {
+    "columnFullName": "Full Name",
+    "columnFirstName": "First Name",
+    "columnLastName": "Last Name",
+    "columnEmail": "Email",
+    "columnPhone": "Phone",
+    "columnMobile": "Mobile",
+    "columnCustomerName": "Customer",
+    "columnTitleName": "Title"
   }
 }

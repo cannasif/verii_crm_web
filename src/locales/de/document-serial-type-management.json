@@ -21,7 +21,8 @@
     "salesRep": "Vertriebsmitarbeiter",
     "serialPrefix": "Serienpräfix",
     "serialLength": "Serienlänge",
-    "createdDate": "Erstellungsdatum"
+    "createdDate": "Erstellungsdatum",
+    "title": "Dosya Tip Listesi"
   },
   "form": {
     "addTitle": "Add New Document Serial Type",
@@ -55,5 +56,11 @@
     "serialIncrement.min": "Serieninkrement muss mindestens 1 sein",
     "serialIncrementPlaceholder": "Geben Sie den Serieninkrementwert ein"
   },
-  "totalRecords": "Gesamt {{count}} Einträge"
+  "totalRecords": "Gesamt {{count}} Einträge",
+  "advancedFilter": {
+    "columnSerialPrefix": "Serial Prefix",
+    "columnCustomerTypeName": "Customer Type",
+    "columnSalesRepFullName": "Sales Rep",
+    "columnRuleType": "Rule Type"
+  }
 }

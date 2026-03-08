@@ -52,5 +52,11 @@
   "enterEmail": "example@company.com",
   "invalidUrl": "Bitte geben Sie eine gültige URL ein",
   "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
-  "phoneNumberMaxLength": "Die Telefonnummer kann bis zu 20 Zeichen lang sein"
+  "phoneNumberMaxLength": "Die Telefonnummer kann bis zu 20 Zeichen lang sein",
+  "profileEditTitle": "Profil bearbeiten",
+  "profileEditDescription": "You can manage your personal information and account settings here.",
+  "heightPlaceholderExample": "Ex: 175",
+  "weightPlaceholderExample": "Ex: 70",
+  "weightPlaceholderExampleDecimal": "Ex: 70.5",
+  "newPasswordPlaceholderShort": "Your new password"
 }

@@ -57,7 +57,9 @@
     "currencyChange": {
       "title": "Changement de Devise",
       "message": "Lorsque la devise est modifiée, toutes les lignes existantes seront recalculées en fonction de la nouvelle devise. Confirmez-vous cette opération ?"
-    }
+    },
+    "deliveryMethod": "Mode de livraison",
+    "documentDetail": "Détails du document"
   },
   "lines": {
     "title": "Lignes de Devis",
@@ -111,7 +113,8 @@
     "title": "Résumé",
     "subtotal": "Sous-total",
     "totalVat": "Total TVA",
-    "grandTotal": "Total Général"
+    "grandTotal": "Total Général",
+    "orderTotalAnalysis": "Analyse du total de commande"
   },
   "offerType": {
     "domestic": "National",

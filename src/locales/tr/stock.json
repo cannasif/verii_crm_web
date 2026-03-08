@@ -53,7 +53,10 @@
     "created": "Oluşturulma",
     "updated": "Güncellenme",
     "copied": "Kopyalandı",
-    "copy": "Kopyala"
+    "copy": "Kopyala",
+    "tipTitle": "İpucu",
+    "tipDescription": "Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.",
+    "relationHint": "Bu stoka ait alt veya üst ürün tanımlayın."
   },
   "images": {
     "upload": "Görselleri buraya sürükleyin veya tıklayın",

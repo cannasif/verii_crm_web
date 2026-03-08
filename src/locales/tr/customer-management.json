@@ -48,7 +48,8 @@
       },
       "businessUnitCode": {
         "label": "İş Birimi Kodu"
-      }
+      },
+      "salesRepCodePlaceholder": "Satış temsilci kodu..."
     }
   },
   "menu": "Müşteri Yönetimi",
@@ -143,7 +144,8 @@
     "isCompleted": "Tamamlandı",
     "isCompletedDescription": "Bu müşterinin tüm bilgileri eksiksiz dolduruldu mu?",
     "isERPIntegrated": "ERP Entegre",
-    "none": "Yok"
+    "none": "Yok",
+    "salesRepCodePlaceholder": "Satış temsilci kodu..."
   },
   "delete": {
     "action": "Sil",

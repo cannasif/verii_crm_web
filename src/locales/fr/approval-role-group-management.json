@@ -34,5 +34,31 @@
     "name.maxLength": "Le nom du groupe peut contenir au maximum 100 caractères",
     "nameRequired": "Group name is required",
     "nameMaxLength": "Group name can be at most 100 characters"
+  },
+  "advancedFilter": {
+    "columnName": "Grup Adı",
+    "columnCreatedBy": "Oluşturan"
+  },
+  "approvalRoleGroup": {
+    "menu": "Onay Rol Grubu Yönetimi",
+    "description": "Onay rol gruplarını yönetin ve düzenleyin",
+    "addButton": "Yeni Grup Ekle",
+    "searchPlaceholder": "Ara...",
+    "noData": "Veri bulunamadı",
+    "table": {
+      "title": "Grup Listesi",
+      "id": "ID",
+      "name": "Grup Adı",
+      "createdDate": "Oluşturulma Tarihi",
+      "createdBy": "Oluşturan Kullanıcı",
+      "actions": "İşlemler",
+      "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
+    },
+    "delete": {
+      "title": "Silme Onayı",
+      "confirmMessage": "{{name}} grubunu silmek istediğinizden emin misiniz?",
+      "success": "Grup başarıyla silindi",
+      "error": "Grup silinirken bir hata oluştu"
+    }
   }
 }

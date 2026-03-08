@@ -91,5 +91,15 @@
     "updateError": "No se pudo actualizar el contacto",
     "deleteSuccess": "Contacto eliminado con éxito",
     "deleteError": "No se pudo eliminar el contacto"
+  },
+  "advancedFilter": {
+    "columnFullName": "Full Name",
+    "columnFirstName": "First Name",
+    "columnLastName": "Last Name",
+    "columnEmail": "Email",
+    "columnPhone": "Phone",
+    "columnMobile": "Mobile",
+    "columnCustomerName": "Customer",
+    "columnTitleName": "Title"
   }
 }

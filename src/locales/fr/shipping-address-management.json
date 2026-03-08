@@ -65,7 +65,8 @@
     "phone": "Téléphone",
     "location": "Emplacement",
     "createdDate": "Date de création",
-    "actions": "Actions"
+    "actions": "Actions",
+    "title": "Sevk Adresi Listesi"
   },
   "loading": "Chargement...",
   "previous": "Précédent",
@@ -79,5 +80,12 @@
   "isDefault": "Adresse de livraison par défaut",
   "isDefaultShort": "Défaut",
   "defaultBadge": "Défaut",
-  "nameMaxLength": "Le nom de l'adresse peut contenir jusqu'à 150 caractères"
+  "nameMaxLength": "Le nom de l'adresse peut contenir jusqu'à 150 caractères",
+  "description": "Sevk adreslerini yönetin ve düzenleyin",
+  "advancedFilter": {
+    "columnCustomerName": "Müşteri Adı",
+    "columnName": "Adres Adı",
+    "columnPostalCode": "Posta Kodu",
+    "columnPhone": "Telefon"
+  }
 }

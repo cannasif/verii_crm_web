@@ -74,5 +74,11 @@
   "enterEmail": "example@company.com",
   "invalidUrl": "الرجاء إدخال عنوان URL صالح",
   "invalidEmail": "الرجاء إدخال عنوان بريد إلكتروني صالح",
-  "phoneNumberMaxLength": "يجب أن يكون رقم الهاتف 20 حرف كحد أقصى"
+  "phoneNumberMaxLength": "يجب أن يكون رقم الهاتف 20 حرف كحد أقصى",
+  "profileEditTitle": "تعديل الملف الشخصي",
+  "profileEditDescription": "You can manage your personal information and account settings here.",
+  "heightPlaceholderExample": "Ex: 175",
+  "weightPlaceholderExample": "Ex: 70",
+  "weightPlaceholderExampleDecimal": "Ex: 70.5",
+  "newPasswordPlaceholderShort": "Your new password"
 }

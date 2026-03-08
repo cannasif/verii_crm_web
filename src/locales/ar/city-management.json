@@ -18,7 +18,8 @@
     "createdDate": "تاريخ الإنشاء",
     "createdBy": "تم الإنشاء بواسطة",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
-    "page": "صفحة {{current}} / {{total}}"
+    "page": "صفحة {{current}} / {{total}}",
+    "title": "Şehir Listesi"
   },
   "form": {
     "editCity": "تعديل المدينة",
@@ -46,5 +47,12 @@
     "confirmMessage": "هل أنت متأكد من حذف {{name}}؟"
   },
   "previous": "السابق",
-  "next": "التالي"
+  "next": "التالي",
+  "cityManagement": {
+    "form": {
+      "tabs": {
+        "header": "Genel Bilgiler"
+      }
+    }
+  }
 }

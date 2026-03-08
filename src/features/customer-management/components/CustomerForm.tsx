@@ -224,7 +224,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
                     <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'name')}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.name')}</FormLabel>
-                    <FormControl><Input {...field} className={INPUT_STYLE} placeholder="Örn: ABC Teknoloji A.Ş." /></FormControl>
+                    <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('customerManagement.form.namePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -232,7 +232,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="customerCode" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.code')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Örn: CST-001" /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.customerCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -260,7 +260,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="taxNumber" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxNumber')}</FormLabel>
-                    <FormControl><Input {...field} maxLength={10} value={field.value || ''} className={INPUT_STYLE} placeholder="Vergi numarası..." /></FormControl>
+                    <FormControl><Input {...field} maxLength={10} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.taxNumberPlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -393,7 +393,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="salesRepCode" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.salesRepCode')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Satış temsilci kodu..." /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.salesRepCodePlaceholder', { defaultValue: 'Satış temsilci kodu...' })} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -439,7 +439,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="address" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
                     <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.address')}</FormLabel>
-                    <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`} placeholder="Açık adres..." /></FormControl>
+                    <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`} placeholder={t('customerManagement.form.addressPlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />

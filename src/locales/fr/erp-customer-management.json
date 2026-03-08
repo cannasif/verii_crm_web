@@ -19,7 +19,8 @@
     "taxOffice": "Administration Fiscale",
     "tcknNumber": "Numéro TCKN",
     "visibleColumns": "Colonnes visibles",
-    "editColumns": "Modifier les colonnes"
+    "editColumns": "Modifier les colonnes",
+    "title": "Müşteri Listesi"
   },
   "filterLabels": {
     "branchCode": "Code Agence",
@@ -56,5 +57,29 @@
     "selectAll": "Sélectionner tout",
     "ok": "D'ACCORD",
     "totalRecords": "Inscription totale"
+  },
+  "advancedFilter": {
+    "title": "Advanced Filter",
+    "add": "Add Filter",
+    "column": "Column",
+    "operator": "Operator",
+    "value": "Valeur",
+    "search": "Search",
+    "clear": "Clear",
+    "remove": "Remove",
+    "columnCustomerCode": "Customer Code",
+    "columnCustomerName": "Customer Name",
+    "columnBranchCode": "Branch Code",
+    "columnCity": "City",
+    "columnDistrict": "District",
+    "columnTaxNumber": "Tax Number",
+    "operatorContains": "Contains",
+    "operatorStartsWith": "Starts with",
+    "operatorEndsWith": "Ends with",
+    "operatorEquals": "Equals",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
   }
 }

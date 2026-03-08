@@ -57,7 +57,9 @@
     "currencyChange": {
       "title": "Para Birimi Değişikliği",
       "message": "Para birimi değiştiğinde mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
-    }
+    },
+    "deliveryMethod": "Teslim Şekli",
+    "documentDetail": "Belge Detayı"
   },
   "lines": {
     "title": "Sipariş Satırları",
@@ -111,7 +113,8 @@
     "title": "Özet",
     "subtotal": "Ara Toplam",
     "totalVat": "Toplam KDV",
-    "grandTotal": "Genel Toplam"
+    "grandTotal": "Genel Toplam",
+    "orderTotalAnalysis": "Sipariş Toplam Analizi"
   },
   "offerType": {
     "domestic": "Yurtiçi",

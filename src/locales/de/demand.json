@@ -24,10 +24,19 @@
     "title": "Anforderungsliste",
     "description": "Alle Anforderungen anzeigen und verwalten",
     "createNew": "Neue Anforderung erstellen",
-    "searchPlaceholder": "Nach Anforderungs-Nr. oder Kundenname suchen..."
+    "searchPlaceholder": "Nach Anforderungs-Nr. oder Kundenname suchen...",
+    "cardTitle": "Demand list",
+    "refresh": "Refresh",
+    "actions": "Actions"
   },
   "detail": {
-    "title": "Anforderungsdetails"
+    "title": "Anforderungsdetails",
+    "subtitle": "View and manage demand details.",
+    "notFound": "Demand not found.",
+    "revisionNo": "Revision No",
+    "tabDetail": "Detail",
+    "tabApprovalFlow": "Approval Flow",
+    "tabReport": "Report"
   },
   "create": {
     "title": "Neue Anforderung erstellen",
@@ -35,7 +44,12 @@
     "success": "Anforderung erfolgreich erstellt",
     "successMessage": "Die Anforderung wurde an den Genehmigungsprozess gesendet.",
     "error": "Anforderung konnte nicht erstellt werden",
-    "errorMessage": "Beim Erstellen der Anforderung ist ein Fehler aufgetreten."
+    "errorMessage": "Beim Erstellen der Anforderung ist ein Fehler aufgetreten.",
+    "subtitle": "Fill in demand details and save.",
+    "deliveryDateRequired": "Delivery date is required.",
+    "paymentTypeRequired": "Payment type is required.",
+    "invalidCurrency": "Invalid currency.",
+    "validationError": "Please check required fields."
   },
   "header": {
     "title": "Anforderungsinformationen",
@@ -61,7 +75,9 @@
     "currencyChange": {
       "title": "Währungsänderung",
       "message": "Wenn die Währung geändert wird, werden alle vorhandenen Zeilen entsprechend der neuen Währung neu berechnet. Möchten Sie diesen Vorgang genehmigen?"
-    }
+    },
+    "deliveryMethod": "Liefermethode",
+    "documentDetail": "Dokumentdetails"
   },
   "lines": {
     "title": "Anforderungszeilen",
@@ -93,8 +109,27 @@
     "noProductsFound": "Keine Produkte gefunden",
     "delete": {
       "confirmTitle": "Zeile löschen",
-      "confirmMessage": "Sind Sie sicher, dass Sie diese Zeile löschen möchten?"
-    }
+      "confirmMessage": "Sind Sie sicher, dass Sie diese Zeile löschen möchten?",
+      "confirmTitleMultiple": "Delete Lines",
+      "confirmMessageMultiple": "Are you sure you want to delete selected lines?"
+    },
+    "noItems": "No lines yet.",
+    "addLine": "Add Line",
+    "relatedStocks": "Related Stocks",
+    "groupCode": "Group Code",
+    "approvalRequired": "Approval required",
+    "requiredFieldsMissing": "Required line fields are missing.",
+    "createSuccess": "Line created.",
+    "createError": "Line could not be created.",
+    "updateSuccess": "Line updated.",
+    "updateError": "Line could not be updated.",
+    "deleteSuccess": "Line deleted.",
+    "deleteError": "Line could not be deleted.",
+    "editStockItemDetails": "Edit stock item details",
+    "description1": "Beschreibung 1",
+    "description2": "Beschreibung 2",
+    "description3": "Beschreibung 3",
+    "descriptionPlaceholder": "Beschreibung eingeben..."
   },
   "exchangeRates": {
     "title": "Wechselkurse",
@@ -108,14 +143,23 @@
     "status": "Status",
     "dialog": {
       "title": "Wechselkurse",
-      "description": "Wechselkurswerte bei Bedarf anzeigen und bearbeiten. Geänderte Kurse werden nicht als offizielle Kurse markiert."
-    }
+      "description": "Wechselkurswerte bei Bedarf anzeigen und bearbeiten. Geänderte Kurse werden nicht als offizielle Kurse markiert.",
+      "subtitle": "You can edit and save exchange rates.",
+      "info": "Manual update is possible for non-official rates."
+    },
+    "updateSuccess": "Exchange rates updated.",
+    "updateError": "Exchange rates could not be updated.",
+    "cannotEditUsedCurrency": "Used currency cannot be edited."
   },
   "summary": {
     "title": "Zusammenfassung",
     "subtotal": "Zwischensumme",
     "totalVat": "Gesamt MwSt.",
-    "grandTotal": "Gesamtsumme"
+    "grandTotal": "Gesamtsumme",
+    "generalDiscount": "General Discount",
+    "generalDiscountRate": "General Discount Rate",
+    "generalDiscountAmount": "General Discount Amount",
+    "generalDiscountHelp": "Applied on total amount."
   },
   "offerType": {
     "domestic": "Inland",
@@ -166,5 +210,61 @@
         "info": "Die Anforderung wird nach dem Speichern automatisch an den Genehmigungsprozess gesendet"
       }
     }
+  },
+  "loadError": "An error occurred while loading data.",
+  "backToDemands": "Back to Demands",
+  "untitled": "Untitled",
+  "sections": {
+    "header": "Header Information",
+    "lines": "Lines",
+    "summary": "Summary"
+  },
+  "approval": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "sending": "Sending...",
+    "sendForApproval": "Send for Approval",
+    "approveSuccess": "Approval succeeded.",
+    "approveError": "Approval failed.",
+    "rejectSuccess": "Rejection succeeded.",
+    "rejectError": "Rejection failed.",
+    "startSuccess": "Approval flow started.",
+    "startError": "Approval flow could not be started.",
+    "rejectTitle": "Reject Demand",
+    "rejectDescription": "Enter the rejection reason.",
+    "rejectReasonPlaceholder": "Rejection reason"
+  },
+  "approvalFlow": {
+    "noData": "No approval step found.",
+    "notStarted": "Not started",
+    "stepCompleted": "Step completed",
+    "stepInProgress": "Step in progress",
+    "stepNotStarted": "Step pending",
+    "stepRejected": "Step rejected",
+    "errorTitle": "Ein Fehler ist aufgetreten"
+  },
+  "update": {
+    "success": "Demand updated.",
+    "successMessage": "Demand updated successfully.",
+    "error": "Demand could not be updated.",
+    "errorMessage": "An error occurred while updating demand.",
+    "invalidCurrency": "Invalid currency.",
+    "validationError": "Form validation error."
+  },
+  "revision": {
+    "success": "Revision created.",
+    "error": "Revision could not be created."
+  },
+  "waitingApprovals": {
+    "title": "Pending Demand Approvals",
+    "list": "Pending Approval List",
+    "noApprovals": "No pending approvals found.",
+    "requestId": "Demand No",
+    "description": "Description",
+    "stepOrder": "Step",
+    "approvedBy": "Approved By",
+    "actionDate": "Action Date",
+    "status": "Status",
+    "waiting": "Waiting"
   }
 }

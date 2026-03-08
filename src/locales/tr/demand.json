@@ -75,7 +75,9 @@
     "currencyChange": {
       "title": "Para Birimi Değişikliği",
       "message": "Para birimi değiştiğinde, mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
-    }
+    },
+    "deliveryMethod": "Teslim Şekli",
+    "documentDetail": "Belge Detayı"
   },
   "lines": {
     "title": "Talep Satırları",
@@ -122,7 +124,12 @@
     "updateSuccess": "Satır güncellendi.",
     "updateError": "Satır güncellenemedi.",
     "deleteSuccess": "Satır silindi.",
-    "deleteError": "Satır silinemedi."
+    "deleteError": "Satır silinemedi.",
+    "editStockItemDetails": "Stok kalemi detaylarını düzenleyin",
+    "description1": "Açıklama 1",
+    "description2": "Açıklama 2",
+    "description3": "Açıklama 3",
+    "descriptionPlaceholder": "Açıklama giriniz..."
   },
   "exchangeRates": {
     "title": "Döviz Kurları",
@@ -233,7 +240,8 @@
     "stepCompleted": "Adım tamamlandı",
     "stepInProgress": "Adım devam ediyor",
     "stepNotStarted": "Adım bekliyor",
-    "stepRejected": "Adım reddedildi"
+    "stepRejected": "Adım reddedildi",
+    "errorTitle": "Hata Oluştu"
   },
   "update": {
     "success": "Talep güncellendi.",

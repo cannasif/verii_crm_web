@@ -20,7 +20,21 @@
   "saveAndApply": "Salva e Applica",
   "list": {
     "revise": "Revisiona",
-    "showing": "Visualizzazione {{from}}-{{to}} di {{total}}"
+    "showing": "Visualizzazione {{from}}-{{to}} di {{total}}",
+    "title": "Quotation List",
+    "description": "View and manage quotation records",
+    "createNew": "Create New Quotation",
+    "cardTitle": "Quotation list",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "id": "ID",
+    "offerNo": "Offer No",
+    "customer": "Customer",
+    "representative": "Representative",
+    "offerDate": "Offer Date",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status"
   },
   "detail": {
     "title": "Dettaglio Preventivo"
@@ -57,7 +71,9 @@
     "currencyChange": {
       "title": "Cambio Valuta",
       "message": "Quando la valuta cambia, tutte le righe esistenti verranno ricalcolate in base alla nuova valuta. Approvi questa operazione?"
-    }
+    },
+    "deliveryMethod": "Metodo di consegna",
+    "documentDetail": "Dettagli documento"
   },
   "lines": {
     "title": "Righe Preventivo",
@@ -90,7 +106,11 @@
     "delete": {
       "confirmTitle": "Elimina Riga",
       "confirmMessage": "Sei sicuro di voler eliminare questa riga?"
-    }
+    },
+    "discountLimitExceeded": "Discount rates exceed your authorization limits.",
+    "max200Chars": "Maximum 200 characters",
+    "totalDiscount": "Sconto totale",
+    "vatAmount": "Importo IVA"
   },
   "exchangeRates": {
     "title": "Tassi di Cambio",
@@ -163,5 +183,6 @@
       }
     }
   },
-  "guide": "Direttorio"
+  "guide": "Direttorio",
+  "loadError": "An error occurred while loading data."
 }

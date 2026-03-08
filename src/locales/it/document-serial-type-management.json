@@ -22,7 +22,8 @@
     "salesRep": "Rappresentante vendite",
     "serialPrefix": "Prefisso serie",
     "serialLength": "Lunghezza serie",
-    "createdDate": "Data di creazione"
+    "createdDate": "Data di creazione",
+    "title": "Dosya Tip Listesi"
   },
   "form": {
     "addTitle": "Aggiungi nuovo tipo di documento",
@@ -79,5 +80,11 @@
   "deleting": "Eliminazione...",
   "deleteConfirmTitle": "Conferma eliminazione",
   "deleteConfirmDescription": "Sei sicuro di voler eliminare questo record? Questa azione non può essere annullata.",
-  "totalRecords": "Totale {{count}} record"
+  "totalRecords": "Totale {{count}} record",
+  "advancedFilter": {
+    "columnSerialPrefix": "Serial Prefix",
+    "columnCustomerTypeName": "Customer Type",
+    "columnSalesRepFullName": "Sales Rep",
+    "columnRuleType": "Rule Type"
+  }
 }

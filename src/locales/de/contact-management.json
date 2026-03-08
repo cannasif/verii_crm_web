@@ -91,5 +91,15 @@
     "updateError": "Kontakt konnte nicht aktualisiert werden",
     "deleteSuccess": "Contact deleted successfully",
     "deleteError": "Contact could not be deleted"
+  },
+  "advancedFilter": {
+    "columnFullName": "Full Name",
+    "columnFirstName": "First Name",
+    "columnLastName": "Last Name",
+    "columnEmail": "Email",
+    "columnPhone": "Phone",
+    "columnMobile": "Mobile",
+    "columnCustomerName": "Customer",
+    "columnTitleName": "Title"
   }
 }

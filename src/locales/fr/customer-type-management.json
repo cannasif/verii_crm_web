@@ -52,5 +52,9 @@
     "updateError": "Échec de la mise à jour du type de client",
     "deleteSuccess": "Type de client supprimé avec succès",
     "deleteError": "Échec de la suppression du type de client"
+  },
+  "advancedFilter": {
+    "columnName": "Customer Type Name",
+    "columnDescription": "Description"
   }
 }

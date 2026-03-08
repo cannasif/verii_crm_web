@@ -108,7 +108,7 @@ export function OrderSummaryCard({
           </div>
           <div>
             <h3 className="font-bold text-sm tracking-tight leading-none mb-1">{t('order.summary.title')}</h3>
-            <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter">Sipariş Toplam Analizi</span>
+            <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter">{t('order.summary.orderTotalAnalysis', { defaultValue: 'Sipariş Toplam Analizi' })}</span>
           </div>
         </div>
 

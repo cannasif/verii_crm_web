@@ -5,7 +5,12 @@
   "edit": "Zahlungsart bearbeiten",
   "editDescription": "Zahlungsart-Informationen bearbeiten",
   "createDescription": "Enter new payment type information",
-  "delete": "Delete",
+  "delete": {
+    "confirmTitle": "Delete Payment Type",
+    "confirmMessage": "Are you sure you want to delete {{name}} payment type? This action cannot be undone.",
+    "success": "Payment type deleted successfully",
+    "error": "An error occurred while deleting payment type"
+  },
   "deleteTitle": "Delete Payment Type",
   "name": "Name",
   "namePlaceholder": "Namen der Zahlungsart eingeben",
@@ -36,7 +41,9 @@
     "createdDate": "Erstellungsdatum",
     "updatedDate": "Aktualisierungsdatum",
     "showing": "Zeige {{from}}-{{to}} von {{total}}",
-    "page": "Seite {{current}} von {{total}}"
+    "page": "Seite {{current}} von {{total}}",
+    "title": "Ödeme Tipleri",
+    "status": "Durum"
   },
   "form": {
     "name": {
@@ -47,5 +54,10 @@
       "maxLength": "Beschreibung darf maximal 500 Zeichen lang sein"
     }
   },
-  "headerDescription": "Zahlungstypen verwalten und bearbeiten"
+  "headerDescription": "Zahlungstypen verwalten und bearbeiten",
+  "advancedFilter": {
+    "columnName": "Name",
+    "columnDescription": "Description"
+  },
+  "error": "Hata oluştu"
 }

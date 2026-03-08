@@ -32,5 +32,31 @@
     "namePlaceholder": "أدخل اسم المجموعة",
     "nameRequired": "اسم المجموعة مطلوب",
     "nameMaxLength": "الاسم يمكن أن يكون بحد أقصى 100 حرف"
+  },
+  "advancedFilter": {
+    "columnName": "Grup Adı",
+    "columnCreatedBy": "Oluşturan"
+  },
+  "approvalRoleGroup": {
+    "menu": "Onay Rol Grubu Yönetimi",
+    "description": "Onay rol gruplarını yönetin ve düzenleyin",
+    "addButton": "Yeni Grup Ekle",
+    "searchPlaceholder": "Ara...",
+    "noData": "Veri bulunamadı",
+    "table": {
+      "title": "Grup Listesi",
+      "id": "ID",
+      "name": "Grup Adı",
+      "createdDate": "Oluşturulma Tarihi",
+      "createdBy": "Oluşturan Kullanıcı",
+      "actions": "İşlemler",
+      "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
+    },
+    "delete": {
+      "title": "Silme Onayı",
+      "confirmMessage": "{{name}} grubunu silmek istediğinizden emin misiniz?",
+      "success": "Grup başarıyla silindi",
+      "error": "Grup silinirken bir hata oluştu"
+    }
   }
 }

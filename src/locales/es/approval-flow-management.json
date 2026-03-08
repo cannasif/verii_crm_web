@@ -42,12 +42,26 @@
       "action": "Eliminar",
       "cancel": "Cancelar",
       "confirmTitle": "Eliminar Flujo",
-      "confirmMessage": "¿Está seguro de que desea eliminar este flujo de aprobación?"
+      "confirmMessage": "¿Está seguro de que desea eliminar este flujo de aprobación?",
+      "title": "Onay Akışını Sil",
+      "confirm": "Bu onay akışını silmek istediğinizden emin misiniz?"
     },
     "documentType": {
       "offer": "Oferta",
       "request": "Solicitud",
-      "order": "Pedido"
+      "order": "Pedido",
+      "demand": "Talep",
+      "quotation": "Teklif"
+    },
+    "advancedFilter": {
+      "columnDocumentType": "Belge Tipi",
+      "columnDescription": "Açıklama",
+      "columnIsActive": "Aktif",
+      "columnCreatedBy": "Oluşturan"
+    },
+    "messages": {
+      "deleteSuccess": "Onay akışı başarıyla silindi",
+      "deleteError": "Onay akışı silinirken hata oluştu"
     }
   },
   "approvalFlowStep": {

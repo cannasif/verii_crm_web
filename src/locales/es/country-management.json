@@ -11,7 +11,10 @@
   "deleteConfirmTitle": "Confirmación de Eliminación",
   "cancel": "Cancelar",
   "deleting": "Eliminando...",
-  "delete": "Eliminar",
+  "delete": {
+    "confirmTitle": "Delete Country",
+    "confirmMessage": "Are you sure you want to delete {{name}}?"
+  },
   "saving": "Guardando...",
   "save": "Guardar",
   "stats": {
@@ -27,7 +30,9 @@
     "createdDate": "Fecha de Creación",
     "createdBy": "Creado Por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Página {{current}} / {{total}}"
+    "page": "Página {{current}} / {{total}}",
+    "noData": "Veri bulunamadı",
+    "title": "Ülke Listesi"
   },
   "form": {
     "addCountry": "Añadir Nuevo País",
@@ -48,5 +53,67 @@
   },
   "deleteConfirm": {
     "confirmMessage": "¿Está seguro de que desea eliminar {{name}}?"
+  },
+  "countryManagement": {
+    "menu": "Ülke Yönetimi",
+    "description": "Ülkeleri yönetin ve düzenleyin",
+    "addButton": "Yeni Ülke Ekle",
+    "searchPlaceholder": "Ara...",
+    "loading": "Yükleniyor...",
+    "error": "Hata oluştu",
+    "table": {
+      "id": "ID",
+      "name": "Ülke Adı",
+      "code": "Kod",
+      "erpCode": "ERP Kodu",
+      "createdDate": "Oluşturulma Tarihi",
+      "createdBy": "Oluşturan",
+      "noData": "Veri bulunamadı",
+      "title": "Ülke Listesi"
+    },
+    "delete": {
+      "confirmTitle": "Ülke Sil",
+      "confirmMessage": "{{name}} ülkesini silmek istediğinizden emin misiniz?"
+    },
+    "messages": {
+      "deleteSuccess": "Ülke başarıyla silindi",
+      "deleteError": "Ülke silinemedi",
+      "createSuccess": "Ülke başarıyla oluşturuldu",
+      "createError": "Ülke oluşturulamadı",
+      "updateSuccess": "Ülke başarıyla güncellendi",
+      "updateError": "Ülke güncellenemedi"
+    },
+    "form": {
+      "addCountry": "Yeni Ülke Ekle",
+      "editCountry": "Ülke Düzenle",
+      "addDescription": "Yeni ülke bilgilerini girin",
+      "editDescription": "Ülke bilgilerini düzenleyin",
+      "name": "Ülke Adı",
+      "namePlaceholder": "Ülke adını girin",
+      "code": "Ülke Kodu",
+      "codePlaceholder": "Ülke kodunu girin (örn: TR, US)",
+      "erpCode": "ERP Kodu",
+      "erpCodePlaceholder": "ERP kodunu girin (opsiyonel)",
+      "nameRequired": "Ülke adı zorunludur",
+      "nameMaxLength": "Ülke adı en fazla 100 karakter olabilir",
+      "codeMinLength": "Ülke kodu en az 2 karakter olmalıdır",
+      "codeMaxLength": "Ülke kodu en fazla 5 karakter olabilir",
+      "erpCodeMaxLength": "ERP kodu en fazla 10 karakter olabilir",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "tabs": {
+        "header": "Genel Bilgiler"
+      }
+    },
+    "stats": {
+      "totalCountries": "Toplam Ülke",
+      "activeCountries": "Aktif Ülke",
+      "newThisMonth": "Bu Ay Yeni"
+    }
+  },
+  "advancedFilter": {
+    "columnName": "Ülke Adı",
+    "columnCode": "Ülke Kodu",
+    "columnErpCode": "ERP Kodu"
   }
 }

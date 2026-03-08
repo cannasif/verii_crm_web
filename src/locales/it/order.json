@@ -57,7 +57,9 @@
     "currencyChange": {
       "title": "Cambio Valuta",
       "message": "Quando la valuta cambia, tutte le righe esistenti verranno ricalcolate in base alla nuova valuta. Approvi questa operazione?"
-    }
+    },
+    "deliveryMethod": "Metodo di consegna",
+    "documentDetail": "Dettagli documento"
   },
   "lines": {
     "title": "Righe Preventivo",
@@ -111,7 +113,8 @@
     "title": "Riepilogo",
     "subtotal": "Subtotale",
     "totalVat": "Totale IVA",
-    "grandTotal": "Totale Generale"
+    "grandTotal": "Totale Generale",
+    "orderTotalAnalysis": "Analisi totale ordine"
   },
   "offerType": {
     "domestic": "Nazionale",

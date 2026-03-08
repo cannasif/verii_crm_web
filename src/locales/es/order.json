@@ -57,7 +57,9 @@
     "currencyChange": {
       "title": "Cambio de Moneda",
       "message": "Cuando cambia la moneda, todas las líneas existentes se recalcularán según la nueva moneda. ¿Aprueba esta operación?"
-    }
+    },
+    "deliveryMethod": "Método de entrega",
+    "documentDetail": "Detalles del documento"
   },
   "lines": {
     "title": "Líneas de Cotización",
@@ -111,7 +113,8 @@
     "title": "Resumen",
     "subtotal": "Subtotal",
     "totalVat": "IVA Total",
-    "grandTotal": "Gran Total"
+    "grandTotal": "Gran Total",
+    "orderTotalAnalysis": "Análisis total del pedido"
   },
   "offerType": {
     "domestic": "Nacional",

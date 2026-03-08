@@ -26,7 +26,8 @@
     "createdDate": "Fecha de creación",
     "updatedDate": "Fecha de actualización",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Página {{current}} / {{total}}"
+    "page": "Página {{current}} / {{total}}",
+    "title": "Fiyatlandırma Grubu Listesi"
   },
   "viewDetails": "Ver Detalles",
   "noData": "No se encontraron datos",
@@ -110,5 +111,9 @@
   "highProfit": "Ganancia alta",
   "mediumProfit": "Ganancia media",
   "lowProfit": "Ganancia baja",
-  "negativeProfit": "Pérdida"
+  "negativeProfit": "Pérdida",
+  "advancedFilter": {
+    "columnErpGroupCode": "ERP Grup Kodu",
+    "columnCurrency": "Para Birimi"
+  }
 }

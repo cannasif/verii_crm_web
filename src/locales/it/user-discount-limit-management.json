@@ -23,7 +23,8 @@
     "maxDiscount2": "Max Discount 2",
     "maxDiscount3": "Max Discount 3",
     "createdDate": "Created Date",
-    "updatedDate": "Updated Date"
+    "updatedDate": "Updated Date",
+    "title": "İskonto Limiti Listesi"
   },
   "form": {
     "addTitle": "Aggiungi Nuovo Limite di Sconto",
@@ -92,5 +93,29 @@
   "percentage": "Percentuale",
   "getBySalesperson": "Ottieni per venditore",
   "getByGroup": "Ottieni per gruppo",
-  "getBySalespersonAndGroup": "Ottieni per venditore e gruppo"
+  "getBySalespersonAndGroup": "Ottieni per venditore e gruppo",
+  "advancedFilter": {
+    "title": "Advanced Filter",
+    "add": "Add Filter",
+    "column": "Column",
+    "operator": "Operator",
+    "value": "Valore",
+    "search": "Search",
+    "clear": "Clear",
+    "remove": "Remove",
+    "columnSalespersonName": "Salesperson Name",
+    "columnErpProductGroupCode": "ERP Product Group Code",
+    "columnMaxDiscount1": "Max Discount 1",
+    "columnMaxDiscount2": "Max Discount 2",
+    "columnMaxDiscount3": "Max Discount 3",
+    "columnCreatedDate": "Created Date",
+    "operatorContains": "Contains",
+    "operatorStartsWith": "Starts with",
+    "operatorEndsWith": "Ends with",
+    "operatorEquals": "Equals",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
+  }
 }

@@ -57,7 +57,9 @@
     "currencyChange": {
       "title": "Währungsänderung",
       "message": "Wenn die Währung geändert wird, werden alle vorhandenen Zeilen basierend auf der neuen Währung neu berechnet. Bestätigen Sie diesen Vorgang?"
-    }
+    },
+    "deliveryMethod": "Liefermethode",
+    "documentDetail": "Dokumentdetails"
   },
   "lines": {
     "title": "Angebotszeilen",
@@ -111,7 +113,8 @@
     "title": "Zusammenfassung",
     "subtotal": "Zwischensumme",
     "totalVat": "Gesamt MwSt.",
-    "grandTotal": "Gesamtsumme"
+    "grandTotal": "Gesamtsumme",
+    "orderTotalAnalysis": "Bestellsummen-Analyse"
   },
   "offerType": {
     "domestic": "Inland",

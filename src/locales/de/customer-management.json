@@ -91,7 +91,8 @@
     "salesRepCodeMaxLength": "Der Vertriebsmitarbeitercode kann bis zu 50 Zeichen lang sein",
     "groupCodeMaxLength": "Der Gruppencode kann bis zu 50 Zeichen lang sein",
     "defaultShippingAddress": "Standardversandadresse",
-    "selectDefaultShippingAddress": "Wählen Sie die Standardversandadresse"
+    "selectDefaultShippingAddress": "Wählen Sie die Standardversandadresse",
+    "salesRepCodePlaceholder": "Vertriebscode..."
   },
   "delete": {
     "action": "Delete",
@@ -114,5 +115,66 @@
     "updateError": "Kunde konnte nicht aktualisiert werden",
     "deleteSuccess": "Customer deleted successfully",
     "deleteError": "Customer could not be deleted"
+  },
+  "customerManagement": {
+    "menu": "Müşteri Yönetimi",
+    "description": "Müşterileri yönetin ve düzenleyin",
+    "addButton": "Yeni Müşteri Ekle",
+    "loading": "Yükleniyor...",
+    "table": {
+      "id": "ID",
+      "customerCode": "Müşteri Kodu",
+      "name": "Müşteri Adı",
+      "customerType": "Müşteri Tipi",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "city": "Şehir",
+      "district": "İlçe",
+      "country": "Ülke",
+      "creditLimit": "Kredi Limiti",
+      "defaultShippingAddressId": "Varsayılan Sevk Adresi",
+      "salesRep": "Satış Temsilcisi",
+      "tckn": "TCKN",
+      "tax": "Vergi No",
+      "website": "Web Sitesi",
+      "createdDate": "Oluşturulma Tarihi"
+    },
+    "delete": {
+      "confirmTitle": "Müşteriyi Sil",
+      "confirmMessage": "{{name}} müşterisini silmek istediğinizden emin misiniz?",
+      "action": "Sil",
+      "success": "Müşteri başarıyla silindi",
+      "error": "Müşteri silinemedi"
+    },
+    "messages": {
+      "createSuccess": "Müşteri başarıyla oluşturuldu",
+      "createError": "Müşteri oluşturulamadı",
+      "updateSuccess": "Müşteri başarıyla güncellendi",
+      "updateError": "Müşteri güncellenemedi",
+      "deleteSuccess": "Müşteri başarıyla silindi",
+      "deleteError": "Müşteri silinemedi"
+    },
+    "stats": {
+      "totalCustomers": "Toplam Müşteri",
+      "approvedCustomers": "Onaylı Müşteri",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "form": {
+      "branchCode": {
+        "label": "Şube Kodu"
+      },
+      "businessUnitCode": {
+        "label": "İş Birimi Kodu"
+      },
+      "salesRepCodePlaceholder": "Vertriebscode..."
+    }
+  },
+  "advancedFilter": {
+    "columnName": "Müşteri Adı",
+    "columnCustomerCode": "Müşteri Kodu",
+    "columnEmail": "E-posta",
+    "columnPhone": "Telefon",
+    "columnTaxNumber": "Vergi No",
+    "columnCityName": "Şehir"
   }
 }

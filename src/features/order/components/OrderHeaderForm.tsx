@@ -414,7 +414,7 @@ export function OrderHeaderForm({
                 name="order.paymentTypeId"
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label}>Ödeme Planı</FormLabel>
+                    <FormLabel className={styles.label}>{t('order.header.paymentType')}</FormLabel>
                     <div className="relative">
                       <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}>
                         <CreditCard className="h-4 w-4" />
@@ -488,7 +488,7 @@ export function OrderHeaderForm({
                     name="order.deliveryMethod"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>Teslim Şekli</FormLabel>
+                        <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>{t('order.header.deliveryMethod', { defaultValue: 'Teslim Şekli' })}</FormLabel>
                         <div className="relative">
                           <div className={styles.iconWrapper}><Truck className="h-4 w-4 text-zinc-400 group-focus-within:text-pink-500" /></div>
                           <FormControl>
@@ -520,7 +520,7 @@ export function OrderHeaderForm({
                   name="order.offerDate"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>Sipariş T.</FormLabel>
+                      <FormLabel className={styles.label}>{t('order.header.offerDate')}</FormLabel>
                       <div className="relative">
                         <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Calendar className="h-4 w-4" /></div>
                         <FormControl>
@@ -572,7 +572,7 @@ export function OrderHeaderForm({
                 <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600">
                   <FileText className="h-4 w-4" />
                 </div>
-                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Belge Detayı</h4>
+                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('order.header.documentDetail', { defaultValue: 'Belge Detayı' })}</h4>
               </div>
               <div className="space-y-4 flex-1">
                  {showDocumentSerialType && (

@@ -50,5 +50,10 @@
   "deleteConfirm": {
     "confirmTitle": "Supprimer le type d'activité",
     "confirmMessage": "Êtes-vous sûr de vouloir supprimer le type d'activité {{name}} ?"
+  },
+  "advancedFilter": {
+    "columnName": "Activity Type Name",
+    "columnDescription": "Description",
+    "columnCreatedBy": "Created By"
   }
 }

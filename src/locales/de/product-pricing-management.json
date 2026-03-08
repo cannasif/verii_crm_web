@@ -118,10 +118,17 @@
     "createdDate": "Erstellungsdatum",
     "updatedDate": "Aktualisierungsdatum",
     "showing": "{{from}}-{{to}} / {{total}} angezeigt",
-    "page": "Seite {{current}} / {{total}}"
+    "page": "Seite {{current}} / {{total}}",
+    "title": "Fiyatlandırma Listesi",
+    "noData": "Veri bulunamadı"
   },
   "previous": "Vorherige",
   "next": "Nächste",
   "deleteConfirmTitle": "Delete Confirmation",
-  "deleteConfirmMessage": "Are you sure you want to delete this record? This action cannot be undone."
+  "deleteConfirmMessage": "Are you sure you want to delete this record? This action cannot be undone.",
+  "advancedFilter": {
+    "columnErpProductCode": "ERP Ürün Kodu",
+    "columnErpGroupCode": "ERP Grup Kodu",
+    "columnCurrency": "Para Birimi"
+  }
 }

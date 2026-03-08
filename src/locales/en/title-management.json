@@ -31,7 +31,8 @@
     "createdDate": "Created Date",
     "createdBy": "Created By",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}"
+    "page": "Page {{current}} / {{total}}",
+    "title": "Ünvan Listesi"
   },
   "form": {
     "addTitle": "Add New Title",

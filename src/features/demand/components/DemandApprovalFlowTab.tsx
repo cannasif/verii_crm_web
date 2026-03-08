@@ -239,7 +239,7 @@ export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps):
         <Alert variant="destructive" className="rounded-2xl border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-500/20 dark:bg-[#1a0a10] dark:text-rose-300 shadow-sm p-5">
           <Alert02Icon size={24} className="mb-1"  />
           <div className="ml-2">
-            <h5 className="font-bold text-base mb-1">Hata Oluştu</h5>
+            <h5 className="font-bold text-base mb-1">{t('demand.approvalFlow.errorTitle', { defaultValue: 'Hata Oluştu' })}</h5>
             <AlertDescription className="font-medium text-sm">
               {error.message}
             </AlertDescription>

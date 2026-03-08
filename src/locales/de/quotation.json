@@ -20,7 +20,21 @@
   "saveAndApply": "Speichern und Anwenden",
   "list": {
     "revise": "Revise",
-    "showing": "Zeige {{from}}-{{to}} / {{total}}"
+    "showing": "Zeige {{from}}-{{to}} / {{total}}",
+    "title": "Quotation List",
+    "description": "View and manage quotation records",
+    "createNew": "Create New Quotation",
+    "cardTitle": "Quotation list",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "id": "ID",
+    "offerNo": "Offer No",
+    "customer": "Customer",
+    "representative": "Representative",
+    "offerDate": "Offer Date",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status"
   },
   "detail": {
     "title": "Angebotsdetails"
@@ -57,7 +71,9 @@
     "currencyChange": {
       "title": "Währungsänderung",
       "message": "Wenn die Währung geändert wird, werden alle vorhandenen Zeilen basierend auf der neuen Währung neu berechnet. Bestätigen Sie diesen Vorgang?"
-    }
+    },
+    "deliveryMethod": "Liefermethode",
+    "documentDetail": "Dokumentdetails"
   },
   "lines": {
     "title": "Angebotszeilen",
@@ -90,7 +106,11 @@
     "delete": {
       "confirmTitle": "Delete Line",
       "confirmMessage": "Are you sure you want to delete this line?"
-    }
+    },
+    "discountLimitExceeded": "Discount rates exceed your authorization limits.",
+    "max200Chars": "Maximum 200 characters",
+    "totalDiscount": "Gesamtrabatt",
+    "vatAmount": "MwSt.-Betrag"
   },
   "exchangeRates": {
     "title": "Wechselkurse",
@@ -163,5 +183,6 @@
       }
     }
   },
-  "guide": "Verzeichnis"
+  "guide": "Verzeichnis",
+  "loadError": "An error occurred while loading data."
 }

@@ -18,7 +18,8 @@
     "rowsPerPage": "الصفوف لكل صفحة",
     "id": "المعرف",
     "createdDate": "Created Date",
-    "createdBy": "Created By"
+    "createdBy": "Created By",
+    "title": "Ünvan Listesi"
   },
   "form": {
     "addTitle": "إضافة لقب جديد",
@@ -62,5 +63,9 @@
   "header": {
     "title": "إدارة الألقاب",
     "description": "يمكنك إدارة تعريفات الألقاب من هنا."
+  },
+  "advancedFilter": {
+    "columnTitleName": "Title Name",
+    "columnCode": "Code"
   }
 }

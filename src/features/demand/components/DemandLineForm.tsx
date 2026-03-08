@@ -727,7 +727,7 @@ export function DemandLineForm({
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
                 {t('demand.lines.editLine')}
               </h3>
-              <p className="text-xs text-zinc-500 font-medium">Stok kalemi detaylarını düzenleyin</p>
+              <p className="text-xs text-zinc-500 font-medium">{t('demand.lines.editStockItemDetails', { defaultValue: 'Stok kalemi detaylarını düzenleyin' })}</p>
             </div>
           </div>
           
@@ -1067,32 +1067,32 @@ export function DemandLineForm({
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-500 ml-1">Açıklama 1</label>
+              <label className="text-xs font-medium text-zinc-500 ml-1">{t('demand.lines.description1')}</label>
               <Input
                 value={formData.description1 ?? ''}
                 onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                 maxLength={200}
-                placeholder="Açıklama giriniz..."
+                placeholder={t('demand.lines.descriptionPlaceholder', { defaultValue: 'Açıklama giriniz...' })}
                 className={styles.inputBase}
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-500 ml-1">Açıklama 2</label>
+              <label className="text-xs font-medium text-zinc-500 ml-1">{t('demand.lines.description2')}</label>
               <Input
                 value={formData.description2 ?? ''}
                 onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                 maxLength={200}
-                placeholder="Açıklama giriniz..."
+                placeholder={t('demand.lines.descriptionPlaceholder', { defaultValue: 'Açıklama giriniz...' })}
                 className={styles.inputBase}
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-500 ml-1">Açıklama 3</label>
+              <label className="text-xs font-medium text-zinc-500 ml-1">{t('demand.lines.description3')}</label>
               <Input
                 value={formData.description3 ?? ''}
                 onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                 maxLength={200}
-                placeholder="Açıklama giriniz..."
+                placeholder={t('demand.lines.descriptionPlaceholder', { defaultValue: 'Açıklama giriniz...' })}
                 className={styles.inputBase}
               />
             </div>
