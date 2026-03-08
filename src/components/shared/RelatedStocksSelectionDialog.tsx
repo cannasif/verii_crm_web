@@ -73,7 +73,7 @@ export function RelatedStocksSelectionDialog({
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isLoading && onOpenChange(isOpen)}>
       <DialogContent className="w-[calc(100vw-1rem)] sm:w-full max-w-2xl max-h-[80vh] flex flex-col p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-2xl rounded-2xl overflow-hidden">
-        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0 border-b border-slate-200/50 dark:border-white/5">
+        <DialogHeader className="px-6 pt-6 pb-4 shrink-0  border-b border-slate-200/50 dark:border-white/5">
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-pink-600 to-orange-600">
             {t('relatedStocksSelectionDialog.title')}
           </DialogTitle>

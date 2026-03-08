@@ -100,7 +100,7 @@ function CustomerCard({
         </div>
 
         <div className="flex flex-col gap-1 mt-1">
-          <span className="font-semibold text-base text-slate-900 dark:text-zinc-100 line-clamp-2 leading-tight min-h-[2.5rem]">{name}</span>
+          <span className="font-semibold text-base text-slate-900 dark:text-zinc-100 line-clamp-2 leading-tight min-h-10">{name}</span>
         </div>
 
         <div className="mt-auto pt-3 space-y-2 border-t border-slate-200/50 dark:border-white/5">
@@ -373,7 +373,7 @@ export function CustomerSelectDialog({
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'erp' | 'potential' | 'all')} className="flex flex-col h-full">
           <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm shrink-0">
             <div className="flex items-center gap-4">
-               <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+               <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
                  <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
                    <Users size={24} className="text-pink-600 dark:text-pink-500" />
                  </div>
