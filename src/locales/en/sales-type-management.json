@@ -1,0 +1,29 @@
+{
+  "menu": "Sales Type Management",
+  "description": "Manage and edit sales types",
+  "addButton": "Add New Sales Type",
+  "searchPlaceholder": "Search sales type...",
+  "advancedFilter": {
+    "columnName": "Name",
+    "columnSalesType": "Offer Type"
+  },
+  "table": {
+    "title": "Sales Type List",
+    "salesType": "Offer Type",
+    "name": "Name",
+    "createdDate": "Created Date"
+  },
+  "form": {
+    "addTitle": "Add New Sales Type",
+    "editTitle": "Edit Sales Type",
+    "addDescription": "Create a new sales type definition.",
+    "editDescription": "Update existing sales type definition.",
+    "salesType": "Offer Type",
+    "name": "Name",
+    "namePlaceholder": "Enter sales type name",
+    "validation": {
+      "required": "Name is required",
+      "whitespace": "Name cannot be empty or whitespace"
+    }
+  }
+}

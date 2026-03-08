@@ -1,0 +1,29 @@
+{
+  "menu": "Verkaufstyp-Verwaltung",
+  "description": "Verkaufstypen verwalten und bearbeiten",
+  "addButton": "Neuen Verkaufstyp hinzufügen",
+  "searchPlaceholder": "Verkaufstyp suchen...",
+  "advancedFilter": {
+    "columnName": "Name",
+    "columnSalesType": "Angebotstyp"
+  },
+  "table": {
+    "title": "Verkaufstyp-Liste",
+    "salesType": "Angebotstyp",
+    "name": "Name",
+    "createdDate": "Erstellt am"
+  },
+  "form": {
+    "addTitle": "Neuen Verkaufstyp hinzufügen",
+    "editTitle": "Verkaufstyp bearbeiten",
+    "addDescription": "Neue Verkaufstyp-Definition erstellen.",
+    "editDescription": "Bestehende Verkaufstyp-Definition aktualisieren.",
+    "salesType": "Angebotstyp",
+    "name": "Name",
+    "namePlaceholder": "Verkaufstypnamen eingeben",
+    "validation": {
+      "required": "Name ist erforderlich",
+      "whitespace": "Name darf nicht leer sein"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "menu": "إدارة أنواع المبيعات",
+  "description": "إدارة وتعديل أنواع المبيعات",
+  "addButton": "إضافة نوع مبيعات جديد",
+  "searchPlaceholder": "ابحث عن نوع المبيعات...",
+  "advancedFilter": {
+    "columnName": "الاسم",
+    "columnSalesType": "نوع العرض"
+  },
+  "table": {
+    "title": "قائمة أنواع المبيعات",
+    "salesType": "نوع العرض",
+    "name": "الاسم",
+    "createdDate": "تاريخ الإنشاء"
+  },
+  "form": {
+    "addTitle": "إضافة نوع مبيعات جديد",
+    "editTitle": "تعديل نوع المبيعات",
+    "addDescription": "إنشاء تعريف نوع مبيعات جديد.",
+    "editDescription": "تحديث تعريف نوع المبيعات الحالي.",
+    "salesType": "نوع العرض",
+    "name": "الاسم",
+    "namePlaceholder": "أدخل اسم نوع المبيعات",
+    "validation": {
+      "required": "الاسم مطلوب",
+      "whitespace": "لا يمكن أن يكون الاسم فارغًا"
+    }
+  }
+}

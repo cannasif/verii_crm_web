@@ -1,0 +1,29 @@
+{
+  "menu": "Gestión de tipos de venta",
+  "description": "Gestiona y edita tipos de venta",
+  "addButton": "Agregar nuevo tipo de venta",
+  "searchPlaceholder": "Buscar tipo de venta...",
+  "advancedFilter": {
+    "columnName": "Nombre",
+    "columnSalesType": "Tipo de oferta"
+  },
+  "table": {
+    "title": "Lista de tipos de venta",
+    "salesType": "Tipo de oferta",
+    "name": "Nombre",
+    "createdDate": "Fecha de creación"
+  },
+  "form": {
+    "addTitle": "Agregar nuevo tipo de venta",
+    "editTitle": "Editar tipo de venta",
+    "addDescription": "Crear una nueva definición de tipo de venta.",
+    "editDescription": "Actualizar la definición existente del tipo de venta.",
+    "salesType": "Tipo de oferta",
+    "name": "Nombre",
+    "namePlaceholder": "Ingrese el nombre del tipo de venta",
+    "validation": {
+      "required": "El nombre es obligatorio",
+      "whitespace": "El nombre no puede estar vacío"
+    }
+  }
+}
