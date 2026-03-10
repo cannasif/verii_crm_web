@@ -16,7 +16,7 @@
     "notConnected": "Bağlı Değil",
     "outlookEmailLabel": "Outlook E-posta",
     "expiresAtLabel": "Token Bitiş Tarihi",
-    "scopeLabel": "Yetki (Scope)",
+    "scopeLabel": "Yetki Kapsamı",
     "connectButton": "Outlook ile Bağlan",
     "disconnectButton": "Bağlantıyı Kaldır",
     "connectedSuccess": "Outlook hesabı başarıyla bağlandı.",
@@ -47,10 +47,10 @@
     "statusLabel": "Bağlantı",
     "connected": "Bağlı",
     "notConnected": "Bağlı Değil",
-    "scopeLabel": "Aktif Scope",
+    "scopeLabel": "Aktif Yetki Kapsamı",
     "flowCardTitle": "Senkron Kapsamı",
-    "flowMeeting": "Meeting aktiviteleri Outlook Calendar tarafına senkronize edilir.",
-    "flowCall": "Call aktiviteleri Outlook Calendar tarafına senkronize edilir.",
+    "flowMeeting": "Toplantı aktiviteleri Outlook Takvim tarafına senkronize edilir.",
+    "flowCall": "Arama aktiviteleri Outlook Takvim tarafına senkronize edilir.",
     "flowPlaceholder": "Detaylı senkron ayarları bir sonraki sürümde açılacaktır.",
     "loading": "Yükleniyor..."
   },
@@ -102,7 +102,7 @@
       "errorCode": "Hata Kodu",
       "userId": "Kullanıcı Id",
       "activityId": "Aktivite Id",
-      "providerEventId": "Sağlayıcı Etkinlik Id"
+      "providerEventId": "Sağlayıcı Etkinlik Kimliği"
     }
   }
 }
