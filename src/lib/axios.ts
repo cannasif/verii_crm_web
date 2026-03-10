@@ -70,6 +70,9 @@ function normalizeApiEnvelope(payload: unknown): unknown {
   if (normalized.data === undefined && source.Data !== undefined) {
     normalized.data = source.Data;
   }
+  if (normalized.details === undefined && source.Details !== undefined) {
+    normalized.details = source.Details;
+  }
   if (normalized.errors === undefined && Array.isArray(source.Errors)) {
     normalized.errors = source.Errors;
   }

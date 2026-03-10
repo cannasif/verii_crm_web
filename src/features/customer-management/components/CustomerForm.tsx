@@ -35,10 +35,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { customerFormSchema, type CustomerFormData, type CustomerDto } from '../types/customer-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { useShippingAddressesByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesByCustomer';
+import type { CustomerDuplicateConflictPayload } from '../utils/customer-conflict';
 import {
+  AlertTriangle,
   Building2,
   Hash,
   FileText,
@@ -56,6 +59,8 @@ interface CustomerFormProps {
   onSubmit: (data: CustomerFormData) => void | Promise<void>;
   customer?: CustomerDto | null;
   isLoading?: boolean;
+  conflictState?: CustomerDuplicateConflictPayload | null;
+  onConflictDismiss?: () => void;
 }
 
 const INPUT_STYLE = `
@@ -80,6 +85,8 @@ export function CustomerForm({
   onSubmit,
   customer,
   isLoading = false,
+  conflictState = null,
+  onConflictDismiss,
 }: CustomerFormProps): ReactElement {
   const { t } = useTranslation();
   const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
@@ -122,12 +129,37 @@ export function CustomerForm({
   const selectedCountryId = form.watch('countryId');
   const selectedCityId = form.watch('cityId');
 
+  useEffect(() => {
+    form.clearErrors(['taxNumber', 'tcknNumber', 'customerCode']);
+
+    if (!conflictState) {
+      return;
+    }
+
+    const fieldMessage = t('customerManagement.form.conflictFieldError');
+    const conflictFields = new Set(conflictState.conflicts.map((conflict) => conflict.field));
+
+    if (conflictFields.has('TaxNumber')) {
+      form.setError('taxNumber', { type: 'server', message: fieldMessage });
+    }
+
+    if (conflictFields.has('TcknNumber')) {
+      form.setError('tcknNumber', { type: 'server', message: fieldMessage });
+    }
+
+    if (conflictFields.has('CustomerCode')) {
+      form.setError('customerCode', { type: 'server', message: fieldMessage });
+    }
+  }, [conflictState, form, t]);
+
   const countryDropdown = useCountryOptionsInfinite(countrySearchTerm, open);
   const cityDropdown = useCityOptionsInfinite(citySearchTerm, open, selectedCountryId ?? undefined);
   const districtDropdown = useDistrictOptionsInfinite(districtSearchTerm, open, selectedCityId ?? undefined);
   const customerTypeDropdown = useCustomerTypeOptionsInfinite(customerTypeSearchTerm, open);
 
   useEffect(() => {
+    onConflictDismiss?.();
+
     if (customer) {
       form.reset({
         name: customer.name || '',
@@ -180,7 +212,20 @@ export function CustomerForm({
       customerTypeId: undefined,
       isCompleted: false,
     });
-  }, [customer, form]);
+  }, [customer, form, onConflictDismiss]);
+
+  const getConflictFieldLabel = (field: string): string => {
+    switch (field) {
+      case 'TaxNumber':
+        return t('customerManagement.form.taxNumber');
+      case 'TcknNumber':
+        return t('customerManagement.form.tcknNumber');
+      case 'CustomerCode':
+        return t('customerManagement.form.customerCode');
+      default:
+        return field;
+    }
+  };
 
   const handleSubmit = async (data: CustomerFormData): Promise<void> => {
     await onSubmit(data);
@@ -220,6 +265,29 @@ export function CustomerForm({
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
             <form id="customer-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+              {conflictState && (
+                <Alert variant="destructive" className="border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-100">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>{t('customerManagement.form.conflictTitle')}</AlertTitle>
+                  <AlertDescription>
+                    <p className="mb-3">{t('customerManagement.form.conflictDescription')}</p>
+                    <ul className="list-disc space-y-1 pl-5 text-sm">
+                      {conflictState.conflicts.map((conflict) => (
+                        <li key={`${conflict.customerId}-${conflict.field}-${conflict.value}`}>
+                          {t('customerManagement.form.conflictItem', {
+                            customerName: conflict.customerName,
+                            customerId: conflict.customerId,
+                            field: getConflictFieldLabel(conflict.field),
+                            value: conflict.value,
+                            branchCode: conflict.branchCode ?? '-',
+                          })}
+                        </li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
