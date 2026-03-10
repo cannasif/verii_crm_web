@@ -3,6 +3,7 @@ export interface ApiResponse<T> {
   message: string;
   exceptionMessage: string;
   data: T;
+  details?: unknown;
   errors: string[];
   timestamp: string;
   statusCode: number;

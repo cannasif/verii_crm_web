@@ -20,6 +20,10 @@ import { useCustomerList } from '../hooks/useCustomerList';
 import type { CustomerDto, CustomerFormData } from '../types/customer-types';
 import { applyCustomerFilters, CUSTOMER_FILTER_COLUMNS } from '../types/customer-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import {
+  extractCustomerConflictPayload,
+  type CustomerDuplicateConflictPayload,
+} from '../utils/customer-conflict';
 
 const EMPTY_CUSTOMERS: CustomerDto[] = [];
 const PAGE_KEY = 'customer-management';
@@ -43,6 +47,7 @@ export function CustomerManagementPage(): ReactElement {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<CustomerDto | null>(null);
+  const [duplicateConflicts, setDuplicateConflicts] = useState<CustomerDuplicateConflictPayload | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -201,17 +206,22 @@ export function CustomerManagementPage(): ReactElement {
 
   const handleAddClick = (): void => {
     setEditingCustomer(null);
+    setDuplicateConflicts(null);
     setFormOpen(true);
   };
 
   const handleEdit = (customer: CustomerDto): void => {
     setEditingCustomer(customer);
+    setDuplicateConflicts(null);
     setFormOpen(true);
   };
 
   const handleFormClose = (open: boolean): void => {
     setFormOpen(open);
-    if (!open) setEditingCustomer(null);
+    if (!open) {
+      setEditingCustomer(null);
+      setDuplicateConflicts(null);
+    }
   };
 
   const handleRefresh = async (): Promise<void> => {
@@ -219,16 +229,28 @@ export function CustomerManagementPage(): ReactElement {
   };
 
   const handleFormSubmit = async (data: CustomerFormData): Promise<void> => {
-    if (editingCustomer) {
-      await updateCustomer.mutateAsync({
-        id: editingCustomer.id,
-        data: data,
-      });
-    } else {
-      await createCustomer.mutateAsync(data);
+    setDuplicateConflicts(null);
+
+    try {
+      if (editingCustomer) {
+        await updateCustomer.mutateAsync({
+          id: editingCustomer.id,
+          data: data,
+        });
+      } else {
+        await createCustomer.mutateAsync(data);
+      }
+    } catch (error) {
+      const conflicts = extractCustomerConflictPayload(error);
+      if (conflicts) {
+        setDuplicateConflicts(conflicts);
+      }
+      throw error;
     }
+
     setFormOpen(false);
     setEditingCustomer(null);
+    setDuplicateConflicts(null);
   };
 
   const columns = useMemo<DataTableGridColumn<CustomerColumnKey>[]>(
@@ -375,6 +397,8 @@ export function CustomerManagementPage(): ReactElement {
         onSubmit={handleFormSubmit}
         customer={editingCustomer}
         isLoading={createCustomer.isPending || updateCustomer.isPending}
+        conflictState={duplicateConflicts}
+        onConflictDismiss={() => setDuplicateConflicts(null)}
       />
     </div>
   );
