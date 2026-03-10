@@ -4,9 +4,9 @@
     "connectionDescription": "Outlook hesabınızı CRM ile bağlayıp takvim ve e-posta entegrasyonunu yönetin.",
     "syncTitle": "Outlook Senkron",
     "syncDescription": "Senkron kapsamını ve izinleri bu ekrandan takip edin.",
-    "logsTitle": "Outlook Loglar",
-    "logsDescription": "Outlook entegrasyonu ile ilgili log akışı bu ekranda listelenir.",
-    "authInformationTitle": "Outlook Kimlik Bilgileri",
+    "logsTitle": "Outlook Kayıtları",
+    "logsDescription": "Outlook entegrasyonu ile ilgili kayıt akışı bu ekranda listelenir.",
+    "authInformationTitle": "Outlook Yetki Bilgileri",
     "authInformationDescription": "Outlook OAuth kurulumu ve gerekli izin adımlarını bu ekrandan takip edin."
   },
   "connection": {
@@ -24,19 +24,19 @@
     "connectError": "Outlook bağlantı URL'i alınamadı.",
     "disconnectSuccess": "Outlook bağlantısı kaldırıldı.",
     "disconnectError": "Outlook bağlantısı kaldırılamadı.",
-    "oauthNotConfiguredWarning": "Outlook OAuth yapılandırılmamış. Yöneticiniz 'Outlook Kimlik Bilgileri' sayfasındaki adımları tamamlamalı."
+    "oauthNotConfiguredWarning": "Outlook OAuth yapılandırılmamış. Yöneticiniz 'Outlook Yetki Bilgileri' sayfasındaki adımları tamamlamalı."
   },
   "authInformation": {
     "currentStatusTitle": "Mevcut Durum",
     "currentStatusDescription": "Bu ekranda Outlook OAuth için gerekli kurulum bilgileri gösterilir.",
-    "currentStatusHint": "Tenant bazlı Outlook OAuth ayar endpoint'i API tarafında henüz açılmadığı için bu sayfa rehber amaçlıdır.",
+    "currentStatusHint": "Kuruluş bazlı Outlook OAuth ayar uç noktası API tarafında henüz açılmadığı için bu sayfa rehber amaçlıdır.",
     "setupGuideTitle": "Outlook OAuth Kurulum Rehberi",
     "setupGuideDescription": "Microsoft Entra Admin Center üzerinden uygulama kaydı oluşturup callback ve izinleri tanımlayın.",
     "setupStep1": "Microsoft Entra Admin Center'a girin ve doğru tenant seçin.",
     "setupStep2": "App registrations > New registration ile web uygulaması oluşturun.",
     "setupStep3": "Authentication bölümünde aşağıdaki callback URL'ini Redirect URI (Web) olarak ekleyin.",
     "setupStep4": "API permissions bölümünde Calendar ve Mail izinlerini ekleyip admin consent verin.",
-    "setupStep5": "Backend'de Outlook OAuth tenant ayar endpoint'i aktif edildiğinde Client ID/Secret değerlerini ilgili ekrandan kaydedin.",
+    "setupStep5": "Arka uçta Outlook OAuth kuruluş ayar uç noktası aktif edildiğinde istemci kimliği ve gizli anahtar değerlerini ilgili ekrandan kaydedin.",
     "callbackLabel": "Geri Dönüş URL",
     "consoleLinkLabel": "Microsoft Entra'yı Aç",
     "permissionTitle": "Önerilen İzinler",
@@ -91,8 +91,8 @@
     "next": "Sonraki",
     "actions": "İşlemler",
     "viewDetails": "Detayları görüntüle",
-    "detailsTitle": "Log detayları",
-    "detailsDescription": "Seçili Outlook entegrasyon log kaydına ait detaylı bilgiler.",
+    "detailsTitle": "Kayıt detayları",
+    "detailsDescription": "Seçili Outlook entegrasyon kaydına ait detaylı bilgiler.",
     "columns": {
       "date": "Tarih",
       "operation": "İşlem",
