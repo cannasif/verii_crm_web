@@ -9,7 +9,7 @@
   },
   "tabs": {
     "overview": "Özet",
-    "analytics": "Analitik",
+    "analytics": "Çözümleme",
     "mailLogs": "E-posta Geçmişi"
   },
   "mail": {
@@ -71,7 +71,7 @@
     "upsell": "Ek Satış Eğilimi",
     "payment": "Ödeme Davranışı",
     "segment": "RFM Segmenti",
-    "ltv": "LTV"
+    "ltv": "Yaşam Boyu Değer"
   },
   "cohort": {
     "title": "Kohort Tutma",
