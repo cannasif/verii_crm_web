@@ -96,7 +96,7 @@
       "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
       "page": "Sayfa {{current}} / {{total}}"
     },
-    "filters": "Detaylı Filtre",
+    "filters": "Filtreler",
     "advancedFilter": {
       "title": "Gelişmiş Filtre",
       "add": "Filtre Ekle",
@@ -118,10 +118,10 @@
       "false": "Hayır"
     },
     "selectAll": "Tümünü Seç",
-    "export": "Dışa Aktar",
-    "exportExcel": "Excel İndir",
-    "exportPDF": "PDF İndir",
-    "exportPPT": "PowerPoint İndir",
+    "export": "Çıktı Al",
+    "exportExcel": "Excel Çıktısı",
+    "exportPDF": "PDF Çıktısı",
+    "exportPPT": "PowerPoint Çıktısı",
     "active": "Aktif",
     "inactive": "Pasif",
     "columns": "Görünür Sütunlar",
