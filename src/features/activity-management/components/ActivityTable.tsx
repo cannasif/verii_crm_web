@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
+import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
 export interface ColumnDef<T> {
   key: keyof T | string;
@@ -195,11 +196,12 @@ export function ActivityTable({
   nextLabel,
   paginationInfoText,
 }: ActivityTableProps): ReactElement {
-  const { t, i18n } = useTranslation(['activity-management', 'common']);
+  const { t, i18n } = useTranslation(['activity-management', 'common', 'outlook-integration']);
   const deleteActivity = useDeleteActivity();
   const updateActivity = useUpdateActivity();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ActivityDto | null>(null);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
@@ -213,6 +215,11 @@ export function ActivityTable({
   const handleMailClick = (activity: ActivityDto): void => {
     setSelectedActivity(activity);
     setMailDialogOpen(true);
+  };
+
+  const handleOutlookMailClick = (activity: ActivityDto): void => {
+    setSelectedActivity(activity);
+    setOutlookMailDialogOpen(true);
   };
 
   const handleDeleteConfirm = async (): Promise<void> => {
@@ -281,6 +288,15 @@ export function ActivityTable({
           className="h-8 w-8 text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400"
           onClick={() => handleMailClick(activity)}
           title={t('google-integration:mailDialog.openButton', { defaultValue: 'Mail' })}
+        >
+          <Mail size={16} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-sky-600 hover:bg-sky-50 dark:text-sky-400"
+          onClick={() => handleOutlookMailClick(activity)}
+          title={t('outlook-integration:mailDialog.openButton', { defaultValue: 'Outlook Mail' })}
         >
           <Mail size={16} />
         </Button>
@@ -365,6 +381,16 @@ export function ActivityTable({
       <GoogleCustomerMailDialog
         open={mailDialogOpen}
         onOpenChange={setMailDialogOpen}
+        moduleKey="activity"
+        recordId={selectedActivity?.id ?? 0}
+        customerId={selectedActivity?.potentialCustomerId}
+        contactId={selectedActivity?.contactId}
+        customerName={selectedActivity?.potentialCustomer?.name}
+        contactName={selectedActivity?.contact?.fullName}
+      />
+      <OutlookCustomerMailDialog
+        open={outlookMailDialogOpen}
+        onOpenChange={setOutlookMailDialogOpen}
         moduleKey="activity"
         recordId={selectedActivity?.id ?? 0}
         customerId={selectedActivity?.potentialCustomerId}

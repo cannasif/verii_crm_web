@@ -7,6 +7,7 @@ import { useCreateRevisionOfDemand } from '../hooks/useCreateRevisionOfDemand';
 import type { DemandGetDto } from '../types/demand-types';
 import { Mail, PencilLine } from 'lucide-react';
 import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
+import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 
@@ -89,10 +90,11 @@ export function DemandTable({
   paginationInfoText,
   disablePaginationButtons = false,
 }: DemandTableProps): ReactElement {
-  const { t } = useTranslation(['demand', 'google-integration']);
+  const { t } = useTranslation(['demand', 'google-integration', 'outlook-integration']);
   const navigate = useNavigate();
   const createRevisionMutation = useCreateRevisionOfDemand();
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedDemand, setSelectedDemand] = useState<DemandGetDto | null>(null);
 
   const handleRevision = async (e: React.MouseEvent, demandId: number): Promise<void> => {
@@ -113,6 +115,12 @@ export function DemandTable({
     setMailDialogOpen(true);
   };
 
+  const handleOpenOutlookMailDialog = (event: React.MouseEvent, demand: DemandGetDto): void => {
+    event.stopPropagation();
+    setSelectedDemand(demand);
+    setOutlookMailDialogOpen(true);
+  };
+
   const renderActionsCell = (demand: DemandGetDto): ReactElement => (
     <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
       <Button
@@ -121,6 +129,15 @@ export function DemandTable({
         title={t('google-integration:mailDialog.openButton')}
         onClick={(e) => handleOpenMailDialog(e, demand)}
         className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
+      >
+        <Mail className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        title={t('outlook-integration:mailDialog.openButton')}
+        onClick={(e) => handleOpenOutlookMailDialog(e, demand)}
+        className="h-8 w-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
       >
         <Mail className="h-4 w-4" />
       </Button>
@@ -179,6 +196,15 @@ export function DemandTable({
       <GoogleCustomerMailDialog
         open={mailDialogOpen}
         onOpenChange={setMailDialogOpen}
+        moduleKey="demand"
+        recordId={selectedDemand?.id ?? 0}
+        customerId={selectedDemand?.potentialCustomerId}
+        contactId={selectedDemand?.contactId}
+        customerName={selectedDemand?.potentialCustomerName}
+      />
+      <OutlookCustomerMailDialog
+        open={outlookMailDialogOpen}
+        onOpenChange={setOutlookMailDialogOpen}
         moduleKey="demand"
         recordId={selectedDemand?.id ?? 0}
         customerId={selectedDemand?.potentialCustomerId}

@@ -7,6 +7,7 @@ import { useCreateRevisionOfOrder } from '../hooks/useCreateRevisionOfOrder';
 import type { OrderGetDto } from '../types/order-types';
 import { Mail } from 'lucide-react';
 import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
+import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 
@@ -89,10 +90,11 @@ export function OrderTable({
   paginationInfoText,
   disablePaginationButtons = false,
 }: OrderTableProps): ReactElement {
-  const { t } = useTranslation(['order', 'google-integration']);
+  const { t } = useTranslation(['order', 'google-integration', 'outlook-integration']);
   const navigate = useNavigate();
   const createRevisionMutation = useCreateRevisionOfOrder();
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderGetDto | null>(null);
 
   const handleRevision = async (e: React.MouseEvent, orderId: number): Promise<void> => {
@@ -113,6 +115,12 @@ export function OrderTable({
     setMailDialogOpen(true);
   };
 
+  const handleOpenOutlookMailDialog = (event: React.MouseEvent, order: OrderGetDto): void => {
+    event.stopPropagation();
+    setSelectedOrder(order);
+    setOutlookMailDialogOpen(true);
+  };
+
   const renderActionsCell = (order: OrderGetDto): ReactElement => (
     <div className="flex items-center justify-center gap-2">
       <Button
@@ -122,6 +130,14 @@ export function OrderTable({
       >
         <Mail className="h-4 w-4 mr-1" />
         {t('google-integration:mailDialog.openButton')}
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={(e) => handleOpenOutlookMailDialog(e, order)}
+      >
+        <Mail className="h-4 w-4 mr-1" />
+        {t('outlook-integration:mailDialog.openButton')}
       </Button>
       {(order.status === 0 || order.status === 1) && (
         <Button
@@ -176,6 +192,15 @@ export function OrderTable({
       <GoogleCustomerMailDialog
         open={mailDialogOpen}
         onOpenChange={setMailDialogOpen}
+        moduleKey="order"
+        recordId={selectedOrder?.id ?? 0}
+        customerId={selectedOrder?.potentialCustomerId}
+        contactId={selectedOrder?.contactId}
+        customerName={selectedOrder?.potentialCustomerName}
+      />
+      <OutlookCustomerMailDialog
+        open={outlookMailDialogOpen}
+        onOpenChange={setOutlookMailDialogOpen}
         moduleKey="order"
         recordId={selectedOrder?.id ?? 0}
         customerId={selectedOrder?.potentialCustomerId}

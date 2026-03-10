@@ -7,6 +7,7 @@ import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotat
 import type { QuotationGetDto } from '../types/quotation-types';
 import { Mail } from 'lucide-react';
 import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
+import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 
@@ -89,10 +90,11 @@ export function QuotationTable({
   paginationInfoText,
   disablePaginationButtons = false,
 }: QuotationTableProps): ReactElement {
-  const { t } = useTranslation(['quotation', 'google-integration']);
+  const { t } = useTranslation(['quotation', 'google-integration', 'outlook-integration']);
   const navigate = useNavigate();
   const createRevisionMutation = useCreateRevisionOfQuotation();
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<QuotationGetDto | null>(null);
 
   const handleRevision = async (e: React.MouseEvent, quotationId: number): Promise<void> => {
@@ -113,11 +115,21 @@ export function QuotationTable({
     setMailDialogOpen(true);
   };
 
+  const handleOpenOutlookMailDialog = (event: React.MouseEvent, quotation: QuotationGetDto): void => {
+    event.stopPropagation();
+    setSelectedQuotation(quotation);
+    setOutlookMailDialogOpen(true);
+  };
+
   const renderActionsCell = (quotation: QuotationGetDto): ReactElement => (
     <div className="flex items-center justify-center gap-2">
       <Button variant="outline" size="sm" onClick={(e) => handleOpenMailDialog(e, quotation)}>
         <Mail className="h-4 w-4 mr-1" />
         {t('google-integration:mailDialog.openButton')}
+      </Button>
+      <Button variant="outline" size="sm" onClick={(e) => handleOpenOutlookMailDialog(e, quotation)}>
+        <Mail className="h-4 w-4 mr-1" />
+        {t('outlook-integration:mailDialog.openButton')}
       </Button>
       {(quotation.status === 0 || quotation.status === 1) && (
         <Button
@@ -172,6 +184,15 @@ export function QuotationTable({
       <GoogleCustomerMailDialog
         open={mailDialogOpen}
         onOpenChange={setMailDialogOpen}
+        moduleKey="quotation"
+        recordId={selectedQuotation?.id ?? 0}
+        customerId={selectedQuotation?.potentialCustomerId}
+        contactId={selectedQuotation?.contactId}
+        customerName={selectedQuotation?.potentialCustomerName}
+      />
+      <OutlookCustomerMailDialog
+        open={outlookMailDialogOpen}
+        onOpenChange={setOutlookMailDialogOpen}
         moduleKey="quotation"
         recordId={selectedQuotation?.id ?? 0}
         customerId={selectedQuotation?.potentialCustomerId}
