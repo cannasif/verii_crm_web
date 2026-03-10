@@ -10,7 +10,7 @@
   "tabs": {
     "overview": "Özet",
     "analytics": "Analitik",
-    "mailLogs": "Mail Geçmişi"
+    "mailLogs": "E-posta Geçmişi"
   },
   "mail": {
     "columns": {

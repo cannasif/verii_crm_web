@@ -321,7 +321,7 @@
     "outlookIntegrationSync": "Senkron",
     "outlookIntegrationLogs": "Loglar",
     "outlookIntegrationAuthInformation": "Outlook Kimlik Bilgileri",
-    "mailSettings": "Mail Ayarları",
+    "mailSettings": "E-posta Ayarları",
     "productPricingGroupByManagement": "Ürün Fiyatlandırma Grubu Yönetimi",
     "quotationLineManagement": "Teklif Satırı Yönetimi",
     "quotationCreateWizard": "Yeni Teklif Oluştur",
@@ -676,16 +676,16 @@
       "Completed": "Tamamlandı"
     },
     "explain": {
-      "revenueQualityTitle": "Gelir kalitesi skorları son 12 ay sipariş/teklif/aktivite verilerinden kural tabanlı hesaplanır; cohort, retention, RFM, LTV, churn, upsell ve payment metriklerini içerir.",
-      "churnRisk": "Churn Risk; son sipariş günü, son aktivite günü ve son 12 ay sipariş sıklığı sinyalleriyle 0-100 hesaplanır. Yüksek skor daha yüksek kayıp riski demektir.",
-      "upsellPropensity": "Upsell Propensity; sipariş adedi, tekliften siparişe dönüşüm oranı ve ortalama sipariş tutarı sinyalleriyle 0-100 hesaplanır. Yüksek skor satış fırsatı anlamına gelir.",
-      "paymentBehavior": "Payment Behavior şu an ERP tahsilat geçmişi yerine proxy sinyallerle (sipariş devamlılığı, teklif red oranı, son sipariş recency) 0-100 hesaplanır.",
-      "rfmSegment": "RFM Segment; recency (yakınlık), frequency (sıklık), monetary (tutar) kurallarına göre Şampiyonlar/Sadık/Risk Altında/Potansiyel sınıfı üretir.",
-      "cohortRetentionTitle": "Cohort Retention, ilk temas/sipariş ayını cohort kabul eder; takip eden aylarda sipariş varsa retained sayar ve aylık retention yüzdesi üretir.",
+      "revenueQualityTitle": "Gelir kalitesi skorları son 12 ay sipariş, teklif ve aktivite verilerinden kural tabanlı hesaplanır; kohort, tutma oranı, RFM, LTV, kayıp riski, ek satış eğilimi ve ödeme davranışı metriklerini içerir.",
+      "churnRisk": "Kayıp Riski; son sipariş günü, son aktivite günü ve son 12 ay sipariş sıklığı sinyalleriyle 0-100 arasında hesaplanır. Yüksek skor daha yüksek kayıp riski demektir.",
+      "upsellPropensity": "Ek Satış Eğilimi; sipariş adedi, tekliften siparişe dönüşüm oranı ve ortalama sipariş tutarı sinyalleriyle 0-100 arasında hesaplanır. Yüksek skor daha yüksek satış fırsatı anlamına gelir.",
+      "paymentBehavior": "Ödeme Davranışı şu anda ERP tahsilat geçmişi yerine vekil sinyallerle (sipariş devamlılığı, teklif red oranı, son sipariş yakınlığı) 0-100 arasında hesaplanır.",
+      "rfmSegment": "RFM Segmenti; yakınlık, sıklık ve tutar kurallarına göre Şampiyonlar, Sadıklar, Risk Altındakiler ve Potansiyeller gibi sınıflar üretir.",
+      "cohortRetentionTitle": "Kohort Tutma Oranı, ilk temas veya sipariş ayını kohort kabul eder; takip eden aylarda sipariş varsa müşteriyi elde tutulmuş sayar ve aylık tutma yüzdesi üretir.",
       "recommendedActionsTitle": "Önerilen Aksiyonlar, kural motorunun ürettiği öncelikli takip önerileridir (örn. uzun süre aktivite yok, açık teklif var, churn yüksek). Her aksiyon gerekçe + kural kodu ile izlenebilir.",
-      "executeAction": "Execute, bu öneriyi aktivite/göreve çevirir: backend `POST /api/customer360/{id}/actions/execute` çağrılır ve yeni Activity kaydı oluşur.",
-      "noCohortData": "Henüz yeterli sipariş geçmişi olmadığı için cohort verisi oluşmadı.",
-      "modelNote": "Not: Bu skorlar deterministic v1'dir; ileride ERP tahsilat verisi, quota/forecast ve ML modelleriyle geliştirilecektir."
+      "executeAction": "Uygula işlemi, bu öneriyi aktiviteye veya göreve çevirir: backend tarafında `POST /api/customer360/{id}/actions/execute` çağrılır ve yeni bir aktivite kaydı oluşur.",
+      "noCohortData": "Henüz yeterli sipariş geçmişi olmadığı için kohort verisi oluşmadı.",
+      "modelNote": "Not: Bu skorlar kural tabanlı v1 sürümüdür; ileride ERP tahsilat verisi, kota/tahmin ve makine öğrenmesi modelleriyle geliştirilecektir."
     }
   },
   "salesman360": {
@@ -764,16 +764,16 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "Skorlar satış temsilcisinin son 12 ay portföy/sipariş/aktivite performansından kural tabanlı hesaplanır; cohort, retention, RFM, LTV, churn, upsell ve payment metriklerini içerir.",
-      "churnRisk": "Portföy Churn Risk; aktif müşteri ve son 90 günde pasifleşen müşteri oranına göre 0-100 hesaplanır.",
-      "upsellPropensity": "Upsell Propensity; sipariş yoğunluğu, kazanılan teklif sayısı ve aktivite temposu sinyalleriyle 0-100 hesaplanır.",
-      "paymentBehavior": "Payment Behavior şu an proxy metriklerle hesaplanır; doğrudan ERP tahsilat geçmişi bağlandığında daha doğru hale gelir.",
-      "rfmSegment": "RFM Segment, portföyün recency/frequency/monetary davranışına göre sınıflandırma verir.",
-      "cohortRetentionTitle": "Cohort Retention, temsilci portföyündeki müşterileri ilk sipariş ayına göre cohort'lar ve aylık retention oranını gösterir.",
-      "recommendedActionsTitle": "Önerilen Aksiyonlar, pipeline temizliği, aktivite artırımı ve churn müdahalesi gibi öncelikli aksiyonları önerir. Her aksiyon gerekçe + kural kodu ile izlenebilir.",
-      "executeAction": "Execute, öneriyi aktivite/görev kaydına çevirir: backend `POST /api/salesmen360/{userId}/actions/execute` çağrılır.",
-      "noCohortData": "Henüz yeterli sipariş geçmişi olmadığı için cohort verisi oluşmadı.",
-      "modelNote": "Not: Mevcut skorlar deterministic v1'dir; quota/forecast/ML eklenerek güçlendirilebilir."
+      "revenueQualityTitle": "Skorlar satış temsilcisinin son 12 ay portföy, sipariş ve aktivite performansından kural tabanlı hesaplanır; kohort, tutma oranı, RFM, LTV, kayıp riski, ek satış eğilimi ve ödeme davranışı metriklerini içerir.",
+      "churnRisk": "Portföy Kayıp Riski; aktif müşteri oranı ve son 90 günde pasifleşen müşteri oranına göre 0-100 arasında hesaplanır.",
+      "upsellPropensity": "Ek Satış Eğilimi; sipariş yoğunluğu, kazanılan teklif sayısı ve aktivite temposu sinyalleriyle 0-100 arasında hesaplanır.",
+      "paymentBehavior": "Ödeme Davranışı şu an vekil metriklerle hesaplanır; doğrudan ERP tahsilat geçmişi bağlandığında daha doğru hale gelir.",
+      "rfmSegment": "RFM Segmenti, portföyün yakınlık, sıklık ve tutar davranışına göre sınıflandırma verir.",
+      "cohortRetentionTitle": "Kohort Tutma Oranı, temsilci portföyündeki müşterileri ilk sipariş ayına göre kohortlara ayırır ve aylık tutma oranını gösterir.",
+      "recommendedActionsTitle": "Önerilen Aksiyonlar, fırsat boru hattı temizliği, aktivite artırımı ve kayıp riskine müdahale gibi öncelikli aksiyonları önerir. Her aksiyon gerekçe ve kural kodu ile izlenebilir.",
+      "executeAction": "Uygula işlemi, öneriyi aktivite veya görev kaydına çevirir: backend tarafında `POST /api/salesmen360/{userId}/actions/execute` çağrılır.",
+      "noCohortData": "Henüz yeterli sipariş geçmişi olmadığı için kohort verisi oluşmadı.",
+      "modelNote": "Not: Mevcut skorlar kural tabanlı v1 sürümüdür; kota, tahmin ve makine öğrenmesi desteği eklenerek geliştirilebilir."
     }
   },
   "goodsReceipt": {
@@ -3475,7 +3475,7 @@
     }
   },
   "mailSettings": {
-    "PageTitle": "Mail Ayarları",
+    "PageTitle": "E-posta Ayarları",
     "PageDescription": "SMTP sunucu ayarlarını yapılandırın",
     "Fields": {
       "Host": "Sunucu",
@@ -3490,8 +3490,8 @@
     },
     "TestMail": {
       "Sending": "Test gönderiliyor...",
-      "Send": "Test Maili Gönder",
-      "Success": "Test maili gönderildi"
+      "Send": "Test E-postası Gönder",
+      "Success": "Test e-postası gönderildi"
     },
     "Save": "Kaydet",
     "SavedSuccessfully": "Ayarlar başarıyla kaydedildi"
@@ -3822,8 +3822,8 @@
     "clientId": "Uygulama Kimligi",
     "workspaceId": "Çalışma Alanı ID (GUID)",
     "apiBaseUrl": "API Temel URL",
-    "scope": "Scope",
-    "clientSecretInfo": "ClientSecret güvenlik nedeniyle sadece sunucu ortam değişkeninden okunur.",
+    "scope": "Yetki Kapsamı",
+    "clientSecretInfo": "İstemci gizli anahtarı, güvenlik nedeniyle yalnızca sunucu ortam değişkeninden okunur.",
     "update": "Güncelle",
     "create": "Kaydet",
     "delete": "Sil",

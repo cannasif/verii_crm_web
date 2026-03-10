@@ -16,7 +16,7 @@
     "notConnected": "Bağlı Değil",
     "googleEmailLabel": "Google E-posta",
     "expiresAtLabel": "Token Bitiş Tarihi",
-    "scopeLabel": "Yetki (Scope)",
+    "scopeLabel": "Yetki Kapsamı",
     "connectButton": "Google ile Bağlan",
     "disconnectButton": "Bağlantıyı Kaldır",
     "testEventButton": "Test Etkinliği Oluştur",
@@ -25,14 +25,14 @@
     "connectError": "Google bağlantı URL'i alınamadı.",
     "disconnectSuccess": "Google bağlantısı kaldırıldı.",
     "disconnectError": "Google bağlantısı kaldırılamadı.",
-    "testEventSuccess": "Test etkinliği oluşturuldu. EventId: {{eventId}}",
+    "testEventSuccess": "Test etkinliği oluşturuldu. Etkinlik Kimliği: {{eventId}}",
     "testEventError": "Test etkinliği oluşturulamadı.",
-    "oauthNotConfiguredWarning": "Google OAuth yapılandırılmamış. Yöneticiniz 'Google Auth Information' sayfasından ayarlamalı."
+    "oauthNotConfiguredWarning": "Google OAuth yapılandırılmamış. Yöneticiniz bunu 'Google Kimlik Bilgileri' sayfasından ayarlamalı."
   },
   "authInformation": {
     "cardTitle": "Tenant Google OAuth Ayarları",
     "clientSecretPlaceholder": "Değiştirmek için girin",
-    "currentSecretLabel": "Mevcut Secret",
+    "currentSecretLabel": "Mevcut Gizli Anahtar",
     "enableLabel": "Google OAuth'u Etkinleştir",
     "enableDescription": "Kapalıysa kullanıcılar Google hesaplarını bağlayamaz.",
     "configStatusLabel": "Yapılandırma Durumu",
@@ -50,7 +50,7 @@
     "setupStep4": "Authorized redirect URIs alanına aşağıdaki callback URL'ini ekleyin ve kaydedin.",
     "setupStep5": "Oluşan Client ID ve Client Secret değerlerini bu sayfaya girip kaydedin.",
     "setupStep6": "IsEnabled açık değilse kullanıcılar Google ile bağlanamaz.",
-    "callbackLabel": "Geri Donus URL",
+    "callbackLabel": "Geri Dönüş URL'si",
     "consoleLinkLabel": "Google Cloud Console'u aç",
     "apiEnableTitle": "Gerekli Google API'leri Etkinleştirin",
     "apiEnableHint": "Mail ve takvim işlemlerinin çalışması için aynı Google projesinde hem Calendar API hem Gmail API açık olmalıdır.",
@@ -62,10 +62,10 @@
     "statusLabel": "Bağlantı",
     "connected": "Bağlı",
     "notConnected": "Bağlı Değil",
-    "scopeLabel": "Aktif Scope",
+    "scopeLabel": "Aktif Yetki Kapsamı",
     "flowCardTitle": "Senkron Kapsamı",
-    "flowMeeting": "Meeting aktiviteleri Google Calendar tarafına senkronize edilir.",
-    "flowCall": "Call aktiviteleri Google Calendar tarafına senkronize edilir.",
+    "flowMeeting": "Toplantı aktiviteleri Google Takvim tarafına senkronize edilir.",
+    "flowCall": "Arama aktiviteleri Google Takvim tarafına senkronize edilir.",
     "flowPlaceholder": "Detaylı senkron ayarları bir sonraki sürümde açılacaktır.",
     "loading": "Yükleniyor..."
   },
@@ -94,10 +94,10 @@
     "false": "Hayır"
   },
   "mailDialog": {
-    "openButton": "Mail Gönder",
-    "title": "Google Mail Gönder",
-    "description": "{{module}} #{{id}} kaydı için gönderilecek maili düzenleyin.",
-    "missingCustomer": "Bu kayıtla ilişkili müşteri bulunamadı. Mail gönderilebilmesi için müşteri zorunludur.",
+    "openButton": "E-posta Gönder",
+    "title": "Google E-postası Gönder",
+    "description": "{{module}} #{{id}} kaydı için gönderilecek e-postayı düzenleyin.",
+    "missingCustomer": "Bu kayıtla ilişkili müşteri bulunamadı. E-posta gönderilebilmesi için müşteri zorunludur.",
     "templateLabel": "Şablon",
     "toLabel": "Alıcı (To)",
     "ccLabel": "Bilgi (Cc)",
@@ -105,13 +105,13 @@
     "subjectLabel": "Konu",
     "bodyLabel": "Mesaj",
     "isHtmlLabel": "HTML olarak gönder",
-    "autoRecipientHint": "Boş bırakılırsa contact/customer e-postası otomatik kullanılır",
+    "autoRecipientHint": "Boş bırakılırsa kişi veya müşteri e-postası otomatik olarak kullanılır",
     "recipientPlaceholder": "mail1@example.com; mail2@example.com",
     "cancel": "Vazgeç",
     "send": "Gönder",
     "sending": "Gönderiliyor...",
-    "sendSuccess": "Mail başarıyla gönderildi.",
-    "sendError": "Mail gönderilemedi.",
+    "sendSuccess": "E-posta başarıyla gönderildi.",
+    "sendError": "E-posta gönderilemedi.",
     "modules": {
       "activity": "Aktivite",
       "demand": "Talep",
@@ -163,7 +163,7 @@
       "errorCode": "Hata Kodu",
       "userId": "Kullanıcı Id",
       "activityId": "Aktivite Id",
-      "googleCalendarEventId": "Google Takvim Etkinlik Kimligi"
+      "googleCalendarEventId": "Google Takvim Etkinlik Kimliği"
     }
   }
 }
