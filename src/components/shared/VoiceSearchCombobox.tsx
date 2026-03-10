@@ -24,6 +24,7 @@ import {
   DROPDOWN_MIN_CHARS,
   DROPDOWN_SCROLL_THRESHOLD,
 } from '@/components/shared/dropdown/constants';
+import { getIconPrefixPaddingStyle } from '@/lib/form-field-with-icon';
 
 export interface ComboboxOption {
   value: string;
@@ -189,6 +190,8 @@ export function VoiceSearchCombobox({
     ? options.find((option) => option.value === value)?.label 
     : null;
 
+  const iconPrefixStyle = getIconPrefixPaddingStyle(className);
+
   return (
     <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
@@ -197,13 +200,14 @@ export function VoiceSearchCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "w-full justify-between px-3 text-left font-normal",
+            "w-full justify-between px-3 text-left font-normal [&>.truncate]:min-w-0 [&>.truncate]:overflow-hidden",
             !value && "text-muted-foreground",
             className
           )}
+          style={iconPrefixStyle}
           disabled={disabled}
         >
-          <span className="truncate">
+          <span className="truncate flex-1 min-w-0 text-left">
             {selectedLabel || placeholder || t('common.select')}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
