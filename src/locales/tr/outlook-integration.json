@@ -104,5 +104,50 @@
       "activityId": "Aktivite Id",
       "providerEventId": "Sağlayıcı Etkinlik Kimliği"
     }
+  },
+  "mailDialog": {
+    "openButton": "Outlook E-posta",
+    "title": "Outlook E-postası Gönder",
+    "description": "{{module}} #{{id}} kaydı için gönderilecek e-postayı düzenleyin.",
+    "missingCustomer": "Bu kayıtla ilişkili müşteri bulunamadı. E-posta gönderilebilmesi için müşteri zorunludur.",
+    "templateLabel": "Şablon",
+    "toLabel": "Alıcı (To)",
+    "ccLabel": "Bilgi (Cc)",
+    "bccLabel": "Gizli (Bcc)",
+    "subjectLabel": "Konu",
+    "bodyLabel": "Mesaj",
+    "isHtmlLabel": "HTML olarak gönder",
+    "autoRecipientHint": "Boş bırakılırsa kişi veya müşteri e-postası otomatik olarak kullanılır",
+    "recipientPlaceholder": "mail1@example.com; mail2@example.com",
+    "cancel": "Vazgeç",
+    "send": "Gönder",
+    "sending": "Gönderiliyor...",
+    "sendSuccess": "Outlook e-postası başarıyla gönderildi.",
+    "sendError": "Outlook e-postası gönderilemedi.",
+    "modules": {
+      "activity": "Aktivite",
+      "demand": "Talep",
+      "quotation": "Teklif",
+      "order": "Sipariş"
+    },
+    "templateNames": {
+      "generic-info": "Bilgilendirme",
+      "follow-up": "Takip",
+      "reminder": "Hatırlatma"
+    },
+    "templates": {
+      "generic": {
+        "subject": "{{module}} #{{id}} hakkında bilgilendirme",
+        "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı hakkında bilgi paylaşmak istiyorum.\n\nİyi çalışmalar."
+      },
+      "followUp": {
+        "subject": "{{module}} #{{id}} takip bilgisi",
+        "body": "Merhaba,\n\n{{customer}} / {{contact}} için {{module}} #{{id}} kaydının takibi kapsamında sizinle iletişime geçiyoruz.\n\nUygun olduğunuzda geri dönüş yapabilir misiniz?"
+      },
+      "reminder": {
+        "subject": "{{module}} #{{id}} hatırlatma",
+        "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı için hatırlatma iletisi.\n\nTeşekkürler."
+      }
+    }
   }
 }

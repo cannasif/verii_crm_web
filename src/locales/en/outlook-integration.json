@@ -104,5 +104,50 @@
       "activityId": "Activity Id",
       "providerEventId": "Provider Event Id"
     }
+  },
+  "mailDialog": {
+    "openButton": "Outlook Mail",
+    "title": "Send Outlook Email",
+    "description": "Edit the email that will be sent for {{module}} #{{id}}.",
+    "missingCustomer": "No related customer was found for this record. Customer is required to send email.",
+    "templateLabel": "Template",
+    "toLabel": "Recipient (To)",
+    "ccLabel": "Cc",
+    "bccLabel": "Bcc",
+    "subjectLabel": "Subject",
+    "bodyLabel": "Message",
+    "isHtmlLabel": "Send as HTML",
+    "autoRecipientHint": "If left empty, contact or customer email is used automatically",
+    "recipientPlaceholder": "mail1@example.com; mail2@example.com",
+    "cancel": "Cancel",
+    "send": "Send",
+    "sending": "Sending...",
+    "sendSuccess": "Outlook email sent successfully.",
+    "sendError": "Outlook email could not be sent.",
+    "modules": {
+      "activity": "Activity",
+      "demand": "Demand",
+      "quotation": "Quotation",
+      "order": "Order"
+    },
+    "templateNames": {
+      "generic-info": "Information",
+      "follow-up": "Follow-up",
+      "reminder": "Reminder"
+    },
+    "templates": {
+      "generic": {
+        "subject": "Information about {{module}} #{{id}}",
+        "body": "Hello,\n\nI would like to share information about {{module}} #{{id}} for customer {{customer}}.\n\nBest regards."
+      },
+      "followUp": {
+        "subject": "Follow-up for {{module}} #{{id}}",
+        "body": "Hello,\n\nWe are contacting you regarding the follow-up for {{module}} #{{id}} for {{customer}} / {{contact}}.\n\nCould you please get back to us when convenient?"
+      },
+      "reminder": {
+        "subject": "Reminder for {{module}} #{{id}}",
+        "body": "Hello,\n\nThis is a reminder for {{module}} #{{id}} belonging to customer {{customer}}.\n\nThank you."
+      }
+    }
   }
 }
