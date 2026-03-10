@@ -18,7 +18,7 @@ interface AuthState {
   user: User | null;
   token: string | null;
   branch: Branch | null;
-  setAuth: (user: User, token: string, branch: Branch | null, rememberMe: boolean) => void;
+  setAuth: (user: User, token: string, branch: Branch | null, rememberMe: boolean, refreshToken?: string | null) => void;
   logout: () => void;
   isAuthenticated: () => boolean;
   init: () => void;
@@ -30,17 +30,26 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       branch: null,
-      setAuth: (user, token, branch, rememberMe) => {
+      setAuth: (user, token, branch, rememberMe, refreshToken) => {
+        localStorage.removeItem('access_token');
+        sessionStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        sessionStorage.removeItem('refresh_token');
+
         if (rememberMe) {
           localStorage.setItem('access_token', token);
+          if (refreshToken) localStorage.setItem('refresh_token', refreshToken);
         } else {
           sessionStorage.setItem('access_token', token);
+          if (refreshToken) sessionStorage.setItem('refresh_token', refreshToken);
         }
         set({ user, token, branch });
       },
       logout: () => {
         localStorage.removeItem('access_token');
         sessionStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        sessionStorage.removeItem('refresh_token');
         set({ user: null, token: null, branch: null });
       },
       isAuthenticated: () => {
@@ -80,4 +89,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-

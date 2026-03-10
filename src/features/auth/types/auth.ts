@@ -19,9 +19,15 @@ export type RegisterRequest = z.infer<typeof registerRequestSchema>;
 
 export interface LoginWithSessionResponseDto {
   token: string;
+  refreshToken: string;
+  refreshTokenExpiresAt?: string | null;
   userId: number;
   sessionId: string;
   rememberMe: boolean;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
 }
 
 export type LoginResponse = ApiResponse<LoginWithSessionResponseDto>;

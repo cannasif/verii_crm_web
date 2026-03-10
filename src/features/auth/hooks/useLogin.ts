@@ -23,16 +23,10 @@ export const useLogin = (branches?: Branch[]) => {
         if (user) {
           const selectedBranch = branches?.find((b) => b.id === variables.branchId) || null;
           const token = response.data.token;
+          const refreshToken = response.data.refreshToken;
           const rememberMe = variables.rememberMe;
 
-          if (rememberMe) {
-            localStorage.setItem('access_token', token);
-            sessionStorage.removeItem('access_token');
-          } else {
-            sessionStorage.setItem('access_token', token);
-            localStorage.removeItem('access_token');
-          }
-          setAuth(user, token, selectedBranch, rememberMe);
+          setAuth(user, token, selectedBranch, rememberMe, refreshToken);
           await queryClient.invalidateQueries({ queryKey: ACCESS_CONTROL_QUERY_KEYS.ME_PERMISSIONS_BASE });
           await queryClient.refetchQueries({
             queryKey: ACCESS_CONTROL_QUERY_KEYS.ME_PERMISSIONS(user.id),

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import i18n from './i18n';
 import { useAuthStore } from '@/stores/auth-store';
+import { getUserFromToken } from '@/utils/jwt';
 import {
   loadConfig,
   getApiUrl,
@@ -20,6 +21,8 @@ export const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+let refreshPromise: Promise<string | null> | null = null;
 
 function resolveBranchCodeFromPersistedState(): string | null {
   try {
@@ -109,10 +112,113 @@ function extractApiErrorMessage(payload: unknown): string | null {
   return null;
 }
 
+function getStoredAccessToken(): string | null {
+  return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+}
+
+function getStoredRefreshToken(): string | null {
+  return localStorage.getItem('refresh_token') || sessionStorage.getItem('refresh_token');
+}
+
+function isPersistentSession(): boolean {
+  return !!(localStorage.getItem('access_token') || localStorage.getItem('refresh_token'));
+}
+
+function storeTokens(accessToken: string, refreshToken: string | null): void {
+  const persistent = isPersistentSession();
+
+  localStorage.removeItem('access_token');
+  sessionStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  sessionStorage.removeItem('refresh_token');
+
+  if (persistent) {
+    localStorage.setItem('access_token', accessToken);
+    if (refreshToken) localStorage.setItem('refresh_token', refreshToken);
+    return;
+  }
+
+  sessionStorage.setItem('access_token', accessToken);
+  if (refreshToken) sessionStorage.setItem('refresh_token', refreshToken);
+}
+
+function clearStoredTokens(): void {
+  localStorage.removeItem('access_token');
+  sessionStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  sessionStorage.removeItem('refresh_token');
+}
+
+function shouldSkipRefresh(url?: string): boolean {
+  if (!url) return false;
+
+  return [
+    '/api/auth/login',
+    '/api/auth/refresh-token',
+    '/api/auth/request-password-reset',
+    '/api/auth/reset-password',
+  ].some((path) => url.includes(path));
+}
+
+async function refreshAccessToken(): Promise<string | null> {
+  const storedRefreshToken = getStoredRefreshToken();
+  if (!storedRefreshToken) {
+    return null;
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      const response = (await axios.post(
+        `${getApiBaseUrl()}/api/auth/refresh-token`,
+        { refreshToken: storedRefreshToken },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Language': i18n.language || 'tr',
+          },
+        }
+      )) as { data: unknown };
+
+      const normalized = normalizeApiEnvelope(response.data) as {
+        success?: boolean;
+        data?: { token?: string; refreshToken?: string };
+        message?: string;
+        exceptionMessage?: string;
+      };
+
+      if (!normalized.success || !normalized.data?.token) {
+        throw new Error(normalized.message || normalized.exceptionMessage || 'Session refresh failed');
+      }
+
+      storeTokens(normalized.data.token, normalized.data.refreshToken ?? storedRefreshToken);
+
+      const decodedUser = getUserFromToken(normalized.data.token);
+      const branch = useAuthStore.getState().branch;
+      if (decodedUser) {
+        useAuthStore.getState().setAuth(
+          decodedUser,
+          normalized.data.token,
+          branch,
+          isPersistentSession(),
+          normalized.data.refreshToken ?? storedRefreshToken
+        );
+      } else {
+        useAuthStore.setState({ token: normalized.data.token });
+      }
+
+      return normalized.data.token;
+    })().finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+}
+
 api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
 
-  const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+  const token = getStoredAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -133,10 +239,24 @@ api.interceptors.response.use(
     response.data = normalizeApiEnvelope(response.data);
     return response.data;
   },
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('access_token');
-      sessionStorage.removeItem('access_token');
+  async (error) => {
+    const originalRequest = error.config as import('axios').AxiosRequestConfig & { _retry?: boolean };
+
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !shouldSkipRefresh(originalRequest.url)) {
+      originalRequest._retry = true;
+
+      try {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          originalRequest.headers = originalRequest.headers ?? {};
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return api(originalRequest);
+        }
+      } catch {
+        // Refresh fallback continues with logout below.
+      }
+
+      clearStoredTokens();
       useAuthStore.getState().logout();
 
       if (window.location.pathname !== '/auth/login') {

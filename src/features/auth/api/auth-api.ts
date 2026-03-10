@@ -1,6 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse } from '@/types/api';
-import type { LoginRequest, LoginResponse, ActiveUsersResponse } from '../types/auth';
+import type { LoginRequest, LoginResponse, ActiveUsersResponse, RefreshTokenRequest } from '../types/auth';
 
 export const authApi = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
@@ -40,6 +40,10 @@ export const authApi = {
       currentPassword: data.currentPassword,
       newPassword: data.newPassword,
     });
+    return response;
+  },
+  refreshToken: async (data: RefreshTokenRequest): Promise<LoginResponse> => {
+    const response = await api.post<LoginResponse>('/api/auth/refresh-token', data);
     return response;
   },
 };
