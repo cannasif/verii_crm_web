@@ -29,14 +29,18 @@
       "success": "Müşteri başarıyla silindi",
       "error": "Müşteri silinemedi"
     },
-    "messages": {
-      "createSuccess": "Müşteri başarıyla oluşturuldu",
-      "createError": "Müşteri oluşturulamadı",
-      "updateSuccess": "Müşteri başarıyla güncellendi",
-      "updateError": "Müşteri güncellenemedi",
-      "deleteSuccess": "Müşteri başarıyla silindi",
-      "deleteError": "Müşteri silinemedi"
-    },
+  "messages": {
+    "createSuccess": "Müşteri başarıyla oluşturuldu",
+    "createError": "Müşteri oluşturulamadı",
+    "updateSuccess": "Müşteri başarıyla güncellendi",
+    "updateError": "Müşteri güncellenemedi",
+    "deleteSuccess": "Müşteri başarıyla silindi",
+    "deleteError": "Müşteri silinemedi",
+    "syncQueued": "Müşteri sync kuyruğa alındı. Job: {{jobId}}",
+    "syncError": "Müşteri sync tetiklenemedi"
+  },
+  "manualSync": "Manuel Sync",
+  "syncing": "Sync çalışıyor",
     "stats": {
       "totalCustomers": "Toplam Müşteri",
       "approvedCustomers": "Onaylı Müşteri",

@@ -34,3 +34,9 @@ export interface PagedResponse<T> {
   hasPreviousPage: boolean;
   hasNextPage: boolean;
 }
+
+export interface CustomerSyncTriggerResponse {
+  jobId: string;
+  queue: string;
+  enqueuedAtUtc: string;
+}

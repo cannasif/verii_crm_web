@@ -1,5 +1,5 @@
 import { api } from '@/lib/axios';
-import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
+import type { ApiResponse, CustomerSyncTriggerResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { CustomerDto, CreateCustomerDto, UpdateCustomerDto } from '../types/customer-types';
 
 const OPTIONAL_STRING_FIELDS: ReadonlyArray<keyof CreateCustomerDto> = [
@@ -90,5 +90,14 @@ export const customerApi = {
     if (!response.success) {
       throw new Error(response.message || 'Müşteri silinemedi');
     }
+  },
+
+  triggerSync: async (): Promise<CustomerSyncTriggerResponse> => {
+    const response = await api.post<ApiResponse<CustomerSyncTriggerResponse>>('/api/Customer/sync');
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'Müşteri sync tetiklenemedi');
   },
 };
