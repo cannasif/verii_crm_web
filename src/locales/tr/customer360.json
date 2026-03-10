@@ -13,6 +13,10 @@
     "mailLogs": "E-posta Geçmişi"
   },
   "mail": {
+    "providers": {
+      "google": "Google",
+      "outlook": "Outlook"
+    },
     "columns": {
       "date": "Tarih",
       "sender": "Gönderen",

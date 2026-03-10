@@ -13,12 +13,16 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { googleIntegrationApi } from '@/features/google-integration/api/google-integration.api';
+import { outlookIntegrationApi } from '@/features/outlook-integration/api/outlook-integration.api';
 import type { GoogleCustomerMailLogDto } from '@/features/google-integration/types/google-integration.types';
+import type { OutlookCustomerMailLogDto } from '@/features/outlook-integration/types/outlook-integration.types';
 
 const PAGE_KEY = 'customer-360-mail-logs';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 
 type SortDirection = 'asc' | 'desc';
+type MailProvider = 'google' | 'outlook';
+type CustomerMailLogDto = GoogleCustomerMailLogDto | OutlookCustomerMailLogDto;
 type MailLogColumnKey =
   | 'createdDate'
   | 'sentByUserName'
@@ -50,9 +54,10 @@ interface CustomerMailLogsTabProps {
 }
 
 export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): ReactElement {
-  const { t } = useTranslation(['customer360', 'google-integration', 'common']);
+  const { t } = useTranslation(['customer360', 'google-integration', 'outlook-integration', 'common']);
   const { user } = useAuthStore();
 
+  const [provider, setProvider] = useState<MailProvider>('google');
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [sortBy, setSortBy] = useState<MailLogColumnKey>('createdDate');
@@ -88,23 +93,34 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
 
   const logsQuery = useQuery({
-    queryKey: ['customer-360', 'mail-logs', customerId, pageNumber, pageSize, sortBy, sortDirection, errorsOnly, JSON.stringify(appliedFilters)],
+    queryKey: ['customer-360', 'mail-logs', provider, customerId, pageNumber, pageSize, sortBy, sortDirection, errorsOnly, JSON.stringify(appliedFilters)],
     queryFn: () =>
-      googleIntegrationApi.getCustomerMailLogs({
-        customerId,
-        pageNumber,
-        pageSize,
-        sortBy,
-        sortDirection,
-        errorsOnly,
-        filters: appliedFilters.length > 0 ? appliedFilters : undefined,
-        filterLogic: 'and',
-      }),
+      provider === 'google'
+        ? googleIntegrationApi.getCustomerMailLogs({
+            customerId,
+            pageNumber,
+            pageSize,
+            sortBy,
+            sortDirection,
+            errorsOnly,
+            filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+            filterLogic: 'and',
+          })
+        : outlookIntegrationApi.getCustomerMailLogs({
+            customerId,
+            pageNumber,
+            pageSize,
+            sortBy,
+            sortDirection,
+            errorsOnly,
+            filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+            filterLogic: 'and',
+          }),
     enabled: customerId > 0,
   });
 
   const pagedLogs = logsQuery.data;
-  const currentPageRows = useMemo(() => pagedLogs?.data ?? [], [pagedLogs?.data]);
+  const currentPageRows = useMemo(() => (pagedLogs?.data ?? []) as CustomerMailLogDto[], [pagedLogs?.data]);
   const totalCount = pagedLogs?.totalCount ?? 0;
   const hasNextPage = pagedLogs?.hasNextPage ?? false;
   const hasPreviousPage = pagedLogs?.hasPreviousPage ?? pageNumber > 1;
@@ -135,6 +151,10 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
     [baseColumns, orderedVisibleColumns]
   );
 
+  const successLabel = provider === 'google' ? t('google-integration:logs.success') : t('outlook-integration:logs.success');
+  const failedLabel = provider === 'google' ? t('google-integration:logs.failed') : t('outlook-integration:logs.failed');
+  const actionNs = provider === 'google' ? 'google-integration' : 'outlook-integration';
+
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
       currentPageRows.map((log) => ({
@@ -142,16 +162,16 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
         sentByUserName: log.sentByUserName ?? '-',
         toEmails: log.toEmails,
         subject: log.subject,
-        isSuccess: log.isSuccess ? t('google-integration:logs.success') : t('google-integration:logs.failed'),
+        isSuccess: log.isSuccess ? successLabel : failedLabel,
         templateName: log.templateName ?? '-',
         errorCode: log.errorCode ?? '-',
       })),
-    [currentPageRows, t]
+    [currentPageRows, failedLabel, successLabel]
   );
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, sortBy, sortDirection, errorsOnly, appliedFilters]);
+  }, [provider, pageSize, sortBy, sortDirection, errorsOnly, appliedFilters]);
 
   const onSort = (column: MailLogColumnKey): void => {
     if (sortBy === column) {
@@ -171,24 +191,24 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
       : <ArrowDown className="h-3.5 w-3.5 text-foreground" />;
   };
 
-  const [selectedLog, setSelectedLog] = useState<GoogleCustomerMailLogDto | null>(null);
+  const [selectedLog, setSelectedLog] = useState<CustomerMailLogDto | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const handleOpenDetails = (log: GoogleCustomerMailLogDto): void => {
+  const handleOpenDetails = (log: CustomerMailLogDto): void => {
     setSelectedLog(log);
     setDetailsOpen(true);
   };
 
-  const renderCell = (log: GoogleCustomerMailLogDto, key: MailLogColumnKey): ReactElement | string => {
+  const renderCell = (log: CustomerMailLogDto, key: MailLogColumnKey): ReactElement | string => {
     if (key === 'createdDate') return new Date(log.createdDate).toLocaleString();
     if (key === 'sentByUserName') return log.sentByUserName ?? '-';
     if (key === 'toEmails') return log.toEmails || '-';
     if (key === 'subject') return log.subject || '-';
     if (key === 'isSuccess') {
       return log.isSuccess ? (
-        <Badge variant="default">{t('google-integration:logs.success')}</Badge>
+        <Badge variant="default">{successLabel}</Badge>
       ) : (
-        <Badge variant="destructive">{t('google-integration:logs.failed')}</Badge>
+        <Badge variant="destructive">{failedLabel}</Badge>
       );
     }
     if (key === 'templateName') return log.templateName ?? '-';
@@ -199,15 +219,34 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
   return (
     <Card className="rounded-xl border border-slate-200 dark:border-white/10">
       <CardContent className="pt-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={provider === 'google' ? 'default' : 'outline'}
+            onClick={() => setProvider('google')}
+          >
+            {t('customer360.mail.providers.google', { defaultValue: 'Google' })}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={provider === 'outlook' ? 'default' : 'outline'}
+            onClick={() => setProvider('outlook')}
+          >
+            {t('customer360.mail.providers.outlook', { defaultValue: 'Outlook' })}
+          </Button>
+        </div>
+
         <DataTableActionBar
-          pageKey={PAGE_KEY}
+          pageKey={`${PAGE_KEY}-${provider}`}
           userId={user?.id}
           columns={baseColumns}
           visibleColumns={visibleColumns}
           columnOrder={columnOrder}
           onVisibleColumnsChange={setVisibleColumns}
           onColumnOrderChange={setColumnOrder}
-          exportFileName="customer-360-mail-logs"
+          exportFileName={`customer-360-mail-logs-${provider}`}
           exportColumns={exportColumns}
           exportRows={exportRows}
           filterColumns={filterColumns}
@@ -219,7 +258,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
             setDraftFilterRows([]);
             setAppliedFilterRows([]);
           }}
-          translationNamespace="google-integration"
+          translationNamespace={actionNs}
           appliedFilterCount={appliedFilters.length}
           leftSlot={(
             <>
@@ -230,7 +269,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
                   onCheckedChange={(checked) => setErrorsOnly(Boolean(checked))}
                 />
                 <Label htmlFor="customer-mail-logs-errors-only" className="text-sm cursor-pointer">
-                  {t('google-integration:logs.errorsOnly')}
+                  {provider === 'google' ? t('google-integration:logs.errorsOnly') : t('outlook-integration:logs.errorsOnly')}
                 </Label>
               </div>
               <Button variant="outline" size="sm" onClick={() => logsQuery.refetch()} disabled={logsQuery.isFetching}>
@@ -239,13 +278,13 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
                 ) : (
                   <RefreshCw className="h-4 w-4 mr-2" />
                 )}
-                {t('google-integration:logs.refresh')}
+                {provider === 'google' ? t('google-integration:logs.refresh') : t('outlook-integration:logs.refresh')}
               </Button>
             </>
           )}
         />
 
-        <DataTableGrid<GoogleCustomerMailLogDto, MailLogColumnKey>
+        <DataTableGrid<CustomerMailLogDto, MailLogColumnKey>
           columns={columns}
           visibleColumnKeys={orderedVisibleColumns}
           rows={currentPageRows}
@@ -257,12 +296,12 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
           renderSortIcon={renderSortIcon}
           isLoading={logsQuery.isLoading}
           isError={logsQuery.isError}
-          loadingText={t('google-integration:logs.loading')}
-          errorText={t('google-integration:logs.loadError')}
-          emptyText={t('google-integration:logs.empty')}
+          loadingText={provider === 'google' ? t('google-integration:logs.loading') : t('outlook-integration:logs.loading')}
+          errorText={provider === 'google' ? t('google-integration:logs.loadError') : t('outlook-integration:logs.loadError')}
+          emptyText={provider === 'google' ? t('google-integration:logs.empty') : t('outlook-integration:logs.empty')}
           minTableWidthClassName="min-w-[1100px]"
           showActionsColumn
-          actionsHeaderLabel={t('google-integration:logs.actions')}
+          actionsHeaderLabel={provider === 'google' ? t('google-integration:logs.actions') : t('outlook-integration:logs.actions')}
           renderActionsCell={(log) => (
             <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
               <Button
@@ -270,7 +309,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
                 size="icon"
                 className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
                 onClick={() => handleOpenDetails(log)}
-                title={t('google-integration:logs.viewDetails')}
+                title={provider === 'google' ? t('google-integration:logs.viewDetails') : t('outlook-integration:logs.viewDetails')}
               >
                 <Eye className="h-4 w-4" />
               </Button>
@@ -286,8 +325,8 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
           hasNextPage={hasNextPage}
           onPreviousPage={() => setPageNumber((prev) => Math.max(1, prev - 1))}
           onNextPage={() => setPageNumber((prev) => prev + 1)}
-          previousLabel={t('google-integration:logs.previous')}
-          nextLabel={t('google-integration:logs.next')}
+          previousLabel={provider === 'google' ? t('google-integration:logs.previous') : t('outlook-integration:logs.previous')}
+          nextLabel={provider === 'google' ? t('google-integration:logs.next') : t('outlook-integration:logs.next')}
           paginationInfoText={t('common.paginationInfo', {
             start: startRow,
             end: endRow,
@@ -301,8 +340,8 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{t('google-integration:logs.detailsTitle')}</DialogTitle>
-            <DialogDescription>{t('google-integration:logs.detailsDescription')}</DialogDescription>
+            <DialogTitle>{provider === 'google' ? t('google-integration:logs.detailsTitle') : t('outlook-integration:logs.detailsTitle')}</DialogTitle>
+            <DialogDescription>{provider === 'google' ? t('google-integration:logs.detailsDescription') : t('outlook-integration:logs.detailsDescription')}</DialogDescription>
           </DialogHeader>
           {selectedLog && (
             <div className="space-y-3 text-sm">
@@ -310,7 +349,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
                 <div><span className="font-medium">{t('mail.columns.date', { ns: 'customer360' })}:</span> {new Date(selectedLog.createdDate).toLocaleString()}</div>
                 <div><span className="font-medium">{t('mail.columns.sender', { ns: 'customer360' })}:</span> {selectedLog.sentByUserName ?? '-'}</div>
                 <div><span className="font-medium">{t('mail.columns.to', { ns: 'customer360' })}:</span> {selectedLog.toEmails || '-'}</div>
-                <div><span className="font-medium">{t('mail.columns.status', { ns: 'customer360' })}:</span> {selectedLog.isSuccess ? t('google-integration:logs.success') : t('google-integration:logs.failed')}</div>
+                <div><span className="font-medium">{t('mail.columns.status', { ns: 'customer360' })}:</span> {selectedLog.isSuccess ? successLabel : failedLabel}</div>
               </div>
               <div><span className="font-medium">{t('mail.columns.subject', { ns: 'customer360' })}:</span> {selectedLog.subject || '-'}</div>
               <div>

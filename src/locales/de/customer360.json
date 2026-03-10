@@ -73,6 +73,10 @@
   },
   "status": {},
   "mail": {
+    "providers": {
+      "google": "Google",
+      "outlook": "Outlook"
+    },
     "columns": {
       "date": "Date",
       "sender": "Sender",
