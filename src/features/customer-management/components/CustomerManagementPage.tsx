@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import { matchesSearchTerm } from '@/lib/search';
 import { CUSTOMER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { CustomerTable, getColumnsConfig } from './CustomerTable';
 import { CustomerForm } from './CustomerForm';
@@ -101,14 +102,30 @@ export function CustomerManagementPage(): ReactElement {
     if (!customers.length) return [];
     let result = [...customers];
     if (debouncedSearch) {
-      const lowerSearch = debouncedSearch.toLowerCase();
       result = result.filter(
         (item) =>
-          (item.name && item.name.toLowerCase().includes(lowerSearch)) ||
-          (item.customerCode && item.customerCode.toLowerCase().includes(lowerSearch)) ||
-          (item.email && item.email.toLowerCase().includes(lowerSearch)) ||
-          (item.phone && item.phone?.includes(lowerSearch)) ||
-          (item.taxNumber && item.taxNumber?.includes(lowerSearch))
+          matchesSearchTerm(debouncedSearch, [
+            item.id,
+            item.customerCode,
+            item.name,
+            item.customerTypeName,
+            item.email,
+            item.phone,
+            item.phone2,
+            item.cityName,
+            item.districtName,
+            item.countryName,
+            item.address,
+            item.taxNumber,
+            item.taxOffice,
+            item.tcknNumber,
+            item.website,
+            item.salesRepCode,
+            item.groupCode,
+            item.creditLimit,
+            item.defaultShippingAddressId,
+            item.createdDate,
+          ])
       );
     }
     result = applyCustomerFilters(result, appliedFilterRows);

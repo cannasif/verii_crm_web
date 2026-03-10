@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import { matchesSearchTerm } from '@/lib/search';
 import { SHIPPING_ADDRESS_QUERY_KEYS } from '../utils/query-keys';
 import { ShippingAddressTable, getColumnsConfig } from './ShippingAddressTable';
 import { ShippingAddressForm } from './ShippingAddressForm';
@@ -95,14 +96,18 @@ export function ShippingAddressManagementPage(): ReactElement {
     if (!shippingAddresses.length) return [];
     let result = [...shippingAddresses];
     if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
       result = result.filter(
         (c) =>
-          (c.name && c.name.toLowerCase().includes(lower)) ||
-          (c.address && c.address.toLowerCase().includes(lower)) ||
-          (c.customerName && c.customerName.toLowerCase().includes(lower)) ||
-          (c.contactPerson && c.contactPerson?.toLowerCase().includes(lower)) ||
-          (c.phone && c.phone.toLowerCase().includes(lower))
+          matchesSearchTerm(searchTerm, [
+            c.name,
+            c.address,
+            c.customerName,
+            c.contactPerson,
+            c.phone,
+            c.countryName,
+            c.cityName,
+            c.districtName,
+          ])
       );
     }
     result = applyShippingAddressFilters(result, appliedFilterRows);
