@@ -15,6 +15,7 @@ import { CustomerTable, getColumnsConfig } from './CustomerTable';
 import { CustomerForm } from './CustomerForm';
 import { CustomerStats } from './CustomerStats';
 import { useCreateCustomer } from '../hooks/useCreateCustomer';
+import { useTriggerCustomerSync } from '../hooks/useTriggerCustomerSync';
 import { useUpdateCustomer } from '../hooks/useUpdateCustomer';
 import { useCustomerList } from '../hooks/useCustomerList';
 import type { CustomerDto, CustomerFormData } from '../types/customer-types';
@@ -61,6 +62,7 @@ export function CustomerManagementPage(): ReactElement {
   const queryClient = useQueryClient();
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
+  const triggerCustomerSync = useTriggerCustomerSync();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   const baseColumns = useMemo(
@@ -330,6 +332,21 @@ export function CustomerManagementPage(): ReactElement {
                     <RefreshCw className="h-4 w-4 mr-2" />
                   )}
                   {resolveLabel(t, 'common.refresh', 'Yenile')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => triggerCustomerSync.mutateAsync()}
+                  disabled={triggerCustomerSync.isPending}
+                >
+                  {triggerCustomerSync.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  {triggerCustomerSync.isPending
+                    ? resolveLabel(t, 'customerManagement.syncing', 'Sync çalışıyor')
+                    : resolveLabel(t, 'customerManagement.manualSync', 'Manuel Sync')}
                 </Button>
               </>
             }

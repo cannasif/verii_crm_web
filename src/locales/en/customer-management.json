@@ -118,8 +118,12 @@
     "updateSuccess": "Customer updated successfully",
     "updateError": "Customer could not be updated",
     "deleteSuccess": "Customer deleted successfully",
-    "deleteError": "Customer could not be deleted"
+    "deleteError": "Customer could not be deleted",
+    "syncQueued": "Customer sync queued. Job: {{jobId}}",
+    "syncError": "Customer sync could not be triggered"
   },
+  "manualSync": "Manual Sync",
+  "syncing": "Syncing",
   "customerManagement": {
     "menu": "Müşteri Yönetimi",
     "description": "Müşterileri yönetin ve düzenleyin",
