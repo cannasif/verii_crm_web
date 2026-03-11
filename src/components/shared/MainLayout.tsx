@@ -17,7 +17,6 @@ import {
   ShoppingBag03Icon, 
   CheckmarkCircle02Icon, 
   SlidersHorizontalIcon, 
-  UserCircleIcon, 
   Settings02Icon,
   File01Icon,
   Analytics01Icon
@@ -167,12 +166,6 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           { title: t('sidebar.paymentTypeManagement'), href: '/payment-type-management' },
           { title: t('sidebar.documentSerialTypeManagement'), href: '/document-serial-type-management' },
           { title: t('sidebar.salesTypeManagement'), href: '/definitions/sales-type-management' },
-        ],
-      },
-      {
-        title: t('sidebar.users'),
-        icon: <UserCircleIcon size={iconSize} className="text-indigo-500" stroke="currentColor" />,
-        children: [
           { title: t('sidebar.userDiscountLimitManagement'), href: '/user-discount-limit-management' },
         ],
       },
