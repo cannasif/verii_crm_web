@@ -162,6 +162,9 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   } else if (typeof body === "string" && body.startsWith("customerManagement.")) {
     const customerKey = body.replace(/^customerManagement\./, "")
     text = t(customerKey, { ns: "customer-management", defaultValue: t(body) })
+  } else if (typeof body === "string" && body.startsWith("activityManagement.")) {
+    const activityKey = body.replace(/^activityManagement\./, "")
+    text = t(activityKey, { ns: "activity-management", defaultValue: t(body) })
   } else {
     text = t(String(body))
   }
