@@ -2,6 +2,7 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -157,6 +158,12 @@ export function ShippingAddressForm({
     }
   };
 
+  const handleInvalidSubmit = (): void => {
+    toast.error('Hata', {
+      description: 'Zorunlu alanlar doldurulmadı.',
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl overflow-hidden transition-colors duration-300">
@@ -191,7 +198,7 @@ export function ShippingAddressForm({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="flex-1 flex flex-col min-h-0">
+          <form onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="flex-1 flex flex-col min-h-0">
             <div className="flex-1 min-h-0 flex flex-col">
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
                   <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

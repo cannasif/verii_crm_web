@@ -333,7 +333,7 @@ export function QuotationCreateForm(): ReactElement {
     const isValid = await form.trigger();
     if (!isValid) {
       toast.error(t('quotation.create.error'), {
-        description: t('quotation.create.validationError'),
+        description: 'Zorunlu alanlar doldurulmadı.',
       });
       return;
     }

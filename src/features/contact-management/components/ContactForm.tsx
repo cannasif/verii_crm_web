@@ -2,6 +2,7 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { X } from 'lucide-react';
 import {
   Dialog,
@@ -161,6 +162,12 @@ export function ContactForm({
     }
   };
 
+  const handleInvalidSubmit = (): void => {
+    toast.error('Hata', {
+      description: 'Zorunlu alanlar doldurulmadı.',
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
@@ -188,7 +195,7 @@ export function ContactForm({
 
         <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 custom-scrollbar">
           <Form {...form}>
-            <form id="contact-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form id="contact-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6">
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                   

@@ -59,6 +59,12 @@ export function ResetPasswordPage(): React.JSX.Element {
     });
   };
 
+  const onInvalidSubmit = (): void => {
+    toast.error(t('auth.resetPassword.error'), {
+      description: t('auth.validation.requiredFieldsNotFilled'),
+    });
+  };
+
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[#0f0518] text-white font-['Outfit']">
       <style>{`
@@ -84,7 +90,7 @@ export function ResetPasswordPage(): React.JSX.Element {
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="newPassword"

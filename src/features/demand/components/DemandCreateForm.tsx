@@ -270,7 +270,7 @@ export function DemandCreateForm(): ReactElement {
     const isValid = await form.trigger();
     if (!isValid) {
       toast.error(t('demand.create.error', 'Hata'), {
-        description: t('demand.create.validationError', 'Lütfen zorunlu alanları kontrol ediniz.'),
+        description: 'Zorunlu alanlar doldurulmadı.',
       });
       return;
     }

@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { forgotPasswordSchema, type ForgotPasswordRequest } from '../types/auth';
 import { useForgotPassword } from '../hooks/useForgotPassword';
 import type React from 'react';
@@ -31,6 +32,12 @@ export function ForgotPasswordPage(): React.JSX.Element {
 
   const onSubmit = (data: ForgotPasswordRequest): void => {
     requestPasswordReset(data.email);
+  };
+
+  const onInvalidSubmit = (): void => {
+    toast.error(t('auth.forgotPassword.title'), {
+      description: t('auth.validation.requiredFieldsNotFilled'),
+    });
   };
 
   return (
@@ -65,7 +72,7 @@ export function ForgotPasswordPage(): React.JSX.Element {
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="email"

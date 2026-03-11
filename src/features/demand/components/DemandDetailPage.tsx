@@ -403,7 +403,7 @@ export function DemandDetailPage(): ReactElement {
     const isValid = await form.trigger();
     if (!isValid) {
       toast.error(t('demand.update.error'), {
-        description: t('demand.update.validationError'),
+        description: 'Zorunlu alanlar doldurulmadı.',
       });
       return;
     }

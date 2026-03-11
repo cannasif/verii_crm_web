@@ -35,6 +35,19 @@ export const createQuotationSchema = z.object({
       .nullable()
       .optional(),
   }),
+}).superRefine((data, ctx) => {
+  const q = data.quotation;
+  const hasCustomer =
+    (q.potentialCustomerId != null && q.potentialCustomerId > 0) ||
+    (q.erpCustomerCode != null && String(q.erpCustomerCode).trim().length > 0);
+
+  if (!hasCustomer) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Müşteri seçilmelidir',
+      path: ['quotation', 'potentialCustomerId'],
+    });
+  }
 });
 
 export type CreateQuotationSchema = z.infer<typeof createQuotationSchema>;

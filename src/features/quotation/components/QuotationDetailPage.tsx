@@ -487,7 +487,7 @@ export function QuotationDetailPage(): ReactElement {
     const isValid = await form.trigger();
     if (!isValid) {
       toast.error(t('quotation.update.error'), {
-        description: t('quotation.update.validationError'),
+        description: 'Zorunlu alanlar doldurulmadı.',
       });
       return;
     }

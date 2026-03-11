@@ -35,6 +35,35 @@ export const createDemandSchema = z.object({
       .nullable()
       .optional(),
   }),
+}).superRefine((data, ctx) => {
+  const d = data.demand;
+  const hasCustomer =
+    (d.potentialCustomerId != null && d.potentialCustomerId > 0) ||
+    (d.erpCustomerCode != null && String(d.erpCustomerCode).trim().length > 0);
+
+  if (!hasCustomer) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Müşteri seçilmelidir',
+      path: ['demand', 'potentialCustomerId'],
+    });
+  }
+
+  if (d.paymentTypeId == null || d.paymentTypeId === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Ödeme tipi seçilmelidir',
+      path: ['demand', 'paymentTypeId'],
+    });
+  }
+
+  if (!d.deliveryDate || String(d.deliveryDate).trim().length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Teslimat tarihi seçilmelidir',
+      path: ['demand', 'deliveryDate'],
+    });
+  }
 });
 
 export type CreateDemandSchema = z.infer<typeof createDemandSchema>;

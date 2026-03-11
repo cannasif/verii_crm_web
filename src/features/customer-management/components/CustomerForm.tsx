@@ -2,6 +2,7 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -234,6 +235,12 @@ export function CustomerForm({
     }
   };
 
+  const handleInvalidSubmit = (): void => {
+    toast.error('Hata', {
+      description: 'Zorunlu alanlar doldurulmadı.',
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-4xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
@@ -264,7 +271,7 @@ export function CustomerForm({
 
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
-            <form id="customer-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form id="customer-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6">
               {conflictState && (
                 <Alert variant="destructive" className="border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-100">
                   <AlertTriangle className="h-4 w-4" />

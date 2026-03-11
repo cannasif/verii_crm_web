@@ -88,6 +88,12 @@ export function LoginPage(): React.JSX.Element {
     login({ ...data });
   };
 
+  const onInvalidSubmit = (): void => {
+    toast.error(t('auth.login.loginError'), {
+      description: t('auth.validation.requiredFieldsNotFilled'),
+    });
+  };
+
   return (
     <div className="relative w-full min-h-dvh h-[100dvh] overflow-hidden bg-[#0f0518] text-white font-['Plus_Jakarta_Sans']">
       
@@ -156,7 +162,7 @@ export function LoginPage(): React.JSX.Element {
           </div>
           
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
+            <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)} className="space-y-5" noValidate>
               
               <FormField
                 control={form.control}

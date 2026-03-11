@@ -2,6 +2,7 @@ import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -296,6 +297,12 @@ export function ActivityForm({
     }
   };
 
+  const handleInvalidSubmit = (): void => {
+    toast.error(t('activityManagement.error'), {
+      description: 'Zorunlu alanlar doldurulmadı.',
+    });
+  };
+
   const addPresetReminder = (offsetMinutes: number): void => {
     const exists = watchedReminders.some((reminder) => reminder.offsetMinutes === offsetMinutes);
     if (exists) return;
@@ -339,7 +346,7 @@ export function ActivityForm({
 
             <TabsContent value="details" className="mt-0">
               <Form {...form}>
-                <form id="activity-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+                <form id="activity-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-8">
               <FormSection title={t('activityManagement.basicInfo')}>
                 <FormField control={form.control} name="subject" render={({ field }) => (
                   <FormItem>

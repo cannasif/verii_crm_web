@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { ApiResponse } from '@/types/api';
 
 export const loginRequestSchema = z.object({
-  email: z.string().email('auth.validation.emailInvalid'),
+  email: z.string().min(1, 'auth.validation.emailRequired').email('auth.validation.emailInvalid'),
   password: z.string().min(1, 'auth.validation.passwordRequired'),
   branchId: z.string().min(1, 'auth.validation.branchRequired'),
   rememberMe: z.boolean(),
@@ -68,7 +68,7 @@ export const resetPasswordSchema = z.object({
 export type ResetPasswordRequest = z.infer<typeof resetPasswordSchema>;
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('auth.validation.emailInvalid'),
+  email: z.string().min(1, 'auth.validation.emailRequired').email('auth.validation.emailInvalid'),
 });
 
 export type ForgotPasswordRequest = z.infer<typeof forgotPasswordSchema>;
