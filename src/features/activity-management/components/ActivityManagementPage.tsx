@@ -415,7 +415,7 @@ export function ActivityManagementPage(): ReactElement {
               to: endRow,
               total: totalCount,
             })}
-            disablePaginationButtons={false}
+            disablePaginationButtons={activitiesLoading}
           />
         </CardContent>
       </Card>
