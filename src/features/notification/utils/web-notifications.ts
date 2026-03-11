@@ -1,3 +1,5 @@
+import { resolveAppPath } from '@/lib/axios';
+
 export const requestNotificationPermission = async (): Promise<boolean> => {
   if (!('Notification' in window)) {
     console.warn('This browser does not support notifications');
@@ -55,7 +57,7 @@ export const showLocalNotification = (notification: {
         };
         const route = routeMap[notification.relatedEntityName];
         if (route) {
-          window.location.href = route;
+          window.location.href = resolveAppPath(route);
         }
       }
     };

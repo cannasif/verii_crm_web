@@ -1,4 +1,6 @@
 {
+  "baseUrl": "/",
+  "apiUrl": "https://crmapi.v3rii.com",
   "branches": [
     {
       "id": "1",
@@ -22,4 +24,3 @@
     }
   ]
 }
-

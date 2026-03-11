@@ -2,6 +2,8 @@
 
 declare module '@/config/config.json' {
   interface Config {
+    baseUrl?: string;
+    apiUrl?: string;
     branches: Array<{
       id: string;
       name: string;

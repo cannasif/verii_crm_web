@@ -67,7 +67,7 @@ export function UserProfileModal({
   const handleLogout = () => {
     logout();
     onOpenChange(false);
-    navigate('/login');
+    navigate('/auth/login', { replace: true });
   };
 
   const darkMode = theme === 'dark';

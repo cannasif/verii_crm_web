@@ -2,6 +2,12 @@ export const DEFAULT_API_BASE_URL = 'https://crmapi.v3rii.com';
 
 interface RuntimeConfig {
   apiUrl?: string;
+  baseUrl?: string;
+}
+
+interface ResolvedRuntimeConfig {
+  apiUrl: string;
+  baseUrl: string;
 }
 
 function isValidApiUrl(value: string | undefined | null): boolean {
@@ -20,8 +26,40 @@ function normalizeBaseUrl(url: string): string {
   return url.trim().replace(/\/$/, '');
 }
 
+function normalizeAppBasePath(value: string | undefined | null): string {
+  if (!value || typeof value !== 'string') {
+    return '/';
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return '/';
+  }
+
+  try {
+    if (/^https?:\/\//i.test(trimmed)) {
+      const url = new URL(trimmed);
+      const normalizedPath = url.pathname.trim();
+      if (!normalizedPath || normalizedPath === '/') {
+        return '/';
+      }
+
+      return `/${normalizedPath.replace(/^\/+|\/+$/g, '')}`;
+    }
+  } catch {
+    return '/';
+  }
+
+  if (trimmed === '/') {
+    return '/';
+  }
+
+  return `/${trimmed.replace(/^\/+|\/+$/g, '')}`;
+}
+
 let cachedApiUrl = normalizeBaseUrl(DEFAULT_API_BASE_URL);
-let configPromise: Promise<string> | null = null;
+let cachedAppBasePath = normalizeAppBasePath(import.meta.env.BASE_URL || '/');
+let configPromise: Promise<ResolvedRuntimeConfig> | null = null;
 const runtimeBasePath = import.meta.env.BASE_URL || '/';
 
 function toBaseRelativePath(fileName: string): string {
@@ -29,33 +67,43 @@ function toBaseRelativePath(fileName: string): string {
   return `${normalizedBase}${fileName}`;
 }
 
-async function fetchRuntimeConfig(): Promise<string> {
+async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
   const envUrl = import.meta.env.VITE_API_URL;
-  if (isValidApiUrl(envUrl)) return normalizeBaseUrl(envUrl);
+  const fallbackConfig: ResolvedRuntimeConfig = {
+    apiUrl: isValidApiUrl(envUrl) ? normalizeBaseUrl(envUrl) : normalizeBaseUrl(DEFAULT_API_BASE_URL),
+    baseUrl: normalizeAppBasePath(import.meta.env.BASE_URL || '/'),
+  };
 
   try {
     const response = await fetch(toBaseRelativePath('config.json'), {
       cache: import.meta.env.PROD ? 'no-cache' : 'default',
     });
-    if (!response.ok) return DEFAULT_API_BASE_URL;
+    if (!response.ok) return fallbackConfig;
     const config = (await response.json()) as RuntimeConfig;
-    if (isValidApiUrl(config?.apiUrl)) return normalizeBaseUrl(config.apiUrl!);
+
+    return {
+      apiUrl: isValidApiUrl(config?.apiUrl) ? normalizeBaseUrl(config.apiUrl!) : fallbackConfig.apiUrl,
+      baseUrl: normalizeAppBasePath(config?.baseUrl ?? fallbackConfig.baseUrl),
+    };
   } catch (error) {
     if (import.meta.env.DEV) {
       console.warn('[api-config] config.json yüklenemedi, fallback kullanılıyor:', error);
     }
   }
-  return normalizeBaseUrl(DEFAULT_API_BASE_URL);
+
+  return fallbackConfig;
 }
 
 export function loadConfig(): Promise<string> {
   if (!configPromise) {
-    configPromise = fetchRuntimeConfig().then((url) => {
-      cachedApiUrl = url;
-      return url;
+    configPromise = fetchRuntimeConfig().then((config) => {
+      cachedApiUrl = config.apiUrl;
+      cachedAppBasePath = config.baseUrl;
+      return config;
     });
   }
-  return configPromise;
+
+  return configPromise.then((config) => config.apiUrl);
 }
 
 export async function getApiUrl(): Promise<string> {
@@ -66,4 +114,42 @@ export function getApiBaseUrl(): string {
   const env = import.meta.env.VITE_API_URL;
   if (isValidApiUrl(env)) return normalizeBaseUrl(env);
   return cachedApiUrl || normalizeBaseUrl(DEFAULT_API_BASE_URL);
+}
+
+export function getAppBasePath(): string {
+  return cachedAppBasePath || normalizeAppBasePath(import.meta.env.BASE_URL || '/');
+}
+
+export function resolveAppPath(path: string): string {
+  if (!path) {
+    return getAppBasePath();
+  }
+
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+
+  const [pathnameWithQuery, hashFragment] = path.split('#', 2);
+  const [pathnamePart, queryString] = pathnameWithQuery.split('?', 2);
+  const normalizedPathname = pathnamePart.startsWith('/') ? pathnamePart : `/${pathnamePart}`;
+  const basePath = getAppBasePath();
+
+  const resolvedPath =
+    basePath === '/'
+      ? normalizedPathname
+      : `${basePath}${normalizedPathname === '/' ? '' : normalizedPathname}`;
+
+  const resolvedQuery = queryString ? `?${queryString}` : '';
+  const resolvedHash = hashFragment ? `#${hashFragment}` : '';
+
+  return `${resolvedPath}${resolvedQuery}${resolvedHash}`;
+}
+
+export function isCurrentAppPath(path: string): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  return currentPath === resolveAppPath(path);
 }
