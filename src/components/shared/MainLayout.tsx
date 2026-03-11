@@ -251,7 +251,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
     if (permissions) return filterNavItemsByPermission(normalized, permissions);
     if (isError) return normalized;
     return normalized;
-  }, [navItems, defaultNavItems, permissions, isLoading, isError, canManageIntegrationAuth, t]);
+  }, [navItems, defaultNavItems, permissions, isLoading, isError, canManageIntegrationAuth]);
 
   return (
     <div className="relative flex min-h-dvh h-[100dvh] w-full overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0516] font-['Outfit'] transition-colors duration-300">
