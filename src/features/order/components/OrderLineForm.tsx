@@ -811,7 +811,18 @@ export function OrderLineForm({
                 step="0.01"
                 min="0"
                 value={formData.unitPrice}
-                readOnly
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  if (inputValue === '' || inputValue === '.') {
+                    handleFieldChange('unitPrice', 0);
+                    return;
+                  }
+
+                  const numValue = parseFloat(inputValue);
+                  if (!isNaN(numValue)) {
+                    handleFieldChange('unitPrice', numValue);
+                  }
+                }}
                 className="bg-muted/50 font-medium"
               />
               <div className="space-y-2">

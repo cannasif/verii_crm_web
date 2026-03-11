@@ -854,7 +854,16 @@ export function DemandLineForm({
                       step="0.01"
                       min="0"
                       value={formData.unitPrice}
-                      readOnly
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        if (inputValue === '' || inputValue === '.') {
+                          handleFieldChange('unitPrice', 0);
+                          return;
+                        }
+
+                        const numValue = parseFloat(inputValue);
+                        if (!isNaN(numValue)) handleFieldChange('unitPrice', numValue);
+                      }}
                       className={cn(styles.inputBase, "pr-14 bg-zinc-50 dark:bg-zinc-900 font-mono font-bold text-zinc-700 dark:text-zinc-300")}
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm font-bold pointer-events-none">

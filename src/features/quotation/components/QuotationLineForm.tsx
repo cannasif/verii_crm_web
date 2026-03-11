@@ -854,7 +854,18 @@ export function QuotationLineForm({
               step="0.01"
               min="0"
               value={formData.unitPrice}
-              readOnly
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                if (inputValue === '' || inputValue === '.') {
+                  handleFieldChange('unitPrice', 0);
+                  return;
+                }
+
+                const numValue = parseFloat(inputValue);
+                if (!isNaN(numValue)) {
+                  handleFieldChange('unitPrice', numValue);
+                }
+              }}
               className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-mono font-bold text-center pr-10"
             />
             <div className="absolute right-3 top-3 text-xs font-bold text-slate-400 dark:text-slate-500">TL</div>
