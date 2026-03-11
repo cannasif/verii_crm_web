@@ -19,6 +19,10 @@ export const useCreateActivity = () => {
         queryKey: [ACTIVITY_QUERY_KEYS.LIST],
         exact: false,
       });
+      await queryClient.invalidateQueries({
+        queryKey: ['customer360'],
+        exact: false,
+      });
       toast.success(t('activityManagement.createSuccess'));
     },
     onError: (error: Error) => {

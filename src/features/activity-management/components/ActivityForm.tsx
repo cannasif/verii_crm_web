@@ -57,6 +57,10 @@ interface ActivityFormProps {
   initialDate?: string | null;
   initialStartDateTime?: string | null;
   initialEndDateTime?: string | null;
+  initialPotentialCustomerId?: number | null;
+  initialErpCustomerCode?: string | null;
+  initialContactId?: number | null;
+  initialCustomerDisplayName?: string | null;
 }
 
 const INPUT_STYLE = `
@@ -120,7 +124,13 @@ function toDateInputValue(value?: string | null): string {
 function toDefaultStartDateTime(initialDate?: string | null, initialStart?: string | null): string {
   if (initialStart && initialStart.length >= 16) return initialStart;
   if (initialDate && initialDate.length === 10) {
-    return `${initialDate}T09:00`;
+    const now = new Date();
+    const year = initialDate.slice(0, 4);
+    const month = initialDate.slice(5, 7);
+    const day = initialDate.slice(8, 10);
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
   const now = new Date();
   now.setSeconds(0, 0);
@@ -155,6 +165,10 @@ export function ActivityForm({
   initialDate,
   initialStartDateTime,
   initialEndDateTime,
+  initialPotentialCustomerId,
+  initialErpCustomerCode,
+  initialContactId,
+  initialCustomerDisplayName,
 }: ActivityFormProps): ReactElement {
   const { t } = useTranslation();
   const { user } = useAuthStore();
@@ -255,19 +269,31 @@ export function ActivityForm({
       subject: '',
       description: '',
       activityType: '',
-      potentialCustomerId: undefined,
-      erpCustomerCode: '',
+      potentialCustomerId: initialPotentialCustomerId ?? undefined,
+      erpCustomerCode: initialErpCustomerCode ?? '',
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
-      contactId: undefined,
+      contactId: initialContactId ?? undefined,
       assignedUserId: user?.id ?? 0,
       startDateTime: defaultStartDateTime,
       endDateTime: toDefaultEndDateTime(initialEndDateTime, defaultStartDateTime),
       isAllDay: false,
       reminders: [],
     });
-    setSelectedCustomerDisplayName(null);
-  }, [activity, form, initialDate, initialStartDateTime, initialEndDateTime, user?.id, defaultStartDateTime]);
+    setSelectedCustomerDisplayName(initialCustomerDisplayName ?? null);
+  }, [
+    activity,
+    defaultStartDateTime,
+    form,
+    initialContactId,
+    initialCustomerDisplayName,
+    initialDate,
+    initialEndDateTime,
+    initialErpCustomerCode,
+    initialPotentialCustomerId,
+    initialStartDateTime,
+    user?.id,
+  ]);
 
   useEffect(() => {
     if (!watchedCustomerId) form.setValue('contactId', undefined);
@@ -281,11 +307,8 @@ export function ActivityForm({
     const endDate = toDateInputValue(endVal);
     if (!startDate || !endDate) return;
     if (watchedIsAllDay) {
-      form.setValue('startDateTime', `${startDate}T00:00`);
-      form.setValue('endDateTime', `${endDate}T23:59`);
-    } else if (startVal === `${startDate}T00:00` || endVal === `${endDate}T23:59`) {
       form.setValue('startDateTime', `${startDate}T09:00`);
-      form.setValue('endDateTime', endDate === startDate ? `${endDate}T10:00` : `${endDate}T23:59`);
+      form.setValue('endDateTime', `${endDate}T18:00`);
     }
   }, [watchedIsAllDay, open, form]);
 
@@ -492,6 +515,8 @@ export function ActivityForm({
                     const selectedCustomer = customerOptions.find((customer) => customer.id === field.value);
                     const displayValue = selectedCustomer
                       ? selectedCustomer.name || selectedCustomer.customerCode || String(field.value)
+                      : field.value && selectedCustomerDisplayName
+                        ? selectedCustomerDisplayName
                       : watchedErpCode
                         ? selectedCustomerDisplayName
                           ? `${selectedCustomerDisplayName} (${t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })})`
