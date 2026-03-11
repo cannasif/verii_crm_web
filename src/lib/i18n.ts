@@ -58,6 +58,7 @@ const withNamespaceCompatibility = (
       : nsScopedBundle;
 
   return {
+    ...nsScopedBundle,
     ...bundle,
     [ns]: nsScopedBundle,
     [camelNs]: camelScopedBundle,

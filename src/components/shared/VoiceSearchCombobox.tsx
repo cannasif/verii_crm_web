@@ -256,7 +256,7 @@ export function VoiceSearchCombobox({
           <CommandList
             onScroll={handleListScroll}
             className="p-2 custom-scrollbar space-y-1"
-            style={{ maxHeight: DROPDOWN_MAX_HEIGHT_PX, overflowY: 'auto', overscrollBehavior: 'contain' }}
+            style={{ minHeight: DROPDOWN_MAX_HEIGHT_PX, maxHeight: DROPDOWN_MAX_HEIGHT_PX, overflowY: 'auto', overscrollBehavior: 'contain' }}
           >
             <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
               {isThresholdMode ? minCharsHint : t('common.noResults')}

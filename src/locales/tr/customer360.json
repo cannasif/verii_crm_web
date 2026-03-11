@@ -10,7 +10,8 @@
   "tabs": {
     "overview": "Özet",
     "analytics": "Çözümleme",
-    "mailLogs": "E-posta Geçmişi"
+    "mailLogs": "E-posta Geçmişi",
+    "images": "Görseller"
   },
   "mail": {
     "providers": {
@@ -87,5 +88,18 @@
     "empty": "Önerilen aksiyon yok",
     "execute": "Uygula"
   },
+  "explain": {
+    "revenueQualityTitle": "Gelir kalitesi, müşterinin satış potansiyeli ve risk profilini özetler.",
+    "churnRisk": "Kayıp riski, müşterinin yeniden sipariş vermeme olasılığını gösterir.",
+    "upsellPropensity": "Ek satış eğilimi, müşterinin daha yüksek hacimli veya ek ürün alım potansiyelini gösterir.",
+    "paymentBehavior": "Ödeme davranışı, müşterinin tahsilat ve ödeme düzenini özetler.",
+    "rfmSegment": "RFM segmenti; yakınlık, sıklık ve tutar verilerine göre müşterinin segmentini gösterir.",
+    "modelNote": "Bu alanlar analitik model çıktılarıdır ve karar desteği amacıyla gösterilir.",
+    "cohortRetentionTitle": "Kohort tutma, benzer dönemde kazanılan müşterilerin zaman içindeki devamlılığını gösterir.",
+    "noCohortData": "Bu müşteri için yeterli kohort verisi bulunamadı.",
+    "recommendedActionsTitle": "Sistem tarafından önerilen aksiyonlar bu alanda listelenir.",
+    "executeAction": "Aksiyonu uygula"
+  },
+  "button": "Müşteri 360",
   "status": {}
 }

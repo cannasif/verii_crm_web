@@ -2642,6 +2642,15 @@
     "contact": "Kişi",
     "deleteActivity": "Aktiviteyi Sil",
     "deleteConfirmation": "Bu aktiviteyi silmek istediğinizden emin misiniz?",
+    "activityTypeRequired": "Aktivite tipi seçimi gereklidir",
+    "assignedUserRequired": "Atanan kullanıcı gereklidir",
+    "endDateRequired": "Bitiş tarihi gereklidir",
+    "listLoadError": "Aktivite listesi yüklenemedi",
+    "detailLoadError": "Aktivite detayı yüklenemedi",
+    "cancel": "İptal",
+    "complete": "Tamamla",
+    "reminderChannelIn-App": "Uygulama İçi",
+    "reminderChannelEmail": "E-posta",
     "createSuccess": "Aktivite başarıyla oluşturuldu",
     "createError": "Aktivite oluşturulurken bir hata oluştu",
     "deleteSuccess": "Aktivite başarıyla silindi",
@@ -2656,6 +2665,9 @@
       "visibleColumns": "Gösterilecek Sütunlar",
       "moveUp": "Yukarı",
       "moveDown": "Aşağı"
+    },
+    "table": {
+      "title": "Aktivite Listesi"
     }
   },
   "status": {
@@ -2681,6 +2693,7 @@
       "description": "Aktivite tiplerini yönetin ve düzenleyin"
     },
     "create": "Yeni Aktivite Tipi",
+    "error": "Bir hata oluştu",
     "loading": "Yükleniyor...",
     "stats": {
       "totalActivityTypes": "Toplam Aktivite Tipi",
@@ -2688,6 +2701,7 @@
       "newThisMonth": "Bu Ay Yeni"
     },
     "table": {
+      "title": "Aktivite Tipi Listesi",
       "id": "ID",
       "name": "Aktivite Tipi",
       "description": "Açıklama",

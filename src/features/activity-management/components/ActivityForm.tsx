@@ -106,6 +106,16 @@ function toDateTimeInputValue(value?: string | null): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
+function toDateInputValue(value?: string | null): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function toDefaultStartDateTime(initialDate?: string | null, initialStart?: string | null): string {
   if (initialStart && initialStart.length >= 16) return initialStart;
   if (initialDate && initialDate.length === 10) {
@@ -186,6 +196,7 @@ export function ActivityForm({
 
   const watchedCustomerId = form.watch('potentialCustomerId');
   const watchedReminders = form.watch('reminders') || [];
+  const watchedIsAllDay = form.watch('isAllDay');
 
   const { data: contactData } = useQuery({
     queryKey: ['contactOptions', watchedCustomerId],
@@ -261,6 +272,22 @@ export function ActivityForm({
     if (!watchedCustomerId) form.setValue('contactId', undefined);
   }, [watchedCustomerId, form]);
 
+  useEffect(() => {
+    if (!open) return;
+    const startVal = form.getValues('startDateTime');
+    const endVal = form.getValues('endDateTime');
+    const startDate = toDateInputValue(startVal);
+    const endDate = toDateInputValue(endVal);
+    if (!startDate || !endDate) return;
+    if (watchedIsAllDay) {
+      form.setValue('startDateTime', `${startDate}T00:00`);
+      form.setValue('endDateTime', `${endDate}T23:59`);
+    } else if (startVal === `${startDate}T00:00` || endVal === `${endDate}T23:59`) {
+      form.setValue('startDateTime', `${startDate}T09:00`);
+      form.setValue('endDateTime', endDate === startDate ? `${endDate}T10:00` : `${endDate}T23:59`);
+    }
+  }, [watchedIsAllDay, open, form]);
+
   const handleSubmit = async (data: ActivityFormSchema): Promise<void> => {
     await onSubmit(data);
     if (!isLoading) {
@@ -277,7 +304,7 @@ export function ActivityForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-4xl w-[95vw] sm:w-full max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-xl">
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl">
         <DialogHeader className="px-6 py-4 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
@@ -359,22 +386,18 @@ export function ActivityForm({
                   )} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="startDateTime" render={({ field }) => (
+                  <FormField control={form.control} name="isAllDay" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
-                      <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
+                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.allDay')}</FormLabel>
+                      <FormControl>
+                        <div className="h-11 px-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center gap-3">
+                          <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                          <span className="text-sm text-slate-700 dark:text-slate-300">{t('activityManagement.allDay')}</span>
+                        </div>
+                      </FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
                   )} />
-                  <FormField control={form.control} name="endDateTime" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
-                      <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || '')} /></FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="priority" render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.priority')}</FormLabel>
@@ -390,19 +413,67 @@ export function ActivityForm({
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
                   )} />
-                  <FormField control={form.control} name="isAllDay" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.allDay')}</FormLabel>
-                      <FormControl>
-                        <div className="h-11 px-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center gap-3">
-                          <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
-                          <span className="text-sm text-slate-700 dark:text-slate-300">{t('activityManagement.allDay')}</span>
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
                 </div>
+                {watchedIsAllDay ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="startDateTime" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="date"
+                            className={INPUT_STYLE}
+                            value={toDateInputValue(field.value) || ''}
+                            onChange={(e) => {
+                              const date = e.target.value;
+                              if (date) {
+                                field.onChange(`${date}T00:00`);
+                                const endVal = form.getValues('endDateTime');
+                                const endDate = toDateInputValue(endVal);
+                                if (!endDate || endDate < date) form.setValue('endDateTime', `${date}T23:59`);
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-xs text-red-500" />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="endDateTime" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="date"
+                            className={INPUT_STYLE}
+                            value={toDateInputValue(field.value) || ''}
+                            onChange={(e) => {
+                              const date = e.target.value;
+                              if (date) field.onChange(`${date}T23:59`);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-xs text-red-500" />
+                      </FormItem>
+                    )} />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="startDateTime" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
+                        <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
+                        <FormMessage className="text-xs text-red-500" />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="endDateTime" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
+                        <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || '')} /></FormControl>
+                        <FormMessage className="text-xs text-red-500" />
+                      </FormItem>
+                    )} />
+                  </div>
+                )}
               </FormSection>
 
               <FormSection title={t('activityManagement.relations')}>

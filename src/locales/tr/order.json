@@ -19,11 +19,24 @@
   "confirm": "Onayla",
   "saveAndApply": "Kaydet ve Uygula",
   "list": {
+    "title": "Sipariş Listesi",
+    "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
+    "createNew": "Yeni Sipariş Oluştur",
+    "cardTitle": "Sipariş listesi",
+    "refresh": "Yenile",
+    "actions": "İşlemler",
     "revise": "Revize et",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor"
   },
+  "loadError": "Veriler yüklenirken hata oluştu.",
   "detail": {
-    "title": "Sipariş Detayı"
+    "title": "Sipariş Detayı",
+    "subtitle": "Sipariş bilgilerini, onay akışını ve raporları görüntüleyin",
+    "notFound": "Sipariş bulunamadı",
+    "revisionNo": "Revizyon No",
+    "tabDetail": "Detay",
+    "tabApprovalFlow": "Onay Akışı",
+    "tabReport": "Rapor"
   },
   "create": {
     "title": "Yeni Sipariş Oluştur",
@@ -31,7 +44,12 @@
     "success": "Sipariş Başarıyla Oluşturuldu",
     "successMessage": "Sipariş onay sürecine gönderildi.",
     "error": "Sipariş Oluşturulamadı",
-    "errorMessage": "Sipariş oluşturulurken bir hata oluştu."
+    "errorMessage": "Sipariş oluşturulurken bir hata oluştu.",
+    "subtitle": "Sipariş başlığı, satırlar ve kur bilgilerini yönetin",
+    "deliveryDateRequired": "Teslimat tarihi zorunludur.",
+    "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
+    "invalidCurrency": "Geçerli bir para birimi seçin.",
+    "validationError": "Lütfen zorunlu alanları kontrol edin."
   },
   "header": {
     "title": "Sipariş Bilgileri",
@@ -52,6 +70,8 @@
     "selectPaymentType": "Ödeme tipi seçin",
     "description": "Açıklama",
     "descriptionPlaceholder": "Açıklama giriniz",
+    "projectCode": "Proje Kodu",
+    "projectCodePlaceholder": "Proje kodunu girin",
     "offerNo": "Sipariş No",
     "offerNoPlaceholder": "Sipariş numarası",
     "currencyChange": {
@@ -63,8 +83,10 @@
   },
   "lines": {
     "title": "Sipariş Satırları",
+    "addLine": "Satır Ekle",
     "add": "Satır Ekle",
     "empty": "Henüz satır eklenmedi",
+    "noItems": "Henüz satır bulunmuyor",
     "emptyDescription": "Sipariş satırları eklemek için \"Stok Seç\" veya \"Satır Ekle\" butonunu kullanın",
     "itemCount": "satır",
     "editLine": "Satır Düzenle",
@@ -76,6 +98,7 @@
     "enterProductCode": "Ürün kodu girin veya ara",
     "productName": "Stok Adı",
     "enterProductName": "Ürün adı girin",
+    "groupCode": "Grup Kodu",
     "quantity": "Miktar",
     "unitPrice": "Birim Fiyat",
     "discount1": "İndirim 1 %",
@@ -88,10 +111,21 @@
     "lineTotal": "Satır Toplamı (KDV Dahil)",
     "calculations": "Hesaplamalar",
     "required": "En az 1 satır eklenmelidir",
+    "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
+    "relatedStocks": "Bağlı Stoklar",
+    "approvalRequired": "Bu satır için onay gerekmektedir.",
     "noProductsFound": "Ürün bulunamadı",
+    "createSuccess": "Sipariş satırları eklendi.",
+    "createError": "Sipariş satırları eklenemedi.",
+    "updateSuccess": "Sipariş satırları güncellendi.",
+    "updateError": "Sipariş satırları güncellenemedi.",
+    "deleteSuccess": "Sipariş satırı silindi.",
+    "deleteError": "Sipariş satırı silinemedi.",
     "delete": {
       "confirmTitle": "Satırı Sil",
-      "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?"
+      "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?",
+      "confirmTitleMultiple": "Satırları Sil",
+      "confirmMessageMultiple": "Seçili satırları silmek istediğinizden emin misiniz?"
     }
   },
   "exchangeRates": {
@@ -104,17 +138,79 @@
     "custom": "Özel",
     "empty": "Kur bulunamadı",
     "status": "Durum",
+    "updateSuccess": "Döviz kurları güncellendi.",
+    "updateError": "Döviz kurları güncellenemedi.",
+    "cannotEditUsedCurrency": "Kullanılan para birimi için kur değiştirilemez.",
     "dialog": {
       "title": "Döviz Kurları",
-      "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin. Değiştirilen kurlar resmi kur olarak işaretlenmeyecektir."
+      "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin. Değiştirilen kurlar resmi kur olarak işaretlenmeyecektir.",
+      "subtitle": "Siparişte kullanılacak döviz kurlarını kontrol edin",
+      "info": "Kur değişiklikleri satır hesaplamalarını etkiler."
     }
+  },
+  "approval": {
+    "approve": "Onayla",
+    "reject": "Reddet",
+    "sending": "Gönderiliyor...",
+    "sendForApproval": "Onaya Gönder",
+    "approveSuccess": "Sipariş başarıyla onaylandı.",
+    "approveError": "Sipariş onaylanamadı.",
+    "rejectSuccess": "Sipariş reddedildi.",
+    "rejectError": "Sipariş reddedilemedi.",
+    "startSuccess": "Onay süreci başlatıldı.",
+    "startError": "Onay süreci başlatılamadı.",
+    "rejectTitle": "Siparişi Reddet",
+    "rejectDescription": "Siparişi reddetme nedeninizi girin.",
+    "rejectReasonPlaceholder": "Red nedeni"
+  },
+  "approvalFlow": {
+    "loading": "Onay akışı yükleniyor...",
+    "noData": "Onay akışı kaydı bulunamadı",
+    "notStarted": "Onay akışı henüz başlatılmadı",
+    "stepCompleted": "Tamamlandı",
+    "stepInProgress": "Devam Ediyor",
+    "stepNotStarted": "Başlamadı",
+    "stepRejected": "Reddedildi"
   },
   "summary": {
     "title": "Özet",
     "subtotal": "Ara Toplam",
     "totalVat": "Toplam KDV",
     "grandTotal": "Genel Toplam",
-    "orderTotalAnalysis": "Sipariş Toplam Analizi"
+    "orderTotalAnalysis": "Sipariş Toplam Analizi",
+    "generalDiscount": "Genel İskonto",
+    "generalDiscountRate": "Genel İskonto Oranı",
+    "generalDiscountAmount": "Genel İskonto Tutarı",
+    "generalDiscountHelp": "Bu alan tüm sipariş toplamına uygulanacak genel iskontoyu ifade eder."
+  },
+  "sections": {
+    "header": "Başlık Bilgileri",
+    "lines": "Satırlar",
+    "summary": "Özet"
+  },
+  "revision": {
+    "success": "Revizyon kaydı oluşturuldu.",
+    "error": "Revizyon kaydı oluşturulamadı."
+  },
+  "update": {
+    "success": "Sipariş güncellendi.",
+    "successMessage": "Sipariş bilgileri başarıyla güncellendi.",
+    "error": "Sipariş güncellenemedi.",
+    "errorMessage": "Sipariş güncellenirken bir hata oluştu.",
+    "invalidCurrency": "Geçerli bir para birimi seçin.",
+    "validationError": "Lütfen zorunlu alanları kontrol edin."
+  },
+  "waitingApprovals": {
+    "title": "Bekleyen Sipariş Onayları",
+    "description": "Onay bekleyen sipariş kayıtlarını görüntüleyin.",
+    "list": "Bekleyen Onay Listesi",
+    "waiting": "Bekliyor",
+    "noApprovals": "Bekleyen onay kaydı bulunamadı.",
+    "requestId": "Talep No",
+    "status": "Durum",
+    "stepOrder": "Adım Sırası",
+    "approvedBy": "Onaylayan",
+    "actionDate": "İşlem Tarihi"
   },
   "offerType": {
     "domestic": "Yurtiçi",

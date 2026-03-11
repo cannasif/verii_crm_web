@@ -1,6 +1,8 @@
 {
   "menu": "Aktivite Tipi Yönetimi",
   "description": "Aktivite tiplerini yönetin ve düzenleyin",
+  "create": "Yeni Aktivite Tipi",
+  "error": "Bir hata oluştu",
   "addButton": "Yeni Aktivite Tipi Ekle",
   "loading": "Yükleniyor...",
   "noData": "Veri yok",
@@ -31,6 +33,7 @@
     "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
   },
   "table": {
+    "title": "Aktivite Tipi Listesi",
     "id": "ID",
     "name": "Aktivite Tipi Adı",
     "description": "Açıklama",

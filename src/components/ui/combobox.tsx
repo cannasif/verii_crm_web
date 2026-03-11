@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { VoiceSearchButton } from "@/components/ui/voice-search-button"
+import { DROPDOWN_MAX_HEIGHT_PX } from "@/components/shared/dropdown/constants"
 
 export interface ComboboxOption {
   value: string
@@ -83,7 +84,7 @@ export function Combobox({
                 className="h-7 w-7 mr-1" 
              />
           </CommandInput>
-          <CommandList>
+          <CommandList className="overflow-y-auto" style={{ minHeight: DROPDOWN_MAX_HEIGHT_PX, maxHeight: DROPDOWN_MAX_HEIGHT_PX }}>
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (

@@ -718,6 +718,12 @@ export function DailyTasksPage(): ReactElement {
                                         setSelectedDate(null);
                                         setFormOpen(true);
                                       }}
+                                      onDoubleClick={() => {
+                                        setSlotStart(formatSlotStart(day, hour));
+                                        setSlotEnd(formatSlotEnd(day, hour));
+                                        setSelectedDate(null);
+                                        setFormOpen(true);
+                                      }}
                                       className={`
                                         min-h-[44px] md:min-h-[52px] p-1 cursor-pointer border border-transparent hover:border-pink-500/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all
                                         ${isToday ? 'bg-pink-50/30 dark:bg-pink-500/5' : 'bg-white/60 dark:bg-white/5'}
@@ -765,6 +771,13 @@ export function DailyTasksPage(): ReactElement {
                                 <div
                                   key={index}
                                   onClick={() => {
+                                    const dateString = dayData.date.toISOString().split('T')[0];
+                                    setSelectedDate(dateString);
+                                    setSlotStart(`${dateString}T09:00`);
+                                    setSlotEnd(`${dateString}T10:00`);
+                                    setFormOpen(true);
+                                  }}
+                                  onDoubleClick={() => {
                                     const dateString = dayData.date.toISOString().split('T')[0];
                                     setSelectedDate(dateString);
                                     setSlotStart(`${dateString}T09:00`);
