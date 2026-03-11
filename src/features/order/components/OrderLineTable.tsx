@@ -251,6 +251,8 @@ export function OrderLineTable({
     setAddLineDialogOpen(true);
   };
 
+  const canAddLine = linesEditable && Boolean((customerId || erpCustomerCode) && representativeId && isCurrencySelected);
+
   const handleSaveNewLine = useCallback(
     async (line: OrderLineFormState): Promise<void> => {
       const lineToAdd = { ...line, isEditing: false };
@@ -505,9 +507,10 @@ export function OrderLineTable({
           
           {linesEditable && (
           <Button 
-            onClick={handleAddLine} 
+            onClick={handleAddLine}
+            disabled={!canAddLine}
             size="sm"
-            className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
+            className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100"
           >
             <Plus className="h-4 w-4 mr-2" />
             {t('order.lines.add')}

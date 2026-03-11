@@ -482,6 +482,8 @@ export function DemandLineTable({
     setDeleteDialogOpen(false);
   };
 
+  const canAddLine = linesEditable && Boolean((customerId || erpCustomerCode) && representativeId && isCurrencySelected);
+
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className={styles.glassCard}>
@@ -510,9 +512,10 @@ export function DemandLineTable({
               e.preventDefault();
               e.stopPropagation();
               handleAddLine();
-            }} 
+            }}
+            disabled={!canAddLine}
             size="sm"
-            className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
+            className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100"
           >
             <Plus className="h-4 w-4 mr-2" />
             {t('demand.lines.add')}
