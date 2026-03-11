@@ -60,7 +60,12 @@ export function ProductPricingStockSelectDialog({
         s.stockName?.toLowerCase().includes(q) ||
         s.erpStockCode?.toLowerCase().includes(q) ||
         s.grupKodu?.toLowerCase().includes(q) ||
-        s.grupAdi?.toLowerCase().includes(q)
+        s.grupAdi?.toLowerCase().includes(q) ||
+        s.kod1?.toLowerCase().includes(q) ||
+        s.kod1Adi?.toLowerCase().includes(q) ||
+        s.kod2?.toLowerCase().includes(q) ||
+        s.kod2Adi?.toLowerCase().includes(q) ||
+        s.ureticiKodu?.toLowerCase().includes(q)
     );
   }, [availableStocks, searchQuery]);
 
@@ -136,11 +141,27 @@ export function ProductPricingStockSelectDialog({
                       <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">
                         {stock.erpStockCode}
                       </span>
-                      {stock.grupKodu && (
-                        <span className="text-xs text-slate-400 dark:text-slate-500">
-                          {stock.grupKodu}
-                          {stock.grupAdi ? ` - ${stock.grupAdi}` : ''}
-                        </span>
+                    </div>
+                    <div className="mt-1 space-y-1 text-xs text-slate-400 dark:text-slate-500">
+                      {(stock.grupKodu || stock.grupAdi) && (
+                        <div>
+                          {t('productSelectDialog.group')}: {[stock.grupKodu, stock.grupAdi].filter(Boolean).join(' - ')}
+                        </div>
+                      )}
+                      {(stock.kod1 || stock.kod1Adi) && (
+                        <div>
+                          {t('productSelectDialog.code1')}: {[stock.kod1, stock.kod1Adi].filter(Boolean).join(' - ')}
+                        </div>
+                      )}
+                      {(stock.kod2 || stock.kod2Adi) && (
+                        <div>
+                          {t('productSelectDialog.code2')}: {[stock.kod2, stock.kod2Adi].filter(Boolean).join(' - ')}
+                        </div>
+                      )}
+                      {typeof stock.balance === 'number' && Number.isFinite(stock.balance) && (
+                        <div className="font-medium text-emerald-600 dark:text-emerald-300">
+                          {t('productSelectDialog.balance')}: {new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 }).format(stock.balance)}
+                        </div>
                       )}
                     </div>
                   </div>

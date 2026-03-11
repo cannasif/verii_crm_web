@@ -28,6 +28,47 @@ import {
   DROPDOWN_SCROLL_THRESHOLD,
 } from '@/components/shared/dropdown/constants';
 
+const STOCK_SEARCH_COLUMNS = [
+  'stockName',
+  'erpStockCode',
+  'grupKodu',
+  'grupAdi',
+  'kod1',
+  'kod1Adi',
+  'kod2',
+  'kod2Adi',
+  'ureticiKodu',
+] as const;
+
+function formatStockBalance(stock: StockGetDto | StockGetWithMainImageDto): string | null {
+  if (stock.balanceText?.trim()) {
+    return stock.balanceText.trim();
+  }
+
+  if (typeof stock.balance === 'number' && Number.isFinite(stock.balance)) {
+    return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 }).format(stock.balance);
+  }
+
+  return null;
+}
+
+function getStockMetaRows(
+  stock: StockGetDto | StockGetWithMainImageDto,
+  t: (key: string) => string
+): Array<{ label: string; value: string }> {
+  return [
+    stock.grupKodu || stock.grupAdi
+      ? { label: t('productSelectDialog.group'), value: [stock.grupKodu, stock.grupAdi].filter(Boolean).join(' - ') }
+      : null,
+    stock.kod1 || stock.kod1Adi
+      ? { label: t('productSelectDialog.code1'), value: [stock.kod1, stock.kod1Adi].filter(Boolean).join(' - ') }
+      : null,
+    stock.kod2 || stock.kod2Adi
+      ? { label: t('productSelectDialog.code2'), value: [stock.kod2, stock.kod2Adi].filter(Boolean).join(' - ') }
+      : null,
+  ].filter((row): row is { label: string; value: string } => Boolean(row));
+}
+
 export interface ProductSelectionResult {
   id?: number;
   code: string;
@@ -63,6 +104,8 @@ function StockCard({
 }: StockCardProps): ReactElement {
   const { t } = useTranslation();
   const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
+  const metaRows = getStockMetaRows(stock, t);
+  const balance = formatStockBalance(stock);
 
   const handleRelatedStockClick = async (e: React.MouseEvent, relatedStock: StockRelationDto): Promise<void> => {
     e.stopPropagation();
@@ -100,20 +143,21 @@ function StockCard({
               </span>
             </div>
             <h3 className="font-semibold text-base mb-2 truncate text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">{stock.stockName}</h3>
-            {(stock.grupKodu || stock.grupAdi) && (
-              <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">
-                {t('productSelectDialog.group')}: {stock.grupKodu && (
-                  <span className="font-mono font-medium text-slate-700 dark:text-slate-300">{stock.grupKodu}</span>
-                )}
-                {stock.grupKodu && stock.grupAdi && ' - '}
-                {stock.grupAdi && <span>{stock.grupAdi}</span>}
+            {metaRows.map((row) => (
+              <div key={row.label} className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+                {row.label}: <span className="font-medium text-slate-700 dark:text-slate-300">{row.value}</span>
               </div>
-            )}
+            ))}
             {stock.unit && (
               <div className="text-sm text-slate-500 dark:text-slate-400">
                 {t('productSelectDialog.unit')}: <span className="font-medium text-slate-700 dark:text-slate-300">{stock.unit}</span>
               </div>
             )}
+            {balance ? (
+              <div className="mt-2 inline-flex items-center rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
+                {t('productSelectDialog.balance')}: {balance}
+              </div>
+            ) : null}
             {hasRelatedStocks && (
               <div className="mt-3">
                 <Popover>
@@ -224,6 +268,8 @@ function StockWithImageCard({
   const { t } = useTranslation();
   const imageUrl = stock.mainImage ? getImageUrl(stock.mainImage.filePath) : null;
   const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
+  const metaRows = getStockMetaRows(stock, t);
+  const balance = formatStockBalance(stock);
 
   const handleRelatedStockClick = async (e: React.MouseEvent, relatedStock: StockRelationDto): Promise<void> => {
     e.stopPropagation();
@@ -272,21 +318,22 @@ function StockWithImageCard({
                 </span>
               </div>
               <h3 className="font-semibold text-base mb-2 truncate text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">{stock.stockName}</h3>
-              {(stock.grupKodu || stock.grupAdi) && (
-                <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">
-                  {t('productSelectDialog.group')}: {stock.grupKodu && (
-                    <span className="font-mono font-medium text-slate-700 dark:text-slate-300">{stock.grupKodu}</span>
-                  )}
-                  {stock.grupKodu && stock.grupAdi && ' - '}
-                  {stock.grupAdi && <span>{stock.grupAdi}</span>}
-                </div>
-              )}
-              {stock.unit && (
-                <div className="text-sm text-slate-500 dark:text-slate-400">
-                  {t('productSelectDialog.unit')}: <span className="font-medium text-slate-700 dark:text-slate-300">{stock.unit}</span>
-                </div>
-              )}
-              {hasRelatedStocks && (
+            {metaRows.map((row) => (
+              <div key={row.label} className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+                {row.label}: <span className="font-medium text-slate-700 dark:text-slate-300">{row.value}</span>
+              </div>
+            ))}
+            {stock.unit && (
+              <div className="text-sm text-slate-500 dark:text-slate-400">
+                {t('productSelectDialog.unit')}: <span className="font-medium text-slate-700 dark:text-slate-300">{stock.unit}</span>
+              </div>
+            )}
+            {balance ? (
+              <div className="mt-2 inline-flex items-center rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
+                {t('productSelectDialog.balance')}: {balance}
+              </div>
+            ) : null}
+            {hasRelatedStocks && (
                 <div className="mt-3">
                   <Popover>
                     <PopoverTrigger asChild>
@@ -397,6 +444,8 @@ function StockListItem({
 }: StockCardProps): ReactElement {
   const { t } = useTranslation();
   const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
+  const metaRows = getStockMetaRows(stock, t);
+  const balance = formatStockBalance(stock);
 
   const handleRelatedStockClick = async (e: React.MouseEvent, relatedStock: StockRelationDto): Promise<void> => {
     e.stopPropagation();
@@ -437,19 +486,22 @@ function StockListItem({
             </span>
          </div>
 
-         <div className="md:col-span-4 flex flex-col justify-center text-sm text-slate-500 dark:text-slate-400">
-            {(stock.grupKodu || stock.grupAdi) && (
-              <span className="truncate text-xs">
-                <span className="font-medium text-slate-700 dark:text-slate-300">{stock.grupKodu}</span>
-                {stock.grupKodu && stock.grupAdi && ' - '}
-                {stock.grupAdi}
+         <div className="md:col-span-4 flex flex-col justify-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+            {metaRows.map((row) => (
+              <span key={row.label} className="truncate text-xs">
+                {row.label}: <span className="font-medium text-slate-700 dark:text-slate-300">{row.value}</span>
               </span>
-            )}
+            ))}
             {stock.unit && (
               <span className="text-xs opacity-80 mt-0.5">
                 {t('productSelectDialog.unit')}: {stock.unit}
               </span>
             )}
+            {balance ? (
+              <span className="text-xs font-medium text-emerald-600 dark:text-emerald-300">
+                {t('productSelectDialog.balance')}: {balance}
+              </span>
+            ) : null}
          </div>
 
          <div className="md:col-span-3 flex justify-end items-center gap-2">
@@ -535,6 +587,8 @@ function StockWithImageListItem({
   const { t } = useTranslation();
   const imageUrl = stock.mainImage ? getImageUrl(stock.mainImage.filePath) : null;
   const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
+  const metaRows = getStockMetaRows(stock, t);
+  const balance = formatStockBalance(stock);
 
   const handleRelatedStockClick = async (e: React.MouseEvent, relatedStock: StockRelationDto): Promise<void> => {
     e.stopPropagation();
@@ -589,19 +643,22 @@ function StockWithImageListItem({
             </span>
          </div>
 
-         <div className="md:col-span-4 flex flex-col justify-center text-sm text-slate-500 dark:text-slate-400">
-            {(stock.grupKodu || stock.grupAdi) && (
-              <span className="truncate text-xs">
-                <span className="font-medium text-slate-700 dark:text-slate-300">{stock.grupKodu}</span>
-                {stock.grupKodu && stock.grupAdi && ' - '}
-                {stock.grupAdi}
+         <div className="md:col-span-4 flex flex-col justify-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+            {metaRows.map((row) => (
+              <span key={row.label} className="truncate text-xs">
+                {row.label}: <span className="font-medium text-slate-700 dark:text-slate-300">{row.value}</span>
               </span>
-            )}
+            ))}
             {stock.unit && (
               <span className="text-xs opacity-80 mt-0.5">
                 {t('productSelectDialog.unit')}: {stock.unit}
               </span>
             )}
+            {balance ? (
+              <span className="text-xs font-medium text-emerald-600 dark:text-emerald-300">
+                {t('productSelectDialog.balance')}: {balance}
+              </span>
+            ) : null}
          </div>
 
          <div className="md:col-span-3 flex justify-end items-center gap-2">
@@ -772,9 +829,9 @@ export function ProductSelectDialog({
     sortBy: 'Id',
     sortDirection: 'desc',
     buildFilters: (searchTerm) => [
-      { column: 'stockName', operator: 'contains', value: searchTerm },
-      { column: 'erpStockCode', operator: 'contains', value: searchTerm },
+      ...STOCK_SEARCH_COLUMNS.map((column) => ({ column, operator: 'contains', value: searchTerm })),
     ],
+    filterLogic: 'or',
     fetchPage: dropdownApi.getStockPage,
   });
 
@@ -787,9 +844,9 @@ export function ProductSelectDialog({
     sortBy: 'Id',
     sortDirection: 'desc',
     buildFilters: (searchTerm) => [
-      { column: 'stockName', operator: 'contains', value: searchTerm },
-      { column: 'erpStockCode', operator: 'contains', value: searchTerm },
+      ...STOCK_SEARCH_COLUMNS.map((column) => ({ column, operator: 'contains', value: searchTerm })),
     ],
+    filterLogic: 'or',
     fetchPage: dropdownApi.getStockWithImagesPage,
   });
 
