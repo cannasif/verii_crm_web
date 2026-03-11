@@ -33,7 +33,10 @@ function toDistrictOptions(items: DistrictDto[]): ComboboxOption[] {
 }
 
 function toUserOptions(items: UserDto[]): ComboboxOption[] {
-  return items.map((u) => ({ value: u.id.toString(), label: u.fullName }));
+  return items.map((u) => ({
+    value: u.id.toString(),
+    label: u.fullName?.trim() || u.username || u.email,
+  }));
 }
 
 function toApprovalRoleOptions(items: ApprovalRoleDto[]): ComboboxOption[] {
@@ -79,13 +82,7 @@ export function useCustomerOptionsInfinite(searchTerm: string, enabled = true) {
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Name',
     sortDirection: 'asc',
-    buildFilters: (term) =>
-      term
-        ? [
-            { column: 'name', operator: 'contains', value: term },
-            { column: 'customerCode', operator: 'contains', value: term },
-          ]
-        : undefined,
+    buildFilters: COMMON_BUILD_FILTERS('name'),
     fetchPage: dropdownApi.getCustomerPage,
   });
   const options = useMemo(() => toCustomerOptions(result.items), [result.items]);
@@ -169,14 +166,8 @@ export function useUserOptionsInfinite(searchTerm: string, enabled = true) {
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'asc',
-    buildFilters: (term) =>
-      term
-        ? [
-            { column: 'fullName', operator: 'contains', value: term },
-            { column: 'username', operator: 'contains', value: term },
-            { column: 'email', operator: 'contains', value: term },
-          ]
-        : undefined,
+    filterLogic: 'or',
+    buildFilters: COMMON_BUILD_FILTERS('fullName'),
     fetchPage: dropdownApi.getUserPage,
   });
   const options = useMemo(() => toUserOptions(result.items), [result.items]);
