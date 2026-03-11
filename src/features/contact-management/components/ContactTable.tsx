@@ -24,6 +24,7 @@ import {
   User,
   Building2,
   Briefcase,
+  Activity,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { toast } from 'sonner';
@@ -54,6 +55,7 @@ interface ContactTableProps {
   showActionsColumn?: boolean;
   actionsHeaderLabel?: string;
   onEdit: (contact: ContactDto) => void;
+  onQuickActivity: (contact: ContactDto) => void;
   rowClassName?: string | ((row: ContactDto) => string | undefined);
   pageSize: number;
   pageSizeOptions: readonly number[];
@@ -195,6 +197,7 @@ export function ContactTable({
   showActionsColumn = true,
   actionsHeaderLabel = '',
   onEdit,
+  onQuickActivity,
   rowClassName,
   pageSize,
   pageSizeOptions,
@@ -251,6 +254,15 @@ export function ContactTable({
         className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
       >
         <Edit2 size={16} />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => onQuickActivity(contact)}
+        className="h-8 w-8 text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:text-pink-400 dark:hover:bg-pink-500/10"
+        title={t('contactManagement.quickActivity')}
+      >
+        <Activity size={16} />
       </Button>
       <Button
         variant="ghost"

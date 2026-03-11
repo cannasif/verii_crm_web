@@ -16,6 +16,10 @@ import { ContactStats } from './ContactStats';
 import { useCreateContact } from '../hooks/useCreateContact';
 import { useUpdateContact } from '../hooks/useUpdateContact';
 import { useContactList } from '../hooks/useContactList';
+import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
+import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
+import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
+import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
 import type { ContactDto } from '../types/contact-types';
 import type { ContactFormSchema } from '../types/contact-types';
 import { applyContactFilters, CONTACT_FILTER_COLUMNS } from '../types/contact-filter.types';
@@ -26,6 +30,27 @@ const PAGE_KEY = 'contact-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 type ContactColumnKey = keyof ContactDto;
+
+function getQuickActivityWindow(): { start: string; end: string } {
+  const start = new Date();
+  const end = new Date(start);
+  end.setHours(end.getHours() + 1, end.getMinutes(), 0, 0);
+  start.setSeconds(0, 0);
+
+  const toInputValue = (value: Date): string => {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+    const hour = String(value.getHours()).padStart(2, '0');
+    const minute = String(value.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  };
+
+  return {
+    start: toInputValue(start),
+    end: toInputValue(end),
+  };
+}
 
 function resolveLabel(
   t: (key: string) => string,
@@ -43,6 +68,7 @@ export function ContactManagementPage(): ReactElement {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<ContactDto | null>(null);
+  const [quickActivityContact, setQuickActivityContact] = useState<ContactDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
@@ -55,6 +81,8 @@ export function ContactManagementPage(): ReactElement {
   const queryClient = useQueryClient();
   const createContact = useCreateContact();
   const updateContact = useUpdateContact();
+  const createActivity = useCreateActivity();
+  const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   const baseColumns = useMemo(
@@ -195,6 +223,10 @@ export function ContactManagementPage(): ReactElement {
     setFormOpen(true);
   };
 
+  const handleQuickActivity = (contact: ContactDto): void => {
+    setQuickActivityContact(contact);
+  };
+
   const handleFormClose = (open: boolean): void => {
     setFormOpen(open);
     if (!open) setEditingContact(null);
@@ -234,6 +266,13 @@ export function ContactManagementPage(): ReactElement {
     }
     setFormOpen(false);
     setEditingContact(null);
+  };
+
+  const handleQuickActivitySubmit = async (data: ActivityFormSchema): Promise<void> => {
+    await createActivity.mutateAsync(
+      buildCreateActivityPayload(data, { assignedUserIdFallback: user?.id })
+    );
+    setQuickActivityContact(null);
   };
 
   const columns = useMemo<DataTableGridColumn<ContactColumnKey>[]>(
@@ -349,6 +388,7 @@ export function ContactManagementPage(): ReactElement {
             showActionsColumn
             actionsHeaderLabel={t('contactManagement.actions')}
             onEdit={handleEdit}
+            onQuickActivity={handleQuickActivity}
             rowClassName="group"
             pageSize={pageSize}
             pageSizeOptions={PAGE_SIZE_OPTIONS}
@@ -380,6 +420,20 @@ export function ContactManagementPage(): ReactElement {
         onSubmit={handleFormSubmit}
         contact={editingContact}
         isLoading={createContact.isPending || updateContact.isPending}
+      />
+
+      <ActivityForm
+        open={!!quickActivityContact}
+        onOpenChange={(open) => {
+          if (!open) setQuickActivityContact(null);
+        }}
+        onSubmit={handleQuickActivitySubmit}
+        isLoading={createActivity.isPending}
+        initialStartDateTime={quickActivityWindow.start}
+        initialEndDateTime={quickActivityWindow.end}
+        initialPotentialCustomerId={quickActivityContact?.customerId}
+        initialContactId={quickActivityContact?.id}
+        initialCustomerDisplayName={quickActivityContact?.customerName ?? undefined}
       />
     </div>
   );
