@@ -18,6 +18,10 @@ import { useCreateCustomer } from '../hooks/useCreateCustomer';
 import { useTriggerCustomerSync } from '../hooks/useTriggerCustomerSync';
 import { useUpdateCustomer } from '../hooks/useUpdateCustomer';
 import { useCustomerList } from '../hooks/useCustomerList';
+import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
+import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
+import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
+import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
 import type { CustomerDto, CustomerFormData } from '../types/customer-types';
 import { applyCustomerFilters, CUSTOMER_FILTER_COLUMNS } from '../types/customer-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
@@ -41,6 +45,26 @@ function resolveLabel(
   return translated && translated !== key ? translated : fallback;
 }
 
+function getQuickActivityWindow(): { start: string; end: string } {
+  const start = new Date();
+  start.setSeconds(0, 0);
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+
+  const toInputValue = (value: Date): string => {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+    const hour = String(value.getHours()).padStart(2, '0');
+    const minute = String(value.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  };
+
+  return {
+    start: toInputValue(start),
+    end: toInputValue(end),
+  };
+}
+
 export function CustomerManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['customer-management', 'common']);
   const { user } = useAuthStore();
@@ -49,6 +73,7 @@ export function CustomerManagementPage(): ReactElement {
   const [formOpen, setFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<CustomerDto | null>(null);
   const [duplicateConflicts, setDuplicateConflicts] = useState<CustomerDuplicateConflictPayload | null>(null);
+  const [quickActivityCustomer, setQuickActivityCustomer] = useState<CustomerDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -63,6 +88,8 @@ export function CustomerManagementPage(): ReactElement {
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
   const triggerCustomerSync = useTriggerCustomerSync();
+  const createActivity = useCreateActivity();
+  const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   const baseColumns = useMemo(
@@ -230,6 +257,17 @@ export function CustomerManagementPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: [CUSTOMER_MANAGEMENT_QUERY_KEYS.LIST] });
   };
 
+  const handleQuickActivity = (customer: CustomerDto): void => {
+    setQuickActivityCustomer(customer);
+  };
+
+  const handleQuickActivitySubmit = async (formData: ActivityFormSchema): Promise<void> => {
+    await createActivity.mutateAsync(
+      buildCreateActivityPayload(formData, { assignedUserIdFallback: user?.id })
+    );
+    setQuickActivityCustomer(null);
+  };
+
   const handleFormSubmit = async (data: CustomerFormData): Promise<void> => {
     setDuplicateConflicts(null);
 
@@ -383,6 +421,7 @@ export function CustomerManagementPage(): ReactElement {
             showActionsColumn
             actionsHeaderLabel={t('customerManagement.actions')}
             onEdit={handleEdit}
+            onQuickActivity={handleQuickActivity}
             rowClassName="group"
             pageSize={pageSize}
             pageSizeOptions={PAGE_SIZE_OPTIONS}
@@ -416,6 +455,19 @@ export function CustomerManagementPage(): ReactElement {
         isLoading={createCustomer.isPending || updateCustomer.isPending}
         conflictState={duplicateConflicts}
         onConflictDismiss={() => setDuplicateConflicts(null)}
+      />
+      <ActivityForm
+        open={!!quickActivityCustomer}
+        onOpenChange={(open) => {
+          if (!open) setQuickActivityCustomer(null);
+        }}
+        onSubmit={handleQuickActivitySubmit}
+        isLoading={createActivity.isPending}
+        initialStartDateTime={quickActivityWindow.start}
+        initialEndDateTime={quickActivityWindow.end}
+        initialPotentialCustomerId={quickActivityCustomer?.id}
+        initialErpCustomerCode={quickActivityCustomer?.customerCode ?? undefined}
+        initialCustomerDisplayName={quickActivityCustomer?.name ?? undefined}
       />
     </div>
   );

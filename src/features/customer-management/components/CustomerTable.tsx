@@ -27,6 +27,7 @@ import {
   LayoutGrid,
   Calendar,
   User,
+  Activity,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { toast } from 'sonner';
@@ -57,6 +58,7 @@ interface CustomerTableProps {
   showActionsColumn?: boolean;
   actionsHeaderLabel?: string;
   onEdit: (customer: CustomerDto) => void;
+  onQuickActivity: (customer: CustomerDto) => void;
   rowClassName?: string | ((row: CustomerDto) => string | undefined);
   pageSize: number;
   pageSizeOptions: readonly number[];
@@ -193,6 +195,7 @@ export function CustomerTable({
   showActionsColumn = true,
   actionsHeaderLabel = '',
   onEdit,
+  onQuickActivity,
   rowClassName,
   pageSize,
   pageSizeOptions,
@@ -244,6 +247,15 @@ export function CustomerTable({
 
   const renderActionsCell = (customer: CustomerDto): ReactElement => (
     <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => onQuickActivity(customer)}
+        title={t('customerManagement.quickActivity')}
+        className="h-8 w-8 text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:text-pink-400 dark:hover:bg-pink-500/10"
+      >
+        <Activity size={16} />
+      </Button>
       <Button
         variant="ghost"
         size="icon"
