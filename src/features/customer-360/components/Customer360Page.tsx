@@ -1,4 +1,4 @@
-import { type ReactElement, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CircleHelp, RefreshCw, User, MapPin, FileText, ClipboardList, ShoppingCart, Activity, Clock, Image as ImageIcon } from 'lucide-react';
@@ -32,6 +32,11 @@ import { CustomerAmountComparisonByCurrencyTable } from './CustomerAmountCompari
 import { CustomerMailLogsTab } from './CustomerMailLogsTab';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { getApiBaseUrl } from '@/lib/axios';
+import { useAuthStore } from '@/stores/auth-store';
+import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
+import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
+import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
+import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
 import type {
   CohortRetentionDto,
   Customer360SimpleItemDto,
@@ -41,6 +46,27 @@ import type {
   RecommendedActionDto,
   RevenueQualityDto,
 } from '../types/customer360.types';
+
+function getQuickActivityWindow(): { start: string; end: string } {
+  const start = new Date();
+  const end = new Date(start);
+  end.setHours(end.getHours() + 1, end.getMinutes(), 0, 0);
+  start.setSeconds(0, 0);
+
+  const toInputValue = (value: Date): string => {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+    const hour = String(value.getHours()).padStart(2, '0');
+    const minute = String(value.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  };
+
+  return {
+    start: toInputValue(start),
+    end: toInputValue(end),
+  };
+}
 
 function recommendedActionCodeToKey(code: string): string {
   return code
@@ -487,8 +513,11 @@ const ALL_CURRENCY = 'ALL';
 export function Customer360Page(): ReactElement {
   const { customerId } = useParams<{ customerId: string }>();
   const { t, i18n } = useTranslation();
+  const { user } = useAuthStore();
   const id = Number(customerId ?? 0);
   const [currency, setCurrency] = useState<string>(ALL_CURRENCY);
+  const [quickActivityOpen, setQuickActivityOpen] = useState(false);
+  const createActivity = useCreateActivity();
   const currencyParam = currency === ALL_CURRENCY ? undefined : currency;
   const { data, isLoading, isError, error, refetch } = useCustomer360OverviewQuery(id, currencyParam);
   const { data: analytics, isLoading: isAnalyticsLoading, isError: isAnalyticsError } =
@@ -517,6 +546,17 @@ export function Customer360Page(): ReactElement {
     return [ALL_CURRENCY, ...Array.from(set).sort()];
   }, [analytics?.totalsByCurrency, chartsData?.amountComparisonByCurrency]);
   const isAllCurrencies = currency === ALL_CURRENCY;
+  const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
+  const profile = data?.profile ?? { id: 0, name: '', customerCode: null };
+  const handleQuickActivitySubmit = useCallback(
+    async (formData: ActivityFormSchema): Promise<void> => {
+      await createActivity.mutateAsync(
+        buildCreateActivityPayload(formData, { assignedUserIdFallback: user?.id })
+      );
+      setQuickActivityOpen(false);
+    },
+    [createActivity, user?.id]
+  );
 
   if (id <= 0) {
     return (
@@ -581,7 +621,6 @@ export function Customer360Page(): ReactElement {
     );
   }
 
-  const profile = data.profile ?? { id: 0, name: '', customerCode: null };
   const kpi = data.kpis ?? {
     totalDemands: 0,
     totalQuotations: 0,
@@ -621,18 +660,28 @@ export function Customer360Page(): ReactElement {
               {profile.customerCode ? ` · ${profile.customerCode}` : ''}
             </p>
           </div>
-          <Select value={currency} onValueChange={setCurrency}>
-            <SelectTrigger className="w-[180px]" size="default">
-              <SelectValue placeholder={t('customer360.currencyFilter.label')} />
-            </SelectTrigger>
-            <SelectContent>
-              {currencyOptions.map((opt) => (
-                <SelectItem key={opt} value={opt}>
-                  {opt === ALL_CURRENCY ? t('customer360.currencyFilter.all') : opt}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              onClick={() => setQuickActivityOpen(true)}
+              className="h-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:text-white"
+            >
+              <Activity className="mr-2 h-4 w-4" />
+              {t('customer360.quickActivity')}
+            </Button>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger className="w-[180px]" size="default">
+                <SelectValue placeholder={t('customer360.currencyFilter.label')} />
+              </SelectTrigger>
+              <SelectContent>
+                {currencyOptions.map((opt) => (
+                  <SelectItem key={opt} value={opt}>
+                    {opt === ALL_CURRENCY ? t('customer360.currencyFilter.all') : opt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </header>
 
@@ -879,6 +928,17 @@ export function Customer360Page(): ReactElement {
           <CustomerMailLogsTab customerId={id} />
         </TabsContent>
       </Tabs>
+        <ActivityForm
+          open={quickActivityOpen}
+          onOpenChange={setQuickActivityOpen}
+          onSubmit={handleQuickActivitySubmit}
+          isLoading={createActivity.isPending}
+          initialStartDateTime={quickActivityWindow.start}
+          initialEndDateTime={quickActivityWindow.end}
+          initialPotentialCustomerId={profile.id || undefined}
+          initialErpCustomerCode={profile.customerCode ?? undefined}
+          initialCustomerDisplayName={profile.name ?? undefined}
+        />
       </div>
     </TooltipProvider>
   );
