@@ -3,6 +3,8 @@ export interface StockGetDto {
   erpStockCode: string;
   stockName: string;
   unit?: string;
+  balance?: number | null;
+  balanceText?: string | null;
   ureticiKodu?: string;
   grupKodu?: string;
   grupAdi?: string;

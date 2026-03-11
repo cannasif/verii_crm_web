@@ -14,7 +14,12 @@ export const useErpProducts = (search?: string) => {
         (product) =>
           product.stokKodu.toLowerCase().includes(searchLower) ||
           product.stokAdi.toLowerCase().includes(searchLower) ||
-          product.grupKodu.toLowerCase().includes(searchLower)
+          product.grupKodu.toLowerCase().includes(searchLower) ||
+          product.grupAdi?.toLowerCase().includes(searchLower) ||
+          product.kod1?.toLowerCase().includes(searchLower) ||
+          product.kod1Adi?.toLowerCase().includes(searchLower) ||
+          product.kod2?.toLowerCase().includes(searchLower) ||
+          product.kod2Adi?.toLowerCase().includes(searchLower)
       );
     },
   });

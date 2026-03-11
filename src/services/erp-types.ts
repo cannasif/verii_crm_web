@@ -66,12 +66,15 @@ export interface ErpProduct {
   ureticiKodu: string;
   stokAdi: string;
   grupKodu: string;
+  grupAdi?: string;
   saticiKodu: string;
   olcuBr1: string;
   olcuBr2: string;
   pay1: number;
   kod1: string;
+  kod1Adi?: string;
   kod2: string;
+  kod2Adi?: string;
   kod3: string;
   kod4: string;
   kod5: string;
