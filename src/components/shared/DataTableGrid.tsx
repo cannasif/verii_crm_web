@@ -1,6 +1,7 @@
 import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState } from 'react';
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
@@ -74,7 +75,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   renderSortIcon,
   isLoading = false,
   isError = false,
-  loadingText = 'Loading...',
+  loadingText: _loadingText = 'Loading...',
   errorText = 'An error occurred while loading rows.',
   emptyText = 'No rows found.',
   minTableWidthClassName = 'min-w-[1200px]',
@@ -199,16 +200,21 @@ export function DataTableGrid<TRow, TKey extends string>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={colSpan} className="text-center text-muted-foreground py-8">
-                  <div className="inline-flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>{loadingText}</span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
+            {isLoading &&
+              Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
+                <TableRow key={`skeleton-${i}`}>
+                  {visibleColumnKeys.map((key) => (
+                    <TableCell key={key}>
+                      <Skeleton className="h-5 w-full max-w-[120px] bg-slate-200/60 dark:bg-white/10" />
+                    </TableCell>
+                  ))}
+                  {showActionsColumn && (
+                    <TableCell className="text-right">
+                      <Skeleton className="h-8 w-32 ml-auto bg-slate-200/60 dark:bg-white/10" />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
 
             {!isLoading && isError && (
               <TableRow>
