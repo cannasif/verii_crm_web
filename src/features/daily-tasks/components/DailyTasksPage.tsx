@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useMemo, useEffect } from 'react';
+import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
@@ -65,6 +65,7 @@ export function DailyTasksPage(): ReactElement {
   const [greeting, setGreeting] = useState('');
 
   const [userFilterSearchTerm, setUserFilterSearchTerm] = useState('');
+  const hasShownContentOnce = useRef(false);
   const { data: userOptions = [] } = useUserOptions();
   const userDropdown = useUserOptionsInfinite(userFilterSearchTerm, true);
   const userFilterOptions = [
@@ -135,7 +136,7 @@ export function DailyTasksPage(): ReactElement {
     activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'lte', value: calendarRange.endDate } : undefined,
   ].filter((f): f is { column: string; operator: string; value: string } => f !== undefined);
 
-  const { data, isLoading, refetch } = useActivities({
+  const { data, isLoading, isFetching, refetch } = useActivities({
     pageNumber: 1,
     pageSize: 1000,
     sortBy: 'StartDateTime',
@@ -360,7 +361,10 @@ export function DailyTasksPage(): ReactElement {
     </div>
   );
 
-  if (isLoading) {
+  if (data) hasShownContentOnce.current = true;
+  const isInitialLoad = isLoading && !hasShownContentOnce.current;
+
+  if (isInitialLoad) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-4">
@@ -482,8 +486,15 @@ export function DailyTasksPage(): ReactElement {
         </div>
 
         {/* 3. İÇERİK ALANI */}
-        <div className="mt-6 md:mt-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            
+        <div className="mt-6 md:mt-8 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
+            {isFetching && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 dark:bg-[#0c0516]/60 backdrop-blur-sm rounded-2xl min-h-[200px]">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="h-10 w-10 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{t('dailyTasks.loading')}</span>
+                </div>
+              </div>
+            )}
             {/* --- KART GÖRÜNÜMÜ --- */}
             <TabsContent value="tasks" className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6">
