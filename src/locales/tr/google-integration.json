@@ -31,6 +31,11 @@
   },
   "authInformation": {
     "cardTitle": "Kuruluşa Ait Google OAuth Ayarları",
+    "clientIdLabel": "İstemci Kimliği",
+    "clientIdPlaceholder": "Google OAuth İstemci Kimliği",
+    "clientSecretLabel": "İstemci Gizli Anahtarı",
+    "redirectUriLabel": "Yönlendirme URI",
+    "scopesLabel": "Yetki Kapsamları",
     "clientSecretPlaceholder": "Değiştirmek için girin",
     "currentSecretLabel": "Mevcut Gizli Anahtar",
     "enableLabel": "Google OAuth'u Etkinleştir",
@@ -99,9 +104,9 @@
     "description": "{{module}} #{{id}} kaydı için gönderilecek e-postayı düzenleyin.",
     "missingCustomer": "Bu kayıtla ilişkili müşteri bulunamadı. E-posta gönderilebilmesi için müşteri zorunludur.",
     "templateLabel": "Şablon",
-    "toLabel": "Alıcı (To)",
-    "ccLabel": "Bilgi (Cc)",
-    "bccLabel": "Gizli (Bcc)",
+    "toLabel": "Alıcı (Kime)",
+    "ccLabel": "Bilgi (Bilgi Kopyası)",
+    "bccLabel": "Gizli (Gizli Kopya)",
     "subjectLabel": "Konu",
     "bodyLabel": "Mesaj",
     "isHtmlLabel": "HTML olarak gönder",
@@ -161,8 +166,8 @@
       "severity": "Seviye",
       "message": "Mesaj",
       "errorCode": "Hata Kodu",
-      "userId": "Kullanıcı Id",
-      "activityId": "Aktivite Id",
+      "userId": "Kullanıcı Kimliği",
+      "activityId": "Aktivite Kimliği",
       "googleCalendarEventId": "Google Takvim Etkinlik Kimliği"
     }
   }

@@ -102,7 +102,7 @@ export function Navbar(): ReactElement {
                         ? "text-pink-500 bg-pink-500/10 animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.3)]" 
                         : "text-slate-400 hover:text-pink-500 hover:bg-slate-100 dark:hover:bg-white/10"
                     )}
-                    title="Sesli Ara"
+                    title={t('common.voiceSearchTitle')}
                   >
                     <Mic01Icon size={18} />
                   </button>

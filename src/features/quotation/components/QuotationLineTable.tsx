@@ -730,7 +730,7 @@ export function QuotationLineTable({
                               {hasApprovalWarning && (
                                 <Badge variant="outline" className="h-5 bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800 gap-1 px-1.5 shadow-sm">
                                   <AlertTriangle className="w-3 h-3" />
-                                  <span className="text-[10px] font-bold">Onay Gerekli</span>
+                                  <span className="text-[10px] font-bold">{t('quotation.lines.approvalRequired')}</span>
                                 </Badge>
                               )}
                               
@@ -818,7 +818,7 @@ export function QuotationLineTable({
                               size="icon"
                               className={cn(styles.actionButton, "text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30")}
                               onClick={() => handleDeleteClick(line.id)}
-                              title="Sil"
+                              title={t('common.delete.action')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>

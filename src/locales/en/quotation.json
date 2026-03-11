@@ -110,6 +110,11 @@
     },
     "discountLimitExceeded": "Discount rates exceed your authorization limits.",
     "max200Chars": "Maximum 200 characters",
+    "approvalRequired": "Approval Required",
+    "approvalNeeded": "Approval Needed",
+    "subtotal": "Subtotal",
+    "grandTotal": "Grand Total",
+    "currencyTry": "TL",
     "totalDiscount": "Total Discount",
     "vatAmount": "VAT Amount"
   },
@@ -130,6 +135,7 @@
   },
   "summary": {
     "title": "Summary",
+    "grandTotalAnalysis": "Grand Total Analysis",
     "subtotal": "Subtotal",
     "totalVat": "Total VAT",
     "grandTotal": "Grand Total"

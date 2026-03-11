@@ -343,7 +343,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="taxOffice" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxOffice')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Vergi dairesi..." /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.taxOfficePlaceholderExample')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -351,7 +351,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="tcknNumber" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.tcknNumber')}</FormLabel>
-                    <FormControl><Input {...field} maxLength={11} value={field.value || ''} className={INPUT_STYLE} placeholder="TCKN..." /></FormControl>
+                    <FormControl><Input {...field} maxLength={11} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.tcknPlaceholderExample')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -359,7 +359,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Mail size={16} className="text-pink-500" />{t('customerManagement.form.email')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="ornek@sirket.com" /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.emailPlaceholderExample')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -367,7 +367,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="website" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Globe size={16} className="text-pink-500" />{t('customerManagement.form.website')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="www.sirket.com" /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.websitePlaceholderExample')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -375,7 +375,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="phone" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{t('customerManagement.form.phone')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="0555..." /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.phonePlaceholderExample')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -383,7 +383,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="phone2" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{t('customerManagement.form.phone2')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Alternatif telefon..." /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.phone2PlaceholderExample')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -468,7 +468,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="salesRepCode" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.salesRepCode')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.salesRepCodePlaceholder', { defaultValue: 'Satış temsilci kodu...' })} /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.salesRepCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -476,7 +476,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="groupCode" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.groupCode')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder="Grup kodu..." /></FormControl>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.groupCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />

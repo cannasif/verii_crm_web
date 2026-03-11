@@ -191,6 +191,7 @@ export function ActivityForm({
       subject: '',
       description: '',
       activityType: '',
+      activityTypeId: undefined,
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
       assignedUserId: user?.id ?? 0,
@@ -247,6 +248,7 @@ export function ActivityForm({
         subject: activity.subject,
         description: activity.description || '',
         activityType: activity.activityTypeId ? String(activity.activityTypeId) : '',
+        activityTypeId: activity.activityTypeId || undefined,
         potentialCustomerId: activity.potentialCustomerId || undefined,
         erpCustomerCode: activity.erpCustomerCode || '',
         status: normalizeStatus(activity.status),
@@ -269,6 +271,7 @@ export function ActivityForm({
       subject: '',
       description: '',
       activityType: '',
+      activityTypeId: undefined,
       potentialCustomerId: initialPotentialCustomerId ?? undefined,
       erpCustomerCode: initialErpCustomerCode ?? '',
       status: ActivityStatus.Scheduled,
@@ -386,7 +389,10 @@ export function ActivityForm({
                         <VoiceSearchCombobox
                           options={activityTypeDropdown.options}
                           value={field.value ? String(field.value) : ''}
-                          onSelect={(v) => field.onChange(v ?? '')}
+                          onSelect={(v) => {
+                            field.onChange(v ?? '');
+                            form.setValue('activityTypeId', v ? Number(v) : undefined);
+                          }}
                           onDebouncedSearchChange={setActivityTypeSearchTerm}
                           onFetchNextPage={activityTypeDropdown.fetchNextPage}
                           hasNextPage={activityTypeDropdown.hasNextPage}

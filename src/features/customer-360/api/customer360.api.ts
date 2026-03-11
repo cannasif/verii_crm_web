@@ -3,6 +3,7 @@ import type {
   ActivityDto,
   CohortRetentionDto,
   CustomerImageDto,
+  Customer360QuickQuotationDto,
   Customer360AnalyticsChartsDto,
   Customer360AnalyticsSummaryDto,
   Customer360OverviewDto,
@@ -115,4 +116,16 @@ export async function getCustomerImages(params: {
   const url = `/api/CustomerImage/by-customer/${id}`;
   const response = await api.get<ApiResponse<CustomerImageDto[] | null>>(url, { signal });
   return ensureData(response, 'Customer images could not be loaded');
+}
+
+export async function getCustomer360QuickQuotations(params: {
+  id: number;
+  signal?: AbortSignal;
+}): Promise<Customer360QuickQuotationDto[]> {
+  const { id, signal } = params;
+  const response = await api.get<ApiResponse<Customer360QuickQuotationDto[] | null>>(
+    `/api/customers/${id}/quick-quotations`,
+    { signal }
+  );
+  return ensureData(response, 'Quick quotations could not be loaded');
 }

@@ -83,6 +83,7 @@
   },
   "lines": {
     "title": "Sipariş Satırları",
+    "max200Chars": "Maksimum 200 karakter",
     "addLine": "Satır Ekle",
     "add": "Satır Ekle",
     "empty": "Henüz satır eklenmedi",
@@ -113,7 +114,7 @@
     "required": "En az 1 satır eklenmelidir",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
     "relatedStocks": "Bağlı Stoklar",
-    "approvalRequired": "Bu satır için onay gerekmektedir.",
+    "approvalRequired": "Onay Gerekli",
     "noProductsFound": "Ürün bulunamadı",
     "createSuccess": "Sipariş satırları eklendi.",
     "createError": "Sipariş satırları eklenemedi.",

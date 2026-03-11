@@ -275,17 +275,17 @@ export function ProductPricingForm({
               disabled={isLoading}
               className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border-0"
             >
-              <Trash2 size={16} className="mr-2" /> Sil
+              <Trash2 size={16} className="mr-2" /> {t('common.delete.action')}
             </Button>
           ) : <div />}
           
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-              İptal
+              {t('common.cancel')}
             </Button>
             <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading || !isFormValid} className="bg-linear-to-r from-pink-600 to-indigo-600 text-white border-0 hover:from-pink-700 hover:to-indigo-700">
               <Save size={16} className="mr-2" />
-              {isLoading ? 'Kaydediliyor...' : 'Kaydet'}
+              {isLoading ? t('common.saving') : t('common.save')}
             </Button>
           </div>
         </DialogFooter>

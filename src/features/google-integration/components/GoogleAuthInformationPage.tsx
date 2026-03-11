@@ -127,17 +127,17 @@ export function GoogleAuthInformationPage(): ReactElement {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="google-client-id">Client ID</Label>
+            <Label htmlFor="google-client-id">{t('authInformation.clientIdLabel')}</Label>
             <Input
               id="google-client-id"
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
-              placeholder="Google OAuth Client ID"
+              placeholder={t('authInformation.clientIdPlaceholder')}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="google-client-secret">Client Secret</Label>
+            <Label htmlFor="google-client-secret">{t('authInformation.clientSecretLabel')}</Label>
             <Input
               id="google-client-secret"
               type="password"
@@ -151,7 +151,7 @@ export function GoogleAuthInformationPage(): ReactElement {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="google-redirect-uri">Redirect URI</Label>
+            <Label htmlFor="google-redirect-uri">{t('authInformation.redirectUriLabel')}</Label>
             <Input
               id="google-redirect-uri"
               value={redirectUri}
@@ -162,7 +162,7 @@ export function GoogleAuthInformationPage(): ReactElement {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="google-scopes">Scopes</Label>
+            <Label htmlFor="google-scopes">{t('authInformation.scopesLabel')}</Label>
             <Input
               id="google-scopes"
               value={scopes}

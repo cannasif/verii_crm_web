@@ -40,7 +40,7 @@
       "descriptionPlaceholder": "İsteğe bağlı açıklama",
       "isActive": "Aktif",
       "codeSearchPlaceholder": "Ara...",
-      "codeEmpty": "Sonuc bulunamadi"
+      "codeEmpty": "Sonuç bulunamadı"
     },
     "table": {
       "code": "Kod",

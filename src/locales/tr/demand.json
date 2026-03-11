@@ -117,7 +117,7 @@
     "addLine": "Satır Ekle",
     "relatedStocks": "Bağlı Stoklar",
     "groupCode": "Grup Kodu",
-    "approvalRequired": "Onay gerekli",
+    "approvalRequired": "Onay Gerekli",
     "requiredFieldsMissing": "Zorunlu satır alanları eksik.",
     "createSuccess": "Satır eklendi.",
     "createError": "Satır eklenemedi.",
@@ -153,6 +153,7 @@
   },
   "summary": {
     "title": "Özet",
+    "grandTotalAnalysis": "Genel Toplam Analizi",
     "subtotal": "Ara Toplam",
     "totalVat": "Toplam KDV",
     "grandTotal": "Genel Toplam",

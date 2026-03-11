@@ -36,7 +36,7 @@ export const activityApi = {
       
       return pagedData;
     }
-    throw new Error(response.message || i18n.t('activityManagement.listLoadError'));
+    throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.listLoadError'));
   },
 
   getById: async (id: number): Promise<ActivityDto> => {
@@ -44,7 +44,7 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || i18n.t('activityManagement.detailLoadError'));
+    throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.detailLoadError'));
   },
 
   create: async (data: CreateActivityDto): Promise<ActivityDto> => {
@@ -52,7 +52,7 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || i18n.t('activityManagement.createError'));
+    throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.createError'));
   },
 
   update: async (id: number, data: UpdateActivityDto): Promise<ActivityDto> => {
@@ -60,13 +60,13 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || i18n.t('activityManagement.updateError'));
+    throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.updateError'));
   },
 
   delete: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<object>>(`/api/Activity/${id}`);
     if (!response.success) {
-      throw new Error(response.message || i18n.t('activityManagement.deleteError'));
+      throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.deleteError'));
     }
   },
 };

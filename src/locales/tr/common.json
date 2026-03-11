@@ -60,7 +60,7 @@
       "noRule": "Bu stok icin eslesen fiyat kurali bulunamadi.",
       "range": "Miktar",
       "fixedPrice": "Sabit Fiyat",
-      "currency": "Doviz",
+      "currency": "Döviz",
       "discountLimit": "Iskonto Limit Araligi",
       "noLimit": "Bu grup icin tanimli kullanici iskonto limiti bulunamadi.",
       "limitGroup": "Limit Grubu",
@@ -79,6 +79,7 @@
     "voiceSearchNotSupported": "Tarayıcınız sesli aramayı desteklemiyor",
     "select": "Seçiniz",
     "voiceSearch": "Sesli Arama",
+    "voiceSearchTitle": "Sesli Ara",
     "dropdown": {
       "minCharsHint": "En az {{count}} karakter"
     },
@@ -613,7 +614,7 @@
     },
     "analyticsCharts": {
       "distributionTitle": "İşlem Dağılımı",
-      "monthlyTrendTitle": "Aylık Trend",
+      "monthlyTrendTitle": "Aylık Eğilim",
       "amountComparisonTitle": "Tutar Karşılaştırması",
       "demand": "Talep",
       "quotation": "Teklif",
@@ -649,7 +650,7 @@
       "churnRisk": "Kayıp Riski",
       "upsell": "Ek Satış Eğilimi",
       "payment": "Ödeme Davranışı",
-      "segment": "RFM Segmenti",
+      "segment": "RFM Gruplandırması",
       "ltv": "LTV"
     },
     "cohort": {
@@ -680,9 +681,9 @@
       "churnRisk": "Kayıp Riski; son sipariş günü, son aktivite günü ve son 12 ay sipariş sıklığı sinyalleriyle 0-100 arasında hesaplanır. Yüksek skor daha yüksek kayıp riski demektir.",
       "upsellPropensity": "Ek Satış Eğilimi; sipariş adedi, tekliften siparişe dönüşüm oranı ve ortalama sipariş tutarı sinyalleriyle 0-100 arasında hesaplanır. Yüksek skor daha yüksek satış fırsatı anlamına gelir.",
       "paymentBehavior": "Ödeme Davranışı şu anda ERP tahsilat geçmişi yerine vekil sinyallerle (sipariş devamlılığı, teklif red oranı, son sipariş yakınlığı) 0-100 arasında hesaplanır.",
-      "rfmSegment": "RFM Segmenti; yakınlık, sıklık ve tutar kurallarına göre Şampiyonlar, Sadıklar, Risk Altındakiler ve Potansiyeller gibi sınıflar üretir.",
+      "rfmSegment": "RFM gruplandırması; yakınlık, sıklık ve tutar kurallarına göre Şampiyonlar, Sadıklar, Risk Altındakiler ve Potansiyeller gibi sınıflar üretir.",
       "cohortRetentionTitle": "Kohort Tutma Oranı, ilk temas veya sipariş ayını kohort kabul eder; takip eden aylarda sipariş varsa müşteriyi elde tutulmuş sayar ve aylık tutma yüzdesi üretir.",
-      "recommendedActionsTitle": "Önerilen Aksiyonlar, kural motorunun ürettiği öncelikli takip önerileridir (örn. uzun süre aktivite yok, açık teklif var, churn yüksek). Her aksiyon gerekçe + kural kodu ile izlenebilir.",
+      "recommendedActionsTitle": "Önerilen Aksiyonlar, kural motorunun ürettiği öncelikli takip önerileridir (örn. uzun süre aktivite yok, açık teklif var, kayıp riski yüksek). Her aksiyon gerekçe + kural kodu ile izlenebilir.",
       "executeAction": "Uygula işlemi, bu öneriyi aktiviteye veya göreve çevirir: backend tarafında `POST /api/customer360/{id}/actions/execute` çağrılır ve yeni bir aktivite kaydı oluşur.",
       "noCohortData": "Henüz yeterli sipariş geçmişi olmadığı için kohort verisi oluşmadı.",
       "modelNote": "Not: Bu skorlar kural tabanlı v1 sürümüdür; ileride ERP tahsilat verisi, kota/tahmin ve makine öğrenmesi modelleriyle geliştirilecektir."
@@ -731,7 +732,7 @@
     },
     "analyticsCharts": {
       "distributionTitle": "İşlem Dağılımı",
-      "monthlyTrendTitle": "Aylık Trend",
+      "monthlyTrendTitle": "Aylık Eğilim",
       "amountComparisonTitle": "Tutar Karşılaştırması",
       "demand": "Talep",
       "quotation": "Teklif",
@@ -745,7 +746,7 @@
       "churnRisk": "Kayıp Riski",
       "upsell": "Ek Satış Eğilimi",
       "payment": "Ödeme Davranışı",
-      "segment": "RFM Segmenti"
+      "segment": "RFM Gruplandırması"
     },
     "cohort": {
       "title": "Kohort Tutma",
@@ -2956,6 +2957,14 @@
       "address": "Adres",
       "notes": "Notlar",
       "notesPlaceholder": "Not ekleyin...",
+      "taxOfficePlaceholderExample": "Vergi dairesi...",
+      "tcknPlaceholderExample": "TCKN...",
+      "emailPlaceholderExample": "ornek@sirket.com",
+      "websitePlaceholderExample": "www.sirket.com",
+      "phonePlaceholderExample": "0555...",
+      "phone2PlaceholderExample": "Alternatif telefon...",
+      "salesRepCodePlaceholder": "Satış temsilci kodu...",
+      "groupCodePlaceholder": "Grup kodu...",
       "cancel": "İptal",
       "saving": "Kaydediliyor...",
       "save": "Kaydet"

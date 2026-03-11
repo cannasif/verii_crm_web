@@ -107,6 +107,26 @@ export interface Customer360OverviewDto {
   recommendedActions?: RecommendedActionDto[] | null;
 }
 
+export interface Customer360QuickQuotationDto {
+  id: number;
+  offerDate: string;
+  currencyCode: string;
+  totalAmount: number;
+  description?: string | null;
+  isApproved: boolean;
+  approvedDate?: string | null;
+  quotationId?: number | null;
+  quotationNo?: string | null;
+  hasConvertedQuotation: boolean;
+  quotationStatus?: number | null;
+  quotationStatusName?: string | null;
+  hasApprovalRequest: boolean;
+  approvalStatus?: number | null;
+  approvalStatusName?: string | null;
+  approvalCurrentStep?: number | null;
+  approvalFlowDescription?: string | null;
+}
+
 export interface Customer360CurrencyAmountDto {
   currency: string;
   demandAmount: number;

@@ -5,7 +5,7 @@
     "complete": "Kaydet ve Onaya Gönder"
   },
   "validation": {
-    "error": "Validasyon Hatası"
+    "error": "Doğrulama Hatası"
   },
   "step": {
     "unknown": "Bilinmeyen adım"

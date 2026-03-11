@@ -1,87 +1,124 @@
 {
-  "title": "Customer 360",
-  "notFound": "Customer not found",
-  "error": "An error occurred",
-  "retry": "Retry",
+  "title": "Cliente 360",
+  "notFound": "Cliente no encontrado",
+  "error": "Se produjo un error",
+  "retry": "Reintentar",
+  "quickActivity": "Actividad Rápida",
   "currencyFilter": {
-    "label": "Currency",
-    "all": "All"
+    "label": "Moneda",
+    "all": "Todos"
   },
   "tabs": {
-    "overview": "Overview",
-    "analytics": "Analytics",
-    "mailLogs": "Mail History"
+    "overview": "Resumen",
+    "analytics": "Análisis",
+    "quickQuotations": "Cotizaciones Rápidas",
+    "mailLogs": "Historial de Correo",
+    "images": "Imágenes",
+    "imagesDefaultDescription": "Imagen de tarjeta de visita"
+  },
+  "quickQuotations": {
+    "empty": "No se encontraron cotizaciones rápidas para este cliente",
+    "error": "No se pudieron cargar las cotizaciones rápidas",
+    "draft": "Borrador",
+    "converted": "Convertido",
+    "sentToApproval": "Enviado a Aprobación",
+    "notSentToApproval": "No Enviado a Aprobación",
+    "currency": "Moneda",
+    "total": "Total",
+    "quotationStatus": "Estado de Cotización",
+    "approvalStep": "Paso de Aprobación",
+    "stepValue": "Paso {{step}}",
+    "convertedAt": "Convertido: {{date}}",
+    "notConvertedYet": "Aún no convertido",
+    "openQuotation": "Abrir Cotización"
+  },
+  "mail": {
+    "providers": {
+      "google": "Google",
+      "outlook": "Outlook"
+    },
+    "columns": {
+      "date": "Fecha",
+      "sender": "Remitente",
+      "to": "Destinatario",
+      "subject": "Asunto",
+      "status": "Estado",
+      "template": "Plantilla",
+      "errorCode": "Código de Error",
+      "body": "Mensaje"
+    }
   },
   "kpi": {
-    "totalDemands": "Total Demands",
-    "totalQuotations": "Total Quotations",
-    "totalOrders": "Total Orders",
-    "openQuotations": "Open Quotations",
-    "openOrders": "Pending Orders"
+    "totalDemands": "Total de Cotizaciones",
+    "totalQuotations": "Total de Cotizaciones",
+    "totalOrders": "Total de Pedidos",
+    "openQuotations": "Cotizaciones Abiertas",
+    "openOrders": "Pedidos Pendientes"
   },
   "sections": {
-    "contacts": "Contacts",
-    "shippingAddresses": "Shipping Addresses",
-    "recentDemands": "Recent Demands",
-    "recentQuotations": "Recent Quotations",
-    "recentOrders": "Recent Orders",
-    "recentActivities": "Recent Activities",
-    "timeline": "Timeline"
+    "contacts": "Contactos",
+    "shippingAddresses": "Direcciones de Envío",
+    "recentDemands": "Cotizaciones Recientes",
+    "recentQuotations": "Cotizaciones Recientes",
+    "recentOrders": "Pedidos Recientes",
+    "recentActivities": "Actividades Recientes",
+    "timeline": "Línea de Tiempo"
   },
   "analytics": {
-    "error": "Could not load analytics data",
-    "last12MonthsOrderAmount": "Last 12 Months Order Amount",
-    "openQuotationAmount": "Open Quotation Amount",
-    "openOrderAmount": "Open Order Amount",
-    "activityCount": "Activity Count",
-    "lastActivityDate": "Last Activity Date"
+    "error": "No se pudieron cargar los datos de análisis",
+    "last12MonthsOrderAmount": "Monto de Pedidos Últimos 12 Meses",
+    "openQuotationAmount": "Monto de Cotización Abierta",
+    "openOrderAmount": "Monto de Pedido Abierto",
+    "activityCount": "Cantidad de Actividades",
+    "lastActivityDate": "Fecha de Última Actividad"
   },
   "analyticsCharts": {
-    "demand": "Demand",
-    "quotation": "Quotation",
-    "order": "Order",
-    "last12MonthsOrderAmount": "Last 12 Months Order",
-    "openQuotationAmount": "Open Quotation",
-    "openOrderAmount": "Open Order",
-    "distributionTitle": "Distribution",
-    "monthlyTrendTitle": "Monthly Trend",
-    "amountComparisonTitle": "Amount Comparison"
+    "demand": "Cotización",
+    "quotation": "Cotización",
+    "order": "Pedido",
+    "last12MonthsOrderAmount": "Pedidos Últimos 12 Meses",
+    "openQuotationAmount": "Cotización Abierta",
+    "openOrderAmount": "Pedido Abierto",
+    "distributionTitle": "Distribución",
+    "monthlyTrendTitle": "Tendencia Mensual",
+    "amountComparisonTitle": "Comparación de Montos"
   },
   "currencyTotals": {
-    "currency": "Currency",
-    "demandAmount": "Demand Amount",
-    "quotationAmount": "Quotation Amount",
-    "orderAmount": "Order Amount"
+    "currency": "Moneda",
+    "demandAmount": "Monto de Cotización",
+    "quotationAmount": "Monto de Cotización",
+    "orderAmount": "Monto de Pedido"
   },
   "revenueQuality": {
-    "title": "Revenue Quality",
-    "churnRisk": "Churn Risk",
-    "upsell": "Upsell Propensity",
-    "payment": "Payment Behavior",
-    "segment": "RFM Segment",
-    "ltv": "TVL"
+    "title": "Calidad de Ingresos",
+    "churnRisk": "Riesgo de Pérdida",
+    "upsell": "Propensión a Cross-sell",
+    "payment": "Comportamiento de Pago",
+    "segment": "Agrupación RFM",
+    "ltv": "Valor de Vida"
   },
   "cohort": {
-    "title": "Cohort Retention",
-    "empty": "No cohort data",
-    "cohortKey": "Cohort"
+    "title": "Retención de Cohorte",
+    "empty": "Sin datos de cohorte",
+    "cohortKey": "Cohorte"
   },
   "actions": {
-    "title": "Recommended Actions",
-    "empty": "No recommended actions",
-    "execute": "Execute"
+    "title": "Acciones Recomendadas",
+    "empty": "Sin acciones recomendadas",
+    "execute": "Ejecutar"
   },
-  "status": {},
-  "mail": {
-    "columns": {
-      "date": "Date",
-      "sender": "Sender",
-      "to": "Recipient",
-      "subject": "Subject",
-      "status": "Status",
-      "template": "Template",
-      "errorCode": "Error Code",
-      "body": "Message"
-    }
-  }
+  "explain": {
+    "revenueQualityTitle": "La calidad de ingresos resume el potencial de ventas y el perfil de riesgo del cliente.",
+    "churnRisk": "El riesgo de pérdida indica la probabilidad de que el cliente no realice pedidos nuevamente.",
+    "upsellPropensity": "La propensión a cross-sell muestra el potencial del cliente para compras de mayor volumen o productos adicionales.",
+    "paymentBehavior": "El comportamiento de pago resume el patrón de cobro y pago del cliente.",
+    "rfmSegment": "La agrupación RFM muestra el grupo del cliente según datos de recencia, frecuencia y monto.",
+    "modelNote": "Estos campos son salidas del modelo analítico y se muestran con fines de apoyo a la decisión.",
+    "cohortRetentionTitle": "La retención de cohorte muestra la continuidad de los clientes adquiridos en un período similar a lo largo del tiempo.",
+    "noCohortData": "Datos de cohorte insuficientes para este cliente.",
+    "recommendedActionsTitle": "Las acciones recomendadas por el sistema se listan en esta sección.",
+    "executeAction": "Ejecutar acción"
+  },
+  "button": "Cliente 360",
+  "status": {}
 }

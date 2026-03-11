@@ -202,7 +202,9 @@ export function ActivityManagementPage(): ReactElement {
   };
 
   const buildUpdatePayload = (data: ActivityFormSchema, fallbackAssignedUserId?: number) => {
-    const activityTypeId = toActivityTypeId(data.activityType);
+    const activityTypeId =
+      (typeof data.activityTypeId === 'number' && data.activityTypeId > 0 ? data.activityTypeId : undefined) ??
+      toActivityTypeId(data.activityType);
     if (activityTypeId === undefined) {
       throw new Error(t('activityManagement.activityTypeRequired'));
     }

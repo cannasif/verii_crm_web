@@ -144,6 +144,11 @@
     },
     "discountLimitExceeded": "İndirim oranları yetki limitlerinizi aşıyor.",
     "max200Chars": "Maksimum 200 karakter",
+    "approvalRequired": "Onay Gerekli",
+    "approvalNeeded": "Onay Gerekiyor",
+    "subtotal": "Ara Toplam",
+    "grandTotal": "Genel Toplam",
+    "currencyTry": "TL",
     "totalDiscount": "Toplam İndirim",
     "vatAmount": "KDV Tutarı"
   },
@@ -204,6 +209,7 @@
   },
   "summary": {
     "title": "Özet",
+    "grandTotalAnalysis": "Genel Toplam Analizi",
     "subtotal": "Ara Toplam",
     "totalVat": "Toplam KDV",
     "grandTotal": "Genel Toplam",

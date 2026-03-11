@@ -10,6 +10,7 @@ export type {
   Customer360TimelineItemDto,
   Customer360AnalyticsSummaryDto,
   Customer360AnalyticsChartsDto,
+  Customer360QuickQuotationDto,
   Customer360MonthlyTrendItemDto,
   Customer360DistributionDto,
   Customer360AmountComparisonDto,

@@ -108,7 +108,7 @@ export function QuotationSummaryCard({
           </div>
           <div>
             <h3 className="font-bold text-sm tracking-tight leading-none mb-1">{t('quotation.summary.title')}</h3>
-            <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter">Genel Toplam Analizi</span>
+            <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter">{t('quotation.summary.grandTotalAnalysis')}</span>
           </div>
         </div>
 

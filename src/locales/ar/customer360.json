@@ -1,87 +1,124 @@
 {
-  "title": "Customer 360",
-  "notFound": "Customer not found",
-  "error": "An error occurred",
-  "retry": "Retry",
+  "title": "عميل 360",
+  "notFound": "العميل غير موجود",
+  "error": "حدث خطأ",
+  "retry": "إعادة المحاولة",
+  "quickActivity": "نشاط سريع",
   "currencyFilter": {
-    "label": "Currency",
-    "all": "All"
+    "label": "العملة",
+    "all": "الكل"
   },
   "tabs": {
-    "overview": "Overview",
-    "analytics": "Analytics",
-    "mailLogs": "Mail History"
+    "overview": "نظرة عامة",
+    "analytics": "التحليلات",
+    "quickQuotations": "عروض الأسعار السريعة",
+    "mailLogs": "سجل البريد",
+    "images": "الصور",
+    "imagesDefaultDescription": "صورة البطاقة الشخصية"
+  },
+  "quickQuotations": {
+    "empty": "لم يتم العثور على عروض أسعار سريعة لهذا العميل",
+    "error": "تعذر تحميل عروض الأسعار السريعة",
+    "draft": "مسودة",
+    "converted": "تم التحويل",
+    "sentToApproval": "تم الإرسال للموافقة",
+    "notSentToApproval": "لم يتم الإرسال للموافقة",
+    "currency": "العملة",
+    "total": "المجموع",
+    "quotationStatus": "حالة عرض السعر",
+    "approvalStep": "خطوة الموافقة",
+    "stepValue": "الخطوة {{step}}",
+    "convertedAt": "تم التحويل: {{date}}",
+    "notConvertedYet": "لم يتم التحويل بعد",
+    "openQuotation": "فتح عرض السعر"
+  },
+  "mail": {
+    "providers": {
+      "google": "Google",
+      "outlook": "Outlook"
+    },
+    "columns": {
+      "date": "التاريخ",
+      "sender": "المرسل",
+      "to": "المستلم",
+      "subject": "الموضوع",
+      "status": "الحالة",
+      "template": "القالب",
+      "errorCode": "رمز الخطأ",
+      "body": "الرسالة"
+    }
   },
   "kpi": {
-    "totalDemands": "Total Demands",
-    "totalQuotations": "Total Quotations",
-    "totalOrders": "Total Orders",
-    "openQuotations": "Open Quotations",
-    "openOrders": "Pending Orders"
+    "totalDemands": "إجمالي عروض الأسعار",
+    "totalQuotations": "إجمالي عروض الأسعار",
+    "totalOrders": "إجمالي الطلبات",
+    "openQuotations": "عروض الأسعار المفتوحة",
+    "openOrders": "الطلبات المعلقة"
   },
   "sections": {
-    "contacts": "Contacts",
-    "shippingAddresses": "Shipping Addresses",
-    "recentDemands": "Recent Demands",
-    "recentQuotations": "Recent Quotations",
-    "recentOrders": "Recent Orders",
-    "recentActivities": "Recent Activities",
-    "timeline": "Timeline"
+    "contacts": "جهات الاتصال",
+    "shippingAddresses": "عناوين الشحن",
+    "recentDemands": "عروض الأسعار الأخيرة",
+    "recentQuotations": "عروض الأسعار الأخيرة",
+    "recentOrders": "الطلبات الأخيرة",
+    "recentActivities": "الأنشطة الأخيرة",
+    "timeline": "الجدول الزمني"
   },
   "analytics": {
-    "error": "Could not load analytics data",
-    "last12MonthsOrderAmount": "Last 12 Months Order Amount",
-    "openQuotationAmount": "Open Quotation Amount",
-    "openOrderAmount": "Open Order Amount",
-    "activityCount": "Activity Count",
-    "lastActivityDate": "Last Activity Date"
+    "error": "تعذر تحميل بيانات التحليلات",
+    "last12MonthsOrderAmount": "مبلغ الطلبات آخر 12 شهراً",
+    "openQuotationAmount": "مبلغ عرض السعر المفتوح",
+    "openOrderAmount": "مبلغ الطلب المفتوح",
+    "activityCount": "عدد الأنشطة",
+    "lastActivityDate": "تاريخ آخر نشاط"
   },
   "analyticsCharts": {
-    "demand": "Demand",
-    "quotation": "Quotation",
-    "order": "Order",
-    "last12MonthsOrderAmount": "Last 12 Months Order",
-    "openQuotationAmount": "Open Quotation",
-    "openOrderAmount": "Open Order",
-    "distributionTitle": "Distribution",
-    "monthlyTrendTitle": "Monthly Trend",
-    "amountComparisonTitle": "Amount Comparison"
+    "demand": "عرض السعر",
+    "quotation": "عرض السعر",
+    "order": "الطلب",
+    "last12MonthsOrderAmount": "طلبات آخر 12 شهراً",
+    "openQuotationAmount": "عرض السعر المفتوح",
+    "openOrderAmount": "الطلب المفتوح",
+    "distributionTitle": "التوزيع",
+    "monthlyTrendTitle": "الاتجاه الشهري",
+    "amountComparisonTitle": "مقارنة المبالغ"
   },
   "currencyTotals": {
-    "currency": "Currency",
-    "demandAmount": "Demand Amount",
-    "quotationAmount": "Quotation Amount",
-    "orderAmount": "Order Amount"
+    "currency": "العملة",
+    "demandAmount": "مبلغ عرض السعر",
+    "quotationAmount": "مبلغ عرض السعر",
+    "orderAmount": "مبلغ الطلب"
   },
   "revenueQuality": {
-    "title": "Revenue Quality",
-    "churnRisk": "Churn Risk",
-    "upsell": "Upsell Propensity",
-    "payment": "Payment Behavior",
-    "segment": "RFM Segment",
+    "title": "جودة الإيرادات",
+    "churnRisk": "خطر الفقدان",
+    "upsell": "الميل للبيع الإضافي",
+    "payment": "سلوك الدفع",
+    "segment": "تجميع RFM",
     "ltv": "القيمة الدائمة"
   },
   "cohort": {
-    "title": "Cohort Retention",
-    "empty": "No cohort data",
-    "cohortKey": "Cohort"
+    "title": "الاحتفاظ بالمجموعة",
+    "empty": "لا توجد بيانات مجموعة",
+    "cohortKey": "المجموعة"
   },
   "actions": {
-    "title": "Recommended Actions",
-    "empty": "No recommended actions",
-    "execute": "Execute"
+    "title": "الإجراءات الموصى بها",
+    "empty": "لا توجد إجراءات موصى بها",
+    "execute": "تنفيذ"
   },
-  "status": {},
-  "mail": {
-    "columns": {
-      "date": "Date",
-      "sender": "Sender",
-      "to": "Recipient",
-      "subject": "Subject",
-      "status": "Status",
-      "template": "Template",
-      "errorCode": "Error Code",
-      "body": "Message"
-    }
-  }
+  "explain": {
+    "revenueQualityTitle": "تلخص جودة الإيرادات إمكانات المبيعات والملف الشخصي للمخاطر للعميل.",
+    "churnRisk": "يشير خطر الفقدان إلى احتمال عدم قيام العميل بتقديم طلبات مرة أخرى.",
+    "upsellPropensity": "يُظهر الميل للبيع الإضافي إمكانات العميل للمشتريات ذات الحجم الأعلى أو المنتجات الإضافية.",
+    "paymentBehavior": "يلخص سلوك الدفع نمط التحصيل والدفع للعميل.",
+    "rfmSegment": "يُظهر تجميع RFM مجموعة العميل بناءً على بيانات الحداثة والتردد والمبلغ.",
+    "modelNote": "هذه الحقول هي مخرجات النموذج التحليلي ويتم عرضها لأغراض دعم القرار.",
+    "cohortRetentionTitle": "يُظهر الاحتفاظ بالمجموعة استمرارية العملاء المكتسبين في فترة مماثلة بمرور الوقت.",
+    "noCohortData": "بيانات مجموعة غير كافية لهذا العميل.",
+    "recommendedActionsTitle": "يتم سرد الإجراءات الموصى بها من قبل النظام في هذا القسم.",
+    "executeAction": "تنفيذ الإجراء"
+  },
+  "button": "عميل 360",
+  "status": {}
 }

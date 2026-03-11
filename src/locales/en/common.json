@@ -85,6 +85,7 @@
     "voiceSearchNotSupported": "Your browser does not support voice search",
     "select": "Select",
     "voiceSearch": "Voice Search",
+    "voiceSearchTitle": "Voice Search",
     "dropdown": {
       "minCharsHint": "Minimum {{count}} characters"
     },

@@ -18,7 +18,9 @@ export function buildCreateActivityPayload(
   data: ActivityFormSchema,
   options: { assignedUserIdFallback?: number } = {}
 ): CreateActivityDto {
-  const activityTypeId = toActivityTypeId(data.activityType);
+  const activityTypeId =
+    (typeof data.activityTypeId === 'number' && data.activityTypeId > 0 ? data.activityTypeId : undefined) ??
+    toActivityTypeId(data.activityType);
   if (activityTypeId === undefined) {
     throw new Error(i18n.t('activityManagement.activityTypeRequired'));
   }

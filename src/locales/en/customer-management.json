@@ -97,7 +97,14 @@
     "none": "None",
     "defaultShippingAddress": "Default Shipping Address",
     "selectDefaultShippingAddress": "Choose default shipping address",
-    "salesRepCodePlaceholder": "Sales representative code..."
+    "salesRepCodePlaceholder": "Sales representative code...",
+    "taxOfficePlaceholderExample": "Tax office...",
+    "tcknPlaceholderExample": "TCKN...",
+    "emailPlaceholderExample": "example@company.com",
+    "websitePlaceholderExample": "www.company.com",
+    "phonePlaceholderExample": "0555...",
+    "phone2PlaceholderExample": "Alternative phone...",
+    "groupCodePlaceholder": "Group code..."
   },
   "delete": {
     "action": "Delete",

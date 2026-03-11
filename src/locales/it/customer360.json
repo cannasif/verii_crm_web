@@ -1,87 +1,124 @@
 {
-  "title": "Customer 360",
-  "notFound": "Customer not found",
-  "error": "An error occurred",
-  "retry": "Retry",
+  "title": "Cliente 360",
+  "notFound": "Cliente non trovato",
+  "error": "Si è verificato un errore",
+  "retry": "Riprova",
+  "quickActivity": "Attività Rapida",
   "currencyFilter": {
-    "label": "Currency",
-    "all": "All"
+    "label": "Valuta",
+    "all": "Tutti"
   },
   "tabs": {
-    "overview": "Overview",
-    "analytics": "Analytics",
-    "mailLogs": "Mail History"
+    "overview": "Panoramica",
+    "analytics": "Analisi",
+    "quickQuotations": "Preventivi Rapidi",
+    "mailLogs": "Cronologia Email",
+    "images": "Immagini",
+    "imagesDefaultDescription": "Immagine biglietto da visita"
+  },
+  "quickQuotations": {
+    "empty": "Nessun preventivo rapido trovato per questo cliente",
+    "error": "Impossibile caricare i preventivi rapidi",
+    "draft": "Bozza",
+    "converted": "Convertito",
+    "sentToApproval": "Inviato per Approvazione",
+    "notSentToApproval": "Non Inviato per Approvazione",
+    "currency": "Valuta",
+    "total": "Totale",
+    "quotationStatus": "Stato del Preventivo",
+    "approvalStep": "Passo di Approvazione",
+    "stepValue": "Passo {{step}}",
+    "convertedAt": "Convertito: {{date}}",
+    "notConvertedYet": "Non ancora convertito",
+    "openQuotation": "Apri Preventivo"
+  },
+  "mail": {
+    "providers": {
+      "google": "Google",
+      "outlook": "Outlook"
+    },
+    "columns": {
+      "date": "Data",
+      "sender": "Mittente",
+      "to": "Destinatario",
+      "subject": "Oggetto",
+      "status": "Stato",
+      "template": "Modello",
+      "errorCode": "Codice Errore",
+      "body": "Messaggio"
+    }
   },
   "kpi": {
-    "totalDemands": "Total Demands",
-    "totalQuotations": "Total Quotations",
-    "totalOrders": "Total Orders",
-    "openQuotations": "Open Quotations",
-    "openOrders": "Pending Orders"
+    "totalDemands": "Totale Preventivi",
+    "totalQuotations": "Totale Preventivi",
+    "totalOrders": "Totale Ordini",
+    "openQuotations": "Preventivi Aperti",
+    "openOrders": "Ordini in Attesa"
   },
   "sections": {
-    "contacts": "Contacts",
-    "shippingAddresses": "Shipping Addresses",
-    "recentDemands": "Recent Demands",
-    "recentQuotations": "Recent Quotations",
-    "recentOrders": "Recent Orders",
-    "recentActivities": "Recent Activities",
-    "timeline": "Timeline"
+    "contacts": "Contatti",
+    "shippingAddresses": "Indirizzi di Spedizione",
+    "recentDemands": "Preventivi Recenti",
+    "recentQuotations": "Preventivi Recenti",
+    "recentOrders": "Ordini Recenti",
+    "recentActivities": "Attività Recenti",
+    "timeline": "Cronologia"
   },
   "analytics": {
-    "error": "Could not load analytics data",
-    "last12MonthsOrderAmount": "Last 12 Months Order Amount",
-    "openQuotationAmount": "Open Quotation Amount",
-    "openOrderAmount": "Open Order Amount",
-    "activityCount": "Activity Count",
-    "lastActivityDate": "Last Activity Date"
+    "error": "Impossibile caricare i dati analitici",
+    "last12MonthsOrderAmount": "Importo Ordini Ultimi 12 Mesi",
+    "openQuotationAmount": "Importo Preventivo Aperto",
+    "openOrderAmount": "Importo Ordine Aperto",
+    "activityCount": "Conteggio Attività",
+    "lastActivityDate": "Data Ultima Attività"
   },
   "analyticsCharts": {
-    "demand": "Demand",
-    "quotation": "Quotation",
-    "order": "Order",
-    "last12MonthsOrderAmount": "Last 12 Months Order",
-    "openQuotationAmount": "Open Quotation",
-    "openOrderAmount": "Open Order",
-    "distributionTitle": "Distribution",
-    "monthlyTrendTitle": "Monthly Trend",
-    "amountComparisonTitle": "Amount Comparison"
+    "demand": "Preventivo",
+    "quotation": "Preventivo",
+    "order": "Ordine",
+    "last12MonthsOrderAmount": "Ordini Ultimi 12 Mesi",
+    "openQuotationAmount": "Preventivo Aperto",
+    "openOrderAmount": "Ordine Aperto",
+    "distributionTitle": "Distribuzione",
+    "monthlyTrendTitle": "Tendenza Mensile",
+    "amountComparisonTitle": "Confronto Importi"
   },
   "currencyTotals": {
-    "currency": "Currency",
-    "demandAmount": "Demand Amount",
-    "quotationAmount": "Quotation Amount",
-    "orderAmount": "Order Amount"
+    "currency": "Valuta",
+    "demandAmount": "Importo Preventivo",
+    "quotationAmount": "Importo Preventivo",
+    "orderAmount": "Importo Ordine"
   },
   "revenueQuality": {
-    "title": "Revenue Quality",
-    "churnRisk": "Churn Risk",
-    "upsell": "Upsell Propensity",
-    "payment": "Payment Behavior",
-    "segment": "RFM Segment",
-    "ltv": "LTV"
+    "title": "Qualità dei Ricavi",
+    "churnRisk": "Rischio di Perdita",
+    "upsell": "Propensione all'Up-sell",
+    "payment": "Comportamento di Pagamento",
+    "segment": "Raggruppamento RFM",
+    "ltv": "Valore Lifetime"
   },
   "cohort": {
-    "title": "Cohort Retention",
-    "empty": "No cohort data",
-    "cohortKey": "Cohort"
+    "title": "Ritenzione della Cohorte",
+    "empty": "Nessun dato di cohorte",
+    "cohortKey": "Cohorte"
   },
   "actions": {
-    "title": "Recommended Actions",
-    "empty": "No recommended actions",
-    "execute": "Execute"
+    "title": "Azioni Raccomandate",
+    "empty": "Nessuna azione raccomandata",
+    "execute": "Esegui"
   },
-  "status": {},
-  "mail": {
-    "columns": {
-      "date": "Date",
-      "sender": "Sender",
-      "to": "Recipient",
-      "subject": "Subject",
-      "status": "Status",
-      "template": "Template",
-      "errorCode": "Error Code",
-      "body": "Message"
-    }
-  }
+  "explain": {
+    "revenueQualityTitle": "La qualità dei ricavi riassume il potenziale di vendita e il profilo di rischio del cliente.",
+    "churnRisk": "Il rischio di perdita indica la probabilità che il cliente non effettui più ordini.",
+    "upsellPropensity": "La propensione all'up-sell mostra il potenziale del cliente per acquisti a volume maggiore o prodotti aggiuntivi.",
+    "paymentBehavior": "Il comportamento di pagamento riassume il modello di incasso e pagamento del cliente.",
+    "rfmSegment": "Il raggruppamento RFM mostra il gruppo del cliente in base a dati di recenza, frequenza e importo.",
+    "modelNote": "Questi campi sono output del modello analitico e vengono visualizzati a scopo di supporto alle decisioni.",
+    "cohortRetentionTitle": "La ritenzione della cohorte mostra la continuità dei clienti acquisiti in un periodo simile nel tempo.",
+    "noCohortData": "Dati di cohorte insufficienti per questo cliente.",
+    "recommendedActionsTitle": "Le azioni raccomandate dal sistema sono elencate in questa sezione.",
+    "executeAction": "Esegui azione"
+  },
+  "button": "Cliente 360",
+  "status": {}
 }

@@ -92,7 +92,9 @@
     "delete": {
       "confirmTitle": "Delete Line",
       "confirmMessage": "Are you sure you want to delete this line?"
-    }
+    },
+    "approvalRequired": "Approval Required",
+    "max200Chars": "Maximum 200 characters"
   },
   "exchangeRates": {
     "title": "Exchange Rates",

@@ -24,6 +24,7 @@ import {
   useCustomer360AnalyticsSummaryQuery,
   useCustomer360AnalyticsChartsQuery,
   useCustomer360CohortQuery,
+  useCustomer360QuickQuotationsQuery,
   useCustomerImagesQuery,
   useExecuteCustomer360ActionMutation,
 } from '../hooks/useCustomer360';
@@ -43,6 +44,7 @@ import type {
   Customer360TimelineItemDto,
   Customer360DistributionDto,
   Customer360AmountComparisonDto,
+  Customer360QuickQuotationDto,
   RecommendedActionDto,
   RevenueQualityDto,
 } from '../types/customer360.types';
@@ -142,9 +144,9 @@ function SimpleItemRow({ item }: { item: Customer360SimpleItemDto }): ReactEleme
   );
 }
 
-function translateStatus(t: (key: string) => string, status: string): string {
-  const key = `customer360.status.${status}`;
-  const translated = t(key);
+function translateStatus(t: (key: string, opts?: { ns?: string }) => string, status: string): string {
+  const key = `status.${status}`;
+  const translated = t(key, { ns: 'customer360' });
   return translated !== key ? translated : status;
 }
 
@@ -167,8 +169,8 @@ function TimelineRow({ item }: { item: Customer360TimelineItemDto }): ReactEleme
 
 const CHART_COLORS = ['#8b5cf6', '#ec4899', '#f59e0b'];
 
-function CardTitleWithInfo({ titleKey, explainKey }: { titleKey: string; explainKey: string }): ReactElement {
-  const { t } = useTranslation();
+function CardTitleWithInfo({ titleKey, explainKey, ns = 'customer360' }: { titleKey: string; explainKey: string; ns?: string }): ReactElement {
+  const { t } = useTranslation(ns);
   return (
     <div className="flex items-center gap-1.5">
       <span className="text-base">{t(titleKey)}</span>
@@ -195,7 +197,7 @@ function ScoreRow({
   value: number | null | undefined;
   explainKey?: string;
 }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('customer360');
   const safeValue = value ?? 0;
   const toneClass = safeValue >= 70 ? 'text-emerald-600' : safeValue >= 40 ? 'text-amber-600' : 'text-rose-600';
   const labelEl = explainKey ? (
@@ -224,36 +226,37 @@ function ScoreRow({
 }
 
 function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | undefined }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('customer360');
+  const tc = (key: string, opts?: Record<string, unknown>) => t(key, opts);
   return (
     <Card className="rounded-xl border border-slate-200 dark:border-white/10">
       <CardHeader>
         <CardTitle className="text-base">
           <CardTitleWithInfo
-            titleKey="customer360.revenueQuality.title"
-            explainKey="customer360.explain.revenueQualityTitle"
+            titleKey="revenueQuality.title"
+            explainKey="explain.revenueQualityTitle"
           />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <ScoreRow
-          label={t('customer360.revenueQuality.churnRisk')}
+          label={tc('revenueQuality.churnRisk')}
           value={quality?.churnRiskScore}
-          explainKey="customer360.explain.churnRisk"
+          explainKey="explain.churnRisk"
         />
         <ScoreRow
-          label={t('customer360.revenueQuality.upsell')}
+          label={tc('revenueQuality.upsell')}
           value={quality?.upsellPropensityScore}
-          explainKey="customer360.explain.upsellPropensity"
+          explainKey="explain.upsellPropensity"
         />
         <ScoreRow
-          label={t('customer360.revenueQuality.payment')}
+          label={tc('revenueQuality.payment')}
           value={quality?.paymentBehaviorScore}
-          explainKey="customer360.explain.paymentBehavior"
+          explainKey="explain.paymentBehavior"
         />
         <div className="flex items-center justify-between text-sm py-1.5 pt-1">
           <span className="flex items-center gap-1 text-muted-foreground">
-            {t('customer360.revenueQuality.segment')}:{' '}
+            {tc('revenueQuality.segment')}:{' '}
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="inline-flex cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
@@ -261,19 +264,19 @@ function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | 
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-[260px]">
-                {t('customer360.explain.rfmSegment')}
+                {tc('explain.rfmSegment')}
               </TooltipContent>
             </Tooltip>
           </span>
           <span className="font-medium">{quality?.rfmSegment ?? '-'}</span>
         </div>
         <div className="text-sm">
-          <span className="text-muted-foreground">{t('customer360.revenueQuality.ltv')}: </span>
+          <span className="text-muted-foreground">{tc('revenueQuality.ltv')}: </span>
           <span className="font-medium">{quality?.ltv ?? 0}</span>
         </div>
         {quality?.dataQualityNote ? <p className="text-xs text-muted-foreground pt-2">{quality.dataQualityNote}</p> : null}
         <p className="text-xs text-muted-foreground border-t border-slate-100 dark:border-white/5 mt-2 pt-2">
-          {t('customer360.explain.modelNote')}
+          {tc('explain.modelNote')}
         </p>
       </CardContent>
     </Card>
@@ -285,27 +288,28 @@ function CohortRetentionPanel({
 }: {
   rows: CohortRetentionDto[] | undefined;
 }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('customer360');
+  const tc = (key: string, opts?: Record<string, unknown>) => t(key, opts);
   const first = rows?.[0];
   return (
     <Card className="rounded-xl border border-slate-200 dark:border-white/10">
       <CardHeader>
         <CardTitle className="text-base">
           <CardTitleWithInfo
-            titleKey="customer360.cohort.title"
-            explainKey="customer360.explain.cohortRetentionTitle"
+            titleKey="cohort.title"
+            explainKey="explain.cohortRetentionTitle"
           />
         </CardTitle>
       </CardHeader>
       <CardContent>
         {!first?.points?.length ? (
           <p className="text-sm text-muted-foreground">
-            {t('customer360.explain.noCohortData')}
+            {tc('explain.noCohortData')}
           </p>
         ) : (
           <div className="space-y-2">
             <div className="text-sm">
-              <span className="text-muted-foreground">{t('customer360.cohort.cohortKey')}: </span>
+              <span className="text-muted-foreground">{tc('cohort.cohortKey')}: </span>
               <span className="font-medium">{first.cohortKey}</span>
             </div>
             <div className="max-h-56 overflow-auto space-y-1">
@@ -332,26 +336,27 @@ function RecommendedActionsPanel({
   busy: boolean;
   onExecute: (row: RecommendedActionDto) => void;
 }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['customer360', 'common']);
+  const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   return (
     <Card className="rounded-xl border border-slate-200 dark:border-white/10">
       <CardHeader>
         <CardTitle className="text-base">
           <CardTitleWithInfo
-            titleKey="customer360.actions.title"
-            explainKey="customer360.explain.recommendedActionsTitle"
+            titleKey="actions.title"
+            explainKey="explain.recommendedActionsTitle"
           />
         </CardTitle>
       </CardHeader>
       <CardContent>
         {rows.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t('customer360.actions.empty')}</p>
+          <p className="text-sm text-muted-foreground">{tc('actions.empty')}</p>
         ) : (
           <div className="space-y-3">
             {rows.map((action) => {
               const actionKey = recommendedActionCodeToKey(action.actionCode);
-              const title = t(`customer360.actions.recommendedActions.${actionKey}.title`, { defaultValue: action.title });
-              const reason = t(`customer360.actions.recommendedActions.${actionKey}.reason`, { defaultValue: action.reason ?? '-' });
+              const title = tc(`actions.recommendedActions.${actionKey}.title`, { defaultValue: action.title });
+              const reason = tc(`actions.recommendedActions.${actionKey}.reason`, { defaultValue: action.reason ?? '-' });
               return (
               <div key={`${action.actionCode}-${action.title}`} className="rounded-lg border border-slate-200 dark:border-white/10 p-3">
                 <div className="flex items-start justify-between gap-3">
@@ -363,12 +368,12 @@ function RecommendedActionsPanel({
                     <TooltipTrigger asChild>
                       <span className="inline-flex">
                         <Button size="sm" onClick={() => onExecute(action)} disabled={busy}>
-                          {t('customer360.actions.execute')}
+                          {tc('actions.execute')}
                         </Button>
                       </span>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-[280px]">
-                      {t('customer360.explain.executeAction')}
+                      {tc('explain.executeAction')}
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -388,6 +393,7 @@ function AnalyticsChartsSection({
   amountComparison,
   currencyFormatter,
   t,
+  tc,
   noDataKey,
   showAmountBar = true,
 }: {
@@ -396,28 +402,29 @@ function AnalyticsChartsSection({
   amountComparison: Customer360AmountComparisonDto;
   currencyFormatter: Intl.NumberFormat;
   t: (key: string) => string;
+  tc: (key: string, opts?: Record<string, unknown>) => string;
   noDataKey: string;
   showAmountBar?: boolean;
 }): ReactElement {
   const recharts = useRechartsModule();
   const Recharts = recharts;
   const pieData = [
-    { name: t('customer360.analyticsCharts.demand'), value: distribution.demandCount },
-    { name: t('customer360.analyticsCharts.quotation'), value: distribution.quotationCount },
-    { name: t('customer360.analyticsCharts.order'), value: distribution.orderCount },
+    { name: tc('analyticsCharts.demand'), value: distribution.demandCount },
+    { name: tc('analyticsCharts.quotation'), value: distribution.quotationCount },
+    { name: tc('analyticsCharts.order'), value: distribution.orderCount },
   ].filter((d) => d.value > 0);
 
   const barData = [
-    { name: t('customer360.analyticsCharts.last12MonthsOrderAmount'), value: amountComparison.last12MonthsOrderAmount },
-    { name: t('customer360.analyticsCharts.openQuotationAmount'), value: amountComparison.openQuotationAmount },
-    { name: t('customer360.analyticsCharts.openOrderAmount'), value: amountComparison.openOrderAmount },
+    { name: tc('analyticsCharts.last12MonthsOrderAmount'), value: amountComparison.last12MonthsOrderAmount },
+    { name: tc('analyticsCharts.openQuotationAmount'), value: amountComparison.openQuotationAmount },
+    { name: tc('analyticsCharts.openOrderAmount'), value: amountComparison.openOrderAmount },
   ];
 
   return (
     <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
       <Card className="rounded-xl border border-slate-200 dark:border-white/10">
         <CardHeader>
-          <CardTitle className="text-base">{t('customer360.analyticsCharts.distributionTitle')}</CardTitle>
+          <CardTitle className="text-base">{tc('analyticsCharts.distributionTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           {pieData.length === 0 ? (
@@ -452,7 +459,7 @@ function AnalyticsChartsSection({
 
       <Card className="rounded-xl border border-slate-200 dark:border-white/10 lg:col-span-2">
         <CardHeader>
-          <CardTitle className="text-base">{t('customer360.analyticsCharts.monthlyTrendTitle')}</CardTitle>
+          <CardTitle className="text-base">{tc('analyticsCharts.monthlyTrendTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           {!monthlyTrend?.length ? (
@@ -468,9 +475,9 @@ function AnalyticsChartsSection({
                   <Recharts.YAxis tick={{ fontSize: 11 }} />
                   <Recharts.Tooltip />
                   <Recharts.Legend />
-                  <Recharts.Line type="monotone" dataKey="demandCount" name={t('customer360.analyticsCharts.demand')} stroke={CHART_COLORS[0]} strokeWidth={2} dot={{ r: 3 }} />
-                  <Recharts.Line type="monotone" dataKey="quotationCount" name={t('customer360.analyticsCharts.quotation')} stroke={CHART_COLORS[1]} strokeWidth={2} dot={{ r: 3 }} />
-                  <Recharts.Line type="monotone" dataKey="orderCount" name={t('customer360.analyticsCharts.order')} stroke={CHART_COLORS[2]} strokeWidth={2} dot={{ r: 3 }} />
+                  <Recharts.Line type="monotone" dataKey="demandCount" name={tc('analyticsCharts.demand')} stroke={CHART_COLORS[0]} strokeWidth={2} dot={{ r: 3 }} />
+                  <Recharts.Line type="monotone" dataKey="quotationCount" name={tc('analyticsCharts.quotation')} stroke={CHART_COLORS[1]} strokeWidth={2} dot={{ r: 3 }} />
+                  <Recharts.Line type="monotone" dataKey="orderCount" name={tc('analyticsCharts.order')} stroke={CHART_COLORS[2]} strokeWidth={2} dot={{ r: 3 }} />
                 </Recharts.LineChart>
               </Recharts.ResponsiveContainer>
             </div>
@@ -481,7 +488,7 @@ function AnalyticsChartsSection({
       {showAmountBar && (
         <Card className="rounded-xl border border-slate-200 dark:border-white/10 lg:col-span-3">
           <CardHeader>
-            <CardTitle className="text-base">{t('customer360.analyticsCharts.amountComparisonTitle')}</CardTitle>
+            <CardTitle className="text-base">{tc('analyticsCharts.amountComparisonTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
             {barData.every((d) => d.value === 0) ? (
@@ -508,11 +515,89 @@ function AnalyticsChartsSection({
   );
 }
 
+function QuickQuotationRow({
+  item,
+  currencyFormatter,
+  tc,
+}: {
+  item: Customer360QuickQuotationDto;
+  currencyFormatter: Intl.NumberFormat;
+  tc: (key: string, options?: Record<string, unknown>) => string;
+}): ReactElement {
+  const offerDate = new Date(item.offerDate).toLocaleDateString();
+  const approvedDate = item.approvedDate ? new Date(item.approvedDate).toLocaleDateString() : null;
+
+  return (
+    <Card className="rounded-xl border border-slate-200 dark:border-white/10">
+      <CardContent className="pt-5 space-y-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div className="text-sm font-semibold">#{item.id}</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {offerDate}
+              {item.quotationNo ? ` · ${item.quotationNo}` : ''}
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${item.hasConvertedQuotation ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'}`}>
+              {item.hasConvertedQuotation ? tc('quickQuotations.converted') : tc('quickQuotations.draft')}
+            </span>
+            <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${item.hasApprovalRequest ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300'}`}>
+              {item.hasApprovalRequest ? (item.approvalStatusName ?? tc('quickQuotations.sentToApproval')) : tc('quickQuotations.notSentToApproval')}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4 text-sm">
+          <div>
+            <p className="text-muted-foreground">{tc('quickQuotations.currency')}</p>
+            <p className="font-medium">{item.currencyCode}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">{tc('quickQuotations.total')}</p>
+            <p className="font-medium">{currencyFormatter.format(item.totalAmount)}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">{tc('quickQuotations.quotationStatus')}</p>
+            <p className="font-medium">{item.quotationStatusName ?? '-'}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">{tc('quickQuotations.approvalStep')}</p>
+            <p className="font-medium">
+              {item.approvalCurrentStep ? tc('quickQuotations.stepValue', { step: item.approvalCurrentStep }) : '-'}
+            </p>
+          </div>
+        </div>
+
+        {item.description ? (
+          <p className="text-sm text-muted-foreground">{item.description}</p>
+        ) : null}
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 dark:border-white/5 pt-3">
+          <div className="text-xs text-muted-foreground">
+            {approvedDate ? tc('quickQuotations.convertedAt', { date: approvedDate }) : tc('quickQuotations.notConvertedYet')}
+            {item.approvalFlowDescription ? ` · ${item.approvalFlowDescription}` : ''}
+          </div>
+          {item.quotationId ? (
+            <a
+              href={`/quotations/${item.quotationId}`}
+              className="text-sm font-medium text-pink-600 hover:text-pink-700 dark:text-pink-400"
+            >
+              {tc('quickQuotations.openQuotation')}
+            </a>
+          ) : null}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 const ALL_CURRENCY = 'ALL';
 
 export function Customer360Page(): ReactElement {
   const { customerId } = useParams<{ customerId: string }>();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['customer360', 'common']);
+  const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const { user } = useAuthStore();
   const id = Number(customerId ?? 0);
   const [currency, setCurrency] = useState<string>(ALL_CURRENCY);
@@ -526,6 +611,7 @@ export function Customer360Page(): ReactElement {
     useCustomer360AnalyticsChartsQuery(id, 12, currencyParam);
   const { data: cohortData, isLoading: isCohortLoading } = useCustomer360CohortQuery(id, 12);
   const { data: customerImages = [], isLoading: isImagesLoading, isError: isImagesError } = useCustomerImagesQuery(id);
+  const { data: quickQuotations = [], isLoading: isQuickQuotationsLoading, isError: isQuickQuotationsError } = useCustomer360QuickQuotationsQuery(id);
   const executeActionMutation = useExecuteCustomer360ActionMutation(id);
   const apiBaseUrl = getApiBaseUrl().replace(/\/$/, '');
   const imageItems = useMemo(
@@ -562,7 +648,7 @@ export function Customer360Page(): ReactElement {
     return (
       <div className="container py-8">
         <div className="rounded-xl border border-dashed border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/5 p-8 text-center">
-          <p className="text-muted-foreground">{t('customer360.notFound')}</p>
+          <p className="text-muted-foreground">{tc('notFound')}</p>
         </div>
       </div>
     );
@@ -598,12 +684,12 @@ export function Customer360Page(): ReactElement {
       <div className="container py-8">
         <div className="rounded-xl border border-dashed border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/5 p-8 text-center space-y-4">
           <p className="text-muted-foreground">
-            {is404 ? t('customer360.notFound') : t('customer360.error')}
+            {is404 ? tc('notFound') : tc('error')}
           </p>
           {!is404 && (
             <Button variant="outline" onClick={() => refetch()}>
               <RefreshCw className="h-4 w-4 mr-2" />
-              {t('customer360.retry')}
+              {tc('retry')}
             </Button>
           )}
         </div>
@@ -615,7 +701,7 @@ export function Customer360Page(): ReactElement {
     return (
       <div className="container py-8">
         <div className="rounded-xl border border-dashed border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/5 p-8 text-center">
-          <p className="text-muted-foreground">{t('customer360.notFound')}</p>
+          <p className="text-muted-foreground">{tc('notFound')}</p>
         </div>
       </div>
     );
@@ -654,7 +740,7 @@ export function Customer360Page(): ReactElement {
       <header className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-bold tracking-tight">{t('customer360.title')}</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{tc('title')}</h1>
             <p className="text-muted-foreground text-sm">
               {profile.name ?? ''}
               {profile.customerCode ? ` · ${profile.customerCode}` : ''}
@@ -667,16 +753,16 @@ export function Customer360Page(): ReactElement {
               className="h-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:text-white"
             >
               <Activity className="mr-2 h-4 w-4" />
-              {t('customer360.quickActivity')}
+              {tc('quickActivity')}
             </Button>
             <Select value={currency} onValueChange={setCurrency}>
               <SelectTrigger className="w-[180px]" size="default">
-                <SelectValue placeholder={t('customer360.currencyFilter.label')} />
+                <SelectValue placeholder={tc('currencyFilter.label')} />
               </SelectTrigger>
               <SelectContent>
                 {currencyOptions.map((opt) => (
                   <SelectItem key={opt} value={opt}>
-                    {opt === ALL_CURRENCY ? t('customer360.currencyFilter.all') : opt}
+                    {opt === ALL_CURRENCY ? tc('currencyFilter.all') : opt}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -687,10 +773,11 @@ export function Customer360Page(): ReactElement {
 
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">{t('customer360.tabs.overview')}</TabsTrigger>
-          <TabsTrigger value="analytics">{t('customer360.tabs.analytics')}</TabsTrigger>
-          <TabsTrigger value="mailLogs">{t('customer360.tabs.mailLogs', { defaultValue: 'Mail Geçmişi' })}</TabsTrigger>
-          <TabsTrigger value="images">{t('customer360.tabs.images', { defaultValue: 'Görseller' })}</TabsTrigger>
+          <TabsTrigger value="overview">{tc('tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="analytics">{tc('tabs.analytics')}</TabsTrigger>
+          <TabsTrigger value="quickQuotations">{tc('tabs.quickQuotations')}</TabsTrigger>
+          <TabsTrigger value="mailLogs">{tc('tabs.mailLogs')}</TabsTrigger>
+          <TabsTrigger value="images">{tc('tabs.images')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -698,7 +785,7 @@ export function Customer360Page(): ReactElement {
             <Card className="rounded-xl border border-slate-200 dark:border-white/10">
               <CardContent className="pt-6">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {t('customer360.kpi.totalDemands')}
+                  {tc('kpi.totalDemands')}
                 </p>
                 <p className="text-2xl font-bold mt-1">{kpi.totalDemands ?? 0}</p>
               </CardContent>
@@ -706,7 +793,7 @@ export function Customer360Page(): ReactElement {
             <Card className="rounded-xl border border-slate-200 dark:border-white/10">
               <CardContent className="pt-6">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {t('customer360.kpi.totalQuotations')}
+                  {tc('kpi.totalQuotations')}
                 </p>
                 <p className="text-2xl font-bold mt-1">{kpi.totalQuotations ?? 0}</p>
               </CardContent>
@@ -714,7 +801,7 @@ export function Customer360Page(): ReactElement {
             <Card className="rounded-xl border border-slate-200 dark:border-white/10">
               <CardContent className="pt-6">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {t('customer360.kpi.totalOrders')}
+                  {tc('kpi.totalOrders')}
                 </p>
                 <p className="text-2xl font-bold mt-1">{kpi.totalOrders ?? 0}</p>
               </CardContent>
@@ -722,7 +809,7 @@ export function Customer360Page(): ReactElement {
             <Card className="rounded-xl border border-slate-200 dark:border-white/10">
               <CardContent className="pt-6">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {t('customer360.kpi.openQuotations')}
+                  {tc('kpi.openQuotations')}
                 </p>
                 <p className="text-2xl font-bold mt-1">{kpi.openQuotations ?? 0}</p>
               </CardContent>
@@ -730,7 +817,7 @@ export function Customer360Page(): ReactElement {
             <Card className="rounded-xl border border-slate-200 dark:border-white/10">
               <CardContent className="pt-6">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {t('customer360.kpi.openOrders')}
+                  {tc('kpi.openOrders')}
                 </p>
                 <p className="text-2xl font-bold mt-1">{kpi.openOrders ?? 0}</p>
               </CardContent>
@@ -758,42 +845,42 @@ export function Customer360Page(): ReactElement {
               <CohortRetentionPanel rows={cohortData} />
             )}
             <SectionCard
-              title={t('customer360.sections.contacts')}
+              title={tc('sections.contacts')}
               icon={User}
               items={data.contacts ?? []}
               emptyKey="common.noData"
               renderItem={(item) => <SimpleItemRow item={item as Customer360SimpleItemDto} />}
             />
             <SectionCard
-              title={t('customer360.sections.shippingAddresses')}
+              title={tc('sections.shippingAddresses')}
               icon={MapPin}
               items={data.shippingAddresses ?? []}
               emptyKey="common.noData"
               renderItem={(item) => <SimpleItemRow item={item as Customer360SimpleItemDto} />}
             />
             <SectionCard
-              title={t('customer360.sections.recentDemands')}
+              title={tc('sections.recentDemands')}
               icon={ClipboardList}
               items={data.recentDemands ?? []}
               emptyKey="common.noData"
               renderItem={(item) => <SimpleItemRow item={item as Customer360SimpleItemDto} />}
             />
             <SectionCard
-              title={t('customer360.sections.recentQuotations')}
+              title={tc('sections.recentQuotations')}
               icon={FileText}
               items={data.recentQuotations ?? []}
               emptyKey="common.noData"
               renderItem={(item) => <SimpleItemRow item={item as Customer360SimpleItemDto} />}
             />
             <SectionCard
-              title={t('customer360.sections.recentOrders')}
+              title={tc('sections.recentOrders')}
               icon={ShoppingCart}
               items={data.recentOrders ?? []}
               emptyKey="common.noData"
               renderItem={(item) => <SimpleItemRow item={item as Customer360SimpleItemDto} />}
             />
             <SectionCard
-              title={t('customer360.sections.recentActivities')}
+              title={tc('sections.recentActivities')}
               icon={Activity}
               items={data.recentActivities ?? []}
               emptyKey="common.noData"
@@ -802,7 +889,7 @@ export function Customer360Page(): ReactElement {
           </div>
 
           <SectionCard
-            title={t('customer360.sections.timeline')}
+            title={tc('sections.timeline')}
             icon={Clock}
             items={timelineSorted}
             emptyKey="common.noData"
@@ -814,7 +901,7 @@ export function Customer360Page(): ReactElement {
           {isAnalyticsError ? (
             <Card className="rounded-xl border border-dashed border-slate-200 dark:border-white/10">
               <CardContent className="pt-6 text-sm text-muted-foreground">
-                {t('customer360.analytics.error')}
+                {tc('analytics.error')}
               </CardContent>
             </Card>
           ) : (
@@ -837,7 +924,7 @@ export function Customer360Page(): ReactElement {
               {isChartsError ? (
                 <Card className="rounded-xl border border-dashed border-slate-200 dark:border-white/10">
                   <CardContent className="pt-6 text-sm text-muted-foreground">
-                    {t('customer360.analytics.error')}
+                    {tc('analytics.error')}
                   </CardContent>
                 </Card>
               ) : isChartsLoading ? (
@@ -863,6 +950,7 @@ export function Customer360Page(): ReactElement {
                     amountComparison={chartsData.amountComparison}
                     currencyFormatter={currencyFormatter}
                     t={t}
+                    tc={tc}
                     noDataKey="common.noData"
                     showAmountBar={!isAllCurrencies}
                   />
@@ -872,12 +960,49 @@ export function Customer360Page(): ReactElement {
           )}
         </TabsContent>
 
+        <TabsContent value="quickQuotations" className="space-y-4">
+          {isQuickQuotationsLoading ? (
+            <div className="grid gap-4">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <Card key={idx} className="rounded-xl border border-slate-200 dark:border-white/10">
+                  <CardContent className="pt-6">
+                    <Skeleton className="h-24 w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : isQuickQuotationsError ? (
+            <Card className="rounded-xl border border-dashed border-slate-200 dark:border-white/10">
+              <CardContent className="pt-6 text-sm text-muted-foreground">
+                {tc('quickQuotations.error')}
+              </CardContent>
+            </Card>
+          ) : quickQuotations.length === 0 ? (
+            <Card className="rounded-xl border border-dashed border-slate-200 dark:border-white/10">
+              <CardContent className="pt-6 text-sm text-muted-foreground">
+                {tc('quickQuotations.empty')}
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {quickQuotations.map((item) => (
+                <QuickQuotationRow
+                  key={item.id}
+                  item={item}
+                  currencyFormatter={currencyFormatter}
+                  tc={tc}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
         <TabsContent value="images" className="space-y-4">
           <Card className="rounded-xl border border-slate-200 dark:border-white/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                 <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                {t('customer360.tabs.images', { defaultValue: 'Görseller' })}
+                {tc('tabs.images')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -889,7 +1014,7 @@ export function Customer360Page(): ReactElement {
                 </div>
               ) : isImagesError ? (
                 <p className="text-sm text-muted-foreground">
-                  {t('customer360.analytics.error')}
+                  {tc('analytics.error')}
                 </p>
               ) : imageItems.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
@@ -913,7 +1038,7 @@ export function Customer360Page(): ReactElement {
                       />
                       <div className="p-3">
                         <p className="text-sm font-medium line-clamp-2">
-                          {img.imageDescription || t('customer360.tabs.images', { defaultValue: 'Kartvizit Görseli' })}
+                          {img.imageDescription || tc('tabs.imagesDefaultDescription')}
                         </p>
                       </div>
                     </a>

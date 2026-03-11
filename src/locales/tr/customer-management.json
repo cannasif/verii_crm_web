@@ -37,11 +37,11 @@
     "updateError": "Müşteri güncellenemedi",
     "deleteSuccess": "Müşteri başarıyla silindi",
     "deleteError": "Müşteri silinemedi",
-    "syncQueued": "Müşteri sync kuyruğa alındı. Job: {{jobId}}",
-    "syncError": "Müşteri sync tetiklenemedi"
+    "syncQueued": "Müşteri senkronizasyonu kuyruğa alındı. İş: {{jobId}}",
+    "syncError": "Müşteri senkronizasyonu tetiklenemedi"
   },
-  "manualSync": "Manuel Sync",
-  "syncing": "Sync çalışıyor",
+  "manualSync": "Manuel Senkronizasyon",
+  "syncing": "Senkronizasyon çalışıyor",
     "stats": {
       "totalCustomers": "Toplam Müşteri",
       "approvedCustomers": "Onaylı Müşteri",
@@ -154,7 +154,14 @@
     "isCompletedDescription": "Bu müşterinin tüm bilgileri eksiksiz dolduruldu mu?",
     "isERPIntegrated": "ERP Entegre",
     "none": "Yok",
-    "salesRepCodePlaceholder": "Satış temsilci kodu..."
+    "salesRepCodePlaceholder": "Satış temsilci kodu...",
+    "taxOfficePlaceholderExample": "Vergi dairesi...",
+    "tcknPlaceholderExample": "TCKN...",
+    "emailPlaceholderExample": "ornek@sirket.com",
+    "websitePlaceholderExample": "www.sirket.com",
+    "phonePlaceholderExample": "0555...",
+    "phone2PlaceholderExample": "Alternatif telefon...",
+    "groupCodePlaceholder": "Grup kodu..."
   },
   "delete": {
     "action": "Sil",

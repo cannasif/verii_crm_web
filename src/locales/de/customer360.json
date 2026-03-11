@@ -1,92 +1,124 @@
 {
-  "title": "Customer 360",
-  "notFound": "Customer not found",
-  "error": "An error occurred",
-  "retry": "Retry",
+  "title": "Kunde 360",
+  "notFound": "Kunde nicht gefunden",
+  "error": "Ein Fehler ist aufgetreten",
+  "retry": "Erneut versuchen",
   "quickActivity": "Schnellaktivität",
   "currencyFilter": {
-    "label": "Currency",
-    "all": "All"
+    "label": "Währung",
+    "all": "Alle"
   },
   "tabs": {
-    "overview": "Overview",
-    "analytics": "Analytics",
-    "mailLogs": "Mail History"
+    "overview": "Übersicht",
+    "analytics": "Analyse",
+    "quickQuotations": "Schnellangebote",
+    "mailLogs": "E-Mail-Verlauf",
+    "images": "Bilder",
+    "imagesDefaultDescription": "Visitenkartenbild"
   },
-  "kpi": {
-    "totalDemands": "Total Demands",
-    "totalQuotations": "Total Quotations",
-    "totalOrders": "Total Orders",
-    "openQuotations": "Open Quotations",
-    "openOrders": "Pending Orders"
+  "quickQuotations": {
+    "empty": "Keine Schnellangebote für diesen Kunden gefunden",
+    "error": "Schnellangebote konnten nicht geladen werden",
+    "draft": "Entwurf",
+    "converted": "Umgewandelt",
+    "sentToApproval": "Zur Freigabe gesendet",
+    "notSentToApproval": "Nicht zur Freigabe gesendet",
+    "currency": "Währung",
+    "total": "Gesamt",
+    "quotationStatus": "Angebotsstatus",
+    "approvalStep": "Freigabeschritt",
+    "stepValue": "Schritt {{step}}",
+    "convertedAt": "Umgewandelt: {{date}}",
+    "notConvertedYet": "Noch nicht umgewandelt",
+    "openQuotation": "Angebot öffnen"
   },
-  "sections": {
-    "contacts": "Contacts",
-    "shippingAddresses": "Shipping Addresses",
-    "recentDemands": "Recent Demands",
-    "recentQuotations": "Recent Quotations",
-    "recentOrders": "Recent Orders",
-    "recentActivities": "Recent Activities",
-    "timeline": "Timeline"
-  },
-  "analytics": {
-    "error": "Could not load analytics data",
-    "last12MonthsOrderAmount": "Last 12 Months Order Amount",
-    "openQuotationAmount": "Open Quotation Amount",
-    "openOrderAmount": "Open Order Amount",
-    "activityCount": "Activity Count",
-    "lastActivityDate": "Last Activity Date"
-  },
-  "analyticsCharts": {
-    "demand": "Demand",
-    "quotation": "Quotation",
-    "order": "Order",
-    "last12MonthsOrderAmount": "Last 12 Months Order",
-    "openQuotationAmount": "Open Quotation",
-    "openOrderAmount": "Open Order",
-    "distributionTitle": "Distribution",
-    "monthlyTrendTitle": "Monthly Trend",
-    "amountComparisonTitle": "Amount Comparison"
-  },
-  "currencyTotals": {
-    "currency": "Currency",
-    "demandAmount": "Demand Amount",
-    "quotationAmount": "Quotation Amount",
-    "orderAmount": "Order Amount"
-  },
-  "revenueQuality": {
-    "title": "Revenue Quality",
-    "churnRisk": "Churn Risk",
-    "upsell": "Upsell Propensity",
-    "payment": "Payment Behavior",
-    "segment": "RFM Segment",
-    "ltv": "LTV"
-  },
-  "cohort": {
-    "title": "Cohort Retention",
-    "empty": "No cohort data",
-    "cohortKey": "Cohort"
-  },
-  "actions": {
-    "title": "Recommended Actions",
-    "empty": "No recommended actions",
-    "execute": "Execute"
-  },
-  "status": {},
   "mail": {
     "providers": {
       "google": "Google",
       "outlook": "Outlook"
     },
     "columns": {
-      "date": "Date",
-      "sender": "Sender",
-      "to": "Recipient",
-      "subject": "Subject",
+      "date": "Datum",
+      "sender": "Absender",
+      "to": "Empfänger",
+      "subject": "Betreff",
       "status": "Status",
-      "template": "Template",
-      "errorCode": "Error Code",
-      "body": "Message"
+      "template": "Vorlage",
+      "errorCode": "Fehlercode",
+      "body": "Nachricht"
     }
-  }
+  },
+  "kpi": {
+    "totalDemands": "Gesamte Angebote",
+    "totalQuotations": "Gesamte Angebote",
+    "totalOrders": "Gesamte Bestellungen",
+    "openQuotations": "Offene Angebote",
+    "openOrders": "Ausstehende Bestellungen"
+  },
+  "sections": {
+    "contacts": "Kontakte",
+    "shippingAddresses": "Lieferadressen",
+    "recentDemands": "Letzte Angebote",
+    "recentQuotations": "Letzte Angebote",
+    "recentOrders": "Letzte Bestellungen",
+    "recentActivities": "Letzte Aktivitäten",
+    "timeline": "Zeitachse"
+  },
+  "analytics": {
+    "error": "Analysedaten konnten nicht geladen werden",
+    "last12MonthsOrderAmount": "Bestellbetrag der letzten 12 Monate",
+    "openQuotationAmount": "Offener Angebotsbetrag",
+    "openOrderAmount": "Offener Bestellbetrag",
+    "activityCount": "Aktivitätsanzahl",
+    "lastActivityDate": "Letztes Aktivitätsdatum"
+  },
+  "analyticsCharts": {
+    "demand": "Angebot",
+    "quotation": "Angebot",
+    "order": "Bestellung",
+    "last12MonthsOrderAmount": "Letzte 12 Monate Bestellung",
+    "openQuotationAmount": "Offenes Angebot",
+    "openOrderAmount": "Offene Bestellung",
+    "distributionTitle": "Verteilung",
+    "monthlyTrendTitle": "Monatlicher Trend",
+    "amountComparisonTitle": "Betragsvergleich"
+  },
+  "currencyTotals": {
+    "currency": "Währung",
+    "demandAmount": "Angebotsbetrag",
+    "quotationAmount": "Angebotsbetrag",
+    "orderAmount": "Bestellbetrag"
+  },
+  "revenueQuality": {
+    "title": "Umsatzqualität",
+    "churnRisk": "Abwanderungsrisiko",
+    "upsell": "Upsell-Neigung",
+    "payment": "Zahlungsverhalten",
+    "segment": "RFM-Gruppierung",
+    "ltv": "Lebenszeitwert"
+  },
+  "cohort": {
+    "title": "Kohortenbindung",
+    "empty": "Keine Kohortendaten",
+    "cohortKey": "Kohorte"
+  },
+  "actions": {
+    "title": "Empfohlene Aktionen",
+    "empty": "Keine empfohlenen Aktionen",
+    "execute": "Ausführen"
+  },
+  "explain": {
+    "revenueQualityTitle": "Umsatzqualität fasst das Verkaufspotenzial und Risikoprofil des Kunden zusammen.",
+    "churnRisk": "Abwanderungsrisiko zeigt die Wahrscheinlichkeit, dass der Kunde keine weiteren Bestellungen aufgibt.",
+    "upsellPropensity": "Upsell-Neigung zeigt das Potenzial des Kunden für höhere Volumen oder zusätzliche Produktkäufe.",
+    "paymentBehavior": "Zahlungsverhalten fasst das Inkasso- und Zahlungsmuster des Kunden zusammen.",
+    "rfmSegment": "RFM-Gruppierung zeigt die Kundengruppe basierend auf Aktualität, Häufigkeit und Betragsdaten.",
+    "modelNote": "Diese Felder sind analytische Modellausgaben und werden zu Entscheidungsunterstützungszwecken angezeigt.",
+    "cohortRetentionTitle": "Kohortenbindung zeigt die Kontinuität von Kunden, die in einem ähnlichen Zeitraum gewonnen wurden.",
+    "noCohortData": "Unzureichende Kohortendaten für diesen Kunden gefunden.",
+    "recommendedActionsTitle": "Vom System empfohlene Aktionen werden in diesem Bereich aufgeführt.",
+    "executeAction": "Aktion ausführen"
+  },
+  "button": "Kunde 360",
+  "status": {}
 }

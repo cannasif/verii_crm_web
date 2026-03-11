@@ -11,8 +11,26 @@
   "tabs": {
     "overview": "Özet",
     "analytics": "Çözümleme",
+    "quickQuotations": "Hızlı Teklifler",
     "mailLogs": "E-posta Geçmişi",
-    "images": "Görseller"
+    "images": "Görseller",
+    "imagesDefaultDescription": "Kartvizit Görseli"
+  },
+  "quickQuotations": {
+    "empty": "Bu cariye ait hızlı teklif bulunamadı",
+    "error": "Hızlı teklifler yüklenemedi",
+    "draft": "Taslak",
+    "converted": "Teklife Döndü",
+    "sentToApproval": "Onaya Gönderildi",
+    "notSentToApproval": "Onaya Gitmedi",
+    "currency": "Para Birimi",
+    "total": "Toplam",
+    "quotationStatus": "Teklif Durumu",
+    "approvalStep": "Onay Adımı",
+    "stepValue": "Adım {{step}}",
+    "convertedAt": "Dönüşüm: {{date}}",
+    "notConvertedYet": "Henüz teklife dönüşmedi",
+    "openQuotation": "Teklifi Aç"
   },
   "mail": {
     "providers": {
@@ -62,7 +80,7 @@
     "openQuotationAmount": "Açık Teklif",
     "openOrderAmount": "Açık Sipariş",
     "distributionTitle": "Dağılım",
-    "monthlyTrendTitle": "Aylık Trend",
+    "monthlyTrendTitle": "Aylık Eğilim",
     "amountComparisonTitle": "Tutar Karşılaştırması"
   },
   "currencyTotals": {
@@ -76,7 +94,7 @@
     "churnRisk": "Kayıp Riski",
     "upsell": "Ek Satış Eğilimi",
     "payment": "Ödeme Davranışı",
-    "segment": "RFM Segmenti",
+    "segment": "RFM Gruplandırması",
     "ltv": "Yaşam Boyu Değer"
   },
   "cohort": {
@@ -94,7 +112,7 @@
     "churnRisk": "Kayıp riski, müşterinin yeniden sipariş vermeme olasılığını gösterir.",
     "upsellPropensity": "Ek satış eğilimi, müşterinin daha yüksek hacimli veya ek ürün alım potansiyelini gösterir.",
     "paymentBehavior": "Ödeme davranışı, müşterinin tahsilat ve ödeme düzenini özetler.",
-    "rfmSegment": "RFM segmenti; yakınlık, sıklık ve tutar verilerine göre müşterinin segmentini gösterir.",
+    "rfmSegment": "RFM gruplandırması; yakınlık, sıklık ve tutar verilerine göre müşterinin grubunu gösterir.",
     "modelNote": "Bu alanlar analitik model çıktılarıdır ve karar desteği amacıyla gösterilir.",
     "cohortRetentionTitle": "Kohort tutma, benzer dönemde kazanılan müşterilerin zaman içindeki devamlılığını gösterir.",
     "noCohortData": "Bu müşteri için yeterli kohort verisi bulunamadı.",

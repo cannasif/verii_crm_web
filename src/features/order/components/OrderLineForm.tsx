@@ -1047,7 +1047,7 @@ export function OrderLineForm({
                 value={formData.description1 ?? ''}
                 onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                 maxLength={200}
-                placeholder="Maksimum 200 karakter"
+                placeholder={t('order.lines.max200Chars')}
                 className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
               />
             </div>
@@ -1060,7 +1060,7 @@ export function OrderLineForm({
                 value={formData.description2 ?? ''}
                 onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                 maxLength={200}
-                placeholder="Maksimum 200 karakter"
+                placeholder={t('order.lines.max200Chars')}
                 className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
               />
             </div>
@@ -1073,7 +1073,7 @@ export function OrderLineForm({
                 value={formData.description3 ?? ''}
                 onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                 maxLength={200}
-                placeholder="Maksimum 200 karakter"
+                placeholder={t('order.lines.max200Chars')}
                 className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
               />
             </div>

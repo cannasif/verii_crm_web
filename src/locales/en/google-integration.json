@@ -31,6 +31,11 @@
   },
   "authInformation": {
     "cardTitle": "Tenant Google OAuth Settings",
+    "clientIdLabel": "Client ID",
+    "clientIdPlaceholder": "Google OAuth Client ID",
+    "clientSecretLabel": "Client Secret",
+    "redirectUriLabel": "Redirect URI",
+    "scopesLabel": "Scopes",
     "clientSecretPlaceholder": "Enter to change",
     "currentSecretLabel": "Current Secret",
     "enableLabel": "Enable Google OAuth",

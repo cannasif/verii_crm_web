@@ -11,7 +11,26 @@
   "tabs": {
     "overview": "Overview",
     "analytics": "Analytics",
-    "mailLogs": "Mail History"
+    "quickQuotations": "Quick Quotations",
+    "mailLogs": "Mail History",
+    "images": "Images",
+    "imagesDefaultDescription": "Business card image"
+  },
+  "quickQuotations": {
+    "empty": "No quick quotations found for this customer",
+    "error": "Quick quotations could not be loaded",
+    "draft": "Draft",
+    "converted": "Converted",
+    "sentToApproval": "Sent to Approval",
+    "notSentToApproval": "Not Sent to Approval",
+    "currency": "Currency",
+    "total": "Total",
+    "quotationStatus": "Quotation Status",
+    "approvalStep": "Approval Step",
+    "stepValue": "Step {{step}}",
+    "convertedAt": "Converted: {{date}}",
+    "notConvertedYet": "Not converted yet",
+    "openQuotation": "Open Quotation"
   },
   "mail": {
     "providers": {
@@ -30,7 +49,7 @@
     }
   },
   "kpi": {
-    "totalDemands": "Total Demands",
+    "totalDemands": "Total Quotations",
     "totalQuotations": "Total Quotations",
     "totalOrders": "Total Orders",
     "openQuotations": "Open Quotations",
@@ -39,7 +58,7 @@
   "sections": {
     "contacts": "Contacts",
     "shippingAddresses": "Shipping Addresses",
-    "recentDemands": "Recent Demands",
+    "recentDemands": "Recent Quotations",
     "recentQuotations": "Recent Quotations",
     "recentOrders": "Recent Orders",
     "recentActivities": "Recent Activities",
@@ -54,7 +73,7 @@
     "lastActivityDate": "Last Activity Date"
   },
   "analyticsCharts": {
-    "demand": "Demand",
+    "demand": "Quotation",
     "quotation": "Quotation",
     "order": "Order",
     "last12MonthsOrderAmount": "Last 12 Months Order",
@@ -66,7 +85,7 @@
   },
   "currencyTotals": {
     "currency": "Currency",
-    "demandAmount": "Demand Amount",
+    "demandAmount": "Quotation Amount",
     "quotationAmount": "Quotation Amount",
     "orderAmount": "Order Amount"
   },
@@ -75,8 +94,8 @@
     "churnRisk": "Churn Risk",
     "upsell": "Upsell Propensity",
     "payment": "Payment Behavior",
-    "segment": "RFM Segment",
-    "ltv": "LTV"
+    "segment": "RFM Grouping",
+    "ltv": "Lifetime Value"
   },
   "cohort": {
     "title": "Cohort Retention",
@@ -88,5 +107,18 @@
     "empty": "No recommended actions",
     "execute": "Execute"
   },
+  "explain": {
+    "revenueQualityTitle": "Revenue quality summarizes the customer's sales potential and risk profile.",
+    "churnRisk": "Churn risk indicates the probability of the customer not placing orders again.",
+    "upsellPropensity": "Upsell propensity shows the customer's potential for higher volume or additional product purchases.",
+    "paymentBehavior": "Payment behavior summarizes the customer's collection and payment pattern.",
+    "rfmSegment": "RFM grouping shows the customer's group based on recency, frequency and amount data.",
+    "modelNote": "These fields are analytical model outputs and are displayed for decision support purposes.",
+    "cohortRetentionTitle": "Cohort retention shows the continuity of customers acquired in a similar period over time.",
+    "noCohortData": "Insufficient cohort data found for this customer.",
+    "recommendedActionsTitle": "Actions recommended by the system are listed in this section.",
+    "executeAction": "Execute action"
+  },
+  "button": "Customer 360",
   "status": {}
 }

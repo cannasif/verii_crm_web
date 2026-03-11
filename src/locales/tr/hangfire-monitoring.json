@@ -1,7 +1,7 @@
 {
   "menu": "Hangfire İzleme",
   "title": "Hangfire İzleme",
-  "description": "Job sağlık durumunu, başarısız işleri ve dead-letter kuyruğunu izleyin.",
+  "description": "İş sağlık durumunu, başarısız işleri ve teslim edilemeyen kuyruğunu izleyin.",
   "refresh": "Yenile",
   "stats": {
     "enqueued": "Kuyrukta",
@@ -10,20 +10,20 @@
     "failed": "Başarısız"
   },
   "table": {
-    "jobId": "Is Kimligi",
-    "jobName": "Job",
+    "jobId": "İş Kimliği",
+    "jobName": "İş",
     "state": "Durum",
     "time": "Zaman",
     "reason": "Neden"
   },
   "failed": {
     "title": "Başarısız İşler",
-    "empty": "Başarısız job bulunamadı.",
+    "empty": "Başarısız iş bulunamadı.",
     "total": "Toplam"
   },
   "deadLetter": {
-    "title": "Dead-Letter Kuyruğu",
-    "empty": "Dead-letter kuyruğu boş.",
+    "title": "Teslim Edilemeyen Kuyruğu",
+    "empty": "Teslim edilemeyen kuyruğu boş.",
     "enqueued": "Kuyruktaki"
   }
 }

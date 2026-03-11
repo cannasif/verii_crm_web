@@ -345,7 +345,7 @@ export function ContactForm({
                           {t('contactManagement.form.mobile')}
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder="05XX..." maxLength={20} />
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.mobilePlaceholderExample')} maxLength={20} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
@@ -362,7 +362,7 @@ export function ContactForm({
                           {t('contactManagement.form.phone')}
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder="0212..." maxLength={20} />
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.phonePlaceholderExample')} maxLength={20} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
@@ -380,7 +380,7 @@ export function ContactForm({
                             {t('contactManagement.form.email')}
                           </FormLabel>
                           <FormControl>
-                            <Input {...field} type="email" className={INPUT_STYLE} placeholder="ornek@email.com" maxLength={100} />
+                            <Input {...field} type="email" className={INPUT_STYLE} placeholder={t('contactManagement.form.emailPlaceholderExample')} maxLength={100} />
                           </FormControl>
                           <FormMessage className="text-xs" />
                         </FormItem>

@@ -170,6 +170,7 @@ export interface ActivityFormData {
   subject: string;
   description?: string;
   activityType: string;
+  activityTypeId?: number;
   potentialCustomerId?: number;
   erpCustomerCode?: string;
   status: number;
@@ -194,6 +195,10 @@ export const activityFormSchema = z.object({
   activityType: z
     .string()
     .min(1, 'activityManagement.activityTypeRequired'),
+  activityTypeId: z
+    .number()
+    .optional()
+    .nullable(),
   potentialCustomerId: z
     .number()
     .optional()
