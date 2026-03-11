@@ -3,6 +3,7 @@
   "notFound": "Müşteri bulunamadı",
   "error": "Bir hata oluştu",
   "retry": "Tekrar Dene",
+  "quickActivity": "Hızlı Aktivite",
   "currencyFilter": {
     "label": "Para birimi",
     "all": "Tümü"

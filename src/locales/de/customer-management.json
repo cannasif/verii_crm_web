@@ -2,6 +2,7 @@
   "menu": "Kundenverwaltung",
   "description": "Kunden verwalten und bearbeiten",
   "addButton": "Add New Customer",
+  "quickActivity": "Schnellaktivität",
   "stats": {
     "totalCustomers": "Gesamtkunden",
     "approvedCustomers": "Genehmigte Kunden",

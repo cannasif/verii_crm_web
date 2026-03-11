@@ -3,6 +3,7 @@
     "menu": "Müşteri Yönetimi",
     "description": "Müşterileri yönetin ve düzenleyin",
     "addButton": "Yeni Müşteri Ekle",
+    "quickActivity": "Hızlı Aktivite",
     "loading": "Yükleniyor...",
     "table": {
       "id": "ID",

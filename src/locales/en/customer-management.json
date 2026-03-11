@@ -2,6 +2,7 @@
   "menu": "Customer Management",
   "description": "Manage and edit customers",
   "addButton": "Add New Customer",
+  "quickActivity": "Quick Activity",
   "stats": {
     "totalCustomers": "Total Customers",
     "approvedCustomers": "Approved Customers",

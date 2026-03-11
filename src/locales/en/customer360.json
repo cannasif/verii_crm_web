@@ -3,6 +3,7 @@
   "notFound": "Customer not found",
   "error": "An error occurred",
   "retry": "Retry",
+  "quickActivity": "Quick Activity",
   "currencyFilter": {
     "label": "Currency",
     "all": "All"

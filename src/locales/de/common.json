@@ -2901,7 +2901,8 @@
       "deleteError": "Der Kontakt konnte nicht gelöscht werden",
       "updateSuccess": "Kontakt erfolgreich aktualisiert",
       "updateError": "Der Kontakt konnte nicht aktualisiert werden"
-    }
+    },
+    "quickActivity": "Schnellaktivität"
   },
   "customerManagement": {
     "form": {
