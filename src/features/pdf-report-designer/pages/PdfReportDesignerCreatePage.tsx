@@ -69,6 +69,8 @@ const RULE_TYPE_OPTIONS: PricingRuleType[] = [
 
 const DEFAULT_ELEMENT_WIDTH = 200;
 const DEFAULT_ELEMENT_HEIGHT = 50;
+const DEFAULT_TABLE_WIDTH = 680;
+const DEFAULT_TABLE_HEIGHT = 220;
 
 function ruleTypeForApi(ruleType: PricingRuleType): number {
   return (ruleType - 1) as number;
@@ -412,8 +414,8 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         section,
         x,
         y,
-        width: DEFAULT_ELEMENT_WIDTH,
-        height: DEFAULT_ELEMENT_HEIGHT,
+        width: DEFAULT_TABLE_WIDTH,
+        height: DEFAULT_TABLE_HEIGHT,
         columns: [],
       };
       addElement(newTable);
