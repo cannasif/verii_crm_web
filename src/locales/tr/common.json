@@ -398,7 +398,12 @@
     "draftFound": "Taslak bulundu. Geri yükleyebilir veya temizleyebilirsiniz.",
     "restoreDraft": "Geri yükle",
     "discardDraft": "Temizle",
-    "snapToGrid": "Izgaraya hizala"
+    "snapToGrid": "Izgaraya hizala",
+    "pageCount": "Sayfa sayısı",
+    "pages": "Sayfalar",
+    "pageNumber": "Sayfa {{page}}",
+    "visiblePages": "Görüneceği sayfalar",
+    "visiblePagesPlaceholder": "Örn: 1,2"
   },
   "reportDesigner": {
     "ruleType": {

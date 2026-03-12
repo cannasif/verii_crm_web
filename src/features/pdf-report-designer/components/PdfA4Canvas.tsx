@@ -84,6 +84,12 @@ function snapToGrid(value: number, enabled: boolean): number {
 
 export interface PdfA4CanvasProps {
   canvasRef?: RefObject<HTMLDivElement | null>;
+  currentPage: number;
+}
+
+function shouldRenderOnPage(element: PdfCanvasElement, currentPage: number): boolean {
+  if (element.pageNumbers == null || element.pageNumbers.length === 0) return true;
+  return element.pageNumbers.includes(currentPage);
 }
 
 const DEFAULT_FONT_SIZE = 14;
@@ -529,7 +535,7 @@ function DroppableSection({
   );
 }
 
-export function PdfA4Canvas({ canvasRef }: PdfA4CanvasProps): ReactElement {
+export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): ReactElement {
   const { t } = useTranslation();
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const elements = getOrderedElements();
@@ -638,7 +644,7 @@ export function PdfA4Canvas({ canvasRef }: PdfA4CanvasProps): ReactElement {
           {t('reportDesigner.sections.footer')}
         </DroppableSection>
         {elements
-          .filter((el) => !el.hidden)
+          .filter((el) => !el.hidden && shouldRenderOnPage(el, currentPage))
           .map((el) => (
             <Rnd
               key={el.id}

@@ -13,7 +13,27 @@ import {
 } from '@/components/ui/select';
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
 
-export function PdfInspectorPanel(): ReactElement {
+interface PdfInspectorPanelProps {
+  pageCount: number;
+}
+
+function normalizePageNumbers(rawValue: string, pageCount: number): number[] | undefined {
+  const raw = rawValue.trim();
+  if (raw.length === 0) return undefined;
+
+  const normalized = Array.from(
+    new Set(
+      raw
+        .split(',')
+        .map((part) => Number(part.trim()))
+        .filter((pageNumber) => Number.isInteger(pageNumber) && pageNumber > 0 && pageNumber <= pageCount)
+    )
+  ).sort((left, right) => left - right);
+
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactElement {
   const { t } = useTranslation();
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
@@ -23,7 +43,7 @@ export function PdfInspectorPanel(): ReactElement {
   const selectedElement =
     selectedIds.length === 1 ? elements.find((el) => el.id === selectedIds[0]) : null;
 
-  if (!selectedElement || isPdfTableElement(selectedElement)) {
+  if (!selectedElement) {
     return (
       <div className="flex w-56 flex-col gap-3 border-l border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/30">
         <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -36,6 +56,7 @@ export function PdfInspectorPanel(): ReactElement {
 
   const style = selectedElement.style ?? {};
   const opacity = style.opacity ?? 1;
+  const pageNumbersValue = selectedElement.pageNumbers?.join(', ') ?? '';
 
   return (
     <div className="flex w-56 flex-col gap-3 border-l border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/30">
@@ -113,7 +134,20 @@ export function PdfInspectorPanel(): ReactElement {
           className="h-8 text-xs"
         />
       </div>
-      {(
+      <div className="flex flex-col gap-2">
+        <Label className="text-xs">{t('pdfReportDesigner.visiblePages')}</Label>
+        <Input
+          value={pageNumbersValue}
+          onChange={(e) =>
+            updateElement(selectedElement.id, {
+              pageNumbers: normalizePageNumbers(e.target.value, pageCount),
+            })
+          }
+          className="h-8 text-xs"
+          placeholder={t('pdfReportDesigner.visiblePagesPlaceholder')}
+        />
+      </div>
+      {!isPdfTableElement(selectedElement) && (
         <>
           <div className="flex flex-col gap-2">
             <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>

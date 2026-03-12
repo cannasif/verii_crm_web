@@ -31,6 +31,7 @@ interface PdfReportElementBase {
   fontSize?: number;
   fontFamily?: string;
   color?: string;
+  pageNumbers?: number[];
 }
 
 export interface PdfReportElement extends PdfReportElementBase {

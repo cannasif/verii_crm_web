@@ -21,7 +21,7 @@ interface PdfReportDesignerState {
   updateElementText: (id: string, text: string) => void;
   updateReportElement: (
     id: string,
-    updates: Partial<Pick<PdfReportElement, 'text' | 'value' | 'path' | 'fontSize' | 'fontFamily' | 'color' | 'style'>>
+    updates: Partial<Pick<PdfReportElement, 'text' | 'value' | 'path' | 'fontSize' | 'fontFamily' | 'color' | 'style' | 'pageNumbers'>>
   ) => void;
   addColumnToTable: (tableId: string, column: PdfTableColumn) => void;
   setSelectedIds: (ids: string[]) => void;

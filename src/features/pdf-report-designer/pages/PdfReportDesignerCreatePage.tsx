@@ -107,6 +107,7 @@ function applyTemplateToFormAndStore(
     ruleType: apiRuleTypeToForm(template.ruleType as number),
     title: template.title,
     default: template.default ?? false,
+    pageCount: Math.max(1, template.templateData.page.pageCount ?? 1),
   });
   setElements(dtoToPdfCanvasElements(template.templateData.elements));
 }
@@ -141,10 +142,12 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         ruleType: PricingRuleType.Demand,
         title: '',
         default: false,
+        pageCount: 1,
       },
     }
   );
   const isFormValid = form.formState.isValid;
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: templateById, isSuccess: templateByIdLoaded } = usePdfReportTemplateById(
     isEdit && editId != null ? editId : null
@@ -239,6 +242,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         title,
         ruleType: ruleTypeVal,
         default: defaultVal,
+        pageCount: form.getValues('pageCount'),
         elements: pdfCanvasElementsToDto(elements),
       };
       localStorage.setItem(draftKey, JSON.stringify(payload));
@@ -271,12 +275,15 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         title?: string;
         ruleType?: number;
         default?: boolean;
+        pageCount?: number;
         elements?: unknown[];
       };
       if (payload.title != null) form.setValue('title', String(payload.title));
       if (payload.ruleType != null)
         form.setValue('ruleType', apiRuleTypeToForm(Number(payload.ruleType)));
       if (payload.default != null) form.setValue('default', Boolean(payload.default));
+      if (payload.pageCount != null)
+        form.setValue('pageCount', Math.max(1, Number(payload.pageCount) || 1));
       if (Array.isArray(payload.elements)) {
         const canvasEls = dtoToPdfCanvasElements(payload.elements as ReportTemplateElementDto[]);
         setElements(canvasEls);
@@ -310,7 +317,12 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       title: values.title,
       templateData: {
         schemaVersion: 1,
-        page: { width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT, unit: 'px' },
+        page: {
+          width: A4_CANVAS_WIDTH,
+          height: A4_CANVAS_HEIGHT,
+          unit: 'px',
+          pageCount: values.pageCount,
+        },
         elements: pdfCanvasElementsToDto(elements),
       },
       isActive: true,
@@ -386,6 +398,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         text: t('reportDesigner.defaults.doubleClickToEdit'),
         fontSize: 14,
         fontFamily: 'Arial',
+        pageNumbers: [currentPage],
       };
       addElement(newElement);
       return;
@@ -402,6 +415,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         height: DEFAULT_ELEMENT_HEIGHT,
         value: data.label,
         path: data.path,
+        pageNumbers: [currentPage],
       };
       addElement(newElement);
       return;
@@ -417,6 +431,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         width: DEFAULT_TABLE_WIDTH,
         height: DEFAULT_TABLE_HEIGHT,
         columns: [],
+        pageNumbers: [currentPage],
       };
       addElement(newTable);
       return;
@@ -433,12 +448,20 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         height: 80,
         value: data.value ?? '',
         path: data.path || undefined,
+        pageNumbers: [currentPage],
       };
       addElement(newElement);
     }
   };
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
+  const pageCount = form.watch('pageCount') ?? 1;
+
+  useEffect(() => {
+    if (currentPage > pageCount) {
+      setCurrentPage(pageCount);
+    }
+  }, [currentPage, pageCount]);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -524,6 +547,27 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="pageCount"
+              render={({ field }) => (
+                <FormItem className="w-28">
+                  <FormLabel>{t('pdfReportDesigner.pageCount')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(Math.min(20, Math.max(1, Number(e.target.value) || 1)))
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button
               type="button"
               variant="outline"
@@ -565,6 +609,20 @@ export function PdfReportDesignerCreatePage(): ReactElement {
             </Button>
           </form>
         </Form>
+        <div className="mt-4 flex flex-wrap items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-2">
+          <span className="text-sm font-medium text-slate-600">{t('pdfReportDesigner.pages')}</span>
+          {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
+            <Button
+              key={pageNumber}
+              type="button"
+              size="sm"
+              variant={currentPage === pageNumber ? 'default' : 'outline'}
+              onClick={() => setCurrentPage(pageNumber)}
+            >
+              {t('pdfReportDesigner.pageNumber', { page: pageNumber })}
+            </Button>
+          ))}
+        </div>
       </div>
       <div className="flex min-h-0 flex-1 flex-col">
         <DndContext onDragEnd={handleDragEnd}>
@@ -575,8 +633,8 @@ export function PdfReportDesignerCreatePage(): ReactElement {
             exchangeRateFields={exchangeRateFields}
             imageFields={imageFields}
           />
-            <PdfA4Canvas canvasRef={canvasRef} />
-            <PdfInspectorPanel />
+            <PdfA4Canvas canvasRef={canvasRef} currentPage={currentPage} />
+            <PdfInspectorPanel pageCount={pageCount} />
             <PdfLayersPanel />
           </div>
         </DndContext>

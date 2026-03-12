@@ -8,6 +8,7 @@ export const pdfReportDesignerCreateSchema = z.object({
   }),
   title: z.string().min(1, i18n.t('reportDesigner.form.requiredTitle')),
   default: z.boolean(),
+  pageCount: z.number().int().min(1).max(20),
 });
 
 export type PdfReportDesignerCreateFormValues = z.infer<typeof pdfReportDesignerCreateSchema>;

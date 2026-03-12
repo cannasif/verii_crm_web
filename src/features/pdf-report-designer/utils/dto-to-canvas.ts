@@ -90,6 +90,9 @@ export function dtoToPdfCanvasElements(dtoElements: ReportTemplateElementDto[]):
       fontSize: dto.fontSize,
       fontFamily: dto.fontFamily,
       color: dto.color,
+      pageNumbers: Array.isArray(dto.pageNumbers)
+        ? dto.pageNumbers.filter((pageNumber): pageNumber is number => Number.isInteger(pageNumber))
+        : undefined,
     };
     if (dto.type === 'table' && Array.isArray(dto.columns)) {
       const table: PdfTableElement = {
@@ -126,6 +129,7 @@ export function pdfCanvasElementsToDto(elements: PdfCanvasElement[]): ReportTemp
       fontSize: el.fontSize,
       fontFamily: el.fontFamily,
       color: el.color,
+      pageNumbers: el.pageNumbers,
     };
     if (el.type === 'table') {
       return { ...base, columns: el.columns };

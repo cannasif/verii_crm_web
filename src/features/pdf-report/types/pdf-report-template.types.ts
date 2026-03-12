@@ -25,6 +25,7 @@ export interface ReportTemplatePageDto {
   width: number;
   height: number;
   unit: string;
+  pageCount?: number;
 }
 
 export interface PdfReportElementStyleDto {
@@ -60,6 +61,7 @@ export interface ReportTemplateElementDto {
   locked?: boolean;
   hidden?: boolean;
   style?: PdfReportElementStyleDto;
+  pageNumbers?: number[];
 }
 
 export interface ReportTemplateDataDto {
