@@ -80,8 +80,8 @@ export function ProductPricingStockSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0 overflow-hidden bg-white/95 dark:bg-[#0c0516]/95 backdrop-blur-xl border-slate-200 dark:border-white/10 shadow-2xl">
-        <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 flex-shrink-0">
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl sm:rounded-2xl">
+        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md flex-shrink-0">
           <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
             <div className="bg-gradient-to-br from-pink-500 to-orange-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
               <Package size={20} />
