@@ -35,6 +35,11 @@ interface ExportQuotationLinesPdfParams {
   t: TranslationFn;
 }
 
+interface CurrencyPresentation {
+  code: string;
+  label: string;
+}
+
 function normalizeCustomerAccountName(value: string | null | undefined): string {
   const trimmed = value?.trim() ?? '';
   if (!trimmed) return '';
@@ -45,6 +50,28 @@ function normalizeCustomerAccountName(value: string | null | undefined): string 
   }
 
   return trimmed;
+}
+
+function getCurrencyPresentation(value: string | null | undefined): CurrencyPresentation {
+  const normalized = String(value ?? 'TRY').trim().toUpperCase();
+
+  switch (normalized) {
+    case '0':
+    case 'TL':
+    case 'TRY':
+      return { code: 'TRY', label: 'Türk Lirası' };
+    case '1':
+    case 'USD':
+      return { code: 'USD', label: 'ABD Doları' };
+    case '2':
+    case 'EUR':
+      return { code: 'EUR', label: 'Euro' };
+    case '3':
+    case 'GBP':
+      return { code: 'GBP', label: 'İngiliz Sterlini' };
+    default:
+      return { code: normalized || 'TRY', label: normalized || 'Türk Lirası' };
+  }
 }
 
 function downloadPdfBlob(blob: Blob, fileName: string): void {
@@ -64,7 +91,8 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
     import('jspdf-autotable'),
   ]);
 
-  const doc = new JsPDF({ orientation: 'landscape' });
+  const doc = new JsPDF({ orientation: 'portrait' });
+  const currency = getCurrencyPresentation(params.currencyCode);
   const fontResponse = await fetch(resolveAppPath(PDF_FONT_PATH), { cache: 'force-cache' });
   if (fontResponse.ok) {
     const fontBytes = await fontResponse.arrayBuffer();
@@ -82,71 +110,63 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
   doc.text(`${params.t('quotation.date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
   doc.text(`${params.t('quotation.offerNo', { defaultValue: 'Teklif No' })}: ${params.offerNo ?? '-'}`, 14, 36);
   const customerAccountName = normalizeCustomerAccountName(params.customerName);
-  const tableStartY = customerAccountName ? 50 : 42;
+  doc.text(`${params.t('quotation.currency', { defaultValue: 'Döviz' })}: ${currency.label}`, 14, 44);
+  const tableStartY = customerAccountName ? 58 : 50;
   if (customerAccountName) {
-    doc.text(`${params.t('quotation.customerAccount')}: ${customerAccountName}`, 14, 44);
+    doc.text(`${params.t('quotation.customerAccount')}: ${customerAccountName}`, 14, 52);
   }
 
   const headers = [[
     params.t('quotation.lines.productCode'),
     params.t('quotation.lines.productName'),
-    params.t('quotation.discount', { defaultValue: 'İskonto' }),
+    params.t('quotation.discount1', { defaultValue: 'İskonto 1' }),
+    params.t('quotation.discount2', { defaultValue: 'İskonto 2' }),
+    params.t('quotation.discount3', { defaultValue: 'İskonto 3' }),
     params.t('quotation.lines.quantity'),
     params.t('quotation.lines.unitPrice'),
+    params.t('quotation.currency', { defaultValue: 'Döviz' }),
     params.t('quotation.lines.vatRate'),
     params.t('quotation.lines.total'),
   ]];
 
-  const formatDiscountText = (line: ExportQuotationLine): string => {
-    const parts: string[] = [];
-
-    if ((line.discountRate1 ?? 0) > 0 || (line.discountAmount1 ?? 0) > 0) {
-      parts.push(`1:%${line.discountRate1 ?? 0}`);
-    }
-    if ((line.discountRate2 ?? 0) > 0 || (line.discountAmount2 ?? 0) > 0) {
-      parts.push(`2:%${line.discountRate2 ?? 0}`);
-    }
-    if ((line.discountRate3 ?? 0) > 0 || (line.discountAmount3 ?? 0) > 0) {
-      parts.push(`3:%${line.discountRate3 ?? 0}`);
-    }
-
-    const totalDiscountAmount =
-      (line.discountAmount1 ?? 0) +
-      (line.discountAmount2 ?? 0) +
-      (line.discountAmount3 ?? 0);
-
-    if (totalDiscountAmount > 0) {
-      parts.push(`${params.t('total', { ns: 'common', defaultValue: 'Toplam' })}: ${formatCurrency(totalDiscountAmount, params.currencyCode)}`);
-    }
-
-    return parts.join(' | ') || '-';
-  };
-
   const data = params.lines.map((line) => [
     line.productCode ?? '',
     line.productName,
-    formatDiscountText(line),
+    `%${line.discountRate1 ?? 0}`,
+    `%${line.discountRate2 ?? 0}`,
+    `%${line.discountRate3 ?? 0}`,
     line.quantity,
-    formatCurrency(line.unitPrice, params.currencyCode),
+    formatCurrency(line.unitPrice, currency.code),
+    currency.label,
     `%${line.vatRate}`,
-    formatCurrency(line.lineTotal, params.currencyCode),
+    formatCurrency(line.lineTotal, currency.code),
   ]);
 
   autoTable(doc, {
     startY: tableStartY,
     head: headers,
     body: data,
-    styles: { font: PDF_FONT_NAME, fontStyle: 'normal', fontSize: 9, cellPadding: 2.5 },
+    styles: {
+      font: PDF_FONT_NAME,
+      fontStyle: 'normal',
+      fontSize: 7.5,
+      cellPadding: 1.6,
+      overflow: 'linebreak',
+      valign: 'middle',
+    },
     theme: 'grid',
     headStyles: { font: PDF_FONT_NAME, fontStyle: 'normal' },
     columnStyles: {
-      0: { cellWidth: 34 },
-      1: { cellWidth: 88 },
-      2: { cellWidth: 72 },
-      3: { cellWidth: 20, halign: 'right' },
-      4: { cellWidth: 28, halign: 'right' },
-      5: { cellWidth: 18, halign: 'right' },
-      6: { cellWidth: 30, halign: 'right' },
+      0: { cellWidth: 20 },
+      1: { cellWidth: 50 },
+      2: { cellWidth: 12, halign: 'right' },
+      3: { cellWidth: 12, halign: 'right' },
+      4: { cellWidth: 12, halign: 'right' },
+      5: { cellWidth: 12, halign: 'right' },
+      6: { cellWidth: 19, halign: 'right' },
+      7: { cellWidth: 16 },
+      8: { cellWidth: 12, halign: 'right' },
+      9: { cellWidth: 23, halign: 'right' },
     },
   });
 
