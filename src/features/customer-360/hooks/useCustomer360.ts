@@ -9,8 +9,15 @@ import {
   getCustomer360AnalyticsSummary,
   getCustomer360AnalyticsCharts,
   getCustomer360QuickQuotations,
+  getCustomer360ErpMovements,
+  getCustomer360ErpBalance,
 } from '../api/customer360.api';
-import type { Customer360QuickQuotationDto, ExecuteRecommendedActionDto } from '../types/customer360.types';
+import type {
+  Customer360QuickQuotationDto,
+  ExecuteRecommendedActionDto,
+  Customer360ErpMovementDto,
+  Customer360ErpBalanceDto,
+} from '../types/customer360.types';
 
 const OVERVIEW_STALE_MS = 30_000;
 const SUMMARY_STALE_MS = 30_000;
@@ -18,6 +25,8 @@ const CHARTS_STALE_MS = 45_000;
 const COHORT_STALE_MS = 300_000;
 const IMAGES_STALE_MS = 60_000;
 const QUICK_QUOTATIONS_STALE_MS = 30_000;
+const ERP_MOVEMENTS_STALE_MS = 30_000;
+const ERP_BALANCE_STALE_MS = 30_000;
 
 export function useCustomer360OverviewQuery(id: number, currency?: string) {
   return useQuery({
@@ -70,6 +79,24 @@ export function useCustomer360QuickQuotationsQuery(id: number) {
     queryKey: ['customer360', 'quick-quotations', id],
     queryFn: ({ signal }) => getCustomer360QuickQuotations({ id, signal }),
     staleTime: QUICK_QUOTATIONS_STALE_MS,
+    enabled: id > 0,
+  });
+}
+
+export function useCustomer360ErpMovementsQuery(id: number) {
+  return useQuery<Customer360ErpMovementDto[], Error>({
+    queryKey: ['customer360', 'erp-movements', id],
+    queryFn: ({ signal }) => getCustomer360ErpMovements({ id, signal }),
+    staleTime: ERP_MOVEMENTS_STALE_MS,
+    enabled: id > 0,
+  });
+}
+
+export function useCustomer360ErpBalanceQuery(id: number) {
+  return useQuery<Customer360ErpBalanceDto, Error>({
+    queryKey: ['customer360', 'erp-balance', id],
+    queryFn: ({ signal }) => getCustomer360ErpBalance({ id, signal }),
+    staleTime: ERP_BALANCE_STALE_MS,
     enabled: id > 0,
   });
 }

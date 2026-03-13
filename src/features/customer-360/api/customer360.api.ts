@@ -7,6 +7,8 @@ import type {
   Customer360AnalyticsChartsDto,
   Customer360AnalyticsSummaryDto,
   Customer360OverviewDto,
+  Customer360ErpBalanceDto,
+  Customer360ErpMovementDto,
   ExecuteRecommendedActionDto,
 } from '../types/customer360.types';
 import { api } from '@/lib/axios';
@@ -128,4 +130,28 @@ export async function getCustomer360QuickQuotations(params: {
     { signal }
   );
   return ensureData(response, 'Quick quotations could not be loaded');
+}
+
+export async function getCustomer360ErpMovements(params: {
+  id: number;
+  signal?: AbortSignal;
+}): Promise<Customer360ErpMovementDto[]> {
+  const { id, signal } = params;
+  const response = await api.get<ApiResponse<Customer360ErpMovementDto[] | null>>(
+    `/api/customers/${id}/erp-movements`,
+    { signal }
+  );
+  return ensureData(response, 'ERP hareketleri yüklenemedi');
+}
+
+export async function getCustomer360ErpBalance(params: {
+  id: number;
+  signal?: AbortSignal;
+}): Promise<Customer360ErpBalanceDto> {
+  const { id, signal } = params;
+  const response = await api.get<ApiResponse<Customer360ErpBalanceDto | null>>(
+    `/api/customers/${id}/erp-balance`,
+    { signal }
+  );
+  return ensureData(response, 'ERP bakiye özeti yüklenemedi');
 }

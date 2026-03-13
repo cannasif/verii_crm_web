@@ -185,3 +185,30 @@ export interface CustomerImageDto {
   updatedByFullUser?: string | null;
   deletedByFullUser?: string | null;
 }
+
+export interface Customer360ErpMovementDto {
+  cariKod: string;
+  tarih?: string | null;
+  vadeTarihi?: string | null;
+  belgeNo?: string | null;
+  aciklama?: string | null;
+  dovizTuru?: number | null;
+  paraBirimi?: string | null;
+  borc: number;
+  alacak: number;
+  tarihSiraliTlBakiye: number;
+  vadeSiraliTlBakiye: number;
+  dovizBorc: number;
+  dovizAlacak: number;
+  tarihSiraliDovizBakiye: number;
+  vadeSiraliDovizBakiye: number;
+}
+
+export interface Customer360ErpBalanceDto {
+  cariKod: string;
+  netBakiye: number;
+  bakiyeDurumu: string;
+  bakiyeTutari: number;
+  toplamBorc: number;
+  toplamAlacak: number;
+}
