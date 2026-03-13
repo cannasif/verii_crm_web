@@ -9,6 +9,7 @@ import {
 import { Sidebar, type SidebarDragData } from './components/Sidebar';
 import type { ReportElement, TableElement } from './models/report-element';
 import { useReportStore } from './store/useReportStore';
+import { createClientId } from '@/lib/create-client-id';
 import i18n from '@/lib/i18n';
 
 const DEFAULT_ELEMENT_WIDTH = 200;
@@ -61,7 +62,7 @@ export function ReportDesignerPage(): ReactElement {
 
     if (data.type === 'text') {
       const newElement: ReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'text',
         section,
         x,
@@ -78,7 +79,7 @@ export function ReportDesignerPage(): ReactElement {
 
     if (data.type === 'field') {
       const newElement: ReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'field',
         section,
         x,
@@ -94,7 +95,7 @@ export function ReportDesignerPage(): ReactElement {
 
     if (data.type === 'table') {
       const newTable: TableElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'table',
         section,
         x,
@@ -109,7 +110,7 @@ export function ReportDesignerPage(): ReactElement {
 
     if (data.type === 'image') {
       const newElement: ReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'image',
         section,
         x,

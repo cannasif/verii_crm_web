@@ -7,6 +7,7 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import type { DemandLineFormState, DemandExchangeRateFormState } from '../types/demand-types';
 import type { ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import type { KurDto } from '@/services/erp-types';
+import { createClientId } from '@/lib/create-client-id';
 
 function findExchangeRateByDovizTipi(
   dovizTipi: number,
@@ -102,7 +103,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
 
         const lines: DemandLineFormState[] = [];
         const mainStockId = product.id || null;
-        const relatedProductKey = crypto.randomUUID();
+        const relatedProductKey = createClientId();
 
         for (let i = 0; i < requests.length; i++) {
           const request = requests[i];

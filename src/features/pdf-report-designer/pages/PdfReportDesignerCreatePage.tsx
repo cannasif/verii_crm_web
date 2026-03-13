@@ -53,6 +53,7 @@ import { useUpdatePdfReportTemplate } from '../hooks/useUpdatePdfReportTemplate'
 import { usePdfReportTemplateById } from '../hooks/usePdfReportTemplateById';
 import { dtoToPdfCanvasElements, pdfCanvasElementsToDto } from '../utils/dto-to-canvas';
 import { getApiErrorMessage } from '../utils/get-api-error-message';
+import { createClientId } from '@/lib/create-client-id';
 import type {
   ReportTemplateCreateDto,
   ReportTemplateGetDto,
@@ -388,7 +389,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
     if (data.type === 'text') {
       const newElement: PdfReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'text',
         section,
         x,
@@ -406,7 +407,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
     if (data.type === 'field') {
       const newElement: PdfReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'field',
         section,
         x,
@@ -423,7 +424,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
     if (data.type === 'table') {
       const newTable: PdfTableElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'table',
         section,
         x,
@@ -439,7 +440,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
     if (data.type === 'image') {
       const newElement: PdfReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'image',
         section,
         x,

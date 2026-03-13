@@ -46,6 +46,7 @@ import { dtoElementsToCanvasElements } from './utils/dto-to-canvas';
 import { DocumentRuleType, type ReportTemplateCreateDto, type ReportTemplateElementDto } from './types/report-template-types';
 import type { ReportTemplateGetDto } from './types/report-template-types';
 import { A4_CANVAS_WIDTH, A4_CANVAS_HEIGHT } from './constants';
+import { createClientId } from '@/lib/create-client-id';
 
 const RULE_TYPE_OPTIONS: PricingRuleType[] = [
   PricingRuleType.Demand,
@@ -267,7 +268,7 @@ export function ReportDesignerCreatePage(): ReactElement {
 
     if (data.type === 'text') {
       const newElement: ReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'text',
         section,
         x,
@@ -284,7 +285,7 @@ export function ReportDesignerCreatePage(): ReactElement {
 
     if (data.type === 'field') {
       const newElement: ReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'field',
         section,
         x,
@@ -300,7 +301,7 @@ export function ReportDesignerCreatePage(): ReactElement {
 
     if (data.type === 'table') {
       const newTable: TableElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'table',
         section,
         x,
@@ -315,7 +316,7 @@ export function ReportDesignerCreatePage(): ReactElement {
 
     if (data.type === 'image') {
       const newElement: ReportElement = {
-        id: crypto.randomUUID(),
+        id: createClientId(),
         type: 'image',
         section,
         x,
