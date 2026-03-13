@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { usePdfReportTemplateList } from '@/features/pdf-report-designer/hooks/usePdfReportTemplateList';
-import { useGeneratePdfReportDocument } from '@/features/pdf-report-designer/hooks/useGeneratePdfReportDocument';
+import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { DocumentRuleType, type ReportTemplateGetDto } from '@/features/pdf-report';
 import {
   Select,
@@ -30,12 +30,13 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
   const { t } = useTranslation();
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [hasPreviewError, setHasPreviewError] = useState(false);
   const pdfBlobUrlRef = useRef<string | null>(null);
   pdfBlobUrlRef.current = pdfBlobUrl;
 
   const { data: listData, isLoading: isLoadingTemplates } = usePdfReportTemplateList();
   const templates = listData?.items ?? [];
-  const generatePdfMutation = useGeneratePdfReportDocument();
 
   const filteredTemplates: ReportTemplateGetDto[] = templates.filter(
     (template) => Number(template.ruleType) === ruleType
@@ -52,6 +53,8 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
 
   useEffect(() => {
     if (!selectedTemplateId) {
+      setIsGenerating(false);
+      setHasPreviewError(false);
       setPdfBlobUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return null;
@@ -62,32 +65,41 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
     if (Number.isNaN(templateId) || templateId < 1) return;
 
     let cancelled = false;
-    generatePdfMutation.mutate(
-      { templateId, entityId },
-      {
-        onSuccess: (blob) => {
-          if (cancelled) {
-            URL.revokeObjectURL(URL.createObjectURL(blob));
-            return;
-          }
-          setPdfBlobUrl((prev) => {
-            if (prev) URL.revokeObjectURL(prev);
-            return URL.createObjectURL(blob);
-          });
-        },
-        onError: (err: Error) => {
-          if (!cancelled) {
-            toast.error(t('common.pdfGenerateFailed'), {
-              description: err?.message,
-            });
-          }
-        },
-      }
-    );
+    setIsGenerating(true);
+    setHasPreviewError(false);
+
+    void pdfReportTemplateApi
+      .generateDocument(templateId, entityId)
+      .then((blob) => {
+        if (cancelled) return;
+
+        setPdfBlobUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return URL.createObjectURL(blob);
+        });
+      })
+      .catch((err: Error) => {
+        if (cancelled) return;
+
+        setPdfBlobUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return null;
+        });
+        setHasPreviewError(true);
+        toast.error(t('common.pdfGenerateFailed'), {
+          description: err?.message,
+        });
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsGenerating(false);
+        }
+      });
+
     return () => {
       cancelled = true;
     };
-  }, [selectedTemplateId, entityId, generatePdfMutation, t]);
+  }, [selectedTemplateId, entityId, t]);
 
   useEffect(() => {
     return () => {
@@ -96,7 +108,6 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
     };
   }, []);
 
-  const isGenerating = Boolean(selectedTemplateId) && generatePdfMutation.isPending;
   const emptyLabel = t(RULE_TYPE_EMPTY_LABELS[ruleType]);
 
   return (
@@ -151,7 +162,7 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
         </div>
       )}
 
-      {selectedTemplateId && !selectedTemplateId.startsWith('__') && !isGenerating && !pdfBlobUrl && generatePdfMutation.isError && (
+      {selectedTemplateId && !selectedTemplateId.startsWith('__') && !isGenerating && !pdfBlobUrl && hasPreviewError && (
         <p className="text-sm text-destructive">
           {t('reportDesigner.preview.loadFailed')}
         </p>
