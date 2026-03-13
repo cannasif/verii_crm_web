@@ -81,8 +81,8 @@ export function QuotationDetailPage(): ReactElement {
         ? []
         : [
             {
-              id: '__builtin_windo_tl__',
-              title: 'Windo TL',
+              id: '__builtin_windo_teklif_yap__',
+              title: 'Windo Teklif Yap',
               isDefault: true,
               generate: () =>
                 createQuotationLinesPdfBlob({
