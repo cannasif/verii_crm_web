@@ -103,6 +103,8 @@ export function DataTableGrid<TRow, TKey extends string>({
   disablePaginationButtons = false,
 }: DataTableGridProps<TRow, TKey>): ReactElement {
   const [isDragging, setIsDragging] = useState(false);
+  const lastRowClickRef = useRef<{ key: string | number; timestamp: number } | null>(null);
+  const suppressNativeDoubleClickUntilRef = useRef(0);
   const tableScrollRef = useRef<HTMLDivElement | null>(null);
   const dragStateRef = useRef({
     isDragging: false,
@@ -154,6 +156,31 @@ export function DataTableGrid<TRow, TKey extends string>({
     event.preventDefault();
     event.stopPropagation();
     dragStateRef.current.moved = false;
+  };
+
+  const handleRowClick = (row: TRow): void => {
+    const key = rowKey(row);
+    const now = Date.now();
+    const lastClick = lastRowClickRef.current;
+    const isFastSecondClick =
+      lastClick != null && lastClick.key === key && now - lastClick.timestamp <= 320;
+
+    onRowClick?.(row);
+
+    if (isFastSecondClick && onRowDoubleClick) {
+      suppressNativeDoubleClickUntilRef.current = now + 400;
+      onRowDoubleClick(row);
+      lastRowClickRef.current = null;
+      return;
+    }
+
+    lastRowClickRef.current = { key, timestamp: now };
+  };
+
+  const handleRowDoubleClick = (row: TRow): void => {
+    if (!onRowDoubleClick) return;
+    if (Date.now() <= suppressNativeDoubleClickUntilRef.current) return;
+    onRowDoubleClick(row);
   };
 
   const colSpan = visibleColumnKeys.length + (showActionsColumn ? 1 : 0) || 1;
@@ -243,8 +270,8 @@ export function DataTableGrid<TRow, TKey extends string>({
                   <TableRow
                     key={rowKey(row)}
                     className={customRowClass}
-                    onClick={onRowClick ? () => onRowClick(row) : undefined}
-                    onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}
+                    onClick={onRowClick || onRowDoubleClick ? () => handleRowClick(row) : undefined}
+                    onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
                   >
                     {visibleColumnKeys.map((key) => {
                       const column = columns.find((item) => item.key === key);
