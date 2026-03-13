@@ -5,7 +5,7 @@ import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
 import type { QuotationGetDto } from '../types/quotation-types';
-import { Mail } from 'lucide-react';
+import { Edit2, Mail } from 'lucide-react';
 import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
 import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
@@ -125,6 +125,14 @@ export function QuotationTable({
 
   const renderActionsCell = (quotation: QuotationGetDto): ReactElement => (
     <div className="flex items-center justify-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => navigate(`/quotations/${quotation.id}`)}
+      >
+        <Edit2 className="h-4 w-4 mr-1" />
+        {t('quotation.list.detail', { defaultValue: 'Detay' })}
+      </Button>
       <Button variant="outline" size="sm" onClick={(e) => handleOpenMailDialog(e, quotation)}>
         <Mail className="h-4 w-4 mr-1" />
         {t('google-integration:mailDialog.openButton')}

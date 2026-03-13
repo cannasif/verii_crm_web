@@ -168,6 +168,7 @@ export function CityTable({
         actionsHeaderLabel={actionsHeaderLabel}
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}
+        onRowDoubleClick={onEdit}
         pageSize={pageSize}
         pageSizeOptions={pageSizeOptions}
         onPageSizeChange={onPageSizeChange}

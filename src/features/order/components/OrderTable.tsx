@@ -5,7 +5,7 @@ import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { useCreateRevisionOfOrder } from '../hooks/useCreateRevisionOfOrder';
 import type { OrderGetDto } from '../types/order-types';
-import { Mail } from 'lucide-react';
+import { Edit2, Mail } from 'lucide-react';
 import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
 import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
@@ -125,6 +125,14 @@ export function OrderTable({
 
   const renderActionsCell = (order: OrderGetDto): ReactElement => (
     <div className="flex items-center justify-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => navigate(`/orders/${order.id}`)}
+      >
+        <Edit2 className="h-4 w-4 mr-1" />
+        {t('order.list.detail', { defaultValue: 'Detay' })}
+      </Button>
       <Button
         variant="outline"
         size="sm"

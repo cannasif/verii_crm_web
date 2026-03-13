@@ -5,7 +5,7 @@ import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { useCreateRevisionOfDemand } from '../hooks/useCreateRevisionOfDemand';
 import type { DemandGetDto } from '../types/demand-types';
-import { Mail, PencilLine } from 'lucide-react';
+import { Edit2, Mail, PencilLine } from 'lucide-react';
 import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
 import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
@@ -125,6 +125,15 @@ export function DemandTable({
 
   const renderActionsCell = (demand: DemandGetDto): ReactElement => (
     <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+      <Button
+        variant="ghost"
+        size="icon"
+        title={t('demand.list.detail', { defaultValue: 'Detay' })}
+        onClick={() => navigate(`/demands/${demand.id}`)}
+        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+      >
+        <Edit2 className="h-4 w-4" />
+      </Button>
       <Button
         variant="ghost"
         size="icon"
