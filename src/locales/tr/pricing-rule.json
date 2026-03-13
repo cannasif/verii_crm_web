@@ -11,7 +11,8 @@
       "add": "Yeni Kural Ekle"
     },
     "table": {
-      "title": "Fiyat Kuralı Listesi"
+      "title": "Fiyat Kuralı Listesi",
+      "actions": "İşlemler"
     },
     "status": {
       "active": "Aktif",
@@ -22,6 +23,48 @@
       "quotation": "Teklif",
       "order": "Sipariş",
       "unknown": "Bilinmiyor"
+    },
+    "form": {
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "create": "Yeni Fiyat Kuralı",
+      "edit": "Fiyat Kuralı Düzenle",
+      "createDescription": "Yeni fiyat kuralı bilgilerini girin",
+      "editDescription": "Fiyat kuralı bilgilerini düzenleyin",
+      "tabs": {
+        "header": "Genel Bilgiler",
+        "lines": "Satırlar",
+        "salesmen": "Satışçılar"
+      },
+      "lines": {
+        "required": "En az 1 satır eklenmelidir",
+        "requiredMessage": "Lütfen en az bir satır ekleyin"
+      }
+    },
+    "lines": {
+      "title": "Fiyat Kuralı Satırları",
+      "selectStock": "Satırlara Stok Ekle",
+      "empty": "Henüz satır eklenmedi",
+      "addFirst": "İlk satırı ekleyin",
+      "stokCode": "Stok Kodu",
+      "minQuantity": "Min Miktar",
+      "maxQuantity": "Max Miktar",
+      "fixedUnitPrice": "Sabit Birim Fiyat",
+      "currencyCode": "Döviz",
+      "discount1": "İndirim 1",
+      "discount2": "İndirim 2",
+      "discount3": "İndirim 3",
+      "addConfirmTitle": "Satır Ekle",
+      "addConfirmMessage": "{{code}} bu kurala eklenecek. Onaylıyor musunuz?",
+      "addSuccess": "Satır eklendi",
+      "addSuccessMessage": "Fiyat kuralı satırı başarıyla eklendi",
+      "addError": "Satır eklenemedi",
+      "deleteConfirmTitle": "Satırı Sil",
+      "deleteConfirmMessage": "{{code}} satırını silmek istediğinizden emin misiniz?",
+      "deleteSuccess": "Satır silindi",
+      "deleteSuccessMessage": "Fiyat kuralı satırı başarıyla silindi",
+      "deleteError": "Satır silinemedi",
+      "stokCodeRequired": "Stok kodu zorunludur"
     }
   },
   "loading": "Yükleniyor...",
