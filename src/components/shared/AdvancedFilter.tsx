@@ -38,6 +38,17 @@ const OPERATOR_LABEL_KEY_MAP: Record<string, string> = {
   '<=': '<=',
 };
 
+const OPERATOR_LABEL_TR_FALLBACK: Record<string, string> = {
+  contains: 'İçerir',
+  startsWith: 'Şununla başlar',
+  endsWith: 'Şununla biter',
+  equals: 'Eşittir',
+  '>': '>',
+  '>=': '>=',
+  '<': '<',
+  '<=': '<=',
+};
+
 function generateId(): string {
   return `filter-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
@@ -96,6 +107,9 @@ export function AdvancedFilter({
     const nsVal = t(key, { ns: translationNamespace });
     if (nsVal && nsVal !== key) return nsVal;
 
+    const trFallback = OPERATOR_LABEL_TR_FALLBACK[operator];
+    if (trFallback) return trFallback;
+
     return operator;
   };
 
@@ -103,19 +117,19 @@ export function AdvancedFilter({
     <div className={embedded ? 'p-4 space-y-4' : 'rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-card/50 p-4 space-y-4'}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-          {getLabel('title', 'Advanced Filter')}
+          {getLabel('title', 'Gelişmiş Filtre')}
         </h3>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={addRow}>
             <Plus className="h-4 w-4 mr-1" />
-            {getLabel('add', 'Add Filter')}
+            {getLabel('add', 'Filtre Ekle')}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={onClear}>
-            {getLabel('clear', 'Clear')}
+            {getLabel('clear', 'Temizle')}
           </Button>
           <Button type="button" size="sm" onClick={onSearch}>
             <Search className="h-4 w-4 mr-1" />
-            {getLabel('search', 'Search')}
+            {getLabel('search', 'Ara')}
           </Button>
         </div>
       </div>
