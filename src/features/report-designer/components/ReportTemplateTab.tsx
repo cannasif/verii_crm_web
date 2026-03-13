@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { usePdfReportTemplateList } from '@/features/pdf-report-designer/hooks/usePdfReportTemplateList';
 import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { DocumentRuleType, type ReportTemplateGetDto } from '@/features/pdf-report';
@@ -24,9 +24,19 @@ const RULE_TYPE_EMPTY_LABELS: Record<DocumentRuleType, string> = {
 interface ReportTemplateTabProps {
   entityId: number;
   ruleType: DocumentRuleType;
+  builtInTemplates?: {
+    id: string;
+    title: string;
+    isDefault?: boolean;
+    generate: () => Promise<Blob>;
+  }[];
 }
 
-export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps): ReactElement {
+export function ReportTemplateTab({
+  entityId,
+  ruleType,
+  builtInTemplates = [],
+}: ReportTemplateTabProps): ReactElement {
   const { t } = useTranslation();
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
@@ -37,19 +47,30 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
 
   const { data: listData, isLoading: isLoadingTemplates } = usePdfReportTemplateList();
   const templates = listData?.items ?? [];
+  const builtInTemplateMap = useMemo(
+    () => new Map(builtInTemplates.map((template) => [template.id, template])),
+    [builtInTemplates]
+  );
 
   const filteredTemplates: ReportTemplateGetDto[] = templates.filter(
     (template) => Number(template.ruleType) === ruleType
   );
   const defaultTemplateRef = useRef(false);
   useEffect(() => {
-    if (defaultTemplateRef.current || filteredTemplates.length === 0) return;
+    if (defaultTemplateRef.current) return;
+    const builtInDefaultTemplate = builtInTemplates.find((template) => template.isDefault === true);
+    if (builtInDefaultTemplate != null) {
+      defaultTemplateRef.current = true;
+      setSelectedTemplateId(builtInDefaultTemplate.id);
+      return;
+    }
+    if (filteredTemplates.length === 0) return;
     const defaultTemplate = filteredTemplates.find((template) => template.default === true);
     if (defaultTemplate != null) {
       defaultTemplateRef.current = true;
       setSelectedTemplateId(String(defaultTemplate.id));
     }
-  }, [filteredTemplates]);
+  }, [builtInTemplates, filteredTemplates]);
 
   useEffect(() => {
     if (!selectedTemplateId) {
@@ -60,6 +81,44 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
         return null;
       });
       return;
+    }
+    const builtInTemplate = builtInTemplateMap.get(selectedTemplateId);
+    if (builtInTemplate != null) {
+      let cancelled = false;
+      setIsGenerating(true);
+      setHasPreviewError(false);
+
+      void builtInTemplate
+        .generate()
+        .then((blob) => {
+          if (cancelled) return;
+
+          setPdfBlobUrl((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return URL.createObjectURL(blob);
+          });
+        })
+        .catch((err: Error) => {
+          if (cancelled) return;
+
+          setPdfBlobUrl((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return null;
+          });
+          setHasPreviewError(true);
+          toast.error(t('common.pdfGenerateFailed'), {
+            description: err?.message,
+          });
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setIsGenerating(false);
+          }
+        });
+
+      return () => {
+        cancelled = true;
+      };
     }
     const templateId = parseInt(selectedTemplateId, 10);
     if (Number.isNaN(templateId) || templateId < 1) return;
@@ -99,7 +158,7 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
     return () => {
       cancelled = true;
     };
-  }, [selectedTemplateId, entityId, t]);
+  }, [selectedTemplateId, entityId, t, builtInTemplateMap]);
 
   useEffect(() => {
     return () => {
@@ -109,6 +168,7 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
   }, []);
 
   const emptyLabel = t(RULE_TYPE_EMPTY_LABELS[ruleType]);
+  const hasSelectableTemplates = builtInTemplates.length > 0 || filteredTemplates.length > 0;
 
   return (
     <div className="space-y-6">
@@ -124,17 +184,25 @@ export function ReportTemplateTab({ entityId, ruleType }: ReportTemplateTabProps
               <SelectValue placeholder={t('reportDesigner.preview.selectPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
-              {filteredTemplates.length === 0 ? (
+              {!hasSelectableTemplates ? (
                 <SelectItem value="__none__" disabled>
                   {isLoadingTemplates ? t('reportDesigner.preview.loading') : emptyLabel}
                 </SelectItem>
               ) : (
-                filteredTemplates.map((template) => (
-                  <SelectItem key={template.id} value={String(template.id)}>
-                    {template.title}
-                    {template.default === true ? t('reportDesigner.preview.defaultSuffix') : ''}
-                  </SelectItem>
-                ))
+                <>
+                  {builtInTemplates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.title}
+                      {template.isDefault === true ? t('reportDesigner.preview.defaultSuffix') : ''}
+                    </SelectItem>
+                  ))}
+                  {filteredTemplates.map((template) => (
+                    <SelectItem key={template.id} value={String(template.id)}>
+                      {template.title}
+                      {template.default === true ? t('reportDesigner.preview.defaultSuffix') : ''}
+                    </SelectItem>
+                  ))}
+                </>
               )}
             </SelectContent>
           </Select>

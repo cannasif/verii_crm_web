@@ -185,15 +185,19 @@ async function mergeAtlasCoverWithLinesPdf(linesPdfBytes: ArrayBuffer): Promise<
   return new Blob([mergedBytes], { type: 'application/pdf' });
 }
 
-export async function exportQuotationLinesPdf(params: ExportQuotationLinesPdfParams): Promise<void> {
+export async function createQuotationLinesPdfBlob(
+  params: ExportQuotationLinesPdfParams
+): Promise<Blob> {
   const linesPdfBytes = await buildLinesPdfBytes(params);
 
   try {
-    const mergedBlob = await mergeAtlasCoverWithLinesPdf(linesPdfBytes);
-    downloadPdfBlob(mergedBlob, params.fileName);
-    return;
+    return await mergeAtlasCoverWithLinesPdf(linesPdfBytes);
   } catch {
-    const fallbackBlob = new Blob([linesPdfBytes], { type: 'application/pdf' });
-    downloadPdfBlob(fallbackBlob, params.fileName);
+    return new Blob([linesPdfBytes], { type: 'application/pdf' });
   }
+}
+
+export async function exportQuotationLinesPdf(params: ExportQuotationLinesPdfParams): Promise<void> {
+  const blob = await createQuotationLinesPdfBlob(params);
+  downloadPdfBlob(blob, params.fileName);
 }

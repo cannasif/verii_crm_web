@@ -42,6 +42,7 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { createQuotationLinesPdfBlob } from '../utils/export-quotation-lines-pdf';
 
 export function QuotationDetailPage(): ReactElement {
   const { t } = useTranslation();
@@ -74,6 +75,29 @@ export function QuotationDetailPage(): ReactElement {
   const isReadOnly = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4;
   const isClosed = quotationStatus === 4;
   const linesEnabled = !isReadOnly;
+  const builtInReportTemplates = useMemo(
+    () =>
+      quotation == null
+        ? []
+        : [
+            {
+              id: '__builtin_windo_tl__',
+              title: 'Windo TL',
+              isDefault: true,
+              generate: () =>
+                createQuotationLinesPdfBlob({
+                  fileName: `teklif-${quotation.offerNo || 'detay'}.pdf`,
+                  title: t('quotation.sections.lines'),
+                  currencyCode: quotation.currency || 'TRY',
+                  lines,
+                  offerNo: quotation.offerNo ?? null,
+                  customerName: quotation.potentialCustomerName ?? null,
+                  t,
+                }),
+            },
+          ],
+    [quotation, lines, t]
+  );
 
   const form = useForm<CreateQuotationSchema>({
     resolver: zodResolver(createQuotationSchema),
@@ -768,7 +792,11 @@ export function QuotationDetailPage(): ReactElement {
         </TabsContent>
 
         <TabsContent value="report" className="mt-6 focus-visible:outline-none">
-          <ReportTemplateTab entityId={quotationId} ruleType={DocumentRuleType.Quotation} />
+          <ReportTemplateTab
+            entityId={quotationId}
+            ruleType={DocumentRuleType.Quotation}
+            builtInTemplates={builtInReportTemplates}
+          />
         </TabsContent>
       </Tabs>
     </div>
