@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -203,6 +203,26 @@ export function OrderListPage(): ReactElement {
     [currentPageRows, orderExportQuery.data?.data, t, i18n.language]
   );
 
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const { data } = await orderExportQuery.refetch();
+    const list = data?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((order: OrderGetDto) => ({
+        Id: order.id,
+        OfferNo: order.offerNo ?? '-',
+        PotentialCustomerName: order.potentialCustomerName ?? '-',
+        RepresentativeName: order.representativeName ?? '-',
+        OfferDate: order.offerDate ? new Date(order.offerDate).toLocaleDateString(i18n.language) : '-',
+        Currency: order.currency ?? '-',
+        GrandTotal: formatCurrency(order.grandTotal, order.currency ?? 'TRY'),
+        Status: typeof order.status === 'number' && order.status >= 0 && order.status <= 4
+          ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][order.status]}`)
+          : '-',
+      })),
+    };
+  }, [orderExportQuery, exportColumns, t, i18n.language]);
+
   useEffect(() => {
     setPageNumber(1);
   }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters]);
@@ -293,6 +313,7 @@ export function OrderListPage(): ReactElement {
                 exportFileName="order-list"
                 exportColumns={exportColumns}
                 exportRows={exportRows}
+                getExportData={getExportData}
                 filterColumns={filterColumns}
                 defaultFilterColumn="OfferNo"
                 draftFilterRows={draftFilterRows}

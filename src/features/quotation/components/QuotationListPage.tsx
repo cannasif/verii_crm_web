@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -191,6 +191,27 @@ export function QuotationListPage(): ReactElement {
     [baseColumns, orderedVisibleColumns]
   );
 
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const { data } = await quotationExportQuery.refetch();
+    const list = data?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((quotation: QuotationGetDto) => ({
+        Id: quotation.id,
+        OfferNo: quotation.offerNo ?? '-',
+        PotentialCustomerName: quotation.potentialCustomerName ?? '-',
+        RepresentativeName: quotation.representativeName ?? '-',
+        OfferDate: quotation.offerDate ? new Date(quotation.offerDate).toLocaleDateString(i18n.language) : '-',
+        Currency: quotation.currency ?? '-',
+        GrandTotal: formatCurrency(quotation.grandTotal, quotation.currency ?? 'TRY'),
+        Status:
+          typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4
+            ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
+            : '-',
+      })),
+    };
+  }, [quotationExportQuery, exportColumns, t, i18n.language]);
+
   useEffect(() => {
     setPageNumber(1);
   }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters]);
@@ -247,7 +268,7 @@ export function QuotationListPage(): ReactElement {
   };
 
   return (
-    <div className="relative min-h-screen space-y-6 p-3 md:p-8 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-700">
+    <div className="relative space-y-6 overflow-hidden">
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
@@ -286,6 +307,7 @@ export function QuotationListPage(): ReactElement {
                 exportFileName="quotation-list"
                 exportColumns={exportColumns}
                 exportRows={exportRows}
+                getExportData={getExportData}
                 filterColumns={filterColumns}
                 defaultFilterColumn="OfferNo"
                 draftFilterRows={draftFilterRows}

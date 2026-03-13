@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -166,6 +166,20 @@ export function StockListPage(): ReactElement {
     [currentPageRows, stockExportQuery.data?.data]
   );
 
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const { data } = await stockExportQuery.refetch();
+    const list = data?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((stock: StockGetDto) => ({
+        Id: `#${stock.id}`,
+        ErpStockCode: stock.erpStockCode ?? '-',
+        StockName: stock.stockName ?? '-',
+        unit: stock.unit ?? '-',
+      })),
+    };
+  }, [stockExportQuery, exportColumns]);
+
   useEffect(() => {
     setPageNumber(1);
   }, [pageSize, sortBy, sortDirection, appliedFilters]);
@@ -219,7 +233,7 @@ export function StockListPage(): ReactElement {
   };
 
   return (
-    <div className="relative space-y-6 p-4 md:p-6 overflow-hidden">
+    <div className="relative space-y-6 overflow-hidden">
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
@@ -248,6 +262,7 @@ export function StockListPage(): ReactElement {
               exportFileName="stock-list"
               exportColumns={exportColumns}
               exportRows={exportRows}
+              getExportData={getExportData}
               filterColumns={filterColumns}
               defaultFilterColumn="StockName"
               draftFilterRows={draftFilterRows}

@@ -20,6 +20,7 @@ interface DataTableActionBarProps {
   exportFileName: string;
   exportColumns: GridExportColumn[];
   exportRows: Record<string, unknown>[];
+  getExportData?: () => Promise<{ columns: GridExportColumn[]; rows: Record<string, unknown>[] }>;
   filterColumns: readonly FilterColumnConfig[];
   defaultFilterColumn: string;
   draftFilterRows: FilterRow[];
@@ -42,6 +43,7 @@ export function DataTableActionBar({
   exportFileName,
   exportColumns,
   exportRows,
+  getExportData,
   filterColumns,
   defaultFilterColumn,
   draftFilterRows,
@@ -120,7 +122,7 @@ export function DataTableActionBar({
           onColumnOrderChange={onColumnOrderChange}
         />
 
-        <GridExportMenu fileName={exportFileName} columns={exportColumns} rows={exportRows} translationNamespace={translationNamespace} />
+        <GridExportMenu fileName={exportFileName} columns={exportColumns} rows={exportRows} getExportData={getExportData} translationNamespace={translationNamespace} />
       </div>
     </div>
   );
