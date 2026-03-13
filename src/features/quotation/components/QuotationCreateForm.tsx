@@ -451,6 +451,8 @@ export function QuotationCreateForm(): ReactElement {
                         customerId={watchedCustomerId}
                         erpCustomerCode={watchedErpCustomerCode}
                         representativeId={watchedRepresentativeId}
+                        offerNo={form.watch('quotation.offerNo')}
+                        customerName={customerOptions.find((c) => c.id === watchedCustomerId)?.name ?? null}
                       />
                   </div>
                 </div>

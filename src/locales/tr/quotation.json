@@ -40,6 +40,7 @@
   },
   "date": "Tarih",
   "offerNo": "Teklif No",
+  "customerAccount": "Müşteri Hesabı",
   "export": "Dışa Aktar",
   "exportPdf": "PDF Dışa Aktar",
   "shareMail": "E-posta ile Paylaş",

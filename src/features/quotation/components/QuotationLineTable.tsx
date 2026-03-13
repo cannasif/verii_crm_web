@@ -26,6 +26,7 @@ import { useUpdateQuotationLines } from '../hooks/useUpdateQuotationLines';
 import { useDeleteQuotationLine } from '../hooks/useDeleteQuotationLine';
 import { quotationApi } from '../api/quotation-api';
 import { formatCurrency } from '../utils/format-currency';
+import { exportQuotationLinesPdf } from '../utils/export-quotation-lines-pdf';
 import { Trash2, Edit, Plus, ShoppingCart, Box, AlertTriangle, Layers, Loader2, Menu, FileSpreadsheet, FileText, Presentation, X } from 'lucide-react';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, CreateQuotationLineDto, QuotationLineGetDto } from '../types/quotation-types';
 import { cn } from '@/lib/utils';
@@ -140,6 +141,8 @@ interface QuotationLineTableProps {
   representativeId?: number | null;
   quotationId?: number | null;
   enabled?: boolean;
+  offerNo?: string | null;
+  customerName?: string | null;
 }
 
 export function QuotationLineTable({
@@ -154,6 +157,8 @@ export function QuotationLineTable({
   representativeId,
   quotationId,
   enabled = true,
+  offerNo,
+  customerName,
 }: QuotationLineTableProps): ReactElement {
   const linesEditable = enabled;
   const { t } = useTranslation();
@@ -240,38 +245,15 @@ export function QuotationLineTable({
   };
 
   const handleExportPDF = async () => {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable'),
-    ]);
-    const doc = new JsPDF();
-    
-    const headers = [[
-      t('quotation.lines.productCode'),
-      t('quotation.lines.productName'),
-      t('quotation.lines.quantity'),
-      t('quotation.lines.unitPrice'),
-      t('quotation.lines.vatRate'),
-      t('quotation.lines.total')
-    ]];
-
-    const data = lines.map(line => [
-      line.productCode,
-      line.productName,
-      line.quantity,
-      formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate}`,
-      formatCurrency(line.lineTotal, currencyCode)
-    ]);
-
-    autoTable(doc, {
-      head: headers,
-      body: data,
-      styles: { font: 'helvetica', fontStyle: 'normal' },
-      theme: 'grid',
+    await exportQuotationLinesPdf({
+      fileName: 'teklif-kalemleri.pdf',
+      title: t('quotation.sections.lines'),
+      currencyCode,
+      lines,
+      offerNo,
+      customerName,
+      t,
     });
-
-    doc.save("teklif-kalemleri.pdf");
   };
 
   const handleExportPowerPoint = async () => {

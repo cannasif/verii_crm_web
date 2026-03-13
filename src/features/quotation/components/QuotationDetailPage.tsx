@@ -668,6 +668,8 @@ export function QuotationDetailPage(): ReactElement {
                       representativeId={watchedRepresentativeId}
                       quotationId={quotationId}
                       enabled={linesEnabled}
+                      offerNo={quotation?.offerNo ?? null}
+                      customerName={quotation?.potentialCustomerName ?? null}
                     />
                   </section>
                 </div>
