@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   Select,
   SelectContent,
@@ -25,6 +26,8 @@ import {
   useCustomer360AnalyticsChartsQuery,
   useCustomer360CohortQuery,
   useCustomer360QuickQuotationsQuery,
+  useCustomer360ErpBalanceQuery,
+  useCustomer360ErpMovementsQuery,
   useCustomerImagesQuery,
   useExecuteCustomer360ActionMutation,
 } from '../hooks/useCustomer360';
@@ -45,6 +48,8 @@ import type {
   Customer360DistributionDto,
   Customer360AmountComparisonDto,
   Customer360QuickQuotationDto,
+  Customer360ErpBalanceDto,
+  Customer360ErpMovementDto,
   RecommendedActionDto,
   RevenueQualityDto,
 } from '../types/customer360.types';
@@ -592,6 +597,147 @@ function QuickQuotationRow({
   );
 }
 
+function ErpBalanceCard({
+  title,
+  value,
+}: {
+  title: string;
+  value: string;
+}): ReactElement {
+  return (
+    <Card className="rounded-xl border border-slate-200 dark:border-white/10">
+      <CardContent className="pt-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          {title}
+        </p>
+        <p className="mt-1 text-2xl font-bold">{value}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ErpMovementsTabContent({
+  balance,
+  movements,
+  isLoading,
+  isError,
+  t,
+  tc,
+}: {
+  balance?: Customer360ErpBalanceDto;
+  movements: Customer360ErpMovementDto[];
+  isLoading: boolean;
+  isError: boolean;
+  t: (key: string, opts?: Record<string, unknown>) => string;
+  tc: (key: string, opts?: Record<string, unknown>) => string;
+}): ReactElement {
+  const formatter = new Intl.NumberFormat('tr-TR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const formatDate = (value?: string | null): string =>
+    value ? new Date(value).toLocaleDateString('tr-TR') : '-';
+
+  const formatNumber = (value?: number | null): string => formatter.format(value ?? 0);
+
+  if (isLoading) {
+    return (
+      <div className="grid gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <Card key={idx} className="rounded-xl border border-slate-200 dark:border-white/10">
+              <CardContent className="pt-6">
+                <Skeleton className="h-16 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card className="rounded-xl border border-slate-200 dark:border-white/10">
+          <CardContent className="pt-6">
+            <Skeleton className="h-72 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card className="rounded-xl border border-dashed border-slate-200 dark:border-white/10">
+        <CardContent className="pt-6 text-sm text-muted-foreground">
+          {tc('erpMovements.error')}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <ErpBalanceCard title={tc('erpMovements.summary.totalDebit')} value={formatNumber(balance?.toplamBorc)} />
+        <ErpBalanceCard title={tc('erpMovements.summary.totalCredit')} value={formatNumber(balance?.toplamAlacak)} />
+        <ErpBalanceCard
+          title={`${tc('erpMovements.summary.balance')} · ${balance?.bakiyeDurumu ?? tc('erpMovements.summary.closed')}`}
+          value={formatNumber(balance?.bakiyeTutari)}
+        />
+      </div>
+
+      <Card className="rounded-xl border border-slate-200 dark:border-white/10">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold">{tc('erpMovements.tableTitle')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {movements.length === 0 ? (
+            <p className="py-6 text-sm text-muted-foreground">{t('common.noData')}</p>
+          ) : (
+            <div className="overflow-x-auto rounded-md border">
+              <Table className="min-w-[1500px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{tc('erpMovements.columns.date')}</TableHead>
+                    <TableHead>{tc('erpMovements.columns.dueDate')}</TableHead>
+                    <TableHead>{tc('erpMovements.columns.documentNo')}</TableHead>
+                    <TableHead>{tc('erpMovements.columns.description')}</TableHead>
+                    <TableHead>{tc('erpMovements.columns.currency')}</TableHead>
+                    <TableHead className="text-right">{tc('erpMovements.columns.debit')}</TableHead>
+                    <TableHead className="text-right">{tc('erpMovements.columns.credit')}</TableHead>
+                    <TableHead className="text-right">{tc('erpMovements.columns.tlBalanceByDate')}</TableHead>
+                    <TableHead className="text-right">{tc('erpMovements.columns.tlBalanceByDueDate')}</TableHead>
+                    <TableHead className="text-right">{tc('erpMovements.columns.fxDebit')}</TableHead>
+                    <TableHead className="text-right">{tc('erpMovements.columns.fxCredit')}</TableHead>
+                    <TableHead className="text-right">{tc('erpMovements.columns.fxBalanceByDate')}</TableHead>
+                    <TableHead className="text-right">{tc('erpMovements.columns.fxBalanceByDueDate')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {movements.map((row, index) => (
+                    <TableRow key={`${row.cariKod}-${row.tarih ?? index}-${row.belgeNo ?? index}`}>
+                      <TableCell>{formatDate(row.tarih)}</TableCell>
+                      <TableCell>{formatDate(row.vadeTarihi)}</TableCell>
+                      <TableCell>{row.belgeNo || '-'}</TableCell>
+                      <TableCell>{row.aciklama || '-'}</TableCell>
+                      <TableCell>{row.paraBirimi || '-'}</TableCell>
+                      <TableCell className="text-right">{formatNumber(row.borc)}</TableCell>
+                      <TableCell className="text-right">{formatNumber(row.alacak)}</TableCell>
+                      <TableCell className="text-right">{formatNumber(row.tarihSiraliTlBakiye)}</TableCell>
+                      <TableCell className="text-right">{formatNumber(row.vadeSiraliTlBakiye)}</TableCell>
+                      <TableCell className="text-right">{formatNumber(row.dovizBorc)}</TableCell>
+                      <TableCell className="text-right">{formatNumber(row.dovizAlacak)}</TableCell>
+                      <TableCell className="text-right">{formatNumber(row.tarihSiraliDovizBakiye)}</TableCell>
+                      <TableCell className="text-right">{formatNumber(row.vadeSiraliDovizBakiye)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 const ALL_CURRENCY = 'ALL';
 
 export function Customer360Page(): ReactElement {
@@ -612,6 +758,8 @@ export function Customer360Page(): ReactElement {
   const { data: cohortData, isLoading: isCohortLoading } = useCustomer360CohortQuery(id, 12);
   const { data: customerImages = [], isLoading: isImagesLoading, isError: isImagesError } = useCustomerImagesQuery(id);
   const { data: quickQuotations = [], isLoading: isQuickQuotationsLoading, isError: isQuickQuotationsError } = useCustomer360QuickQuotationsQuery(id);
+  const { data: erpMovements = [], isLoading: isErpMovementsLoading, isError: isErpMovementsError } = useCustomer360ErpMovementsQuery(id);
+  const { data: erpBalance, isLoading: isErpBalanceLoading, isError: isErpBalanceError } = useCustomer360ErpBalanceQuery(id);
   const executeActionMutation = useExecuteCustomer360ActionMutation(id);
   const apiBaseUrl = getApiBaseUrl().replace(/\/$/, '');
   const imageItems = useMemo(
@@ -776,6 +924,7 @@ export function Customer360Page(): ReactElement {
           <TabsTrigger value="overview">{tc('tabs.overview')}</TabsTrigger>
           <TabsTrigger value="analytics">{tc('tabs.analytics')}</TabsTrigger>
           <TabsTrigger value="quickQuotations">{tc('tabs.quickQuotations')}</TabsTrigger>
+          <TabsTrigger value="erpMovements">{tc('tabs.erpMovements')}</TabsTrigger>
           <TabsTrigger value="mailLogs">{tc('tabs.mailLogs')}</TabsTrigger>
           <TabsTrigger value="images">{tc('tabs.images')}</TabsTrigger>
         </TabsList>
@@ -995,6 +1144,17 @@ export function Customer360Page(): ReactElement {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="erpMovements" className="space-y-4">
+          <ErpMovementsTabContent
+            balance={erpBalance}
+            movements={erpMovements}
+            isLoading={isErpMovementsLoading || isErpBalanceLoading}
+            isError={isErpMovementsError || isErpBalanceError}
+            t={t}
+            tc={tc}
+          />
         </TabsContent>
 
         <TabsContent value="images" className="space-y-4">
