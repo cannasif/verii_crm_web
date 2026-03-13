@@ -118,6 +118,13 @@ export function StockListPage(): ReactElement {
     sortDirection,
     ...filtersParam,
   });
+  const stockExportQuery = useStockList({
+    pageNumber: 1,
+    pageSize: 10000,
+    sortBy,
+    sortDirection,
+    ...filtersParam,
+  });
 
   const pagedData = stockQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
@@ -150,13 +157,13 @@ export function StockListPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      currentPageRows.map((stock) => ({
+      (stockExportQuery.data?.data ?? currentPageRows).map((stock) => ({
         Id: `#${stock.id}`,
         ErpStockCode: stock.erpStockCode ?? '-',
         StockName: stock.stockName ?? '-',
         unit: stock.unit ?? '-',
       })),
-    [currentPageRows]
+    [currentPageRows, stockExportQuery.data?.data]
   );
 
   useEffect(() => {
@@ -212,7 +219,7 @@ export function StockListPage(): ReactElement {
   };
 
   return (
-    <div className="relative min-h-screen space-y-6 p-4 md:p-8 overflow-hidden">
+    <div className="relative space-y-6 p-4 md:p-6 overflow-hidden">
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
@@ -303,6 +310,7 @@ export function StockListPage(): ReactElement {
               )}
               rowClassName="group cursor-pointer border-b border-zinc-100 dark:border-white/5 last:border-0 hover:bg-pink-50/60 dark:hover:bg-pink-900/10 transition-colors duration-200"
               onRowClick={(stock) => handleRowClick(stock.id)}
+              onRowDoubleClick={(stock) => handleRowClick(stock.id)}
               pageSize={pageSize}
               pageSizeOptions={PAGE_SIZE_OPTIONS}
               onPageSizeChange={setPageSize}

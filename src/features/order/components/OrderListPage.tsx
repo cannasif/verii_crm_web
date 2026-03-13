@@ -144,6 +144,13 @@ export function OrderListPage(): ReactElement {
     sortDirection,
     ...filtersParam,
   });
+  const orderExportQuery = useOrderList({
+    pageNumber: 1,
+    pageSize: 10000,
+    sortBy,
+    sortDirection,
+    ...filtersParam,
+  });
 
   const pagedData = orderQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
@@ -181,7 +188,7 @@ export function OrderListPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      currentPageRows.map((order) => ({
+      (orderExportQuery.data?.data ?? currentPageRows).map((order) => ({
         Id: order.id,
         OfferNo: order.offerNo ?? '-',
         PotentialCustomerName: order.potentialCustomerName ?? '-',
@@ -193,7 +200,7 @@ export function OrderListPage(): ReactElement {
           ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][order.status]}`)
           : '-',
       })),
-    [currentPageRows, t, i18n.language]
+    [currentPageRows, orderExportQuery.data?.data, t, i18n.language]
   );
 
   useEffect(() => {
@@ -350,6 +357,7 @@ export function OrderListPage(): ReactElement {
                 actionsHeaderLabel={t('order.list.actions')}
                 rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                 onRowClick={(order: OrderGetDto) => handleRowClick(order.id)}
+                onRowDoubleClick={(order: OrderGetDto) => handleRowClick(order.id)}
                 pageSize={pageSize}
                 pageSizeOptions={PAGE_SIZE_OPTIONS}
                 onPageSizeChange={setPageSize}

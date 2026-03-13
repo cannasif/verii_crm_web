@@ -63,7 +63,7 @@ export function ProductPricingForm({
   isLoading,
   excludeProductCodes,
 }: ProductPricingFormProps): ReactElement {
-  const { t, i18n } = useTranslation('product-pricing-management');
+  const { t, i18n } = useTranslation(['product-pricing-management', 'common']);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
 
   const form = useForm<ProductPricingFormSchema>({
@@ -109,7 +109,7 @@ export function ProductPricingForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-4xl max-h-[95vh] h-full flex flex-col gap-0 p-0 overflow-hidden sm:rounded-2xl">
+      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-5xl max-h-[92vh] flex flex-col gap-0 p-0 overflow-hidden sm:rounded-2xl">
         <DialogHeader className="border-b border-slate-100 dark:border-white/5 px-6 py-5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md shrink-0 flex-row items-center gap-3 space-y-0">
           <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500/20 to-orange-500/20 border border-pink-500/10 flex items-center justify-center text-pink-500 shrink-0">
             <Tag size={20} />
@@ -216,7 +216,7 @@ export function ProductPricingForm({
                           <Tag size={12} className="text-pink-500" /> Liste Fiyatı
                         </FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} className={INPUT_STYLE} />
+                          <Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px]" />
                       </FormItem>
@@ -227,7 +227,7 @@ export function ProductPricingForm({
                           <Coins size={12} className="text-pink-500" /> Maliyet
                         </FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} className={INPUT_STYLE} />
+                          <Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px]" />
                       </FormItem>
@@ -240,7 +240,7 @@ export function ProductPricingForm({
                         <FormLabel className={LABEL_STYLE}>
                           <Percent size={12} className="text-pink-500" /> İsk. 1 (%)
                         </FormLabel>
-                        <FormControl><Input type="number" {...field} className={INPUT_STYLE} /></FormControl>
+                        <FormControl><Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="discount2" render={({ field }) => (
@@ -248,7 +248,7 @@ export function ProductPricingForm({
                         <FormLabel className={LABEL_STYLE}>
                           <Percent size={12} className="text-pink-500" /> İsk. 2 (%)
                         </FormLabel>
-                        <FormControl><Input type="number" {...field} className={INPUT_STYLE} /></FormControl>
+                        <FormControl><Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="discount3" render={({ field }) => (
@@ -256,7 +256,7 @@ export function ProductPricingForm({
                         <FormLabel className={LABEL_STYLE}>
                           <Percent size={12} className="text-pink-500" /> İsk. 3 (%)
                         </FormLabel>
-                        <FormControl><Input type="number" {...field} className={INPUT_STYLE} /></FormControl>
+                        <FormControl><Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
                       </FormItem>
                     )} />
                   </div>
@@ -275,17 +275,17 @@ export function ProductPricingForm({
               disabled={isLoading}
               className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border-0"
             >
-              <Trash2 size={16} className="mr-2" /> {t('common.delete.action')}
+              <Trash2 size={16} className="mr-2" /> {t('delete.action', { ns: 'common' })}
             </Button>
           ) : <div />}
           
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-              {t('common.cancel')}
+              {t('cancel', { ns: 'common' })}
             </Button>
-            <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading || !isFormValid} className="bg-linear-to-r from-pink-600 to-indigo-600 text-white border-0 hover:from-pink-700 hover:to-indigo-700">
+            <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading || !isFormValid} className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:from-pink-700 hover:to-orange-700">
               <Save size={16} className="mr-2" />
-              {isLoading ? t('common.saving') : t('common.save')}
+              {isLoading ? t('saving', { ns: 'common' }) : t('save', { ns: 'common' })}
             </Button>
           </div>
         </DialogFooter>

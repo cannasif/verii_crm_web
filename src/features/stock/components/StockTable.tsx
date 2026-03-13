@@ -29,6 +29,7 @@ interface StockTableProps {
   renderActionsCell?: (row: StockGetDto) => ReactNode;
   rowClassName?: string | ((row: StockGetDto) => string | undefined);
   onRowClick?: (row: StockGetDto) => void;
+  onRowDoubleClick?: (row: StockGetDto) => void;
   pageSize: number;
   pageSizeOptions: readonly number[];
   onPageSizeChange: (size: number) => void;
@@ -65,6 +66,7 @@ export function StockTable({
   renderActionsCell,
   rowClassName,
   onRowClick,
+  onRowDoubleClick,
   pageSize,
   pageSizeOptions,
   onPageSizeChange,
@@ -101,6 +103,7 @@ export function StockTable({
       renderActionsCell={renderActionsCell}
       rowClassName={rowClassName}
       onRowClick={onRowClick}
+      onRowDoubleClick={onRowDoubleClick}
       pageSize={pageSize}
       pageSizeOptions={pageSizeOptions}
       onPageSizeChange={onPageSizeChange}

@@ -136,6 +136,13 @@ export function DemandListPage(): ReactElement {
     sortDirection,
     ...filtersParam,
   });
+  const demandExportQuery = useDemandList({
+    pageNumber: 1,
+    pageSize: 10000,
+    sortBy,
+    sortDirection,
+    ...filtersParam,
+  });
 
   const pagedData = demandQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
@@ -159,7 +166,7 @@ export function DemandListPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      currentPageRows.map((demand) => ({
+      (demandExportQuery.data?.data ?? currentPageRows).map((demand) => ({
         Id: demand.id,
         OfferNo: demand.offerNo ?? '-',
         PotentialCustomerName: demand.potentialCustomerName ?? '-',
@@ -172,7 +179,7 @@ export function DemandListPage(): ReactElement {
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
             : '-',
       })),
-    [currentPageRows, t, i18n.language]
+    [currentPageRows, demandExportQuery.data?.data, t, i18n.language]
   );
 
   const exportColumns = useMemo(
@@ -343,6 +350,7 @@ export function DemandListPage(): ReactElement {
                 actionsHeaderLabel={t('demand.list.actions')}
                 rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                 onRowClick={(order: DemandGetDto) => handleRowClick(order.id)}
+                onRowDoubleClick={(order: DemandGetDto) => handleRowClick(order.id)}
                 pageSize={pageSize}
                 pageSizeOptions={PAGE_SIZE_OPTIONS}
                 onPageSizeChange={setPageSize}

@@ -92,12 +92,12 @@ export function StockDetailPage(): ReactElement {
                     {stock.stockName}
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                         <ShieldCheck className="w-3 h-3 mr-1" />
-                        Aktif
+                        {t('common.active', { ns: 'common', defaultValue: 'Aktif' })}
                     </span>
                 </h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 font-medium">
                     <Box className="w-4 h-4 text-pink-500" />
-                    <span>{stock.erpStockCode || 'Kod Yok'}</span>
+                    <span>{stock.erpStockCode || t('stock.detail.noCode', { defaultValue: 'Kod Yok' })}</span>
                     <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
                     <span>{t('stock.detail.subtitle')}</span>
                 </div>

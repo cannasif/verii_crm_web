@@ -118,6 +118,32 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
           }),
     enabled: customerId > 0,
   });
+  const exportLogsQuery = useQuery({
+    queryKey: ['customer-360', 'mail-logs-export', provider, customerId, sortBy, sortDirection, errorsOnly, JSON.stringify(appliedFilters)],
+    queryFn: () =>
+      provider === 'google'
+        ? googleIntegrationApi.getCustomerMailLogs({
+            customerId,
+            pageNumber: 1,
+            pageSize: 10000,
+            sortBy,
+            sortDirection,
+            errorsOnly,
+            filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+            filterLogic: 'and',
+          })
+        : outlookIntegrationApi.getCustomerMailLogs({
+            customerId,
+            pageNumber: 1,
+            pageSize: 10000,
+            sortBy,
+            sortDirection,
+            errorsOnly,
+            filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+            filterLogic: 'and',
+          }),
+    enabled: customerId > 0,
+  });
 
   const pagedLogs = logsQuery.data;
   const currentPageRows = useMemo(() => (pagedLogs?.data ?? []) as CustomerMailLogDto[], [pagedLogs?.data]);
@@ -157,7 +183,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      currentPageRows.map((log) => ({
+      (((exportLogsQuery.data?.data as CustomerMailLogDto[] | undefined) ?? currentPageRows)).map((log) => ({
         createdDate: new Date(log.createdDate).toLocaleString(),
         sentByUserName: log.sentByUserName ?? '-',
         toEmails: log.toEmails,
@@ -166,7 +192,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
         templateName: log.templateName ?? '-',
         errorCode: log.errorCode ?? '-',
       })),
-    [currentPageRows, failedLabel, successLabel]
+    [currentPageRows, exportLogsQuery.data?.data, failedLabel, successLabel]
   );
 
   useEffect(() => {

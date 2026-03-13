@@ -41,6 +41,7 @@ interface DemandTableProps {
   actionsHeaderLabel?: string;
   rowClassName?: string | ((row: DemandGetDto) => string | undefined);
   onRowClick?: (row: DemandGetDto) => void;
+  onRowDoubleClick?: (row: DemandGetDto) => void;
   pageSize: number;
   pageSizeOptions: readonly number[];
   onPageSizeChange: (size: number) => void;
@@ -76,6 +77,7 @@ export function DemandTable({
   actionsHeaderLabel = '',
   rowClassName,
   onRowClick,
+  onRowDoubleClick,
   pageSize,
   pageSizeOptions = PAGE_SIZE_OPTIONS,
   onPageSizeChange,
@@ -179,6 +181,7 @@ export function DemandTable({
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}
         onRowClick={onRowClick}
+        onRowDoubleClick={onRowDoubleClick}
         pageSize={pageSize}
         pageSizeOptions={pageSizeOptions}
         onPageSizeChange={onPageSizeChange}

@@ -41,6 +41,7 @@ interface QuotationTableProps {
   actionsHeaderLabel?: string;
   rowClassName?: string | ((row: QuotationGetDto) => string | undefined);
   onRowClick?: (row: QuotationGetDto) => void;
+  onRowDoubleClick?: (row: QuotationGetDto) => void;
   pageSize: number;
   pageSizeOptions: readonly number[];
   onPageSizeChange: (size: number) => void;
@@ -76,6 +77,7 @@ export function QuotationTable({
   actionsHeaderLabel = '',
   rowClassName,
   onRowClick,
+  onRowDoubleClick,
   pageSize,
   pageSizeOptions = PAGE_SIZE_OPTIONS,
   onPageSizeChange,
@@ -167,6 +169,7 @@ export function QuotationTable({
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}
         onRowClick={onRowClick}
+        onRowDoubleClick={onRowDoubleClick}
         pageSize={pageSize}
         pageSizeOptions={pageSizeOptions}
         onPageSizeChange={onPageSizeChange}

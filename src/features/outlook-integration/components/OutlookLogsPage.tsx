@@ -119,6 +119,15 @@ export function OutlookLogsPage(): ReactElement {
     filters: appliedFilters.length > 0 ? appliedFilters : undefined,
     filterLogic: 'and',
   });
+  const exportLogsQuery = useOutlookLogsQuery({
+    pageNumber: 1,
+    pageSize: 10000,
+    sortBy,
+    sortDirection,
+    errorsOnly,
+    filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+    filterLogic: 'and',
+  });
 
   const pagedLogs = logsQuery.data;
   const currentPageRows = useMemo(() => pagedLogs?.data ?? [], [pagedLogs?.data]);
@@ -154,7 +163,7 @@ export function OutlookLogsPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      currentPageRows.map((log) => ({
+      (exportLogsQuery.data?.data ?? currentPageRows).map((log) => ({
         createdDate: new Date(log.createdDate).toLocaleString(),
         operation: log.operation,
         isSuccess: log.isSuccess ? t('logs.success') : t('logs.failed'),
@@ -165,7 +174,7 @@ export function OutlookLogsPage(): ReactElement {
         activityId: log.activityId ?? '-',
         providerEventId: log.providerEventId ?? '-',
       })),
-    [currentPageRows, t]
+    [currentPageRows, exportLogsQuery.data?.data, t]
   );
 
   useEffect(() => {

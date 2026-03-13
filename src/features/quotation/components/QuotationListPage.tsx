@@ -136,6 +136,13 @@ export function QuotationListPage(): ReactElement {
     sortDirection,
     ...filtersParam,
   });
+  const quotationExportQuery = useQuotationList({
+    pageNumber: 1,
+    pageSize: 10000,
+    sortBy,
+    sortDirection,
+    ...filtersParam,
+  });
 
   const pagedData = quotationQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
@@ -159,7 +166,7 @@ export function QuotationListPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      currentPageRows.map((quotation) => ({
+      (quotationExportQuery.data?.data ?? currentPageRows).map((quotation) => ({
         Id: quotation.id,
         OfferNo: quotation.offerNo ?? '-',
         PotentialCustomerName: quotation.potentialCustomerName ?? '-',
@@ -172,7 +179,7 @@ export function QuotationListPage(): ReactElement {
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
             : '-',
       })),
-    [currentPageRows, t, i18n.language]
+    [currentPageRows, quotationExportQuery.data?.data, t, i18n.language]
   );
 
   const exportColumns = useMemo(
@@ -343,6 +350,7 @@ export function QuotationListPage(): ReactElement {
                 actionsHeaderLabel={t('quotation.list.actions')}
                 rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                 onRowClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
+                onRowDoubleClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
                 pageSize={pageSize}
                 pageSizeOptions={PAGE_SIZE_OPTIONS}
                 onPageSizeChange={setPageSize}

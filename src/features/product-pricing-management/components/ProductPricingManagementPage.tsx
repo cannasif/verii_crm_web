@@ -258,7 +258,7 @@ export function ProductPricingManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('title')}
@@ -379,6 +379,7 @@ export function ProductPricingManagementPage(): ReactElement {
             loadingText={t('loading')}
             errorText={t('deleteError')}
             emptyText={t('table.noData')}
+            onRowDoubleClick={handleEdit}
             minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
             showActionsColumn
             actionsHeaderLabel={t('actions')}

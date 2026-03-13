@@ -219,7 +219,7 @@ export function PricingRuleManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('pricingRule.list.title')}
@@ -392,6 +392,7 @@ export function PricingRuleManagementPage(): ReactElement {
             loadingText={t('pricingRule.loading')}
             errorText={t('pricingRule.error', { defaultValue: 'Hata oluştu' })}
             emptyText={t('pricingRule.noData')}
+            onRowDoubleClick={handleEdit}
             minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
             showActionsColumn
             actionsHeaderLabel={t('pricingRule.actions')}

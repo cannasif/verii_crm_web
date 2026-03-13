@@ -124,7 +124,7 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
                 >
                     <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1 flex items-center gap-1 group-hover:text-pink-600 transition-colors">
                         <Tag className="w-2.5 h-2.5 opacity-50" />
-                        {t(`stock.detail.kod${item.id}`, `KOD ${item.id}`)}
+                        {t(`stock.detail.kod${item.id}`, { defaultValue: `KOD ${item.id}` })}
                     </span>
                     
                     <div className="flex flex-col min-w-0">

@@ -45,6 +45,7 @@ interface ProductPricingTableProps {
   actionsHeaderLabel?: string;
   onEdit: (item: ProductPricingGetDto) => void;
   rowClassName?: string | ((row: ProductPricingGetDto) => string | undefined);
+  onRowDoubleClick?: (row: ProductPricingGetDto) => void;
   pageSize: number;
   pageSizeOptions: readonly number[];
   onPageSizeChange: (size: number) => void;
@@ -93,6 +94,7 @@ export function ProductPricingTable({
   actionsHeaderLabel = '',
   onEdit,
   rowClassName,
+  onRowDoubleClick,
   pageSize,
   pageSizeOptions,
   onPageSizeChange,
@@ -173,6 +175,7 @@ export function ProductPricingTable({
         actionsHeaderLabel={actionsHeaderLabel}
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}
+        onRowDoubleClick={onRowDoubleClick}
         pageSize={pageSize}
         pageSizeOptions={pageSizeOptions}
         onPageSizeChange={onPageSizeChange}

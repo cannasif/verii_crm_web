@@ -80,7 +80,8 @@
   "delete": {
     "button": "Sil",
     "confirmTitle": "Silme Onayı",
-    "confirmMessage": "Bu kaydı silmek istediğinizden emin misiniz?"
+    "confirmMessage": "Bu kaydı silmek istediğinizden emin misiniz?",
+    "action": "Sil"
   },
   "salesmen": {
     "title": "Satışçılar",

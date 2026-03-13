@@ -57,6 +57,7 @@ interface PricingRuleTableProps {
   showActionsColumn?: boolean;
   actionsHeaderLabel?: string;
   rowClassName?: string | ((row: PricingRuleHeaderGetDto) => string | undefined);
+  onRowDoubleClick?: (row: PricingRuleHeaderGetDto) => void;
   pageSize: number;
   pageSizeOptions: readonly number[];
   onPageSizeChange: (size: number) => void;
@@ -91,6 +92,7 @@ export function PricingRuleTable({
   showActionsColumn = true,
   actionsHeaderLabel = '',
   rowClassName,
+  onRowDoubleClick,
   pageSize,
   pageSizeOptions,
   onPageSizeChange,
@@ -171,6 +173,7 @@ export function PricingRuleTable({
         actionsHeaderLabel={actionsHeaderLabel}
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}
+        onRowDoubleClick={onRowDoubleClick}
         pageSize={pageSize}
         pageSizeOptions={pageSizeOptions}
         onPageSizeChange={onPageSizeChange}

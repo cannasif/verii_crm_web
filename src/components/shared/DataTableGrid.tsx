@@ -39,6 +39,7 @@ interface DataTableGridProps<TRow, TKey extends string> {
   iconOnlyActions?: boolean;
   rowClassName?: string | ((row: TRow) => string | undefined);
   onRowClick?: (row: TRow) => void;
+  onRowDoubleClick?: (row: TRow) => void;
   pageSize: number;
   pageSizeOptions: readonly number[];
   onPageSizeChange: (size: number) => void;
@@ -86,6 +87,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   iconOnlyActions = true,
   rowClassName,
   onRowClick,
+  onRowDoubleClick,
   pageSize,
   pageSizeOptions,
   onPageSizeChange,
@@ -242,6 +244,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                     key={rowKey(row)}
                     className={customRowClass}
                     onClick={onRowClick ? () => onRowClick(row) : undefined}
+                    onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}
                   >
                     {visibleColumnKeys.map((key) => {
                       const column = columns.find((item) => item.key === key);

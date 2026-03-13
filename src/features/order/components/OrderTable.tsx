@@ -41,6 +41,7 @@ interface OrderTableProps {
   actionsHeaderLabel?: string;
   rowClassName?: string | ((row: OrderGetDto) => string | undefined);
   onRowClick?: (row: OrderGetDto) => void;
+  onRowDoubleClick?: (row: OrderGetDto) => void;
   pageSize: number;
   pageSizeOptions: readonly number[];
   onPageSizeChange: (size: number) => void;
@@ -76,6 +77,7 @@ export function OrderTable({
   actionsHeaderLabel = '',
   rowClassName,
   onRowClick,
+  onRowDoubleClick,
   pageSize,
   pageSizeOptions = PAGE_SIZE_OPTIONS,
   onPageSizeChange,
@@ -175,6 +177,7 @@ export function OrderTable({
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}
         onRowClick={onRowClick}
+        onRowDoubleClick={onRowDoubleClick}
         pageSize={pageSize}
         pageSizeOptions={pageSizeOptions}
         onPageSizeChange={onPageSizeChange}
