@@ -145,12 +145,18 @@ export function PricingRuleLineForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-6 border border-slate-200 dark:border-white/10 rounded-2xl bg-white/50 dark:bg-white/5 shadow-sm backdrop-blur-sm animate-in fade-in zoom-in-95 duration-300">
-        
-        {/* 1. Ürün ve Miktar Bilgileri */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          
-          {/* Stok Kodu (Tam Genişlik - Mobilde) */}
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="space-y-5 p-4 md:p-5 border border-slate-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#130822] shadow-md"
+      >
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            {t('pricingRule.lines.section.stock')}
+          </p>
+          <div className="h-px bg-slate-100 dark:bg-white/10" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="stokCode"
@@ -277,11 +283,14 @@ export function PricingRuleLineForm({
           />
         </div>
 
-        <div className="border-t border-slate-200 dark:border-white/5 my-4" />
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            {t('pricingRule.lines.section.pricing')}
+          </p>
+          <div className="h-px bg-slate-100 dark:bg-white/10" />
+        </div>
 
-        {/* 2. Fiyat ve İndirimler */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField
                 control={form.control}
                 name="fixedUnitPrice"
@@ -308,7 +317,7 @@ export function PricingRuleLineForm({
             />
 
             {/* İndirim 1 */}
-            <div className="contents md:block lg:contents">
+            <div className="space-y-3">
                 <FormField
                     control={form.control}
                     name="discountRate1"
@@ -356,7 +365,7 @@ export function PricingRuleLineForm({
                 />
             </div>
 
-            {/* İndirim 2 ve 3 (Mobilde Alt Alta) */}
+            {/* İndirim 2 */}
             <FormField
                 control={form.control}
                 name="discountRate2"
@@ -382,6 +391,7 @@ export function PricingRuleLineForm({
                 )}
             />
             
+            {/* İndirim 3 */}
             <FormField
                 control={form.control}
                 name="discountRate3"
@@ -408,8 +418,7 @@ export function PricingRuleLineForm({
             />
         </div>
 
-        {/* 3. Aksiyon Butonları */}
-        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-slate-200 dark:border-white/5">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/5">
           <Button 
             type="button" 
             variant="outline" 

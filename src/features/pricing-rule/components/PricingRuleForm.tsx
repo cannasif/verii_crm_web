@@ -264,7 +264,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="max-w-6xl max-h-[90vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl overflow-hidden transition-colors duration-300">
+        <DialogContent showCloseButton={false} className="max-w-4xl max-h-[85vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl overflow-hidden transition-colors duration-300">
         
         <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
@@ -317,15 +317,21 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
 
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
                   <TabsContent value="header" className="mt-0 h-full focus-visible:outline-none focus-visible:ring-0">
-                    <PricingRuleHeaderForm />
+                    <div className="max-w-3xl mx-auto w-full">
+                      <PricingRuleHeaderForm />
+                    </div>
                   </TabsContent>
                   
                   <TabsContent value="lines" className="mt-0 h-full focus-visible:outline-none focus-visible:ring-0">
-                    <PricingRuleLineTable header={header} />
+                    <div className="max-w-4xl mx-auto w-full">
+                      <PricingRuleLineTable header={header} />
+                    </div>
                   </TabsContent>
                   
                   <TabsContent value="salesmen" className="mt-0 h-full focus-visible:outline-none focus-visible:ring-0">
-                    <PricingRuleSalesmanTable header={header} />
+                    <div className="max-w-3xl mx-auto w-full">
+                      <PricingRuleSalesmanTable header={header} />
+                    </div>
                   </TabsContent>
                 </div>
               </Tabs>
