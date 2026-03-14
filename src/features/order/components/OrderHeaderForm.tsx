@@ -135,7 +135,7 @@ export function OrderHeaderForm({
   
   const customerTypeId = useMemo(() => {
     if (watchedErpCustomerCode) return 0;
-    return customer?.customerTypeId ?? undefined;
+    return customer?.customerTypeId ?? 0;
   }, [watchedErpCustomerCode, customer?.customerTypeId]);
   
   const { data: availableDocumentSerialTypes = [] } = useAvailableDocumentSerialTypes(
