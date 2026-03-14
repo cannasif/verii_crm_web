@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { erpCommonApi } from '../erp-common-api';
 import type { ErpProduct } from '../erp-types';
+import { filterAndRankErpProducts } from '../utils/filterErpProducts';
 
 export const useErpProducts = (search?: string) => {
   return useQuery<ErpProduct[]>({
@@ -9,18 +10,7 @@ export const useErpProducts = (search?: string) => {
     staleTime: 5 * 60 * 1000,
     select: (data) => {
       if (!search) return data;
-      const searchLower = search.toLowerCase();
-      return data.filter(
-        (product) =>
-          product.stokKodu.toLowerCase().includes(searchLower) ||
-          product.stokAdi.toLowerCase().includes(searchLower) ||
-          product.grupKodu.toLowerCase().includes(searchLower) ||
-          product.grupAdi?.toLowerCase().includes(searchLower) ||
-          product.kod1?.toLowerCase().includes(searchLower) ||
-          product.kod1Adi?.toLowerCase().includes(searchLower) ||
-          product.kod2?.toLowerCase().includes(searchLower) ||
-          product.kod2Adi?.toLowerCase().includes(searchLower)
-      );
+      return filterAndRankErpProducts(data, search);
     },
   });
 };

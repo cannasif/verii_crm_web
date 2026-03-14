@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,13 @@ import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 
+function addDaysToDateOnly(dateValue: string, days: number): string {
+  const date = new Date(`${dateValue}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return dateValue;
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split('T')[0];
+}
+
 export function QuotationCreateForm(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -65,6 +72,7 @@ export function QuotationCreateForm(): ReactElement {
         offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
+        deliveryDate: addDaysToDateOnly(new Date().toISOString().split('T')[0], 21),
         representativeId: user?.id || null,
         generalDiscountRate: null,
         generalDiscountAmount: null,
@@ -78,6 +86,22 @@ export function QuotationCreateForm(): ReactElement {
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
   const watchedOfferDate = form.watch('quotation.offerDate');
+  const offerDateSyncInitializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!watchedOfferDate) return;
+    if (!offerDateSyncInitializedRef.current) {
+      offerDateSyncInitializedRef.current = true;
+      return;
+    }
+    const nextDeliveryDate = addDaysToDateOnly(watchedOfferDate, 21);
+    if (form.getValues('quotation.deliveryDate') !== nextDeliveryDate) {
+      form.setValue('quotation.deliveryDate', nextDeliveryDate, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [watchedOfferDate, form]);
   
   const { calculateLineTotals } = useQuotationCalculations();
   const { data: erpRates = [] } = useExchangeRate();

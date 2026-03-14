@@ -44,6 +44,13 @@ import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { createQuotationLinesPdfBlob } from '../utils/export-quotation-lines-pdf';
 
+function addDaysToDateOnly(dateValue: string, days: number): string {
+  const date = new Date(`${dateValue}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return dateValue;
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split('T')[0];
+}
+
 export function QuotationDetailPage(): ReactElement {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -108,12 +115,30 @@ export function QuotationDetailPage(): ReactElement {
         offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
+        deliveryDate: addDaysToDateOnly(new Date().toISOString().split('T')[0], 21),
         representativeId: null,
       },
     },
   });
   const isFormValid = form.formState.isValid;
   const watchedCurrencyValue = form.watch('quotation.currency');
+  const watchedOfferDate = form.watch('quotation.offerDate');
+  const offerDateSyncInitializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!watchedOfferDate) return;
+    if (!offerDateSyncInitializedRef.current) {
+      offerDateSyncInitializedRef.current = true;
+      return;
+    }
+    const nextDeliveryDate = addDaysToDateOnly(watchedOfferDate, 21);
+    if (form.getValues('quotation.deliveryDate') !== nextDeliveryDate) {
+      form.setValue('quotation.deliveryDate', nextDeliveryDate, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [watchedOfferDate, form]);
 
   // Başlık Ayarı
   useEffect(() => {
@@ -149,7 +174,12 @@ export function QuotationDetailPage(): ReactElement {
           offerDate: quotation.offerDate ? quotation.offerDate.split('T')[0] : new Date().toISOString().split('T')[0],
           potentialCustomerId: quotation.potentialCustomerId || null,
           erpCustomerCode: quotation.erpCustomerCode || null,
-          deliveryDate: quotation.deliveryDate ? quotation.deliveryDate.split('T')[0] : undefined,
+          deliveryDate: quotation.deliveryDate
+            ? quotation.deliveryDate.split('T')[0]
+            : addDaysToDateOnly(
+                quotation.offerDate ? quotation.offerDate.split('T')[0] : new Date().toISOString().split('T')[0],
+                21
+              ),
           shippingAddressId: quotation.shippingAddressId || null,
           representativeId: quotation.representativeId || null,
           status: quotation.status || null,
@@ -323,7 +353,6 @@ export function QuotationDetailPage(): ReactElement {
   const watchedCustomerId = form.watch('quotation.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
-  const watchedOfferDate = form.watch('quotation.offerDate');
 
   const customerCode = useMemo(() => {
     if (watchedErpCustomerCode) {

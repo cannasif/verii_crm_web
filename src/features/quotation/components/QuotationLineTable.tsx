@@ -702,9 +702,9 @@ export function QuotationLineTable({
 
                             {(line.description1 || line.description2 || line.description3) && (
                               <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                                {line.description1 && <div className="line-clamp-1">Açıklama 1: {line.description1}</div>}
-                                {line.description2 && <div className="line-clamp-1">Açıklama 2: {line.description2}</div>}
-                                {line.description3 && <div className="line-clamp-1">Açıklama 3: {line.description3}</div>}
+                                {line.description1 && <div className="line-clamp-1">Profile: {line.description1}</div>}
+                                {line.description2 && <div className="line-clamp-1">Demir: {line.description2}</div>}
+                                {line.description3 && <div className="line-clamp-1">Vida: {line.description3}</div>}
                               </div>
                             )}
                             

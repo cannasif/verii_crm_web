@@ -999,7 +999,7 @@ export function QuotationLineForm({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  Açıklama 1
+                  Profile
                 </label>
                 <Input
                   value={formData.description1 ?? ''}
@@ -1012,7 +1012,7 @@ export function QuotationLineForm({
 
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  Açıklama 2
+                  Demir
                 </label>
                 <Input
                   value={formData.description2 ?? ''}
@@ -1025,7 +1025,7 @@ export function QuotationLineForm({
 
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  Açıklama 3
+                  Vida
                 </label>
                 <Input
                   value={formData.description3 ?? ''}
