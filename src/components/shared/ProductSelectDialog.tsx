@@ -1,6 +1,6 @@
-import { type ReactElement, useState, useEffect, useRef, useCallback } from 'react';
+import { type ReactElement, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LayoutGrid, List as ListIcon, X, AlertCircle } from 'lucide-react';
+import { LayoutGrid, List as ListIcon, X, AlertCircle, Filter } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,12 @@ import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/
 import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
 import { dropdownApi } from '@/components/shared/dropdown/dropdown-api';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { AdvancedFilter } from '@/components/shared/AdvancedFilter';
+import {
+  rowsToBackendFilters,
+  type FilterColumnConfig,
+  type FilterRow,
+} from '@/lib/advanced-filter-types';
 import {
   DROPDOWN_DEBOUNCE_MS,
   DROPDOWN_MIN_CHARS,
@@ -39,6 +45,69 @@ const STOCK_SEARCH_COLUMNS = [
   'kod2Adi',
   'ureticiKodu',
 ] as const;
+
+const STOCK_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
+  { value: 'Id', type: 'number', labelKey: 'columnId' },
+  { value: 'ErpStockCode', type: 'string', labelKey: 'columnErpStockCode' },
+  { value: 'StockName', type: 'string', labelKey: 'columnStockName' },
+  { value: 'unit', type: 'string', labelKey: 'columnUnit' },
+] as const;
+
+function normalizeSearchText(value: string): string {
+  return value
+    .toLocaleLowerCase('tr-TR')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ı/g, 'i')
+    .replace(/İ/g, 'i')
+    .replace(/ş/g, 's')
+    .replace(/Ş/g, 's')
+    .replace(/ğ/g, 'g')
+    .replace(/Ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/Ü/g, 'u')
+    .replace(/ö/g, 'o')
+    .replace(/Ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/Ç/g, 'c')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function matchesSearchQuery(
+  stock: Pick<
+    StockGetDto,
+    | 'stockName'
+    | 'erpStockCode'
+    | 'grupKodu'
+    | 'grupAdi'
+    | 'kod1'
+    | 'kod1Adi'
+    | 'kod2'
+    | 'kod2Adi'
+    | 'ureticiKodu'
+  >,
+  searchQuery: string
+): boolean {
+  const query = normalizeSearchText(searchQuery);
+  if (!query) return true;
+
+  const haystacks = [
+    stock.stockName,
+    stock.erpStockCode,
+    stock.grupKodu,
+    stock.grupAdi,
+    stock.kod1,
+    stock.kod1Adi,
+    stock.kod2,
+    stock.kod2Adi,
+    stock.ureticiKodu,
+  ]
+    .filter(Boolean)
+    .map((item) => normalizeSearchText(String(item)));
+
+  return haystacks.some((item) => item.includes(query));
+}
 
 function formatStockBalance(stock: StockGetDto | StockGetWithMainImageDto): string | null {
   if (stock.balanceText?.trim()) {
@@ -747,12 +816,16 @@ export function ProductSelectDialog({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('stocks');
   const [isListening, setIsListening] = useState(false);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const [relatedStocksDialogOpen, setRelatedStocksDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<StockGetDto | StockGetWithMainImageDto | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debouncedSearch = useDebouncedValue(searchQuery, DROPDOWN_DEBOUNCE_MS);
   const isThresholdInput = searchQuery.trim().length > 0 && searchQuery.trim().length < DROPDOWN_MIN_CHARS;
+  const appliedAdvancedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
+  const hasAdvancedFilters = appliedAdvancedFilters.length > 0;
   const minCharsHint = t('common.dropdown.minCharsHint', {
     count: DROPDOWN_MIN_CHARS,
     defaultValue: `Minimum ${DROPDOWN_MIN_CHARS} characters`,
@@ -812,6 +885,8 @@ export function ProductSelectDialog({
   useEffect(() => {
     if (!open) {
       setSearchQuery('');
+      setDraftFilterRows([]);
+      setAppliedFilterRows([]);
       setIsListening(false);
       if (recognitionRef.current) {
         recognitionRef.current.stop();
@@ -828,10 +903,16 @@ export function ProductSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
-    buildFilters: (searchTerm) => [
-      ...STOCK_SEARCH_COLUMNS.map((column) => ({ column, operator: 'contains', value: searchTerm })),
-    ],
-    filterLogic: 'or',
+    extraQueryKey: [JSON.stringify(appliedAdvancedFilters)],
+    buildFilters: (searchTerm) => {
+      if (hasAdvancedFilters) {
+        return appliedAdvancedFilters;
+      }
+      return searchTerm
+        ? [...STOCK_SEARCH_COLUMNS.map((column) => ({ column, operator: 'contains', value: searchTerm }))]
+        : undefined;
+    },
+    filterLogic: hasAdvancedFilters ? 'and' : 'or',
     fetchPage: dropdownApi.getStockPage,
   });
 
@@ -843,12 +924,32 @@ export function ProductSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
-    buildFilters: (searchTerm) => [
-      ...STOCK_SEARCH_COLUMNS.map((column) => ({ column, operator: 'contains', value: searchTerm })),
-    ],
-    filterLogic: 'or',
+    extraQueryKey: [JSON.stringify(appliedAdvancedFilters)],
+    buildFilters: (searchTerm) => {
+      if (hasAdvancedFilters) {
+        return appliedAdvancedFilters;
+      }
+      return searchTerm
+        ? [...STOCK_SEARCH_COLUMNS.map((column) => ({ column, operator: 'contains', value: searchTerm }))]
+        : undefined;
+    },
+    filterLogic: hasAdvancedFilters ? 'and' : 'or',
     fetchPage: dropdownApi.getStockWithImagesPage,
   });
+
+  const visibleStocks = useMemo(
+    () =>
+      (hasAdvancedFilters ? stocksDropdown.items.filter((item) => matchesSearchQuery(item, searchQuery)) : stocksDropdown.items),
+    [hasAdvancedFilters, searchQuery, stocksDropdown.items]
+  );
+
+  const visibleStocksWithImages = useMemo(
+    () =>
+      (hasAdvancedFilters
+        ? stocksWithImagesDropdown.items.filter((item) => matchesSearchQuery(item, searchQuery))
+        : stocksWithImagesDropdown.items),
+    [hasAdvancedFilters, searchQuery, stocksWithImagesDropdown.items]
+  );
 
   const handleStockSelect = async (stock: StockGetDto | StockGetWithMainImageDto): Promise<void> => {
     const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
@@ -934,7 +1035,7 @@ export function ProductSelectDialog({
       );
     }
 
-    if (stocksDropdown.items.length === 0) {
+    if (visibleStocks.length === 0) {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
@@ -947,7 +1048,7 @@ export function ProductSelectDialog({
     if (viewMode === 'list') {
       return (
         <div className="flex flex-col gap-2">
-          {stocksDropdown.items.map((stock) => (
+          {visibleStocks.map((stock) => (
             <StockListItem
               key={stock.id}
               stock={stock}
@@ -961,7 +1062,7 @@ export function ProductSelectDialog({
 
     return (
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {stocksDropdown.items.map((stock) => (
+        {visibleStocks.map((stock) => (
           <StockCard
             key={stock.id}
             stock={stock}
@@ -984,7 +1085,7 @@ export function ProductSelectDialog({
       );
     }
 
-    if (stocksWithImagesDropdown.items.length === 0) {
+    if (visibleStocksWithImages.length === 0) {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-muted-foreground">
@@ -997,7 +1098,7 @@ export function ProductSelectDialog({
     if (viewMode === 'list') {
       return (
         <div className="flex flex-col gap-2">
-          {stocksWithImagesDropdown.items.map((stock) => (
+          {visibleStocksWithImages.map((stock) => (
             <StockWithImageListItem
               key={stock.id}
               stock={stock}
@@ -1011,7 +1112,7 @@ export function ProductSelectDialog({
 
     return (
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {stocksWithImagesDropdown.items.map((stock) => (
+        {visibleStocksWithImages.map((stock) => (
           <StockWithImageCard
             key={stock.id}
             stock={stock}
@@ -1134,6 +1235,54 @@ export function ProductSelectDialog({
             </div>
 
             <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-11 rounded-xl bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400"
+                  >
+                    <Filter className="h-4 w-4 mr-2" />
+                    {t('common.filters', { defaultValue: 'Filtreler' })}
+                    {hasAdvancedFilters ? (
+                      <span className="ml-2 inline-flex min-w-5 justify-center rounded-full bg-pink-100 px-1.5 py-0.5 text-[10px] font-semibold text-pink-700 dark:bg-pink-900/40 dark:text-pink-300">
+                        {appliedAdvancedFilters.length}
+                      </span>
+                    ) : null}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-[min(96vw,680px)] p-0">
+                  <AdvancedFilter
+                    embedded
+                    columns={STOCK_FILTER_COLUMNS}
+                    defaultColumn="ErpStockCode"
+                    draftRows={draftFilterRows}
+                    onDraftRowsChange={setDraftFilterRows}
+                    onSearch={() => setAppliedFilterRows(draftFilterRows)}
+                    onClear={() => {
+                      setDraftFilterRows([]);
+                      setAppliedFilterRows([]);
+                    }}
+                    translationNamespace="common"
+                  />
+                  <div className="flex items-center justify-end gap-2 border-t border-slate-200 dark:border-white/10 p-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setDraftFilterRows(appliedFilterRows)}
+                    >
+                      {t('common.cancel', { defaultValue: 'İptal' })}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setAppliedFilterRows(draftFilterRows)}
+                    >
+                      {t('common.apply', { defaultValue: 'Uygula' })}
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
               <div className="bg-white dark:bg-[#1a1025] p-1 rounded-xl flex items-center gap-1 border border-slate-200 dark:border-white/5 shadow-sm">
                 <button
                   type="button"

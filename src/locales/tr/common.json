@@ -116,7 +116,11 @@
       "operator<": "<",
       "operator<=": "<=",
       "true": "Evet",
-      "false": "Hayır"
+      "false": "Hayır",
+      "columnId": "ID",
+      "columnErpStockCode": "ERP Kodu",
+      "columnStockName": "Stok Adı",
+      "columnUnit": "Birim"
     },
     "selectAll": "Tümünü Seç",
     "export": "Çıktı Al",
