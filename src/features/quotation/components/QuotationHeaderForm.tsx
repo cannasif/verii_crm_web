@@ -154,7 +154,8 @@ export function QuotationHeaderForm({
   
   const { data: customerOptions = [] } = useCustomerOptions();
   
-  const { data: customer } = useCustomer(watchedCustomerId ?? 0);
+  const shouldFetchCustomer = Boolean(watchedCustomerId && !watchedErpCustomerCode);
+  const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
   
   const customerTypeId = useMemo(() => {
@@ -174,14 +175,27 @@ export function QuotationHeaderForm({
   );
 
   const customerDisplayValue = useMemo(() => {
-    if (!watchedCustomerId) return '';
+    if (!watchedCustomerId && !watchedErpCustomerCode) return '';
     if (customer) {
       return customer.customerCode?.trim()
         ? `ERP: ${customer.customerCode} - ${customer.name}`
         : `CRM: ${customer.name}`;
     }
+    const matchedOption = customerOptions.find(
+      (option) =>
+        (watchedCustomerId != null && option.id === watchedCustomerId) ||
+        (!!watchedErpCustomerCode && option.customerCode === watchedErpCustomerCode)
+    );
+    if (matchedOption) {
+      return matchedOption.customerCode?.trim()
+        ? `ERP: ${matchedOption.customerCode} - ${matchedOption.name}`
+        : `CRM: ${matchedOption.name}`;
+    }
+    if (watchedErpCustomerCode) {
+      return `ERP: ${watchedErpCustomerCode}`;
+    }
     return `ID: ${watchedCustomerId}`;
-  }, [watchedCustomerId, customer]);
+  }, [watchedCustomerId, watchedErpCustomerCode, customer, customerOptions]);
 
   useEffect(() => {
     setCustomerSearchQuery(customerDisplayValue);

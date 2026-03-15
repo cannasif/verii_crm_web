@@ -129,7 +129,8 @@ export function DemandHeaderForm({
 
   const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useDemandRelatedUsers(user?.id);
-  const { data: customer } = useCustomer(watchedCustomerId ?? 0);
+  const shouldFetchCustomer = Boolean(watchedCustomerId && !watchedErpCustomerCode);
+  const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
   
   const customerTypeId = useMemo(() => {
@@ -144,14 +145,17 @@ export function DemandHeaderForm({
   );
 
   const customerDisplayValue = useMemo(() => {
-    if (!watchedCustomerId) return '';
+    if (!watchedCustomerId && !watchedErpCustomerCode) return '';
     if (customer) {
       return customer.customerCode?.trim()
         ? `ERP: ${customer.customerCode} - ${customer.name}`
         : `CRM: ${customer.name}`;
     }
+    if (watchedErpCustomerCode) {
+      return `ERP: ${watchedErpCustomerCode}`;
+    }
     return `ID: ${watchedCustomerId}`;
-  }, [watchedCustomerId, customer]);
+  }, [watchedCustomerId, watchedErpCustomerCode, customer]);
 
   useEffect(() => {
     const currentRepresentativeId = form.watch('demand.representativeId');
