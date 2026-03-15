@@ -42,7 +42,7 @@ export function convertPriceToTargetCurrency(
   const sourceDovizTipi = findDovizTipiFromCurrencyCode(sourceCurrency, erpRates);
   const targetDovizTipi = findDovizTipiFromCurrencyCode(targetCurrency, erpRates);
 
-  if (!sourceDovizTipi || !targetDovizTipi) {
+  if (sourceDovizTipi == null || targetDovizTipi == null) {
     return price;
   }
 
