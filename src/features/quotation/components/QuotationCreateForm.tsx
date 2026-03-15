@@ -177,7 +177,7 @@ export function QuotationCreateForm(): ReactElement {
 
       const exchangeRatesToSend = exchangeRates.length > 0
         ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
-            const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
+            const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
             return {
               ...rate,
               currency: currencyValue,

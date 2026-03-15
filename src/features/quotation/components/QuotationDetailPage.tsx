@@ -1,7 +1,7 @@
 import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useQuotation } from '../hooks/useQuotation';
@@ -51,12 +51,24 @@ function addDaysToDateOnly(dateValue: string, days: number): string {
   return date.toISOString().split('T')[0];
 }
 
+function parseQuotationIdFromPath(pathname: string): number {
+  const parts = pathname.split('/');
+  const idx = parts.indexOf('quotations');
+  if (idx === -1 || idx === parts.length - 1) return 0;
+  const segment = parts[idx + 1];
+  if (!segment || segment === 'create' || segment === 'waiting-approvals') return 0;
+  const num = parseInt(segment, 10);
+  return Number.isNaN(num) ? 0 : num;
+}
+
 export function QuotationDetailPage(): ReactElement {
   const { t } = useTranslation();
-  const { id } = useParams<{ id: string }>();
+  const { id: paramId } = useParams<{ id: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
-  const quotationId = id ? parseInt(id, 10) : 0;
+  const quotationIdFromPath = parseQuotationIdFromPath(location.pathname);
+  const quotationId = quotationIdFromPath > 0 ? quotationIdFromPath : (paramId ? parseInt(paramId, 10) : 0) || 0;
 
   const { data: quotation, isLoading } = useQuotation(quotationId);
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useQuotationExchangeRates(quotationId);
@@ -236,6 +248,7 @@ export function QuotationDetailPage(): ReactElement {
   useEffect(() => {
     linesInitializedRef.current = false;
     notesInitializedRef.current = false;
+    exchangeRatesInitializedRef.current = false;
   }, [quotationId]);
 
   useEffect(() => {
@@ -364,18 +377,25 @@ export function QuotationDetailPage(): ReactElement {
   useEffect(() => {
     if (exchangeRatesData && exchangeRatesData.length > 0 && !exchangeRatesInitializedRef.current && currencyOptionsForExchangeRates.length > 0) {
       const formattedExchangeRates: QuotationExchangeRateFormState[] = exchangeRatesData.map((rate) => {
+        const normalizedCurrency = String(rate.currency ?? '').trim();
+        const numericCurrency = Number(normalizedCurrency);
+        const resolvedDovizTipi = !Number.isNaN(numericCurrency)
+          ? numericCurrency
+          : undefined;
         const currencyOption = currencyOptionsForExchangeRates.find(
-          (opt) => opt.dovizIsmi?.toUpperCase() === rate.currency.toUpperCase() || 
-                   opt.code?.toUpperCase() === rate.currency.toUpperCase()
+          (opt) =>
+            (resolvedDovizTipi != null && opt.dovizTipi === resolvedDovizTipi) ||
+            opt.dovizIsmi?.toUpperCase() === normalizedCurrency.toUpperCase() ||
+            opt.code?.toUpperCase() === normalizedCurrency.toUpperCase()
         );
         
         return {
           id: `rate-${rate.id}`,
-          currency: rate.currency,
+          currency: normalizedCurrency,
           exchangeRate: rate.exchangeRate,
           exchangeRateDate: rate.exchangeRateDate ? rate.exchangeRateDate.split('T')[0] : new Date().toISOString().split('T')[0],
           isOfficial: rate.isOfficial,
-          dovizTipi: currencyOption?.dovizTipi,
+          dovizTipi: currencyOption?.dovizTipi ?? resolvedDovizTipi,
         };
       });
       setExchangeRates(formattedExchangeRates);
@@ -460,7 +480,7 @@ export function QuotationDetailPage(): ReactElement {
 
       const exchangeRatesToSend = exchangeRates.length > 0
         ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
-            const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
+            const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
             return {
               ...rate,
               currency: currencyValue,
