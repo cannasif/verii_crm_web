@@ -91,10 +91,6 @@ export function QuotationDetailPage(): ReactElement {
         quotation.potentialCustomerName ??
         customerOptions.find((option) => option.id === quotation.potentialCustomerId)?.name ??
         null;
-      const offerTypeLabel =
-        quotation.offerType === 'YURTDISI'
-          ? t('quotation.offerTypeExport', { defaultValue: 'Yurt Dışı' })
-          : t('quotation.offerTypeDomestic', { defaultValue: 'Yurt İçi' });
       const documentSerialTypeName =
         (raw.documentSerialTypeName as string | null | undefined) ??
         (raw.DocumentSerialTypeName as string | null | undefined) ??
@@ -119,26 +115,29 @@ export function QuotationDetailPage(): ReactElement {
               lines,
               offerNo: quotation.offerNo ?? null,
               customerName,
+              representativeName: quotation.representativeName ?? null,
+              address: quotation.shippingAddressText ?? null,
+              shippingAddress: quotation.shippingAddressText ?? null,
+              erpCustomerCode: quotation.erpCustomerCode ?? null,
+              offerDate: quotation.offerDate ?? null,
+              deliveryDate: quotation.deliveryDate ?? null,
+              validUntil: quotation.validUntil ?? null,
+              paymentTypeName: quotation.paymentTypeName ?? null,
+              salesTypeName,
+              projectCode: quotation.erpProjectCode ?? null,
+              description: quotation.description ?? null,
+              notes: Object.values(quotationNotes).filter(
+                (note): note is string => typeof note === 'string' && note.trim().length > 0
+              ),
               metaFields: [
-                { label: t('quotation.customerCode', { defaultValue: 'ERP Müşteri Kodu' }), value: quotation.erpCustomerCode ?? null },
-                { label: t('quotation.offerType', { defaultValue: 'Teklif Tipi' }), value: offerTypeLabel },
-                { label: t('quotation.offerDate', { defaultValue: 'Teklif Tarihi' }), value: quotation.offerDate ? quotation.offerDate.split('T')[0] : null },
-                { label: t('quotation.deliveryDate', { defaultValue: 'Teslim Tarihi' }), value: quotation.deliveryDate ? quotation.deliveryDate.split('T')[0] : null },
-                { label: t('quotation.validUntil', { defaultValue: 'Geçerlilik Tarihi' }), value: quotation.validUntil ? quotation.validUntil.split('T')[0] : null },
-                { label: t('quotation.paymentType', { defaultValue: 'Ödeme Tipi' }), value: quotation.paymentTypeName ?? null },
-                { label: t('quotation.representative', { defaultValue: 'Temsilci' }), value: quotation.representativeName ?? null },
-                { label: t('quotation.shippingAddress', { defaultValue: 'Sevk Adresi' }), value: quotation.shippingAddressText ?? null },
                 { label: t('quotation.serialNumber', { defaultValue: 'Seri No' }), value: documentSerialTypeName },
-                { label: t('quotation.deliveryMethod', { defaultValue: 'Teslim Şekli' }), value: salesTypeName },
-                { label: t('quotation.projectCode', { defaultValue: 'Proje Kodu' }), value: quotation.erpProjectCode ?? null },
-                { label: t('quotation.description', { defaultValue: 'Açıklama' }), value: quotation.description ?? null },
               ],
               t,
             }),
         },
       ];
     },
-    [quotation, customerOptions, lines, t]
+    [quotation, customerOptions, lines, quotationNotes, t]
   );
 
   const form = useForm<CreateQuotationSchema>({
