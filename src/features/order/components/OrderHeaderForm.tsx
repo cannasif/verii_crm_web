@@ -161,6 +161,11 @@ export function OrderHeaderForm({
   }, [form, user, watchedRepresentativeId]);
 
   useEffect(() => {
+    if (initialCurrency === null || initialCurrency === undefined) {
+      isInitialLoadRef.current = false;
+      return;
+    }
+
     if (initialCurrency !== null && initialCurrency !== undefined) {
       isInitialLoadRef.current = true;
       const timer = setTimeout(() => isInitialLoadRef.current = false, 1000);
