@@ -50,7 +50,21 @@ const STOCK_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'Id', type: 'number', labelKey: 'columnId' },
   { value: 'ErpStockCode', type: 'string', labelKey: 'columnErpStockCode' },
   { value: 'StockName', type: 'string', labelKey: 'columnStockName' },
+  { value: 'grupKodu', type: 'string', labelKey: 'columnGroupCode' },
+  { value: 'grupAdi', type: 'string', labelKey: 'columnGroupName' },
+  { value: 'kod1', type: 'string', labelKey: 'columnCode1' },
+  { value: 'kod1Adi', type: 'string', labelKey: 'columnCode1Name' },
+  { value: 'kod2', type: 'string', labelKey: 'columnCode2' },
+  { value: 'kod2Adi', type: 'string', labelKey: 'columnCode2Name' },
+  { value: 'kod3', type: 'string', labelKey: 'columnCode3' },
+  { value: 'kod3Adi', type: 'string', labelKey: 'columnCode3Name' },
+  { value: 'kod4', type: 'string', labelKey: 'columnCode4' },
+  { value: 'kod4Adi', type: 'string', labelKey: 'columnCode4Name' },
+  { value: 'kod5', type: 'string', labelKey: 'columnCode5' },
+  { value: 'kod5Adi', type: 'string', labelKey: 'columnCode5Name' },
+  { value: 'ureticiKodu', type: 'string', labelKey: 'columnManufacturerCode' },
   { value: 'unit', type: 'string', labelKey: 'columnUnit' },
+  { value: 'branchCode', type: 'number', labelKey: 'columnBranchCode' },
 ] as const;
 
 function normalizeSearchText(value: string): string {
@@ -816,6 +830,7 @@ export function ProductSelectDialog({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('stocks');
   const [isListening, setIsListening] = useState(false);
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const [relatedStocksDialogOpen, setRelatedStocksDialogOpen] = useState(false);
@@ -885,6 +900,7 @@ export function ProductSelectDialog({
   useEffect(() => {
     if (!open) {
       setSearchQuery('');
+      setFilterPopoverOpen(false);
       setDraftFilterRows([]);
       setAppliedFilterRows([]);
       setIsListening(false);
@@ -1235,7 +1251,7 @@ export function ProductSelectDialog({
             </div>
 
             <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-              <Popover>
+              <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
@@ -1262,6 +1278,7 @@ export function ProductSelectDialog({
                     onClear={() => {
                       setDraftFilterRows([]);
                       setAppliedFilterRows([]);
+                      setFilterPopoverOpen(false);
                     }}
                     translationNamespace="common"
                   />
@@ -1269,13 +1286,19 @@ export function ProductSelectDialog({
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setDraftFilterRows(appliedFilterRows)}
+                      onClick={() => {
+                        setDraftFilterRows(appliedFilterRows);
+                        setFilterPopoverOpen(false);
+                      }}
                     >
                       {t('common.cancel', { defaultValue: 'İptal' })}
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => setAppliedFilterRows(draftFilterRows)}
+                      onClick={() => {
+                        setAppliedFilterRows(draftFilterRows);
+                        setFilterPopoverOpen(false);
+                      }}
                     >
                       {t('common.apply', { defaultValue: 'Uygula' })}
                     </Button>
