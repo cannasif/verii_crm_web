@@ -813,7 +813,7 @@ export function QuotationLineForm({
           </label>
           <Input
             type="number"
-            step="1"
+            step="0.000001"
             min="1"
             value={quantityInputValue}
             onChange={(e) => {
@@ -851,7 +851,7 @@ export function QuotationLineForm({
           <div className="relative">
             <Input
               type="number"
-              step="0.01"
+              step="0.000001"
               min="0"
               value={formData.unitPrice}
               onChange={(e) => {
@@ -892,7 +892,7 @@ export function QuotationLineForm({
           <div className="relative">
             <Input
               type="number"
-              step="0.01"
+              step="0.000001"
               min="0"
               max="100"
               value={vatRateInputValue}
@@ -946,7 +946,7 @@ export function QuotationLineForm({
                   </div>
 	                <Input
                   type="number"
-                  step="0.01"
+                  step="0.000001"
                   min="0"
                   max="100"
 	                  value={item.val}

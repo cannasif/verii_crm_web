@@ -179,7 +179,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                     <Input
                         type="number"
                         min="0.01"
-                        step="0.01"
+                        step="0.000001"
                         className="
                             h-12 rounded-xl pl-4
                             bg-white/50 dark:bg-zinc-900/50 

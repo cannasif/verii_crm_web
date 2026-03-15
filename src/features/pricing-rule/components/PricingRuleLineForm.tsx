@@ -217,7 +217,7 @@ export function PricingRuleLineForm({
                 <FormControl>
                   <Input
                     type="number"
-                    step="0.01"
+                    step="0.000001"
                     min="0"
                     {...field}
                     value={field.value || ''}
@@ -242,7 +242,7 @@ export function PricingRuleLineForm({
                 <FormControl>
                   <Input
                     type="number"
-                    step="0.01"
+                    step="0.000001"
                     min="0.01"
                     {...field}
                     value={field.value ?? ''}
@@ -303,7 +303,7 @@ export function PricingRuleLineForm({
                     <FormControl>
                     <Input
                         type="number"
-                        step="0.01"
+                        step="0.000001"
                         min="0.01"
                         {...field}
                         value={field.value ?? ''}
@@ -330,7 +330,7 @@ export function PricingRuleLineForm({
                         <FormControl>
                         <Input
                             type="number"
-                            step="0.01"
+                            step="0.000001"
                             min="0"
                             max="100"
                             {...field}
@@ -378,7 +378,7 @@ export function PricingRuleLineForm({
                     <FormControl>
                     <Input
                         type="number"
-                        step="0.01"
+                        step="0.000001"
                         min="0"
                         max="100"
                         {...field}
@@ -404,7 +404,7 @@ export function PricingRuleLineForm({
                     <FormControl>
                     <Input
                         type="number"
-                        step="0.01"
+                        step="0.000001"
                         min="0"
                         max="100"
                         {...field}

@@ -216,7 +216,7 @@ export function ProductPricingForm({
                           <Tag size={12} className="text-pink-500" /> Liste Fiyatı
                         </FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} />
+                          <Input type="number" step="0.000001" inputMode="decimal" {...field} className={INPUT_STYLE} />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px]" />
                       </FormItem>
@@ -227,7 +227,7 @@ export function ProductPricingForm({
                           <Coins size={12} className="text-pink-500" /> Maliyet
                         </FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} />
+                          <Input type="number" step="0.000001" inputMode="decimal" {...field} className={INPUT_STYLE} />
                         </FormControl>
                         <FormMessage className="text-red-500 text-[10px]" />
                       </FormItem>
@@ -240,7 +240,7 @@ export function ProductPricingForm({
                         <FormLabel className={LABEL_STYLE}>
                           <Percent size={12} className="text-pink-500" /> İsk. 1 (%)
                         </FormLabel>
-                        <FormControl><Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
+                        <FormControl><Input type="number" step="0.000001" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="discount2" render={({ field }) => (
@@ -248,7 +248,7 @@ export function ProductPricingForm({
                         <FormLabel className={LABEL_STYLE}>
                           <Percent size={12} className="text-pink-500" /> İsk. 2 (%)
                         </FormLabel>
-                        <FormControl><Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
+                        <FormControl><Input type="number" step="0.000001" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="discount3" render={({ field }) => (
@@ -256,7 +256,7 @@ export function ProductPricingForm({
                         <FormLabel className={LABEL_STYLE}>
                           <Percent size={12} className="text-pink-500" /> İsk. 3 (%)
                         </FormLabel>
-                        <FormControl><Input type="number" step="0.01" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
+                        <FormControl><Input type="number" step="0.000001" inputMode="decimal" {...field} className={INPUT_STYLE} /></FormControl>
                       </FormItem>
                     )} />
                   </div>

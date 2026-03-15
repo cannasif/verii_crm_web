@@ -327,7 +327,7 @@ export function ProfilePage(): ReactElement {
                           <Ruler className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
                           <Input
                             type="number"
-                            step="0.01"
+                            step="0.000001"
                             {...field}
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value ?? ''}
@@ -353,7 +353,7 @@ export function ProfilePage(): ReactElement {
                           <Weight className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
                           <Input
                             type="number"
-                            step="0.01"
+                            step="0.000001"
                             {...field}
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                             value={field.value ?? ''}

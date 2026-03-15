@@ -232,7 +232,7 @@ export function UserDiscountLimitForm({
                         <Input
                           className={INPUT_STYLE}
                           type="number"
-                          step="0.01"
+                          step="0.000001"
                           min="0"
                           max="100"
                           {...field}
@@ -258,7 +258,7 @@ export function UserDiscountLimitForm({
                         <Input
                           className={INPUT_STYLE}
                           type="number"
-                          step="0.01"
+                          step="0.000001"
                           min="0"
                           max="100"
                           {...field}
@@ -284,7 +284,7 @@ export function UserDiscountLimitForm({
                         <Input
                           className={INPUT_STYLE}
                           type="number"
-                          step="0.01"
+                          step="0.000001"
                           min="0"
                           max="100"
                           {...field}

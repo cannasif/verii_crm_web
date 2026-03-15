@@ -211,7 +211,7 @@ export function ExchangeRateDialog({
                             {editingId === rate.id ? (
                               <Input
                                 type="number"
-                                step="0.0001"
+                                step="0.000001"
                                 min="0"
                                 value={rate.exchangeRate}
                                 onChange={(e) => handleRateChange(rate.id, parseFloat(e.target.value) || 0)}

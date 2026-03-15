@@ -263,7 +263,7 @@ export function ProductPricingGroupByForm({
                         <FormControl>
                           <Input
                             type="number"
-                            step="0.01"
+                            step="0.000001"
                             min="0"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
@@ -288,7 +288,7 @@ export function ProductPricingGroupByForm({
                         <FormControl>
                           <Input
                             type="number"
-                            step="0.01"
+                            step="0.000001"
                             min="0"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
@@ -315,7 +315,7 @@ export function ProductPricingGroupByForm({
                         <FormControl>
                           <Input
                             type="number"
-                            step="0.01"
+                            step="0.000001"
                             min="0"
                             max="100"
                             {...field}
@@ -341,7 +341,7 @@ export function ProductPricingGroupByForm({
                         <FormControl>
                           <Input
                             type="number"
-                            step="0.01"
+                            step="0.000001"
                             min="0"
                             max="100"
                             {...field}
@@ -367,7 +367,7 @@ export function ProductPricingGroupByForm({
                         <FormControl>
                           <Input
                             type="number"
-                            step="0.01"
+                            step="0.000001"
                             min="0"
                             max="100"
                             {...field}

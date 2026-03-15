@@ -155,7 +155,7 @@ export function ApprovalRoleForm({
                   <FormControl>
                     <Input
                       type="number"
-                      step="0.01"
+                      step="0.000001"
                       {...field}
                       value={field.value || ''}
                       onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}

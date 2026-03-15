@@ -851,7 +851,7 @@ export function DemandLineForm({
                   <div className="relative">
                     <Input
                       type="number"
-                      step="0.01"
+                      step="0.000001"
                       min="0"
                       value={formData.unitPrice}
                       onChange={(e) => {
@@ -877,7 +877,7 @@ export function DemandLineForm({
                   </label>
                   <Input
                     type="number"
-                    step="0.001"
+                    step="0.000001"
                     min="0.01"
                     value={quantityInputValue}
                     onChange={(e) => {
@@ -908,7 +908,7 @@ export function DemandLineForm({
                   </label>
                   <Input
                     type="number"
-                    step="0.01"
+                    step="0.000001"
                     min="0"
                     max="100"
                     value={vatRateInputValue}
@@ -957,7 +957,7 @@ export function DemandLineForm({
                  </div>
                  <Input
                    type="number"
-                   step="0.01"
+                   step="0.000001"
                    min="0"
                    max="100"
                    value={discountRate1InputValue}
@@ -997,7 +997,7 @@ export function DemandLineForm({
                    </div>
                    <Input
                      type="number"
-                     step="0.01"
+                     step="0.000001"
                      min="0"
                      max="100"
                      value={discountRate2InputValue}
@@ -1035,7 +1035,7 @@ export function DemandLineForm({
                    </div>
                    <Input
                      type="number"
-                     step="0.01"
+                     step="0.000001"
                      min="0"
                      max="100"
                      value={discountRate3InputValue}

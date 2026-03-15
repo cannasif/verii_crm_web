@@ -330,7 +330,7 @@ export function UserDetailDialog({
                                 {/* Pembe Border Geri Döndü */}
                                 <Input
                                   type="number"
-                                  step="0.01"
+                                  step="0.000001"
                                   {...field}
                                   onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                                   value={field.value || ''}
@@ -357,7 +357,7 @@ export function UserDetailDialog({
                                     <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
                                     <Input
                                         type="number"
-                                        step="0.01"
+                                        step="0.000001"
                                         {...field}
                                         onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                                         value={field.value || ''}

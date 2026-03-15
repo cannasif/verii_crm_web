@@ -124,7 +124,7 @@ export function QuotationExchangeRateForm({
               </div>
               <Input
                 type="number"
-                step="0.01"
+                step="0.000001"
                 min="0.01"
                 value={newExchangeRate}
                 onChange={(e) => setNewExchangeRate(e.target.value)}
