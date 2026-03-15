@@ -73,6 +73,7 @@ interface QuotationHeaderFormProps {
   isSavingNotes?: boolean;
   lines?: Array<{ productCode?: string | null; productName?: string | null }>;
   onLinesChange?: (lines: Array<{ productCode?: string | null; productName?: string | null }>) => void;
+  onCurrencyChange?: (oldCurrency: number, newCurrency: number) => Promise<void> | void;
   initialCurrency?: string | number | null;
   revisionNo?: string | null;
   quotationId?: number | null;
@@ -90,6 +91,7 @@ export function QuotationHeaderForm({
   isSavingNotes = false,
   lines = [],
   onLinesChange,
+  onCurrencyChange,
   initialCurrency,
   quotationId,
   quotationOfferNo,
@@ -105,6 +107,7 @@ export function QuotationHeaderForm({
   const [exchangeRateDialogOpen, setExchangeRateDialogOpen] = useState(false);
   const [currencyChangeDialogOpen, setCurrencyChangeDialogOpen] = useState(false);
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
+  const [pendingPreviousCurrency, setPendingPreviousCurrency] = useState<number | null>(null);
   const [customerComboboxOpen, setCustomerComboboxOpen] = useState(false);
   const [customerSearchQuery, setCustomerSearchQuery] = useState("");
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
@@ -229,6 +232,11 @@ export function QuotationHeaderForm({
   }, [form, user]);
 
   useEffect(() => {
+    if (initialCurrency === null || initialCurrency === undefined) {
+      isInitialLoadRef.current = false;
+      return;
+    }
+
     if (initialCurrency !== null && initialCurrency !== undefined) {
       isInitialLoadRef.current = true;
       const timer = setTimeout(() => isInitialLoadRef.current = false, 1000);
@@ -275,6 +283,7 @@ export function QuotationHeaderForm({
     if (currentCurrencyNum === newCurrencyNum) return;
     
     if (lines && lines.length > 0 && onLinesChange) {
+      setPendingPreviousCurrency(currentCurrencyNum);
       setPendingCurrency(newCurrency);
       setCurrencyChangeDialogOpen(true);
     } else {
@@ -282,18 +291,24 @@ export function QuotationHeaderForm({
     }
   };
 
-  const handleCurrencyChangeConfirm = (): void => {
+  const handleCurrencyChangeConfirm = async (): Promise<void> => {
     if (pendingCurrency && onLinesChange) {
+      if (onCurrencyChange && pendingPreviousCurrency != null) {
+        await onCurrencyChange(pendingPreviousCurrency, Number(pendingCurrency));
+      } else {
+        onLinesChange(lines || []);
+      }
       form.setValue('quotation.currency', pendingCurrency);
-      onLinesChange(lines || []);
       setCurrencyChangeDialogOpen(false);
       setPendingCurrency(null);
+      setPendingPreviousCurrency(null);
     }
   };
 
   const handleCurrencyChangeCancel = (): void => {
     setCurrencyChangeDialogOpen(false);
     setPendingCurrency(null);
+    setPendingPreviousCurrency(null);
   };
 
   const currencyConfig = useMemo(() => {

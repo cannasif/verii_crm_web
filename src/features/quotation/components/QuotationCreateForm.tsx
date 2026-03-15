@@ -253,10 +253,13 @@ export function QuotationCreateForm(): ReactElement {
     }
   };
 
-  const handleCurrencyChange = async (newCurrency: string): Promise<void> => {
+  const handleCurrencyChange = async (
+    newCurrency: string,
+    forcedOldCurrency?: number
+  ): Promise<void> => {
     if (lines.length === 0) return;
 
-    const oldCurrency = watchedCurrency;
+    const oldCurrency = forcedOldCurrency ?? watchedCurrency;
     const newCurrencyNum = Number(newCurrency);
 
     if (oldCurrency === newCurrencyNum) return;
@@ -280,6 +283,13 @@ export function QuotationCreateForm(): ReactElement {
       })
     );
     setLines(updatedLines);
+  };
+
+  const handleExplicitCurrencyChange = async (
+    oldCurrency: number,
+    newCurrency: number
+  ): Promise<void> => {
+    await handleCurrencyChange(String(newCurrency), oldCurrency);
   };
 
   const currencyCode = useMemo(() => {
@@ -438,6 +448,7 @@ export function QuotationCreateForm(): ReactElement {
                       quotationNotes={quotationNotes}
                       onQuotationNotesChange={setQuotationNotes}
                       lines={lines}
+                      onCurrencyChange={handleExplicitCurrencyChange}
                       onLinesChange={async () => {
                         const newCurrency = form.getValues('quotation.currency');
                         if (newCurrency) {

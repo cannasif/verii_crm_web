@@ -543,10 +543,13 @@ export function QuotationDetailPage(): ReactElement {
     }
   };
 
-  const handleCurrencyChange = async (newCurrency: string): Promise<void> => {
+  const handleCurrencyChange = async (
+    newCurrency: string,
+    forcedOldCurrency?: number
+  ): Promise<void> => {
     if (lines.length === 0) return;
 
-    const oldCurrency = watchedCurrency;
+    const oldCurrency = forcedOldCurrency ?? watchedCurrency;
     const newCurrencyNum = Number(newCurrency);
 
     if (oldCurrency === newCurrencyNum) return;
@@ -566,6 +569,13 @@ export function QuotationDetailPage(): ReactElement {
       })
     );
     setLines(updatedLines);
+  };
+
+  const handleExplicitCurrencyChange = async (
+    oldCurrency: number,
+    newCurrency: number
+  ): Promise<void> => {
+    await handleCurrencyChange(String(newCurrency), oldCurrency);
   };
 
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -719,6 +729,7 @@ export function QuotationDetailPage(): ReactElement {
                       }}
                       isSavingNotes={updateNotesMutation.isPending}
                       lines={lines}
+                      onCurrencyChange={handleExplicitCurrencyChange}
                       onLinesChange={async () => {
                         const newCurrency = form.getValues('quotation.currency');
                         if (newCurrency) {
