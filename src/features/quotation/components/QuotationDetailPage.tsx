@@ -83,27 +83,62 @@ export function QuotationDetailPage(): ReactElement {
   const isClosed = quotationStatus === 4;
   const linesEnabled = !isReadOnly;
   const builtInReportTemplates = useMemo(
-    () =>
-      quotation == null
-        ? []
-        : [
-            {
-              id: '__builtin_windo_teklif_yap__',
-              title: 'Windo Teklif Yap',
-              isDefault: true,
-              generate: () =>
-                createQuotationLinesPdfBlob({
-                  fileName: `teklif-${quotation.offerNo || 'detay'}.pdf`,
-                  title: t('quotation.sections.lines'),
-                  currencyCode: quotation.currency || 'TRY',
-                  lines,
-                  offerNo: quotation.offerNo ?? null,
-                  customerName: quotation.potentialCustomerName ?? null,
-                  t,
-                }),
-            },
-          ],
-    [quotation, lines, t]
+    () => {
+      if (quotation == null) return [];
+
+      const raw = quotation as unknown as Record<string, unknown>;
+      const customerName =
+        quotation.potentialCustomerName ??
+        customerOptions.find((option) => option.id === quotation.potentialCustomerId)?.name ??
+        null;
+      const offerTypeLabel =
+        quotation.offerType === 'YURTDISI'
+          ? t('quotation.offerTypeExport', { defaultValue: 'Yurt Dışı' })
+          : t('quotation.offerTypeDomestic', { defaultValue: 'Yurt İçi' });
+      const documentSerialTypeName =
+        (raw.documentSerialTypeName as string | null | undefined) ??
+        (raw.DocumentSerialTypeName as string | null | undefined) ??
+        null;
+      const salesTypeName =
+        (raw.salesTypeDefinitionName as string | null | undefined) ??
+        (raw.SalesTypeDefinitionName as string | null | undefined) ??
+        (raw.deliveryMethodName as string | null | undefined) ??
+        (raw.DeliveryMethodName as string | null | undefined) ??
+        null;
+
+      return [
+        {
+          id: '__builtin_windo_teklif_yap__',
+          title: 'Windo Teklif Yap',
+          isDefault: true,
+          generate: () =>
+            createQuotationLinesPdfBlob({
+              fileName: `teklif-${quotation.offerNo || 'detay'}.pdf`,
+              title: t('quotation.sections.lines'),
+              currencyCode: quotation.currency || 'TRY',
+              lines,
+              offerNo: quotation.offerNo ?? null,
+              customerName,
+              metaFields: [
+                { label: t('quotation.customerCode', { defaultValue: 'ERP Müşteri Kodu' }), value: quotation.erpCustomerCode ?? null },
+                { label: t('quotation.offerType', { defaultValue: 'Teklif Tipi' }), value: offerTypeLabel },
+                { label: t('quotation.offerDate', { defaultValue: 'Teklif Tarihi' }), value: quotation.offerDate ? quotation.offerDate.split('T')[0] : null },
+                { label: t('quotation.deliveryDate', { defaultValue: 'Teslim Tarihi' }), value: quotation.deliveryDate ? quotation.deliveryDate.split('T')[0] : null },
+                { label: t('quotation.validUntil', { defaultValue: 'Geçerlilik Tarihi' }), value: quotation.validUntil ? quotation.validUntil.split('T')[0] : null },
+                { label: t('quotation.paymentType', { defaultValue: 'Ödeme Tipi' }), value: quotation.paymentTypeName ?? null },
+                { label: t('quotation.representative', { defaultValue: 'Temsilci' }), value: quotation.representativeName ?? null },
+                { label: t('quotation.shippingAddress', { defaultValue: 'Sevk Adresi' }), value: quotation.shippingAddressText ?? null },
+                { label: t('quotation.serialNumber', { defaultValue: 'Seri No' }), value: documentSerialTypeName },
+                { label: t('quotation.deliveryMethod', { defaultValue: 'Teslim Şekli' }), value: salesTypeName },
+                { label: t('quotation.projectCode', { defaultValue: 'Proje Kodu' }), value: quotation.erpProjectCode ?? null },
+                { label: t('quotation.description', { defaultValue: 'Açıklama' }), value: quotation.description ?? null },
+              ],
+              t,
+            }),
+        },
+      ];
+    },
+    [quotation, customerOptions, lines, t]
   );
 
   const form = useForm<CreateQuotationSchema>({

@@ -32,6 +32,7 @@ interface ExportQuotationLinesPdfParams {
   lines: ExportQuotationLine[];
   offerNo?: string | null;
   customerName?: string | null;
+  metaFields?: Array<{ label: string; value?: string | null }>;
   t: TranslationFn;
 }
 
@@ -50,6 +51,17 @@ function normalizeCustomerAccountName(value: string | null | undefined): string 
   }
 
   return trimmed;
+}
+
+function normalizeMetaFields(
+  fields: Array<{ label: string; value?: string | null }> | undefined
+): Array<{ label: string; value: string }> {
+  return (fields ?? [])
+    .map((field) => ({
+      label: field.label?.trim() ?? "",
+      value: field.value?.trim() ?? "",
+    }))
+    .filter((field) => field.label && field.value);
 }
 
 function getCurrencyPresentation(value: string | null | undefined): CurrencyPresentation {
@@ -108,13 +120,30 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
   doc.text(params.title, 14, 20);
   doc.setFontSize(11);
   doc.text(`${params.t('quotation.date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+  const normalizedMetaFields = normalizeMetaFields(params.metaFields);
   doc.text(`${params.t('quotation.offerNo', { defaultValue: 'Teklif No' })}: ${params.offerNo ?? '-'}`, 14, 36);
   const customerAccountName = normalizeCustomerAccountName(params.customerName);
-  doc.text(`${params.t('quotation.currency', { defaultValue: 'Döviz' })}: ${currency.label}`, 14, 44);
-  const tableStartY = customerAccountName ? 58 : 50;
-  if (customerAccountName) {
-    doc.text(`${params.t('quotation.customerAccount')}: ${customerAccountName}`, 14, 52);
-  }
+  doc.text(`${params.t('quotation.currency', { defaultValue: 'Döviz' })}: ${currency.label}`, 14, 44);  
+  const baseMetaFields = [
+    ...(customerAccountName
+      ? [{ label: params.t('quotation.customerAccount'), value: customerAccountName }]
+      : []),
+    ...normalizedMetaFields,
+  ];
+
+  const metaColumnX = [14, 108];
+  let currentMetaY = 52;
+  baseMetaFields.forEach((field, index) => {
+    const columnIndex = index % 2;
+    const rowIndex = Math.floor(index / 2);
+    const y = 52 + rowIndex * 8;
+    doc.text(`${field.label}: ${field.value}`, metaColumnX[columnIndex], y, {
+      maxWidth: columnIndex === 0 ? 86 : 86,
+    });
+    currentMetaY = Math.max(currentMetaY, y);
+  });
+
+  const tableStartY = currentMetaY + 10;
 
   const headers = [[
     params.t('quotation.lines.productCode'),
