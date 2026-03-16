@@ -27,6 +27,7 @@ import {
   type FilterColumnConfig,
   type FilterRow,
 } from '@/lib/advanced-filter-types';
+import type { PagedFilter } from '@/types/api';
 import {
   DROPDOWN_DEBOUNCE_MS,
   DROPDOWN_MIN_CHARS,
@@ -66,6 +67,57 @@ const STOCK_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'unit', type: 'string', labelKey: 'columnUnit' },
   { value: 'branchCode', type: 'number', labelKey: 'columnBranchCode' },
 ] as const;
+
+function splitFilterTokens(value: string): string[] {
+  return value
+    .trim()
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+}
+
+function buildTokenizedSearchFilters(searchTerm: string): PagedFilter[] | undefined {
+  const tokens = splitFilterTokens(searchTerm);
+  if (tokens.length === 0) {
+    return undefined;
+  }
+
+  return STOCK_SEARCH_COLUMNS.flatMap((column) =>
+    tokens.map((token) => ({
+      column,
+      operator: 'contains',
+      value: token,
+    }))
+  );
+}
+
+function buildTokenizedAdvancedFilters(filters: PagedFilter[]): {
+  filters: PagedFilter[];
+  filterLogic: 'and' | 'or';
+} {
+  if (filters.length !== 1) {
+    return { filters, filterLogic: 'and' };
+  }
+
+  const [singleFilter] = filters;
+  if (singleFilter.operator !== 'contains') {
+    return { filters, filterLogic: 'and' };
+  }
+
+  const tokens = splitFilterTokens(singleFilter.value);
+  if (tokens.length <= 1) {
+    return { filters, filterLogic: 'and' };
+  }
+
+  return {
+    filters: tokens.map((token) => ({
+      column: singleFilter.column,
+      operator: singleFilter.operator,
+      value: token,
+    })),
+    filterLogic: 'or',
+  };
+}
 
 function normalizeSearchText(value: string): string {
   return value
@@ -839,8 +891,12 @@ export function ProductSelectDialog({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debouncedSearch = useDebouncedValue(searchQuery, DROPDOWN_DEBOUNCE_MS);
   const isThresholdInput = searchQuery.trim().length > 0 && searchQuery.trim().length < DROPDOWN_MIN_CHARS;
-  const appliedAdvancedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
-  const hasAdvancedFilters = appliedAdvancedFilters.length > 0;
+  const rawAppliedAdvancedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
+  const advancedFilterRequest = useMemo(
+    () => buildTokenizedAdvancedFilters(rawAppliedAdvancedFilters),
+    [rawAppliedAdvancedFilters]
+  );
+  const hasAdvancedFilters = advancedFilterRequest.filters.length > 0;
   const minCharsHint = t('common.dropdown.minCharsHint', {
     count: DROPDOWN_MIN_CHARS,
     defaultValue: `Minimum ${DROPDOWN_MIN_CHARS} characters`,
@@ -919,16 +975,14 @@ export function ProductSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
-    extraQueryKey: [JSON.stringify(appliedAdvancedFilters)],
+    extraQueryKey: [JSON.stringify(advancedFilterRequest)],
     buildFilters: (searchTerm) => {
       if (hasAdvancedFilters) {
-        return appliedAdvancedFilters;
+        return advancedFilterRequest.filters;
       }
-      return searchTerm
-        ? [...STOCK_SEARCH_COLUMNS.map((column) => ({ column, operator: 'contains', value: searchTerm }))]
-        : undefined;
+      return buildTokenizedSearchFilters(searchTerm);
     },
-    filterLogic: hasAdvancedFilters ? 'and' : 'or',
+    filterLogic: hasAdvancedFilters ? advancedFilterRequest.filterLogic : 'or',
     fetchPage: dropdownApi.getStockPage,
   });
 
@@ -940,16 +994,14 @@ export function ProductSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
-    extraQueryKey: [JSON.stringify(appliedAdvancedFilters)],
+    extraQueryKey: [JSON.stringify(advancedFilterRequest)],
     buildFilters: (searchTerm) => {
       if (hasAdvancedFilters) {
-        return appliedAdvancedFilters;
+        return advancedFilterRequest.filters;
       }
-      return searchTerm
-        ? [...STOCK_SEARCH_COLUMNS.map((column) => ({ column, operator: 'contains', value: searchTerm }))]
-        : undefined;
+      return buildTokenizedSearchFilters(searchTerm);
     },
-    filterLogic: hasAdvancedFilters ? 'and' : 'or',
+    filterLogic: hasAdvancedFilters ? advancedFilterRequest.filterLogic : 'or',
     fetchPage: dropdownApi.getStockWithImagesPage,
   });
 
@@ -1262,7 +1314,7 @@ export function ProductSelectDialog({
                     {t('common.filters', { defaultValue: 'Filtreler' })}
                     {hasAdvancedFilters ? (
                       <span className="ml-2 inline-flex min-w-5 justify-center rounded-full bg-pink-100 px-1.5 py-0.5 text-[10px] font-semibold text-pink-700 dark:bg-pink-900/40 dark:text-pink-300">
-                        {appliedAdvancedFilters.length}
+                        {rawAppliedAdvancedFilters.length}
                       </span>
                     ) : null}
                   </Button>
