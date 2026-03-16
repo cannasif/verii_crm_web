@@ -96,17 +96,17 @@ function buildTokenizedAdvancedFilters(filters: PagedFilter[]): {
   filterLogic: 'and' | 'or';
 } {
   if (filters.length !== 1) {
-    return { filters, filterLogic: 'and' };
+    return { filters, filterLogic: 'or' };
   }
 
   const [singleFilter] = filters;
   if (singleFilter.operator !== 'contains') {
-    return { filters, filterLogic: 'and' };
+    return { filters, filterLogic: 'or' };
   }
 
   const tokens = splitFilterTokens(singleFilter.value);
   if (tokens.length <= 1) {
-    return { filters, filterLogic: 'and' };
+    return { filters, filterLogic: 'or' };
   }
 
   return {
