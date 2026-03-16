@@ -96,17 +96,17 @@ function buildTokenizedAdvancedFilters(filters: PagedFilter[]): {
   filterLogic: 'and' | 'or';
 } {
   if (filters.length !== 1) {
-    return { filters, filterLogic: 'or' };
+    return { filters, filterLogic: 'and' };
   }
 
   const [singleFilter] = filters;
   if (singleFilter.operator !== 'contains') {
-    return { filters, filterLogic: 'or' };
+    return { filters, filterLogic: 'and' };
   }
 
   const tokens = splitFilterTokens(singleFilter.value);
   if (tokens.length <= 1) {
-    return { filters, filterLogic: 'or' };
+    return { filters, filterLogic: 'and' };
   }
 
   return {
@@ -115,7 +115,7 @@ function buildTokenizedAdvancedFilters(filters: PagedFilter[]): {
       operator: singleFilter.operator,
       value: token,
     })),
-    filterLogic: 'or',
+    filterLogic: 'and',
   };
 }
 
