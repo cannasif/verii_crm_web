@@ -2,18 +2,11 @@ import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { DocumentSerialTypeDto, CreateDocumentSerialTypeDto, UpdateDocumentSerialTypeDto, DocumentSerialTypeGetDto } from '../types/document-serial-type-types';
 import type { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { appendPagedQueryParams } from '@/utils/query-params';
 
 export const documentSerialTypeApi = {
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<DocumentSerialTypeDto>> => {
-    const queryParams = new URLSearchParams();
-    if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
-    if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params.filters) {
-      queryParams.append('filters', JSON.stringify(params.filters));
-      queryParams.append('filterLogic', params.filterLogic ?? 'and');
-    }
+    const queryParams = appendPagedQueryParams(new URLSearchParams(), params);
 
     const response = await api.get<ApiResponse<PagedResponse<DocumentSerialTypeDto>>>(
       `/api/DocumentSerialType?${queryParams.toString()}`
