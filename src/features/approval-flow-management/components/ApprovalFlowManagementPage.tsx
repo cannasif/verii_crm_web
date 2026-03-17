@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -19,6 +18,7 @@ import { useCreateApprovalFlow } from '../hooks/useCreateApprovalFlow';
 import { useUpdateApprovalFlow } from '../hooks/useUpdateApprovalFlow';
 import { applyApprovalFlowFilters, APPROVAL_FLOW_FILTER_COLUMNS } from '../types/approval-flow-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { approvalFlowApi } from '../api/approval-flow-api';
 
 const EMPTY_APPROVAL_FLOWS: ApprovalFlowDto[] = [];
 const PAGE_KEY = 'approval-flow-management';
@@ -158,26 +158,39 @@ export function ApprovalFlowManagementPage(): ReactElement {
     [tableColumns, orderedVisibleColumns]
   );
 
+  const mapApprovalFlowRow = useCallback((f: ApprovalFlowDto): Record<string, unknown> => {
+    const row: Record<string, unknown> = {};
+    orderedVisibleColumns.forEach((key) => {
+      const val = f[key];
+      if (key === 'createdDate' && val) {
+        row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+      } else if (key === 'documentType') {
+        row[key] = getDocumentTypeLabel(t, f.documentType);
+      } else if (key === 'isActive') {
+        row[key] = f.isActive ? t('approvalFlow.active') : t('approvalFlow.inactive');
+      } else {
+        row[key] = val ?? '';
+      }
+    });
+    return row;
+  }, [orderedVisibleColumns, i18n.language, t]);
+
   const exportRows = useMemo<Record<string, unknown>[]>(
-    () =>
-      filteredApprovalFlows.map((f) => {
-        const row: Record<string, unknown> = {};
-        orderedVisibleColumns.forEach((key) => {
-          const val = f[key];
-          if (key === 'createdDate' && val) {
-            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
-          } else if (key === 'documentType') {
-            row[key] = getDocumentTypeLabel(t, f.documentType);
-          } else if (key === 'isActive') {
-            row[key] = f.isActive ? t('approvalFlow.active') : t('approvalFlow.inactive');
-          } else {
-            row[key] = val ?? '';
-          }
-        });
-        return row;
-      }),
-    [filteredApprovalFlows, orderedVisibleColumns, i18n.language, t]
+    () => currentPageRows.map(mapApprovalFlowRow),
+    [currentPageRows, mapApprovalFlowRow]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await approvalFlowApi.getList({
+      pageNumber: 1,
+      pageSize: 10000,
+    });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map(mapApprovalFlowRow),
+    };
+  }, [exportColumns, mapApprovalFlowRow]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -267,6 +280,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
             exportFileName="approval-flows"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="documentType"
             draftFilterRows={draftFilterRows}
@@ -278,14 +292,11 @@ export function ApprovalFlowManagementPage(): ReactElement {
             }}
             translationNamespace="approval-flow-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('common.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl overflow-x-auto">
                   {(['all', 'active', 'inactive'] as const).map((filter) => (
                     <Button

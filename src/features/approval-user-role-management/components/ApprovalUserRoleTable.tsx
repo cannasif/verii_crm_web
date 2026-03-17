@@ -35,6 +35,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalUserRoleDto>[]
 
 interface ApprovalUserRoleTableProps {
   onEdit: (userRole: ApprovalUserRoleDto) => void;
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<ApprovalUserRoleColumnKey>[];
   visibleColumnKeys: ApprovalUserRoleColumnKey[];
   rows: ApprovalUserRoleDto[];
@@ -69,6 +70,7 @@ interface ApprovalUserRoleTableProps {
 
 export function ApprovalUserRoleTable({
   onEdit,
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -149,6 +151,7 @@ export function ApprovalUserRoleTable({
   return (
     <>
       <DataTableGrid<ApprovalUserRoleDto, ApprovalUserRoleColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

@@ -36,6 +36,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalFlowDto>[] => 
 
 interface ApprovalFlowTableProps {
   onEdit: (approvalFlow: ApprovalFlowDto) => void;
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<ApprovalFlowColumnKey>[];
   visibleColumnKeys: ApprovalFlowColumnKey[];
   rows: ApprovalFlowDto[];
@@ -70,6 +71,7 @@ interface ApprovalFlowTableProps {
 
 export function ApprovalFlowTable({
   onEdit,
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -150,6 +152,7 @@ export function ApprovalFlowTable({
   return (
     <>
       <DataTableGrid<ApprovalFlowDto, ApprovalFlowColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

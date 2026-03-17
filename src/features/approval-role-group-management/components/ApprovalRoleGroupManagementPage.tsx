@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -19,6 +18,7 @@ import type { ApprovalRoleGroupFormSchema } from '../types/approval-role-group-t
 import { applyApprovalRoleGroupFilters, APPROVAL_ROLE_GROUP_FILTER_COLUMNS } from '../types/approval-role-group-filter.types';
 import { APPROVAL_ROLE_GROUP_QUERY_KEYS } from '../utils/query-keys';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { approvalRoleGroupApi } from '../api/approval-role-group-api';
 
 const EMPTY_ITEMS: ApprovalRoleGroupDto[] = [];
 const PAGE_KEY = 'approval-role-group-management';
@@ -143,22 +143,37 @@ export function ApprovalRoleGroupManagementPage(): ReactElement {
     [tableColumns, orderedVisibleColumns]
   );
 
+  const mapApprovalRoleGroupRow = useCallback((item: ApprovalRoleGroupDto): Record<string, unknown> => {
+    const row: Record<string, unknown> = {};
+    orderedVisibleColumns.forEach((key) => {
+      const val = item[key];
+      if (key === 'createdDate' && val) {
+        row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+      } else {
+        row[key] = val ?? '';
+      }
+    });
+    return row;
+  }, [orderedVisibleColumns, i18n.language]);
+
   const exportRows = useMemo<Record<string, unknown>[]>(
-    () =>
-      filteredItems.map((item) => {
-        const row: Record<string, unknown> = {};
-        orderedVisibleColumns.forEach((key) => {
-          const val = item[key];
-          if (key === 'createdDate' && val) {
-            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
-          } else {
-            row[key] = val ?? '';
-          }
-        });
-        return row;
-      }),
-    [filteredItems, orderedVisibleColumns, i18n.language]
+    () => currentPageRows.map(mapApprovalRoleGroupRow),
+    [currentPageRows, mapApprovalRoleGroupRow]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await approvalRoleGroupApi.getList({
+      pageNumber: 1,
+      pageSize: 10000,
+      sortBy: 'Id',
+      sortDirection: 'desc',
+    });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map(mapApprovalRoleGroupRow),
+    };
+  }, [exportColumns, mapApprovalRoleGroupRow]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -247,6 +262,7 @@ export function ApprovalRoleGroupManagementPage(): ReactElement {
             exportFileName="approval-role-groups"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -258,14 +274,11 @@ export function ApprovalRoleGroupManagementPage(): ReactElement {
             }}
             translationNamespace="approval-role-group-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('approvalRoleGroup.searchPlaceholder')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('approvalRoleGroup.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

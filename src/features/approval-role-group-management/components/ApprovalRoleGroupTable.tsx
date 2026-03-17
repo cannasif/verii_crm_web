@@ -26,6 +26,7 @@ export interface ColumnDef<T> {
 type ApprovalRoleGroupColumnKey = keyof ApprovalRoleGroupDto;
 
 interface ApprovalRoleGroupTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<ApprovalRoleGroupColumnKey>[];
   visibleColumnKeys: ApprovalRoleGroupColumnKey[];
   rows: ApprovalRoleGroupDto[];
@@ -67,6 +68,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalRoleGroupDto>[
 ];
 
 export function ApprovalRoleGroupTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -147,6 +149,7 @@ export function ApprovalRoleGroupTable({
   return (
     <>
       <DataTableGrid<ApprovalRoleGroupDto, ApprovalRoleGroupColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

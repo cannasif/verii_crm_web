@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -20,6 +19,7 @@ import { useUpdateApprovalRole } from '../hooks/useUpdateApprovalRole';
 import { approvalRoleRowsToBackendFilters, APPROVAL_ROLE_FILTER_COLUMNS } from '../types/approval-role-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import type { PagedFilter } from '@/types/api';
+import { approvalRoleApi } from '../api/approval-role-api';
 
 const SORT_MAP: Record<string, string> = {
   id: 'Id',
@@ -144,24 +144,40 @@ export function ApprovalRoleManagementPage(): ReactElement {
     [tableColumns, orderedVisibleColumns]
   );
 
+  const mapApprovalRoleRow = useCallback((r: ApprovalRoleDto): Record<string, unknown> => {
+    const row: Record<string, unknown> = {};
+    orderedVisibleColumns.forEach((key) => {
+      const val = r[key];
+      if (key === 'createdDate' && val) {
+        row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+      } else if (key === 'maxAmount' && val != null) {
+        row[key] = new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'TRY' }).format(Number(val));
+      } else {
+        row[key] = val ?? '';
+      }
+    });
+    return row;
+  }, [orderedVisibleColumns, i18n.language]);
+
   const exportRows = useMemo<Record<string, unknown>[]>(
-    () =>
-      roles.map((r) => {
-        const row: Record<string, unknown> = {};
-        orderedVisibleColumns.forEach((key) => {
-          const val = r[key];
-          if (key === 'createdDate' && val) {
-            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
-          } else if (key === 'maxAmount' && val != null) {
-            row[key] = new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'TRY' }).format(Number(val));
-          } else {
-            row[key] = val ?? '';
-          }
-        });
-        return row;
-      }),
-    [roles, orderedVisibleColumns, i18n.language]
+    () => roles.map(mapApprovalRoleRow),
+    [roles, mapApprovalRoleRow]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await approvalRoleApi.getList({
+      pageNumber: 1,
+      pageSize: 10000,
+      sortBy,
+      sortDirection,
+      filters: apiFilters.length > 0 ? apiFilters : undefined,
+    });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map(mapApprovalRoleRow),
+    };
+  }, [exportColumns, mapApprovalRoleRow, sortBy, sortDirection, apiFilters]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -253,6 +269,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
             exportFileName="approval-roles"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -264,14 +281,11 @@ export function ApprovalRoleManagementPage(): ReactElement {
             }}
             translationNamespace="approval-role-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('approvalRole.searchPlaceholder')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('approvalRole.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"
