@@ -2,12 +2,13 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, Mail, PencilLine, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
+import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,14 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { DemandTable } from './DemandTable';
 import { useDemandList } from '../hooks/useDemandList';
+import { demandApi } from '../api/demand-api';
 import { DEMAND_QUERY_KEYS } from '../utils/query-keys';
 import type { DemandGetDto } from '../types/demand-types';
 import type { PagedFilter } from '@/types/api';
 import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
+import { useCreateRevisionOfDemand } from '../hooks/useCreateRevisionOfDemand';
+import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
+import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
 const PAGE_KEY = 'demand-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -73,14 +77,20 @@ export function DemandListPage(): ReactElement {
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
+  const createRevisionMutation = useCreateRevisionOfDemand();
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [sortBy, setSortBy] = useState<DemandColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResetKey, setSearchResetKey] = useState(0);
   const [approvalStatusFilter, setApprovalStatusFilter] = useState<string>('all');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
+  const [selectedDemand, setSelectedDemand] = useState<DemandGetDto | null>(null);
 
   const baseColumns = useMemo(
     () =>
@@ -132,18 +142,11 @@ export function DemandListPage(): ReactElement {
   const demandQuery = useDemandList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
     ...filtersParam,
   });
-  const demandExportQuery = useDemandList({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy,
-    sortDirection,
-    ...filtersParam,
-  });
-
   const pagedData = demandQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;
@@ -166,7 +169,7 @@ export function DemandListPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      (demandExportQuery.data?.data ?? currentPageRows).map((demand) => ({
+      currentPageRows.map((demand) => ({
         Id: demand.id,
         OfferNo: demand.offerNo ?? '-',
         PotentialCustomerName: demand.potentialCustomerName ?? '-',
@@ -179,7 +182,7 @@ export function DemandListPage(): ReactElement {
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
             : '-',
       })),
-    [currentPageRows, demandExportQuery.data?.data, t, i18n.language]
+    [currentPageRows, t, i18n.language]
   );
 
   const exportColumns = useMemo(
@@ -192,8 +195,17 @@ export function DemandListPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const { data } = await demandExportQuery.refetch();
-    const list = data?.data ?? [];
+    const list = await fetchAllPagedData({
+      fetchPage: (exportPageNumber, exportPageSize) =>
+        demandApi.getList({
+          pageNumber: exportPageNumber,
+          pageSize: exportPageSize,
+          search: searchTerm || undefined,
+          sortBy,
+          sortDirection,
+          ...filtersParam,
+        }),
+    });
     return {
       columns: exportColumns,
       rows: list.map((demand: DemandGetDto) => ({
@@ -210,11 +222,11 @@ export function DemandListPage(): ReactElement {
             : '-',
       })),
     };
-  }, [demandExportQuery, exportColumns, t, i18n.language]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, t, i18n.language]);
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters]);
+  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters, searchTerm]);
 
   const onSort = (column: DemandColumnKey): void => {
     if (sortBy === column) {
@@ -263,9 +275,89 @@ export function DemandListPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] });
   };
 
+  const handleGridRefresh = async (): Promise<void> => {
+    setSearchTerm('');
+    setSearchResetKey((value) => value + 1);
+    setApprovalStatusFilter('all');
+    setDraftFilterRows([]);
+    setAppliedFilterRows([]);
+    setPageNumber(1);
+    await handleRefresh();
+  };
+
   const handleRowClick = (demandId: number): void => {
     navigate(`/demands/${demandId}`);
   };
+
+  const handleRevision = async (event: React.MouseEvent, demandId: number): Promise<void> => {
+    event.stopPropagation();
+    try {
+      const result = await createRevisionMutation.mutateAsync(demandId);
+      if (result.success && result.data?.id) {
+        navigate(`/demands/${result.data.id}`);
+      }
+    } catch {
+      void 0;
+    }
+  };
+
+  const handleOpenMailDialog = (event: React.MouseEvent, demand: DemandGetDto): void => {
+    event.stopPropagation();
+    setSelectedDemand(demand);
+    setMailDialogOpen(true);
+  };
+
+  const handleOpenOutlookMailDialog = (event: React.MouseEvent, demand: DemandGetDto): void => {
+    event.stopPropagation();
+    setSelectedDemand(demand);
+    setOutlookMailDialogOpen(true);
+  };
+
+  const renderActionsCell = (demand: DemandGetDto): ReactElement => (
+    <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+      <Button
+        variant="ghost"
+        size="icon"
+        title={t('demand.list.detail', { defaultValue: 'Detay' })}
+        onClick={() => navigate(`/demands/${demand.id}`)}
+        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+      >
+        <Edit2 className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        title={t('google-integration:mailDialog.openButton')}
+        onClick={(event) => handleOpenMailDialog(event, demand)}
+        className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
+      >
+        <Mail className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        title={t('outlook-integration:mailDialog.openButton')}
+        onClick={(event) => handleOpenOutlookMailDialog(event, demand)}
+        className="h-8 w-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
+      >
+        <Mail className="h-4 w-4" />
+      </Button>
+      {(demand.status === 0 || demand.status === 1) && (
+        <Button
+          variant="ghost"
+          size="icon"
+          title={t('demand.list.revise')}
+          onClick={(event) => {
+            void handleRevision(event, demand.id);
+          }}
+          disabled={createRevisionMutation.isPending}
+          className="h-8 w-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
+        >
+          <PencilLine className={createRevisionMutation.isPending ? 'h-4 w-4 animate-pulse' : 'h-4 w-4'} />
+        </Button>
+      )}
+    </div>
+  );
 
   return (
     <div className="relative space-y-6 overflow-hidden">
@@ -296,63 +388,64 @@ export function DemandListPage(): ReactElement {
           <Card className="border-0 bg-transparent shadow-none">
             <CardHeader className="space-y-4">
               <CardTitle>{t('demand.list.cardTitle', { defaultValue: 'Talep listesi' })}</CardTitle>
-              <DataTableActionBar
-                pageKey={PAGE_KEY}
-                userId={user?.id}
-                columns={baseColumns}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={setVisibleColumns}
-                onColumnOrderChange={setColumnOrder}
-                exportFileName="demand-list"
-                exportColumns={exportColumns}
-                exportRows={exportRows}
-                getExportData={getExportData}
-                filterColumns={filterColumns}
-                defaultFilterColumn="OfferNo"
-                draftFilterRows={draftFilterRows}
-                onDraftFilterRowsChange={setDraftFilterRows}
-                onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
-                onClearFilters={() => {
-                  setDraftFilterRows([]);
-                  setAppliedFilterRows([]);
-                }}
-                translationNamespace="demand"
-                appliedFilterCount={appliedFilters.length}
-                leftSlot={
-                  <>
-                    <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-                      <SelectTrigger className="w-[180px] h-9">
-                        <SelectValue placeholder={t('approval.statusFilterLabel')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{t('common.all')}</SelectItem>
-                        <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
-                        <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-                        <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-                        <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-                        <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRefresh()}
-                      disabled={demandQuery.isFetching}
-                    >
-                      {demandQuery.isFetching ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : (
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                      )}
-                      {t('demand.list.refresh', { defaultValue: 'Yenile' })}
-                    </Button>
-                  </>
-                }
-              />
             </CardHeader>
             <CardContent>
-              <DemandTable
+              <DataTableGrid<DemandGetDto, DemandColumnKey>
+                actionBar={{
+                  pageKey: PAGE_KEY,
+                  userId: user?.id,
+                  columns: baseColumns,
+                  visibleColumns,
+                  columnOrder,
+                  onVisibleColumnsChange: setVisibleColumns,
+                  onColumnOrderChange: setColumnOrder,
+                  exportFileName: 'demand-list',
+                  exportColumns,
+                  exportRows,
+                  getExportData,
+                  filterColumns,
+                  defaultFilterColumn: 'OfferNo',
+                  draftFilterRows,
+                  onDraftFilterRowsChange: setDraftFilterRows,
+                  onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
+                  onClearFilters: () => {
+                    setDraftFilterRows([]);
+                    setAppliedFilterRows([]);
+                  },
+                  translationNamespace: 'demand',
+                  appliedFilterCount: appliedFilters.length,
+                  search: {
+                    onSearchChange: setSearchTerm,
+                    placeholder: t('common.search'),
+                    minLength: 1,
+                    resetKey: searchResetKey,
+                  },
+                  refresh: {
+                    onRefresh: () => {
+                      void handleGridRefresh();
+                    },
+                    isLoading: demandQuery.isFetching,
+                    cooldownSeconds: 60,
+                    label: t('demand.list.refresh', { defaultValue: 'Yenile' }),
+                  },
+                  leftSlot: (
+                    <>
+                      <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
+                        <SelectTrigger className="w-[180px] h-9">
+                          <SelectValue placeholder={t('approval.statusFilterLabel')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{t('common.all')}</SelectItem>
+                          <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                          <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+                          <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+                          <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+                          <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ),
+                } satisfies DataTableActionBarProps}
                 columns={columns}
                 visibleColumnKeys={orderedVisibleColumns}
                 rows={currentPageRows}
@@ -362,7 +455,7 @@ export function DemandListPage(): ReactElement {
                 sortDirection={sortDirection}
                 onSort={onSort}
                 renderSortIcon={renderSortIcon}
-                isLoading={demandQuery.isLoading}
+                isLoading={demandQuery.isLoading || demandQuery.isFetching}
                 isError={demandQuery.isError}
                 loadingText={t('demand.loading')}
                 errorText={t('demand.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
@@ -370,6 +463,7 @@ export function DemandListPage(): ReactElement {
                 minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
                 showActionsColumn
                 actionsHeaderLabel={t('demand.list.actions')}
+                renderActionsCell={renderActionsCell}
                 rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                 onRowClick={(order: DemandGetDto) => handleRowClick(order.id)}
                 onRowDoubleClick={(order: DemandGetDto) => handleRowClick(order.id)}
@@ -396,6 +490,24 @@ export function DemandListPage(): ReactElement {
           </Card>
         </div>
       </div>
+      <GoogleCustomerMailDialog
+        open={mailDialogOpen}
+        onOpenChange={setMailDialogOpen}
+        moduleKey="demand"
+        recordId={selectedDemand?.id ?? 0}
+        customerId={selectedDemand?.potentialCustomerId}
+        contactId={selectedDemand?.contactId}
+        customerName={selectedDemand?.potentialCustomerName}
+      />
+      <OutlookCustomerMailDialog
+        open={outlookMailDialogOpen}
+        onOpenChange={setOutlookMailDialogOpen}
+        moduleKey="demand"
+        recordId={selectedDemand?.id ?? 0}
+        customerId={selectedDemand?.potentialCustomerId}
+        contactId={selectedDemand?.contactId}
+        customerName={selectedDemand?.potentialCustomerName}
+      />
     </div>
   );
 }
