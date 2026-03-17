@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Loader2, Plus, RefreshCw, Settings } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
@@ -243,14 +242,11 @@ export function PermissionGroupsPage(): ReactElement {
             onClearFilters={() => {}}
             translationNamespace="access-control"
             appliedFilterCount={0}
+            searchValue={searchTerm}
+            searchPlaceholder={t('common.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />

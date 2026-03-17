@@ -8,22 +8,27 @@ export function useNotificationConnection(): void {
 
   useEffect(() => {
     const shouldConnect = isAuthenticated();
-    
+
     if (shouldConnect && !connectedRef.current) {
       connectedRef.current = true;
-      
+
       notificationService.connect().catch((error) => {
         console.error('[useNotificationConnection] Failed to connect to SignalR:', error);
         connectedRef.current = false;
       });
     }
 
+    if (!shouldConnect && connectedRef.current) {
+      connectedRef.current = false;
+      notificationService.disconnect().catch((error) => {
+        console.error('[useNotificationConnection] Failed to disconnect from SignalR:', error);
+      });
+    }
+
     return () => {
-      if (!shouldConnect && connectedRef.current) {
+      if (connectedRef.current) {
         connectedRef.current = false;
-        notificationService.disconnect().catch((error) => {
-          console.error('[useNotificationConnection] Failed to disconnect from SignalR:', error);
-        });
+        notificationService.disconnect().catch(() => {});
       }
     };
   }, [isAuthenticated]);

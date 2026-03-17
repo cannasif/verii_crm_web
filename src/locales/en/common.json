@@ -117,6 +117,9 @@
       "operator>=": ">=",
       "operator<": "<",
       "operator<=": "<=",
+      "logic": "Condition",
+      "logicAnd": "AND",
+      "logicOr": "OR",
       "true": "Yes",
       "false": "No"
     },
