@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -16,6 +15,7 @@ import type { CountryDto } from '../types/country-types';
 import { useCountryList } from '../hooks/useCountryList';
 import { applyCountryFilters, COUNTRY_FILTER_COLUMNS } from '../types/country-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { countryApi } from '../api/country-api';
 
 const EMPTY_COUNTRIES: CountryDto[] = [];
 const PAGE_KEY = 'country-management';
@@ -143,7 +143,7 @@ export function CountryManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredCountries.map((c) => {
+      currentPageRows.map((c) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -155,8 +155,28 @@ export function CountryManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredCountries, orderedVisibleColumns, i18n.language]
+    [currentPageRows, orderedVisibleColumns, i18n.language]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await countryApi.getList({ pageNumber: 1, pageSize: 10000 });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((c: CountryDto) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -230,6 +250,7 @@ export function CountryManagementPage(): ReactElement {
             exportFileName="countries"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -241,14 +262,11 @@ export function CountryManagementPage(): ReactElement {
             }}
             translationNamespace="country-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('countryManagement.searchPlaceholder')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('countryManagement.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

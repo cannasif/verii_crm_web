@@ -26,6 +26,7 @@ export interface ColumnConfig {
 type ShippingAddressColumnKey = keyof ShippingAddressDto | 'location';
 
 interface ShippingAddressTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<ShippingAddressColumnKey>[];
   visibleColumnKeys: ShippingAddressColumnKey[];
   rows: ShippingAddressDto[];
@@ -73,6 +74,7 @@ export const getColumnsConfig = (t: TFunction): ColumnConfig[] => [
 ];
 
 export function ShippingAddressTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -152,6 +154,7 @@ export function ShippingAddressTable({
   return (
     <>
       <DataTableGrid<ShippingAddressDto, ShippingAddressColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

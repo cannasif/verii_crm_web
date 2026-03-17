@@ -26,6 +26,7 @@ export interface ColumnDef<T> {
 type SalesTypeColumnKey = keyof SalesTypeGetDto;
 
 interface SalesTypeTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<SalesTypeColumnKey>[];
   visibleColumnKeys: SalesTypeColumnKey[];
   rows: SalesTypeGetDto[];
@@ -66,6 +67,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<SalesTypeGetDto>[] => 
 ];
 
 export function SalesTypeTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -140,6 +142,7 @@ export function SalesTypeTable({
   return (
     <>
       <DataTableGrid<SalesTypeGetDto, SalesTypeColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

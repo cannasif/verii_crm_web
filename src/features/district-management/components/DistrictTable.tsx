@@ -34,6 +34,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<DistrictDto>[] => [
 ];
 
 interface DistrictTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<DistrictColumnKey>[];
   visibleColumnKeys: DistrictColumnKey[];
   rows: DistrictDto[];
@@ -68,6 +69,7 @@ interface DistrictTableProps {
 }
 
 export function DistrictTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -147,6 +149,7 @@ export function DistrictTable({
   return (
     <>
       <DataTableGrid<DistrictDto, DistrictColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

@@ -35,6 +35,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<UserDto>[] => [
 
 interface UserTableProps {
   onEdit: (user: UserDto) => void;
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<UserColumnKey>[];
   visibleColumnKeys: UserColumnKey[];
   rows: UserDto[];
@@ -69,6 +70,7 @@ interface UserTableProps {
 
 export function UserTable({
   onEdit,
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -122,6 +124,7 @@ export function UserTable({
 
   return (
     <DataTableGrid<UserDto, UserColumnKey>
+      toolbar={toolbar}
       columns={columns}
       visibleColumnKeys={visibleColumnKeys}
       rows={rows}

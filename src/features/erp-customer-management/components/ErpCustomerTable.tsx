@@ -6,6 +6,7 @@ import type { ErpCustomer } from '../types/erp-customer-types';
 type ErpCustomerColumnKey = keyof ErpCustomer;
 
 interface ErpCustomerTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<ErpCustomerColumnKey>[];
   visibleColumnKeys: ErpCustomerColumnKey[];
   rows: ErpCustomer[];
@@ -56,6 +57,7 @@ export const getColumnsConfig = (t: TFunction) => [
 ];
 
 export function ErpCustomerTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -89,6 +91,7 @@ export function ErpCustomerTable({
 }: ErpCustomerTableProps): ReactElement {
   return (
     <DataTableGrid<ErpCustomer, ErpCustomerColumnKey>
+      toolbar={toolbar}
       columns={columns}
       visibleColumnKeys={visibleColumnKeys}
       rows={rows}

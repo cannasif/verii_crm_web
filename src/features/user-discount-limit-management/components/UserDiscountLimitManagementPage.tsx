@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -20,6 +19,7 @@ import type { UserDiscountLimitDto } from '../types/user-discount-limit-types';
 import type { UserDiscountLimitFormSchema } from '../types/user-discount-limit-types';
 import { USER_DISCOUNT_LIMIT_FILTER_COLUMNS } from '../types/user-discount-limit-filter.types';
 import { queryKeys } from '../utils/query-keys';
+import { userDiscountLimitApi } from '../api/user-discount-limit-api';
 
 const PAGE_KEY = 'user-discount-limit-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -123,22 +123,36 @@ export function UserDiscountLimitManagementPage(): ReactElement {
     [tableColumns, orderedVisibleColumns]
   );
 
+  const mapUserDiscountLimitRow = useCallback((item: UserDiscountLimitDto): Record<string, unknown> => {
+    const row: Record<string, unknown> = {};
+    orderedVisibleColumns.forEach((key) => {
+      const val = item[key];
+      if ((key === 'createdDate' || key === 'updatedDate') && val) {
+        row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+      } else {
+        row[key] = val ?? '';
+      }
+    });
+    return row;
+  }, [orderedVisibleColumns, i18n.language]);
+
   const exportRows = useMemo<Record<string, unknown>[]>(
-    () =>
-      items.map((item) => {
-        const row: Record<string, unknown> = {};
-        orderedVisibleColumns.forEach((key) => {
-          const val = item[key];
-          if ((key === 'createdDate' || key === 'updatedDate') && val) {
-            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
-          } else {
-            row[key] = val ?? '';
-          }
-        });
-        return row;
-      }),
-    [items, orderedVisibleColumns, i18n.language]
+    () => items.map(mapUserDiscountLimitRow),
+    [items, mapUserDiscountLimitRow]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await userDiscountLimitApi.getList({
+      pageNumber: 1,
+      pageSize: 10000,
+      filters: apiFilters.length > 0 ? apiFilters : undefined,
+    });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map(mapUserDiscountLimitRow),
+    };
+  }, [exportColumns, mapUserDiscountLimitRow, apiFilters]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -239,6 +253,7 @@ export function UserDiscountLimitManagementPage(): ReactElement {
             exportFileName="user-discount-limits"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="SalespersonName"
             draftFilterRows={draftFilterRows}
@@ -250,14 +265,11 @@ export function UserDiscountLimitManagementPage(): ReactElement {
             }}
             translationNamespace="user-discount-limit-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchQuery}
+            searchPlaceholder={t('common.search', { ns: 'common' })}
+            onSearchChange={setSearchQuery}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search', { ns: 'common' })}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, CheckCircle2, Loader2, Plus, RefreshCw, XCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -20,6 +19,7 @@ import type { DistrictFormSchema } from '../types/district-types';
 import { useDistrictList } from '../hooks/useDistrictList';
 import { applyDistrictFilters, DISTRICT_FILTER_COLUMNS } from '../types/district-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { districtApi } from '../api/district-api';
 
 const EMPTY_DISTRICTS: DistrictDto[] = [];
 const PAGE_KEY = 'district-management';
@@ -149,7 +149,7 @@ export function DistrictManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredDistricts.map((d) => {
+      currentPageRows.map((d) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           if (key === 'isDeleted') {
@@ -161,8 +161,28 @@ export function DistrictManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredDistricts, orderedVisibleColumns, t]
+    [currentPageRows, orderedVisibleColumns, t]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await districtApi.getList({ pageNumber: 1, pageSize: 10000 });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((d: DistrictDto) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          if (key === 'isDeleted') {
+            row[key] = d.isDeleted ? t('status.inactive') : t('status.active');
+          } else {
+            const val = (d as unknown as Record<string, unknown>)[key];
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, t]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -274,6 +294,7 @@ export function DistrictManagementPage(): ReactElement {
             exportFileName="districts"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -285,14 +306,11 @@ export function DistrictManagementPage(): ReactElement {
             }}
             translationNamespace="district-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('common.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

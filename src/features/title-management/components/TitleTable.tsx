@@ -27,6 +27,7 @@ export interface ColumnDef<T> {
 type TitleColumnKey = keyof TitleDto;
 
 interface TitleTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<TitleColumnKey>[];
   visibleColumnKeys: TitleColumnKey[];
   rows: TitleDto[];
@@ -69,6 +70,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<TitleDto>[] => [
 ];
 
 export function TitleTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -148,6 +150,7 @@ export function TitleTable({
   return (
     <>
       <DataTableGrid<TitleDto, TitleColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -19,6 +18,7 @@ import { useCustomerTypeList } from '../hooks/useCustomerTypeList';
 import type { CustomerTypeDto, CustomerTypeFormSchema } from '../types/customer-type-types';
 import { applyCustomerTypeFilters, CUSTOMER_TYPE_FILTER_COLUMNS } from '../types/customer-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { customerTypeApi } from '../api/customer-type-api';
 
 const EMPTY_CUSTOMER_TYPES: CustomerTypeDto[] = [];
 const PAGE_KEY = 'customer-type-management';
@@ -147,7 +147,7 @@ export function CustomerTypeManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredCustomerTypes.map((c) => {
+      currentPageRows.map((c) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -159,8 +159,28 @@ export function CustomerTypeManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredCustomerTypes, orderedVisibleColumns, i18n.language]
+    [currentPageRows, orderedVisibleColumns, i18n.language]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await customerTypeApi.getList({ pageNumber: 1, pageSize: 10000 });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((c: CustomerTypeDto) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -255,6 +275,7 @@ export function CustomerTypeManagementPage(): ReactElement {
             exportFileName="customer_types"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -266,14 +287,11 @@ export function CustomerTypeManagementPage(): ReactElement {
             }}
             translationNamespace="customer-type-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('common.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

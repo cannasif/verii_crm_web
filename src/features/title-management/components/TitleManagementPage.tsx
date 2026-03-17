@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { Users, Activity, Calendar } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -21,6 +20,7 @@ import { useUpdateTitle } from '../hooks/useUpdateTitle';
 import { applyTitleFilters, TITLE_FILTER_COLUMNS } from '../types/title-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { queryKeys } from '../utils/query-keys';
+import { titleApi } from '../api/title-api';
 
 const EMPTY_TITLES: TitleDto[] = [];
 const PAGE_KEY = 'title-management';
@@ -150,7 +150,7 @@ export function TitleManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredTitles.map((c) => {
+      currentPageRows.map((c) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -162,8 +162,28 @@ export function TitleManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredTitles, orderedVisibleColumns, i18n.language]
+    [currentPageRows, orderedVisibleColumns, i18n.language]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await titleApi.getList({ pageNumber: 1, pageSize: 10000 });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((c: TitleDto) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -304,6 +324,7 @@ export function TitleManagementPage(): ReactElement {
             exportFileName="titles"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="titleName"
             draftFilterRows={draftFilterRows}
@@ -315,14 +336,11 @@ export function TitleManagementPage(): ReactElement {
             }}
             translationNamespace="title-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('titleManagement.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('titleManagement.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

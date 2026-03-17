@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -19,6 +18,7 @@ import { useUpdateSalesType } from '../hooks/useUpdateSalesType';
 import { applySalesTypeFilters, SALES_TYPE_FILTER_COLUMNS } from '../types/sales-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { OfferType } from '@/types/offer-type';
+import { salesTypeApi } from '../api/sales-type-api';
 
 const EMPTY_SALES_TYPES: SalesTypeGetDto[] = [];
 const PAGE_KEY = 'sales-type-management';
@@ -163,7 +163,7 @@ export function SalesTypeManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredItems.map((c) => {
+      currentPageRows.map((c) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -177,8 +177,30 @@ export function SalesTypeManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredItems, orderedVisibleColumns, i18n.language, salesTypeLabel]
+    [currentPageRows, orderedVisibleColumns, i18n.language, salesTypeLabel]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await salesTypeApi.getList({ pageNumber: 1, pageSize: 10000 });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((c: SalesTypeGetDto) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'salesType') {
+            row[key] = salesTypeLabel(val as string);
+          } else if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language, salesTypeLabel]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -267,6 +289,7 @@ export function SalesTypeManagementPage(): ReactElement {
             exportFileName="sales-types"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -278,14 +301,11 @@ export function SalesTypeManagementPage(): ReactElement {
             }}
             translationNamespace="sales-type-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('searchPlaceholder')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

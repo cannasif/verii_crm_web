@@ -27,6 +27,7 @@ export interface ColumnDef<T> {
 type UserDiscountLimitColumnKey = keyof UserDiscountLimitDto;
 
 interface UserDiscountLimitTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<UserDiscountLimitColumnKey>[];
   visibleColumnKeys: UserDiscountLimitColumnKey[];
   rows: UserDiscountLimitDto[];
@@ -71,6 +72,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<UserDiscountLimitDto>[
 ];
 
 export function UserDiscountLimitTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -151,6 +153,7 @@ export function UserDiscountLimitTable({
   return (
     <>
       <DataTableGrid<UserDiscountLimitDto, UserDiscountLimitColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

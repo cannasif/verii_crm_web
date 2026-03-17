@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -15,6 +14,7 @@ import { USER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { UserStats } from './UserStats';
 import { UserTable, getColumnsConfig } from './UserTable';
 import { UserForm } from './UserForm';
+import { userApi } from '../api/user-api';
 import { useUserList } from '../hooks/useUserList';
 import { useUpdateUser } from '../hooks/useUpdateUser';
 import type { UserDto } from '../types/user-types';
@@ -168,6 +168,34 @@ export function UserManagementPage(): ReactElement {
     [users, orderedVisibleColumns, i18n.language, t]
   );
 
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await userApi.getList({
+      pageNumber: 1,
+      pageSize: 10000,
+      sortBy,
+      sortDirection,
+      filters: filtersParam,
+    });
+    const list: UserDto[] = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((u) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          if (key === 'status') {
+            row[key] = u.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive');
+          } else if (key === 'creationTime' && u.creationTime) {
+            row[key] = new Date(u.creationTime).toLocaleDateString(i18n.language);
+          } else {
+            const val = u[key as keyof UserDto];
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language, t, sortBy, sortDirection, filtersParam]);
+
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
     [appliedFilterRows]
@@ -280,6 +308,7 @@ export function UserManagementPage(): ReactElement {
             exportFileName="users"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="username"
             draftFilterRows={draftFilterRows}
@@ -291,14 +320,11 @@ export function UserManagementPage(): ReactElement {
             }}
             translationNamespace="user-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('userManagement.searchPlaceholder', { defaultValue: t('common.search') })}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('userManagement.searchPlaceholder', { defaultValue: t('common.search') })}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

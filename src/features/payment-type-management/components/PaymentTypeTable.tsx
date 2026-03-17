@@ -27,6 +27,7 @@ export interface ColumnDef<T> {
 type PaymentTypeColumnKey = keyof PaymentTypeDto | 'status';
 
 interface PaymentTypeTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<PaymentTypeColumnKey>[];
   visibleColumnKeys: PaymentTypeColumnKey[];
   rows: PaymentTypeDto[];
@@ -70,6 +71,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<PaymentTypeDto>[] => [
 ];
 
 export function PaymentTypeTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -149,6 +151,7 @@ export function PaymentTypeTable({
   return (
     <>
       <DataTableGrid<PaymentTypeDto, PaymentTypeColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

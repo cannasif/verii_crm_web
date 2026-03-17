@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -12,6 +11,7 @@ import { loadColumnPreferences } from '@/lib/column-preferences';
 import { ErpCustomerTable, getColumnsConfig } from './ErpCustomerTable';
 import { ErpCustomerDetailModal } from './ErpCustomerDetailModal';
 import { useErpCustomers } from '../hooks/useErpCustomers';
+import { erpCommonApi } from '@/services/erp-common-api';
 import type { ErpCustomer } from '../types/erp-customer-types';
 import { applyFilterRows } from '../types/erp-customer-filter.types';
 import { ERP_CUSTOMER_FILTER_COLUMNS } from '../types/erp-customer-filter.types';
@@ -134,7 +134,7 @@ export function ErpCustomerManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredCustomers.map((c) => {
+      currentPageRows.map((c) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -146,8 +146,43 @@ export function ErpCustomerManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredCustomers, orderedVisibleColumns]
+    [currentPageRows, orderedVisibleColumns]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const caris = await erpCommonApi.getCaris(null);
+    const list: ErpCustomer[] = caris.map((item) => ({
+      branchCode: item.subeKodu,
+      businessUnit: item.isletmeKodu,
+      customerCode: item.cariKod,
+      customerName: item.cariIsim || '',
+      phone: item.cariTel || '',
+      email: item.email || '',
+      city: item.cariIl || '',
+      district: item.cariIlce || '',
+      address: item.cariAdres || '',
+      countryCode: item.ulkeKodu,
+      website: item.web,
+      taxNumber: item.vergiNumarasi,
+      taxOffice: item.vergiDairesi,
+      tckn: item.tcknNumber,
+    }));
+    return {
+      columns: exportColumns,
+      rows: list.map((c) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'website' && val) {
+            row[key] = val;
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -204,6 +239,7 @@ export function ErpCustomerManagementPage(): ReactElement {
             exportFileName="erp-customers"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="customerCode"
             draftFilterRows={draftFilterRows}
@@ -215,14 +251,11 @@ export function ErpCustomerManagementPage(): ReactElement {
             }}
             translationNamespace="erp-customer-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('placeholders.quickSearch')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('placeholders.quickSearch')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

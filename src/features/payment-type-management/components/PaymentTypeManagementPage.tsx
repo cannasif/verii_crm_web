@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -19,6 +18,7 @@ import { useCreatePaymentType } from '../hooks/useCreatePaymentType';
 import { useUpdatePaymentType } from '../hooks/useUpdatePaymentType';
 import { applyPaymentTypeFilters, PAYMENT_TYPE_FILTER_COLUMNS } from '../types/payment-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { paymentTypeApi } from '../api/payment-type-api';
 
 const EMPTY_PAYMENT_TYPES: PaymentTypeDto[] = [];
 const PAGE_KEY = 'payment-type-management';
@@ -149,7 +149,7 @@ export function PaymentTypeManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredPaymentTypes.map((c) => {
+      currentPageRows.map((c) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = key === 'isDeleted' ? c.isDeleted : c[key as keyof PaymentTypeDto];
@@ -163,8 +163,30 @@ export function PaymentTypeManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredPaymentTypes, orderedVisibleColumns, i18n.language, t]
+    [currentPageRows, orderedVisibleColumns, i18n.language, t]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await paymentTypeApi.getList({ pageNumber: 1, pageSize: 10000 });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((c: PaymentTypeDto) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = key === 'isDeleted' ? c.isDeleted : c[key as keyof PaymentTypeDto];
+          if ((key === 'createdDate' || key === 'updatedDate') && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else if (key === 'isDeleted') {
+            row[key] = c.isDeleted ? t('status.inactive') : t('status.active');
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language, t]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -276,6 +298,7 @@ export function PaymentTypeManagementPage(): ReactElement {
             exportFileName="payment-types"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -287,14 +310,11 @@ export function PaymentTypeManagementPage(): ReactElement {
             }}
             translationNamespace="payment-type-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('common.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

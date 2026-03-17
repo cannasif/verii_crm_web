@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -20,6 +19,7 @@ import { ActivityForm } from '@/features/activity-management/components/Activity
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
+import { contactApi } from '../api/contact-api';
 import type { ContactDto } from '../types/contact-types';
 import type { ContactFormSchema } from '../types/contact-types';
 import { applyContactFilters, CONTACT_FILTER_COLUMNS } from '../types/contact-filter.types';
@@ -186,7 +186,7 @@ export function ContactManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredContacts.map((c) => {
+      currentPageRows.map((c) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -201,8 +201,31 @@ export function ContactManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredContacts, orderedVisibleColumns, i18n.language]
+    [currentPageRows, orderedVisibleColumns, i18n.language]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await contactApi.getList({ pageNumber: 1, pageSize: 10000 });
+    const list: ContactDto[] = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((c) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else if (key === 'fullName') {
+            const composed = [c.firstName, c.middleName, c.lastName].filter(Boolean).join(' ').trim();
+            row[key] = (composed || val) ?? '';
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -321,6 +344,7 @@ export function ContactManagementPage(): ReactElement {
             exportFileName="contacts"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="fullName"
             draftFilterRows={draftFilterRows}
@@ -332,14 +356,11 @@ export function ContactManagementPage(): ReactElement {
             }}
             translationNamespace="contact-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('common.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

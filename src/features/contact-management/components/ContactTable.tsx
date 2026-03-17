@@ -39,6 +39,7 @@ export interface ColumnDef<T> {
 type ContactColumnKey = keyof ContactDto;
 
 interface ContactTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<ContactColumnKey>[];
   visibleColumnKeys: ContactColumnKey[];
   rows: ContactDto[];
@@ -180,6 +181,7 @@ function renderCellContent(
 }
 
 export function ContactTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -278,6 +280,7 @@ export function ContactTable({
   return (
     <>
       <DataTableGrid<ContactDto, ContactColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

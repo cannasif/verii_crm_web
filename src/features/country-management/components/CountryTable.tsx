@@ -27,6 +27,7 @@ export interface ColumnDef<T> {
 type CountryColumnKey = keyof CountryDto;
 
 interface CountryTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<CountryColumnKey>[];
   visibleColumnKeys: CountryColumnKey[];
   rows: CountryDto[];
@@ -70,6 +71,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<CountryDto>[] => [
 ];
 
 export function CountryTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -150,6 +152,7 @@ export function CountryTable({
   return (
     <>
       <DataTableGrid<CountryDto, CountryColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

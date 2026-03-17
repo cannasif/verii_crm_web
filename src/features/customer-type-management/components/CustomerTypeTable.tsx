@@ -27,6 +27,7 @@ export interface ColumnDef<T> {
 type CustomerTypeColumnKey = keyof CustomerTypeDto;
 
 interface CustomerTypeTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<CustomerTypeColumnKey>[];
   visibleColumnKeys: CustomerTypeColumnKey[];
   rows: CustomerTypeDto[];
@@ -110,6 +111,7 @@ function renderCellContent(
 }
 
 export function CustomerTypeTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -198,6 +200,7 @@ export function CustomerTypeTable({
   return (
     <>
       <DataTableGrid<CustomerTypeDto, CustomerTypeColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -19,6 +18,7 @@ import { useCreateShippingAddress } from '../hooks/useCreateShippingAddress';
 import { useUpdateShippingAddress } from '../hooks/useUpdateShippingAddress';
 import { applyShippingAddressFilters, SHIPPING_ADDRESS_FILTER_COLUMNS } from '../types/shipping-address-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { shippingAddressApi } from '../api/shipping-address-api';
 
 const EMPTY_SHIPPING_ADDRESSES: ShippingAddressDto[] = [];
 const PAGE_KEY = 'shipping-address-management';
@@ -164,28 +164,41 @@ export function ShippingAddressManagementPage(): ReactElement {
     [tableColumns, orderedVisibleColumns]
   );
 
+  const mapShippingAddressRow = useCallback((c: ShippingAddressDto): Record<string, unknown> => {
+    const row: Record<string, unknown> = {};
+    orderedVisibleColumns.forEach((key) => {
+      if (key === 'location') {
+        row[key] = [c.countryName, c.cityName, c.districtName].filter(Boolean).join(' / ');
+      } else if (key === 'createdDate' && c.createdDate) {
+        row[key] = new Date(String(c.createdDate)).toLocaleDateString(i18n.language);
+      } else if (key === 'isDefault') {
+        row[key] = c.isDefault ? t('shippingAddressManagement.defaultBadge') : '-';
+      } else if (key === 'isActive') {
+        row[key] = c.isActive ? t('common.active') : t('common.inactive');
+      } else {
+        const val = c[key as keyof ShippingAddressDto];
+        row[key] = val ?? '';
+      }
+    });
+    return row;
+  }, [orderedVisibleColumns, i18n.language, t]);
+
   const exportRows = useMemo<Record<string, unknown>[]>(
-    () =>
-      filteredShippingAddresses.map((c) => {
-        const row: Record<string, unknown> = {};
-        orderedVisibleColumns.forEach((key) => {
-          if (key === 'location') {
-            row[key] = [c.countryName, c.cityName, c.districtName].filter(Boolean).join(' / ');
-          } else if (key === 'createdDate' && c.createdDate) {
-            row[key] = new Date(String(c.createdDate)).toLocaleDateString(i18n.language);
-          } else if (key === 'isDefault') {
-            row[key] = c.isDefault ? t('shippingAddressManagement.defaultBadge') : '-';
-          } else if (key === 'isActive') {
-            row[key] = c.isActive ? t('common.active') : t('common.inactive');
-          } else {
-            const val = c[key as keyof ShippingAddressDto];
-            row[key] = val ?? '';
-          }
-        });
-        return row;
-      }),
-    [filteredShippingAddresses, orderedVisibleColumns, i18n.language, t]
+    () => currentPageRows.map(mapShippingAddressRow),
+    [currentPageRows, mapShippingAddressRow]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await shippingAddressApi.getList({
+      pageNumber: 1,
+      pageSize: 10000,
+    });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map(mapShippingAddressRow),
+    };
+  }, [exportColumns, mapShippingAddressRow]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -330,6 +343,7 @@ export function ShippingAddressManagementPage(): ReactElement {
             exportFileName="shipping-addresses"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -341,14 +355,11 @@ export function ShippingAddressManagementPage(): ReactElement {
             }}
             translationNamespace="shipping-address-management"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('shippingAddressManagement.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('shippingAddressManagement.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"
