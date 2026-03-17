@@ -11,7 +11,7 @@ export const useStockList = (
   const keyParams = {
     ...normalizeQueryParams(params),
     ...(Array.isArray(params.filters) && params.filters.length > 0
-      ? { filtersSignature: JSON.stringify(params.filters) }
+      ? { filtersSignature: JSON.stringify(params.filters), filterLogic: params.filterLogic ?? 'and' }
       : {}),
   };
   return useQuery({

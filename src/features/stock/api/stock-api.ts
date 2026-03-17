@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
+import { appendPagedQueryParams } from '@/utils/query-params';
 import type {
   StockGetDto,
   StockGetWithMainImageDto,
@@ -13,15 +14,9 @@ import type {
 
 export const stockApi = {
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<StockGetDto>> => {
-    const queryParams = new URLSearchParams();
-    if (params.pageNumber) queryParams.append('page', params.pageNumber.toString());
-    if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params.filters) {
-      queryParams.append('filters', JSON.stringify(params.filters));
-      queryParams.append('filterLogic', params.filterLogic ?? 'and');
-    }
+    const queryParams = appendPagedQueryParams(new URLSearchParams(), params, {
+      pageParamName: 'page',
+    });
 
     const response = await api.get<ApiResponse<PagedResponse<StockGetDto>>>(
       `/api/Stock?${queryParams.toString()}`
@@ -211,15 +206,9 @@ export const stockApi = {
   },
 
   getListWithImages: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<StockGetWithMainImageDto>> => {
-    const queryParams = new URLSearchParams();
-    if (params.pageNumber) queryParams.append('page', params.pageNumber.toString());
-    if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params.filters) {
-      queryParams.append('filters', JSON.stringify(params.filters));
-      queryParams.append('filterLogic', params.filterLogic ?? 'and');
-    }
+    const queryParams = appendPagedQueryParams(new URLSearchParams(), params, {
+      pageParamName: 'page',
+    });
 
     const response = await api.get<ApiResponse<PagedResponse<StockGetWithMainImageDto>>>(
       `/api/Stock/withImages?${queryParams.toString()}`

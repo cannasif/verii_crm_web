@@ -2,17 +2,18 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
+import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { StockTable } from './StockTable';
 import { useStockList } from '../hooks/useStockList';
+import { stockApi } from '../api/stock-api';
 import { STOCK_QUERY_KEYS } from '../utils/query-keys';
 import type { StockGetDto } from '../types';
 import type { PagedFilter } from '@/types/api';
@@ -57,8 +58,11 @@ export function StockListPage(): ReactElement {
   const [pageSize, setPageSize] = useState(20);
   const [sortBy, setSortBy] = useState<StockColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResetKey, setSearchResetKey] = useState(0);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const [filterLogic, setFilterLogic] = useState<'and' | 'or'>('and');
 
   const baseColumns = useMemo(
     () =>
@@ -108,24 +112,17 @@ export function StockListPage(): ReactElement {
   }, [defaultColumnKeys, user?.id]);
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
-  const filtersParam: { filters?: PagedFilter[] } =
-    appliedFilters.length > 0 ? { filters: appliedFilters } : {};
+  const filtersParam: { filters?: PagedFilter[]; filterLogic?: 'and' | 'or' } =
+    appliedFilters.length > 0 ? { filters: appliedFilters, filterLogic } : {};
 
   const stockQuery = useStockList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
     ...filtersParam,
   });
-  const stockExportQuery = useStockList({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy,
-    sortDirection,
-    ...filtersParam,
-  });
-
   const pagedData = stockQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;
@@ -157,18 +154,27 @@ export function StockListPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      (stockExportQuery.data?.data ?? currentPageRows).map((stock) => ({
+      currentPageRows.map((stock) => ({
         Id: `#${stock.id}`,
         ErpStockCode: stock.erpStockCode ?? '-',
         StockName: stock.stockName ?? '-',
         unit: stock.unit ?? '-',
       })),
-    [currentPageRows, stockExportQuery.data?.data]
+    [currentPageRows]
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const { data } = await stockExportQuery.refetch();
-    const list = data?.data ?? [];
+    const list = await fetchAllPagedData({
+      fetchPage: (exportPageNumber, exportPageSize) =>
+        stockApi.getList({
+          pageNumber: exportPageNumber,
+          pageSize: exportPageSize,
+          search: searchTerm || undefined,
+          sortBy,
+          sortDirection,
+          ...filtersParam,
+        }),
+    });
     return {
       columns: exportColumns,
       rows: list.map((stock: StockGetDto) => ({
@@ -178,11 +184,11 @@ export function StockListPage(): ReactElement {
         unit: stock.unit ?? '-',
       })),
     };
-  }, [stockExportQuery, exportColumns]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam]);
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, sortBy, sortDirection, appliedFilters]);
+  }, [pageSize, sortBy, sortDirection, appliedFilters, filterLogic, searchTerm]);
 
   const onSort = (column: StockColumnKey): void => {
     if (column === 'unit') return;
@@ -232,6 +238,16 @@ export function StockListPage(): ReactElement {
     navigate(`/stocks/${stockId}`);
   };
 
+  const handleGridRefresh = async (): Promise<void> => {
+    setSearchTerm('');
+    setSearchResetKey((value) => value + 1);
+    setDraftFilterRows([]);
+    setAppliedFilterRows([]);
+    setFilterLogic('and');
+    setPageNumber(1);
+    await handleRefresh();
+  };
+
   return (
     <div className="relative space-y-6 overflow-hidden">
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
@@ -251,48 +267,50 @@ export function StockListPage(): ReactElement {
         <Card className="border-0 bg-transparent shadow-none">
           <CardHeader className="space-y-4">
             <CardTitle>{t('stock.list.cardTitle', { defaultValue: 'Stok listesi' })}</CardTitle>
-            <DataTableActionBar
-              pageKey={PAGE_KEY}
-              userId={user?.id}
-              columns={baseColumns}
-              visibleColumns={visibleColumns}
-              columnOrder={columnOrder}
-              onVisibleColumnsChange={setVisibleColumns}
-              onColumnOrderChange={setColumnOrder}
-              exportFileName="stock-list"
-              exportColumns={exportColumns}
-              exportRows={exportRows}
-              getExportData={getExportData}
-              filterColumns={filterColumns}
-              defaultFilterColumn="StockName"
-              draftFilterRows={draftFilterRows}
-              onDraftFilterRowsChange={setDraftFilterRows}
-              onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
-              onClearFilters={() => {
-                setDraftFilterRows([]);
-                setAppliedFilterRows([]);
-              }}
-              translationNamespace="stock"
-              appliedFilterCount={appliedFilters.length}
-              leftSlot={
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleRefresh()}
-                  disabled={stockQuery.isFetching}
-                >
-                  {stockQuery.isFetching ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                  )}
-                  {t('stock.list.refresh', { defaultValue: 'Yenile' })}
-                </Button>
-              }
-            />
           </CardHeader>
           <CardContent>
-            <StockTable
+            <DataTableGrid<StockGetDto, StockColumnKey>
+              actionBar={{
+                pageKey: PAGE_KEY,
+                userId: user?.id,
+                columns: baseColumns,
+                visibleColumns,
+                columnOrder,
+                onVisibleColumnsChange: setVisibleColumns,
+                onColumnOrderChange: setColumnOrder,
+                exportFileName: 'stock-list',
+                exportColumns,
+                exportRows,
+                getExportData,
+                filterColumns,
+                defaultFilterColumn: 'StockName',
+                draftFilterRows,
+                onDraftFilterRowsChange: setDraftFilterRows,
+                filterLogic,
+                onFilterLogicChange: setFilterLogic,
+                onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
+                onClearFilters: () => {
+                  setDraftFilterRows([]);
+                  setAppliedFilterRows([]);
+                  setFilterLogic('and');
+                },
+                translationNamespace: 'stock',
+                appliedFilterCount: appliedFilters.length,
+                search: {
+                  onSearchChange: setSearchTerm,
+                  placeholder: t('common.search'),
+                  minLength: 1,
+                  resetKey: searchResetKey,
+                },
+                refresh: {
+                  onRefresh: () => {
+                    void handleGridRefresh();
+                  },
+                  isLoading: stockQuery.isFetching,
+                  cooldownSeconds: 60,
+                  label: t('stock.list.refresh', { defaultValue: 'Yenile' }),
+                },
+              } satisfies DataTableActionBarProps}
               columns={columns}
               visibleColumnKeys={orderedVisibleColumns}
               rows={currentPageRows}
@@ -302,7 +320,7 @@ export function StockListPage(): ReactElement {
               sortDirection={sortDirection}
               onSort={onSort}
               renderSortIcon={renderSortIcon}
-              isLoading={stockQuery.isLoading}
+              isLoading={stockQuery.isLoading || stockQuery.isFetching}
               isError={stockQuery.isError}
               loadingText={t('stock.list.loading', { defaultValue: 'Yükleniyor...' })}
               errorText={t('stock.list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
