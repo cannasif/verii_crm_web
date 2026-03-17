@@ -10,9 +10,6 @@ import { Input } from '@/components/ui/input';
 import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage
 } from '@/components/ui/form';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from '@/components/ui/select';
 import { 
   Package, 
   Calculator, 
@@ -26,18 +23,20 @@ import {
 } from 'lucide-react';
 
 // Kendi oluşturduğumuz types dosyasından importlar
-import { 
-  productPricingFormSchema, 
-  type ProductPricingFormSchema, 
+import {
+  productPricingFormSchema,
+  type ProductPricingFormSchema,
   type ProductPricingGetDto,
-  CURRENCIES,
-  calculateFinalPrice, 
-  calculateProfitMargin, 
-  formatPrice 
+  calculateFinalPrice,
+  calculateProfitMargin,
+  formatPrice,
 } from '../types/product-pricing-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
 import { ProductPricingStockSelectDialog } from './ProductPricingStockSelectDialog';
+import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { CurrencySelectDialog } from '@/components/shared/CurrencySelectDialog';
+import { ChevronDown } from 'lucide-react';
 
 interface ProductPricingFormProps {
   open: boolean;
@@ -65,13 +64,15 @@ export function ProductPricingForm({
 }: ProductPricingFormProps): ReactElement {
   const { t, i18n } = useTranslation(['product-pricing-management', 'common']);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [currencySelectDialogOpen, setCurrencySelectDialogOpen] = useState(false);
+  const { data: exchangeRates = [] } = useExchangeRate();
 
   const form = useForm<ProductPricingFormSchema>({
     resolver: zodResolver(productPricingFormSchema) as Resolver<ProductPricingFormSchema>,
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      erpProductCode: '', erpGroupCode: '', currency: 'TRY',
+      erpProductCode: '', erpGroupCode: '', currency: '1',
       listPrice: 0, costPrice: 0,
       discount1: 0, discount2: 0, discount3: 0
     }
@@ -93,7 +94,7 @@ export function ProductPricingForm({
       });
     } else {
       form.reset({ 
-        erpProductCode: '', erpGroupCode: '', currency: 'TRY', 
+        erpProductCode: '', erpGroupCode: '', currency: '1', 
         listPrice: 0, costPrice: 0, discount1: 0, discount2: 0, discount3: 0 
       });
     }
@@ -165,18 +166,39 @@ export function ProductPricingForm({
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'currency')}>
                         <Banknote size={12} className="text-pink-500" /> {t('currency')}
                       </FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className={INPUT_STYLE}>
-                            <SelectValue placeholder={t('common.select', { ns: 'common', defaultValue: 'Seçiniz' })} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {CURRENCIES.map(c => (
-                            <SelectItem key={c.value} value={c.value}>{c.value} - {c.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          className={`${INPUT_STYLE} flex items-center justify-between px-3 font-normal`}
+                          onClick={() => setCurrencySelectDialogOpen(true)}
+                        >
+                          {field.value ? (
+                            <span className="truncate">
+                              {(() => {
+                                const numeric = Number(field.value);
+                                const curr = exchangeRates.find(
+                                  (c) => c.dovizTipi === numeric && !Number.isNaN(numeric)
+                                );
+                                if (!curr) return field.value;
+                                return curr.dovizIsmi || `Döviz ${curr.dovizTipi}`;
+                              })()}
+                            </span>
+                          ) : (
+                            t('productPricingGroupByManagement.selectCurrency')
+                          )}
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                      <CurrencySelectDialog
+                        open={currencySelectDialogOpen}
+                        onOpenChange={setCurrencySelectDialogOpen}
+                        selectedCurrencyCode={values.currency}
+                        onSelect={(currency) => {
+                          form.setValue('currency', String(currency.dovizTipi), { shouldValidate: true });
+                        }}
+                      />
                       <FormMessage className="text-red-500 text-[10px]" />
                     </FormItem>
                   )} />

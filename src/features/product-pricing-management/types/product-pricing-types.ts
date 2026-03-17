@@ -75,8 +75,43 @@ export const calculateProfitMargin = (finalPrice: number, cost: number) => {
   return { amount: profit, percentage: (profit / c) * 100 };
 };
 
-export const formatPrice = (amount: number, currencyCode: string, locale?: string): string => {
-  const symbol = CURRENCIES.find(c => c.value === currencyCode)?.symbol || currencyCode;
+type ExchangeRateSummary = { dovizTipi: number; dovizIsmi: string | null };
+
+export const formatPrice = (
+  amount: number,
+  currency: string | number,
+  locale?: string,
+  exchangeRates?: ExchangeRateSummary[]
+): string => {
+  if (!Number.isFinite(amount)) {
+    return '';
+  }
+
+  if (exchangeRates && exchangeRates.length > 0) {
+    const numericCurrency =
+      typeof currency === 'string' ? Number(currency) : currency;
+    const rate = exchangeRates.find(
+      (c) => c.dovizTipi === numericCurrency && !Number.isNaN(numericCurrency)
+    );
+    const label = rate?.dovizIsmi || String(currency);
+    const loc = locale || 'tr';
+    return (
+      new Intl.NumberFormat(loc, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount) + ` ${label}`
+    );
+  }
+
+  const code = typeof currency === 'string' ? currency : String(currency);
+  const symbol =
+    CURRENCIES.find((c) => c.value === code)?.symbol || code;
   const loc = locale || 'tr';
-  return new Intl.NumberFormat(loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ' ' + symbol;
+
+  return (
+    new Intl.NumberFormat(loc, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount) + ` ${symbol}`
+  );
 };

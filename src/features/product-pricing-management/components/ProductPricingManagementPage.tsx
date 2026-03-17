@@ -17,6 +17,8 @@ import { useDeleteProductPricing } from '../hooks/useDeleteProductPricing';
 import { useProductPricings } from '../hooks/useProductPricings';
 import type { ProductPricingGetDto } from '../types/product-pricing-types';
 import type { ProductPricingFormSchema } from '../types/product-pricing-types';
+import { formatPrice } from '../types/product-pricing-types';
+import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { applyProductPricingFilters, PRODUCT_PRICING_FILTER_COLUMNS } from '../types/product-pricing-filter.types';
 import { queryKeys } from '../utils/query-keys';
 import type { FilterRow } from '@/lib/advanced-filter-types';
@@ -57,6 +59,7 @@ export function ProductPricingManagementPage(): ReactElement {
   const createProductPricing = useCreateProductPricing();
   const updateProductPricing = useUpdateProductPricing();
   const deleteProductPricing = useDeleteProductPricing();
+  const { data: exchangeRates = [] } = useExchangeRate();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   const baseColumns = useMemo(
@@ -351,7 +354,7 @@ export function ProductPricingManagementPage(): ReactElement {
               if (key === 'id') return `#${val}`;
               if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
               if (key === 'listPrice' || key === 'costPrice') {
-                return new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2 }).format(Number(val)) + ' ' + (row.currency ?? '');
+                return formatPrice(Number(val), row.currency, i18n.language, exchangeRates);
               }
               if (key === 'discount1' || key === 'discount2' || key === 'discount3') {
                 return val ? `%${val}` : '-';
