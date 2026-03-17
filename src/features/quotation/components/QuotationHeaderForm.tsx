@@ -279,7 +279,12 @@ export function QuotationHeaderForm({
   const handleCurrencyChange = (newCurrency: string): void => {
     const currentCurrency = form.watch('quotation.currency');
     const newCurrencyNum = Number(newCurrency);
-    const currentCurrencyNum = typeof currentCurrency === 'string' ? Number(currentCurrency) : currentCurrency;
+    const currentCurrencyNum =
+      currentCurrency === '' || currentCurrency === null || currentCurrency === undefined
+        ? null
+        : typeof currentCurrency === 'string'
+          ? Number(currentCurrency)
+          : currentCurrency;
     
     if (isInitialLoadRef.current) {
       form.setValue('quotation.currency', newCurrency, { shouldValidate: false, shouldDirty: false });
@@ -294,7 +299,7 @@ export function QuotationHeaderForm({
       }
     }
     
-    if (currentCurrencyNum === newCurrencyNum) return;
+    if (currentCurrencyNum !== null && currentCurrencyNum === newCurrencyNum) return;
     
     if (lines && lines.length > 0 && onLinesChange) {
       setPendingPreviousCurrency(currentCurrencyNum);
@@ -306,13 +311,20 @@ export function QuotationHeaderForm({
   };
 
   const handleCurrencyChangeConfirm = async (): Promise<void> => {
-    if (pendingCurrency && onLinesChange) {
+    if (!pendingCurrency || !onLinesChange) {
+      return;
+    }
+
+    try {
       if (onCurrencyChange && pendingPreviousCurrency != null) {
         await onCurrencyChange(pendingPreviousCurrency, Number(pendingCurrency));
       } else {
         onLinesChange(lines || []);
       }
       form.setValue('quotation.currency', pendingCurrency);
+    } catch {
+      // ZERO_RATE veya başka hata durumunda para birimini değiştirme
+    } finally {
       setCurrencyChangeDialogOpen(false);
       setPendingCurrency(null);
       setPendingPreviousCurrency(null);

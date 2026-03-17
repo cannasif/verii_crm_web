@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { quotationApi } from '../api/quotation-api';
 import { stockApi } from '@/features/stock/api/stock-api';
 import { useQuotationCalculations } from './useQuotationCalculations';
@@ -15,8 +17,11 @@ function findExchangeRateByDovizTipi(
   erpRates?: KurDto[]
 ): number | null {
   const exchangeRate = exchangeRates.find((er) => er.dovizTipi === dovizTipi);
-  if (exchangeRate?.exchangeRate && exchangeRate.exchangeRate > 0) {
-    return exchangeRate.exchangeRate;
+  if (exchangeRate) {
+    if (exchangeRate.exchangeRate != null && exchangeRate.exchangeRate > 0) {
+      return exchangeRate.exchangeRate;
+    }
+    return null;
   }
 
   if (erpRates && erpRates.length > 0) {
@@ -43,6 +48,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
   const { calculateLineTotals } = useQuotationCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
+  const { t } = useTranslation();
 
   const createEmptyLine = useCallback(
     (product: ProductSelectionResult): QuotationLineFormState => {
@@ -179,7 +185,16 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
             const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
             const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
 
-            if (sourceRate && sourceRate > 0 && targetRate && targetRate > 0 && sourceDovizTipi !== currency) {
+            if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
+              toast.error(t('quotation.update.error'), {
+                description: t('quotation.exchangeRates.zeroRateError', {
+                  defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
+                }),
+              });
+              throw new Error('ZERO_RATE');
+            }
+
+            if (sourceDovizTipi !== currency) {
               convertedPrice = (priceData.listPrice ?? 0) * sourceRate / targetRate;
             }
           }
@@ -217,7 +232,10 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         }
 
         return lines;
-      } catch {
+      } catch (error) {
+        if (error instanceof Error && error.message === 'ZERO_RATE') {
+          throw error;
+        }
         const baseLine = createEmptyLine(product);
         return [calculateLineTotals(baseLine)];
       }
@@ -298,7 +316,10 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
 
         const calculatedLine = calculateLineTotals(updatedLine);
         return calculatedLine;
-      } catch {
+      } catch (error) {
+        if (error instanceof Error && error.message === 'ZERO_RATE') {
+          throw error;
+        }
         return calculateLineTotals(baseLine);
       }
     },

@@ -264,22 +264,35 @@ export function QuotationCreateForm(): ReactElement {
 
     if (oldCurrency === newCurrencyNum) return;
 
+    const sampleOldRate = findExchangeRateByDovizTipi(oldCurrency, exchangeRates, erpRates);
+    const sampleNewRate = findExchangeRateByDovizTipi(newCurrencyNum, exchangeRates, erpRates);
+
+    if (!sampleOldRate || sampleOldRate <= 0 || !sampleNewRate || sampleNewRate <= 0) {
+      toast.error(t('quotation.update.error'), {
+        description: t('quotation.exchangeRates.zeroRateError', {
+          defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
+        }),
+      });
+      throw new Error('ZERO_RATE');
+    }
+
     const updatedLines = await Promise.all(
       lines.map(async (line) => {
         const oldRate = findExchangeRateByDovizTipi(oldCurrency, exchangeRates, erpRates);
         const newRate = findExchangeRateByDovizTipi(newCurrencyNum, exchangeRates, erpRates);
 
-        if (oldRate && oldRate > 0 && newRate && newRate > 0) {
-          const conversionRatio = oldRate / newRate;
-          const newUnitPrice = line.unitPrice * conversionRatio;
-          
-          const updatedLine = {
-            ...line,
-            unitPrice: newUnitPrice,
-          };
-          return calculateLineTotals(updatedLine);
+        if (!oldRate || oldRate <= 0 || !newRate || newRate <= 0) {
+          return line;
         }
-        return line;
+
+        const conversionRatio = oldRate / newRate;
+        const newUnitPrice = line.unitPrice * conversionRatio;
+        
+        const updatedLine = {
+          ...line,
+          unitPrice: newUnitPrice,
+        };
+        return calculateLineTotals(updatedLine);
       })
     );
     setLines(updatedLines);
