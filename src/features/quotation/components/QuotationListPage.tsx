@@ -2,12 +2,13 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, Mail, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
+import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,14 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { QuotationTable } from './QuotationTable';
 import { useQuotationList } from '../hooks/useQuotationList';
+import { quotationApi } from '../api/quotation-api';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
 import type { QuotationGetDto } from '../types/quotation-types';
 import type { PagedFilter } from '@/types/api';
 import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
+import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
+import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
+import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
 const PAGE_KEY = 'quotation-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -73,14 +77,20 @@ export function QuotationListPage(): ReactElement {
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
+  const createRevisionMutation = useCreateRevisionOfQuotation();
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [sortBy, setSortBy] = useState<QuotationColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResetKey, setSearchResetKey] = useState(0);
   const [approvalStatusFilter, setApprovalStatusFilter] = useState<string>('all');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
+  const [selectedQuotation, setSelectedQuotation] = useState<QuotationGetDto | null>(null);
 
   const baseColumns = useMemo(
     () =>
@@ -132,18 +142,11 @@ export function QuotationListPage(): ReactElement {
   const quotationQuery = useQuotationList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
     ...filtersParam,
   });
-  const quotationExportQuery = useQuotationList({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy,
-    sortDirection,
-    ...filtersParam,
-  });
-
   const pagedData = quotationQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;
@@ -166,7 +169,7 @@ export function QuotationListPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      (quotationExportQuery.data?.data ?? currentPageRows).map((quotation) => ({
+      currentPageRows.map((quotation) => ({
         Id: quotation.id,
         OfferNo: quotation.offerNo ?? '-',
         PotentialCustomerName: quotation.potentialCustomerName ?? '-',
@@ -179,7 +182,7 @@ export function QuotationListPage(): ReactElement {
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
             : '-',
       })),
-    [currentPageRows, quotationExportQuery.data?.data, t, i18n.language]
+    [currentPageRows, t, i18n.language]
   );
 
   const exportColumns = useMemo(
@@ -192,8 +195,17 @@ export function QuotationListPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const { data } = await quotationExportQuery.refetch();
-    const list = data?.data ?? [];
+    const list = await fetchAllPagedData({
+      fetchPage: (exportPageNumber, exportPageSize) =>
+        quotationApi.getList({
+          pageNumber: exportPageNumber,
+          pageSize: exportPageSize,
+          search: searchTerm || undefined,
+          sortBy,
+          sortDirection,
+          ...filtersParam,
+        }),
+    });
     return {
       columns: exportColumns,
       rows: list.map((quotation: QuotationGetDto) => ({
@@ -210,11 +222,11 @@ export function QuotationListPage(): ReactElement {
             : '-',
       })),
     };
-  }, [quotationExportQuery, exportColumns, t, i18n.language]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, t, i18n.language]);
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters]);
+  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters, searchTerm]);
 
   const onSort = (column: QuotationColumnKey): void => {
     if (sortBy === column) {
@@ -263,9 +275,72 @@ export function QuotationListPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] });
   };
 
+  const handleGridRefresh = async (): Promise<void> => {
+    setSearchTerm('');
+    setSearchResetKey((value) => value + 1);
+    setApprovalStatusFilter('all');
+    setDraftFilterRows([]);
+    setAppliedFilterRows([]);
+    setPageNumber(1);
+    await handleRefresh();
+  };
+
   const handleRowClick = (quotationId: number): void => {
     navigate(`/quotations/${quotationId}`);
   };
+
+  const handleRevision = async (event: React.MouseEvent, quotationId: number): Promise<void> => {
+    event.stopPropagation();
+    try {
+      const result = await createRevisionMutation.mutateAsync(quotationId);
+      if (result.success && result.data?.id) {
+        navigate(`/quotations/${result.data.id}`);
+      }
+    } catch {
+      void 0;
+    }
+  };
+
+  const handleOpenMailDialog = (event: React.MouseEvent, quotation: QuotationGetDto): void => {
+    event.stopPropagation();
+    setSelectedQuotation(quotation);
+    setMailDialogOpen(true);
+  };
+
+  const handleOpenOutlookMailDialog = (event: React.MouseEvent, quotation: QuotationGetDto): void => {
+    event.stopPropagation();
+    setSelectedQuotation(quotation);
+    setOutlookMailDialogOpen(true);
+  };
+
+  const renderActionsCell = (quotation: QuotationGetDto): ReactElement => (
+    <div className="flex items-center justify-center gap-2">
+      <Button variant="outline" size="sm" onClick={() => navigate(`/quotations/${quotation.id}`)}>
+        <Edit2 className="h-4 w-4 mr-1" />
+        {t('quotation.list.detail', { defaultValue: 'Detay' })}
+      </Button>
+      <Button variant="outline" size="sm" onClick={(event) => handleOpenMailDialog(event, quotation)}>
+        <Mail className="h-4 w-4 mr-1" />
+        {t('google-integration:mailDialog.openButton')}
+      </Button>
+      <Button variant="outline" size="sm" onClick={(event) => handleOpenOutlookMailDialog(event, quotation)}>
+        <Mail className="h-4 w-4 mr-1" />
+        {t('outlook-integration:mailDialog.openButton')}
+      </Button>
+      {(quotation.status === 0 || quotation.status === 1) && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={(event) => {
+            void handleRevision(event, quotation.id);
+          }}
+          disabled={createRevisionMutation.isPending}
+        >
+          {createRevisionMutation.isPending ? t('quotation.loading') : t('quotation.list.revise')}
+        </Button>
+      )}
+    </div>
+  );
 
   return (
     <div className="relative space-y-6 overflow-hidden">
@@ -296,63 +371,64 @@ export function QuotationListPage(): ReactElement {
           <Card className="border-0 bg-transparent shadow-none">
             <CardHeader className="space-y-4">
               <CardTitle>{t('quotation.list.cardTitle', { defaultValue: 'Teklif listesi' })}</CardTitle>
-              <DataTableActionBar
-                pageKey={PAGE_KEY}
-                userId={user?.id}
-                columns={baseColumns}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={setVisibleColumns}
-                onColumnOrderChange={setColumnOrder}
-                exportFileName="quotation-list"
-                exportColumns={exportColumns}
-                exportRows={exportRows}
-                getExportData={getExportData}
-                filterColumns={filterColumns}
-                defaultFilterColumn="OfferNo"
-                draftFilterRows={draftFilterRows}
-                onDraftFilterRowsChange={setDraftFilterRows}
-                onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
-                onClearFilters={() => {
-                  setDraftFilterRows([]);
-                  setAppliedFilterRows([]);
-                }}
-                translationNamespace="quotation"
-                appliedFilterCount={appliedFilters.length}
-                leftSlot={
-                  <>
-                    <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-                      <SelectTrigger className="w-[180px] h-9">
-                        <SelectValue placeholder={t('approval.statusFilterLabel')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{t('common.all')}</SelectItem>
-                        <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
-                        <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-                        <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-                        <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-                        <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRefresh()}
-                      disabled={quotationQuery.isFetching}
-                    >
-                      {quotationQuery.isFetching ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : (
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                      )}
-                      {t('quotation.list.refresh', { defaultValue: 'Yenile' })}
-                    </Button>
-                  </>
-                }
-              />
             </CardHeader>
             <CardContent>
-              <QuotationTable
+              <DataTableGrid<QuotationGetDto, QuotationColumnKey>
+                actionBar={{
+                  pageKey: PAGE_KEY,
+                  userId: user?.id,
+                  columns: baseColumns,
+                  visibleColumns,
+                  columnOrder,
+                  onVisibleColumnsChange: setVisibleColumns,
+                  onColumnOrderChange: setColumnOrder,
+                  exportFileName: 'quotation-list',
+                  exportColumns,
+                  exportRows,
+                  getExportData,
+                  filterColumns,
+                  defaultFilterColumn: 'OfferNo',
+                  draftFilterRows,
+                  onDraftFilterRowsChange: setDraftFilterRows,
+                  onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
+                  onClearFilters: () => {
+                    setDraftFilterRows([]);
+                    setAppliedFilterRows([]);
+                  },
+                  translationNamespace: 'quotation',
+                  appliedFilterCount: appliedFilters.length,
+                  search: {
+                    onSearchChange: setSearchTerm,
+                    placeholder: t('common.search'),
+                    minLength: 1,
+                    resetKey: searchResetKey,
+                  },
+                  refresh: {
+                    onRefresh: () => {
+                      void handleGridRefresh();
+                    },
+                    isLoading: quotationQuery.isFetching,
+                    cooldownSeconds: 60,
+                    label: t('quotation.list.refresh', { defaultValue: 'Yenile' }),
+                  },
+                  leftSlot: (
+                    <>
+                      <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
+                        <SelectTrigger className="w-[180px] h-9">
+                          <SelectValue placeholder={t('approval.statusFilterLabel')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{t('common.all')}</SelectItem>
+                          <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                          <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+                          <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+                          <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+                          <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ),
+                } satisfies DataTableActionBarProps}
                 columns={columns}
                 visibleColumnKeys={orderedVisibleColumns}
                 rows={currentPageRows}
@@ -362,7 +438,7 @@ export function QuotationListPage(): ReactElement {
                 sortDirection={sortDirection}
                 onSort={onSort}
                 renderSortIcon={renderSortIcon}
-                isLoading={quotationQuery.isLoading}
+                isLoading={quotationQuery.isLoading || quotationQuery.isFetching}
                 isError={quotationQuery.isError}
                 loadingText={t('quotation.loading')}
                 errorText={t('quotation.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
@@ -370,6 +446,7 @@ export function QuotationListPage(): ReactElement {
                 minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
                 showActionsColumn
                 actionsHeaderLabel={t('quotation.list.actions')}
+                renderActionsCell={renderActionsCell}
                 rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                 onRowClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
                 onRowDoubleClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
@@ -395,6 +472,24 @@ export function QuotationListPage(): ReactElement {
             </CardContent>
           </Card>
         </div>
+        <GoogleCustomerMailDialog
+          open={mailDialogOpen}
+          onOpenChange={setMailDialogOpen}
+          moduleKey="quotation"
+          recordId={selectedQuotation?.id ?? 0}
+          customerId={selectedQuotation?.potentialCustomerId}
+          contactId={selectedQuotation?.contactId}
+          customerName={selectedQuotation?.potentialCustomerName}
+        />
+        <OutlookCustomerMailDialog
+          open={outlookMailDialogOpen}
+          onOpenChange={setOutlookMailDialogOpen}
+          moduleKey="quotation"
+          recordId={selectedQuotation?.id ?? 0}
+          customerId={selectedQuotation?.potentialCustomerId}
+          contactId={selectedQuotation?.contactId}
+          customerName={selectedQuotation?.potentialCustomerName}
+        />
       </div>
     </div>
   );
