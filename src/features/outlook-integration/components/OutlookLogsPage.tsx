@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, RefreshCw } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import type { OutlookIntegrationLogDto } from '../types/outlook-integration.types';
+import { outlookIntegrationApi } from '../api/outlook-integration.api';
 import { useOutlookLogsQuery } from '../hooks/useOutlookLogsQuery';
 
 const PAGE_KEY = 'outlook-integration-logs';
@@ -119,15 +120,6 @@ export function OutlookLogsPage(): ReactElement {
     filters: appliedFilters.length > 0 ? appliedFilters : undefined,
     filterLogic: 'and',
   });
-  const exportLogsQuery = useOutlookLogsQuery({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy,
-    sortDirection,
-    errorsOnly,
-    filters: appliedFilters.length > 0 ? appliedFilters : undefined,
-    filterLogic: 'and',
-  });
 
   const pagedLogs = logsQuery.data;
   const currentPageRows = useMemo(() => pagedLogs?.data ?? [], [pagedLogs?.data]);
@@ -163,7 +155,7 @@ export function OutlookLogsPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      (exportLogsQuery.data?.data ?? currentPageRows).map((log) => ({
+      currentPageRows.map((log) => ({
         createdDate: new Date(log.createdDate).toLocaleString(),
         operation: log.operation,
         isSuccess: log.isSuccess ? t('logs.success') : t('logs.failed'),
@@ -174,8 +166,35 @@ export function OutlookLogsPage(): ReactElement {
         activityId: log.activityId ?? '-',
         providerEventId: log.providerEventId ?? '-',
       })),
-    [currentPageRows, exportLogsQuery.data?.data, t]
+    [currentPageRows, t]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await outlookIntegrationApi.getLogs({
+      pageNumber: 1,
+      pageSize: 10000,
+      sortBy,
+      sortDirection,
+      errorsOnly,
+      filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+      filterLogic: 'and',
+    });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((log) => ({
+        createdDate: new Date(log.createdDate).toLocaleString(),
+        operation: log.operation,
+        isSuccess: log.isSuccess ? t('logs.success') : t('logs.failed'),
+        severity: log.severity,
+        message: log.message ?? '-',
+        errorCode: log.errorCode ?? '-',
+        userId: log.userId ?? '-',
+        activityId: log.activityId ?? '-',
+        providerEventId: log.providerEventId ?? '-',
+      })),
+    };
+  }, [exportColumns, sortBy, sortDirection, errorsOnly, appliedFilters, t]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -260,6 +279,7 @@ export function OutlookLogsPage(): ReactElement {
             exportFileName="outlook-integration-logs"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="operation"
             draftFilterRows={draftFilterRows}

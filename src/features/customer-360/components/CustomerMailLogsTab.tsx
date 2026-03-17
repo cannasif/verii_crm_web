@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, RefreshCw } from 'lucide-react';
@@ -118,32 +118,6 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
           }),
     enabled: customerId > 0,
   });
-  const exportLogsQuery = useQuery({
-    queryKey: ['customer-360', 'mail-logs-export', provider, customerId, sortBy, sortDirection, errorsOnly, JSON.stringify(appliedFilters)],
-    queryFn: () =>
-      provider === 'google'
-        ? googleIntegrationApi.getCustomerMailLogs({
-            customerId,
-            pageNumber: 1,
-            pageSize: 10000,
-            sortBy,
-            sortDirection,
-            errorsOnly,
-            filters: appliedFilters.length > 0 ? appliedFilters : undefined,
-            filterLogic: 'and',
-          })
-        : outlookIntegrationApi.getCustomerMailLogs({
-            customerId,
-            pageNumber: 1,
-            pageSize: 10000,
-            sortBy,
-            sortDirection,
-            errorsOnly,
-            filters: appliedFilters.length > 0 ? appliedFilters : undefined,
-            filterLogic: 'and',
-          }),
-    enabled: customerId > 0,
-  });
 
   const pagedLogs = logsQuery.data;
   const currentPageRows = useMemo(() => (pagedLogs?.data ?? []) as CustomerMailLogDto[], [pagedLogs?.data]);
@@ -183,7 +157,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      (((exportLogsQuery.data?.data as CustomerMailLogDto[] | undefined) ?? currentPageRows)).map((log) => ({
+      currentPageRows.map((log) => ({
         createdDate: new Date(log.createdDate).toLocaleString(),
         sentByUserName: log.sentByUserName ?? '-',
         toEmails: log.toEmails,
@@ -192,8 +166,46 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
         templateName: log.templateName ?? '-',
         errorCode: log.errorCode ?? '-',
       })),
-    [currentPageRows, exportLogsQuery.data?.data, failedLabel, successLabel]
+    [currentPageRows, failedLabel, successLabel]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response =
+      provider === 'google'
+        ? await googleIntegrationApi.getCustomerMailLogs({
+            customerId,
+            pageNumber: 1,
+            pageSize: 10000,
+            sortBy,
+            sortDirection,
+            errorsOnly,
+            filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+            filterLogic: 'and',
+          })
+        : await outlookIntegrationApi.getCustomerMailLogs({
+            customerId,
+            pageNumber: 1,
+            pageSize: 10000,
+            sortBy,
+            sortDirection,
+            errorsOnly,
+            filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+            filterLogic: 'and',
+          });
+    const list = (response?.data ?? []) as CustomerMailLogDto[];
+    return {
+      columns: exportColumns,
+      rows: list.map((log) => ({
+        createdDate: new Date(log.createdDate).toLocaleString(),
+        sentByUserName: log.sentByUserName ?? '-',
+        toEmails: log.toEmails,
+        subject: log.subject,
+        isSuccess: log.isSuccess ? successLabel : failedLabel,
+        templateName: log.templateName ?? '-',
+        errorCode: log.errorCode ?? '-',
+      })),
+    };
+  }, [provider, customerId, exportColumns, sortBy, sortDirection, errorsOnly, appliedFilters, successLabel, failedLabel]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -275,6 +287,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
           exportFileName={`customer-360-mail-logs-${provider}`}
           exportColumns={exportColumns}
           exportRows={exportRows}
+          getExportData={getExportData}
           filterColumns={filterColumns}
           defaultFilterColumn="subject"
           draftFilterRows={draftFilterRows}
