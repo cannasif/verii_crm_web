@@ -21,6 +21,8 @@ export interface AdvancedFilterProps {
   defaultColumn: string;
   draftRows: FilterRow[];
   onDraftRowsChange: (rows: FilterRow[]) => void;
+  filterLogic?: 'and' | 'or';
+  onFilterLogicChange?: (value: 'and' | 'or') => void;
   onSearch: () => void;
   onClear: () => void;
   translationNamespace?: string;
@@ -58,6 +60,8 @@ export function AdvancedFilter({
   defaultColumn,
   draftRows,
   onDraftRowsChange,
+  filterLogic = 'and',
+  onFilterLogicChange,
   onSearch,
   onClear,
   translationNamespace = 'common',
@@ -90,10 +94,10 @@ export function AdvancedFilter({
   };
 
   const getLabel = (key: string, fallback?: string): string => {
-    const nsVal = t(`advancedFilter.${key}`, { ns: translationNamespace });
-    if (nsVal && nsVal !== `advancedFilter.${key}`) return nsVal;
     const commonVal = t(`advancedFilter.${key}`, { ns: 'common' });
     if (commonVal && commonVal !== `advancedFilter.${key}`) return commonVal;
+    const nsVal = t(`advancedFilter.${key}`, { ns: translationNamespace });
+    if (nsVal && nsVal !== `advancedFilter.${key}`) return nsVal;
     return fallback ?? key;
   };
 
@@ -133,6 +137,22 @@ export function AdvancedFilter({
           </Button>
         </div>
       </div>
+      {onFilterLogicChange && (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+            {getLabel('logic', 'Koşul')}
+          </span>
+          <Select value={filterLogic} onValueChange={(value: 'and' | 'or') => onFilterLogicChange(value)}>
+            <SelectTrigger className="w-full sm:w-[140px]">
+              <SelectValue placeholder={getLabel('logic')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="and">{getLabel('logicAnd', 'AND')}</SelectItem>
+              <SelectItem value="or">{getLabel('logicOr', 'OR')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       {draftRows.length > 0 && (
         <div className="space-y-2">
           {draftRows.map((row) => {

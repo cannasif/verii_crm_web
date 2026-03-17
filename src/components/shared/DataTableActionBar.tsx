@@ -1,15 +1,37 @@
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Filter, X } from 'lucide-react';
+import { Filter, RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { AdvancedFilter } from './AdvancedFilter';
 import { ColumnPreferencesPopover, type ColumnDef } from './ColumnPreferencesPopover';
 import { GridExportMenu } from './GridExportMenu';
 import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
 import type { GridExportColumn } from '@/lib/grid-export';
 
-interface DataTableActionBarProps {
+export interface DataTableSearchConfig {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  onSearchChange?: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  debounceMs?: number;
+  minLength?: number;
+  resetKey?: string | number;
+}
+
+export interface DataTableRefreshConfig {
+  onRefresh: () => void;
+  isLoading?: boolean;
+  disabled?: boolean;
+  cooldownSeconds?: number;
+  label?: string;
+}
+
+export interface DataTableActionBarProps {
   pageKey: string;
   userId?: number;
   columns: ColumnDef[];
@@ -25,10 +47,19 @@ interface DataTableActionBarProps {
   defaultFilterColumn: string;
   draftFilterRows: FilterRow[];
   onDraftFilterRowsChange: (rows: FilterRow[]) => void;
+  filterLogic?: 'and' | 'or';
+  onFilterLogicChange?: (value: 'and' | 'or') => void;
   onApplyFilters: () => void;
   onClearFilters: () => void;
   translationNamespace?: string;
   appliedFilterCount?: number;
+  searchValue?: string;
+  searchPlaceholder?: string;
+  onSearchChange?: (value: string) => void;
+  searchClassName?: string;
+  search?: DataTableSearchConfig;
+  refresh?: DataTableRefreshConfig;
+  searchDebounceMs?: number;
   leftSlot?: React.ReactNode;
 }
 
@@ -48,18 +79,147 @@ export function DataTableActionBar({
   defaultFilterColumn,
   draftFilterRows,
   onDraftFilterRowsChange,
+  filterLogic,
+  onFilterLogicChange,
   onApplyFilters,
   onClearFilters,
   translationNamespace = 'common',
   appliedFilterCount = 0,
+  searchValue,
+  searchPlaceholder,
+  onSearchChange,
+  searchClassName = 'h-9 w-[200px]',
+  search,
+  refresh,
+  searchDebounceMs = 700,
   leftSlot,
 }: DataTableActionBarProps): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
   const [showFilters, setShowFilters] = useState(false);
+  const [internalSearchValue, setInternalSearchValue] = useState(search?.defaultValue ?? '');
+  const [legacyDisplayValue, setLegacyDisplayValue] = useState(searchValue ?? '');
+  const [refreshCooldownUntil, setRefreshCooldownUntil] = useState<number | null>(null);
+  const [refreshNow, setRefreshNow] = useState(() => Date.now());
+  const lastEmittedLegacyRef = useRef(searchValue ?? '');
+
+  const isSearchControlled = search?.value !== undefined;
+  const useLegacySearch = Boolean(onSearchChange && !search);
+  const legacyDebounceMs = searchDebounceMs;
+
+  const debouncedLegacyValue = useDebouncedValue(legacyDisplayValue, legacyDebounceMs);
+
+  useEffect(() => {
+    if (!useLegacySearch) return;
+    if (debouncedLegacyValue === lastEmittedLegacyRef.current) return;
+    lastEmittedLegacyRef.current = debouncedLegacyValue;
+    onSearchChange?.(debouncedLegacyValue);
+  }, [debouncedLegacyValue, useLegacySearch, onSearchChange]);
+
+  useEffect(() => {
+    if (!useLegacySearch) return;
+    if (searchValue === '') {
+      setLegacyDisplayValue('');
+      lastEmittedLegacyRef.current = '';
+      return;
+    }
+    if (searchValue === lastEmittedLegacyRef.current) {
+      setLegacyDisplayValue(searchValue);
+    }
+  }, [searchValue, useLegacySearch]);
+
+  useEffect(() => {
+    if (!search?.resetKey || isSearchControlled) return;
+    setInternalSearchValue(search.defaultValue ?? '');
+  }, [search?.resetKey, search?.defaultValue, isSearchControlled]);
+
+  useEffect(() => {
+    if (!refreshCooldownUntil) return;
+    if (refreshCooldownUntil <= Date.now()) {
+      setRefreshCooldownUntil(null);
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      setRefreshNow(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [refreshCooldownUntil]);
+
+  const currentSearchValue = search
+    ? (isSearchControlled ? (search.value ?? '') : internalSearchValue)
+    : legacyDisplayValue;
+  const debouncedSearchConfigValue = useDebouncedValue(currentSearchValue, search?.debounceMs ?? 700);
+  const debouncedSearchValue = search ? debouncedSearchConfigValue : debouncedLegacyValue;
+  const normalizedSearchValue = useMemo(() => {
+    const trimmed = debouncedSearchValue.trim();
+    if (!trimmed) return '';
+
+    const minLength = Math.max(search?.minLength ?? 0, 0);
+    return trimmed.length < minLength ? '' : trimmed;
+  }, [debouncedSearchValue, search?.minLength]);
+
+  const searchOnSearchChangeRef = useRef(search?.onSearchChange);
+  searchOnSearchChangeRef.current = search?.onSearchChange;
+  useEffect(() => {
+    if (!searchOnSearchChangeRef.current) return;
+    searchOnSearchChangeRef.current(normalizedSearchValue);
+  }, [normalizedSearchValue]);
+
+  const handleSearchInputChange = (value: string): void => {
+    if (search) {
+      if (!isSearchControlled) {
+        setInternalSearchValue(value);
+      }
+      search.onValueChange?.(value);
+      return;
+    }
+    setLegacyDisplayValue(value);
+  };
+
+  const resolvedSearchPlaceholder = search?.placeholder ?? searchPlaceholder ?? t('search', { ns: 'common' });
+  const resolvedSearchClassName = search?.className ?? searchClassName;
+  const shouldRenderSearch = Boolean(search || onSearchChange);
+  const refreshCooldownSeconds = Math.max(refresh?.cooldownSeconds ?? 60, 0);
+  const refreshRemainingSeconds = refreshCooldownUntil == null
+    ? 0
+    : Math.max(0, Math.ceil((refreshCooldownUntil - refreshNow) / 1000));
+  const isRefreshDisabled = Boolean(refresh?.disabled || refresh?.isLoading || refreshRemainingSeconds > 0);
+  const refreshLabel = refresh?.label ?? t('refresh', { ns: 'common' });
+
+  const handleRefresh = (): void => {
+    if (!refresh || isRefreshDisabled) return;
+    refresh.onRefresh();
+    if (refreshCooldownSeconds > 0) {
+      setRefreshCooldownUntil(Date.now() + refreshCooldownSeconds * 1000);
+      setRefreshNow(Date.now());
+    }
+  };
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <div className="flex items-center gap-2">{leftSlot}</div>
+      <div className="flex items-center gap-2">
+        {shouldRenderSearch && (
+          <Input
+            placeholder={resolvedSearchPlaceholder}
+            value={currentSearchValue}
+            onChange={(event) => handleSearchInputChange(event.target.value)}
+            className={resolvedSearchClassName}
+          />
+        )}
+        {refresh && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isRefreshDisabled}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${refresh?.isLoading ? 'animate-spin' : ''}`} />
+            {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
+          </Button>
+        )}
+        {leftSlot}
+      </div>
       <div className="flex items-center gap-2">
         <Popover open={showFilters} onOpenChange={setShowFilters}>
           <PopoverTrigger asChild>
@@ -100,6 +260,8 @@ export function DataTableActionBar({
                 defaultColumn={defaultFilterColumn}
                 draftRows={draftFilterRows}
                 onDraftRowsChange={onDraftFilterRowsChange}
+                filterLogic={filterLogic}
+                onFilterLogicChange={onFilterLogicChange}
                 onSearch={() => {
                   onApplyFilters();
                   setShowFilters(false);

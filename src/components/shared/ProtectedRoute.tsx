@@ -28,27 +28,27 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
   const hasValidToken = !!(storedToken && isTokenValid(storedToken));
   const isAuthenticated = !!(user && (token || hasValidToken));
   const location = useLocation();
-  const myPermissionsQuery = useMyPermissionsQuery();
+  const { isError: permissionsIsError, error: permissionsError, refetch: refetchPermissions, isLoading: permissionsLoading, data: permissionsData } = useMyPermissionsQuery();
   const autoRetryCount = useRef(0);
 
   useEffect(() => {
-    if (!myPermissionsQuery.isError) {
+    if (!permissionsIsError) {
       autoRetryCount.current = 0;
       return;
     }
 
-    const statusCode = (myPermissionsQuery.error as AxiosError | null)?.response?.status;
+    const statusCode = (permissionsError as AxiosError | null)?.response?.status;
     if (statusCode === 401 || statusCode === 403) return;
 
     if (autoRetryCount.current >= MAX_AUTO_RETRY) return;
 
     const timer = setTimeout(() => {
       autoRetryCount.current += 1;
-      void myPermissionsQuery.refetch();
+      void refetchPermissions();
     }, AUTO_RETRY_DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [myPermissionsQuery]);
+  }, [permissionsIsError, permissionsError, refetchPermissions]);
 
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" replace />;
@@ -58,7 +58,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
     return children;
   }
 
-  if (myPermissionsQuery.isLoading || myPermissionsQuery.isFetching) {
+  if (permissionsLoading) {
     return (
       <div className="min-h-[60vh] w-full flex items-center justify-center">
         <div className="text-slate-500 dark:text-slate-400">
@@ -68,8 +68,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
     );
   }
 
-  if (myPermissionsQuery.isError) {
-    const statusCode = (myPermissionsQuery.error as AxiosError | null)?.response?.status;
+  if (permissionsIsError) {
+    const statusCode = (permissionsError as AxiosError | null)?.response?.status;
     if (statusCode === 401) {
       return <Navigate to="/auth/login" replace />;
     }
@@ -96,7 +96,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
               variant="outline"
               onClick={() => {
                 autoRetryCount.current = 0;
-                void myPermissionsQuery.refetch();
+                void refetchPermissions();
               }}
             >
               {t('common.retry')}
@@ -110,7 +110,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
     );
   }
 
-  const permissions = myPermissionsQuery.data ?? null;
+  const permissions = permissionsData ?? null;
   const allowed = canAccessPath(permissions, location.pathname);
   if (!allowed) {
     return <Navigate to="/forbidden" replace state={{ from: location.pathname }} />;

@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { DataTableActionBar, type DataTableActionBarProps } from './DataTableActionBar';
 
 export type DataTableSortDirection = 'asc' | 'desc';
 
@@ -17,6 +18,8 @@ export interface DataTableGridColumn<TKey extends string> {
 }
 
 interface DataTableGridProps<TRow, TKey extends string> {
+  actionBar?: DataTableActionBarProps;
+  toolbar?: ReactNode;
   columns: DataTableGridColumn<TKey>[];
   visibleColumnKeys: TKey[];
   rows: TRow[];
@@ -65,6 +68,8 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
 }
 
 export function DataTableGrid<TRow, TKey extends string>({
+  actionBar,
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -187,6 +192,7 @@ export function DataTableGrid<TRow, TKey extends string>({
 
   return (
     <div className="space-y-4 min-w-0 w-full">
+      {actionBar ? <DataTableActionBar {...actionBar} /> : toolbar}
       <div
         ref={tableScrollRef}
         className={cn(

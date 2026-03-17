@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FileDown, FileSpreadsheet, FileType } from 'lucide-react';
+import { FileDown, FileSpreadsheet, FileType, Loader2 } from 'lucide-react';
 import { exportGridToExcel, exportGridToPdf, type GridExportColumn } from '@/lib/grid-export';
 
 interface GridExportMenuProps {
@@ -58,10 +58,17 @@ export function GridExportMenu({ fileName, columns, rows, translationNamespace, 
         <Button
           variant="outline"
           size="sm"
+          disabled={isExporting}
           className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
         >
-          <FileDown className="mr-2 h-4 w-4" />
-          {t('export', { ns: 'common', defaultValue: 'Çıktı Al' })}
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <FileDown className="mr-2 h-4 w-4" />
+          )}
+          {isExporting
+            ? t('exportPreparing', { ns: 'common', defaultValue: 'Hazırlanıyor...' })
+            : t('export', { ns: 'common', defaultValue: 'Çıktı Al' })}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
@@ -70,16 +77,20 @@ export function GridExportMenu({ fileName, columns, rows, translationNamespace, 
           disabled={isExporting || rows.length === 0}
           className="cursor-pointer"
         >
-          <FileSpreadsheet className="mr-2 h-4 w-4" />
-          {t('exportExcel', { ns: 'common', defaultValue: 'Excel Çıktısı' })}
+          {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileSpreadsheet className="mr-2 h-4 w-4" />}
+          {isExporting
+            ? t('exportPreparing', { ns: 'common', defaultValue: 'Hazırlanıyor...' })
+            : t('exportExcel', { ns: 'common', defaultValue: 'Excel Çıktısı' })}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={handlePdfExport}
           disabled={isExporting || rows.length === 0}
           className="cursor-pointer"
         >
-          <FileType className="mr-2 h-4 w-4" />
-          {t('exportPdf', { ns: 'common', defaultValue: 'PDF Çıktısı' })}
+          {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileType className="mr-2 h-4 w-4" />}
+          {isExporting
+            ? t('exportPreparing', { ns: 'common', defaultValue: 'Hazırlanıyor...' })
+            : t('exportPdf', { ns: 'common', defaultValue: 'PDF Çıktısı' })}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
