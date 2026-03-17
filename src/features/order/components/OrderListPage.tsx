@@ -2,12 +2,13 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, Mail, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
+import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,15 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { OrderTable } from './OrderTable';
 import { useOrderList } from '../hooks/useOrderList';
+import { orderApi } from '../api/order-api';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
 import type { OrderGetDto } from '../types/order-types';
 import type { PagedFilter } from '@/types/api';
 import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { useCreateRevisionOfOrder } from '../hooks/useCreateRevisionOfOrder';
+import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
+import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
 const PAGE_KEY = 'order-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -74,14 +77,20 @@ export function OrderListPage(): ReactElement {
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
+  const createRevisionMutation = useCreateRevisionOfOrder();
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [sortBy, setSortBy] = useState<OrderColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResetKey, setSearchResetKey] = useState(0);
   const [approvalStatusFilter, setApprovalStatusFilter] = useState<string>('all');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderGetDto | null>(null);
 
   const baseColumns = useMemo(
     () =>
@@ -140,18 +149,11 @@ export function OrderListPage(): ReactElement {
   const orderQuery = useOrderList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
     ...filtersParam,
   });
-  const orderExportQuery = useOrderList({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy,
-    sortDirection,
-    ...filtersParam,
-  });
-
   const pagedData = orderQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;
@@ -188,7 +190,7 @@ export function OrderListPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      (orderExportQuery.data?.data ?? currentPageRows).map((order) => ({
+      currentPageRows.map((order) => ({
         Id: order.id,
         OfferNo: order.offerNo ?? '-',
         PotentialCustomerName: order.potentialCustomerName ?? '-',
@@ -200,12 +202,21 @@ export function OrderListPage(): ReactElement {
           ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][order.status]}`)
           : '-',
       })),
-    [currentPageRows, orderExportQuery.data?.data, t, i18n.language]
+    [currentPageRows, t, i18n.language]
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const { data } = await orderExportQuery.refetch();
-    const list = data?.data ?? [];
+    const list = await fetchAllPagedData({
+      fetchPage: (exportPageNumber, exportPageSize) =>
+        orderApi.getList({
+          pageNumber: exportPageNumber,
+          pageSize: exportPageSize,
+          search: searchTerm || undefined,
+          sortBy,
+          sortDirection,
+          ...filtersParam,
+        }),
+    });
     return {
       columns: exportColumns,
       rows: list.map((order: OrderGetDto) => ({
@@ -221,11 +232,11 @@ export function OrderListPage(): ReactElement {
           : '-',
       })),
     };
-  }, [orderExportQuery, exportColumns, t, i18n.language]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, t, i18n.language]);
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters]);
+  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters, searchTerm]);
 
   const onSort = (column: OrderColumnKey): void => {
     if (sortBy === column) {
@@ -269,9 +280,72 @@ export function OrderListPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] });
   };
 
+  const handleGridRefresh = async (): Promise<void> => {
+    setSearchTerm('');
+    setSearchResetKey((value) => value + 1);
+    setApprovalStatusFilter('all');
+    setDraftFilterRows([]);
+    setAppliedFilterRows([]);
+    setPageNumber(1);
+    await handleRefresh();
+  };
+
   const handleRowClick = (orderId: number): void => {
     navigate(`/orders/${orderId}`);
   };
+
+  const handleRevision = async (event: React.MouseEvent, orderId: number): Promise<void> => {
+    event.stopPropagation();
+    try {
+      const result = await createRevisionMutation.mutateAsync(orderId);
+      if (result.success && result.data?.id) {
+        navigate(`/orders/${result.data.id}`);
+      }
+    } catch {
+      void 0;
+    }
+  };
+
+  const handleOpenMailDialog = (event: React.MouseEvent, order: OrderGetDto): void => {
+    event.stopPropagation();
+    setSelectedOrder(order);
+    setMailDialogOpen(true);
+  };
+
+  const handleOpenOutlookMailDialog = (event: React.MouseEvent, order: OrderGetDto): void => {
+    event.stopPropagation();
+    setSelectedOrder(order);
+    setOutlookMailDialogOpen(true);
+  };
+
+  const renderActionsCell = (order: OrderGetDto): ReactElement => (
+    <div className="flex items-center justify-center gap-2">
+      <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${order.id}`)}>
+        <Edit2 className="h-4 w-4 mr-1" />
+        {t('order.list.detail', { defaultValue: 'Detay' })}
+      </Button>
+      <Button variant="outline" size="sm" onClick={(event) => handleOpenMailDialog(event, order)}>
+        <Mail className="h-4 w-4 mr-1" />
+        {t('google-integration:mailDialog.openButton')}
+      </Button>
+      <Button variant="outline" size="sm" onClick={(event) => handleOpenOutlookMailDialog(event, order)}>
+        <Mail className="h-4 w-4 mr-1" />
+        {t('outlook-integration:mailDialog.openButton')}
+      </Button>
+      {(order.status === 0 || order.status === 1) && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={(event) => {
+            void handleRevision(event, order.id);
+          }}
+          disabled={createRevisionMutation.isPending}
+        >
+          {createRevisionMutation.isPending ? t('order.loading') : t('order.list.revise')}
+        </Button>
+      )}
+    </div>
+  );
 
   return (
     <div className="relative min-h-screen space-y-6 p-3 md:p-8 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-700">
@@ -302,63 +376,64 @@ export function OrderListPage(): ReactElement {
           <Card className="border-0 bg-transparent shadow-none">
             <CardHeader className="space-y-4">
               <CardTitle>{t('order.list.cardTitle', { defaultValue: 'Sipariş listesi' })}</CardTitle>
-              <DataTableActionBar
-                pageKey={PAGE_KEY}
-                userId={user?.id}
-                columns={baseColumns}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={setVisibleColumns}
-                onColumnOrderChange={setColumnOrder}
-                exportFileName="order-list"
-                exportColumns={exportColumns}
-                exportRows={exportRows}
-                getExportData={getExportData}
-                filterColumns={filterColumns}
-                defaultFilterColumn="OfferNo"
-                draftFilterRows={draftFilterRows}
-                onDraftFilterRowsChange={setDraftFilterRows}
-                onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
-                onClearFilters={() => {
-                  setDraftFilterRows([]);
-                  setAppliedFilterRows([]);
-                }}
-                translationNamespace="order"
-                appliedFilterCount={appliedFilters.length}
-                leftSlot={
-                  <>
-                    <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-                      <SelectTrigger className="w-[180px] h-9">
-                        <SelectValue placeholder={t('approval.statusFilterLabel')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{t('common.all')}</SelectItem>
-                        <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
-                        <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-                        <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-                        <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-                        <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRefresh()}
-                      disabled={orderQuery.isFetching}
-                    >
-                      {orderQuery.isFetching ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : (
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                      )}
-                      {t('order.list.refresh', { defaultValue: 'Yenile' })}
-                    </Button>
-                  </>
-                }
-              />
             </CardHeader>
             <CardContent>
-              <OrderTable
+              <DataTableGrid<OrderGetDto, OrderColumnKey>
+                actionBar={{
+                  pageKey: PAGE_KEY,
+                  userId: user?.id,
+                  columns: baseColumns,
+                  visibleColumns,
+                  columnOrder,
+                  onVisibleColumnsChange: setVisibleColumns,
+                  onColumnOrderChange: setColumnOrder,
+                  exportFileName: 'order-list',
+                  exportColumns,
+                  exportRows,
+                  getExportData,
+                  filterColumns,
+                  defaultFilterColumn: 'OfferNo',
+                  draftFilterRows,
+                  onDraftFilterRowsChange: setDraftFilterRows,
+                  onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
+                  onClearFilters: () => {
+                    setDraftFilterRows([]);
+                    setAppliedFilterRows([]);
+                  },
+                  translationNamespace: 'order',
+                  appliedFilterCount: appliedFilters.length,
+                  search: {
+                    onSearchChange: setSearchTerm,
+                    placeholder: t('common.search'),
+                    minLength: 1,
+                    resetKey: searchResetKey,
+                  },
+                  refresh: {
+                    onRefresh: () => {
+                      void handleGridRefresh();
+                    },
+                    isLoading: orderQuery.isFetching,
+                    cooldownSeconds: 60,
+                    label: t('order.list.refresh', { defaultValue: 'Yenile' }),
+                  },
+                  leftSlot: (
+                    <>
+                      <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
+                        <SelectTrigger className="w-[180px] h-9">
+                          <SelectValue placeholder={t('approval.statusFilterLabel')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{t('common.all')}</SelectItem>
+                          <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                          <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+                          <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+                          <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+                          <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ),
+                } satisfies DataTableActionBarProps}
                 columns={columns}
                 visibleColumnKeys={orderedVisibleColumns}
                 rows={currentPageRows}
@@ -368,7 +443,7 @@ export function OrderListPage(): ReactElement {
                 sortDirection={sortDirection}
                 onSort={onSort}
                 renderSortIcon={renderSortIcon}
-                isLoading={orderQuery.isLoading}
+                isLoading={orderQuery.isLoading || orderQuery.isFetching}
                 isError={orderQuery.isError}
                 loadingText={t('order.loading')}
                 errorText={t('order.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
@@ -376,6 +451,7 @@ export function OrderListPage(): ReactElement {
                 minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
                 showActionsColumn
                 actionsHeaderLabel={t('order.list.actions')}
+                renderActionsCell={renderActionsCell}
                 rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                 onRowClick={(order: OrderGetDto) => handleRowClick(order.id)}
                 onRowDoubleClick={(order: OrderGetDto) => handleRowClick(order.id)}
@@ -402,6 +478,24 @@ export function OrderListPage(): ReactElement {
           </Card>
         </div>
       </div>
+      <GoogleCustomerMailDialog
+        open={mailDialogOpen}
+        onOpenChange={setMailDialogOpen}
+        moduleKey="order"
+        recordId={selectedOrder?.id ?? 0}
+        customerId={selectedOrder?.potentialCustomerId}
+        contactId={selectedOrder?.contactId}
+        customerName={selectedOrder?.potentialCustomerName}
+      />
+      <OutlookCustomerMailDialog
+        open={outlookMailDialogOpen}
+        onOpenChange={setOutlookMailDialogOpen}
+        moduleKey="order"
+        recordId={selectedOrder?.id ?? 0}
+        customerId={selectedOrder?.potentialCustomerId}
+        contactId={selectedOrder?.contactId}
+        customerName={selectedOrder?.potentialCustomerName}
+      />
     </div>
   );
 }
