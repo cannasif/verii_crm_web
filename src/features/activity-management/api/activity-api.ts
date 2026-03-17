@@ -2,23 +2,11 @@ import { api } from '@/lib/axios';
 import i18n from '@/lib/i18n';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { ActivityDto, CreateActivityDto, UpdateActivityDto } from '../types/activity-types';
+import { appendPagedQueryParams } from '@/utils/query-params';
 
 export const activityApi = {
   getList: async (params: Omit<PagedParams, 'filters'> & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<ActivityDto>> => {
-    const queryParams = new URLSearchParams();
-    if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
-    if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (Array.isArray(params.filters)) {
-      if (params.filters.length > 0) {
-        queryParams.append('filters', JSON.stringify(params.filters));
-        queryParams.append('filterLogic', params.filterLogic ?? 'and');
-      }
-    } else if (params.filters && Object.keys(params.filters).length > 0) {
-      queryParams.append('filters', JSON.stringify(params.filters));
-      queryParams.append('filterLogic', params.filterLogic ?? 'and');
-    }
+    const queryParams = appendPagedQueryParams(new URLSearchParams(), params);
 
     const response = await api.get<ApiResponse<PagedResponse<ActivityDto>>>(
       `/api/Activity?${queryParams.toString()}`

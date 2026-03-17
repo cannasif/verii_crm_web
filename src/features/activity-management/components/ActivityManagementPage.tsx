@@ -1,39 +1,61 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, type ReactNode, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Plus,
+  Edit2,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+  Calendar,
+  User,
+  Building2,
+  Briefcase,
+  List,
+  Mail,
+} from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import type { PagedFilter } from '@/types/api';
-import { ActivityTable, getColumnsConfig } from './ActivityTable';
+import { getActivityColumns } from './activity-columns';
 import { ActivityForm } from './ActivityForm';
+import { activityApi } from '../api/activity-api';
 import { useCreateActivity } from '../hooks/useCreateActivity';
+import { useDeleteActivity } from '../hooks/useDeleteActivity';
 import { useUpdateActivity } from '../hooks/useUpdateActivity';
 import { useActivities } from '../hooks/useActivities';
 import { buildCreateActivityPayload } from '../utils/build-create-payload';
+import { toUpdateActivityDto } from '../utils/to-update-activity-dto';
 import { rowsToBackendFilters } from '../types/activity-filter.types';
 import type { ActivityFilterRow } from '../types/activity-filter.types';
 import { ActivityPriority, ActivityStatus, ReminderChannel, type ActivityDto, type ActivityFormSchema, type ReminderChannel as ReminderChannelType } from '../types/activity-types';
 import { ACTIVITY_QUERY_KEYS } from '../utils/query-keys';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { ActivityStatusBadge } from './ActivityStatusBadge';
+import { ActivityPriorityBadge } from './ActivityPriorityBadge';
+import { Alert02Icon } from 'hugeicons-react';
+import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
+import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
 
 const PAGE_KEY = 'activity-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
-
-function buildSimpleFilters(searchTerm: string): PagedFilter[] {
-  const out: PagedFilter[] = [];
-  const trimmed = searchTerm.trim();
-  if (trimmed) {
-    out.push({ column: 'Subject', operator: 'Contains', value: trimmed });
-  }
-  return out;
-}
 
 function toActivityTypeId(value: string): number | undefined {
   const num = Number(value);
@@ -55,27 +77,27 @@ export function ActivityManagementPage(): ReactElement {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<ActivityDto | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<ActivityDto | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [sortBy, setSortBy] = useState('Id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResetKey, setSearchResetKey] = useState(0);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [draftFilterLogic, setDraftFilterLogic] = useState<'and' | 'or'>('and');
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [refreshCooldownUntil, setRefreshCooldownUntil] = useState<number>(0);
-
-  const simpleFilters = useMemo(() => buildSimpleFilters(searchTerm), [searchTerm]);
-  const apiFilters = useMemo<PagedFilter[]>(
-    () => [...simpleFilters, ...appliedAdvancedFilters],
-    [simpleFilters, appliedAdvancedFilters]
-  );
+  const [appliedFilterLogic, setAppliedFilterLogic] = useState<'and' | 'or'>('and');
 
   const queryClient = useQueryClient();
   const createActivity = useCreateActivity();
+  const deleteActivity = useDeleteActivity();
   const updateActivity = useUpdateActivity();
 
-  const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+  const tableColumns = useMemo(() => getActivityColumns(t), [t]);
   const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key as string), [tableColumns]);
   const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
@@ -99,12 +121,14 @@ export function ActivityManagementPage(): ReactElement {
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
-  const { data: activitiesResponse, isLoading: activitiesLoading } = useActivities({
+  const { data: activitiesResponse, isLoading: activitiesLoading, isFetching: activitiesFetching } = useActivities({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
-    filters: apiFilters,
+    filters: appliedAdvancedFilters,
+    filterLogic: appliedFilterLogic,
   });
 
   const activities = useMemo(
@@ -170,6 +194,39 @@ export function ActivityManagementPage(): ReactElement {
     [activities, orderedVisibleColumns]
   );
 
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const list = await fetchAllPagedData({
+      fetchPage: (exportPageNumber, exportPageSize) =>
+        activityApi.getList({
+          pageNumber: exportPageNumber,
+          pageSize: exportPageSize,
+          search: searchTerm || undefined,
+          sortBy,
+          sortDirection,
+          filters: appliedAdvancedFilters,
+          filterLogic: appliedFilterLogic,
+        }),
+    });
+    return {
+      columns: exportColumns,
+      rows: list.map((a) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          if (key === 'potentialCustomer') row[key] = a.potentialCustomer?.name ?? '';
+          else if (key === 'contact') row[key] = (a.contact?.fullName ?? `${a.contact?.firstName ?? ''} ${a.contact?.lastName ?? ''}`.trim()) || '';
+          else if (key === 'assignedUser') row[key] = a.assignedUser?.fullName ?? a.assignedUser?.userName ?? '';
+          else if (key === 'activityType') row[key] = a.activityType?.name ?? '';
+          else {
+            const val = a[key as keyof ActivityDto];
+            if (key === 'startDateTime' && val) row[key] = new Date(String(val)).toLocaleDateString();
+            else row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, searchTerm, sortBy, sortDirection, appliedAdvancedFilters, appliedFilterLogic]);
+
   const appliedFilterCount = useMemo(
     () => draftFilterRows.filter((r) => r.value.trim()).length,
     [draftFilterRows]
@@ -177,7 +234,7 @@ export function ActivityManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [searchTerm, appliedAdvancedFilters]);
+  }, [searchTerm, appliedAdvancedFilters, appliedFilterLogic]);
 
   const handleAddClick = (): void => {
     setEditingActivity(null);
@@ -185,20 +242,52 @@ export function ActivityManagementPage(): ReactElement {
   };
 
   const handleRefresh = async (): Promise<void> => {
-    const now = Date.now();
-    if (now < refreshCooldownUntil) return;
-    setIsRefreshing(true);
     await queryClient.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.LIST] });
-    setTimeout(() => setIsRefreshing(false), 500);
-    setRefreshCooldownUntil(now + 45000);
-    setTimeout(() => setRefreshCooldownUntil(0), 45000);
   };
 
-  const isRefreshDisabled = Date.now() < refreshCooldownUntil;
+  const handleGridRefresh = async (): Promise<void> => {
+    setSearchTerm('');
+    setSearchResetKey((value) => value + 1);
+    setDraftFilterRows([]);
+    setDraftFilterLogic('and');
+    setAppliedAdvancedFilters([]);
+    setAppliedFilterLogic('and');
+    setPageNumber(1);
+    await handleRefresh();
+  };
 
   const handleEdit = (activity: ActivityDto): void => {
     setEditingActivity(activity);
     setFormOpen(true);
+  };
+
+  const handleDeleteClick = (activity: ActivityDto): void => {
+    setSelectedActivity(activity);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleMailClick = (activity: ActivityDto): void => {
+    setSelectedActivity(activity);
+    setMailDialogOpen(true);
+  };
+
+  const handleOutlookMailClick = (activity: ActivityDto): void => {
+    setSelectedActivity(activity);
+    setOutlookMailDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async (): Promise<void> => {
+    if (!selectedActivity) return;
+    await deleteActivity.mutateAsync(selectedActivity.id);
+    setDeleteDialogOpen(false);
+    setSelectedActivity(null);
+  };
+
+  const handleStatusChange = async (activity: ActivityDto, newStatus: ActivityStatus): Promise<void> => {
+    await updateActivity.mutateAsync({
+      id: activity.id,
+      data: toUpdateActivityDto(activity, { status: newStatus }),
+    });
   };
 
   const buildUpdatePayload = (data: ActivityFormSchema, fallbackAssignedUserId?: number) => {
@@ -285,6 +374,136 @@ export function ActivityManagementPage(): ReactElement {
     [tableColumns]
   );
 
+  const renderCell = (activity: ActivityDto, key: string): ReactNode => {
+    const value = activity[key as keyof ActivityDto];
+
+    if (key === 'status') return <ActivityStatusBadge status={activity.status} />;
+    if (key === 'priority') return <ActivityPriorityBadge priority={activity.priority} />;
+    if (key === 'startDateTime') {
+      const dateValue =
+        typeof value === 'string' || typeof value === 'number' || value instanceof Date ? value : null;
+      return (
+        <div className="flex items-center gap-2 text-xs">
+          <Calendar size={14} className="text-pink-500/50" />
+          {dateValue ? new Date(dateValue).toLocaleDateString() : '-'}
+        </div>
+      );
+    }
+    if (key === 'potentialCustomer') {
+      return activity.potentialCustomer ? (
+        <div className="flex items-start gap-2">
+          <Building2 size={14} className="text-slate-400 mt-0.5 shrink-0" />
+          <span className="truncate max-w-[150px]" title={activity.potentialCustomer.name}>
+            {activity.potentialCustomer.name}
+          </span>
+        </div>
+      ) : '-';
+    }
+    if (key === 'contact') {
+      const contactName =
+        activity.contact?.fullName || `${activity.contact?.firstName ?? ''} ${activity.contact?.lastName ?? ''}`.trim();
+      return activity.contact ? (
+        <div className="flex items-start gap-2">
+          <Briefcase size={14} className="text-slate-400 mt-0.5 shrink-0" />
+          <span className="truncate max-w-[150px]" title={contactName}>
+            {contactName}
+          </span>
+        </div>
+      ) : '-';
+    }
+    if (key === 'assignedUser') {
+      return activity.assignedUser ? (
+        <div className="flex items-center gap-2 text-xs">
+          <User size={14} className="text-indigo-500/50" />
+          {activity.assignedUser.fullName || activity.assignedUser.userName}
+        </div>
+      ) : '-';
+    }
+    if (key === 'activityType') {
+      const display =
+        value != null && typeof value === 'object' && 'name' in value
+          ? (value as { name: string }).name
+          : String(value ?? '');
+      return (
+        <div className="flex items-center gap-2">
+          <List size={14} className="text-pink-500" />
+          {display}
+        </div>
+      );
+    }
+    return String(value ?? '-');
+  };
+
+  const renderActionsCell = (activity: ActivityDto): ReactElement => {
+    const isCompleted = activity.status === ActivityStatus.Completed || activity.status === 'Completed';
+    const isCancelled =
+      activity.status === ActivityStatus.Cancelled ||
+      activity.status === 'Cancelled' ||
+      activity.status === 'Canceled';
+
+    return (
+      <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+        {!isCompleted && !isCancelled && (
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-green-600 hover:bg-green-50 dark:text-green-400"
+              onClick={() => void handleStatusChange(activity, ActivityStatus.Completed)}
+              title={t('activityManagement.complete', { defaultValue: 'Tamamla' })}
+            >
+              <CheckCircle2 size={16} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-orange-600 hover:bg-orange-50 dark:text-orange-400"
+              onClick={() => void handleStatusChange(activity, ActivityStatus.Cancelled)}
+              title={t('activityManagement.cancel', { defaultValue: 'İptal Et' })}
+            >
+              <XCircle size={16} />
+            </Button>
+            <div className="w-px h-4 bg-slate-200 dark:bg-white/10 mx-1 self-center" />
+          </>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-blue-600 hover:bg-blue-50 dark:text-blue-400"
+          onClick={() => handleEdit(activity)}
+        >
+          <Edit2 size={16} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400"
+          onClick={() => handleMailClick(activity)}
+          title={t('google-integration:mailDialog.openButton', { defaultValue: 'Mail' })}
+        >
+          <Mail size={16} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-sky-600 hover:bg-sky-50 dark:text-sky-400"
+          onClick={() => handleOutlookMailClick(activity)}
+          title={t('outlook-integration:mailDialog.openButton', { defaultValue: 'Outlook Mail' })}
+        >
+          <Mail size={16} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-red-600 hover:bg-red-50 dark:text-red-400"
+          onClick={() => handleDeleteClick(activity)}
+        >
+          <Trash2 size={16} />
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
@@ -308,63 +527,61 @@ export function ActivityManagementPage(): ReactElement {
       <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
         <CardHeader className="space-y-4">
           <CardTitle>{t('activityManagement.table.title', { defaultValue: t('table.title') })}</CardTitle>
-          <DataTableActionBar
-            pageKey={PAGE_KEY}
-            userId={user?.id}
-            columns={baseColumns}
-            visibleColumns={visibleColumns}
-            columnOrder={columnOrder}
-            onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={setColumnOrder}
-            exportFileName="activities"
-            exportColumns={exportColumns}
-            exportRows={exportRows}
-            filterColumns={filterColumns}
-            defaultFilterColumn="Subject"
-            draftFilterRows={draftFilterRows}
-            onDraftFilterRowsChange={setDraftFilterRows}
-            onApplyFilters={() => {
-              setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows as ActivityFilterRow[]));
-              setPageNumber(1);
-            }}
-            onClearFilters={() => {
-              setDraftFilterRows([]);
-              setAppliedAdvancedFilters([]);
-              setPageNumber(1);
-            }}
-            translationNamespace="activity-management"
-            appliedFilterCount={appliedFilterCount}
-            leftSlot={
-              <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleRefresh()}
-                  disabled={isRefreshDisabled || activitiesLoading}
-                >
-                  {activitiesLoading || isRefreshing ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                  )}
-                  {t('common.refresh')}
-                </Button>
-              </>
-            }
-          />
         </CardHeader>
         <CardContent>
-          <ActivityTable
+          <DataTableGrid<ActivityDto, string>
+            actionBar={{
+              pageKey: PAGE_KEY,
+              userId: user?.id,
+              columns: baseColumns,
+              visibleColumns,
+              columnOrder,
+              onVisibleColumnsChange: setVisibleColumns,
+              onColumnOrderChange: setColumnOrder,
+              exportFileName: 'activities',
+              exportColumns,
+              exportRows,
+              getExportData,
+              filterColumns,
+              defaultFilterColumn: 'Subject',
+              draftFilterRows,
+              onDraftFilterRowsChange: setDraftFilterRows,
+              filterLogic: draftFilterLogic,
+              onFilterLogicChange: setDraftFilterLogic,
+              onApplyFilters: () => {
+                setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows as ActivityFilterRow[]));
+                setAppliedFilterLogic(draftFilterLogic);
+                setPageNumber(1);
+              },
+              onClearFilters: () => {
+                setDraftFilterRows([]);
+                setDraftFilterLogic('and');
+                setAppliedAdvancedFilters([]);
+                setAppliedFilterLogic('and');
+                setPageNumber(1);
+              },
+              translationNamespace: 'activity-management',
+              appliedFilterCount,
+              search: {
+                onSearchChange: setSearchTerm,
+                placeholder: t('common.search'),
+                minLength: 1,
+                resetKey: searchResetKey,
+              },
+              refresh: {
+                onRefresh: () => {
+                  void handleGridRefresh();
+                },
+                isLoading: activitiesLoading,
+                cooldownSeconds: 60,
+                label: t('common.refresh'),
+              },
+            } satisfies DataTableActionBarProps}
             columns={columns}
             visibleColumnKeys={orderedVisibleColumns}
             rows={activities}
             rowKey={(r) => r.id}
+            renderCell={renderCell}
             sortBy={sortByDisplayKey}
             sortDirection={sortDirection}
             onSort={(k) => {
@@ -381,15 +598,14 @@ export function ActivityManagementPage(): ReactElement {
                 <ArrowDown className="h-3.5 w-3.5 text-foreground" />
               );
             }}
-            isLoading={activitiesLoading}
+            isLoading={activitiesLoading || activitiesFetching}
             loadingText={t('common.loading')}
             errorText={t('common.error', { defaultValue: 'Hata oluştu' })}
             emptyText={t('common.noData')}
             minTableWidthClassName="min-w-[1100px]"
             showActionsColumn
             actionsHeaderLabel={t('common.actions')}
-            onEdit={handleEdit}
-            userId={user?.id}
+            renderActionsCell={renderActionsCell}
             rowClassName={(row) => {
               const status = row.status;
               const isCompleted = status === 1 || status === 'Completed';
@@ -421,6 +637,56 @@ export function ActivityManagementPage(): ReactElement {
           />
         </CardContent>
       </Card>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="max-w-sm bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 rounded-xl p-0 overflow-hidden">
+          <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/10">
+            <DialogTitle className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                <Alert02Icon size={18} />
+              </span>
+              {t('activityManagement.deleteActivity')}
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-2">
+              {t('activityManagement.deleteConfirmation')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/10 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="h-9 px-4 rounded-lg text-sm">
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => void handleDeleteConfirm()}
+              disabled={deleteActivity.isPending}
+              className="h-9 px-4 rounded-lg text-sm"
+            >
+              {deleteActivity.isPending ? t('common.deleting') : t('common.delete.action')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <GoogleCustomerMailDialog
+        open={mailDialogOpen}
+        onOpenChange={setMailDialogOpen}
+        moduleKey="activity"
+        recordId={selectedActivity?.id ?? 0}
+        customerId={selectedActivity?.potentialCustomerId}
+        contactId={selectedActivity?.contactId}
+        customerName={selectedActivity?.potentialCustomer?.name}
+        contactName={selectedActivity?.contact?.fullName}
+      />
+      <OutlookCustomerMailDialog
+        open={outlookMailDialogOpen}
+        onOpenChange={setOutlookMailDialogOpen}
+        moduleKey="activity"
+        recordId={selectedActivity?.id ?? 0}
+        customerId={selectedActivity?.potentialCustomerId}
+        contactId={selectedActivity?.contactId}
+        customerName={selectedActivity?.potentialCustomer?.name}
+        contactName={selectedActivity?.contact?.fullName}
+      />
 
       <ActivityForm
         open={formOpen}
