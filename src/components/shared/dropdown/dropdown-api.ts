@@ -17,6 +17,7 @@ import type { SalesTypeGetDto } from '@/features/sales-type-management/types/sal
 interface DropdownPageRequest {
   pageNumber: number;
   pageSize: number;
+  search?: string;
   sortBy?: string;
   sortDirection?: string;
   filters?: PagedFilter[] | Record<string, unknown>;
@@ -42,6 +43,10 @@ function buildPagedQueryParams(
   const queryParams = new URLSearchParams();
   queryParams.append(pageNumberParamName, request.pageNumber.toString());
   queryParams.append('pageSize', request.pageSize.toString());
+
+  if (request.search) {
+    queryParams.append('search', request.search);
+  }
 
   if (request.sortBy) {
     queryParams.append('sortBy', request.sortBy);

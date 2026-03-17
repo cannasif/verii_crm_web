@@ -27,25 +27,13 @@ import {
   type FilterColumnConfig,
   type FilterRow,
 } from '@/lib/advanced-filter-types';
-import type { PagedFilter } from '@/types/api';
 import {
-  DROPDOWN_DEBOUNCE_MS,
   DROPDOWN_MIN_CHARS,
   DROPDOWN_PAGE_SIZE,
   DROPDOWN_SCROLL_THRESHOLD,
 } from '@/components/shared/dropdown/constants';
 
-const STOCK_SEARCH_COLUMNS = [
-  'stockName',
-  'erpStockCode',
-  'grupKodu',
-  'grupAdi',
-  'kod1',
-  'kod1Adi',
-  'kod2',
-  'kod2Adi',
-  'ureticiKodu',
-] as const;
+const POPUP_SEARCH_DEBOUNCE_MS = 700;
 
 const STOCK_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'Id', type: 'number', labelKey: 'columnId' },
@@ -67,113 +55,6 @@ const STOCK_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'unit', type: 'string', labelKey: 'columnUnit' },
   { value: 'branchCode', type: 'number', labelKey: 'columnBranchCode' },
 ] as const;
-
-function splitFilterTokens(value: string): string[] {
-  return value
-    .trim()
-    .split(/\s+/)
-    .map((token) => token.trim())
-    .filter(Boolean);
-}
-
-function buildTokenizedSearchFilters(searchTerm: string): PagedFilter[] | undefined {
-  const tokens = splitFilterTokens(searchTerm);
-  if (tokens.length === 0) {
-    return undefined;
-  }
-
-  return STOCK_SEARCH_COLUMNS.flatMap((column) =>
-    tokens.map((token) => ({
-      column,
-      operator: 'contains',
-      value: token,
-    }))
-  );
-}
-
-function buildTokenizedAdvancedFilters(filters: PagedFilter[]): {
-  filters: PagedFilter[];
-  filterLogic: 'and' | 'or';
-} {
-  if (filters.length !== 1) {
-    return { filters, filterLogic: 'or' };
-  }
-
-  const [singleFilter] = filters;
-  if (singleFilter.operator !== 'contains') {
-    return { filters, filterLogic: 'or' };
-  }
-
-  const tokens = splitFilterTokens(singleFilter.value);
-  if (tokens.length <= 1) {
-    return { filters, filterLogic: 'or' };
-  }
-
-  return {
-    filters: tokens.map((token) => ({
-      column: singleFilter.column,
-      operator: singleFilter.operator,
-      value: token,
-    })),
-    filterLogic: 'or',
-  };
-}
-
-function normalizeSearchText(value: string): string {
-  return value
-    .toLocaleLowerCase('tr-TR')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/ı/g, 'i')
-    .replace(/İ/g, 'i')
-    .replace(/ş/g, 's')
-    .replace(/Ş/g, 's')
-    .replace(/ğ/g, 'g')
-    .replace(/Ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/Ü/g, 'u')
-    .replace(/ö/g, 'o')
-    .replace(/Ö/g, 'o')
-    .replace(/ç/g, 'c')
-    .replace(/Ç/g, 'c')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function matchesSearchQuery(
-  stock: Pick<
-    StockGetDto,
-    | 'stockName'
-    | 'erpStockCode'
-    | 'grupKodu'
-    | 'grupAdi'
-    | 'kod1'
-    | 'kod1Adi'
-    | 'kod2'
-    | 'kod2Adi'
-    | 'ureticiKodu'
-  >,
-  searchQuery: string
-): boolean {
-  const query = normalizeSearchText(searchQuery);
-  if (!query) return true;
-
-  const haystacks = [
-    stock.stockName,
-    stock.erpStockCode,
-    stock.grupKodu,
-    stock.grupAdi,
-    stock.kod1,
-    stock.kod1Adi,
-    stock.kod2,
-    stock.kod2Adi,
-    stock.ureticiKodu,
-  ]
-    .filter(Boolean)
-    .map((item) => normalizeSearchText(String(item)));
-
-  return haystacks.some((item) => item.includes(query));
-}
 
 function formatStockBalance(stock: StockGetDto | StockGetWithMainImageDto): string | null {
   if (stock.balanceText?.trim()) {
@@ -885,18 +766,16 @@ export function ProductSelectDialog({
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const [draftFilterLogic, setDraftFilterLogic] = useState<'and' | 'or'>('and');
+  const [appliedFilterLogic, setAppliedFilterLogic] = useState<'and' | 'or'>('and');
   const [relatedStocksDialogOpen, setRelatedStocksDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<StockGetDto | StockGetWithMainImageDto | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const debouncedSearch = useDebouncedValue(searchQuery, DROPDOWN_DEBOUNCE_MS);
+  const debouncedSearch = useDebouncedValue(searchQuery, POPUP_SEARCH_DEBOUNCE_MS);
   const isThresholdInput = searchQuery.trim().length > 0 && searchQuery.trim().length < DROPDOWN_MIN_CHARS;
   const rawAppliedAdvancedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
-  const advancedFilterRequest = useMemo(
-    () => buildTokenizedAdvancedFilters(rawAppliedAdvancedFilters),
-    [rawAppliedAdvancedFilters]
-  );
-  const hasAdvancedFilters = advancedFilterRequest.filters.length > 0;
+  const hasAdvancedFilters = rawAppliedAdvancedFilters.length > 0;
   const minCharsHint = t('common.dropdown.minCharsHint', {
     count: DROPDOWN_MIN_CHARS,
     defaultValue: `Minimum ${DROPDOWN_MIN_CHARS} characters`,
@@ -959,6 +838,8 @@ export function ProductSelectDialog({
       setFilterPopoverOpen(false);
       setDraftFilterRows([]);
       setAppliedFilterRows([]);
+      setDraftFilterLogic('and');
+      setAppliedFilterLogic('and');
       setIsListening(false);
       if (recognitionRef.current) {
         recognitionRef.current.stop();
@@ -975,14 +856,9 @@ export function ProductSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
-    extraQueryKey: [JSON.stringify(advancedFilterRequest)],
-    buildFilters: (searchTerm) => {
-      if (hasAdvancedFilters) {
-        return advancedFilterRequest.filters;
-      }
-      return buildTokenizedSearchFilters(searchTerm);
-    },
-    filterLogic: hasAdvancedFilters ? advancedFilterRequest.filterLogic : 'or',
+    extraQueryKey: [JSON.stringify(rawAppliedAdvancedFilters), appliedFilterLogic],
+    buildFilters: () => (hasAdvancedFilters ? rawAppliedAdvancedFilters : undefined),
+    filterLogic: appliedFilterLogic,
     fetchPage: dropdownApi.getStockPage,
   });
 
@@ -994,30 +870,15 @@ export function ProductSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
-    extraQueryKey: [JSON.stringify(advancedFilterRequest)],
-    buildFilters: (searchTerm) => {
-      if (hasAdvancedFilters) {
-        return advancedFilterRequest.filters;
-      }
-      return buildTokenizedSearchFilters(searchTerm);
-    },
-    filterLogic: hasAdvancedFilters ? advancedFilterRequest.filterLogic : 'or',
+    extraQueryKey: [JSON.stringify(rawAppliedAdvancedFilters), appliedFilterLogic],
+    buildFilters: () => (hasAdvancedFilters ? rawAppliedAdvancedFilters : undefined),
+    filterLogic: appliedFilterLogic,
     fetchPage: dropdownApi.getStockWithImagesPage,
   });
 
-  const visibleStocks = useMemo(
-    () =>
-      (hasAdvancedFilters ? stocksDropdown.items.filter((item) => matchesSearchQuery(item, searchQuery)) : stocksDropdown.items),
-    [hasAdvancedFilters, searchQuery, stocksDropdown.items]
-  );
+  const visibleStocks = stocksDropdown.items;
 
-  const visibleStocksWithImages = useMemo(
-    () =>
-      (hasAdvancedFilters
-        ? stocksWithImagesDropdown.items.filter((item) => matchesSearchQuery(item, searchQuery))
-        : stocksWithImagesDropdown.items),
-    [hasAdvancedFilters, searchQuery, stocksWithImagesDropdown.items]
-  );
+  const visibleStocksWithImages = stocksWithImagesDropdown.items;
 
   const handleStockSelect = async (stock: StockGetDto | StockGetWithMainImageDto): Promise<void> => {
     const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
@@ -1326,10 +1187,17 @@ export function ProductSelectDialog({
                     defaultColumn="ErpStockCode"
                     draftRows={draftFilterRows}
                     onDraftRowsChange={setDraftFilterRows}
-                    onSearch={() => setAppliedFilterRows(draftFilterRows)}
+                    filterLogic={draftFilterLogic}
+                    onFilterLogicChange={setDraftFilterLogic}
+                    onSearch={() => {
+                      setAppliedFilterRows(draftFilterRows);
+                      setAppliedFilterLogic(draftFilterLogic);
+                    }}
                     onClear={() => {
                       setDraftFilterRows([]);
                       setAppliedFilterRows([]);
+                      setDraftFilterLogic('and');
+                      setAppliedFilterLogic('and');
                       setFilterPopoverOpen(false);
                     }}
                     translationNamespace="common"
@@ -1340,6 +1208,7 @@ export function ProductSelectDialog({
                       variant="outline"
                       onClick={() => {
                         setDraftFilterRows(appliedFilterRows);
+                        setDraftFilterLogic(appliedFilterLogic);
                         setFilterPopoverOpen(false);
                       }}
                     >
@@ -1349,6 +1218,7 @@ export function ProductSelectDialog({
                       type="button"
                       onClick={() => {
                         setAppliedFilterRows(draftFilterRows);
+                        setAppliedFilterLogic(draftFilterLogic);
                         setFilterPopoverOpen(false);
                       }}
                     >

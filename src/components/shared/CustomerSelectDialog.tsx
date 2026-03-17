@@ -10,19 +10,28 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import type { CustomerDto } from '@/features/customer-management/types/customer-types';
 import { cn } from '@/lib/utils';
-import { Phone, Mail, ChevronRight, Search, Mic, Building2, User, X, Users, LayoutGrid, List, AlertCircle } from 'lucide-react';
+import {
+  Phone, Mail, ChevronRight, Search, Mic, Building2, User, X,
+  Users, LayoutGrid, List, AlertCircle, SlidersHorizontal,
+} from 'lucide-react';
 import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
 import { dropdownApi } from '@/components/shared/dropdown/dropdown-api';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import {
-  DROPDOWN_DEBOUNCE_MS,
   DROPDOWN_MIN_CHARS,
   DROPDOWN_PAGE_SIZE,
   DROPDOWN_SCROLL_THRESHOLD,
 } from '@/components/shared/dropdown/constants';
+import type { FilterRow } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
+import { AdvancedFilter } from '@/components/shared/AdvancedFilter';
+import { CUSTOMER_FILTER_COLUMNS } from '@/features/customer-management/types/customer-filter.types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
+const POPUP_SEARCH_DEBOUNCE_MS = 700;
 
 export interface CustomerSelectionResult {
   customerId?: number;
@@ -86,8 +95,8 @@ function CustomerCard({
         <div className="flex items-start justify-between w-full">
           <div className={cn(
             "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-            type === 'erp' 
-              ? "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400" 
+            type === 'erp'
+              ? "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
               : "bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400"
           )}>
             {type === 'erp' ? <Building2 size={24} /> : <User size={24} />}
@@ -128,8 +137,8 @@ function CustomerCard({
       <div className="flex items-center gap-3 min-w-[88px] sm:min-w-[30%] max-w-full sm:max-w-[40%]">
         <div className={cn(
           "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
-          type === 'erp' 
-            ? "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400" 
+          type === 'erp'
+            ? "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
             : "bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400"
         )}>
           {type === 'erp' ? <Building2 size={18} /> : <User size={18} />}
@@ -168,9 +177,13 @@ export function CustomerSelectDialog({
   const [activeTab, setActiveTab] = useState<'erp' | 'potential' | 'all'>('erp');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const [filterLogic, setFilterLogic] = useState<'and' | 'or'>('and');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const debouncedSearch = useDebouncedValue(searchQuery, DROPDOWN_DEBOUNCE_MS);
+  const debouncedSearch = useDebouncedValue(searchQuery, POPUP_SEARCH_DEBOUNCE_MS);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -181,12 +194,12 @@ export function CustomerSelectDialog({
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        
+
         const langMap: Record<string, string> = {
           'tr': 'tr-TR',
           'en': 'en-US',
           'de': 'de-DE',
-          'fr': 'fr-FR'
+          'fr': 'fr-FR',
         };
         recognition.lang = langMap[i18n.language] || 'tr-TR';
 
@@ -210,10 +223,7 @@ export function CustomerSelectDialog({
   }, [i18n.language]);
 
   const handleVoiceSearch = (): void => {
-    if (!recognitionRef.current) {
-      return;
-    }
-
+    if (!recognitionRef.current) return;
     if (isListening) {
       recognitionRef.current.stop();
       setIsListening(false);
@@ -227,11 +237,23 @@ export function CustomerSelectDialog({
     if (!open) {
       setSearchQuery('');
       setIsListening(false);
+      setIsFilterPanelOpen(false);
+      setDraftFilterRows([]);
+      setAppliedFilterRows([]);
+      setFilterLogic('and');
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
     }
   }, [open]);
+
+  const validAppliedFilters = useMemo(
+    () => rowsToBackendFilters(appliedFilterRows),
+    [appliedFilterRows]
+  );
+  const hasAdvancedFilters = validAppliedFilters.length > 0;
+  const appliedFilterCount = validAppliedFilters.length;
+  const advancedFiltersKey = JSON.stringify(appliedFilterRows);
 
   const {
     items: customers,
@@ -244,16 +266,15 @@ export function CustomerSelectDialog({
     searchTerm: debouncedSearch,
     enabled: open,
     minChars: DROPDOWN_MIN_CHARS,
-    // Fetch in pages of 50 to avoid request spam while UI shows only a small visible window.
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'asc',
-    buildFilters: (searchTerm) => [
-      { column: 'name', operator: 'contains', value: searchTerm },
-      { column: 'customerCode', operator: 'contains', value: searchTerm },
-    ],
+    extraQueryKey: [advancedFiltersKey, filterLogic],
+    filterLogic,
+    buildFilters: () => (hasAdvancedFilters ? validAppliedFilters : undefined),
     fetchPage: dropdownApi.getCustomerPage,
   });
+
   const isThresholdInput = searchQuery.trim().length > 0 && searchQuery.trim().length < DROPDOWN_MIN_CHARS;
   const minCharsHint = t('common.dropdown.minCharsHint', {
     count: DROPDOWN_MIN_CHARS,
@@ -261,9 +282,7 @@ export function CustomerSelectDialog({
   });
 
   const displayCustomers = useMemo(() => {
-    const isErp = (c: CustomerDto): boolean =>
-      c.isIntegrated === true ||
-      (c.customerCode != null && String(c.customerCode).trim() !== '');
+    const isErp = (c: CustomerDto): boolean => c.isIntegrated === true;
     return customers.map((c) => ({
       ...c,
       type: (isErp(c) ? 'erp' : 'crm') as 'erp' | 'crm',
@@ -294,15 +313,9 @@ export function CustomerSelectDialog({
 
   const handleListScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>): void => {
-      if (!hasNextPage || isFetchingNextPage) {
-        return;
-      }
-
+      if (!hasNextPage || isFetchingNextPage) return;
       const target = event.currentTarget;
-      if (target.scrollHeight <= 0) {
-        return;
-      }
-
+      if (target.scrollHeight <= 0) return;
       const scrollProgress = (target.scrollTop + target.clientHeight) / target.scrollHeight;
       if (scrollProgress >= DROPDOWN_SCROLL_THRESHOLD) {
         void fetchNextPage();
@@ -310,6 +323,16 @@ export function CustomerSelectDialog({
     },
     [fetchNextPage, hasNextPage, isFetchingNextPage]
   );
+
+  const handleApplyFilters = (): void => {
+    setAppliedFilterRows(draftFilterRows);
+  };
+
+  const handleClearFilters = (): void => {
+    setDraftFilterRows([]);
+    setAppliedFilterRows([]);
+    setFilterLogic('and');
+  };
 
   const renderCustomerList = (
     list: Array<CustomerDto & { type: 'erp' | 'crm' }>,
@@ -329,7 +352,7 @@ export function CustomerSelectDialog({
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-zinc-500">
-            {searchQuery.trim()
+            {searchQuery.trim() || hasAdvancedFilters
               ? t('customerSelectDialog.noResults')
               : t(emptyKey, { ns: 'customer-select-dialog', defaultValue: 'Müşteri bulunamadı' })}
           </div>
@@ -373,26 +396,26 @@ export function CustomerSelectDialog({
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'erp' | 'potential' | 'all')} className="flex flex-col h-full">
           <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm shrink-0">
             <div className="flex items-center gap-4">
-               <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-                 <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                   <Users size={24} className="text-pink-600 dark:text-pink-500" />
-                 </div>
-               </div>
-               <div className="space-y-1 text-left">
-                  <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                    {t('customerSelectDialog.title')}
-                  </DialogTitle>
-                  <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
-                    {t('customerSelectDialog.description')}
-                  </DialogDescription>
-               </div>
+              <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
+                  <Users size={24} className="text-pink-600 dark:text-pink-500" />
+                </div>
+              </div>
+              <div className="space-y-1 text-left">
+                <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  {t('customerSelectDialog.title')}
+                </DialogTitle>
+                <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
+                  {t('customerSelectDialog.description')}
+                </DialogDescription>
+              </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full">
               <X size={20} />
             </Button>
           </DialogHeader>
 
-          <div className="p-6 pb-0 space-y-4 bg-white dark:bg-[#130822] shrink-0">
+          <div className="p-6 pb-0 space-y-3 bg-white dark:bg-[#130822] shrink-0">
             <div className="flex items-center gap-3">
               <div className="relative flex-1 group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-pink-500 transition-colors" />
@@ -431,29 +454,49 @@ export function CustomerSelectDialog({
                   </Button>
                 )}
               </div>
-              
+
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setIsFilterPanelOpen((prev) => !prev)}
+                className={cn(
+                  "relative h-12 w-12 shrink-0 rounded-xl border-slate-200 dark:border-white/10 transition-all",
+                  isFilterPanelOpen || hasAdvancedFilters
+                    ? "bg-pink-50 dark:bg-pink-500/10 border-pink-300 dark:border-pink-500/40 text-pink-600 dark:text-pink-400"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                )}
+              >
+                <SlidersHorizontal size={18} />
+                {appliedFilterCount > 0 && (
+                  <Badge className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 text-[10px] bg-pink-500 text-white border-0 flex items-center justify-center">
+                    {appliedFilterCount}
+                  </Badge>
+                )}
+              </Button>
+
               <div className="flex bg-slate-100 dark:bg-[#1a1025] p-1 rounded-xl border border-slate-200 dark:border-white/5 shrink-0 h-12 items-center">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setViewMode('list')}
                   className={cn(
                     "w-10 h-10 rounded-lg transition-all",
-                    viewMode === 'list' 
-                      ? "bg-white dark:bg-pink-500 text-slate-900 dark:text-white shadow-sm" 
+                    viewMode === 'list'
+                      ? "bg-white dark:bg-pink-500 text-slate-900 dark:text-white shadow-sm"
                       : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
                   <List size={20} />
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setViewMode('grid')}
                   className={cn(
                     "w-10 h-10 rounded-lg transition-all",
-                    viewMode === 'grid' 
-                      ? "bg-white dark:bg-pink-500 text-slate-900 dark:text-white shadow-sm" 
+                    viewMode === 'grid'
+                      ? "bg-white dark:bg-pink-500 text-slate-900 dark:text-white shadow-sm"
                       : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
@@ -462,20 +505,35 @@ export function CustomerSelectDialog({
               </div>
             </div>
 
+            {isFilterPanelOpen && (
+              <AdvancedFilter
+                columns={CUSTOMER_FILTER_COLUMNS}
+                defaultColumn="name"
+                draftRows={draftFilterRows}
+                onDraftRowsChange={setDraftFilterRows}
+                filterLogic={filterLogic}
+                onFilterLogicChange={setFilterLogic}
+                onSearch={handleApplyFilters}
+                onClear={handleClearFilters}
+                translationNamespace="customer-management"
+                embedded
+              />
+            )}
+
             <TabsList className="bg-slate-100 dark:bg-[#1a1025] p-1 h-auto w-full grid grid-cols-3 rounded-xl border border-slate-200 dark:border-white/5">
-              <TabsTrigger 
-                value="erp" 
+              <TabsTrigger
+                value="erp"
                 className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
               >
                 {t('customerSelectDialog.erpCustomers')}
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="potential"
                 className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
               >
                 {t('customerSelectDialog.potentialCustomers')}
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="all"
                 className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
               >

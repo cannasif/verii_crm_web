@@ -5,6 +5,7 @@ import type { PagedFilter, PagedResponse } from '@/types/api';
 interface DropdownFetchPageParams {
   pageNumber: number;
   pageSize: number;
+  search?: string;
   sortBy?: string;
   sortDirection?: string;
   filters?: PagedFilter[] | Record<string, unknown>;
@@ -79,6 +80,7 @@ export function useDropdownInfiniteSearch<TItem>({
       return fetchPage({
         pageNumber: pageParam,
         pageSize,
+        search: activeSearchTerm || undefined,
         sortBy,
         sortDirection,
         filters: filters ?? undefined,
