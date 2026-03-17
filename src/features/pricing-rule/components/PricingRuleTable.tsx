@@ -40,6 +40,7 @@ export { getColumnsConfig };
 
 interface PricingRuleTableProps {
   onEdit: (header: PricingRuleHeaderGetDto) => void;
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<PricingRuleColumnKey>[];
   visibleColumnKeys: PricingRuleColumnKey[];
   rows: PricingRuleHeaderGetDto[];
@@ -75,6 +76,7 @@ interface PricingRuleTableProps {
 
 export function PricingRuleTable({
   onEdit,
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -154,6 +156,7 @@ export function PricingRuleTable({
   return (
     <>
       <DataTableGrid<PricingRuleHeaderGetDto, PricingRuleColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

@@ -1,9 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw, List, FileText, ShoppingCart, TrendingUp, CheckCircle2, XCircle, Calendar, Building2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -15,6 +14,7 @@ import { PricingRuleTable, getColumnsConfig } from './PricingRuleTable';
 import { PricingRuleForm } from './PricingRuleForm';
 import type { PricingRuleHeaderGetDto } from '../types/pricing-rule-types';
 import { PricingRuleType } from '../types/pricing-rule-types';
+import { pricingRuleApi } from '../api/pricing-rule-api';
 import { usePricingRuleHeaders } from '../hooks/usePricingRuleHeaders';
 
 const EMPTY_HEADERS: PricingRuleHeaderGetDto[] = [];
@@ -162,7 +162,7 @@ export function PricingRuleManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredHeaders.map((h) => {
+      currentPageRows.map((h) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           if (key === 'isActive') {
@@ -181,8 +181,35 @@ export function PricingRuleManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredHeaders, orderedVisibleColumns, i18n.language, t]
+    [currentPageRows, orderedVisibleColumns, i18n.language, t]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await pricingRuleApi.getHeaders({ pageNumber: 1, pageSize: 10000 });
+    const list: PricingRuleHeaderGetDto[] = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((h) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          if (key === 'isActive') {
+            const now = new Date();
+            const from = new Date(h.validFrom);
+            const to = new Date(h.validTo);
+            const isRuleValid = h.isActive && from <= now && to >= now;
+            row[key] = isRuleValid ? t('pricingRule.status.active') : t('pricingRule.status.inactive');
+          } else if (key === 'ruleType') {
+            row[key] = getRuleTypeConfig(t, h.ruleType).label;
+          } else if (key === 'validFrom' || key === 'validTo') {
+            row[key] = new Date(String(h[key])).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = (h as unknown as Record<string, unknown>)[key] ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language, t]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -251,6 +278,7 @@ export function PricingRuleManagementPage(): ReactElement {
             exportFileName="pricing-rules"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="ruleName"
             draftFilterRows={[]}
@@ -259,14 +287,11 @@ export function PricingRuleManagementPage(): ReactElement {
             onClearFilters={() => {}}
             translationNamespace="pricing-rule"
             appliedFilterCount={0}
+            searchValue={searchTerm}
+            searchPlaceholder={t('common.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl overflow-x-auto">
                   {(['all', 'active', 'inactive'] as const).map((filter) => (
                     <Button

@@ -1,16 +1,17 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import { ProductPricingTable, getColumnsConfig } from './ProductPricingTable';
 import { ProductPricingForm } from './ProductPricingForm';
+import { productPricingApi } from '../api/product-pricing-api';
 import { useCreateProductPricing } from '../hooks/useCreateProductPricing';
 import { useUpdateProductPricing } from '../hooks/useUpdateProductPricing';
 import { useDeleteProductPricing } from '../hooks/useDeleteProductPricing';
@@ -47,6 +48,7 @@ export function ProductPricingManagementPage(): ReactElement {
   const [editingProductPricing, setEditingProductPricing] = useState<ProductPricingGetDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResetKey, setSearchResetKey] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [sortBy, setSortBy] = useState<ProductPricingColumnKey>('id');
@@ -159,7 +161,7 @@ export function ProductPricingManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredItems.map((item) => {
+      currentPageRows.map((item) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = item[key];
@@ -171,8 +173,36 @@ export function ProductPricingManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredItems, orderedVisibleColumns, i18n.language]
+    [currentPageRows, orderedVisibleColumns, i18n.language]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const list = await fetchAllPagedData({
+      fetchPage: (exportPageNumber, exportPageSize) =>
+        productPricingApi.getList({
+          pageNumber: exportPageNumber,
+          pageSize: exportPageSize,
+          sortBy: 'Id',
+          sortDirection: 'desc',
+          filters: apiFilters,
+        }),
+    });
+    return {
+      columns: exportColumns,
+      rows: list.map((item) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = item[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language, apiFilters]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -249,6 +279,16 @@ export function ProductPricingManagementPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: queryKeys.list({}) });
   };
 
+  const handleGridRefresh = async (): Promise<void> => {
+    setSearchTerm('');
+    setSearchResetKey((value) => value + 1);
+    setDraftFilterRows([]);
+    setAppliedFilterRows([]);
+    setActiveFilter('all');
+    setPageNumber(1);
+    await handleRefresh();
+  };
+
   const columns = useMemo<DataTableGridColumn<ProductPricingColumnKey>[]>(
     () =>
       tableColumns.map((c) => ({
@@ -282,68 +322,64 @@ export function ProductPricingManagementPage(): ReactElement {
       <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
         <CardHeader className="space-y-4">
           <CardTitle>{t('table.title')}</CardTitle>
-          <DataTableActionBar
-            pageKey={PAGE_KEY}
-            userId={user?.id}
-            columns={baseColumns}
-            visibleColumns={visibleColumns}
-            columnOrder={columnOrder}
-            onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={setColumnOrder}
-            exportFileName="product-pricings"
-            exportColumns={exportColumns}
-            exportRows={exportRows}
-            filterColumns={filterColumns}
-            defaultFilterColumn="erpProductCode"
-            draftFilterRows={draftFilterRows}
-            onDraftFilterRowsChange={setDraftFilterRows}
-            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
-            onClearFilters={() => {
-              setDraftFilterRows([]);
-              setAppliedFilterRows([]);
-            }}
-            translationNamespace="product-pricing-management"
-            appliedFilterCount={appliedFilterCount}
-            leftSlot={
-              <>
-                <Input
-                  placeholder={t('searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
-                <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl">
-                  {(['all', 'active', 'archive'] as const).map((filter) => (
-                    <Button
-                      key={filter}
-                      variant={activeFilter === filter ? 'secondary' : 'ghost'}
-                      size="sm"
-                      onClick={() => setActiveFilter(filter)}
-                      className="h-7 text-xs"
-                    >
-                      {t(`filter.${filter}`)}
-                    </Button>
-                  ))}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleRefresh()}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                  )}
-                  {resolveLabel(t, 'common.refresh', 'Yenile')}
-                </Button>
-              </>
-            }
-          />
         </CardHeader>
         <CardContent>
           <ProductPricingTable
+            actionBar={{
+              pageKey: PAGE_KEY,
+              userId: user?.id,
+              columns: baseColumns,
+              visibleColumns,
+              columnOrder,
+              onVisibleColumnsChange: setVisibleColumns,
+              onColumnOrderChange: setColumnOrder,
+              exportFileName: 'product-pricings',
+              exportColumns,
+              exportRows,
+              getExportData,
+              filterColumns,
+              defaultFilterColumn: 'erpProductCode',
+              draftFilterRows,
+              onDraftFilterRowsChange: setDraftFilterRows,
+              onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
+              onClearFilters: () => {
+                setDraftFilterRows([]);
+                setAppliedFilterRows([]);
+              },
+              translationNamespace: 'product-pricing-management',
+              appliedFilterCount,
+              search: {
+                onSearchChange: setSearchTerm,
+                placeholder: t('searchPlaceholder'),
+                minLength: 1,
+                resetKey: searchResetKey,
+              },
+              refresh: {
+                onRefresh: () => {
+                  void handleGridRefresh();
+                },
+                isLoading,
+                cooldownSeconds: 60,
+                label: resolveLabel(t, 'common.refresh', 'Yenile'),
+              },
+              leftSlot: (
+                <>
+                  <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl">
+                    {(['all', 'active', 'archive'] as const).map((filter) => (
+                      <Button
+                        key={filter}
+                        variant={activeFilter === filter ? 'secondary' : 'ghost'}
+                        size="sm"
+                        onClick={() => setActiveFilter(filter)}
+                        className="h-7 text-xs"
+                      >
+                        {t(`filter.${filter}`)}
+                      </Button>
+                    ))}
+                  </div>
+                </>
+              ),
+            } satisfies DataTableActionBarProps}
             columns={columns}
             visibleColumnKeys={orderedVisibleColumns}
             rows={currentPageRows}

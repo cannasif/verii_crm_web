@@ -26,6 +26,7 @@ export interface ColumnDef<T> {
 type ProductPricingGroupByColumnKey = keyof ProductPricingGroupByDto;
 
 interface ProductPricingGroupByTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<ProductPricingGroupByColumnKey>[];
   visibleColumnKeys: ProductPricingGroupByColumnKey[];
   rows: ProductPricingGroupByDto[];
@@ -71,6 +72,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<ProductPricingGroupByD
 ];
 
 export function ProductPricingGroupByTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -151,6 +153,7 @@ export function ProductPricingGroupByTable({
   return (
     <>
       <DataTableGrid<ProductPricingGroupByDto, ProductPricingGroupByColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

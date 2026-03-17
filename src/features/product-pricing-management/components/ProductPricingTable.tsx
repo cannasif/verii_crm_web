@@ -1,7 +1,7 @@
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -27,6 +27,7 @@ export interface ColumnDef<T> {
 type ProductPricingColumnKey = keyof ProductPricingGetDto;
 
 interface ProductPricingTableProps {
+  actionBar?: DataTableActionBarProps;
   columns: DataTableGridColumn<ProductPricingColumnKey>[];
   visibleColumnKeys: ProductPricingColumnKey[];
   rows: ProductPricingGetDto[];
@@ -75,6 +76,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<ProductPricingGetDto>[
 ];
 
 export function ProductPricingTable({
+  actionBar,
   columns,
   visibleColumnKeys,
   rows,
@@ -156,6 +158,7 @@ export function ProductPricingTable({
   return (
     <>
       <DataTableGrid<ProductPricingGetDto, ProductPricingColumnKey>
+        actionBar={actionBar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}

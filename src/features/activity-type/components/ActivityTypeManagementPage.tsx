@@ -1,10 +1,9 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
@@ -19,6 +18,7 @@ import { useActivityTypeList } from '../hooks/useActivityTypeList';
 import type { ActivityTypeDto, ActivityTypeFormSchema } from '../types/activity-type-types';
 import { applyActivityTypeFilters, ACTIVITY_TYPE_FILTER_COLUMNS } from '../types/activity-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { activityTypeApi } from '../api/activity-type-api';
 
 const EMPTY_ACTIVITY_TYPES: ActivityTypeDto[] = [];
 const PAGE_KEY = 'activity-type-management';
@@ -159,7 +159,7 @@ export function ActivityTypeManagementPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredActivityTypes.map((c) => {
+      currentPageRows.map((c) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -171,8 +171,28 @@ export function ActivityTypeManagementPage(): ReactElement {
         });
         return row;
       }),
-    [filteredActivityTypes, orderedVisibleColumns, i18n.language]
+    [currentPageRows, orderedVisibleColumns, i18n.language]
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const response = await activityTypeApi.getList({ pageNumber: 1, pageSize: 10000, sortBy: 'Id', sortDirection: 'desc' });
+    const list = response?.data ?? [];
+    return {
+      columns: exportColumns,
+      rows: list.map((c: ActivityTypeDto) => {
+        const row: Record<string, unknown> = {};
+        orderedVisibleColumns.forEach((key) => {
+          const val = c[key];
+          if (key === 'createdDate' && val) {
+            row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
+          } else {
+            row[key] = val ?? '';
+          }
+        });
+        return row;
+      }),
+    };
+  }, [exportColumns, orderedVisibleColumns, i18n.language]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -263,6 +283,7 @@ export function ActivityTypeManagementPage(): ReactElement {
             exportFileName="activity_types"
             exportColumns={exportColumns}
             exportRows={exportRows}
+            getExportData={getExportData}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
@@ -274,14 +295,11 @@ export function ActivityTypeManagementPage(): ReactElement {
             }}
             translationNamespace="activity-type"
             appliedFilterCount={appliedFilterCount}
+            searchValue={searchTerm}
+            searchPlaceholder={t('common.search')}
+            onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Input
-                  placeholder={t('common.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 w-[200px]"
-                />
                 <Button
                   variant="outline"
                   size="sm"

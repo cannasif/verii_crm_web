@@ -27,6 +27,7 @@ export interface ColumnDef<T> {
 type ActivityTypeColumnKey = keyof ActivityTypeDto;
 
 interface ActivityTypeTableProps {
+  toolbar?: React.ReactNode;
   columns: DataTableGridColumn<ActivityTypeColumnKey>[];
   visibleColumnKeys: ActivityTypeColumnKey[];
   rows: ActivityTypeDto[];
@@ -114,6 +115,7 @@ function renderCellContent(
 }
 
 export function ActivityTypeTable({
+  toolbar,
   columns,
   visibleColumnKeys,
   rows,
@@ -202,6 +204,7 @@ export function ActivityTypeTable({
   return (
     <>
       <DataTableGrid<ActivityTypeDto, ActivityTypeColumnKey>
+        toolbar={toolbar}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={rows}
