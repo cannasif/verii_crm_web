@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { demandApi } from '../api/demand-api';
 import { stockApi } from '@/features/stock/api/stock-api';
 import { useDemandCalculations } from './useDemandCalculations';
@@ -40,6 +42,7 @@ interface UseProductSelectionReturn {
 }
 
 export function useProductSelection({ currency, exchangeRates }: UseProductSelectionParams): UseProductSelectionReturn {
+  const { t } = useTranslation();
   const { calculateLineTotals } = useDemandCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
@@ -280,11 +283,16 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
         const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
 
+        if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
+          toast.error(t('demand.update.error', 'Hata'), {
+            description: t('demand.exchangeRates.zeroRateError', 'Lütfen devam edebilmek için kur değeri girin.'),
+          });
+          throw new Error('ZERO_RATE');
+        }
+
         let convertedPrice = selectedPrice.listPrice ?? 0;
-        if (sourceRate && sourceRate > 0 && targetRate && targetRate > 0) {
-          if (sourceDovizTipi !== currency) {
-            convertedPrice = (selectedPrice.listPrice ?? 0) * sourceRate / targetRate;
-          }
+        if (sourceDovizTipi !== currency) {
+          convertedPrice = (selectedPrice.listPrice ?? 0) * sourceRate / targetRate;
         }
 
         const updatedLine: DemandLineFormState = {
@@ -298,7 +306,10 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
 
         const calculatedLine = calculateLineTotals(updatedLine);
         return calculatedLine;
-      } catch {
+      } catch (error) {
+        if (error instanceof Error && error.message === 'ZERO_RATE') {
+          throw error;
+        }
         return calculateLineTotals(baseLine);
       }
     },

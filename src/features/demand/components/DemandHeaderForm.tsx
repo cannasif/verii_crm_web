@@ -59,6 +59,7 @@ interface DemandHeaderFormProps {
   isSavingNotes?: boolean;
   lines?: Array<{ productCode?: string | null; productName?: string | null }>;
   onLinesChange?: (lines: Array<{ productCode?: string | null; productName?: string | null }>) => void;
+  onCurrencyChange?: (oldCurrency: number, newCurrency: number) => Promise<void> | void;
   initialCurrency?: string | number | null;
   revisionNo?: string | null;
   demandId?: number | null;
@@ -76,8 +77,9 @@ export function DemandHeaderForm({
   isSavingNotes = false,
   lines = [],
   onLinesChange,
+  onCurrencyChange,
   initialCurrency,
-   demandId,
+  demandId,
   demandOfferNo,
   readOnly = false,
   showDocumentSerialType = true,
@@ -198,7 +200,12 @@ export function DemandHeaderForm({
   const handleCurrencyChange = (newCurrency: string): void => {
     const currentCurrency = form.watch('demand.currency');
     const newCurrencyNum = Number(newCurrency);
-    const currentCurrencyNum = typeof currentCurrency === 'string' ? Number(currentCurrency) : currentCurrency;
+    const currentCurrencyNum =
+      currentCurrency === '' || currentCurrency === null || currentCurrency === undefined
+        ? null
+        : typeof currentCurrency === 'string'
+          ? Number(currentCurrency)
+          : currentCurrency;
     
     if (isInitialLoadRef.current) {
       form.setValue('demand.currency', newCurrency, { shouldValidate: false, shouldDirty: false });
@@ -213,7 +220,7 @@ export function DemandHeaderForm({
       }
     }
     
-    if (currentCurrencyNum === newCurrencyNum) return;
+    if (currentCurrencyNum !== null && currentCurrencyNum === newCurrencyNum) return;
     
     if (lines && lines.length > 0 && onLinesChange) {
       setPendingCurrency(newCurrency);
@@ -223,10 +230,28 @@ export function DemandHeaderForm({
     }
   };
 
-  const handleCurrencyChangeConfirm = (): void => {
-    if (pendingCurrency && onLinesChange) {
+  const handleCurrencyChangeConfirm = async (): Promise<void> => {
+    if (!pendingCurrency || !onLinesChange) {
+      return;
+    }
+
+    try {
+      const watchedCurrencyNum =
+        watchedCurrency === '' || watchedCurrency === null || watchedCurrency === undefined
+          ? null
+          : typeof watchedCurrency === 'string'
+            ? Number(watchedCurrency)
+            : watchedCurrency;
+
+      if (onCurrencyChange && watchedCurrencyNum != null) {
+        await onCurrencyChange(watchedCurrencyNum, Number(pendingCurrency));
+      } else {
+        onLinesChange(lines || []);
+      }
       form.setValue('demand.currency', pendingCurrency);
-      onLinesChange(lines || []);
+    } catch {
+      // ZERO_RATE vb. durumda para birimini değiştirme
+    } finally {
       setCurrencyChangeDialogOpen(false);
       setPendingCurrency(null);
     }

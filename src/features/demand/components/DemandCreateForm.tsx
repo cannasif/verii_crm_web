@@ -66,7 +66,11 @@ export function DemandCreateForm(): ReactElement {
   });
   const isFormValid = form.formState.isValid;
 
-  const watchedCurrency = Number(form.watch('demand.currency') ?? '2');
+  const watchedCurrencyRaw = form.watch('demand.currency');
+  const watchedCurrency =
+    watchedCurrencyRaw === '' || watchedCurrencyRaw === null || watchedCurrencyRaw === undefined
+      ? Number.NaN
+      : Number(watchedCurrencyRaw);
   const watchedCustomerId = form.watch('demand.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedRepresentativeId = form.watch('demand.representativeId');

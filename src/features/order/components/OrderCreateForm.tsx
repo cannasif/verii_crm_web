@@ -65,7 +65,11 @@ export function OrderCreateForm(): ReactElement {
   });
   const isFormValid = form.formState.isValid;
 
-  const watchedCurrency = Number(form.watch('order.currency') ?? '2');
+  const watchedCurrencyRaw = form.watch('order.currency');
+  const watchedCurrency =
+    watchedCurrencyRaw === '' || watchedCurrencyRaw === null || watchedCurrencyRaw === undefined
+      ? Number.NaN
+      : Number(watchedCurrencyRaw);
   const watchedCustomerId = form.watch('order.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('order.erpCustomerCode');
   const watchedRepresentativeId = form.watch('order.representativeId');

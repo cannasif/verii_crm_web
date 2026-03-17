@@ -298,11 +298,18 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
         const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
 
+        if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
+          toast.error(t('quotation.update.error'), {
+            description: t('quotation.exchangeRates.zeroRateError', {
+              defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
+            }),
+          });
+          throw new Error('ZERO_RATE');
+        }
+
         let convertedPrice = selectedPrice.listPrice ?? 0;
-        if (sourceRate && sourceRate > 0 && targetRate && targetRate > 0) {
-          if (sourceDovizTipi !== currency) {
-            convertedPrice = (selectedPrice.listPrice ?? 0) * sourceRate / targetRate;
-          }
+        if (sourceDovizTipi !== currency) {
+          convertedPrice = (selectedPrice.listPrice ?? 0) * sourceRate / targetRate;
         }
 
         const updatedLine: QuotationLineFormState = {

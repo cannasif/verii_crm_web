@@ -81,7 +81,11 @@ export function QuotationCreateForm(): ReactElement {
   });
   const isFormValid = form.formState.isValid;
 
-  const watchedCurrency = Number(form.watch('quotation.currency') ?? '2');
+  const watchedCurrencyRaw = form.watch('quotation.currency');
+  const watchedCurrency =
+    watchedCurrencyRaw === '' || watchedCurrencyRaw === null || watchedCurrencyRaw === undefined
+      ? Number.NaN
+      : Number(watchedCurrencyRaw);
   const watchedCustomerId = form.watch('quotation.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
