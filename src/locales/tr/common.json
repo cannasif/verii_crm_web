@@ -424,7 +424,18 @@
     "pages": "Sayfalar",
     "pageNumber": "Sayfa {{page}}",
     "visiblePages": "Görüneceği sayfalar",
-    "visiblePagesPlaceholder": "Örn: 1,2"
+    "visiblePagesPlaceholder": "Örn: 1,2",
+    "layoutPreset": {
+      "label": "Yerleşim tipi",
+      "customTitle": "Özel canvas yerleşimi",
+      "customDescription": "Metin, alan, tablo ve görselleri canvas üzerinde elle yerleştirerek özel bir PDF şablonu oluşturun.",
+      "windoQuotationTitle": "Windo teklif tasarımı",
+      "windoQuotationDescription": "Projede gömülü Windo teklif tasarımını kullanan gelişmiş quotation renderer. Kullanıcı bu şablonu seçip doğrudan teklif PDF'i oluşturabilir.",
+      "windoQuotationTemplateTitle": "Windo Teklif Tasarımı",
+      "builderLockedTitle": "Windo teklif tasarımı aktif",
+      "builderLockedDescription": "Bu preset canvas elemanlarıyla değil, projedeki gerçek Windo teklif tasarımına bağlı gelişmiş renderer ile üretilir.",
+      "builderLockedHint": "Şablonu kaydedin ve liste ekranından teklif ID girerek PDF oluşturun. Düzen bu akışta otomatik olarak uygulanacaktır."
+    }
   },
   "reportDesigner": {
     "ruleType": {
@@ -435,6 +446,11 @@
     "palette": {
       "title": "Alan paleti",
       "text": "Metin",
+      "shape": "Kart / şekil",
+      "container": "Container / grup",
+      "note": "Not bloğu",
+      "summary": "Özet bloğu",
+      "quotationTotals": "Teklif toplamları",
       "fields": "Alanlar",
       "tableColumns": "Tablo sütunları",
       "exchangeRates": "Döviz kurları",
@@ -443,6 +459,7 @@
       "logoImage": "Logo resmi"
     },
     "sections": {
+      "page": "Tam sayfa",
       "header": "Üst bilgi",
       "content": "İçerik",
       "footer": "Alt bilgi"
@@ -470,7 +487,10 @@
       "selectImageMax2Mb": "Resim seç (max 2 MB)",
       "max2MbNote": "(max 2 MB)",
       "preview": "Önizleme",
-      "colorPlaceholder": "#374151"
+      "colorPlaceholder": "#374151",
+      "imageFit": "Resim yerleşimi",
+      "imageFitContain": "İçeri sığdır",
+      "imageFitCover": "Alanı kapla"
     },
     "actions": {
       "settings": "Ayarlar",
@@ -527,7 +547,12 @@
       "center": "Orta",
       "right": "Sağ",
       "background": "Arka plan",
+      "border": "Kenarlık",
+      "borderPlaceholder": "1px solid #d7dde8",
+      "radius": "Köşe yarıçapı",
       "backgroundPlaceholder": "saydam",
+      "parentContainer": "Üst kapsayıcı",
+      "noParent": "Yok",
       "opacity": "Opaklık (0-1)"
     },
     "layers": {
@@ -542,7 +567,81 @@
       "tableLabel": "Tablo ({{count}} sütun)",
       "textLabel": "Metin",
       "fieldLabel": "Alan",
-      "imageLabel": "Resim"
+      "imageLabel": "Resim",
+      "shapeLabel": "Şekil",
+      "containerLabel": "Container",
+      "noteLabel": "Not",
+      "summaryLabel": "Özet",
+      "quotationTotalsLabel": "Teklif toplamları"
+    },
+    "starter": {
+      "windoTitle": "Windo başlangıç canvas'ı",
+      "windoDescription": "Windo teklif düzenine yakın, düzenlenebilir bir canvas iskeleti yükler. Sonra sürükle-bırak ile geliştirebilirsiniz.",
+      "loadWindoStarter": "Windo iskeletini yükle",
+      "windoTemplateTitle": "Windo Canvas Taslağı",
+      "manualQuotationTitle": "Düzenlenebilir teklif + görsel başlangıcı",
+      "manualQuotationDescription": "4 sayfalı bir custom canvas kurar: teklif sayfası, hakkımızda görsel sayfası, timeline görsel sayfası ve son olarak notlar + 3 referans görsel sayfası. Tümü düzenlenebilir kalır.",
+      "loadManualQuotationStarter": "Düzenlenebilir teklifi yükle",
+      "manualQuotationTemplateTitle": "Düzenlenebilir Teklif Taslağı",
+      "visualBrochureTitle": "Görsel broşür başlangıcı",
+      "visualBrochureDescription": "Kapak, hakkımızda ve zaman çizelgesi sayfaları için 3 sayfalı görsel bir canvas oluşturur. Referans görselleri tam sayfa resim alanlarına yükleyebilirsiniz.",
+      "loadVisualBrochureStarter": "Görsel broşürü yükle",
+      "visualBrochureTemplateTitle": "Windo Görsel Broşür Taslağı"
+    },
+    "tableDesigner": {
+      "columns": "Sütunlar",
+      "addColumn": "Sütun ekle",
+      "presetLibrary": "Preset kütüphanesi",
+      "customPreset": "Özel tablo",
+      "columnLabel": "Sütun {{index}}",
+      "header": "Başlık",
+      "binding": "Bağlantı yolu",
+      "width": "Genişlik",
+      "density": "Yoğunluk",
+      "dense": "Sıkışık",
+      "comfortable": "Rahat",
+      "pageBreak": "Sayfa kırılımı",
+      "presetName": "Grid preset adı",
+      "presetNamePlaceholder": "Örn: Varsayılan teklif satırları"
+    },
+    "noteDesigner": {
+      "title": "Not başlığı",
+      "body": "Not gövdesi",
+      "bodyPlaceholder": "Statik not metni",
+      "binding": "Bağlı not alanı",
+      "bindingPlaceholder": "Örn: Description"
+    },
+    "summaryDesigner": {
+      "items": "Özet satırları",
+      "addItem": "Satır ekle",
+      "itemLabel": "Satır {{index}}",
+      "label": "Etiket",
+      "binding": "Bağlantı yolu"
+    },
+    "quotationTotalsDesigner": {
+      "title": "Teklif toplam tasarımcısı",
+      "titlePlaceholder": "Örn: Teklif toplamları",
+      "layout": "Yerleşim",
+      "layoutSingle": "Tek kolon",
+      "layoutTwoColumn": "İki kolon",
+      "currencyMode": "Para birimi gösterimi",
+      "currencyNone": "Gösterme",
+      "currencyCode": "Kod ekle",
+      "currencyPath": "Para birimi alanı",
+      "grossLabel": "Brüt toplam etiketi",
+      "discountLabel": "İskonto etiketi",
+      "netLabel": "Net toplam etiketi",
+      "vatLabel": "KDV etiketi",
+      "grandLabel": "Genel toplam etiketi",
+      "noteTitle": "Not başlığı",
+      "notePath": "Not bağlama yolu",
+      "noteText": "Statik not metni",
+      "showGross": "Brüt toplamı göster",
+      "showDiscount": "İskontoyu göster",
+      "showVat": "KDV satırını göster",
+      "emphasizeGrandTotal": "Genel toplamı vurgula",
+      "showNote": "Not alanını göster",
+      "hideEmptyNote": "Not boşsa gizle"
     }
   },
   "dashboard": {

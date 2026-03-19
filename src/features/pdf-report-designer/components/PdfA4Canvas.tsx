@@ -1,6 +1,7 @@
 import type { MutableRefObject, ReactElement, RefObject } from 'react';
 import { useEffect, useCallback, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
+import quotationTotalsLayoutSpecJson from '../../../../../pdf-samples/quotation-totals-layout-spec.json';
 import { type RndDragCallback, type RndResizeCallback, Rnd } from 'react-rnd';
 import { GripVertical, Settings, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
@@ -23,6 +24,7 @@ import {
   type PdfReportElement,
   type PdfTableElement,
   type PdfReportSection,
+  type PdfSummaryItem,
 } from '../types/pdf-report-template.types';
 import {
   FONT_FAMILIES,
@@ -45,8 +47,10 @@ const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 export const A4_HEADER_DROPPABLE_ID = 'a4-header';
 export const A4_CONTENT_DROPPABLE_ID = 'a4-content';
 export const A4_FOOTER_DROPPABLE_ID = 'a4-footer';
+export const A4_PAGE_DROPPABLE_ID = 'a4-page';
 
 export const SECTION_DROPPABLE_IDS = [
+  A4_PAGE_DROPPABLE_ID,
   A4_HEADER_DROPPABLE_ID,
   A4_CONTENT_DROPPABLE_ID,
   A4_FOOTER_DROPPABLE_ID,
@@ -54,6 +58,8 @@ export const SECTION_DROPPABLE_IDS = [
 
 export function getSectionFromDroppableId(id: string): PdfReportSection | null {
   switch (id) {
+    case A4_PAGE_DROPPABLE_ID:
+      return 'page';
     case A4_HEADER_DROPPABLE_ID:
       return 'header';
     case A4_CONTENT_DROPPABLE_ID:
@@ -65,7 +71,22 @@ export function getSectionFromDroppableId(id: string): PdfReportSection | null {
   }
 }
 
+function getCanvasTextStyle(element: PdfReportElement): React.CSSProperties {
+  const style = element.style ?? {};
+  return {
+    fontSize: `${element.fontSize ?? DEFAULT_FONT_SIZE}px`,
+    fontFamily: element.fontFamily ?? DEFAULT_FONT_FAMILY,
+    color: element.color ?? undefined,
+    fontWeight: style.fontWeight ?? undefined,
+    lineHeight: style.lineHeight ?? undefined,
+    letterSpacing:
+      typeof style.letterSpacing === 'number' ? `${style.letterSpacing}px` : undefined,
+    textAlign: style.textAlign ?? undefined,
+  };
+}
+
 export const TABLE_DROPPABLE_PREFIX = 'table-drop-';
+export const CONTAINER_DROPPABLE_PREFIX = 'container-drop-';
 
 export function getTableDroppableId(tableId: string): string {
   return `${TABLE_DROPPABLE_PREFIX}${tableId}`;
@@ -75,6 +96,16 @@ export function parseTableIdFromDroppableId(droppableId: string): string | null 
   if (typeof droppableId !== 'string' || !droppableId.startsWith(TABLE_DROPPABLE_PREFIX))
     return null;
   return droppableId.slice(TABLE_DROPPABLE_PREFIX.length);
+}
+
+export function getContainerDroppableId(containerId: string): string {
+  return `${CONTAINER_DROPPABLE_PREFIX}${containerId}`;
+}
+
+export function parseContainerIdFromDroppableId(droppableId: string): string | null {
+  if (typeof droppableId !== 'string' || !droppableId.startsWith(CONTAINER_DROPPABLE_PREFIX))
+    return null;
+  return droppableId.slice(CONTAINER_DROPPABLE_PREFIX.length);
 }
 
 function snapToGrid(value: number, enabled: boolean): number {
@@ -92,6 +123,108 @@ function shouldRenderOnPage(element: PdfCanvasElement, currentPage: number): boo
   return element.pageNumbers.includes(currentPage);
 }
 
+interface ResolvedCanvasElement {
+  element: PdfCanvasElement;
+  absoluteX: number;
+  absoluteY: number;
+}
+
+function getElementPadding(style: PdfReportElement['style']): number {
+  const rawPadding = style?.padding;
+  if (typeof rawPadding === 'number') return rawPadding;
+  if (typeof rawPadding === 'string') {
+    const parsed = Number.parseFloat(rawPadding);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function resolveCanvasElements(elements: PdfCanvasElement[], currentPage: number): ResolvedCanvasElement[] {
+  const elementMap = new Map(elements.map((element) => [element.id, element]));
+  const resolved = new Map<string, ResolvedCanvasElement>();
+  const resolving = new Set<string>();
+
+  const resolve = (element: PdfCanvasElement): ResolvedCanvasElement | null => {
+    if (!shouldRenderOnPage(element, currentPage)) return null;
+    const cached = resolved.get(element.id);
+    if (cached) return cached;
+    if (resolving.has(element.id)) {
+      return { element, absoluteX: element.x, absoluteY: element.y };
+    }
+
+    resolving.add(element.id);
+    let absoluteX = element.x;
+    let absoluteY = element.y;
+
+    if ('parentId' in element && element.parentId) {
+      const parent = elementMap.get(element.parentId);
+      if (parent) {
+        const resolvedParent = resolve(parent);
+        if (resolvedParent) {
+          const parentPadding = !isPdfTableElement(parent) ? getElementPadding(parent.style) : 0;
+          absoluteX += resolvedParent.absoluteX + parentPadding;
+          absoluteY += resolvedParent.absoluteY + parentPadding;
+        }
+      }
+    }
+
+    const value = { element, absoluteX, absoluteY };
+    resolving.delete(element.id);
+    resolved.set(element.id, value);
+    return value;
+  };
+
+  return elements
+    .map((element) => resolve(element))
+    .filter((element): element is ResolvedCanvasElement => element != null);
+}
+
+function formatSummaryValue(rawValue: string, format?: PdfSummaryItem['format']): string {
+  if (!format || format === 'text') return rawValue;
+  if ((format === 'number' || format === 'currency') && !Number.isNaN(Number(rawValue))) {
+    const numericValue = Number(rawValue);
+    return format === 'currency'
+      ? new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue)
+      : new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(numericValue);
+  }
+  if (format === 'date') {
+    const date = new Date(rawValue);
+    if (!Number.isNaN(date.getTime())) {
+      return new Intl.DateTimeFormat('tr-TR').format(date);
+    }
+  }
+  return rawValue;
+}
+
+function getQuotationTotalsPreviewRows(element: PdfReportElement): Array<{ label: string; value: string; emphasize?: boolean }> {
+  const options = element.quotationTotalsOptions ?? {};
+  const currencySuffix = options.currencyMode === 'code' ? ' USD' : '';
+  const rows: Array<{ label: string; value: string; emphasize?: boolean }> = [];
+
+  if (options.showGross !== false) {
+    rows.push({ label: options.grossLabel || 'Brut Toplam', value: `12.500,00${currencySuffix}` });
+  }
+  if (options.showDiscount !== false) {
+    rows.push({ label: options.discountLabel || 'Iskonto', value: `750,00${currencySuffix}` });
+  }
+
+  rows.push({ label: options.netLabel || 'Net Toplam', value: `11.750,00${currencySuffix}` });
+
+  if (options.showVat !== false) {
+    rows.push({ label: options.vatLabel || 'KDV', value: `2.115,00${currencySuffix}` });
+  }
+
+  rows.push({
+    label: options.grandLabel || 'Genel Toplam',
+    value: `13.865,00${currencySuffix}`,
+    emphasize: options.emphasizeGrandTotal !== false,
+  });
+
+  return rows;
+}
+
+const quotationTotalsLayoutSpec = quotationTotalsLayoutSpecJson.quotationTotals;
+
 const DEFAULT_FONT_SIZE = 14;
 const DEFAULT_FONT_FAMILY = 'Arial';
 
@@ -100,11 +233,18 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
   const { setNodeRef, isOver } = useDroppable({
     id: getTableDroppableId(table.id),
   });
+  const detailColumnPath = table.tableOptions?.detailColumnPath;
+  const detailPaths = table.tableOptions?.detailPaths ?? [];
+  const detailLineFontSize = table.tableOptions?.detailLineFontSize ?? 10;
+  const detailLineColor = table.tableOptions?.detailLineColor ?? '#64748b';
+  const showGroupFooter = table.tableOptions?.showGroupFooter === true;
+  const groupHeaderLabel = table.tableOptions?.groupHeaderLabel ?? 'Group';
+  const groupFooterLabel = table.tableOptions?.groupFooterLabel ?? 'Toplam';
 
   return (
     <div
       ref={setNodeRef}
-      className={`flex h-full min-h-8 w-full flex-row flex-wrap items-stretch gap-0 border border-slate-400 bg-slate-100 dark:bg-slate-800 ${
+      className={`flex h-full min-h-8 w-full flex-col overflow-hidden border border-slate-400 bg-white ${
         isOver ? 'ring-2 ring-inset ring-blue-400' : ''
       }`}
     >
@@ -113,14 +253,82 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
           {t('reportDesigner.tableDropHint')}
         </span>
       ) : (
-        table.columns.map((col) => (
-          <div
-            key={col.path}
-            className="flex min-w-16 flex-1 items-center justify-center border-r border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 last:border-r-0 dark:border-slate-600 dark:text-slate-300"
-          >
-            {col.label}
+        <>
+          <div className="flex flex-row items-stretch border-b border-slate-300 bg-slate-100">
+            {table.columns.map((col) => (
+              <div
+                key={col.path}
+                className="flex min-w-16 items-center border-r border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 last:border-r-0"
+                style={{
+                  width: col.width != null ? `${col.width}px` : undefined,
+                  flex: col.width != null ? '0 0 auto' : '1 1 0%',
+                  justifyContent:
+                    col.align === 'right'
+                      ? 'flex-end'
+                      : col.align === 'center'
+                        ? 'center'
+                        : 'flex-start',
+                }}
+              >
+                {col.label}
+              </div>
+            ))}
           </div>
-        ))
+          <div className="border-b border-slate-200 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-slate-600">
+            {groupHeaderLabel}: PRJ-01
+          </div>
+          {[0, 1].map((rowIndex) => (
+            <div
+              key={`sample-row-${rowIndex}`}
+              className={`flex flex-row items-stretch border-b border-slate-200 text-xs ${
+                rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'
+              }`}
+            >
+              {table.columns.map((col) => {
+                const isDetailColumn = detailColumnPath != null && col.path === detailColumnPath;
+                return (
+                  <div
+                    key={`${col.path}-${rowIndex}`}
+                    className="flex min-w-16 border-r border-slate-200 px-2 py-2 last:border-r-0"
+                    style={{
+                      width: col.width != null ? `${col.width}px` : undefined,
+                      flex: col.width != null ? '0 0 auto' : '1 1 0%',
+                      justifyContent:
+                        col.align === 'right'
+                          ? 'flex-end'
+                          : col.align === 'center'
+                            ? 'center'
+                            : 'flex-start',
+                    }}
+                  >
+                    {col.format === 'image' ? (
+                      <div className="flex h-10 w-10 items-center justify-center rounded border border-slate-200 bg-slate-100 text-[10px] text-slate-400">
+                        IMG
+                      </div>
+                    ) : isDetailColumn ? (
+                      <div className="flex w-full flex-col gap-1">
+                        <div className="font-medium text-slate-700">{col.label} degeri</div>
+                        {detailPaths.slice(0, 3).map((path) => (
+                          <div key={path} style={{ fontSize: `${detailLineFontSize}px`, color: detailLineColor }}>
+                            {path}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-slate-600">{col.label} degeri</div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+          {showGroupFooter ? (
+            <div className="flex flex-row items-center justify-between border-t border-slate-300 bg-slate-100 px-3 py-2 text-[11px] font-semibold text-slate-700">
+              <span>{groupFooterLabel}</span>
+              <span>3.600,00</span>
+            </div>
+          ) : null}
+        </>
       )}
     </div>
   );
@@ -131,9 +339,6 @@ function TextElementBlock({ element }: { element: PdfReportElement }): ReactElem
   const updateElementText = usePdfReportDesignerStore((s) => s.updateElementText);
   const setSelectedIds = usePdfReportDesignerStore((s) => s.setSelectedIds);
   if (element.type !== 'text') return null;
-  const fontSize = element.fontSize ?? DEFAULT_FONT_SIZE;
-  const fontFamily = element.fontFamily ?? DEFAULT_FONT_FAMILY;
-  const color = element.color ?? undefined;
 
   return (
     <textarea
@@ -144,11 +349,7 @@ function TextElementBlock({ element }: { element: PdfReportElement }): ReactElem
       onFocus={() => setSelectedIds([element.id])}
       className="relative z-10 h-full w-full resize-none border-0 bg-transparent p-2 text-slate-700 outline-none focus:ring-0"
       placeholder={t('reportDesigner.properties.textPlaceholder')}
-      style={{
-        fontSize: `${fontSize}px`,
-        fontFamily: fontFamily || DEFAULT_FONT_FAMILY,
-        ...(color && { color }),
-      }}
+      style={getCanvasTextStyle(element)}
     />
   );
 }
@@ -183,7 +384,12 @@ function ImageElementBlock({ element }: { element: PdfReportElement }): ReactEle
   if (isUrl) {
     return (
       <div className="flex h-full w-full items-center justify-center overflow-hidden bg-slate-100">
-        <img src={element.value} alt="" className="h-full w-full object-contain" />
+        <img
+          src={element.value}
+          alt=""
+          className="h-full w-full"
+          style={{ objectFit: element.style?.imageFit ?? 'contain' }}
+        />
       </div>
     );
   }
@@ -215,28 +421,195 @@ function ImageElementBlock({ element }: { element: PdfReportElement }): ReactEle
 }
 
 function FieldElementBlock({ element }: { element: PdfReportElement }): ReactElement {
+  if (element.type === 'shape') {
+    const style = element.style ?? {};
+    return (
+      <div
+        className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400"
+        style={{
+          background: style.background ?? '#ffffff',
+          border: style.border ?? '1px solid #cbd5e1',
+          borderRadius: style.radius != null ? `${style.radius}px` : '0px',
+        }}
+      >
+        Shape
+      </div>
+    );
+  }
+
   if (element.type === 'text') {
     return <TextElementBlock element={element} />;
   }
   if (element.type === 'image') {
     return <ImageElementBlock element={element} />;
   }
-  const fontSize = element.fontSize ?? DEFAULT_FONT_SIZE;
-  const fontFamily = element.fontFamily ?? DEFAULT_FONT_FAMILY;
-  const color = element.color ?? undefined;
-
+  if (element.type === 'note') {
+    return (
+      <div className="flex h-full w-full flex-col gap-2 overflow-hidden bg-white p-3 text-slate-700">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+          {element.text || 'NOTE'}
+        </div>
+        <div className="text-xs leading-5 text-slate-600">
+          {element.value || element.path || 'Bagli not veya aciklama alani'}
+        </div>
+      </div>
+    );
+  }
+  if (element.type === 'summary') {
+    return (
+      <div className="flex h-full w-full flex-col gap-2 overflow-hidden bg-white p-3 text-slate-700">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+          {element.text || 'SUMMARY'}
+        </div>
+        <div className="flex flex-col gap-1">
+          {(element.summaryItems ?? []).map((item, index) => (
+            <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-2 text-xs">
+              <span className="text-slate-500">{item.label}</span>
+              <span className="font-medium text-slate-700">
+                {formatSummaryValue(item.path || '0', item.format)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (element.type === 'quotationTotals') {
+    const rows = getQuotationTotalsPreviewRows(element);
+    const options = element.quotationTotalsOptions ?? {};
+    const noteText = options.noteText || (options.notePath ? '{{' + options.notePath + '}}' : '');
+    const showNote = options.showNote === true && !(options.hideEmptyNote !== false && noteText.trim().length === 0);
+    const leftRows = options.layout === 'two-column' ? rows.filter((_, index) => index % 2 === 0) : rows;
+    const rightRows = options.layout === 'two-column' ? rows.filter((_, index) => index % 2 === 1) : [];
+    const renderRows = (items: typeof rows) => (
+      <div className="flex flex-col" style={{ gap: `${quotationTotalsLayoutSpec.rowGap}px` }}>
+        {items.map((row, index) => (
+          <div
+            key={`${row.label}-${index}`}
+            className={`flex items-center justify-between rounded border ${
+              row.emphasize ? 'bg-slate-900 font-semibold text-white border-slate-900' : 'bg-white border-slate-200 text-slate-700'
+            }`}
+            style={{
+              minHeight: `${quotationTotalsLayoutSpec.rowHeight}px`,
+              paddingLeft: `${quotationTotalsLayoutSpec.rowPaddingX}px`,
+              paddingRight: `${quotationTotalsLayoutSpec.rowPaddingX}px`,
+              paddingTop: `${quotationTotalsLayoutSpec.rowPaddingTop}px`,
+              paddingBottom: `${quotationTotalsLayoutSpec.rowPaddingBottom}px`,
+            }}
+          >
+            <span
+              style={{
+                fontSize: `${quotationTotalsLayoutSpec.rowLabelFontSize}px`,
+                color: row.emphasize ? quotationTotalsLayoutSpec.rowLabelEmphasisColor : quotationTotalsLayoutSpec.rowLabelColor,
+              }}
+            >
+              {row.label}
+            </span>
+            <span
+              className="font-semibold"
+              style={{
+                fontSize: `${quotationTotalsLayoutSpec.rowValueFontSize}px`,
+                color: row.emphasize ? quotationTotalsLayoutSpec.rowValueEmphasisColor : quotationTotalsLayoutSpec.rowValueColor,
+              }}
+            >
+              {row.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+    return (
+      <div
+        className="flex h-full w-full flex-col overflow-hidden bg-white text-slate-700"
+        style={{
+          paddingLeft: `${quotationTotalsLayoutSpec.outerPaddingX}px`,
+          paddingRight: `${quotationTotalsLayoutSpec.outerPaddingX}px`,
+          paddingTop: `${quotationTotalsLayoutSpec.outerPaddingTop}px`,
+        }}
+      >
+        <div
+          style={{
+            fontSize: `${quotationTotalsLayoutSpec.titleFontSize}px`,
+            fontWeight: 600,
+            color: quotationTotalsLayoutSpec.titleColor,
+            marginBottom: `${quotationTotalsLayoutSpec.titleBottomGap}px`,
+          }}
+        >
+          {element.text || 'TEKLIF TOPLAMLARI'}
+        </div>
+        <div
+          className={options.layout === 'two-column' ? 'grid grid-cols-2' : ''}
+          style={options.layout === 'two-column' ? { columnGap: `${quotationTotalsLayoutSpec.columnGap}px` } : undefined}
+        >
+          {renderRows(leftRows)}
+          {rightRows.length > 0 ? renderRows(rightRows) : null}
+        </div>
+        {showNote ? (
+          <div
+            className="border border-slate-200 bg-slate-50 text-slate-600"
+            style={{
+              marginTop: `${quotationTotalsLayoutSpec.noteTopGap}px`,
+              paddingLeft: `${quotationTotalsLayoutSpec.notePaddingX}px`,
+              paddingRight: `${quotationTotalsLayoutSpec.notePaddingX}px`,
+              paddingTop: `${quotationTotalsLayoutSpec.notePaddingTop}px`,
+              paddingBottom: `${quotationTotalsLayoutSpec.notePaddingBottom}px`,
+            }}
+          >
+            <div
+              style={{
+                fontSize: `${quotationTotalsLayoutSpec.noteTitleFontSize}px`,
+                fontWeight: 600,
+                color: quotationTotalsLayoutSpec.titleColor,
+              }}
+            >
+              {options.noteTitle || 'Not'}
+            </div>
+            <div
+              style={{
+                marginTop: '8px',
+                fontSize: `${quotationTotalsLayoutSpec.noteTextFontSize}px`,
+                lineHeight: String(quotationTotalsLayoutSpec.noteTextLineHeight),
+                color: '#475569',
+              }}
+            >
+              {noteText}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
   return (
     <div
       className="flex h-full w-full select-none items-center justify-center text-slate-700"
-      style={{
-        fontSize: `${fontSize}px`,
-        fontFamily,
-        ...(color && { color }),
-      }}
+      style={getCanvasTextStyle(element)}
       contentEditable={false}
       suppressContentEditableWarning
     >
       {element.type === 'field' && element.value ? element.value : element.type}
+    </div>
+  );
+}
+
+function ContainerElementBlock({ element }: { element: PdfReportElement }): ReactElement {
+  const { setNodeRef, isOver } = useDroppable({
+    id: getContainerDroppableId(element.id),
+  });
+  const style = element.style ?? {};
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400 ${
+        isOver ? 'ring-2 ring-inset ring-blue-400' : ''
+      }`}
+      style={{
+        background: style.background ?? '#ffffff',
+        border: style.border ?? '1px solid #cbd5e1',
+        borderRadius: style.radius != null ? `${style.radius}px` : '0px',
+      }}
+    >
+      Container
     </div>
   );
 }
@@ -404,6 +777,10 @@ function ElementSettingsPopover({ element }: { element: PdfCanvasElement }): Rea
     </>
   );
 
+  if (el.type === 'shape') {
+    return null;
+  }
+
   if (el.type === 'text') {
     return (
       <TextSettingsPopover element={el} commonFields={commonFields} />
@@ -539,6 +916,7 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
   const { t } = useTranslation();
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const elements = getOrderedElements();
+  const resolvedElements = resolveCanvasElements(elements, currentPage);
   const updateElementPosition = usePdfReportDesignerStore((s) => s.updateElementPosition);
   const updateElementSize = usePdfReportDesignerStore((s) => s.updateElementSize);
   const updateElementsPosition = usePdfReportDesignerStore((s) => s.updateElementsPosition);
@@ -554,13 +932,23 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
       (_e, d) => {
         const el = usePdfReportDesignerStore.getState().elementsById[id];
         if (!el) return;
+        const parent = 'parentId' in el && el.parentId
+          ? usePdfReportDesignerStore.getState().elementsById[el.parentId]
+          : null;
+        const parentPadding = parent && !isPdfTableElement(parent) ? getElementPadding(parent.style) : 0;
+        const parentResolved = parent
+          ? resolveCanvasElements(Object.values(usePdfReportDesignerStore.getState().elementsById), currentPage)
+              .find((resolved) => resolved.element.id === parent.id)
+          : null;
         const x = snapToGrid(d.x, snapEnabled);
         const y = snapToGrid(d.y, snapEnabled);
-        const clamped = clampElementToSection(el.section, x, y, el.width, el.height);
+        const relativeX = parentResolved ? x - parentResolved.absoluteX - parentPadding : x;
+        const relativeY = parentResolved ? y - parentResolved.absoluteY - parentPadding : y;
+        const clamped = clampElementToSection(el.section, relativeX, relativeY, el.width, el.height);
         updateElementPosition(id, clamped.x, clamped.y);
         pushHistory();
       },
-    [snapEnabled, updateElementPosition, pushHistory]
+    [currentPage, snapEnabled, updateElementPosition, pushHistory]
   );
 
   const makeElementResizeStop = useCallback(
@@ -568,15 +956,25 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
       (_e, _direction, ref, _delta, position) => {
         const el = usePdfReportDesignerStore.getState().elementsById[id];
         if (!el) return;
+        const parent = 'parentId' in el && el.parentId
+          ? usePdfReportDesignerStore.getState().elementsById[el.parentId]
+          : null;
+        const parentPadding = parent && !isPdfTableElement(parent) ? getElementPadding(parent.style) : 0;
+        const parentResolved = parent
+          ? resolveCanvasElements(Object.values(usePdfReportDesignerStore.getState().elementsById), currentPage)
+              .find((resolved) => resolved.element.id === parent.id)
+          : null;
         const x = snapToGrid(position.x, snapEnabled);
         const y = snapToGrid(position.y, snapEnabled);
         const width = snapToGrid(ref.offsetWidth, snapEnabled);
         const height = snapToGrid(ref.offsetHeight, snapEnabled);
-        const clamped = clampElementToSection(el.section, x, y, width, height);
+        const relativeX = parentResolved ? x - parentResolved.absoluteX - parentPadding : x;
+        const relativeY = parentResolved ? y - parentResolved.absoluteY - parentPadding : y;
+        const clamped = clampElementToSection(el.section, relativeX, relativeY, width, height);
         updateElementSize(id, clamped.width, clamped.height, clamped.x, clamped.y);
         pushHistory();
       },
-    [snapEnabled, updateElementSize, pushHistory]
+    [currentPage, snapEnabled, updateElementSize, pushHistory]
   );
 
   useEffect(() => {
@@ -603,6 +1001,7 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
   const headerDroppable = useDroppable({ id: A4_HEADER_DROPPABLE_ID });
   const contentDroppable = useDroppable({ id: A4_CONTENT_DROPPABLE_ID });
   const footerDroppable = useDroppable({ id: A4_FOOTER_DROPPABLE_ID });
+  const pageDroppable = useDroppable({ id: A4_PAGE_DROPPABLE_ID });
 
   const setPaperRef = (node: HTMLDivElement | null): void => {
     if (canvasRef) {
@@ -619,6 +1018,12 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
         onClick={() => setSelectedIds([])}
         role="presentation"
       >
+        <DroppableSection
+          setNodeRef={pageDroppable.setNodeRef}
+          isOver={pageDroppable.isOver ?? false}
+          className="absolute left-0 top-0 z-0 border border-dashed border-slate-200 bg-transparent"
+          style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
+        />
         <DroppableSection
           setNodeRef={headerDroppable.setNodeRef}
           isOver={headerDroppable.isOver ?? false}
@@ -643,12 +1048,12 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
         >
           {t('reportDesigner.sections.footer')}
         </DroppableSection>
-        {elements
-          .filter((el) => !el.hidden && shouldRenderOnPage(el, currentPage))
-          .map((el) => (
+        {resolvedElements
+          .filter(({ element }) => !element.hidden)
+          .map(({ element: el, absoluteX, absoluteY }) => (
             <Rnd
               key={el.id}
-              position={{ x: el.x, y: el.y }}
+              position={{ x: absoluteX, y: absoluteY }}
               size={{ width: el.width, height: el.height }}
               onDragStop={makeElementDragStop(el.id)}
               onResizeStop={makeElementResizeStop(el.id)}
@@ -663,6 +1068,8 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
               style={{
                 opacity: el.style?.opacity ?? 1,
                 transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
+                borderRadius: el.style?.radius != null ? `${el.style.radius}px` : undefined,
+                background: el.type === 'shape' ? el.style?.background : undefined,
               }}
             >
               <div
@@ -699,6 +1106,8 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
               <div className="relative z-1 min-h-0 flex-1 overflow-hidden">
                 {isPdfTableElement(el) ? (
                   <TableElementBlock table={el} />
+                ) : el.type === 'container' ? (
+                  <ContainerElementBlock element={el} />
                 ) : (
                   <FieldElementBlock element={el} />
                 )}

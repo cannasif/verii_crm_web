@@ -1,13 +1,24 @@
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { jsPDF as JsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { PDFDocument } from 'pdf-lib';
-import { resolveAppPath } from '@/lib/api-config';
-import { formatCurrency } from './format-currency';
-import layoutSpecJson from '../../../../../pdf-samples/windo-quotation-layout-spec.json';
 
-const ATLAS_COVER_PDF_PATH = '/pdf-templates/atlas-cover-first-3-pages.pdf';
-const PDF_FONT_PATH = '/fonts/arial.ttf';
-const PDF_FONT_NAME = 'ArialCustom';
-const BRAND_LOGO_PATH = '/logo.png';
-const REFERENCE_IMAGE_PATHS = ['/logo.png', '/login.jpg', '/v3rii.jpeg'] as const;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(__dirname, '..', '..');
+const publicDir = path.resolve(repoRoot, 'verii_crm_web', 'public');
+const layoutSpecPath = path.resolve(repoRoot, 'pdf-samples', 'windo-quotation-layout-spec.json');
+const layoutSpec = JSON.parse(await readFile(layoutSpecPath, 'utf8'));
+
+const ATLAS_COVER_PDF_PATH = path.join(publicDir, 'pdf-templates', 'atlas-cover-first-3-pages.pdf');
+const PDF_FONT_PATH = path.join(publicDir, 'fonts', 'arial.ttf');
+const BRAND_LOGO_PATH = path.join(publicDir, 'logo.png');
+const REFERENCE_IMAGE_PATHS = [
+  path.join(publicDir, 'logo.png'),
+  path.join(publicDir, 'login.jpg'),
+  path.join(publicDir, 'v3rii.jpeg'),
+];
 
 const COMPANY_NAME = 'WINDOFORM KAPI & PENCERE AKS.';
 const COMPANY_CONTACT_LINES = [
@@ -23,103 +34,32 @@ const TERMS_LINES = [
   'Belirtilen teslim tarihi sipariş onayından itibaren geçerlidir.',
 ];
 
-interface WindoQuotationLayoutSpec {
-  summary: {
-    topPadding: number;
-    labelFontSize: number;
-    totalFontSize: number;
-    minStartY: number;
-  };
-  notes: {
-    sectionHeight: number;
-    bodyFontSize: number;
-    titleFontSize: number;
-    deliveryBadgeWidth: number;
-    deliveryBadgeHeight: number;
-    lineGap: number;
-  };
+function formatCurrency(amount, currencyCode) {
+  try {
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${new Intl.NumberFormat('tr-TR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount)} ${currencyCode}`;
+  }
 }
 
-const layoutSpec = layoutSpecJson as WindoQuotationLayoutSpec;
-
-interface TranslationFn {
-  (key: string, options?: Record<string, unknown>): string;
-}
-
-interface ExportQuotationLine {
-  productCode?: string | null;
-  productName: string;
-  quantity: number;
-  unitPrice: number;
-  vatRate: number;
-  vatAmount?: number | null;
-  lineTotal: number;
-  lineGrandTotal?: number | null;
-  description1?: string | null;
-  description2?: string | null;
-  description3?: string | null;
-  discountRate1?: number | null;
-  discountAmount1?: number | null;
-  discountRate2?: number | null;
-  discountAmount2?: number | null;
-  discountRate3?: number | null;
-  discountAmount3?: number | null;
-}
-
-interface ExportQuotationLinesPdfParams {
-  fileName: string;
-  title: string;
-  currencyCode: string;
-  lines: ExportQuotationLine[];
-  offerNo?: string | null;
-  customerName?: string | null;
-  representativeName?: string | null;
-  address?: string | null;
-  shippingAddress?: string | null;
-  erpCustomerCode?: string | null;
-  offerDate?: string | null;
-  deliveryDate?: string | null;
-  validUntil?: string | null;
-  paymentTypeName?: string | null;
-  salesTypeName?: string | null;
-  projectCode?: string | null;
-  description?: string | null;
-  metaFields?: Array<{ label: string; value?: string | null }>;
-  notes?: string[];
-  t: TranslationFn;
-}
-
-interface CurrencyPresentation {
-  code: string;
-  label: string;
-}
-
-function normalizeCustomerAccountName(value: string | null | undefined): string {
+function normalizeCustomerAccountName(value) {
   const trimmed = value?.trim() ?? '';
   if (!trimmed) return '';
-
   const erpMatch = trimmed.match(/^ERP:\s*[^-]+-\s*(.+)$/i);
-  if (erpMatch?.[1]) {
-    return erpMatch[1].trim();
-  }
-
+  if (erpMatch?.[1]) return erpMatch[1].trim();
   return trimmed;
 }
 
-function normalizeMetaFields(
-  fields: Array<{ label: string; value?: string | null }> | undefined
-): Array<{ label: string; value: string }> {
-  return (fields ?? [])
-    .map((field) => ({
-      label: field.label?.trim() ?? '',
-      value: field.value?.trim() ?? '',
-    }))
-    .filter((field) => field.label && field.value);
-}
-
-function getCurrencyPresentation(value: string | null | undefined): CurrencyPresentation {
+function getCurrencyPresentation(value) {
   const normalized = String(value ?? 'TRY').trim().toUpperCase();
-
   switch (normalized) {
     case '0':
     case 'TL':
@@ -139,7 +79,7 @@ function getCurrencyPresentation(value: string | null | undefined): CurrencyPres
   }
 }
 
-function formatDate(value: string | null | undefined): string {
+function formatDate(value) {
   if (!value) return '';
   const normalized = value.includes('T') ? value.split('T')[0] : value;
   const date = new Date(`${normalized}T12:00:00`);
@@ -147,7 +87,7 @@ function formatDate(value: string | null | undefined): string {
   return date.toLocaleDateString('tr-TR');
 }
 
-function buildDescription(line: ExportQuotationLine): string {
+function buildDescription(line) {
   const extra = [line.description1, line.description2, line.description3]
     .map((value) => value?.trim() ?? '')
     .filter(Boolean)
@@ -157,7 +97,7 @@ function buildDescription(line: ExportQuotationLine): string {
   return `${line.productName}\n${extra}`;
 }
 
-function buildDiscountSummary(line: ExportQuotationLine): string {
+function buildDiscountSummary(line) {
   return [
     line.discountRate1 ? `%${line.discountRate1}` : '%0',
     line.discountRate2 ? `%${line.discountRate2}` : '%0',
@@ -165,13 +105,7 @@ function buildDiscountSummary(line: ExportQuotationLine): string {
   ].join(' / ');
 }
 
-function calculateTotals(lines: ExportQuotationLine[]): {
-  grossTotal: number;
-  discountTotal: number;
-  netTotal: number;
-  vatTotal: number;
-  grandTotal: number;
-} {
+function calculateTotals(lines) {
   return lines.reduce(
     (acc, line) => {
       const grossLineTotal = (line.quantity || 0) * (line.unitPrice || 0);
@@ -192,74 +126,62 @@ function calculateTotals(lines: ExportQuotationLine[]): {
   );
 }
 
-async function blobToDataUrl(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(String(reader.result || ''));
-    reader.onerror = () => reject(new Error('Blob okunamadı'));
-    reader.readAsDataURL(blob);
-  });
+function normalizeMetaFields(fields) {
+  return (fields ?? [])
+    .map((field) => ({
+      label: field.label?.trim() ?? '',
+      value: field.value?.trim() ?? '',
+    }))
+    .filter((field) => field.label && field.value);
 }
 
-async function fetchAssetAsDataUrl(path: string): Promise<string | null> {
+async function fileToDataUrl(filePath) {
   try {
-    const response = await fetch(resolveAppPath(path), { cache: 'force-cache' });
-    if (!response.ok) return null;
-    const blob = await response.blob();
-    return await blobToDataUrl(blob);
+    const data = await readFile(filePath);
+    const ext = path.extname(filePath).toLowerCase();
+    const mime =
+      ext === '.png' ? 'image/png' :
+      ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg' :
+      ext === '.ttf' ? 'font/ttf' :
+      'application/octet-stream';
+    return `data:${mime};base64,${data.toString('base64')}`;
   } catch {
     return null;
   }
 }
 
-function downloadPdfBlob(blob: Blob, fileName: string): void {
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.href = url;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
-async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promise<ArrayBuffer> {
-  const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-    import('jspdf'),
-    import('jspdf-autotable'),
-  ]);
-
+async function buildLinesPdfBytes(sample, options = {}) {
   const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const currency = getCurrencyPresentation(params.currencyCode);
-  const totals = calculateTotals(params.lines);
+  const currency = getCurrencyPresentation(sample.currencyCode);
+  const totals = calculateTotals(sample.lines);
+  const rowMetrics = [];
   const [logoDataUrl, ...referenceDataUrls] = await Promise.all([
-    fetchAssetAsDataUrl(BRAND_LOGO_PATH),
-    ...REFERENCE_IMAGE_PATHS.map((path) => fetchAssetAsDataUrl(path)),
+    fileToDataUrl(BRAND_LOGO_PATH),
+    ...REFERENCE_IMAGE_PATHS.map((filePath) => fileToDataUrl(filePath)),
   ]);
 
-  const fontResponse = await fetch(resolveAppPath(PDF_FONT_PATH), { cache: 'force-cache' });
-  if (fontResponse.ok) {
-    const fontBytes = await fontResponse.arrayBuffer();
-    const fontBinary = Array.from(new Uint8Array(fontBytes), (byte) =>
-      String.fromCharCode(byte)
-    ).join('');
+  try {
+    const fontBytes = await readFile(PDF_FONT_PATH);
+    const fontBinary = Array.from(fontBytes, (byte) => String.fromCharCode(byte)).join('');
     doc.addFileToVFS('arial.ttf', fontBinary);
-    doc.addFont('arial.ttf', PDF_FONT_NAME, 'normal');
-    doc.setFont(PDF_FONT_NAME, 'normal');
+    doc.addFont('arial.ttf', 'ArialCustom', 'normal');
+    doc.setFont('ArialCustom', 'normal');
+  } catch {
+    // Fallback to built-in font if Arial cannot be loaded.
   }
 
-  const customerName = normalizeCustomerAccountName(params.customerName);
+  const customerName = normalizeCustomerAccountName(sample.customerName);
   const customerDetailLines = [
     customerName,
-    params.representativeName ? `Satınalma Departmanı: ${params.representativeName}` : '',
-    params.address || params.shippingAddress || '',
-    params.erpCustomerCode || '',
+    sample.representativeName ? `Satınalma Departmanı: ${sample.representativeName}` : '',
+    sample.address || sample.shippingAddress || '',
+    sample.erpCustomerCode || '',
   ].filter(Boolean);
 
   const noteLines = [
-    ...normalizeMetaFields(params.metaFields).map((field) => `${field.label}: ${field.value}`),
-    ...(params.description ? [params.description] : []),
-    ...(params.notes ?? []).filter((item) => item.trim().length > 0),
+    ...normalizeMetaFields(sample.metaFields).map((field) => `${field.label}: ${field.value}`),
+    ...(sample.description ? [sample.description] : []),
+    ...(sample.notes ?? []).filter((item) => item.trim().length > 0),
   ].slice(0, 5);
 
   doc.setFillColor(255, 255, 255);
@@ -287,9 +209,9 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
   doc.text('FİYAT TEKLİFİ', 108, 19);
 
   const offerInfoLines = [
-    ['Teklif No', params.offerNo ?? '-'],
-    ['Tarih', formatDate(params.offerDate) || new Date().toLocaleDateString('tr-TR')],
-    ['Teslim', formatDate(params.deliveryDate) || '-'],
+    ['Teklif No', sample.offerNo ?? '-'],
+    ['Tarih', formatDate(sample.offerDate) || new Date().toLocaleDateString('tr-TR')],
+    ['Teslim', formatDate(sample.deliveryDate) || '-'],
   ];
 
   doc.setTextColor(58, 65, 83);
@@ -323,7 +245,7 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
     doc.text(line, 108, 70 + index * 5.2, { maxWidth: 82 });
   });
 
-  const tableRows = params.lines.map((line) => [
+  const tableRows = sample.lines.map((line) => [
     '',
     line.productCode ?? '',
     buildDescription(line),
@@ -348,7 +270,7 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
     body: tableRows,
     theme: 'grid',
     styles: {
-      font: PDF_FONT_NAME,
+      font: 'ArialCustom',
       fontStyle: 'normal',
       fontSize: 7.5,
       lineColor: [220, 226, 236],
@@ -379,18 +301,38 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
         doc.setDrawColor(213, 219, 229);
         doc.rect(x, y, size, size);
         if (logoDataUrl) {
-          doc.addImage(logoDataUrl, x + 1, y + 1, size - 2, size - 2, undefined, 'FAST');
+          doc.addImage(logoDataUrl, 'PNG', x + 1, y + 1, size - 2, size - 2, undefined, 'FAST');
         } else {
           doc.setTextColor(120, 131, 149);
           doc.setFontSize(6);
           doc.text('WF', x + size / 2, y + size / 2 + 1.5, { align: 'center' });
         }
       }
+
+      if (data.section === 'body' && data.column.index === 2) {
+        rowMetrics.push({
+          rowIndex: data.row.index,
+          pageNumber: doc.getCurrentPageInfo().pageNumber,
+          y: Number(data.cell.y.toFixed(3)),
+          height: Number(data.cell.height.toFixed(3)),
+          rawText: buildDescription(sample.lines[data.row.index] ?? {}),
+          renderedLines: Array.isArray(data.cell.text) ? data.cell.text : [String(data.cell.text ?? '')],
+          renderedLineCount: Array.isArray(data.cell.text) ? data.cell.text.length : 1,
+        });
+      }
     },
   });
 
-  const finalY = (doc as { lastAutoTable?: { finalY?: number } }).lastAutoTable?.finalY ?? 150;
+  const finalY = doc.lastAutoTable?.finalY ?? 150;
   const summaryStartY = Math.max(finalY + layoutSpec.summary.topPadding, layoutSpec.summary.minStartY);
+  const metrics = {
+    table: {
+      rowMetrics,
+      finalY: Number(finalY.toFixed(3)),
+      summaryStartY: Number(summaryStartY.toFixed(3)),
+      pageCount: doc.getNumberOfPages(),
+    },
+  };
 
   doc.setDrawColor(199, 208, 220);
   doc.setFillColor(255, 255, 255);
@@ -405,11 +347,11 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
   doc.setFontSize(6.5);
   doc.text('Kaşe ve imza', 47, summaryStartY + 20, { align: 'center' });
 
-  const summaryLines: Array<[string, number]> = [
+  const summaryLines = [
     ['Brüt Toplam', totals.grossTotal],
     ['İskonto Toplam', totals.discountTotal],
     ['Net Ara Toplam', totals.netTotal],
-    [`KDV (%${params.lines[0]?.vatRate ?? 20})`, totals.vatTotal],
+    [`KDV (%${sample.lines[0]?.vatRate ?? 20})`, totals.vatTotal],
   ];
   doc.setTextColor(123, 132, 148);
   doc.setFontSize(layoutSpec.summary.labelFontSize);
@@ -434,19 +376,11 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
   doc.setFontSize(layoutSpec.notes.titleFontSize);
   doc.text('TEKLİF ŞARTLARI VE ÖNEMLİ NOTLAR', 16, noteSectionY + 8);
   doc.setDrawColor(182, 191, 206);
-  doc.roundedRect(
-    16,
-    noteSectionY + 12,
-    layoutSpec.notes.deliveryBadgeWidth,
-    layoutSpec.notes.deliveryBadgeHeight,
-    1.2,
-    1.2,
-    'S'
-  );
+  doc.roundedRect(16, noteSectionY + 12, layoutSpec.notes.deliveryBadgeWidth, layoutSpec.notes.deliveryBadgeHeight, 1.2, 1.2, 'S');
   doc.setFontSize(layoutSpec.notes.bodyFontSize);
   doc.setTextColor(80, 90, 110);
   doc.text(
-    `TESLİM ŞEKLİ (DELIVERY TERMS): ${params.salesTypeName || 'Belirtilecektir'}`,
+    `TESLİM ŞEKLİ (DELIVERY TERMS): ${sample.salesTypeName || 'Belirtilecektir'}`,
     18,
     noteSectionY + 17
   );
@@ -484,19 +418,16 @@ async function buildLinesPdfBytes(params: ExportQuotationLinesPdfParams): Promis
     doc.text(`Referans ${index + 1}`, x + 23, referenceBoxY + 21.5, { align: 'center' });
   });
 
-  return doc.output('arraybuffer') as ArrayBuffer;
-}
-
-async function mergeAtlasCoverWithLinesPdf(linesPdfBytes: ArrayBuffer): Promise<Blob> {
-  const coverResponse = await fetch(resolveAppPath(ATLAS_COVER_PDF_PATH), {
-    cache: 'no-cache',
-  });
-
-  if (!coverResponse.ok) {
-    throw new Error(`Atlas cover PDF yüklenemedi: ${coverResponse.status}`);
+  if (options.metricsOutputPath) {
+    await mkdir(path.dirname(options.metricsOutputPath), { recursive: true });
+    await writeFile(options.metricsOutputPath, JSON.stringify(metrics, null, 2));
   }
 
-  const coverPdfBytes = await coverResponse.arrayBuffer();
+  return doc.output('arraybuffer');
+}
+
+async function mergeAtlasCoverWithLinesPdf(linesPdfBytes) {
+  const coverPdfBytes = await readFile(ATLAS_COVER_PDF_PATH);
   const mergedPdf = await PDFDocument.create();
   const [coverPdf, linesPdf] = await Promise.all([
     PDFDocument.load(coverPdfBytes),
@@ -505,27 +436,80 @@ async function mergeAtlasCoverWithLinesPdf(linesPdfBytes: ArrayBuffer): Promise<
 
   const coverPages = await mergedPdf.copyPages(coverPdf, coverPdf.getPageIndices());
   coverPages.forEach((page) => mergedPdf.addPage(page));
-
   const linePages = await mergedPdf.copyPages(linesPdf, linesPdf.getPageIndices());
   linePages.forEach((page) => mergedPdf.addPage(page));
-
-  const mergedBytes = await mergedPdf.save();
-  return new Blob([mergedBytes], { type: 'application/pdf' });
+  return Buffer.from(await mergedPdf.save());
 }
 
-export async function createQuotationLinesPdfBlob(
-  params: ExportQuotationLinesPdfParams
-): Promise<Blob> {
-  const linesPdfBytes = await buildLinesPdfBytes(params);
+function noteFieldsToArray(sample) {
+  return Object.entries(sample)
+    .filter(([key, value]) => /^note\d+$/i.test(key) && typeof value === 'string' && value.trim().length > 0)
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey, 'en'))
+    .map(([, value]) => value.trim());
+}
 
-  try {
-    return await mergeAtlasCoverWithLinesPdf(linesPdfBytes);
-  } catch {
-    return new Blob([linesPdfBytes], { type: 'application/pdf' });
+function expandLines(lines, repeatFactor) {
+  if (!Array.isArray(lines) || repeatFactor <= 1) {
+    return lines ?? [];
   }
+
+  const expanded = [];
+  for (let iteration = 1; iteration <= repeatFactor; iteration += 1) {
+    for (const line of lines) {
+      expanded.push({
+        ...line,
+        productCode: line.productCode ? `${line.productCode}-${iteration}` : line.productCode,
+        productName: `${line.productName} Faz ${iteration}`,
+        erpProjectCode: line.erpProjectCode ? `${line.erpProjectCode}-${iteration}` : line.erpProjectCode,
+      });
+    }
+  }
+
+  return expanded;
 }
 
-export async function exportQuotationLinesPdf(params: ExportQuotationLinesPdfParams): Promise<void> {
-  const blob = await createQuotationLinesPdfBlob(params);
-  downloadPdfBlob(blob, params.fileName);
+async function main() {
+  const samplePath = process.argv[2] ? path.resolve(process.argv[2]) : path.resolve(repoRoot, 'pdf-samples', 'windo-quotation-sample.json');
+  const outputPath = process.argv[3] ? path.resolve(process.argv[3]) : path.resolve(repoRoot, 'tmp', 'reference-windo-quotation.pdf');
+  const includeCover = process.argv.includes('--include-cover');
+  const metricsFlagIndex = process.argv.indexOf('--metrics-output');
+  const metricsOutputPath = metricsFlagIndex >= 0 && process.argv[metricsFlagIndex + 1]
+    ? path.resolve(process.argv[metricsFlagIndex + 1])
+    : null;
+
+  const rawSample = JSON.parse(await readFile(samplePath, 'utf8'));
+  const sample = {
+    fileName: path.basename(outputPath),
+    title: 'Windo Teklif',
+    currencyCode: rawSample.currency ?? 'TRY',
+    lines: expandLines(rawSample.lines ?? [], rawSample.repeatFactor ?? 1),
+    offerNo: rawSample.offerNo ?? null,
+    customerName: rawSample.customerName ?? rawSample.potentialCustomerName ?? null,
+    representativeName: rawSample.representativeName ?? null,
+    address: rawSample.shippingAddressText ?? null,
+    shippingAddress: rawSample.shippingAddressText ?? null,
+    erpCustomerCode: rawSample.erpCustomerCode ?? null,
+    offerDate: rawSample.offerDate ?? null,
+    deliveryDate: rawSample.deliveryDate ?? null,
+    validUntil: rawSample.validUntil ?? null,
+    paymentTypeName: rawSample.paymentTypeName ?? null,
+    salesTypeName: rawSample.salesTypeDefinitionName ?? null,
+    projectCode: rawSample.erpProjectCode ?? null,
+    description: rawSample.description ?? null,
+    notes: noteFieldsToArray(rawSample),
+    metaFields: [
+      { label: 'Seri No', value: rawSample.documentSerialTypeName ?? null },
+    ],
+  };
+
+  const linesPdfBytes = await buildLinesPdfBytes(sample, { metricsOutputPath });
+  const outputBytes = includeCover ? await mergeAtlasCoverWithLinesPdf(linesPdfBytes) : Buffer.from(linesPdfBytes);
+  await mkdir(path.dirname(outputPath), { recursive: true });
+  await writeFile(outputPath, outputBytes);
+  console.log(outputPath);
 }
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

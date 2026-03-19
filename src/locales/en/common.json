@@ -401,7 +401,23 @@
     "draftFound": "Draft found. You can restore or clear it.",
     "restoreDraft": "restore",
     "discardDraft": "clear",
-    "snapToGrid": "Align to grid"
+    "snapToGrid": "Align to grid",
+    "pageCount": "Page count",
+    "pages": "Pages",
+    "pageNumber": "Page {{page}}",
+    "visiblePages": "Visible pages",
+    "visiblePagesPlaceholder": "E.g. 1,2",
+    "layoutPreset": {
+      "label": "Layout type",
+      "customTitle": "Custom canvas layout",
+      "customDescription": "Build a custom PDF template by placing text, fields, tables and images on the canvas.",
+      "windoQuotationTitle": "Windo quotation design",
+      "windoQuotationDescription": "Uses the embedded Windo quotation design with the advanced quotation renderer. Users can select this template and generate quotation PDFs directly.",
+      "windoQuotationTemplateTitle": "Windo Quotation Design",
+      "builderLockedTitle": "Windo quotation design is active",
+      "builderLockedDescription": "This preset is rendered by the built-in Windo quotation engine rather than canvas elements.",
+      "builderLockedHint": "Save the template, then generate the PDF from the template list by entering a quotation ID. The layout will be applied automatically."
+    }
   },
   "dashboard": {
     "title": "dashboard",
@@ -2215,6 +2231,11 @@
     "palette": {
       "title": "field palette",
       "text": "Text",
+      "shape": "Card / shape",
+      "container": "Container",
+      "note": "Note block",
+      "summary": "Summary block",
+      "quotationTotals": "Quotation totals",
       "fields": "Fields",
       "tableColumns": "Table columns",
       "exchangeRates": "exchange rates",
@@ -2223,6 +2244,7 @@
       "logoImage": "logo image"
     },
     "sections": {
+      "page": "Full page",
       "header": "Header",
       "content": "Contents",
       "footer": "Footer"
@@ -2248,7 +2270,10 @@
       "uploadFromFileMax2Mb": "Install from file (max 2 MB)",
       "selectImageMax2Mb": "Select image (max 2 MB)",
       "max2MbNote": "(max 2MB)",
-      "preview": "Preview"
+      "preview": "Preview",
+      "imageFit": "Image fit",
+      "imageFitContain": "Contain",
+      "imageFitCover": "Cover"
     },
     "actions": {
       "settings": "Settings",
@@ -2305,7 +2330,12 @@
       "center": "Middle",
       "right": "Right",
       "background": "Background",
+      "border": "Border",
+      "borderPlaceholder": "1px solid #d7dde8",
+      "radius": "Corner radius",
       "backgroundPlaceholder": "transparent",
+      "parentContainer": "Parent container",
+      "noParent": "None",
       "opacity": "Opacity (0-1)"
     },
     "layers": {
@@ -2320,10 +2350,84 @@
       "tableLabel": "Table ({{count}} column)",
       "textLabel": "Text",
       "fieldLabel": "Area",
-      "imageLabel": "Picture"
+      "imageLabel": "Picture",
+      "shapeLabel": "Shape",
+      "containerLabel": "Container",
+      "noteLabel": "Note",
+      "summaryLabel": "Summary",
+      "quotationTotalsLabel": "Quotation totals"
+    },
+    "starter": {
+      "windoTitle": "Windo starter canvas",
+      "windoDescription": "Loads an editable canvas skeleton close to the Windo quotation layout so you can continue with drag and drop.",
+      "loadWindoStarter": "Load Windo starter",
+      "windoTemplateTitle": "Windo Canvas Draft",
+      "manualQuotationTitle": "Editable quotation + visuals starter",
+      "manualQuotationDescription": "Builds a 4-page custom canvas: quotation page, about image page, timeline image page, and a final notes + 3 reference images page. Everything stays editable.",
+      "loadManualQuotationStarter": "Load editable quotation starter",
+      "manualQuotationTemplateTitle": "Editable Quotation Draft",
+      "visualBrochureTitle": "Visual brochure starter",
+      "visualBrochureDescription": "Creates a 3-page visual deck canvas for cover, about and timeline pages. Upload your reference visuals directly into the full-page image slots.",
+      "loadVisualBrochureStarter": "Load visual brochure starter",
+      "visualBrochureTemplateTitle": "Windo Visual Brochure Draft"
     },
     "tableDropHint": "Drag from the palette to add a column",
-    "tableSettingsHint": "Drag the table columns from the left palette and drop them into this area."
+    "tableSettingsHint": "Drag the table columns from the left palette and drop them into this area.",
+    "tableDesigner": {
+      "columns": "Columns",
+      "addColumn": "Add column",
+      "presetLibrary": "Preset library",
+      "customPreset": "Custom table",
+      "columnLabel": "Column {{index}}",
+      "header": "Header",
+      "binding": "Binding path",
+      "width": "Width",
+      "density": "Density",
+      "dense": "Dense",
+      "comfortable": "Comfortable",
+      "pageBreak": "Page break",
+      "presetName": "Grid preset name",
+      "presetNamePlaceholder": "For example: Default offer lines"
+    },
+    "noteDesigner": {
+      "title": "Note title",
+      "body": "Note body",
+      "bodyPlaceholder": "Static note content",
+      "binding": "Bound note field",
+      "bindingPlaceholder": "For example: Description"
+    },
+    "summaryDesigner": {
+      "items": "Summary rows",
+      "addItem": "Add row",
+      "itemLabel": "Row {{index}}",
+      "label": "Label",
+      "binding": "Binding path"
+    },
+    "quotationTotalsDesigner": {
+      "title": "Quotation totals designer",
+      "titlePlaceholder": "For example: Quotation totals",
+      "layout": "Layout",
+      "layoutSingle": "Single column",
+      "layoutTwoColumn": "Two column",
+      "currencyMode": "Currency display",
+      "currencyNone": "Do not show",
+      "currencyCode": "Append code",
+      "currencyPath": "Currency field",
+      "grossLabel": "Gross total label",
+      "discountLabel": "Discount label",
+      "netLabel": "Net total label",
+      "vatLabel": "VAT label",
+      "grandLabel": "Grand total label",
+      "noteTitle": "Note title",
+      "notePath": "Note binding path",
+      "noteText": "Static note text",
+      "showGross": "Show gross total",
+      "showDiscount": "Show discount",
+      "showVat": "Show VAT row",
+      "emphasizeGrandTotal": "Emphasize grand total",
+      "showNote": "Show note area",
+      "hideEmptyNote": "Hide when note is empty"
+    }
   },
   "currencySelectDialog": {
     "title": "Select Currency",

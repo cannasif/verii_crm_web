@@ -64,6 +64,7 @@ const DocumentSerialTypeManagementPage = lazyImport(() => import('@/features/doc
 const SalesTypeManagementPage = lazyImport(() => import('@/features/sales-type-management'), 'SalesTypeManagementPage');
 const ReportDesignerListPage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerListPage');
 const ReportDesignerCreatePage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerCreatePage');
+const PdfTablePresetManagementPage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfTablePresetManagementPage');
 const ReportsListPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportsListPage');
 const ReportBuilderPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportBuilderPage');
 const ReportViewerPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportViewerPage');
@@ -106,6 +107,7 @@ export function createAppRouter() {
         { path: 'report-designer', element: <ReportDesignerListPage /> },
         { path: 'report-designer/create', element: <ReportDesignerCreatePage /> },
         { path: 'report-designer/edit/:id', element: <ReportDesignerCreatePage /> },
+        { path: 'report-designer/table-presets', element: <PdfTablePresetManagementPage /> },
         { path: 'reports', element: <ReportsListPage /> },
         { path: 'reports/new', element: <ReportBuilderPage /> },
         { path: 'reports/:id/edit', element: <ReportBuilderPage /> },

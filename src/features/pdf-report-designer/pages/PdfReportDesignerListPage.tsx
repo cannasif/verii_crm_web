@@ -27,7 +27,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Plus, MoreHorizontal, Pencil, Copy, Trash2, FileDown } from 'lucide-react';
+import { Plus, MoreHorizontal, Pencil, Copy, Trash2, FileDown, TableProperties } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { usePdfReportTemplateList } from '../hooks/usePdfReportTemplateList';
@@ -123,12 +123,20 @@ export function PdfReportDesignerListPage(): ReactElement {
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
           {t('pdfReportDesigner.templatesTitle')}
         </h1>
-        <Button asChild>
-          <Link to="/report-designer/create" className="inline-flex items-center gap-2">
-            <Plus className="size-4" />
-            {t('pdfReportDesigner.createNew')}
-          </Link>
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" asChild>
+            <Link to="/report-designer/table-presets" className="inline-flex items-center gap-2">
+              <TableProperties className="size-4" />
+              Table Presets
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link to="/report-designer/create" className="inline-flex items-center gap-2">
+              <Plus className="size-4" />
+              {t('pdfReportDesigner.createNew')}
+            </Link>
+          </Button>
+        </div>
       </div>
       <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/50">
         {isLoading ? (
@@ -145,6 +153,7 @@ export function PdfReportDesignerListPage(): ReactElement {
               <TableRow>
                 <TableHead className="w-[60px]">{t('reportDesigner.list.id')}</TableHead>
                 <TableHead>{t('pdfReportDesigner.title')}</TableHead>
+                <TableHead>{t('pdfReportDesigner.layoutPreset.label')}</TableHead>
                 <TableHead>{t('pdfReportDesigner.documentType')}</TableHead>
                 <TableHead className="w-[80px]">{t('pdfReportDesigner.active')}</TableHead>
                 <TableHead className="w-[100px]">{t('pdfReportDesigner.default')}</TableHead>
@@ -156,6 +165,9 @@ export function PdfReportDesignerListPage(): ReactElement {
                 <TableRow key={template.id}>
                   <TableCell className="font-mono text-slate-500">{template.id}</TableCell>
                   <TableCell className="font-medium">{template.title}</TableCell>
+                  <TableCell>
+                    <span className="text-slate-500">{t('pdfReportDesigner.layoutPreset.customTitle')}</span>
+                  </TableCell>
                   <TableCell>{t(RULE_TYPE_LABEL_KEYS[template.ruleType] ?? String(template.ruleType))}</TableCell>
                   <TableCell>{template.isActive ? t('common.yes') : t('common.no')}</TableCell>
                   <TableCell>

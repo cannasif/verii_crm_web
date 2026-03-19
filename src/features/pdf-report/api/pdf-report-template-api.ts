@@ -9,9 +9,15 @@ import type {
   ReportTemplateUpdateDto,
   PdfReportTemplateListParams,
   PdfReportTemplateListResult,
+  PdfTablePresetDto,
+  PdfTablePresetCreateDto,
+  PdfTablePresetListParams,
+  PdfTablePresetListResult,
+  PdfTablePresetUpdateDto,
 } from '../types/pdf-report-template.types';
 
 const BASE = '/api/pdf-report-templates';
+const PRESET_BASE = '/api/pdf-table-presets';
 
 function normalizeTemplateItem(item: unknown): ReportTemplateGetDto {
   const r = item != null && typeof item === 'object' ? (item as Record<string, unknown>) : {};
@@ -59,6 +65,16 @@ function normalizeTemplateItem(item: unknown): ReportTemplateGetDto {
           (templateData as unknown as Record<string, unknown>).SchemaVersion ??
           1
       ) || 1,
+    layoutKey: String(
+      (templateData as unknown as Record<string, unknown>).layoutKey ??
+      (templateData as unknown as Record<string, unknown>).LayoutKey ??
+      ''
+    ) || undefined,
+    layoutOptions:
+      ((templateData as unknown as Record<string, unknown>).layoutOptions ??
+        (templateData as unknown as Record<string, unknown>).LayoutOptions) as
+        | Record<string, string>
+        | undefined,
     page: page as ReportTemplateDataDto['page'],
     elements: Array.isArray(elements) ? elements : [],
   };
@@ -89,6 +105,33 @@ function parseListResult(response: unknown): PdfReportTemplateListResult {
   const totalCount = Number(data.totalCount ?? data.TotalCount ?? 0) || items.length;
   const pageNumber = Number(data.pageNumber ?? data.PageNumber ?? 1) || 1;
   const pageSize = Number(data.pageSize ?? data.PageSize ?? 10) || items.length;
+  const totalPages =
+    Number(data.totalPages ?? data.TotalPages ?? 0) ||
+    Math.max(1, Math.ceil(totalCount / (pageSize || 1)));
+  return { items, totalCount, pageNumber, pageSize, totalPages };
+}
+
+function normalizePresetItem(item: unknown): PdfTablePresetDto {
+  const r = item != null && typeof item === 'object' ? (item as Record<string, unknown>) : {};
+  return {
+    id: Number(r.id ?? r.Id ?? 0),
+    ruleType: Number(r.ruleType ?? r.RuleType ?? 0) as DocumentRuleType,
+    name: String(r.name ?? r.Name ?? ''),
+    key: String(r.key ?? r.Key ?? ''),
+    columns: Array.isArray(r.columns ?? r.Columns) ? ((r.columns ?? r.Columns) as PdfTablePresetDto['columns']) : [],
+    tableOptions: ((r.tableOptions ?? r.TableOptions) as PdfTablePresetDto['tableOptions']) ?? undefined,
+    isActive: Boolean(r.isActive ?? r.IsActive ?? false),
+  };
+}
+
+function parsePresetListResult(response: unknown): PdfTablePresetListResult {
+  const data = getApiData<Record<string, unknown>>(response);
+  if (data == null) return { items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 };
+  const rawItems = (data.items ?? data.Items ?? data.data ?? data.Data) as unknown;
+  const items = Array.isArray(rawItems) ? rawItems.map(normalizePresetItem) : [];
+  const totalCount = Number(data.totalCount ?? data.TotalCount ?? 0) || items.length;
+  const pageNumber = Number(data.pageNumber ?? data.PageNumber ?? 1) || 1;
+  const pageSize = Number(data.pageSize ?? data.PageSize ?? 20) || items.length;
   const totalPages =
     Number(data.totalPages ?? data.TotalPages ?? 0) ||
     Math.max(1, Math.ceil(totalCount / (pageSize || 1)));
@@ -159,5 +202,32 @@ export const pdfReportTemplateApi = {
     );
     if (blob instanceof Blob) return blob;
     throw new Error('PDF yanıtı geçersiz');
+  },
+
+  getPresetList: async (params?: PdfTablePresetListParams): Promise<PdfTablePresetListResult> => {
+    const response = await api.get<unknown>(PRESET_BASE, { params });
+    if (!isApiSuccess(response)) {
+      const r = response as Record<string, unknown>;
+      throw new Error((r.message ?? r.Message ?? 'Preset listesi yüklenemedi') as string);
+    }
+    return parsePresetListResult(response);
+  },
+
+  createPreset: async (data: PdfTablePresetCreateDto): Promise<PdfTablePresetDto> => {
+    const response = await api.post<unknown>(PRESET_BASE, data);
+    return unwrapApiResponse<PdfTablePresetDto>(response);
+  },
+
+  updatePreset: async (id: number, data: PdfTablePresetUpdateDto): Promise<PdfTablePresetDto> => {
+    const response = await api.put<unknown>(`${PRESET_BASE}/${id}`, data);
+    return unwrapApiResponse<PdfTablePresetDto>(response);
+  },
+
+  deletePreset: async (id: number): Promise<void> => {
+    const response = await api.delete<unknown>(`${PRESET_BASE}/${id}`);
+    if (!isApiSuccess(response)) {
+      const r = response as Record<string, unknown>;
+      throw new Error((r.message ?? r.Message ?? 'Preset silinemedi') as string);
+    }
   },
 };

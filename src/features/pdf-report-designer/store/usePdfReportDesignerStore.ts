@@ -21,9 +21,14 @@ interface PdfReportDesignerState {
   updateElementText: (id: string, text: string) => void;
   updateReportElement: (
     id: string,
-    updates: Partial<Pick<PdfReportElement, 'text' | 'value' | 'path' | 'fontSize' | 'fontFamily' | 'color' | 'style' | 'pageNumbers'>>
+    updates: Partial<Pick<PdfReportElement, 'text' | 'value' | 'path' | 'fontSize' | 'fontFamily' | 'color' | 'style' | 'pageNumbers' | 'parentId' | 'summaryItems' | 'quotationTotalsOptions'>>
   ) => void;
   addColumnToTable: (tableId: string, column: PdfTableColumn) => void;
+  replaceTableColumns: (tableId: string, columns: PdfTableColumn[]) => void;
+  updateTableColumn: (tableId: string, index: number, patch: Partial<PdfTableColumn>) => void;
+  removeColumnFromTable: (tableId: string, index: number) => void;
+  moveTableColumn: (tableId: string, index: number, direction: 'left' | 'right') => void;
+  updateTableOptions: (tableId: string, patch: Partial<PdfTableElement>) => void;
   setSelectedIds: (ids: string[]) => void;
   toggleSelection: (id: string) => void;
   reorderElements: (fromIndex: number, toIndex: number) => void;
@@ -212,6 +217,84 @@ export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, ge
       };
     });
     get().pushHistory();
+  },
+
+  replaceTableColumns: (tableId, columns) => {
+    set((s) => {
+      const el = s.elementsById[tableId];
+      if (!el || el.type !== 'table') return s;
+      return {
+        elementsById: {
+          ...s.elementsById,
+          [tableId]: { ...el, columns } as PdfCanvasElement,
+        },
+      };
+    });
+    get().pushHistory();
+  },
+
+  updateTableColumn: (tableId, index, patch) => {
+    set((s) => {
+      const el = s.elementsById[tableId];
+      if (!el || el.type !== 'table' || index < 0 || index >= el.columns.length) return s;
+      const columns = el.columns.map((column, columnIndex) =>
+        columnIndex === index ? { ...column, ...patch } : column
+      );
+      return {
+        elementsById: {
+          ...s.elementsById,
+          [tableId]: { ...el, columns } as PdfCanvasElement,
+        },
+      };
+    });
+  },
+
+  removeColumnFromTable: (tableId, index) => {
+    set((s) => {
+      const el = s.elementsById[tableId];
+      if (!el || el.type !== 'table') return s;
+      const columns = el.columns.filter((_, columnIndex) => columnIndex !== index);
+      return {
+        elementsById: {
+          ...s.elementsById,
+          [tableId]: { ...el, columns } as PdfCanvasElement,
+        },
+      };
+    });
+    get().pushHistory();
+  },
+
+  moveTableColumn: (tableId, index, direction) => {
+    set((s) => {
+      const el = s.elementsById[tableId];
+      if (!el || el.type !== 'table') return s;
+      const targetIndex = direction === 'left' ? index - 1 : index + 1;
+      if (index < 0 || index >= el.columns.length || targetIndex < 0 || targetIndex >= el.columns.length)
+        return s;
+      const columns = [...el.columns];
+      const [moved] = columns.splice(index, 1);
+      columns.splice(targetIndex, 0, moved);
+      return {
+        elementsById: {
+          ...s.elementsById,
+          [tableId]: { ...el, columns } as PdfCanvasElement,
+        },
+      };
+    });
+    get().pushHistory();
+  },
+
+  updateTableOptions: (tableId, patch) => {
+    set((s) => {
+      const el = s.elementsById[tableId];
+      if (!el || el.type !== 'table') return s;
+      return {
+        elementsById: {
+          ...s.elementsById,
+          [tableId]: { ...el, ...patch } as PdfCanvasElement,
+        },
+      };
+    });
   },
 
   setSelectedIds: (ids) => set({ selectedIds: ids }),

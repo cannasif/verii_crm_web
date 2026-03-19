@@ -36,6 +36,7 @@ import {
 import {
   PdfA4Canvas,
   getSectionFromDroppableId,
+  parseContainerIdFromDroppableId,
   parseTableIdFromDroppableId,
 } from '../components/PdfA4Canvas';
 import {
@@ -45,7 +46,7 @@ import {
 } from '../components/PdfSidebar';
 import { PdfInspectorPanel } from '../components/PdfInspectorPanel';
 import { PdfLayersPanel } from '../components/PdfLayersPanel';
-import type { PdfReportElement, PdfTableElement } from '../types/pdf-report-template.types';
+import type { PdfCanvasElement, PdfReportElement, PdfTableElement } from '../types/pdf-report-template.types';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { usePdfReportTemplateFields } from '../hooks/usePdfReportTemplateFields';
 import { useCreatePdfReportTemplate } from '../hooks/useCreatePdfReportTemplate';
@@ -54,13 +55,24 @@ import { usePdfReportTemplateById } from '../hooks/usePdfReportTemplateById';
 import { dtoToPdfCanvasElements, pdfCanvasElementsToDto } from '../utils/dto-to-canvas';
 import { getApiErrorMessage } from '../utils/get-api-error-message';
 import { createClientId } from '@/lib/create-client-id';
+import { createWindoCanvasStarter } from '../utils/windo-canvas-starter';
+import { createWindoVisualBrochureStarter } from '../utils/windo-visual-brochure-starter';
+import { createWindoManualQuotationStarter } from '../utils/windo-manual-quotation-starter';
 import type {
   ReportTemplateCreateDto,
   ReportTemplateGetDto,
   ReportTemplateElementDto,
 } from '@/features/pdf-report';
 import type { DocumentRuleType } from '@/features/pdf-report';
-import { A4_CANVAS_WIDTH, A4_CANVAS_HEIGHT, PDF_REPORT_DRAFT_STORAGE_KEY } from '../constants';
+import {
+  A4_MM_WIDTH,
+  A4_MM_HEIGHT,
+  PDF_REPORT_DRAFT_STORAGE_KEY,
+} from '../constants';
+import {
+  PDF_LAYOUT_PRESET,
+  getAvailableLayoutPresets,
+} from '../constants/layout-presets';
 
 const RULE_TYPE_OPTIONS: PricingRuleType[] = [
   PricingRuleType.Demand,
@@ -72,6 +84,40 @@ const DEFAULT_ELEMENT_WIDTH = 200;
 const DEFAULT_ELEMENT_HEIGHT = 50;
 const DEFAULT_TABLE_WIDTH = 680;
 const DEFAULT_TABLE_HEIGHT = 220;
+
+function getElementPaddingValue(element?: PdfCanvasElement): number {
+  if (!element || element.type === 'table') return 0;
+  const padding = element.style?.padding;
+  if (typeof padding === 'number') return padding;
+  if (typeof padding === 'string') {
+    const parsed = Number.parseFloat(padding);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function resolveAbsolutePosition(
+  elementsById: Record<string, PdfCanvasElement>,
+  element: PdfCanvasElement
+): { x: number; y: number } {
+  const seen = new Set<string>();
+  let current: PdfCanvasElement | undefined = element;
+  let x = element.x;
+  let y = element.y;
+
+  while (current && current.type !== 'table' && current.parentId) {
+    if (seen.has(current.id)) break;
+    seen.add(current.id);
+    const parent: PdfCanvasElement | undefined = elementsById[current.parentId];
+    if (!parent) break;
+    const parentPadding = getElementPaddingValue(parent);
+    x += parent.x + parentPadding;
+    y += parent.y + parentPadding;
+    current = parent;
+  }
+
+  return { x, y };
+}
 
 function ruleTypeForApi(ruleType: PricingRuleType): number {
   return (ruleType - 1) as number;
@@ -85,6 +131,18 @@ function apiRuleTypeToForm(apiRuleType: number): PricingRuleType {
     n === PricingRuleType.Order
   )
     return n;
+  return PricingRuleType.Demand;
+}
+
+function normalizeFormRuleType(value: number | null | undefined): PricingRuleType {
+  if (
+    value === PricingRuleType.Demand ||
+    value === PricingRuleType.Quotation ||
+    value === PricingRuleType.Order
+  ) {
+    return value;
+  }
+
   return PricingRuleType.Demand;
 }
 
@@ -104,13 +162,15 @@ function applyTemplateToFormAndStore(
   form: ReturnType<typeof useForm<PdfReportDesignerCreateFormValues>>,
   setElements: (elements: import('../types/pdf-report-template.types').PdfCanvasElement[]) => void
 ): void {
+  const formRuleType = apiRuleTypeToForm(template.ruleType as number);
   form.reset({
-    ruleType: apiRuleTypeToForm(template.ruleType as number),
+    ruleType: formRuleType,
     title: template.title,
     default: template.default ?? false,
     pageCount: Math.max(1, template.templateData.page.pageCount ?? 1),
+    layoutPreset: PDF_LAYOUT_PRESET.Custom,
   });
-  setElements(dtoToPdfCanvasElements(template.templateData.elements));
+  setElements(dtoToPdfCanvasElements(template.templateData.elements, template.templateData.page.unit));
 }
 
 export function PdfReportDesignerCreatePage(): ReactElement {
@@ -144,12 +204,12 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         title: '',
         default: false,
         pageCount: 1,
+        layoutPreset: PDF_LAYOUT_PRESET.Custom,
       },
     }
   );
   const isFormValid = form.formState.isValid;
   const [currentPage, setCurrentPage] = useState(1);
-
   const { data: templateById, isSuccess: templateByIdLoaded } = usePdfReportTemplateById(
     isEdit && editId != null ? editId : null
   );
@@ -187,6 +247,9 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   }, [isEdit]);
 
   const ruleType = form.watch('ruleType') ?? PricingRuleType.Demand;
+  const layoutPreset = form.watch('layoutPreset') ?? PDF_LAYOUT_PRESET.Custom;
+  const availableLayoutPresets = useMemo(() => getAvailableLayoutPresets(ruleType), [ruleType]);
+  const isCanvasLocked = false;
   const ruleTypeForFields = ruleTypeForApi(ruleType);
   const { data: fieldsData } = usePdfReportTemplateFields(ruleTypeForFields);
   const headerFields: PdfFieldPaletteItem[] = useMemo(
@@ -244,6 +307,8 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         ruleType: ruleTypeVal,
         default: defaultVal,
         pageCount: form.getValues('pageCount'),
+        layoutPreset: form.getValues('layoutPreset'),
+        layoutOptions: undefined,
         elements: pdfCanvasElementsToDto(elements),
       };
       localStorage.setItem(draftKey, JSON.stringify(payload));
@@ -277,16 +342,25 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         ruleType?: number;
         default?: boolean;
         pageCount?: number;
+        layoutPreset?: string;
+        layoutOptions?: Record<string, string>;
+        page?: {
+          unit?: string;
+        };
         elements?: unknown[];
       };
       if (payload.title != null) form.setValue('title', String(payload.title));
       if (payload.ruleType != null)
-        form.setValue('ruleType', apiRuleTypeToForm(Number(payload.ruleType)));
+        form.setValue('ruleType', normalizeFormRuleType(Number(payload.ruleType)));
       if (payload.default != null) form.setValue('default', Boolean(payload.default));
       if (payload.pageCount != null)
         form.setValue('pageCount', Math.max(1, Number(payload.pageCount) || 1));
+      form.setValue('layoutPreset', PDF_LAYOUT_PRESET.Custom);
       if (Array.isArray(payload.elements)) {
-        const canvasEls = dtoToPdfCanvasElements(payload.elements as ReportTemplateElementDto[]);
+        const canvasEls = dtoToPdfCanvasElements(
+          payload.elements as ReportTemplateElementDto[],
+          payload.page?.unit
+        );
         setElements(canvasEls);
       }
       localStorage.removeItem(draftKey);
@@ -311,6 +385,15 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   const createMutation = useCreatePdfReportTemplate();
   const updateMutation = useUpdatePdfReportTemplate();
 
+  useEffect(() => {
+    if (layoutPreset !== PDF_LAYOUT_PRESET.Custom) {
+      form.setValue('layoutPreset', PDF_LAYOUT_PRESET.Custom, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [form, layoutPreset]);
+
   const onSubmit = async (values: PdfReportDesignerCreateFormValues): Promise<void> => {
     const elements = getOrderedElements();
     const payload: ReportTemplateCreateDto = {
@@ -318,13 +401,15 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       title: values.title,
       templateData: {
         schemaVersion: 1,
+        layoutKey: undefined,
+        layoutOptions: undefined,
         page: {
-          width: A4_CANVAS_WIDTH,
-          height: A4_CANVAS_HEIGHT,
-          unit: 'px',
+          width: A4_MM_WIDTH,
+          height: A4_MM_HEIGHT,
+          unit: 'mm',
           pageCount: values.pageCount,
         },
-        elements: pdfCanvasElementsToDto(elements),
+        elements: pdfCanvasElementsToDto(elements, 'mm'),
       },
       isActive: true,
       default: values.default ?? false,
@@ -364,6 +449,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     if (!isPdfSidebarDragData(data)) return;
 
     const tableId = over?.id != null ? parseTableIdFromDroppableId(String(over.id)) : null;
+    const containerId = over?.id != null ? parseContainerIdFromDroppableId(String(over.id)) : null;
 
     if (tableId != null) {
       if (data.type !== 'table-column') return;
@@ -372,20 +458,24 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     }
 
     const overId = over?.id != null ? String(over.id) : null;
-    const section = overId != null ? getSectionFromDroppableId(overId) : null;
+    const elementsById = usePdfReportDesignerStore.getState().elementsById;
+    const containerTarget = containerId ? elementsById[containerId] : undefined;
+    const section = containerTarget?.section ?? (overId != null ? getSectionFromDroppableId(overId) : null);
 
     if (section == null || !canvasRef.current) return;
     if (data.type === 'table-column') return;
 
     if (data.type === 'table' && section !== 'content') return;
-    if (data.type === 'image' && section === 'content') return;
-
     const translated = active.rect.current.translated;
     if (!translated) return;
 
     const canvasRect = canvasRef.current.getBoundingClientRect();
-    const x = Math.round((translated.left - canvasRect.left) / 8) * 8;
-    const y = Math.round((translated.top - canvasRect.top) / 8) * 8;
+    const absoluteX = Math.round((translated.left - canvasRect.left) / 8) * 8;
+    const absoluteY = Math.round((translated.top - canvasRect.top) / 8) * 8;
+    const parentAbsolute = containerTarget ? resolveAbsolutePosition(elementsById, containerTarget) : null;
+    const parentPadding = getElementPaddingValue(containerTarget);
+    const x = parentAbsolute ? absoluteX - parentAbsolute.x - parentPadding : absoluteX;
+    const y = parentAbsolute ? absoluteY - parentAbsolute.y - parentPadding : absoluteY;
 
     if (data.type === 'text') {
       const newElement: PdfReportElement = {
@@ -399,6 +489,149 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         text: t('reportDesigner.defaults.doubleClickToEdit'),
         fontSize: 14,
         fontFamily: 'Arial',
+        parentId: containerTarget?.id,
+        pageNumbers: [currentPage],
+      };
+      addElement(newElement);
+      return;
+    }
+
+    if (data.type === 'shape') {
+      const newElement: PdfReportElement = {
+        id: createClientId(),
+        type: 'shape',
+        section,
+        x,
+        y,
+        width: 220,
+        height: 80,
+        style: {
+          background: '#ffffff',
+          border: '1px solid #d7dde8',
+          radius: 12,
+        },
+        parentId: containerTarget?.id,
+        pageNumbers: [currentPage],
+      };
+      addElement(newElement);
+      return;
+    }
+
+    if (data.type === 'container') {
+      const newElement: PdfReportElement = {
+        id: createClientId(),
+        type: 'container',
+        section,
+        x,
+        y,
+        width: 260,
+        height: 140,
+        style: {
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          radius: 16,
+          padding: 16,
+        },
+        parentId: containerTarget?.id,
+        pageNumbers: [currentPage],
+      };
+      addElement(newElement);
+      return;
+    }
+
+    if (data.type === 'note') {
+      const newElement: PdfReportElement = {
+        id: createClientId(),
+        type: 'note',
+        section,
+        x,
+        y,
+        width: 260,
+        height: 120,
+        text: 'Notlar',
+        value: 'Aciklama veya sart metni',
+        fontSize: 13,
+        fontFamily: 'Arial',
+        parentId: containerTarget?.id,
+        style: {
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          radius: 12,
+          padding: 14,
+        },
+        pageNumbers: [currentPage],
+      };
+      addElement(newElement);
+      return;
+    }
+
+    if (data.type === 'summary') {
+      const newElement: PdfReportElement = {
+        id: createClientId(),
+        type: 'summary',
+        section,
+        x,
+        y,
+        width: 240,
+        height: 150,
+        text: 'Toplamlar',
+        fontSize: 13,
+        fontFamily: 'Arial',
+        parentId: containerTarget?.id,
+        style: {
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          radius: 12,
+          padding: 14,
+        },
+        summaryItems: [
+          { label: 'Ara Toplam', path: 'SubTotal', format: 'currency' },
+          { label: 'KDV', path: 'VatAmount', format: 'currency' },
+          { label: 'Genel Toplam', path: 'GrandTotal', format: 'currency' },
+        ],
+        pageNumbers: [currentPage],
+      };
+      addElement(newElement);
+      return;
+    }
+
+    if (data.type === 'quotationTotals') {
+      const newElement: PdfReportElement = {
+        id: createClientId(),
+        type: 'quotationTotals',
+        section,
+        x,
+        y,
+        width: 260,
+        height: 176,
+        text: 'Teklif Toplamlari',
+        fontSize: 13,
+        fontFamily: 'Arial',
+        parentId: containerTarget?.id,
+        style: {
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          radius: 12,
+          padding: 14,
+        },
+        quotationTotalsOptions: {
+          layout: 'single',
+          currencyMode: 'code',
+          currencyPath: 'Currency',
+          grossLabel: 'Brut Toplam',
+          discountLabel: 'Iskonto',
+          netLabel: 'Net Toplam',
+          vatLabel: 'KDV',
+          grandLabel: 'Genel Toplam',
+          showGross: true,
+          showDiscount: true,
+          showVat: true,
+          emphasizeGrandTotal: true,
+          noteTitle: 'Aciklama',
+          notePath: 'Description',
+          showNote: false,
+          hideEmptyNote: true,
+        },
         pageNumbers: [currentPage],
       };
       addElement(newElement);
@@ -416,6 +649,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         height: DEFAULT_ELEMENT_HEIGHT,
         value: data.label,
         path: data.path,
+        parentId: containerTarget?.id,
         pageNumbers: [currentPage],
       };
       addElement(newElement);
@@ -432,6 +666,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         width: DEFAULT_TABLE_WIDTH,
         height: DEFAULT_TABLE_HEIGHT,
         columns: [],
+        parentId: containerTarget?.id,
         pageNumbers: [currentPage],
       };
       addElement(newTable);
@@ -449,6 +684,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         height: 80,
         value: data.value ?? '',
         path: data.path || undefined,
+        parentId: containerTarget?.id,
         pageNumbers: [currentPage],
       };
       addElement(newElement);
@@ -533,6 +769,33 @@ export function PdfReportDesignerCreatePage(): ReactElement {
             />
             <FormField
               control={form.control}
+              name="layoutPreset"
+              render={({ field }) => (
+                <FormItem className="w-72">
+                  <FormLabel>{t('pdfReportDesigner.layoutPreset.label')}</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('common.select')} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {availableLayoutPresets.map((preset) => (
+                        <SelectItem key={preset.value} value={preset.value}>
+                          {t(preset.titleKey)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="default"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center gap-2 space-y-0">
@@ -559,6 +822,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                       type="number"
                       min={1}
                       max={20}
+                      disabled={isCanvasLocked}
                       value={field.value}
                       onChange={(e) =>
                         field.onChange(Math.min(20, Math.max(1, Number(e.target.value) || 1)))
@@ -610,6 +874,73 @@ export function PdfReportDesignerCreatePage(): ReactElement {
             </Button>
           </form>
         </Form>
+        {layoutPreset === PDF_LAYOUT_PRESET.Custom && (
+          <div className="mt-4 flex flex-col gap-3 rounded-md border border-slate-200 bg-slate-50 p-3">
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-slate-900">Standart belge baslangici</p>
+                <p className="text-xs text-slate-500">Secili belge tipi icin duzenlenebilir tek sayfali ticari belge iskeleti yukler.</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setElements(createWindoCanvasStarter(createClientId, ruleType));
+                  form.setValue('pageCount', 1, { shouldDirty: true });
+                  if (!form.getValues('title').trim()) {
+                    form.setValue('title', `${ruleType === PricingRuleType.Demand ? 'Talep' : ruleType === PricingRuleType.Order ? 'Siparis' : 'Teklif'} Taslagi`, {
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+              >
+                Belge iskeletini yukle
+              </Button>
+            </div>
+            <div className="flex items-center gap-3 border-t border-slate-200 pt-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-slate-900">Belge + gorsel sayfalari</p>
+                <p className="text-xs text-slate-500">Ilk sayfasi belge, sonraki sayfalari tam sayfa gorsel olacak sekilde 4 sayfalik duzenlenebilir taslak yukler.</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setElements(createWindoManualQuotationStarter(createClientId, ruleType));
+                  form.setValue('pageCount', 4, { shouldDirty: true });
+                  if (!form.getValues('title').trim()) {
+                    form.setValue('title', `${ruleType === PricingRuleType.Demand ? 'Talep' : ruleType === PricingRuleType.Order ? 'Siparis' : 'Teklif'} + Gorsel Taslagi`, {
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+              >
+                Cok sayfali taslagi yukle
+              </Button>
+            </div>
+            <div className="flex items-center gap-3 border-t border-slate-200 pt-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-slate-900">Tam sayfa gorsel seti</p>
+                <p className="text-xs text-slate-500">Kapak, tanitim veya ek belge sayfalari icin 3 sayfalik gorsel odakli canvas yukler.</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setElements(createWindoVisualBrochureStarter(createClientId));
+                  form.setValue('pageCount', 3, { shouldDirty: true });
+                  if (!form.getValues('title').trim()) {
+                    form.setValue('title', `${ruleType === PricingRuleType.Demand ? 'Talep' : ruleType === PricingRuleType.Order ? 'Siparis' : 'Teklif'} Gorsel Eki`, {
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+              >
+                Gorsel canvas yukle
+              </Button>
+            </div>
+          </div>
+        )}
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-2">
           <span className="text-sm font-medium text-slate-600">{t('pdfReportDesigner.pages')}</span>
           {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
@@ -626,19 +957,21 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         </div>
       </div>
       <div className="flex min-h-0 flex-1 flex-col">
-        <DndContext onDragEnd={handleDragEnd}>
-          <div className="flex min-h-0 flex-1">
-          <PdfSidebar
-            headerFields={headerFields}
-            lineFields={lineFields}
-            exchangeRateFields={exchangeRateFields}
-            imageFields={imageFields}
-          />
-            <PdfA4Canvas canvasRef={canvasRef} currentPage={currentPage} />
-            <PdfInspectorPanel pageCount={pageCount} />
-            <PdfLayersPanel />
-          </div>
-        </DndContext>
+        {!isCanvasLocked ? (
+          <DndContext onDragEnd={handleDragEnd}>
+            <div className="flex min-h-0 flex-1">
+              <PdfSidebar
+                headerFields={headerFields}
+                lineFields={lineFields}
+                exchangeRateFields={exchangeRateFields}
+                imageFields={imageFields}
+              />
+              <PdfA4Canvas canvasRef={canvasRef} currentPage={currentPage} />
+              <PdfInspectorPanel pageCount={pageCount} />
+              <PdfLayersPanel />
+            </div>
+          </DndContext>
+        ) : null}
       </div>
     </div>
   );

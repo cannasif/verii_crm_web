@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
 
-export type PdfFieldPaletteType = 'text' | 'field' | 'table' | 'table-column' | 'image';
+export type PdfFieldPaletteType = 'text' | 'field' | 'table' | 'table-column' | 'image' | 'shape' | 'container' | 'note' | 'summary' | 'quotationTotals';
 
 export interface PdfFieldPaletteItem {
   label: string;
@@ -378,6 +378,28 @@ function ImagePropertiesPanel(): ReactElement | null {
           />
         </div>
       )}
+      <div className="flex flex-col gap-2">
+        <Label className="text-xs">{t('reportDesigner.properties.imageFit')}</Label>
+        <Select
+          value={selectedElement.style?.imageFit ?? 'contain'}
+          onValueChange={(value: 'contain' | 'cover') =>
+            updateReportElement(selectedElement.id, {
+              style: {
+                ...selectedElement.style,
+                imageFit: value,
+              },
+            })
+          }
+        >
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="contain">{t('reportDesigner.properties.imageFitContain')}</SelectItem>
+            <SelectItem value="cover">{t('reportDesigner.properties.imageFitCover')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 }
@@ -398,6 +420,31 @@ export function PdfSidebar({
     path: '',
     type: 'text',
   };
+  const shapeItem: PdfFieldPaletteItem = {
+    label: t('reportDesigner.palette.shape'),
+    path: '',
+    type: 'shape',
+  };
+  const containerItem: PdfFieldPaletteItem = {
+    label: t('reportDesigner.palette.container'),
+    path: '',
+    type: 'container',
+  };
+  const noteItem: PdfFieldPaletteItem = {
+    label: t('reportDesigner.palette.note'),
+    path: '',
+    type: 'note',
+  };
+  const summaryItem: PdfFieldPaletteItem = {
+    label: t('reportDesigner.palette.summary'),
+    path: '',
+    type: 'summary',
+  };
+  const quotationTotalsItem: PdfFieldPaletteItem = {
+    label: t('reportDesigner.palette.quotationTotals'),
+    path: '',
+    type: 'quotationTotals',
+  };
   const addTableItem: PdfFieldPaletteItem = {
     label: t('reportDesigner.palette.addTable'),
     path: '',
@@ -415,7 +462,7 @@ export function PdfSidebar({
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
         {t('reportDesigner.palette.title')}
       </span>
-      <Section title={t('reportDesigner.palette.text')} items={[textItem]} idPrefix="pdf-palette-text" />
+      <Section title={t('reportDesigner.palette.text')} items={[textItem, shapeItem, containerItem, noteItem, summaryItem, quotationTotalsItem]} idPrefix="pdf-palette-text" />
       <Section title={t('reportDesigner.palette.fields')} items={fieldsItems} idPrefix="pdf-palette-fields" />
       <Section title={t('reportDesigner.palette.tableColumns')} items={tableColumnsItems} idPrefix="pdf-palette-table-columns" />
       {exchangeRateColumnsItems.length > 0 && (

@@ -34,11 +34,38 @@ export interface PdfReportElementStyleDto {
   verticalAlign?: 'top' | 'middle' | 'bottom';
   lineHeight?: number;
   letterSpacing?: number;
+  imageFit?: 'contain' | 'cover';
   background?: string;
   border?: string;
   radius?: number;
   padding?: number | string;
   opacity?: number;
+}
+
+export interface PdfSummaryItemDto {
+  label: string;
+  path: string;
+  format?: 'text' | 'number' | 'currency' | 'date';
+}
+
+export interface PdfQuotationTotalsOptionsDto {
+  layout?: 'single' | 'two-column';
+  currencyMode?: 'none' | 'code';
+  currencyPath?: string;
+  grossLabel?: string;
+  discountLabel?: string;
+  netLabel?: string;
+  vatLabel?: string;
+  grandLabel?: string;
+  showGross?: boolean;
+  showDiscount?: boolean;
+  showVat?: boolean;
+  emphasizeGrandTotal?: boolean;
+  noteTitle?: string;
+  notePath?: string;
+  noteText?: string;
+  showNote?: boolean;
+  hideEmptyNote?: boolean;
 }
 
 export interface ReportTemplateElementDto {
@@ -55,17 +82,70 @@ export interface ReportTemplateElementDto {
   fontSize?: number;
   fontFamily?: string;
   color?: string;
-  columns?: { label: string; path: string }[];
+  columns?: {
+    label: string;
+    path: string;
+    width?: number;
+    align?: 'left' | 'center' | 'right';
+    format?: 'text' | 'number' | 'currency' | 'date' | 'image';
+  }[];
+  headerStyle?: {
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    backgroundColor?: string;
+  };
+  rowStyle?: {
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    backgroundColor?: string;
+  };
+  alternateRowStyle?: {
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    backgroundColor?: string;
+  };
+  columnWidths?: number[];
+  tableOptions?: {
+    repeatHeader?: boolean;
+    pageBreak?: 'auto' | 'avoid' | 'always';
+    reportRegionMode?: 'flow';
+    dense?: boolean;
+    showBorders?: boolean;
+    presetName?: string;
+    groupByPath?: string;
+    groupHeaderLabel?: string;
+    showGroupFooter?: boolean;
+    groupFooterLabel?: string;
+    groupFooterValuePath?: string;
+    detailColumnPath?: string;
+    detailPaths?: string[];
+    detailLineFontSize?: number;
+    detailLineColor?: string;
+    continuationElementIds?: string[];
+    flowElementIds?: string[];
+    repeatedElementIds?: string[];
+    firstPageBudget?: number;
+    continuationPageBudget?: number;
+    lastPageBudget?: number;
+  };
   zIndex?: number;
   rotation?: number;
   locked?: boolean;
   hidden?: boolean;
   style?: PdfReportElementStyleDto;
   pageNumbers?: number[];
+  parentId?: string;
+  summaryItems?: PdfSummaryItemDto[];
+  quotationTotalsOptions?: PdfQuotationTotalsOptionsDto;
 }
 
 export interface ReportTemplateDataDto {
   schemaVersion: number;
+  layoutKey?: string;
+  layoutOptions?: Record<string, string>;
   page: ReportTemplatePageDto;
   elements: ReportTemplateElementDto[];
 }
@@ -104,3 +184,40 @@ export interface PdfReportTemplateListResult {
   pageSize: number;
   totalPages: number;
 }
+
+export interface PdfTablePresetDto {
+  id: number;
+  ruleType: DocumentRuleType;
+  name: string;
+  key: string;
+  columns: NonNullable<ReportTemplateElementDto['columns']>;
+  tableOptions?: NonNullable<ReportTemplateElementDto['tableOptions']>;
+  isActive: boolean;
+}
+
+export interface PdfTablePresetListParams {
+  pageNumber?: number;
+  pageSize?: number;
+  search?: string;
+  ruleType?: DocumentRuleType;
+  isActive?: boolean;
+}
+
+export interface PdfTablePresetListResult {
+  items: PdfTablePresetDto[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface PdfTablePresetCreateDto {
+  ruleType: DocumentRuleType;
+  name: string;
+  key: string;
+  columns: NonNullable<ReportTemplateElementDto['columns']>;
+  tableOptions?: NonNullable<ReportTemplateElementDto['tableOptions']>;
+  isActive: boolean;
+}
+
+export type PdfTablePresetUpdateDto = PdfTablePresetCreateDto;

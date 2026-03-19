@@ -24,6 +24,11 @@ export function PdfLayersPanel(): ReactElement {
     if (el.type === 'text') return el.text?.slice(0, 20) || t('reportDesigner.layers.textLabel');
     if (el.type === 'field') return el.value || t('reportDesigner.layers.fieldLabel');
     if (el.type === 'image') return t('reportDesigner.layers.imageLabel');
+    if (el.type === 'shape') return t('reportDesigner.layers.shapeLabel');
+    if (el.type === 'container') return t('reportDesigner.layers.containerLabel');
+    if (el.type === 'note') return t('reportDesigner.layers.noteLabel');
+    if (el.type === 'summary') return t('reportDesigner.layers.summaryLabel');
+    if (el.type === 'quotationTotals') return t('reportDesigner.layers.quotationTotalsLabel');
     return el.type;
   };
 
