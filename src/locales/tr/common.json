@@ -171,6 +171,7 @@
     "templateUpdateFailed": "Şablon güncellenemedi",
     "templateSaveFailed": "Şablon kaydedilemedi",
     "imageMax2Mb": "Resim en fazla 2 MB olabilir.",
+    "imageUploadFailed": "Resim yüklenemedi",
     "selectImage": "Resim seç",
     "imageSettings": "Resim Özellikleri",
     "imageUrl": "Resim URL",
@@ -428,13 +429,7 @@
     "layoutPreset": {
       "label": "Yerleşim tipi",
       "customTitle": "Özel canvas yerleşimi",
-      "customDescription": "Metin, alan, tablo ve görselleri canvas üzerinde elle yerleştirerek özel bir PDF şablonu oluşturun.",
-      "windoQuotationTitle": "Windo teklif tasarımı",
-      "windoQuotationDescription": "Projede gömülü Windo teklif tasarımını kullanan gelişmiş quotation renderer. Kullanıcı bu şablonu seçip doğrudan teklif PDF'i oluşturabilir.",
-      "windoQuotationTemplateTitle": "Windo Teklif Tasarımı",
-      "builderLockedTitle": "Windo teklif tasarımı aktif",
-      "builderLockedDescription": "Bu preset canvas elemanlarıyla değil, projedeki gerçek Windo teklif tasarımına bağlı gelişmiş renderer ile üretilir.",
-      "builderLockedHint": "Şablonu kaydedin ve liste ekranından teklif ID girerek PDF oluşturun. Düzen bu akışta otomatik olarak uygulanacaktır."
+      "customDescription": "Metin, alan, tablo ve görselleri canvas üzerinde elle yerleştirerek özel bir PDF şablonu oluşturun."
     }
   },
   "reportDesigner": {
@@ -575,18 +570,13 @@
       "quotationTotalsLabel": "Teklif toplamları"
     },
     "starter": {
-      "windoTitle": "Windo başlangıç canvas'ı",
-      "windoDescription": "Windo teklif düzenine yakın, düzenlenebilir bir canvas iskeleti yükler. Sonra sürükle-bırak ile geliştirebilirsiniz.",
-      "loadWindoStarter": "Windo iskeletini yükle",
-      "windoTemplateTitle": "Windo Canvas Taslağı",
       "manualQuotationTitle": "Düzenlenebilir teklif + görsel başlangıcı",
       "manualQuotationDescription": "4 sayfalı bir custom canvas kurar: teklif sayfası, hakkımızda görsel sayfası, timeline görsel sayfası ve son olarak notlar + 3 referans görsel sayfası. Tümü düzenlenebilir kalır.",
       "loadManualQuotationStarter": "Düzenlenebilir teklifi yükle",
       "manualQuotationTemplateTitle": "Düzenlenebilir Teklif Taslağı",
       "visualBrochureTitle": "Görsel broşür başlangıcı",
       "visualBrochureDescription": "Kapak, hakkımızda ve zaman çizelgesi sayfaları için 3 sayfalı görsel bir canvas oluşturur. Referans görselleri tam sayfa resim alanlarına yükleyebilirsiniz.",
-      "loadVisualBrochureStarter": "Görsel broşürü yükle",
-      "visualBrochureTemplateTitle": "Windo Görsel Broşür Taslağı"
+      "loadVisualBrochureStarter": "Görsel broşürü yükle"
     },
     "tableDesigner": {
       "columns": "Sütunlar",

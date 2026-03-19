@@ -8,7 +8,6 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate:windo-reference-pdf": "node ./scripts/generate-windo-reference-pdf.mjs",
     "prepare": "husky"
   },
   "lint-staged": {

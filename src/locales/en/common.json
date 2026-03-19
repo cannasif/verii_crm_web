@@ -153,6 +153,7 @@
     "templateUpdateFailed": "Template could not be updated",
     "templateSaveFailed": "Template could not be saved",
     "imageMax2Mb": "The image can be up to 2 MB.",
+    "imageUploadFailed": "Failed to upload image",
     "selectImage": "select image",
     "imageSettings": "Image Properties",
     "imageUrl": "Image URL",
@@ -410,13 +411,7 @@
     "layoutPreset": {
       "label": "Layout type",
       "customTitle": "Custom canvas layout",
-      "customDescription": "Build a custom PDF template by placing text, fields, tables and images on the canvas.",
-      "windoQuotationTitle": "Windo quotation design",
-      "windoQuotationDescription": "Uses the embedded Windo quotation design with the advanced quotation renderer. Users can select this template and generate quotation PDFs directly.",
-      "windoQuotationTemplateTitle": "Windo Quotation Design",
-      "builderLockedTitle": "Windo quotation design is active",
-      "builderLockedDescription": "This preset is rendered by the built-in Windo quotation engine rather than canvas elements.",
-      "builderLockedHint": "Save the template, then generate the PDF from the template list by entering a quotation ID. The layout will be applied automatically."
+      "customDescription": "Build a custom PDF template by placing text, fields, tables and images on the canvas."
     }
   },
   "dashboard": {
@@ -2358,18 +2353,13 @@
       "quotationTotalsLabel": "Quotation totals"
     },
     "starter": {
-      "windoTitle": "Windo starter canvas",
-      "windoDescription": "Loads an editable canvas skeleton close to the Windo quotation layout so you can continue with drag and drop.",
-      "loadWindoStarter": "Load Windo starter",
-      "windoTemplateTitle": "Windo Canvas Draft",
       "manualQuotationTitle": "Editable quotation + visuals starter",
       "manualQuotationDescription": "Builds a 4-page custom canvas: quotation page, about image page, timeline image page, and a final notes + 3 reference images page. Everything stays editable.",
       "loadManualQuotationStarter": "Load editable quotation starter",
       "manualQuotationTemplateTitle": "Editable Quotation Draft",
       "visualBrochureTitle": "Visual brochure starter",
       "visualBrochureDescription": "Creates a 3-page visual deck canvas for cover, about and timeline pages. Upload your reference visuals directly into the full-page image slots.",
-      "loadVisualBrochureStarter": "Load visual brochure starter",
-      "visualBrochureTemplateTitle": "Windo Visual Brochure Draft"
+      "loadVisualBrochureStarter": "Load visual brochure starter"
     },
     "tableDropHint": "Drag from the palette to add a column",
     "tableSettingsHint": "Drag the table columns from the left palette and drop them into this area.",

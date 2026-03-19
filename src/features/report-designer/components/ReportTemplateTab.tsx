@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { usePdfReportTemplateList } from '@/features/pdf-report-designer/hooks/usePdfReportTemplateList';
 import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { DocumentRuleType, type ReportTemplateGetDto } from '@/features/pdf-report';
@@ -21,6 +21,8 @@ const RULE_TYPE_EMPTY_LABELS: Record<DocumentRuleType, string> = {
   [DocumentRuleType.Order]: 'reportDesigner.preview.emptyOrder',
 };
 
+const EMPTY_BUILT_IN_TEMPLATES: NonNullable<ReportTemplateTabProps['builtInTemplates']> = [];
+
 interface ReportTemplateTabProps {
   entityId: number;
   ruleType: DocumentRuleType;
@@ -35,7 +37,7 @@ interface ReportTemplateTabProps {
 export function ReportTemplateTab({
   entityId,
   ruleType,
-  builtInTemplates = [],
+  builtInTemplates,
 }: ReportTemplateTabProps): ReactElement {
   const { t } = useTranslation();
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
@@ -45,32 +47,85 @@ export function ReportTemplateTab({
   const pdfBlobUrlRef = useRef<string | null>(null);
   pdfBlobUrlRef.current = pdfBlobUrl;
 
-  const { data: listData, isLoading: isLoadingTemplates } = usePdfReportTemplateList();
+  const { data: listData, isLoading: isLoadingTemplates } = usePdfReportTemplateList({
+    ruleType,
+    isActive: true,
+    pageSize: 100,
+  });
   const templates = listData?.items ?? [];
-  const builtInTemplateMap = useMemo(
-    () => new Map(builtInTemplates.map((template) => [template.id, template])),
-    [builtInTemplates]
-  );
-
+  const stableBuiltInTemplates = builtInTemplates ?? EMPTY_BUILT_IN_TEMPLATES;
   const filteredTemplates: ReportTemplateGetDto[] = templates.filter(
     (template) => Number(template.ruleType) === ruleType
   );
-  const defaultTemplateRef = useRef(false);
+  const effectiveBuiltInTemplates = useMemo(
+    () => (filteredTemplates.length > 0 ? EMPTY_BUILT_IN_TEMPLATES : stableBuiltInTemplates),
+    [filteredTemplates.length, stableBuiltInTemplates]
+  );
+  const builtInTemplateMap = useMemo(
+    () => new Map(effectiveBuiltInTemplates.map((template) => [template.id, template])),
+    [effectiveBuiltInTemplates]
+  );
+  const selectedBuiltInTemplate = useMemo(
+    () => builtInTemplateMap.get(selectedTemplateId),
+    [builtInTemplateMap, selectedTemplateId]
+  );
+  const selectionStorageKey = useMemo(
+    () => `report-template-selection:${ruleType}`,
+    [ruleType]
+  );
+
+  const persistSelection = useCallback((value: string): void => {
+    try {
+      localStorage.setItem(selectionStorageKey, value);
+    } catch {
+      // ignore
+    }
+  }, [selectionStorageKey]);
+
+  const selectableIds = useMemo(
+    () => new Set([
+      ...effectiveBuiltInTemplates.map((template) => template.id),
+      ...filteredTemplates.map((template) => String(template.id)),
+    ]),
+    [effectiveBuiltInTemplates, filteredTemplates]
+  );
+
   useEffect(() => {
-    if (defaultTemplateRef.current) return;
-    const builtInDefaultTemplate = builtInTemplates.find((template) => template.isDefault === true);
-    if (builtInDefaultTemplate != null) {
-      defaultTemplateRef.current = true;
-      setSelectedTemplateId(builtInDefaultTemplate.id);
+    if (selectedTemplateId && selectableIds.has(selectedTemplateId)) return;
+
+    let storedSelection = '';
+    try {
+      storedSelection = localStorage.getItem(selectionStorageKey) ?? '';
+    } catch {
+      storedSelection = '';
+    }
+
+    if (storedSelection && selectableIds.has(storedSelection)) {
+      setSelectedTemplateId(storedSelection);
       return;
     }
-    if (filteredTemplates.length === 0) return;
+
+    const builtInDefaultTemplate = effectiveBuiltInTemplates.find((template) => template.isDefault === true);
+    if (builtInDefaultTemplate != null) {
+      setSelectedTemplateId(builtInDefaultTemplate.id);
+      persistSelection(builtInDefaultTemplate.id);
+      return;
+    }
+
     const defaultTemplate = filteredTemplates.find((template) => template.default === true);
     if (defaultTemplate != null) {
-      defaultTemplateRef.current = true;
-      setSelectedTemplateId(String(defaultTemplate.id));
+      const value = String(defaultTemplate.id);
+      setSelectedTemplateId(value);
+      persistSelection(value);
+      return;
     }
-  }, [builtInTemplates, filteredTemplates]);
+
+    const fallbackTemplate = effectiveBuiltInTemplates[0]?.id ?? (filteredTemplates[0] ? String(filteredTemplates[0].id) : '');
+    if (fallbackTemplate) {
+      setSelectedTemplateId(fallbackTemplate);
+      persistSelection(fallbackTemplate);
+    }
+  }, [effectiveBuiltInTemplates, filteredTemplates, persistSelection, selectableIds, selectedTemplateId, selectionStorageKey]);
 
   useEffect(() => {
     if (!selectedTemplateId) {
@@ -82,13 +137,12 @@ export function ReportTemplateTab({
       });
       return;
     }
-    const builtInTemplate = builtInTemplateMap.get(selectedTemplateId);
-    if (builtInTemplate != null) {
+    if (selectedBuiltInTemplate != null) {
       let cancelled = false;
       setIsGenerating(true);
       setHasPreviewError(false);
 
-      void builtInTemplate
+      void selectedBuiltInTemplate
         .generate()
         .then((blob) => {
           if (cancelled) return;
@@ -158,7 +212,7 @@ export function ReportTemplateTab({
     return () => {
       cancelled = true;
     };
-  }, [selectedTemplateId, entityId, t, builtInTemplateMap]);
+  }, [selectedTemplateId, entityId, t, selectedBuiltInTemplate]);
 
   useEffect(() => {
     return () => {
@@ -168,7 +222,7 @@ export function ReportTemplateTab({
   }, []);
 
   const emptyLabel = t(RULE_TYPE_EMPTY_LABELS[ruleType]);
-  const hasSelectableTemplates = builtInTemplates.length > 0 || filteredTemplates.length > 0;
+  const hasSelectableTemplates = effectiveBuiltInTemplates.length > 0 || filteredTemplates.length > 0;
 
   return (
     <div className="space-y-6">
@@ -177,7 +231,10 @@ export function ReportTemplateTab({
           <Label htmlFor="report-template">{t('reportDesigner.preview.label')}</Label>
           <Select
             value={selectedTemplateId}
-            onValueChange={setSelectedTemplateId}
+            onValueChange={(value) => {
+              setSelectedTemplateId(value);
+              persistSelection(value);
+            }}
             disabled={isLoadingTemplates}
           >
             <SelectTrigger id="report-template" className="w-full">
@@ -190,7 +247,7 @@ export function ReportTemplateTab({
                 </SelectItem>
               ) : (
                 <>
-                  {builtInTemplates.map((template) => (
+                  {effectiveBuiltInTemplates.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       {template.title}
                       {template.isDefault === true ? t('reportDesigner.preview.defaultSuffix') : ''}

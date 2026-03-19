@@ -41,6 +41,7 @@ import {
   KEYBOARD_MOVE_STEP_SHIFT,
 } from '../constants';
 import { clampElementToSection } from '../utils/dto-to-canvas';
+import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 
@@ -372,12 +373,15 @@ function ImageElementBlock({ element }: { element: PdfReportElement }): ReactEle
       e.target.value = '';
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result;
-      if (typeof dataUrl === 'string') updateReportElement(element.id, { value: dataUrl });
-    };
-    reader.readAsDataURL(file);
+    void uploadPdfTemplateImage(file)
+      .then((relativeUrl) => {
+        updateReportElement(element.id, { value: relativeUrl });
+      })
+      .catch((error: Error) => {
+        toast.error(t('common.imageUploadFailed'), {
+          description: error.message,
+        });
+      });
     e.target.value = '';
   };
 
@@ -829,12 +833,15 @@ function ElementSettingsPopover({ element }: { element: PdfCanvasElement }): Rea
         e.target.value = '';
         return;
       }
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result;
-        if (typeof dataUrl === 'string') updateReportElement(el.id, { value: dataUrl });
-      };
-      reader.readAsDataURL(file);
+      void uploadPdfTemplateImage(file)
+        .then((relativeUrl) => {
+          updateReportElement(el.id, { value: relativeUrl });
+        })
+        .catch((error: Error) => {
+          toast.error(t('common.imageUploadFailed'), {
+            description: error.message,
+          });
+        });
       e.target.value = '';
     };
     return (

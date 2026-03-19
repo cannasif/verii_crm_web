@@ -42,7 +42,6 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
-import { createQuotationLinesPdfBlob } from '../utils/export-quotation-lines-pdf';
 
 function addDaysToDateOnly(dateValue: string, days: number): string {
   const date = new Date(`${dateValue}T12:00:00`);
@@ -94,64 +93,6 @@ export function QuotationDetailPage(): ReactElement {
   const isReadOnly = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4;
   const isClosed = quotationStatus === 4;
   const linesEnabled = !isReadOnly;
-  const builtInReportTemplates = useMemo(
-    () => {
-      if (quotation == null) return [];
-
-      const raw = quotation as unknown as Record<string, unknown>;
-      const customerName =
-        quotation.potentialCustomerName ??
-        customerOptions.find((option) => option.id === quotation.potentialCustomerId)?.name ??
-        null;
-      const documentSerialTypeName =
-        (raw.documentSerialTypeName as string | null | undefined) ??
-        (raw.DocumentSerialTypeName as string | null | undefined) ??
-        null;
-      const salesTypeName =
-        (raw.salesTypeDefinitionName as string | null | undefined) ??
-        (raw.SalesTypeDefinitionName as string | null | undefined) ??
-        (raw.deliveryMethodName as string | null | undefined) ??
-        (raw.DeliveryMethodName as string | null | undefined) ??
-        null;
-
-      return [
-        {
-          id: '__builtin_windo_teklif_yap__',
-          title: 'Windo Teklif Yap',
-          isDefault: true,
-          generate: () =>
-            createQuotationLinesPdfBlob({
-              fileName: `teklif-${quotation.offerNo || 'detay'}.pdf`,
-              title: t('quotation.sections.lines'),
-              currencyCode: quotation.currency || 'TRY',
-              lines,
-              offerNo: quotation.offerNo ?? null,
-              customerName,
-              representativeName: quotation.representativeName ?? null,
-              address: quotation.shippingAddressText ?? null,
-              shippingAddress: quotation.shippingAddressText ?? null,
-              erpCustomerCode: quotation.erpCustomerCode ?? null,
-              offerDate: quotation.offerDate ?? null,
-              deliveryDate: quotation.deliveryDate ?? null,
-              validUntil: quotation.validUntil ?? null,
-              paymentTypeName: quotation.paymentTypeName ?? null,
-              salesTypeName,
-              projectCode: quotation.erpProjectCode ?? null,
-              description: quotation.description ?? null,
-              notes: Object.values(quotationNotes).filter(
-                (note): note is string => typeof note === 'string' && note.trim().length > 0
-              ),
-              metaFields: [
-                { label: t('quotation.serialNumber', { defaultValue: 'Seri No' }), value: documentSerialTypeName },
-              ],
-              t,
-            }),
-        },
-      ];
-    },
-    [quotation, customerOptions, lines, quotationNotes, t]
-  );
-
   const form = useForm<CreateQuotationSchema>({
     resolver: zodResolver(createQuotationSchema),
     mode: 'onChange',
@@ -902,7 +843,6 @@ export function QuotationDetailPage(): ReactElement {
           <ReportTemplateTab
             entityId={quotationId}
             ruleType={DocumentRuleType.Quotation}
-            builtInTemplates={builtInReportTemplates}
           />
         </TabsContent>
       </Tabs>

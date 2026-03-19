@@ -175,6 +175,8 @@ export interface PdfReportTemplateListParams {
   search?: string;
   sortBy?: string;
   sortDirection?: 'asc' | 'desc';
+  ruleType?: DocumentRuleType;
+  isActive?: boolean;
 }
 
 export interface PdfReportTemplateListResult {
@@ -193,6 +195,15 @@ export interface PdfTablePresetDto {
   columns: NonNullable<ReportTemplateElementDto['columns']>;
   tableOptions?: NonNullable<ReportTemplateElementDto['tableOptions']>;
   isActive: boolean;
+}
+
+export interface PdfTemplateAssetDto {
+  id: number;
+  originalFileName: string;
+  storedFileName: string;
+  relativeUrl: string;
+  contentType: string;
+  sizeBytes: number;
 }
 
 export interface PdfTablePresetListParams {

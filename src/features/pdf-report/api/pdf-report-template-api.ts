@@ -10,6 +10,7 @@ import type {
   PdfReportTemplateListParams,
   PdfReportTemplateListResult,
   PdfTablePresetDto,
+  PdfTemplateAssetDto,
   PdfTablePresetCreateDto,
   PdfTablePresetListParams,
   PdfTablePresetListResult,
@@ -148,16 +149,18 @@ export const pdfReportTemplateApi = {
     params?: PdfReportTemplateListParams
   ): Promise<PdfReportTemplateListResult> => {
     const response = await api.get<unknown>(BASE, {
-      params: params
-        ? {
-            pageNumber: params.pageNumber,
-            pageSize: params.pageSize,
-            search: params.search,
-            sortBy: params.sortBy,
-            sortDirection: params.sortDirection,
-          }
-        : undefined,
-    });
+          params: params
+            ? {
+                pageNumber: params.pageNumber,
+                pageSize: params.pageSize,
+                search: params.search,
+                sortBy: params.sortBy,
+                sortDirection: params.sortDirection,
+                ruleType: params.ruleType,
+                isActive: params.isActive,
+              }
+            : undefined,
+        });
     if (!isApiSuccess(response)) {
       const r = response as Record<string, unknown>;
       throw new Error((r.message ?? r.Message ?? 'Şablon listesi yüklenemedi') as string);
@@ -216,6 +219,18 @@ export const pdfReportTemplateApi = {
   createPreset: async (data: PdfTablePresetCreateDto): Promise<PdfTablePresetDto> => {
     const response = await api.post<unknown>(PRESET_BASE, data);
     return unwrapApiResponse<PdfTablePresetDto>(response);
+  },
+
+  uploadAsset: async (file: File): Promise<PdfTemplateAssetDto> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await api.post<unknown>(`${BASE}/assets/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return unwrapApiResponse<PdfTemplateAssetDto>(response);
   },
 
   updatePreset: async (id: number, data: PdfTablePresetUpdateDto): Promise<PdfTablePresetDto> => {

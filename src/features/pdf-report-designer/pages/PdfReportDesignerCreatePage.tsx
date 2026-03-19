@@ -55,9 +55,6 @@ import { usePdfReportTemplateById } from '../hooks/usePdfReportTemplateById';
 import { dtoToPdfCanvasElements, pdfCanvasElementsToDto } from '../utils/dto-to-canvas';
 import { getApiErrorMessage } from '../utils/get-api-error-message';
 import { createClientId } from '@/lib/create-client-id';
-import { createWindoCanvasStarter } from '../utils/windo-canvas-starter';
-import { createWindoVisualBrochureStarter } from '../utils/windo-visual-brochure-starter';
-import { createWindoManualQuotationStarter } from '../utils/windo-manual-quotation-starter';
 import type {
   ReportTemplateCreateDto,
   ReportTemplateGetDto,
@@ -874,73 +871,6 @@ export function PdfReportDesignerCreatePage(): ReactElement {
             </Button>
           </form>
         </Form>
-        {layoutPreset === PDF_LAYOUT_PRESET.Custom && (
-          <div className="mt-4 flex flex-col gap-3 rounded-md border border-slate-200 bg-slate-50 p-3">
-            <div className="flex items-center gap-3">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-900">Standart belge baslangici</p>
-                <p className="text-xs text-slate-500">Secili belge tipi icin duzenlenebilir tek sayfali ticari belge iskeleti yukler.</p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setElements(createWindoCanvasStarter(createClientId, ruleType));
-                  form.setValue('pageCount', 1, { shouldDirty: true });
-                  if (!form.getValues('title').trim()) {
-                    form.setValue('title', `${ruleType === PricingRuleType.Demand ? 'Talep' : ruleType === PricingRuleType.Order ? 'Siparis' : 'Teklif'} Taslagi`, {
-                      shouldDirty: true,
-                    });
-                  }
-                }}
-              >
-                Belge iskeletini yukle
-              </Button>
-            </div>
-            <div className="flex items-center gap-3 border-t border-slate-200 pt-3">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-900">Belge + gorsel sayfalari</p>
-                <p className="text-xs text-slate-500">Ilk sayfasi belge, sonraki sayfalari tam sayfa gorsel olacak sekilde 4 sayfalik duzenlenebilir taslak yukler.</p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setElements(createWindoManualQuotationStarter(createClientId, ruleType));
-                  form.setValue('pageCount', 4, { shouldDirty: true });
-                  if (!form.getValues('title').trim()) {
-                    form.setValue('title', `${ruleType === PricingRuleType.Demand ? 'Talep' : ruleType === PricingRuleType.Order ? 'Siparis' : 'Teklif'} + Gorsel Taslagi`, {
-                      shouldDirty: true,
-                    });
-                  }
-                }}
-              >
-                Cok sayfali taslagi yukle
-              </Button>
-            </div>
-            <div className="flex items-center gap-3 border-t border-slate-200 pt-3">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-900">Tam sayfa gorsel seti</p>
-                <p className="text-xs text-slate-500">Kapak, tanitim veya ek belge sayfalari icin 3 sayfalik gorsel odakli canvas yukler.</p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setElements(createWindoVisualBrochureStarter(createClientId));
-                  form.setValue('pageCount', 3, { shouldDirty: true });
-                  if (!form.getValues('title').trim()) {
-                    form.setValue('title', `${ruleType === PricingRuleType.Demand ? 'Talep' : ruleType === PricingRuleType.Order ? 'Siparis' : 'Teklif'} Gorsel Eki`, {
-                      shouldDirty: true,
-                    });
-                  }
-                }}
-              >
-                Gorsel canvas yukle
-              </Button>
-            </div>
-          </div>
-        )}
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-2">
           <span className="text-sm font-medium text-slate-600">{t('pdfReportDesigner.pages')}</span>
           {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (

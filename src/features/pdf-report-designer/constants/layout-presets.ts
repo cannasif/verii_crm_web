@@ -2,7 +2,6 @@ import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-type
 
 export const PDF_LAYOUT_PRESET = {
   Custom: 'custom',
-  WindoQuotation: 'windo-quotation-v1',
 } as const;
 
 export type PdfLayoutPresetValue = (typeof PDF_LAYOUT_PRESET)[keyof typeof PDF_LAYOUT_PRESET];

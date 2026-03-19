@@ -16,6 +16,7 @@ import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
+import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
 
 export type PdfFieldPaletteType = 'text' | 'field' | 'table' | 'table-column' | 'image' | 'shape' | 'container' | 'note' | 'summary' | 'quotationTotals';
 
@@ -327,13 +328,15 @@ function ImagePropertiesPanel(): ReactElement | null {
       e.target.value = '';
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result;
-      if (typeof dataUrl === 'string')
-        updateReportElement(selectedElement.id, { value: dataUrl });
-    };
-    reader.readAsDataURL(file);
+    void uploadPdfTemplateImage(file)
+      .then((relativeUrl) => {
+        updateReportElement(selectedElement.id, { value: relativeUrl });
+      })
+      .catch((error: Error) => {
+        toast.error(t('common.imageUploadFailed'), {
+          description: error.message,
+        });
+      });
     e.target.value = '';
   };
 
