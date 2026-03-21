@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Table,
   TableBody,
@@ -38,6 +39,7 @@ function normalizeColumns(cols: ColumnItem[]): string[] {
 }
 
 export function ReportChart({ columns, rows, chartType, className }: ReportChartProps): ReactElement {
+  const { t } = useTranslation('common');
   const recharts = useRechartsModule();
   const Recharts = recharts;
   const columnLabels = useMemo(() => normalizeColumns(columns), [columns]);
@@ -58,7 +60,7 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
 
   const [labelKey, valueKeys] = useMemo(() => {
     if (columnLabels.length === 0) return [undefined, [] as string[]];
-    if (chartType === 'pie') {
+    if (chartType === 'pie' || chartType === 'donut') {
       const valueCol =
         columnLabels.find((_, i) => {
           const sample = normalizedRows[0]?.[i];
@@ -72,10 +74,37 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
     return [labelCol, valueCols];
   }, [columnLabels, normalizedRows, chartType]);
 
+  const matrixData = useMemo(() => {
+    if (chartType !== 'matrix' || columnLabels.length < 3) return null;
+
+    const rowKey = columnLabels[0];
+    const legendKey = columnLabels[1];
+    const metricKeys = columnLabels.slice(2);
+    const rowLabels: string[] = [];
+    const columnHeaders: string[] = [];
+    const grid = new Map<string, Record<string, number | string>>();
+
+    tableData.forEach((item) => {
+      const rowLabel = String(item[rowKey] ?? '');
+      const legendLabel = String(item[legendKey] ?? '');
+      if (!rowLabels.includes(rowLabel)) rowLabels.push(rowLabel);
+
+      metricKeys.forEach((metricKey) => {
+        const header = metricKeys.length > 1 ? `${legendLabel} · ${metricKey}` : legendLabel;
+        if (!columnHeaders.includes(header)) columnHeaders.push(header);
+        const currentRow = grid.get(rowLabel) ?? {};
+        currentRow[header] = (item[metricKey] as number | string | undefined) ?? '';
+        grid.set(rowLabel, currentRow);
+      });
+    });
+
+    return { rowKey, rowLabels, columnHeaders, grid };
+  }, [chartType, columnLabels, tableData]);
+
   if (columnLabels.length === 0 || normalizedRows.length === 0) {
     return (
-      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
-        No data
+        <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
+        {t('common.noData')}
       </div>
     );
   }
@@ -105,15 +134,73 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
     );
   }
 
-  if (!Recharts) {
+  if (chartType === 'matrix' && matrixData) {
     return (
-      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
-        Loading chart...
+      <div className={cn('max-h-[400px] overflow-auto', className)}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{matrixData.rowKey}</TableHead>
+              {matrixData.columnHeaders.map((header) => (
+                <TableHead key={header}>{header}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {matrixData.rowLabels.map((rowLabel) => {
+              const cells = matrixData.grid.get(rowLabel) ?? {};
+              return (
+                <TableRow key={rowLabel}>
+                  <TableCell className="font-medium">{rowLabel}</TableCell>
+                  {matrixData.columnHeaders.map((header) => (
+                    <TableCell key={`${rowLabel}-${header}`}>{String(cells[header] ?? '')}</TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
     );
   }
 
-  if (chartType === 'pie' && labelKey && valueKeys.length > 0) {
+  if (!Recharts) {
+    return (
+        <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
+        {t('common.reportBuilder.loadingChart')}
+      </div>
+    );
+  }
+
+  if (chartType === 'kpi') {
+    const numericCells = normalizedRows.flat().filter((value) => typeof value === 'number' || (typeof value === 'string' && !Number.isNaN(Number(value))));
+    const primaryValue = numericCells.length > 0 ? Number(numericCells[0]) : 0;
+    const secondaryValue = numericCells.length > 1 ? Number(numericCells[1]) : null;
+    const secondaryDiff = secondaryValue != null && secondaryValue !== 0
+      ? (((primaryValue - secondaryValue) / Math.abs(secondaryValue)) * 100).toFixed(1)
+      : null;
+
+    return (
+      <div className={cn('grid h-full min-h-[220px] gap-4 md:grid-cols-2', className)}>
+        <div className="rounded-xl border bg-gradient-to-br from-primary/10 to-background p-6">
+          <div className="text-muted-foreground text-xs uppercase tracking-[0.2em]">{t('common.reportBuilder.primaryKpi')}</div>
+          <div className="mt-4 text-4xl font-bold tracking-tight">{primaryValue.toLocaleString()}</div>
+          <div className="text-muted-foreground mt-2 text-sm">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
+        </div>
+        <div className="rounded-xl border bg-card p-6">
+          <div className="text-muted-foreground text-xs uppercase tracking-[0.2em]">{t('common.reportBuilder.comparison')}</div>
+          <div className="mt-4 text-2xl font-semibold">
+            {secondaryValue != null ? secondaryValue.toLocaleString() : t('common.reportBuilder.emptyDash')}
+          </div>
+          <div className="mt-2 text-sm font-medium text-primary">
+            {secondaryDiff != null ? t('common.reportBuilder.deltaSuffix', { value: secondaryDiff }) : t('common.reportBuilder.noComparisonValue')}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if ((chartType === 'pie' || chartType === 'donut') && labelKey && valueKeys.length > 0) {
     const data = tableData.map((r) => ({
       name: String(r[labelKey] ?? ''),
       value: Number(r[valueKeys[0]]) || 0,
@@ -122,7 +209,16 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
       <div className={cn('h-[300px] w-full', className)}>
         <Recharts.ResponsiveContainer width="100%" height="100%">
           <Recharts.PieChart>
-            <Recharts.Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+            <Recharts.Pie
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              innerRadius={chartType === 'donut' ? 45 : 0}
+              label
+            >
               {data.map((_, i) => (
                 <Recharts.Cell key={i} fill={COLORS[i % COLORS.length]} />
               ))}
@@ -135,8 +231,11 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
     );
   }
 
-  if ((chartType === 'bar' || chartType === 'line') && labelKey) {
-    const ChartComponent = chartType === 'bar' ? Recharts.BarChart : Recharts.LineChart;
+  if ((chartType === 'bar' || chartType === 'stackedBar' || chartType === 'line') && labelKey) {
+    const ChartComponent =
+      chartType === 'line'
+        ? Recharts.LineChart
+        : Recharts.BarChart;
     return (
       <div className={cn('h-[300px] w-full', className)}>
         <Recharts.ResponsiveContainer width="100%" height="100%">
@@ -147,8 +246,13 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
             <Recharts.Tooltip />
             <Recharts.Legend />
             {valueKeys.map((key, i) =>
-              chartType === 'bar' ? (
-                <Recharts.Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} />
+              chartType === 'bar' || chartType === 'stackedBar' ? (
+                <Recharts.Bar
+                  key={key}
+                  dataKey={key}
+                  fill={COLORS[i % COLORS.length]}
+                  stackId={chartType === 'stackedBar' ? 'stack' : undefined}
+                />
               ) : (
                 <Recharts.Line key={key} type="monotone" dataKey={key} stroke={COLORS[i % COLORS.length]} />
               )
@@ -160,8 +264,8 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
   }
 
   return (
-    <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
-      No data
+      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
+      {t('common.noData')}
     </div>
   );
 }

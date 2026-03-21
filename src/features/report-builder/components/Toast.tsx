@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface ToastProps {
   message: string;
@@ -9,6 +10,7 @@ interface ToastProps {
 }
 
 export function Toast({ message, variant, onDismiss, className }: ToastProps): ReactElement {
+  const { t } = useTranslation('common');
   const isSuccess = variant === 'success';
   return (
     <div
@@ -28,7 +30,7 @@ export function Toast({ message, variant, onDismiss, className }: ToastProps): R
             type="button"
             onClick={onDismiss}
             className="shrink-0 rounded p-1 hover:bg-black/10 dark:hover:bg-white/10"
-            aria-label="Dismiss"
+            aria-label={t('common.reportBuilder.dismiss')}
           >
             ×
           </button>

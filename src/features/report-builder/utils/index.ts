@@ -3,5 +3,9 @@ export {
   isValuesCompatible,
   isLegendCompatible,
   getOperatorsForField,
+  getFieldSemanticLabel,
+  getFieldSemanticType,
+  validateKpiConfig,
+  validateMatrixConfig,
   validatePieConfig,
 } from './slot-validation';

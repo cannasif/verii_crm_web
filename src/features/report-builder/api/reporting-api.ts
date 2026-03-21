@@ -1,11 +1,23 @@
 import { api } from '@/lib/axios';
-import type { ConnectionDto, DataSourceCheckResponseDto, Field } from '../types';
+import type { ConnectionDto, DataSourceCatalogItem, DataSourceCheckResponseDto, Field } from '../types';
 
 const BASE = '/api/reportbuilder';
 
 function normalizeField(raw: Record<string, unknown>): Field {
   return {
     name: String(raw.name ?? raw.Name ?? ''),
+    displayName:
+      raw.displayName != null || raw.DisplayName != null
+        ? String(raw.displayName ?? raw.DisplayName ?? '')
+        : undefined,
+    semanticType:
+      raw.semanticType != null || raw.SemanticType != null
+        ? String(raw.semanticType ?? raw.SemanticType ?? '')
+        : undefined,
+    defaultAggregation:
+      raw.defaultAggregation != null || raw.DefaultAggregation != null
+        ? String(raw.defaultAggregation ?? raw.DefaultAggregation ?? '') as Field['defaultAggregation']
+        : undefined,
     sqlType: String(raw.sqlType ?? raw.SqlType ?? ''),
     dotNetType: String(raw.dotNetType ?? raw.DotNetType ?? ''),
     isNullable: Boolean(raw.isNullable ?? raw.IsNullable ?? false),
@@ -23,6 +35,16 @@ function normalizeConnection(raw: Record<string, unknown>): ConnectionDto {
   return {
     key: String(raw.key ?? raw.Key ?? ''),
     label: raw.label != null || raw.Label != null ? String(raw.label ?? raw.Label ?? '') : undefined,
+  };
+}
+
+function normalizeDataSourceCatalogItem(raw: Record<string, unknown>): DataSourceCatalogItem {
+  return {
+    schemaName: String(raw.schemaName ?? raw.SchemaName ?? 'dbo'),
+    objectName: String(raw.objectName ?? raw.ObjectName ?? ''),
+    fullName: String(raw.fullName ?? raw.FullName ?? ''),
+    type: String(raw.type ?? raw.Type ?? ''),
+    displayName: String(raw.displayName ?? raw.DisplayName ?? raw.fullName ?? raw.FullName ?? ''),
   };
 }
 
@@ -55,5 +77,24 @@ export const reportingApi = {
       message: String(res?.message ?? (res as { Message?: string }).Message ?? ''),
       schema: schemaToFields(schemaArr),
     };
+  },
+
+  async listDataSources(params: {
+    connectionKey: string;
+    type: string;
+    search?: string;
+  }): Promise<DataSourceCatalogItem[]> {
+    const search = params.search?.trim();
+    const q = new URLSearchParams({
+      connectionKey: params.connectionKey,
+      type: params.type,
+    });
+    if (search) q.set('search', search);
+    const res = await api.get<unknown>(`${BASE}/datasources?${q.toString()}`);
+    const obj = res as Record<string, unknown>;
+    const arr = Array.isArray(obj?.data ?? obj?.Data) ? (obj.data ?? obj.Data) as unknown[] : Array.isArray(res) ? res as unknown[] : [];
+    return arr
+      .map((item) => (typeof item === 'object' && item !== null ? normalizeDataSourceCatalogItem(item as Record<string, unknown>) : null))
+      .filter((item): item is DataSourceCatalogItem => item != null && item.fullName !== '');
   },
 };

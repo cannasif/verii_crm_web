@@ -68,9 +68,9 @@ export function SlotsPanel({
 
   return (
     <div className="space-y-4">
-      <Slot id="slot-axis" label={t('reportBuilder.axis')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
+      <Slot id="slot-axis" label={t('common.reportBuilder.axis')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
         {disabled ? (
-          <span className="text-muted-foreground text-xs">Kontrol gerekli</span>
+          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.checkRequired')}</span>
         ) : axis ? (
           <div className="flex items-center justify-between gap-1 rounded bg-muted/50 px-2 py-1 text-sm">
             <span>{axis.field}</span>
@@ -79,15 +79,15 @@ export function SlotsPanel({
             </Button>
           </div>
         ) : (
-          <span className="text-muted-foreground text-xs">Alan bırakın</span>
+          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
         )}
       </Slot>
 
-      <Slot id="slot-values" label={t('reportBuilder.value')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
+      <Slot id="slot-values" label={t('common.reportBuilder.value')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
         {disabled ? (
-          <span className="text-muted-foreground text-xs">Kontrol gerekli</span>
+          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.checkRequired')}</span>
         ) : values.length === 0 ? (
-          <span className="text-muted-foreground text-xs">Sayısal alan bırakın</span>
+          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropNumericField')}</span>
         ) : (
           <div className="space-y-1">
             {values.map((v, i) => (
@@ -102,9 +102,9 @@ export function SlotsPanel({
         )}
       </Slot>
 
-      <Slot id="slot-legend" label="Lejant" invalid={!!slotError} errorMessage={slotError ?? undefined}>
+      <Slot id="slot-legend" label={t('common.reportBuilder.legend')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
         {disabled ? (
-          <span className="text-muted-foreground text-xs">Kontrol gerekli</span>
+          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.checkRequired')}</span>
         ) : legend ? (
           <div className="flex items-center justify-between gap-1 rounded bg-muted/50 px-2 py-1 text-sm">
             <span>{legend.field}</span>
@@ -113,15 +113,15 @@ export function SlotsPanel({
             </Button>
           </div>
         ) : (
-          <span className="text-muted-foreground text-xs">Alan bırakın</span>
+          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
         )}
       </Slot>
 
-      <Slot id="slot-filters" label="Filtreler" invalid={!!slotError} errorMessage={slotError ?? undefined}>
+      <Slot id="slot-filters" label={t('common.filters')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
         {disabled ? (
-          <span className="text-muted-foreground text-xs">Kontrol gerekli</span>
+          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.checkRequired')}</span>
         ) : filters.length === 0 ? (
-          <span className="text-muted-foreground text-xs">Alan bırakın</span>
+          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
         ) : (
           <div className="space-y-1">
             {filters.map((f, i) => (

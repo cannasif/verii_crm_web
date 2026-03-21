@@ -1,4 +1,5 @@
-export type ChartType = 'table' | 'bar' | 'line' | 'pie';
+export type ChartType = 'table' | 'bar' | 'stackedBar' | 'line' | 'pie' | 'donut' | 'kpi' | 'matrix';
+export type ReportLifecycleStatus = 'draft' | 'published' | 'archived';
 
 export type DateGrouping = 'day' | 'week' | 'month' | 'year';
 
@@ -33,7 +34,67 @@ export interface ReportConfigFilter {
   to?: unknown;
 }
 
+export type CalculatedFieldOperation = 'add' | 'subtract' | 'multiply' | 'divide';
+
+export interface CalculatedField {
+  name: string;
+  label?: string;
+  leftField: string;
+  rightField: string;
+  operation: CalculatedFieldOperation;
+}
+
+export interface ReportLifecycleMetadata {
+  status: ReportLifecycleStatus;
+  version: number;
+  publishedAt?: string;
+  releaseNote?: string;
+}
+
+export interface ReportHistoryEntry {
+  version: number;
+  status: ReportLifecycleStatus;
+  publishedAt?: string;
+  releaseNote?: string;
+  snapshotAt: string;
+  configSnapshot: string;
+}
+
+export interface ReportGovernanceMetadata {
+  category?: string;
+  tags?: string[];
+  audience?: 'private' | 'team' | 'organization';
+  refreshCadence?: 'manual' | 'hourly' | 'daily' | 'weekly';
+  favorite?: boolean;
+  sharedWith?: string[];
+  subscriptionEnabled?: boolean;
+  subscriptionChannel?: 'email' | 'inbox' | 'webhook';
+  subscriptionFrequency?: 'manual' | 'daily' | 'weekly' | 'monthly';
+  owner?: string;
+  certified?: boolean;
+  lastReviewedAt?: string;
+}
+
 export interface ReportConfig {
+  chartType: ChartType;
+  axis?: ReportConfigAxis;
+  values: ReportConfigValue[];
+  legend?: ReportConfigLegend;
+  sorting?: ReportConfigSorting;
+  filters: ReportConfigFilter[];
+  calculatedFields?: CalculatedField[];
+  lifecycle?: ReportLifecycleMetadata;
+  history?: ReportHistoryEntry[];
+  governance?: ReportGovernanceMetadata;
+  widgets?: ReportWidget[];
+  activeWidgetId?: string;
+}
+
+export interface ReportWidget {
+  id: string;
+  title: string;
+  size?: 'third' | 'half' | 'full';
+  height?: 'sm' | 'md' | 'lg';
   chartType: ChartType;
   axis?: ReportConfigAxis;
   values: ReportConfigValue[];
@@ -44,6 +105,9 @@ export interface ReportConfig {
 
 export interface Field {
   name: string;
+  displayName?: string;
+  semanticType?: string;
+  defaultAggregation?: Aggregation | 'count';
   sqlType: string;
   dotNetType: string;
   isNullable: boolean;
@@ -58,6 +122,14 @@ export interface DataSourceCheckResponseDto {
 export interface ConnectionDto {
   key: string;
   label?: string;
+}
+
+export interface DataSourceCatalogItem {
+  schemaName: string;
+  objectName: string;
+  fullName: string;
+  type: string;
+  displayName: string;
 }
 
 export interface ReportDto {
