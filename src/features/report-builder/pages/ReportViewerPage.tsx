@@ -84,6 +84,9 @@ export function ReportViewerPage(): ReactElement {
   const reportId = id ? parseInt(id, 10) : NaN;
   const widgetCount = config.widgets?.length ?? 1;
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
+  const accessLevelLabel = meta.accessLevel && meta.accessLevel !== 'none'
+    ? t(`common.reportBuilder.accessLevels.${meta.accessLevel}`)
+    : null;
   const governance = config.governance ?? {
     audience: 'private' as const,
     refreshCadence: 'manual' as const,
@@ -286,6 +289,7 @@ export function ReportViewerPage(): ReactElement {
           <div className="mt-2 flex flex-wrap gap-2">
             {governance.favorite && <Badge variant="default">{t('common.reportBuilder.favorite')}</Badge>}
             {governance.certified && <Badge variant="default">{t('common.reportBuilder.certified')}</Badge>}
+            {accessLevelLabel && meta.accessLevel !== 'owner' && <Badge variant="outline">{accessLevelLabel}</Badge>}
             <Badge variant={lifecycle.status === 'published' ? 'default' : lifecycle.status === 'archived' ? 'destructive' : 'secondary'}>
               {statusLabel}
             </Badge>
@@ -322,10 +326,12 @@ export function ReportViewerPage(): ReactElement {
             <FileJson className="mr-2 size-4" />
             {t('common.reportBuilder.exportDefinition')}
           </Button>
-          <Button size="sm" onClick={() => navigate(`/reports/${reportId}/edit`)}>
-            <Pencil className="mr-2 size-4" />
-            {t('common.edit')}
-          </Button>
+          {meta.canManage !== false && (
+            <Button size="sm" onClick={() => navigate(`/reports/${reportId}/edit`)}>
+              <Pencil className="mr-2 size-4" />
+              {t('common.edit')}
+            </Button>
+          )}
         </div>
       </div>
 

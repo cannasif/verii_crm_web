@@ -272,6 +272,11 @@
         "team": "Takım",
         "organization": "Organizasyon"
       },
+      "accessLevels": {
+        "owner": "Sahibi",
+        "shared": "Paylaşılan erişim",
+        "organization": "Organizasyon erişimi"
+      },
       "refreshCadences": {
         "manual": "Manuel",
         "hourly": "Saatlik",

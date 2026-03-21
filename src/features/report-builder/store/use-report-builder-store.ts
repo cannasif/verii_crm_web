@@ -111,6 +111,8 @@ interface BuilderMeta {
   connectionKey: string;
   dataSourceType: string;
   dataSourceName: string;
+  canManage?: boolean;
+  accessLevel?: 'owner' | 'shared' | 'organization' | 'none';
 }
 
 interface BuilderUI {
@@ -714,6 +716,8 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
         connectionKey: report.connectionKey,
         dataSourceType: report.dataSourceType,
         dataSourceName: report.dataSourceName,
+        canManage: report.canManage,
+        accessLevel: report.accessLevel,
       },
     });
     try {

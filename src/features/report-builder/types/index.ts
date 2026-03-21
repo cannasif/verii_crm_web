@@ -143,6 +143,8 @@ export interface ReportDto {
   createdAt?: string;
   updatedAt?: string;
   isDeleted?: boolean;
+  canManage?: boolean;
+  accessLevel?: 'owner' | 'shared' | 'organization' | 'none';
 }
 
 export interface ReportPreviewRequest {

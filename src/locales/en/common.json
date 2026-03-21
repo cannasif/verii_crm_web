@@ -254,6 +254,11 @@
         "team": "Team",
         "organization": "Organization"
       },
+      "accessLevels": {
+        "owner": "Owner",
+        "shared": "Shared access",
+        "organization": "Organization access"
+      },
       "refreshCadences": {
         "manual": "Manual",
         "hourly": "Hourly",

@@ -101,6 +101,10 @@ export function ReportsListPage(): ReactElement {
     cadence ? t(`common.reportBuilder.refreshCadences.${cadence}`) : null;
   const getSubscriptionFrequencyLabel = (frequency?: string): string | null =>
     frequency ? t(`common.reportBuilder.subscriptionFrequencies.${frequency}`) : null;
+  const getAccessLevelLabel = (accessLevel?: string): string | null =>
+    accessLevel && accessLevel !== 'none'
+      ? t(`common.reportBuilder.accessLevels.${accessLevel}`)
+      : null;
 
   const handleDuplicate = async (reportId: number): Promise<void> => {
     try {
@@ -202,6 +206,9 @@ export function ReportsListPage(): ReactElement {
                     <Badge variant="outline">v{summary.version}</Badge>
                     {summary.category && <Badge variant="outline">{summary.category}</Badge>}
                     {summary.audience && <Badge variant="outline">{getAudienceLabel(summary.audience)}</Badge>}
+                    {r.accessLevel && r.accessLevel !== 'owner' && (
+                      <Badge variant="outline">{getAccessLevelLabel(r.accessLevel)}</Badge>
+                    )}
                     {summary.refreshCadence && <Badge variant="outline">{getRefreshCadenceLabel(summary.refreshCadence)}</Badge>}
                     {summary.subscriptionEnabled && summary.subscriptionFrequency && (
                       <Badge variant="outline">{t('common.reportBuilder.subscriptionShort', { value: getSubscriptionFrequencyLabel(summary.subscriptionFrequency) })}</Badge>
@@ -230,18 +237,20 @@ export function ReportsListPage(): ReactElement {
                         ? new Date(r.updatedAt).toLocaleDateString(i18n.language)
                         : ''}
                   </p>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    disabled={pendingId === r.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/reports/${r.id}/edit`);
-                    }}
-                  >
-                    <Pencil className="size-4" />
-                  </Button>
+                  {r.canManage !== false && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      disabled={pendingId === r.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/reports/${r.id}/edit`);
+                      }}
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                  )}
                   <Button
                     type="button"
                     variant="ghost"
@@ -254,18 +263,20 @@ export function ReportsListPage(): ReactElement {
                   >
                     {pendingId === r.id ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    disabled={pendingId === r.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void handleDelete(r.id);
-                    }}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
+                  {r.canManage !== false && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      disabled={pendingId === r.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleDelete(r.id);
+                      }}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

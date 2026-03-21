@@ -28,6 +28,11 @@ function normalizeReportItem(raw: Record<string, unknown>): ReportDto {
       ? String(raw.updatedAt ?? raw.UpdatedAt ?? raw.updatedDate ?? raw.UpdatedDate ?? '')
       : undefined,
     isDeleted: raw.isDeleted != null || raw.IsDeleted != null ? Boolean(raw.isDeleted ?? raw.IsDeleted) : undefined,
+    canManage: raw.canManage != null || raw.CanManage != null ? Boolean(raw.canManage ?? raw.CanManage) : undefined,
+    accessLevel:
+      raw.accessLevel != null || raw.AccessLevel != null
+        ? String(raw.accessLevel ?? raw.AccessLevel ?? '') as 'owner' | 'shared' | 'organization' | 'none'
+        : undefined,
   };
 }
 
