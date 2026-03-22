@@ -2,9 +2,20 @@ export const DocumentRuleType = {
   Demand: 0,
   Quotation: 1,
   Order: 2,
+  FastQuotation: 3,
 } as const;
 
 export type DocumentRuleType = (typeof DocumentRuleType)[keyof typeof DocumentRuleType];
+
+export const TemplateDesignerRuleType = {
+  Demand: 1,
+  Quotation: 2,
+  Order: 3,
+  FastQuotation: 4,
+} as const;
+
+export type TemplateDesignerRuleType =
+  (typeof TemplateDesignerRuleType)[keyof typeof TemplateDesignerRuleType];
 
 export interface FieldDefinitionDto {
   label: string;

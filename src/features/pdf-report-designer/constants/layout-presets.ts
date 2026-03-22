@@ -1,4 +1,4 @@
-import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { TemplateDesignerRuleType, type TemplateDesignerRuleType as TemplateDesignerRuleTypeValue } from '@/features/pdf-report';
 
 export const PDF_LAYOUT_PRESET = {
   Custom: 'custom',
@@ -10,7 +10,7 @@ export interface PdfLayoutPresetDefinition {
   value: PdfLayoutPresetValue;
   titleKey: string;
   descriptionKey: string;
-  supportedRuleTypes: PricingRuleType[];
+  supportedRuleTypes: TemplateDesignerRuleTypeValue[];
   locksCanvas: boolean;
 }
 
@@ -20,21 +20,22 @@ export const PDF_LAYOUT_PRESETS: PdfLayoutPresetDefinition[] = [
     titleKey: 'pdfReportDesigner.layoutPreset.customTitle',
     descriptionKey: 'pdfReportDesigner.layoutPreset.customDescription',
     supportedRuleTypes: [
-      PricingRuleType.Demand,
-      PricingRuleType.Quotation,
-      PricingRuleType.Order,
+      TemplateDesignerRuleType.Demand,
+      TemplateDesignerRuleType.Quotation,
+      TemplateDesignerRuleType.Order,
+      TemplateDesignerRuleType.FastQuotation,
     ],
     locksCanvas: false,
   },
 ];
 
-export function getAvailableLayoutPresets(ruleType: PricingRuleType): PdfLayoutPresetDefinition[] {
+export function getAvailableLayoutPresets(ruleType: TemplateDesignerRuleTypeValue): PdfLayoutPresetDefinition[] {
   return PDF_LAYOUT_PRESETS.filter((preset) => preset.supportedRuleTypes.includes(ruleType));
 }
 
 export function normalizeLayoutPreset(
   value: string | null | undefined,
-  ruleType: PricingRuleType
+  ruleType: TemplateDesignerRuleTypeValue
 ): PdfLayoutPresetValue {
   const available = getAvailableLayoutPresets(ruleType);
   const matched = available.find((preset) => preset.value === value);

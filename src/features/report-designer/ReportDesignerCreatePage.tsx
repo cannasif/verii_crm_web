@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useRef, useMemo, useEffect } from 'react';
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
-import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -44,28 +43,35 @@ import { useUpdateReportTemplate } from './hooks/useUpdateReportTemplate';
 import { useReportTemplateById } from './hooks/useReportTemplateById';
 import { dtoElementsToCanvasElements } from './utils/dto-to-canvas';
 import { DocumentRuleType, type ReportTemplateCreateDto, type ReportTemplateElementDto } from './types/report-template-types';
+import { TemplateDesignerRuleType, type TemplateDesignerRuleType as TemplateDesignerRuleTypeValue } from './types/report-template-types';
 import type { ReportTemplateGetDto } from './types/report-template-types';
 import { A4_CANVAS_WIDTH, A4_CANVAS_HEIGHT } from './constants';
 import { createClientId } from '@/lib/create-client-id';
 
-const RULE_TYPE_OPTIONS: PricingRuleType[] = [
-  PricingRuleType.Demand,
-  PricingRuleType.Quotation,
-  PricingRuleType.Order,
+const RULE_TYPE_OPTIONS: TemplateDesignerRuleTypeValue[] = [
+  TemplateDesignerRuleType.Demand,
+  TemplateDesignerRuleType.Quotation,
+  TemplateDesignerRuleType.Order,
+  TemplateDesignerRuleType.FastQuotation,
 ];
 
 const DEFAULT_ELEMENT_WIDTH = 200;
 const DEFAULT_ELEMENT_HEIGHT = 50;
 
-function ruleTypeForApi(ruleType: PricingRuleType): DocumentRuleType {
+function ruleTypeForApi(ruleType: TemplateDesignerRuleTypeValue): DocumentRuleType {
   return (ruleType - 1) as DocumentRuleType;
 }
 
-function apiRuleTypeToForm(apiRuleType: number): PricingRuleType {
+function apiRuleTypeToForm(apiRuleType: number): TemplateDesignerRuleTypeValue {
   const n = apiRuleType + 1;
-  if (n === PricingRuleType.Demand || n === PricingRuleType.Quotation || n === PricingRuleType.Order)
+  if (
+    n === TemplateDesignerRuleType.Demand ||
+    n === TemplateDesignerRuleType.Quotation ||
+    n === TemplateDesignerRuleType.Order ||
+    n === TemplateDesignerRuleType.FastQuotation
+  )
     return n;
-  return PricingRuleType.Demand;
+  return TemplateDesignerRuleType.Demand;
 }
 
 function isSidebarDragData(data: unknown): data is SidebarDragData {
@@ -132,7 +138,7 @@ export function ReportDesignerCreatePage(): ReactElement {
   const form = useForm<ReportDesignerCreateFormValues, unknown, ReportDesignerCreateFormValues>({
     resolver: zodResolver(reportDesignerCreateSchema),
     defaultValues: {
-      ruleType: PricingRuleType.Demand,
+      ruleType: TemplateDesignerRuleType.Demand,
       title: '',
       default: false,
     },
@@ -172,7 +178,7 @@ export function ReportDesignerCreatePage(): ReactElement {
     if (!isEdit) appliedEditIdRef.current = null;
   }, [isEdit]);
 
-  const ruleType = form.watch('ruleType') ?? PricingRuleType.Demand;
+  const ruleType = (form.watch('ruleType') ?? TemplateDesignerRuleType.Demand) as TemplateDesignerRuleTypeValue;
   const ruleTypeForFields = ruleTypeForApi(ruleType);
   const { data: fieldsData } = useReportTemplateFields(ruleTypeForFields);
   const headerFields: FieldPaletteItem[] = useMemo(
@@ -208,7 +214,7 @@ export function ReportDesignerCreatePage(): ReactElement {
 
   const onSubmit = async (values: ReportDesignerCreateFormValues): Promise<void> => {
     const payload: ReportTemplateCreateDto = {
-      ruleType: ruleTypeForApi(values.ruleType),
+      ruleType: ruleTypeForApi(values.ruleType as TemplateDesignerRuleTypeValue),
       title: values.title,
       templateData: {
         page: { width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT, unit: 'px' },
@@ -344,7 +350,7 @@ export function ReportDesignerCreatePage(): ReactElement {
                 <FormItem className="w-48">
                   <FormLabel>{t('reportDesigner.form.documentType')}</FormLabel>
                   <Select
-                    onValueChange={(value) => field.onChange(Number(value) as PricingRuleType)}
+                    onValueChange={(value) => field.onChange(Number(value) as TemplateDesignerRuleTypeValue)}
                     value={field.value?.toString()}
                   >
                     <FormControl>
@@ -355,11 +361,13 @@ export function ReportDesignerCreatePage(): ReactElement {
                     <SelectContent>
                       {RULE_TYPE_OPTIONS.map((value) => (
                         <SelectItem key={value} value={value.toString()}>
-                          {value === PricingRuleType.Demand
+                          {value === TemplateDesignerRuleType.Demand
                             ? t('reportDesigner.ruleType.demand')
-                            : value === PricingRuleType.Quotation
+                            : value === TemplateDesignerRuleType.Quotation
                               ? t('reportDesigner.ruleType.quotation')
-                              : t('reportDesigner.ruleType.order')}
+                              : value === TemplateDesignerRuleType.Order
+                                ? t('reportDesigner.ruleType.order')
+                                : t('reportDesigner.ruleType.fastQuotation')}
                         </SelectItem>
                       ))}
                     </SelectContent>

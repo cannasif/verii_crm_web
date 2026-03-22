@@ -644,7 +644,8 @@
     "ruleType": {
       "demand": "Talep",
       "quotation": "Teklif",
-      "order": "Sipariş"
+      "order": "Sipariş",
+      "fastQuotation": "Hızlı Teklif"
     },
     "palette": {
       "title": "Alan paleti",
@@ -737,7 +738,8 @@
       "loadFailed": "PDF yüklenemedi. Şablonu tekrar seçin veya sayfayı yenileyin.",
       "emptyDemand": "Talep şablonu bulunamadı",
       "emptyQuotation": "Teklif şablonu bulunamadı",
-      "emptyOrder": "Sipariş şablonu bulunamadı"
+      "emptyOrder": "Sipariş şablonu bulunamadı",
+      "emptyFastQuotation": "Hızlı teklif şablonu bulunamadı"
     },
     "inspector": {
       "title": "Denetleyici",

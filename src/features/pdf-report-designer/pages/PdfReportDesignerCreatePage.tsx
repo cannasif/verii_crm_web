@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useRef, useMemo, useEffect, useCallback, useState } from 'react';
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
-import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -61,6 +60,7 @@ import type {
   ReportTemplateElementDto,
 } from '@/features/pdf-report';
 import type { DocumentRuleType } from '@/features/pdf-report';
+import { TemplateDesignerRuleType, type TemplateDesignerRuleType as TemplateDesignerRuleTypeValue } from '@/features/pdf-report';
 import {
   A4_MM_WIDTH,
   A4_MM_HEIGHT,
@@ -71,10 +71,11 @@ import {
   getAvailableLayoutPresets,
 } from '../constants/layout-presets';
 
-const RULE_TYPE_OPTIONS: PricingRuleType[] = [
-  PricingRuleType.Demand,
-  PricingRuleType.Quotation,
-  PricingRuleType.Order,
+const RULE_TYPE_OPTIONS: TemplateDesignerRuleTypeValue[] = [
+  TemplateDesignerRuleType.Demand,
+  TemplateDesignerRuleType.Quotation,
+  TemplateDesignerRuleType.Order,
+  TemplateDesignerRuleType.FastQuotation,
 ];
 
 const DEFAULT_ELEMENT_WIDTH = 200;
@@ -116,31 +117,33 @@ function resolveAbsolutePosition(
   return { x, y };
 }
 
-function ruleTypeForApi(ruleType: PricingRuleType): number {
+function ruleTypeForApi(ruleType: TemplateDesignerRuleTypeValue): number {
   return (ruleType - 1) as number;
 }
 
-function apiRuleTypeToForm(apiRuleType: number): PricingRuleType {
+function apiRuleTypeToForm(apiRuleType: number): TemplateDesignerRuleTypeValue {
   const n = apiRuleType + 1;
   if (
-    n === PricingRuleType.Demand ||
-    n === PricingRuleType.Quotation ||
-    n === PricingRuleType.Order
+    n === TemplateDesignerRuleType.Demand ||
+    n === TemplateDesignerRuleType.Quotation ||
+    n === TemplateDesignerRuleType.Order ||
+    n === TemplateDesignerRuleType.FastQuotation
   )
     return n;
-  return PricingRuleType.Demand;
+  return TemplateDesignerRuleType.Demand;
 }
 
-function normalizeFormRuleType(value: number | null | undefined): PricingRuleType {
+function normalizeFormRuleType(value: number | null | undefined): TemplateDesignerRuleTypeValue {
   if (
-    value === PricingRuleType.Demand ||
-    value === PricingRuleType.Quotation ||
-    value === PricingRuleType.Order
+    value === TemplateDesignerRuleType.Demand ||
+    value === TemplateDesignerRuleType.Quotation ||
+    value === TemplateDesignerRuleType.Order ||
+    value === TemplateDesignerRuleType.FastQuotation
   ) {
     return value;
   }
 
-  return PricingRuleType.Demand;
+  return TemplateDesignerRuleType.Demand;
 }
 
 function isPdfSidebarDragData(data: unknown): data is PdfSidebarDragData {
@@ -196,8 +199,8 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       resolver: zodResolver(pdfReportDesignerCreateSchema),
       mode: 'onChange',
       reValidateMode: 'onChange',
-      defaultValues: {
-        ruleType: PricingRuleType.Demand,
+        defaultValues: {
+        ruleType: TemplateDesignerRuleType.Demand,
         title: '',
         default: false,
         pageCount: 1,
@@ -243,7 +246,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     if (!isEdit) appliedEditIdRef.current = null;
   }, [isEdit]);
 
-  const ruleType = form.watch('ruleType') ?? PricingRuleType.Demand;
+  const ruleType = (form.watch('ruleType') ?? TemplateDesignerRuleType.Demand) as TemplateDesignerRuleTypeValue;
   const layoutPreset = form.watch('layoutPreset') ?? PDF_LAYOUT_PRESET.Custom;
   const availableLayoutPresets = useMemo(() => getAvailableLayoutPresets(ruleType), [ruleType]);
   const isCanvasLocked = false;
@@ -297,7 +300,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     try {
       const elements = getOrderedElements();
       const title = form.getValues('title');
-      const ruleTypeVal = form.getValues('ruleType');
+      const ruleTypeVal = form.getValues('ruleType') as TemplateDesignerRuleTypeValue;
       const defaultVal = form.getValues('default');
       const payload = {
         title,
@@ -394,7 +397,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   const onSubmit = async (values: PdfReportDesignerCreateFormValues): Promise<void> => {
     const elements = getOrderedElements();
     const payload: ReportTemplateCreateDto = {
-      ruleType: ruleTypeForApi(values.ruleType) as DocumentRuleType,
+      ruleType: ruleTypeForApi(values.ruleType as TemplateDesignerRuleTypeValue) as DocumentRuleType,
       title: values.title,
       templateData: {
         schemaVersion: 1,
@@ -727,7 +730,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 <FormItem className="w-48">
                   <FormLabel>{t('pdfReportDesigner.documentType')}</FormLabel>
                   <Select
-                    onValueChange={(value) => field.onChange(Number(value) as PricingRuleType)}
+                    onValueChange={(value) => field.onChange(Number(value) as TemplateDesignerRuleTypeValue)}
                     value={field.value?.toString()}
                   >
                     <FormControl>
@@ -738,11 +741,13 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                     <SelectContent>
                       {RULE_TYPE_OPTIONS.map((value) => (
                         <SelectItem key={value} value={value.toString()}>
-                          {value === PricingRuleType.Demand
+                          {value === TemplateDesignerRuleType.Demand
                             ? t('reportDesigner.ruleType.demand')
-                            : value === PricingRuleType.Quotation
+                            : value === TemplateDesignerRuleType.Quotation
                               ? t('reportDesigner.ruleType.quotation')
-                              : t('reportDesigner.ruleType.order')}
+                              : value === TemplateDesignerRuleType.Order
+                                ? t('reportDesigner.ruleType.order')
+                                : t('reportDesigner.ruleType.fastQuotation')}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -2429,7 +2429,8 @@
     "ruleType": {
       "demand": "Request",
       "quotation": "Offer",
-      "order": "Order"
+      "order": "Order",
+      "fastQuotation": "Fast Quotation"
     },
     "palette": {
       "title": "field palette",
@@ -2520,7 +2521,8 @@
       "loadFailed": "PDF could not be loaded. Select the template again or refresh the page.",
       "emptyDemand": "Request template not found",
       "emptyQuotation": "Quote template not found",
-      "emptyOrder": "Order template not found"
+      "emptyOrder": "Order template not found",
+      "emptyFastQuotation": "Fast quotation template not found"
     },
     "inspector": {
       "title": "controller",
