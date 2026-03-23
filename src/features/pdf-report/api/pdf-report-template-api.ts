@@ -221,9 +221,12 @@ export const pdfReportTemplateApi = {
     return unwrapApiResponse<PdfTablePresetDto>(response);
   },
 
-  uploadAsset: async (file: File): Promise<PdfTemplateAssetDto> => {
+  uploadAsset: async (file: File, templateId?: number): Promise<PdfTemplateAssetDto> => {
     const formData = new FormData();
     formData.append('file', file);
+    if (typeof templateId === 'number' && Number.isFinite(templateId) && templateId > 0) {
+      formData.append('templateId', String(templateId));
+    }
 
     const response = await api.post<unknown>(`${BASE}/assets/upload`, formData, {
       headers: {
