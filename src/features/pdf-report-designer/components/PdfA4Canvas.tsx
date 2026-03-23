@@ -1,7 +1,7 @@
 import type { MutableRefObject, ReactElement, RefObject } from 'react';
 import { useEffect, useCallback, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import quotationTotalsLayoutSpecJson from '../../../../../pdf-samples/quotation-totals-layout-spec.json';
+import quotationTotalsLayoutSpecJson from '../specs/quotation-totals-layout-spec.json';
 import { type RndDragCallback, type RndResizeCallback, Rnd } from 'react-rnd';
 import { GripVertical, Settings, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';

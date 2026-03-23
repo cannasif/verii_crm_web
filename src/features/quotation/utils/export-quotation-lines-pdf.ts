@@ -1,7 +1,7 @@
 import { PDFDocument } from 'pdf-lib';
 import { resolveAppPath } from '@/lib/api-config';
 import { formatCurrency } from './format-currency';
-import layoutSpecJson from '../../../../../pdf-samples/windo-quotation-layout-spec.json';
+import layoutSpecJson from '../specs/windo-quotation-layout-spec.json';
 
 const ATLAS_COVER_PDF_PATH = '/pdf-templates/atlas-cover-first-3-pages.pdf';
 const PDF_FONT_PATH = '/fonts/arial.ttf';

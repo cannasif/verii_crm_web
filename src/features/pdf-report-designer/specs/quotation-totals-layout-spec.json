@@ -1,0 +1,55 @@
+{
+  "quotationTotals": {
+    "outerPaddingX": 14,
+    "outerPaddingTop": 12,
+    "titleFontSize": 13,
+    "titleColor": "#64748b",
+    "titleBottomGap": 10,
+    "rowHeight": 26,
+    "rowGap": 6,
+    "columnGap": 8,
+    "rowPaddingX": 10,
+    "rowPaddingTop": 7,
+    "rowPaddingBottom": 7,
+    "rowLabelFontSize": 11,
+    "rowValueFontSize": 11,
+    "rowLabelColor": "#64748b",
+    "rowLabelEmphasisColor": "#cbd5e1",
+    "rowValueColor": "#0f172a",
+    "rowValueEmphasisColor": "#ffffff",
+    "rowBorderColor": "#e2e8f0",
+    "rowEmphasisFill": "#0f172a",
+    "noteTopGap": 10,
+    "notePaddingX": 10,
+    "notePaddingTop": 10,
+    "notePaddingBottom": 10,
+    "noteTitleFontSize": 10,
+    "noteTextFontSize": 10,
+    "noteTextLineHeight": 1.35,
+    "noteTextSpacing": 4
+  },
+  "anchors": [
+    {
+      "id": "quotation_totals_block",
+      "label": "Quotation Totals Block",
+      "pageTypes": ["first", "last", "middle"],
+      "rect": {
+        "x": 0.57,
+        "y": 0.73,
+        "width": 0.33,
+        "height": 0.2
+      }
+    },
+    {
+      "id": "quotation_totals_note",
+      "label": "Quotation Totals Note",
+      "pageTypes": ["first", "last", "middle"],
+      "rect": {
+        "x": 0.59,
+        "y": 0.84,
+        "width": 0.29,
+        "height": 0.08
+      }
+    }
+  ]
+}
