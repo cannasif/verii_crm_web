@@ -127,7 +127,7 @@ export function ReportBuilderPage(): ReactElement {
         })),
     [usersResponse?.data],
   );
-  const assignedUserIds = meta.assignedUserIds ?? [];
+  const assignedUserIds = useMemo<number[]>(() => meta.assignedUserIds ?? [], [meta.assignedUserIds]);
   const selectedAssignedUsers = useMemo(
     () =>
       assignedUserIds.map((userId) => {
@@ -226,7 +226,7 @@ export function ReportBuilderPage(): ReactElement {
         setTimeout(() => setUi({ slotError: null }), 3000);
       }
     },
-    [addToSlot, setUi]
+    [addToSlot, setUi, t]
   );
 
   useEffect(() => {
@@ -362,7 +362,7 @@ export function ReportBuilderPage(): ReactElement {
       onDragEnd={handleDragEnd}
     >
       <div className="flex h-[calc(100vh-4rem)] min-h-0 flex-col gap-4 p-4">
-        <div className="shrink-0 rounded-2xl border bg-gradient-to-r from-slate-50 via-white to-sky-50 px-5 py-4 shadow-xs dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+        <div className="shrink-0 rounded-2xl border bg-linear-to-r from-slate-50 via-white to-sky-50 px-5 py-4 shadow-xs dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
           <div className="flex flex-wrap items-start gap-4">
             <div className="min-w-[260px] flex-1">
               <div className="mb-3 flex items-center gap-2">
