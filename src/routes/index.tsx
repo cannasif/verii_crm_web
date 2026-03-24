@@ -113,6 +113,7 @@ export function createAppRouter() {
         { path: 'reports/my/:id', element: <ReportViewerPage /> },
         { path: 'reports/new', element: <ReportBuilderPage /> },
         { path: 'reports/:id/edit', element: <ReportBuilderPage /> },
+        { path: 'reports/:id/edit/preview', element: <ReportViewerPage /> },
         { path: 'reports/:id', element: <ReportViewerPage /> },
         { path: 'powerbi/configuration', element: <PowerbiConfigurationPage /> },
         { path: 'powerbi/reports', element: <PowerbiReportsListPage /> },

@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   DndContext,
   PointerSensor,
@@ -101,6 +101,11 @@ export function ReportBuilderPage(): ReactElement {
   } = useReportBuilderStore();
   const [dataSourceSearch, setDataSourceSearch] = useState('');
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
+  const lifecycleStatusLabel = lifecycle.status === 'published'
+    ? t('common.reportBuilder.lifecycle.publish')
+    : lifecycle.status === 'archived'
+      ? t('common.reportBuilder.lifecycle.archive')
+      : t('common.reportBuilder.lifecycle.draft');
   const widgetSizeLabel = (size?: 'third' | 'half' | 'full'): string => t(`common.reportBuilder.widgetSizes.${size ?? 'half'}`);
   const widgetHeightLabel = (height?: 'sm' | 'md' | 'lg'): string => t(`common.reportBuilder.widgetHeights.${height ?? 'md'}`);
   const [deleteWidgetId, setDeleteWidgetId] = useState<string | null>(null);
@@ -108,7 +113,7 @@ export function ReportBuilderPage(): ReactElement {
   const { data: usersResponse } = useUserList({
     pageNumber: 1,
     pageSize: 100,
-    sortBy: 'fullName',
+    sortBy: 'firstName',
     sortDirection: 'asc',
     filters: [{ column: 'isActive', operator: 'eq', value: 'true' }],
   });
@@ -365,7 +370,7 @@ export function ReportBuilderPage(): ReactElement {
                   <ArrowLeft className="mr-1 size-4" />
                   {t('common.back')}
                 </Button>
-                <Badge variant="outline" className="font-mono">{lifecycle.status}</Badge>
+                <Badge variant="outline" className="font-mono">{lifecycleStatusLabel}</Badge>
                 <Badge variant="secondary" className="font-mono">v{lifecycle.version}</Badge>
               </div>
               <h1 className="text-xl font-semibold">
@@ -415,6 +420,13 @@ export function ReportBuilderPage(): ReactElement {
             </div>
             <div className="flex items-center gap-2">
               {isEdit && (
+                <Button variant="outline" asChild>
+                  <Link to={`/reports/${reportId}/edit/preview`} target="_blank" rel="noreferrer">
+                    {t('common.reportBuilder.preview')}
+                  </Link>
+                </Button>
+              )}
+              {isEdit && (
                 <Button variant="outline" onClick={() => navigate(`/reports/${reportId}`)}>
                   {t('common.cancel')}
                 </Button>
@@ -459,9 +471,6 @@ export function ReportBuilderPage(): ReactElement {
               searchPlaceholder={t('common.reportBuilder.sharedWithSearch')}
               emptyText={t('common.reportBuilder.sharedWithEmpty')}
             />
-            <div className="rounded-xl border bg-muted/20 p-2 text-xs text-muted-foreground">
-              {t('common.reportBuilder.sharedWithTableHint')}
-            </div>
           </div>
           <div className="mt-3 rounded-xl border bg-background">
             <Table>
@@ -519,7 +528,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
           <div className="flex items-center gap-2 rounded-xl border bg-muted/30 px-3 py-2 text-sm">
             <CheckCircle2 className="size-4 text-primary" />
-            <span className="font-medium uppercase">{lifecycle.status}</span>
+            <span className="font-medium uppercase">{lifecycleStatusLabel}</span>
             <span className="text-muted-foreground">v{lifecycle.version}</span>
           </div>
           <div className="flex items-end gap-2">

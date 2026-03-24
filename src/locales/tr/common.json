@@ -39,6 +39,7 @@
     "yes": "Evet",
     "no": "Hayır",
     "add": "Ekle",
+    "remove": "Kaldır",
     "start": "Başla",
     "actions": "İşlemler",
     "processing": "İşleniyor...",
@@ -264,13 +265,13 @@
       "parameterSources": {
         "literal": "Sabit değer",
         "currentUserId": "Giriş yapan kullanıcı ID",
-        "currentUserEmail": "Giriş yapan kullanıcı email",
+        "currentUserEmail": "Giriş yapan kullanıcı e-posta",
         "today": "Bugünün tarihi",
         "now": "Şu an"
       },
       "datasetTypes": {
-        "view": "View",
-        "function": "Function"
+        "view": "Görünüm",
+        "function": "Fonksiyon"
       },
       "chartType": "Grafik tipi",
       "visualGallery": "Görsel galeri",
@@ -456,11 +457,11 @@
       },
       "chartTypes": {
         "table": "Tablo",
-        "bar": "Bar",
-        "stackedBar": "Yığılmış bar",
+        "bar": "Çubuk",
+        "stackedBar": "Yığılmış çubuk",
         "line": "Çizgi",
         "pie": "Pasta",
-        "donut": "Donut",
+        "donut": "Halka",
         "kpi": "KPI",
         "matrix": "Matris"
       },
@@ -499,10 +500,10 @@
       "emptyDash": "—",
       "messages": {
         "loadConnectionsFailed": "Bağlantılar yüklenemedi",
-        "loadDatasetsFailed": "Dataset'ler yüklenemedi",
+        "loadDatasetsFailed": "Veri setleri yüklenemedi",
         "checkFailed": "Kontrol başarısız",
-        "connectionTypeDatasetRequired": "Bağlantı, tip ve dataset zorunludur",
-        "connectionDatasetRequired": "Bağlantı ve dataset zorunludur",
+        "connectionTypeDatasetRequired": "Bağlantı, tip ve veri seti zorunludur",
+        "connectionDatasetRequired": "Bağlantı ve veri seti zorunludur",
         "reportNameRequired": "Rapor adı zorunludur",
         "previewFailed": "Önizleme alınamadı",
         "saveFailed": "Kaydetme başarısız",
