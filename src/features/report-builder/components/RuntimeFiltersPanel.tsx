@@ -54,6 +54,11 @@ export function RuntimeFiltersPanel({
 }: RuntimeFiltersPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const { config, updateFilter } = useReportBuilderStore();
+  const hasRuntimeFilters = config.filters.length > 0;
+
+  if (!hasRuntimeFilters) {
+    return <></>;
+  }
 
   return (
     <div className="rounded-lg border bg-card p-4">
@@ -77,105 +82,99 @@ export function RuntimeFiltersPanel({
         </div>
       </div>
 
-      {config.filters.length === 0 ? (
-        <div className="text-muted-foreground rounded-md border border-dashed p-4 text-sm">
-          {t('common.reportBuilder.noRuntimeFilters')}
-        </div>
-      ) : (
-        <div className="grid gap-3 md:grid-cols-2">
-          {config.filters.map((filter, index) => {
-            const field = schema.find((item) => item.name === filter.field);
-            const operators = field ? getOperatorsForField(field) : ['eq', 'ne'];
-            const inputType = getInputType(field);
-            const isUnary = filter.operator === 'isNull' || filter.operator === 'isNotNull';
-            const isBetween = filter.operator === 'between';
-            const isList = filter.operator === 'in';
+      <div className="grid gap-3 md:grid-cols-2">
+        {config.filters.map((filter, index) => {
+          const field = schema.find((item) => item.name === filter.field);
+          const operators = field ? getOperatorsForField(field) : ['eq', 'ne'];
+          const inputType = getInputType(field);
+          const isUnary = filter.operator === 'isNull' || filter.operator === 'isNotNull';
+          const isBetween = filter.operator === 'between';
+          const isList = filter.operator === 'in';
 
-            return (
-              <div key={`${filter.field}-${index}`} className="rounded-md border bg-muted/30 p-3">
-                <div className="mb-2 flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-medium">{filter.field}</div>
-                    <div className="text-muted-foreground text-xs">{field?.dotNetType ?? field?.sqlType ?? t('common.reportBuilder.field')}</div>
-                  </div>
-                  <Select
-                    value={filter.operator}
-                    onValueChange={(operator) =>
-                      updateFilter(index, { operator, value: undefined, values: undefined, from: undefined, to: undefined })
-                    }
-                  >
-                    <SelectTrigger className="h-8 w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {operators.map((operator) => (
-                        <SelectItem key={operator} value={operator}>
-                          {OPERATOR_LABELS[operator] ?? operator}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+          return (
+            <div key={`${filter.field}-${index}`} className="rounded-md border bg-muted/30 p-3">
+              <div className="mb-2 flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium">{filter.field}</div>
+                  <div className="text-muted-foreground text-xs">{field?.dotNetType ?? field?.sqlType ?? t('common.reportBuilder.field')}</div>
                 </div>
+                <Select
+                  value={filter.operator}
+                  onValueChange={(operator) =>
+                    updateFilter(index, { operator, value: undefined, values: undefined, from: undefined, to: undefined })
+                  }
+                >
+                  <SelectTrigger className="h-8 w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {operators.map((operator) => (
+                      <SelectItem key={operator} value={operator}>
+                        {OPERATOR_LABELS[operator] ?? operator}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                {!isUnary && (
-                  <div className="space-y-2">
-                    {isBetween && (
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="space-y-1">
-                          <Label className="text-xs">{t('common.reportBuilder.from')}</Label>
-                          <Input
-                            type={inputType}
-                            value={String(filter.from ?? '')}
-                            onChange={(e) => updateFilter(index, { from: e.target.value })}
-                            className="h-8"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-xs">{t('common.reportBuilder.to')}</Label>
-                          <Input
-                            type={inputType}
-                            value={String(filter.to ?? '')}
-                            onChange={(e) => updateFilter(index, { to: e.target.value })}
-                            className="h-8"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {isList && (
+              {!isUnary && (
+                <div className="space-y-2">
+                  {isBetween && (
+                    <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-1">
-                        <Label className="text-xs">{t('common.reportBuilder.values')}</Label>
-                        <Input
-                          value={Array.isArray(filter.values) ? filter.values.map((item) => String(item ?? '')).join(', ') : ''}
-                          onChange={(e) =>
-                            updateFilter(index, {
-                              values: e.target.value.split(',').map((item) => item.trim()).filter(Boolean),
-                            })
-                          }
-                          placeholder={t('common.reportBuilder.valuesListPlaceholder')}
-                          className="h-8"
-                        />
-                      </div>
-                    )}
-
-                    {!isBetween && !isList && (
-                      <div className="space-y-1">
-                        <Label className="text-xs">{t('common.reportBuilder.value')}</Label>
+                        <Label className="text-xs">{t('common.reportBuilder.from')}</Label>
                         <Input
                           type={inputType}
-                          value={String(filter.value ?? '')}
-                          onChange={(e) => updateFilter(index, { value: e.target.value })}
+                          value={String(filter.from ?? '')}
+                          onChange={(e) => updateFilter(index, { from: e.target.value })}
                           className="h-8"
                         />
                       </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t('common.reportBuilder.to')}</Label>
+                        <Input
+                          type={inputType}
+                          value={String(filter.to ?? '')}
+                          onChange={(e) => updateFilter(index, { to: e.target.value })}
+                          className="h-8"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {isList && (
+                    <div className="space-y-1">
+                      <Label className="text-xs">{t('common.reportBuilder.values')}</Label>
+                      <Input
+                        value={Array.isArray(filter.values) ? filter.values.map((item) => String(item ?? '')).join(', ') : ''}
+                        onChange={(e) =>
+                          updateFilter(index, {
+                            values: e.target.value.split(',').map((item) => item.trim()).filter(Boolean),
+                          })
+                        }
+                        placeholder={t('common.reportBuilder.valuesListPlaceholder')}
+                        className="h-8"
+                      />
+                    </div>
+                  )}
+
+                  {!isBetween && !isList && (
+                    <div className="space-y-1">
+                      <Label className="text-xs">{t('common.reportBuilder.value')}</Label>
+                      <Input
+                        type={inputType}
+                        value={String(filter.value ?? '')}
+                        onChange={(e) => updateFilter(index, { value: e.target.value })}
+                        className="h-8"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

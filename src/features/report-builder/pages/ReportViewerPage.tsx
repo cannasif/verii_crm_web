@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useReportBuilderStore } from '../store';
@@ -179,6 +179,26 @@ export function ReportViewerPage(): ReactElement {
   const subscriptionFrequencyLabel = governance.subscriptionFrequency ? t(`common.reportBuilder.subscriptionFrequencies.${governance.subscriptionFrequency}`) : t('common.reportBuilder.subscriptionFrequencies.manual');
   const subscriptionChannelLabel = governance.subscriptionChannel ? t(`common.reportBuilder.subscriptionChannels.${governance.subscriptionChannel}`) : t('common.reportBuilder.subscriptionChannels.email');
   const viewerEditableParameters = (config.datasetParameters ?? []).filter((item) => item.allowViewerOverride);
+  const dataSourceTypeLabel = meta.dataSourceType
+    ? (meta.dataSourceType === 'view' || meta.dataSourceType === 'function'
+      ? t(`common.reportBuilder.datasetTypes.${meta.dataSourceType}`)
+      : meta.dataSourceType)
+    : '-';
+  const initialViewerParameterValues = useMemo(
+    () =>
+      Object.fromEntries(
+        (config.datasetParameters ?? [])
+          .filter((item) => item.allowViewerOverride)
+          .map((item) => [item.name, resolveBindingValue(item, currentUser)])
+      ),
+    [config.datasetParameters, currentUser]
+  );
+  const hasViewerParameterChanges = useMemo(() => {
+    const currentKeys = Object.keys(viewerParameterValues);
+    const initialKeys = Object.keys(initialViewerParameterValues);
+    if (currentKeys.length !== initialKeys.length) return true;
+    return currentKeys.some((key) => (viewerParameterValues[key] ?? '') !== (initialViewerParameterValues[key] ?? ''));
+  }, [viewerParameterValues, initialViewerParameterValues]);
 
   const exportCurrentWidgetCsv = useCallback(() => {
     if (!preview.columns.length) return;
@@ -242,11 +262,11 @@ export function ReportViewerPage(): ReactElement {
     setUi({ checkLoading: false });
   }, [reportId, hydrateFromReportDetail, setUi]);
 
-  const runPreview = useCallback(async () => {
+  const runPreview = useCallback(async (parameterOverrides: Record<string, string>) => {
     if (!meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName) return;
     setUi({ previewLoading: true, error: null });
     try {
-      const configJson = buildRuntimeConfigJson(config, currentUser, viewerParameterValues);
+      const configJson = buildRuntimeConfigJson(config, currentUser, parameterOverrides);
       const res = await reportsApi.preview({
         connectionKey: meta.connectionKey,
         dataSourceType: meta.dataSourceType,
@@ -258,12 +278,12 @@ export function ReportViewerPage(): ReactElement {
     } catch (e) {
       setUi({ previewLoading: false, error: e instanceof Error ? e.message : t('common.reportBuilder.messages.previewFailed') });
     }
-  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, config, currentUser, viewerParameterValues, setPreview, setUi]);
+  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, config, currentUser, setPreview, setUi]);
 
-  const runAllWidgetPreviews = useCallback(async () => {
+  const runAllWidgetPreviews = useCallback(async (parameterOverrides: Record<string, string>) => {
     const widgets = config.widgets ?? [];
     if (!meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName || widgets.length === 0) return;
-    const runtimeDatasetParameters = JSON.parse(buildRuntimeConfigJson(config, currentUser, viewerParameterValues)).datasetParameters as DataSourceParameterBinding[] | undefined;
+    const runtimeDatasetParameters = JSON.parse(buildRuntimeConfigJson(config, currentUser, parameterOverrides)).datasetParameters as DataSourceParameterBinding[] | undefined;
 
     setWidgetPreviews((current) =>
       Object.fromEntries(
@@ -316,7 +336,7 @@ export function ReportViewerPage(): ReactElement {
         }
       })
     );
-  }, [config, config.calculatedFields, config.widgets, currentUser, lifecycle, meta.connectionKey, meta.dataSourceType, meta.dataSourceName, viewerParameterValues]);
+  }, [config, config.calculatedFields, config.widgets, currentUser, lifecycle, meta.connectionKey, meta.dataSourceType, meta.dataSourceName]);
 
   useEffect(() => {
     loadReport();
@@ -325,19 +345,14 @@ export function ReportViewerPage(): ReactElement {
   useEffect(() => {
     if (meta.connectionKey && meta.dataSourceType && meta.dataSourceName) {
       loadSchemaForCurrentDataSource();
-      runPreview();
-      runAllWidgetPreviews();
+      runPreview(initialViewerParameterValues);
+      runAllWidgetPreviews(initialViewerParameterValues);
     }
-  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, runPreview, runAllWidgetPreviews, loadSchemaForCurrentDataSource]);
+  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, runPreview, runAllWidgetPreviews, loadSchemaForCurrentDataSource, initialViewerParameterValues]);
 
   useEffect(() => {
-    const initialValues = Object.fromEntries(
-      (config.datasetParameters ?? [])
-        .filter((item) => item.allowViewerOverride)
-        .map((item) => [item.name, resolveBindingValue(item, currentUser)])
-    );
-    setViewerParameterValues(initialValues);
-  }, [config.datasetParameters, currentUser]);
+    setViewerParameterValues(initialViewerParameterValues);
+  }, [initialViewerParameterValues]);
 
   if (Number.isNaN(reportId)) {
     return (
@@ -372,7 +387,7 @@ export function ReportViewerPage(): ReactElement {
         <div>
           <h1 className="text-2xl font-bold">{meta.name}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            {meta.connectionKey} / {meta.dataSourceType} / {meta.dataSourceName}
+            {meta.connectionKey} / {dataSourceTypeLabel} / {meta.dataSourceName}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {governance.favorite && <Badge variant="default">{t('common.reportBuilder.favorite')}</Badge>}
@@ -398,7 +413,7 @@ export function ReportViewerPage(): ReactElement {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={runPreview} disabled={ui.previewLoading}>
+          <Button variant="outline" size="sm" onClick={() => runPreview(viewerParameterValues)} disabled={ui.previewLoading}>
             <RefreshCw className={cn('mr-2 size-4', ui.previewLoading && 'animate-spin')} />
             {t('common.refresh')}
           </Button>
@@ -450,13 +465,22 @@ export function ReportViewerPage(): ReactElement {
                 </div>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant={hasViewerParameterChanges ? 'default' : 'outline'}
+                  disabled={!hasViewerParameterChanges}
                   onClick={async () => {
-                    await runPreview();
-                    await runAllWidgetPreviews();
+                    await runPreview(viewerParameterValues);
+                    await runAllWidgetPreviews(viewerParameterValues);
                   }}
                 >
                   {t('common.reportBuilder.applyViewerParameters')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!hasViewerParameterChanges}
+                  onClick={() => setViewerParameterValues(initialViewerParameterValues)}
+                >
+                  {t('common.reset')}
                 </Button>
               </CardContent>
             </Card>
@@ -466,8 +490,8 @@ export function ReportViewerPage(): ReactElement {
             schema={schema}
             loading={ui.previewLoading}
             onApply={async () => {
-              await runPreview();
-              await runAllWidgetPreviews();
+              await runPreview(viewerParameterValues);
+              await runAllWidgetPreviews(viewerParameterValues);
             }}
             onReset={loadReport}
           />
