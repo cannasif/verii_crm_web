@@ -1,10 +1,50 @@
-import type { ReactElement } from 'react';
-import { Eye, EyeOff, Lock, Unlock, ChevronUp, ChevronDown } from 'lucide-react';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useState, useCallback, useRef } from 'react';
+import { Eye, EyeOff, Lock, Unlock, ChevronUp, ChevronDown, Layers, ChevronRight, Trash2, Settings, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
+import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-export function PdfLayersPanel(): ReactElement {
+interface PdfLayersPanelProps {
+  onNavigateToPage: (page: number) => void;
+  templateId?: number | null;
+}
+
+const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
+
+function normalizeImageSrc(value: string): string {
+  if (value.startsWith('http') || value.startsWith('data:') || value.startsWith('/')) return value;
+  return `/${value}`;
+}
+
+export function PdfLayersPanel({ onNavigateToPage, templateId }: PdfLayersPanelProps): ReactElement {
   const { t } = useTranslation();
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
@@ -15,8 +55,16 @@ export function PdfLayersPanel(): ReactElement {
   const setElementHidden = usePdfReportDesignerStore((s) => s.setElementHidden);
   const bringForward = usePdfReportDesignerStore((s) => s.bringForward);
   const sendBackward = usePdfReportDesignerStore((s) => s.sendBackward);
+  const setFlashingId = usePdfReportDesignerStore((s) => s.setFlashingId);
+  const removeElement = usePdfReportDesignerStore((s) => s.removeElement);
+  const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
+  const [deleteDialogElementId, setDeleteDialogElementId] = useState<string | null>(null);
+  const settingsPanelRef = useRef<HTMLDivElement | null>(null);
 
   const elements = getOrderedElements();
+  const [collapsed, setCollapsed] = useState(false);
+  const selectedElement =
+    selectedIds.length === 1 ? elementsById[selectedIds[0]] : null;
 
   const getLabel = (el: (typeof elements)[0]): string => {
     if (isPdfTableElement(el))
@@ -32,12 +80,103 @@ export function PdfLayersPanel(): ReactElement {
     return el.type;
   };
 
+  const handleFocusElement = useCallback(
+    (id: string) => {
+      const el = elementsById[id];
+      if (!el) return;
+      setSelectedIds([id]);
+      const targetPage =
+        el.pageNumbers && el.pageNumbers.length > 0 ? el.pageNumbers[0] : 1;
+      onNavigateToPage(targetPage);
+      setFlashingId(id);
+      setTimeout(() => setFlashingId(null), 1600);
+    },
+    [elementsById, setSelectedIds, onNavigateToPage, setFlashingId]
+  );
+
+  const handleOpenSettings = useCallback(
+    (id: string) => {
+      handleFocusElement(id);
+      requestAnimationFrame(() => {
+        settingsPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    },
+    [handleFocusElement]
+  );
+
+  const handleSelectedImageUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (selectedElement?.type !== 'image') return;
+      const file = e.target.files?.[0];
+      if (!file || !file.type.startsWith('image/')) return;
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        toast.error(t('common.imageMax2Mb'));
+        e.target.value = '';
+        return;
+      }
+
+      void uploadPdfTemplateImage(file, templateId ?? undefined)
+        .then((relativeUrl) => {
+          updateReportElement(selectedElement.id, { value: relativeUrl });
+        })
+        .catch((error: Error) => {
+          toast.error(t('common.imageUploadFailed'), {
+            description: error.message,
+          });
+        });
+      e.target.value = '';
+    },
+    [selectedElement, t, updateReportElement]
+  );
+
+  if (collapsed) {
+    return (
+      <TooltipProvider delayDuration={300}>
+        <div className="flex min-h-0 w-8 shrink-0 flex-col items-center border-l border-slate-200 bg-slate-50/80 py-2 dark:border-slate-700 dark:bg-slate-900/30">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="rounded p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:hover:bg-slate-700"
+                onClick={() => setCollapsed(false)}
+              >
+                <ChevronRight className="size-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="left">{t('reportDesigner.layers.title')}</TooltipContent>
+          </Tooltip>
+          <div className="mt-3 flex flex-col items-center">
+            <Layers className="size-3.5 text-slate-300" />
+          </div>
+        </div>
+      </TooltipProvider>
+    );
+  }
+
   return (
-    <div className="flex w-56 flex-col gap-2 border-l border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/30">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        {t('reportDesigner.layers.title')}
-      </span>
-      <div className="flex flex-col gap-0.5">
+    <>
+      <div className="flex min-h-0 w-52 shrink-0 flex-col border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
+      <div className="flex items-center justify-between border-b border-slate-200 px-3 py-2.5 dark:border-slate-700">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          {t('reportDesigner.layers.title')}
+        </span>
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                onClick={() => setCollapsed(true)}
+              >
+                <ChevronRight className="size-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="left">Daralt</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2">
         {[...elementOrder].reverse().map((id, reverseIndex) => {
           const el = elementsById[id];
           if (!el) return null;
@@ -46,16 +185,16 @@ export function PdfLayersPanel(): ReactElement {
           return (
             <div
               key={id}
-              className={`flex items-center gap-1 rounded border px-2 py-1.5 text-xs ${
+              className={`group flex items-center gap-1 rounded-md border px-2 py-1.5 text-xs transition-colors ${
                 isSelected
-                  ? 'border-blue-500 bg-blue-50 dark:bg-slate-800'
-                  : 'border-transparent hover:bg-slate-100 dark:hover:bg-slate-800'
+                  ? 'border-blue-400 bg-blue-50 dark:border-blue-600 dark:bg-blue-950/30'
+                  : 'border-transparent hover:border-slate-200 hover:bg-slate-100 dark:hover:border-slate-700 dark:hover:bg-slate-800'
               }`}
             >
               <div className="flex flex-col">
                 <button
                   type="button"
-                  className="rounded p-0.5 text-slate-400 hover:bg-slate-200 disabled:opacity-40"
+                  className="rounded p-0.5 text-slate-300 hover:bg-slate-200 hover:text-slate-600 disabled:opacity-30 dark:hover:bg-slate-700"
                   title={t('reportDesigner.layers.bringForward')}
                   disabled={index >= elementOrder.length - 1}
                   onClick={() => bringForward(id)}
@@ -64,7 +203,7 @@ export function PdfLayersPanel(): ReactElement {
                 </button>
                 <button
                   type="button"
-                  className="rounded p-0.5 text-slate-400 hover:bg-slate-200 disabled:opacity-40"
+                  className="rounded p-0.5 text-slate-300 hover:bg-slate-200 hover:text-slate-600 disabled:opacity-30 dark:hover:bg-slate-700"
                   title={t('reportDesigner.layers.sendBackward')}
                   disabled={index <= 0}
                   onClick={() => sendBackward(id)}
@@ -74,42 +213,223 @@ export function PdfLayersPanel(): ReactElement {
               </div>
               <button
                 type="button"
-                className="min-w-0 flex-1 truncate text-left"
-                onClick={() => setSelectedIds([id])}
+                className="min-w-0 flex-1 truncate text-left text-slate-700 dark:text-slate-300"
+                onClick={() => handleFocusElement(id)}
+                title={`${getLabel(el)} — odaklan`}
               >
                 {getLabel(el)}
               </button>
-              <button
-                type="button"
-                onClick={() => setElementHidden(id, !el.hidden)}
-                className="rounded p-0.5 text-slate-500 hover:bg-slate-200"
-                title={el.hidden ? t('reportDesigner.layers.show') : t('reportDesigner.layers.hide')}
-              >
-                {el.hidden ? (
-                  <EyeOff className="size-3.5" />
-                ) : (
-                  <Eye className="size-3.5" />
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => setElementLocked(id, !el.locked)}
-                className="rounded p-0.5 text-slate-500 hover:bg-slate-200"
-                title={el.locked ? t('reportDesigner.layers.unlock') : t('reportDesigner.layers.lock')}
-              >
-                {el.locked ? (
-                  <Lock className="size-3.5" />
-                ) : (
-                  <Unlock className="size-3.5" />
-                )}
-              </button>
+              <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                <button
+                  type="button"
+                  onClick={() => handleOpenSettings(id)}
+                  className="rounded p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                  title={t('reportDesigner.actions.settings')}
+                >
+                  <Settings className="size-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setElementHidden(id, !el.hidden)}
+                  className="rounded p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                  title={el.hidden ? t('reportDesigner.layers.show') : t('reportDesigner.layers.hide')}
+                >
+                  {el.hidden ? (
+                    <EyeOff className="size-3.5" />
+                  ) : (
+                    <Eye className="size-3.5" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setElementLocked(id, !el.locked)}
+                  className="rounded p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                  title={el.locked ? t('reportDesigner.layers.unlock') : t('reportDesigner.layers.lock')}
+                >
+                  {el.locked ? (
+                    <Lock className="size-3.5" />
+                  ) : (
+                    <Unlock className="size-3.5" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteDialogElementId(id);
+                  }}
+                  className="rounded p-0.5 text-slate-400 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30"
+                  title={t('reportDesigner.actions.remove')}
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              </div>
             </div>
           );
         })}
+
+        {elements.length === 0 && (
+          <div className="flex flex-1 items-center justify-center py-8">
+            <p className="text-center text-xs text-slate-400 dark:text-slate-500">{t('reportDesigner.layers.noItems')}</p>
+          </div>
+        )}
+
+        {selectedElement && !isPdfTableElement(selectedElement) && (
+          <div
+            ref={settingsPanelRef}
+            className="mt-2 rounded-md border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900/40"
+          >
+            <div className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              {t('reportDesigner.actions.settings')}
+            </div>
+            <div className="flex flex-col gap-2">
+              {selectedElement.type === 'image' ? (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-xs">{t('reportDesigner.properties.imageUrl')}</Label>
+                    <Input
+                      value={selectedElement.value ?? ''}
+                      onChange={(e) =>
+                        updateReportElement(selectedElement.id, { value: e.target.value })
+                      }
+                      className="h-8 text-xs"
+                      placeholder={t('reportDesigner.properties.imageUrlPlaceholder')}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-xs">{t('reportDesigner.properties.uploadFromFileMax2Mb')}</Label>
+                    <input
+                      id={`layer-image-upload-${selectedElement.id}`}
+                      type="file"
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={handleSelectedImageUpload}
+                    />
+                    <Label
+                      htmlFor={`layer-image-upload-${selectedElement.id}`}
+                      className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-medium hover:bg-accent"
+                    >
+                      <Upload className="size-3.5" />
+                      {t('common.selectImage')}
+                    </Label>
+                  </div>
+                  {selectedElement.value ? (
+                    <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/40">
+                      <div className="flex h-24 items-center justify-center bg-white dark:bg-slate-900">
+                        <img
+                          src={normalizeImageSrc(selectedElement.value)}
+                          alt=""
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
+                      <div className="border-t border-slate-200 px-2 py-1 text-[10px] text-slate-500 dark:border-slate-700">
+                        <span className="block truncate" title={selectedElement.value}>
+                          {selectedElement.value}
+                        </span>
+                      </div>
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+              {selectedElement.type !== 'image' ? (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
+                    <Select
+                      value={String(selectedElement.fontSize ?? 14)}
+                      onValueChange={(value) =>
+                        updateReportElement(selectedElement.id, { fontSize: Number(value) })
+                      }
+                    >
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[10, 12, 14, 16, 18, 20, 24, 28, 32].map((size) => (
+                          <SelectItem key={size} value={String(size)}>
+                            {size} px
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-xs">{t('reportDesigner.properties.color')}</Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={selectedElement.color ?? '#374151'}
+                        onChange={(e) =>
+                          updateReportElement(selectedElement.id, { color: e.target.value })
+                        }
+                        className="h-8 w-9 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
+                      />
+                      <Input
+                        value={selectedElement.color ?? ''}
+                        onChange={(e) =>
+                          updateReportElement(selectedElement.id, { color: e.target.value || undefined })
+                        }
+                        className="h-8 flex-1 text-xs"
+                        placeholder={t('reportDesigner.properties.colorPlaceholder')}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : null}
+              {selectedElement.type === 'image' && (
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs">{t('reportDesigner.properties.imageFit')}</Label>
+                  <Select
+                    value={selectedElement.style?.imageFit ?? 'contain'}
+                    onValueChange={(value: 'contain' | 'cover') =>
+                      updateReportElement(selectedElement.id, {
+                        style: {
+                          ...selectedElement.style,
+                          imageFit: value,
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="contain">{t('reportDesigner.properties.imageFitContain')}</SelectItem>
+                      <SelectItem value="cover">{t('reportDesigner.properties.imageFitCover')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
-      {elements.length === 0 && (
-        <p className="text-xs text-slate-500">{t('reportDesigner.layers.noItems')}</p>
-      )}
-    </div>
+      </div>
+      <AlertDialog
+        open={deleteDialogElementId != null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteDialogElementId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('common.delete.confirmTitle', { ns: 'common' })}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('common.delete.confirmMessage', { ns: 'common' })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', { ns: 'common' })}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteDialogElementId) removeElement(deleteDialogElementId);
+                setDeleteDialogElementId(null);
+              }}
+            >
+              {t('common.delete.action', { ns: 'common' })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

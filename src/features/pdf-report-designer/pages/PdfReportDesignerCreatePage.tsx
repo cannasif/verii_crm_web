@@ -9,7 +9,15 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Undo2, Redo2, Grid3X3 } from 'lucide-react';
+import { Undo2, Redo2, Grid3X3, ArrowLeft, AlertTriangle, FileText } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   Select,
   SelectContent,
@@ -182,7 +190,11 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   const editId = idParam != null ? parseInt(idParam, 10) : null;
   const isEdit = editId != null && !Number.isNaN(editId) && editId > 0;
 
-  const canvasRef = useRef<HTMLDivElement | null>(null);
+  const pageCanvasRefs = useRef<Map<number, HTMLDivElement | null>>(new Map());
+  const handlePageRef = useCallback((page: number, el: HTMLDivElement | null) => {
+    if (el) pageCanvasRefs.current.set(page, el);
+    else pageCanvasRefs.current.delete(page);
+  }, []);
   const setElements = usePdfReportDesignerStore((s) => s.setElements);
   const addElement = usePdfReportDesignerStore((s) => s.addElement);
   const addColumnToTable = usePdfReportDesignerStore((s) => s.addColumnToTable);
@@ -462,14 +474,16 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     const containerTarget = containerId ? elementsById[containerId] : undefined;
     const section = containerTarget?.section ?? (overId != null ? getSectionFromDroppableId(overId) : null);
 
-    if (section == null || !canvasRef.current) return;
+    if (section == null) return;
     if (data.type === 'table-column') return;
 
     if (data.type === 'table' && section !== 'content') return;
     const translated = active.rect.current.translated;
     if (!translated) return;
 
-    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const activePageCanvas = pageCanvasRefs.current.get(currentPage);
+    if (!activePageCanvas) return;
+    const canvasRect = activePageCanvas.getBoundingClientRect();
     const absoluteX = Math.round((translated.left - canvasRect.left) / 8) * 8;
     const absoluteY = Math.round((translated.top - canvasRect.top) / 8) * 8;
     const parentAbsolute = containerTarget ? resolveAbsolutePosition(elementsById, containerTarget) : null;
@@ -700,12 +714,22 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     }
   }, [currentPage, pageCount]);
 
+  const handleNavigateToPage = useCallback((page: number) => {
+    setCurrentPage(page);
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`pdf-canvas-page-${page}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, []);
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       {hasDraft && !draftBannerDismissed && (
-        <Alert className="rounded-none border-x-0 border-t-0 border-b border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30">
+        <Alert className="rounded-none border-x-0 border-t-0 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30">
+          <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
           <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-            <span>{t('pdfReportDesigner.draftFound')}</span>
+            <span className="text-amber-800 dark:text-amber-200">{t('pdfReportDesigner.draftFound')}</span>
             <span className="flex gap-2">
               <Button type="button" variant="outline" size="sm" onClick={handleRestoreDraft}>
                 {t('pdfReportDesigner.restoreDraft')}
@@ -717,180 +741,223 @@ export function PdfReportDesignerCreatePage(): ReactElement {
           </AlertDescription>
         </Alert>
       )}
-      <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-700 dark:bg-slate-900/50">
-        <h1 className="mb-4 text-xl font-semibold text-slate-900 dark:text-white">
-          {isEdit ? t('pdfReportDesigner.editTemplate') : t('pdfReportDesigner.newTemplate')}
-        </h1>
+
+      <div className="shrink-0 border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-wrap items-end gap-4">
-            <FormField
-              control={form.control}
-              name="ruleType"
-              render={({ field }) => (
-                <FormItem className="w-48">
-                  <FormLabel>{t('pdfReportDesigner.documentType')}</FormLabel>
-                  <Select
-                    onValueChange={(value) => field.onChange(Number(value) as TemplateDesignerRuleTypeValue)}
-                    value={field.value?.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t('common.select')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {RULE_TYPE_OPTIONS.map((value) => (
-                        <SelectItem key={value} value={value.toString()}>
-                          {value === TemplateDesignerRuleType.Demand
-                            ? t('reportDesigner.ruleType.demand')
-                            : value === TemplateDesignerRuleType.Quotation
-                              ? t('reportDesigner.ruleType.quotation')
-                              : value === TemplateDesignerRuleType.Order
-                                ? t('reportDesigner.ruleType.order')
-                                : t('reportDesigner.ruleType.fastQuotation')}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem className="min-w-[200px] flex-1">
-                  <FormLabel>{t('pdfReportDesigner.title')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('pdfReportDesigner.titlePlaceholder')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="layoutPreset"
-              render={({ field }) => (
-                <FormItem className="w-72">
-                  <FormLabel>{t('pdfReportDesigner.layoutPreset.label')}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t('common.select')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {availableLayoutPresets.map((preset) => (
-                        <SelectItem key={preset.value} value={preset.value}>
-                          {t(preset.titleKey)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="default"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value ?? false}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    {t('pdfReportDesigner.setDefaultTemplate')}
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="pageCount"
-              render={({ field }) => (
-                <FormItem className="w-28">
-                  <FormLabel>{t('pdfReportDesigner.pageCount')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={20}
-                      disabled={isCanvasLocked}
-                      value={field.value}
-                      onChange={(e) =>
-                        field.onChange(Math.min(20, Math.max(1, Number(e.target.value) || 1)))
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-              disabled={historyIndex <= 0}
-              onClick={() => undo()}
-              title={t('pdfReportDesigner.undo')}
-            >
-              <Undo2 className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-              disabled={historyIndex >= history.length - 1 || history.length === 0}
-              onClick={() => redo()}
-              title={t('pdfReportDesigner.redo')}
-            >
-              <Redo2 className="size-4" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <Grid3X3 className="size-4 text-slate-500" />
-              <Switch
-                id="snap-toggle"
-                checked={snapEnabled}
-                onCheckedChange={setSnapEnabled}
-              />
-              <Label htmlFor="snap-toggle" className="text-sm font-normal cursor-pointer">
-                {t('pdfReportDesigner.snapToGrid')}
-              </Label>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="flex items-center gap-2 px-4 py-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="-ml-1 gap-1.5 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                onClick={() => navigate('/report-designer')}
+              >
+                <ArrowLeft className="size-4" />
+              </Button>
+              <Separator orientation="vertical" className="mx-0.5 h-5" />
+              <div className="flex min-w-0 items-center gap-2">
+                <FileText className="size-4 shrink-0 text-slate-400 dark:text-slate-500" />
+                <span className="truncate text-sm font-semibold text-slate-800 dark:text-white">
+                  {isEdit ? t('pdfReportDesigner.editTemplate') : t('pdfReportDesigner.newTemplate')}
+                </span>
+                {isEdit && (
+                  <Badge variant="secondary" className="shrink-0 text-[11px]">
+                    {t('common.update')}
+                  </Badge>
+                )}
+              </div>
+              <div className="flex-1" />
+              <TooltipProvider delayDuration={400}>
+                <div className="flex items-center gap-0.5">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                        disabled={historyIndex <= 0}
+                        onClick={() => undo()}
+                      >
+                        <Undo2 className="size-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">{t('pdfReportDesigner.undo')}</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                        disabled={historyIndex >= history.length - 1 || history.length === 0}
+                        onClick={() => redo()}
+                      >
+                        <Redo2 className="size-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">{t('pdfReportDesigner.redo')}</TooltipContent>
+                  </Tooltip>
+                </div>
+              </TooltipProvider>
+              <Separator orientation="vertical" className="mx-1 h-5" />
+              <div className="flex items-center gap-1.5">
+                <Grid3X3 className="size-3.5 text-slate-400" />
+                <Switch
+                  id="snap-toggle"
+                  checked={snapEnabled}
+                  onCheckedChange={setSnapEnabled}
+                />
+                <Label htmlFor="snap-toggle" className="cursor-pointer text-xs font-normal text-slate-600 dark:text-slate-400">
+                  {t('pdfReportDesigner.snapToGrid')}
+                </Label>
+              </div>
+              <Separator orientation="vertical" className="mx-1 h-5" />
+              <Button
+                type="submit"
+                size="sm"
+                disabled={isSaving || (isEdit && !templateByIdLoaded) || !isFormValid}
+                className="min-w-[80px]"
+              >
+                {isSaving ? t('common.saving') : isEdit ? t('common.update') : t('common.save')}
+              </Button>
             </div>
-            <Button
-              type="submit"
-              disabled={isSaving || (isEdit && !templateByIdLoaded) || !isFormValid}
-            >
-              {isSaving ? t('common.saving') : isEdit ? t('common.update') : t('common.save')}
-            </Button>
+
+            <div className="flex flex-wrap items-end gap-3 border-t border-slate-100 bg-slate-50/70 px-4 py-2.5 dark:border-slate-800 dark:bg-slate-900/40">
+              <FormField
+                control={form.control}
+                name="ruleType"
+                render={({ field }) => (
+                  <FormItem className="w-44">
+                    <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.documentType')}</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value) as TemplateDesignerRuleTypeValue)}
+                      value={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="h-8 w-full text-xs">
+                          <SelectValue placeholder={t('common.select')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {RULE_TYPE_OPTIONS.map((value) => (
+                          <SelectItem key={value} value={value.toString()}>
+                            {value === TemplateDesignerRuleType.Demand
+                              ? t('reportDesigner.ruleType.demand')
+                              : value === TemplateDesignerRuleType.Quotation
+                                ? t('reportDesigner.ruleType.quotation')
+                                : value === TemplateDesignerRuleType.Order
+                                  ? t('reportDesigner.ruleType.order')
+                                  : t('reportDesigner.ruleType.fastQuotation')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem className="min-w-[180px] flex-1">
+                    <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.title')}</FormLabel>
+                    <FormControl>
+                      <Input className="h-8 text-xs" placeholder={t('pdfReportDesigner.titlePlaceholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="layoutPreset"
+                render={({ field }) => (
+                  <FormItem className="w-60">
+                    <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.layoutPreset.label')}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-8 w-full text-xs">
+                          <SelectValue placeholder={t('common.select')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {availableLayoutPresets.map((preset) => (
+                          <SelectItem key={preset.value} value={preset.value}>
+                            {t(preset.titleKey)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="pageCount"
+                render={({ field }) => (
+                  <FormItem className="w-24">
+                    <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.pageCount')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={20}
+                        disabled={isCanvasLocked}
+                        value={field.value}
+                        onChange={(e) =>
+                          field.onChange(Math.min(20, Math.max(1, Number(e.target.value) || 1)))
+                        }
+                        className="h-8 text-xs"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="default"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center gap-2 space-y-0 pb-1">
+                    <FormControl>
+                      <Checkbox checked={field.value ?? false} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel className="cursor-pointer text-xs font-normal text-slate-700 dark:text-slate-300">
+                      {t('pdfReportDesigner.setDefaultTemplate')}
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
+            </div>
           </form>
         </Form>
-        <div className="mt-4 flex flex-wrap items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-2">
-          <span className="text-sm font-medium text-slate-600">{t('pdfReportDesigner.pages')}</span>
-          {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
-            <Button
-              key={pageNumber}
-              type="button"
-              size="sm"
-              variant={currentPage === pageNumber ? 'default' : 'outline'}
-              onClick={() => setCurrentPage(pageNumber)}
-            >
-              {t('pdfReportDesigner.pageNumber', { page: pageNumber })}
-            </Button>
-          ))}
+
+        <div className="flex items-center gap-2.5 border-t border-slate-100 bg-white px-4 py-1.5 dark:border-slate-800 dark:bg-slate-950">
+          <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            {t('pdfReportDesigner.pages')}
+          </span>
+          <div className="flex flex-wrap gap-1">
+            {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
+              <Button
+                key={pageNumber}
+                type="button"
+                size="sm"
+                variant={currentPage === pageNumber ? 'default' : 'outline'}
+                className="h-6 min-w-[52px] px-3 text-xs"
+                onClick={() => handleNavigateToPage(pageNumber)}
+              >
+                {t('pdfReportDesigner.pageNumber', { page: pageNumber })}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
+
       <div className="flex min-h-0 flex-1 flex-col">
         {!isCanvasLocked ? (
           <DndContext onDragEnd={handleDragEnd}>
@@ -900,10 +967,17 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 lineFields={lineFields}
                 exchangeRateFields={exchangeRateFields}
                 imageFields={imageFields}
+                templateId={editId}
               />
-              <PdfA4Canvas canvasRef={canvasRef} currentPage={currentPage} />
+              <PdfA4Canvas
+                currentPage={currentPage}
+                pageCount={pageCount}
+                templateId={editId}
+                onPageRef={handlePageRef}
+                onPageChange={handleNavigateToPage}
+              />
               <PdfInspectorPanel pageCount={pageCount} />
-              <PdfLayersPanel />
+              <PdfLayersPanel onNavigateToPage={handleNavigateToPage} templateId={editId} />
             </div>
           </DndContext>
         ) : null}

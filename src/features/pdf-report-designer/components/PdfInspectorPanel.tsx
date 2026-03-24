@@ -1,5 +1,13 @@
 import type { ReactElement } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Settings2, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
 import { Input } from '@/components/ui/input';
@@ -37,6 +45,7 @@ function normalizePageNumbers(rawValue: string, pageCount: number): number[] | u
 
 export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactElement {
   const { t } = useTranslation();
+  const [collapsed, setCollapsed] = useState(false);
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
   const updateElement = usePdfReportDesignerStore((s) => s.updateElement);
@@ -58,13 +67,55 @@ export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactE
     (element) => element.type === 'container' && element.id !== selectedElement?.id
   );
 
+  if (collapsed) {
+    return (
+      <TooltipProvider delayDuration={300}>
+        <div className="flex min-h-0 w-8 shrink-0 flex-col items-center border-l border-slate-200 bg-slate-50/80 py-2 dark:border-slate-700 dark:bg-slate-900/30">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="rounded p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:hover:bg-slate-700"
+                onClick={() => setCollapsed(false)}
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="left">{t('reportDesigner.inspector.title')}</TooltipContent>
+          </Tooltip>
+          <div className="mt-3">
+            <Settings2 className="size-3.5 text-slate-300" />
+          </div>
+        </div>
+      </TooltipProvider>
+    );
+  }
+
   if (!selectedElement) {
     return (
-      <div className="flex w-56 flex-col gap-3 border-l border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/30">
-        <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          {t('reportDesigner.inspector.title')}
-        </span>
-        <p className="text-xs text-slate-500">{t('reportDesigner.inspector.selectHint')}</p>
+      <div className="flex min-h-0 w-64 shrink-0 flex-col border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2.5 dark:border-slate-700">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            {t('reportDesigner.inspector.title')}
+          </span>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                  onClick={() => setCollapsed(true)}
+                >
+                  <ChevronRight className="size-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="left">Daralt</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="flex flex-1 items-center justify-center p-4">
+          <p className="text-center text-xs text-slate-400 dark:text-slate-500">{t('reportDesigner.inspector.selectHint')}</p>
+        </div>
       </div>
     );
   }
@@ -84,10 +135,27 @@ export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactE
       : PDF_TABLE_PRESETS;
 
   return (
-    <div className="flex w-72 flex-col gap-3 overflow-y-auto border-l border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/30">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        {t('reportDesigner.inspector.title')}
-      </span>
+    <div className="flex min-h-0 w-64 shrink-0 flex-col overflow-y-auto border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-4 py-2.5 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          {t('reportDesigner.inspector.title')}
+        </span>
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                onClick={() => setCollapsed(true)}
+              >
+                <ChevronRight className="size-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="left">Daralt</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <div className="flex flex-col gap-3 p-3">
       <div className="grid grid-cols-2 gap-2">
         <div className="flex flex-col gap-1">
           <Label className="text-xs">X</Label>
@@ -917,6 +985,7 @@ export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactE
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
@@ -12,11 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Upload } from 'lucide-react';
+import { Upload, ChevronLeft, ChevronRight, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
 import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export type PdfFieldPaletteType = 'text' | 'field' | 'table' | 'table-column' | 'image' | 'shape' | 'container' | 'note' | 'summary' | 'quotationTotals';
 
@@ -39,6 +46,7 @@ export interface PdfSidebarProps {
   lineFields?: PdfFieldPaletteItem[];
   exchangeRateFields?: PdfFieldPaletteItem[];
   imageFields?: PdfFieldPaletteItem[];
+  templateId?: number | null;
 }
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
@@ -70,7 +78,7 @@ function DraggablePaletteItem({
       style={style}
       {...listeners}
       {...attributes}
-      className="cursor-grab rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm active:cursor-grabbing data-[dragging=true]:opacity-50"
+      className="cursor-grab rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 active:cursor-grabbing dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 data-[dragging=true]:opacity-50"
       data-dragging={isDragging ?? undefined}
     >
       {field.label}
@@ -89,10 +97,10 @@ function Section({
 }): ReactElement {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
         {title}
       </span>
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1">
         {items.map((field, index) => (
           <DraggablePaletteItem
             key={`${idPrefix}-${field.path || field.type}-${index}`}
@@ -299,7 +307,7 @@ function FieldPropertiesPanel(): ReactElement | null {
   );
 }
 
-function ImagePropertiesPanel(): ReactElement | null {
+function ImagePropertiesPanel({ templateId }: { templateId?: number | null }): ReactElement | null {
   const { t } = useTranslation();
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
@@ -328,7 +336,7 @@ function ImagePropertiesPanel(): ReactElement | null {
       e.target.value = '';
       return;
     }
-    void uploadPdfTemplateImage(file)
+    void uploadPdfTemplateImage(file, templateId ?? undefined)
       .then((relativeUrl) => {
         updateReportElement(selectedElement.id, { value: relativeUrl });
       })
@@ -412,74 +420,91 @@ export function PdfSidebar({
   lineFields,
   exchangeRateFields,
   imageFields,
+  templateId,
 }: PdfSidebarProps = {}): ReactElement {
   const { t } = useTranslation();
+  const [collapsed, setCollapsed] = useState(false);
   const fieldsItems = headerFields ?? [];
   const tableColumnsItems = lineFields ?? [];
   const exchangeRateColumnsItems = exchangeRateFields ?? [];
   const imageFieldsItems = imageFields ?? [];
-  const textItem: PdfFieldPaletteItem = {
-    label: t('reportDesigner.palette.text'),
-    path: '',
-    type: 'text',
-  };
-  const shapeItem: PdfFieldPaletteItem = {
-    label: t('reportDesigner.palette.shape'),
-    path: '',
-    type: 'shape',
-  };
-  const containerItem: PdfFieldPaletteItem = {
-    label: t('reportDesigner.palette.container'),
-    path: '',
-    type: 'container',
-  };
-  const noteItem: PdfFieldPaletteItem = {
-    label: t('reportDesigner.palette.note'),
-    path: '',
-    type: 'note',
-  };
-  const summaryItem: PdfFieldPaletteItem = {
-    label: t('reportDesigner.palette.summary'),
-    path: '',
-    type: 'summary',
-  };
-  const quotationTotalsItem: PdfFieldPaletteItem = {
-    label: t('reportDesigner.palette.quotationTotals'),
-    path: '',
-    type: 'quotationTotals',
-  };
-  const addTableItem: PdfFieldPaletteItem = {
-    label: t('reportDesigner.palette.addTable'),
-    path: '',
-    type: 'table',
-  };
-  const logoImageItem: PdfFieldPaletteItem = {
-    label: t('reportDesigner.palette.logoImage'),
-    path: '',
-    type: 'image',
-    value: 'Logo',
-  };
+  const textItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.text'), path: '', type: 'text' };
+  const shapeItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.shape'), path: '', type: 'shape' };
+  const containerItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.container'), path: '', type: 'container' };
+  const noteItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.note'), path: '', type: 'note' };
+  const summaryItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.summary'), path: '', type: 'summary' };
+  const quotationTotalsItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.quotationTotals'), path: '', type: 'quotationTotals' };
+  const addTableItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.addTable'), path: '', type: 'table' };
+  const logoImageItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.logoImage'), path: '', type: 'image', value: 'Logo' };
   const allImageItems = [logoImageItem, ...imageFieldsItems];
+
+  if (collapsed) {
+    return (
+      <TooltipProvider delayDuration={300}>
+        <div className="flex min-h-0 w-8 shrink-0 flex-col items-center border-r border-slate-200 bg-slate-50 py-2 dark:border-slate-700 dark:bg-slate-900/30">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="rounded p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:hover:bg-slate-700"
+                onClick={() => setCollapsed(false)}
+              >
+                <ChevronRight className="size-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">{t('reportDesigner.palette.title')}</TooltipContent>
+          </Tooltip>
+          <div className="mt-3">
+            <Palette className="size-3.5 text-slate-300" />
+          </div>
+        </div>
+      </TooltipProvider>
+    );
+  }
+
   return (
-    <div className="flex w-64 flex-col gap-6 border-r border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/30">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        {t('reportDesigner.palette.title')}
-      </span>
-      <Section title={t('reportDesigner.palette.text')} items={[textItem, shapeItem, containerItem, noteItem, summaryItem, quotationTotalsItem]} idPrefix="pdf-palette-text" />
-      <Section title={t('reportDesigner.palette.fields')} items={fieldsItems} idPrefix="pdf-palette-fields" />
-      <Section title={t('reportDesigner.palette.tableColumns')} items={tableColumnsItems} idPrefix="pdf-palette-table-columns" />
-      {exchangeRateColumnsItems.length > 0 && (
-        <Section
-          title={t('reportDesigner.palette.exchangeRates')}
-          items={exchangeRateColumnsItems}
-          idPrefix="pdf-palette-exchange-rates"
-        />
-      )}
-      <Section title={t('reportDesigner.palette.addTable')} items={[addTableItem]} idPrefix="pdf-palette-add-table" />
-      <Section title={t('reportDesigner.palette.images')} items={allImageItems} idPrefix="pdf-palette-images" />
-      <TextPropertiesPanel />
-      <FieldPropertiesPanel />
-      <ImagePropertiesPanel />
+    <div className="flex min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/30">
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-2.5 dark:border-slate-700">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          {t('reportDesigner.palette.title')}
+        </span>
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                onClick={() => setCollapsed(true)}
+              >
+                <ChevronLeft className="size-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Daralt</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-5 p-4">
+          <Section title={t('reportDesigner.palette.text')} items={[textItem, shapeItem, containerItem, noteItem, summaryItem, quotationTotalsItem]} idPrefix="pdf-palette-text" />
+          <Section title={t('reportDesigner.palette.fields')} items={fieldsItems} idPrefix="pdf-palette-fields" />
+          <Section title={t('reportDesigner.palette.tableColumns')} items={tableColumnsItems} idPrefix="pdf-palette-table-columns" />
+          {exchangeRateColumnsItems.length > 0 && (
+            <Section
+              title={t('reportDesigner.palette.exchangeRates')}
+              items={exchangeRateColumnsItems}
+              idPrefix="pdf-palette-exchange-rates"
+            />
+          )}
+          <Section title={t('reportDesigner.palette.addTable')} items={[addTableItem]} idPrefix="pdf-palette-add-table" />
+          <Section title={t('reportDesigner.palette.images')} items={allImageItems} idPrefix="pdf-palette-images" />
+        </div>
+        <div className="flex flex-col gap-3 border-t border-slate-200 p-4 dark:border-slate-700">
+          <TextPropertiesPanel />
+          <FieldPropertiesPanel />
+            <ImagePropertiesPanel templateId={templateId} />
+        </div>
+      </div>
     </div>
   );
 }

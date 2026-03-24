@@ -42,6 +42,8 @@ interface PdfReportDesignerState {
   getOrderedElements: () => PdfCanvasElement[];
   snapEnabled: boolean;
   setSnapEnabled: (enabled: boolean) => void;
+  flashingId: string | null;
+  setFlashingId: (id: string | null) => void;
 }
 
 function snapshot(
@@ -62,6 +64,8 @@ export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, ge
   historyIndex: -1,
   snapEnabled: true,
   setSnapEnabled: (enabled) => set({ snapEnabled: enabled }),
+  flashingId: null,
+  setFlashingId: (id) => set({ flashingId: id }),
 
   setElements: (elements) => {
     const byId: Record<string, PdfCanvasElement> = {};

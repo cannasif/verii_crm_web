@@ -1,4 +1,4 @@
-import type { MutableRefObject, ReactElement, RefObject } from 'react';
+import type { ReactElement } from 'react';
 import { useEffect, useCallback, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import quotationTotalsLayoutSpecJson from '../specs/quotation-totals-layout-spec.json';
@@ -7,6 +7,16 @@ import { GripVertical, Settings, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -115,8 +125,11 @@ function snapToGrid(value: number, enabled: boolean): number {
 }
 
 export interface PdfA4CanvasProps {
-  canvasRef?: RefObject<HTMLDivElement | null>;
   currentPage: number;
+  pageCount: number;
+  templateId?: number | null;
+  onPageRef?: (page: number, el: HTMLDivElement | null) => void;
+  onPageChange?: (page: number) => void;
 }
 
 function shouldRenderOnPage(element: PdfCanvasElement, currentPage: number): boolean {
@@ -222,6 +235,11 @@ function getQuotationTotalsPreviewRows(element: PdfReportElement): Array<{ label
   });
 
   return rows;
+}
+
+function normalizeImageSrc(value: string): string {
+  if (value.startsWith('http') || value.startsWith('data:') || value.startsWith('/')) return value;
+  return `/${value}`;
 }
 
 const quotationTotalsLayoutSpec = quotationTotalsLayoutSpecJson.quotationTotals;
@@ -355,15 +373,18 @@ function TextElementBlock({ element }: { element: PdfReportElement }): ReactElem
   );
 }
 
-function ImageElementBlock({ element }: { element: PdfReportElement }): ReactElement {
+function ImageElementBlock({
+  element,
+  templateId,
+}: {
+  element: PdfReportElement;
+  templateId?: number | null;
+}): ReactElement {
   const { t } = useTranslation();
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
   const setSelectedIds = usePdfReportDesignerStore((s) => s.setSelectedIds);
-  const isUrl =
-    typeof element.value === 'string' &&
-    (element.value.startsWith('http') ||
-      element.value.startsWith('/') ||
-      element.value.startsWith('data:'));
+  const imageValue = typeof element.value === 'string' ? element.value : '';
+  const isUrl = imageValue.trim().length > 0;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
@@ -373,7 +394,7 @@ function ImageElementBlock({ element }: { element: PdfReportElement }): ReactEle
       e.target.value = '';
       return;
     }
-    void uploadPdfTemplateImage(file)
+    void uploadPdfTemplateImage(file, templateId ?? undefined)
       .then((relativeUrl) => {
         updateReportElement(element.id, { value: relativeUrl });
       })
@@ -387,13 +408,18 @@ function ImageElementBlock({ element }: { element: PdfReportElement }): ReactEle
 
   if (isUrl) {
     return (
-      <div className="flex h-full w-full items-center justify-center overflow-hidden bg-slate-100">
+      <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-100">
         <img
-          src={element.value}
+          src={normalizeImageSrc(imageValue)}
           alt=""
           className="h-full w-full"
           style={{ objectFit: element.style?.imageFit ?? 'contain' }}
         />
+        <div className="absolute inset-x-0 bottom-0 bg-slate-900/65 px-2 py-1 text-[10px] text-white">
+          <span className="block truncate" title={imageValue}>
+            {imageValue}
+          </span>
+        </div>
       </div>
     );
   }
@@ -424,7 +450,13 @@ function ImageElementBlock({ element }: { element: PdfReportElement }): ReactEle
   );
 }
 
-function FieldElementBlock({ element }: { element: PdfReportElement }): ReactElement {
+function FieldElementBlock({
+  element,
+  templateId,
+}: {
+  element: PdfReportElement;
+  templateId?: number | null;
+}): ReactElement {
   if (element.type === 'shape') {
     const style = element.style ?? {};
     return (
@@ -445,7 +477,7 @@ function FieldElementBlock({ element }: { element: PdfReportElement }): ReactEle
     return <TextElementBlock element={element} />;
   }
   if (element.type === 'image') {
-    return <ImageElementBlock element={element} />;
+    return <ImageElementBlock element={element} templateId={templateId} />;
   }
   if (element.type === 'note') {
     return (
@@ -690,7 +722,13 @@ function TextSettingsPopover({
   );
 }
 
-function ElementSettingsPopover({ element }: { element: PdfCanvasElement }): ReactElement | null {
+function ElementSettingsPopover({
+  element,
+  templateId,
+}: {
+  element: PdfCanvasElement;
+  templateId?: number | null;
+}): ReactElement | null {
   const { t } = useTranslation();
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
 
@@ -833,7 +871,7 @@ function ElementSettingsPopover({ element }: { element: PdfCanvasElement }): Rea
         e.target.value = '';
         return;
       }
-      void uploadPdfTemplateImage(file)
+      void uploadPdfTemplateImage(file, templateId ?? undefined)
         .then((relativeUrl) => {
           updateReportElement(el.id, { value: relativeUrl });
         })
@@ -886,6 +924,22 @@ function ElementSettingsPopover({ element }: { element: PdfCanvasElement }): Rea
                 {t('common.selectImage')}
               </Label>
             </div>
+            {el.value ? (
+              <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50">
+                <div className="flex h-28 items-center justify-center bg-white">
+                  <img
+                    src={normalizeImageSrc(el.value)}
+                    alt=""
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+                <div className="border-t border-slate-200 px-2 py-1 text-[10px] text-slate-500">
+                  <span className="block truncate" title={el.value}>
+                    {el.value}
+                  </span>
+                </div>
+              </div>
+            ) : null}
           </div>
         </PopoverContent>
       </Popover>
@@ -919,11 +973,10 @@ function DroppableSection({
   );
 }
 
-export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): ReactElement {
+export function PdfA4Canvas({ currentPage, pageCount, templateId, onPageRef, onPageChange }: PdfA4CanvasProps): ReactElement {
   const { t } = useTranslation();
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const elements = getOrderedElements();
-  const resolvedElements = resolveCanvasElements(elements, currentPage);
   const updateElementPosition = usePdfReportDesignerStore((s) => s.updateElementPosition);
   const updateElementSize = usePdfReportDesignerStore((s) => s.updateElementSize);
   const updateElementsPosition = usePdfReportDesignerStore((s) => s.updateElementsPosition);
@@ -933,6 +986,8 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
   const setSelectedIds = usePdfReportDesignerStore((s) => s.setSelectedIds);
   const removeElement = usePdfReportDesignerStore((s) => s.removeElement);
   const snapEnabled = usePdfReportDesignerStore((s) => s.snapEnabled);
+  const flashingId = usePdfReportDesignerStore((s) => s.flashingId);
+  const [deleteDialogElementId, setDeleteDialogElementId] = useState<string | null>(null);
 
   const makeElementDragStop = useCallback(
     (id: string): RndDragCallback =>
@@ -1010,118 +1065,218 @@ export function PdfA4Canvas({ canvasRef, currentPage }: PdfA4CanvasProps): React
   const footerDroppable = useDroppable({ id: A4_FOOTER_DROPPABLE_ID });
   const pageDroppable = useDroppable({ id: A4_PAGE_DROPPABLE_ID });
 
-  const setPaperRef = (node: HTMLDivElement | null): void => {
-    if (canvasRef) {
-      (canvasRef as MutableRefObject<HTMLDivElement | null>).current = node;
-    }
-  };
-
   return (
-    <div className="flex flex-1 items-start justify-center overflow-auto bg-slate-200/80 p-8">
-      <div
-        ref={setPaperRef}
-        className="relative shrink-0 bg-white shadow-lg"
-        style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
-        onClick={() => setSelectedIds([])}
-        role="presentation"
-      >
-        <DroppableSection
-          setNodeRef={pageDroppable.setNodeRef}
-          isOver={pageDroppable.isOver ?? false}
-          className="absolute left-0 top-0 z-0 border border-dashed border-slate-200 bg-transparent"
-          style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
-        />
-        <DroppableSection
-          setNodeRef={headerDroppable.setNodeRef}
-          isOver={headerDroppable.isOver ?? false}
-          className="absolute left-0 top-0 z-0 flex items-center justify-center border-b border-slate-200 bg-slate-50/50 text-xs text-slate-400"
-          style={{ width: A4_CANVAS_WIDTH, height: A4_HEADER_HEIGHT }}
-        >
-          {t('reportDesigner.sections.header')}
-        </DroppableSection>
-        <DroppableSection
-          setNodeRef={contentDroppable.setNodeRef}
-          isOver={contentDroppable.isOver ?? false}
-          className="absolute left-0 z-0 flex items-center justify-center border-b border-slate-200 bg-white/50 text-xs text-slate-400"
-          style={{ width: A4_CANVAS_WIDTH, height: A4_CONTENT_HEIGHT, top: A4_CONTENT_TOP }}
-        >
-          {t('reportDesigner.sections.content')}
-        </DroppableSection>
-        <DroppableSection
-          setNodeRef={footerDroppable.setNodeRef}
-          isOver={footerDroppable.isOver ?? false}
-          className="absolute bottom-0 left-0 z-0 flex items-center justify-center border-t border-slate-200 bg-slate-50/50 text-xs text-slate-400"
-          style={{ width: A4_CANVAS_WIDTH, height: A4_FOOTER_HEIGHT, top: A4_FOOTER_TOP }}
-        >
-          {t('reportDesigner.sections.footer')}
-        </DroppableSection>
-        {resolvedElements
-          .filter(({ element }) => !element.hidden)
-          .map(({ element: el, absoluteX, absoluteY }) => (
-            <Rnd
-              key={el.id}
-              position={{ x: absoluteX, y: absoluteY }}
-              size={{ width: el.width, height: el.height }}
-              onDragStop={makeElementDragStop(el.id)}
-              onResizeStop={makeElementResizeStop(el.id)}
-              bounds="parent"
-              disableDragging={el.locked ?? false}
-              enableResizing={!el.locked}
-              cancel="[data-delete-element], [data-text-edit], [data-image-upload], [data-element-settings]"
-              dragHandleClassName="pdf-element-drag-handle"
-              className={`relative z-10 flex flex-col overflow-hidden border bg-slate-50 ${
-                selectedIds.includes(el.id) ? 'border-blue-500 ring-1 ring-blue-500' : 'border-slate-300'
+    <div className="flex min-h-0 flex-1 flex-col items-center gap-10 overflow-y-auto bg-slate-200/80 px-8 py-10">
+      {Array.from({ length: pageCount }, (_, i) => i + 1).map((pageNum) => {
+        const isActivePage = pageNum === currentPage;
+        const resolvedForPage = resolveCanvasElements(elements, pageNum);
+
+        return (
+          <div key={pageNum} id={`pdf-canvas-page-${pageNum}`} className="flex flex-col items-center gap-2">
+            <div className={`flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest ${isActivePage ? 'text-blue-500' : 'text-slate-400'}`}>
+              <div className={`h-px w-8 ${isActivePage ? 'bg-blue-400' : 'bg-slate-300'}`} />
+              {t('pdfReportDesigner.pageNumber', { page: pageNum })}
+              {isActivePage && <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">aktif</span>}
+              <div className={`h-px w-8 ${isActivePage ? 'bg-blue-400' : 'bg-slate-300'}`} />
+            </div>
+
+            <div
+              ref={(el) => onPageRef?.(pageNum, el)}
+              className={`relative shrink-0 bg-white transition-all duration-200 ${
+                isActivePage
+                  ? 'shadow-xl ring-2 ring-blue-400 ring-offset-2'
+                  : 'cursor-pointer shadow-md opacity-70 hover:opacity-90 hover:shadow-lg'
               }`}
-              style={{
-                opacity: el.style?.opacity ?? 1,
-                transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
-                borderRadius: el.style?.radius != null ? `${el.style.radius}px` : undefined,
-                background: el.type === 'shape' ? el.style?.background : undefined,
+              style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
+              onClick={() => {
+                setSelectedIds([]);
+                if (!isActivePage) onPageChange?.(pageNum);
+              }}
+              role="presentation"
+            >
+              {isActivePage && (
+                <>
+                  <DroppableSection
+                    setNodeRef={pageDroppable.setNodeRef}
+                    isOver={pageDroppable.isOver ?? false}
+                    className="absolute left-0 top-0 z-0 border border-dashed border-slate-200 bg-transparent"
+                    style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
+                  />
+                  <DroppableSection
+                    setNodeRef={headerDroppable.setNodeRef}
+                    isOver={headerDroppable.isOver ?? false}
+                    className="absolute left-0 top-0 z-0 flex items-center justify-center border-b border-slate-200 bg-slate-50/50 text-xs text-slate-400"
+                    style={{ width: A4_CANVAS_WIDTH, height: A4_HEADER_HEIGHT }}
+                  >
+                    {t('reportDesigner.sections.header')}
+                  </DroppableSection>
+                  <DroppableSection
+                    setNodeRef={contentDroppable.setNodeRef}
+                    isOver={contentDroppable.isOver ?? false}
+                    className="absolute left-0 z-0 flex items-center justify-center border-b border-slate-200 bg-white/50 text-xs text-slate-400"
+                    style={{ width: A4_CANVAS_WIDTH, height: A4_CONTENT_HEIGHT, top: A4_CONTENT_TOP }}
+                  >
+                    {t('reportDesigner.sections.content')}
+                  </DroppableSection>
+                  <DroppableSection
+                    setNodeRef={footerDroppable.setNodeRef}
+                    isOver={footerDroppable.isOver ?? false}
+                    className="absolute bottom-0 left-0 z-0 flex items-center justify-center border-t border-slate-200 bg-slate-50/50 text-xs text-slate-400"
+                    style={{ width: A4_CANVAS_WIDTH, height: A4_FOOTER_HEIGHT, top: A4_FOOTER_TOP }}
+                  >
+                    {t('reportDesigner.sections.footer')}
+                  </DroppableSection>
+                </>
+              )}
+
+              {!isActivePage && (
+                <>
+                  <div className="absolute left-0 top-0 z-0 border-b border-slate-200 bg-slate-50/50" style={{ width: A4_CANVAS_WIDTH, height: A4_HEADER_HEIGHT }} />
+                  <div className="absolute left-0 z-0 border-b border-slate-200 bg-white/50" style={{ width: A4_CANVAS_WIDTH, height: A4_CONTENT_HEIGHT, top: A4_CONTENT_TOP }} />
+                  <div className="absolute bottom-0 left-0 z-0 border-t border-slate-200 bg-slate-50/50" style={{ width: A4_CANVAS_WIDTH, height: A4_FOOTER_HEIGHT, top: A4_FOOTER_TOP }} />
+                </>
+              )}
+
+              {resolvedForPage
+                .filter(({ element }) => !element.hidden)
+                .map(({ element: el, absoluteX, absoluteY }) => {
+                  const isFlashing = flashingId === el.id;
+                  const isSelected = selectedIds.includes(el.id);
+
+                  if (!isActivePage) {
+                    return (
+                      <div
+                        key={el.id}
+                        className={`absolute overflow-hidden border ${isSelected ? 'border-blue-400 ring-1 ring-blue-400' : 'border-slate-200'}`}
+                        style={{
+                          left: absoluteX,
+                          top: absoluteY,
+                          width: el.width,
+                          height: el.height,
+                          zIndex: 10,
+                          opacity: el.style?.opacity ?? 1,
+                          transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
+                          borderRadius: el.style?.radius != null ? `${el.style.radius}px` : undefined,
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedIds([el.id]);
+                          onPageChange?.(pageNum);
+                        }}
+                        role="presentation"
+                      >
+                        <div className="pointer-events-none h-full w-full overflow-hidden">
+                          {isPdfTableElement(el) ? (
+                            <TableElementBlock table={el} />
+                          ) : el.type === 'container' ? (
+                            <ContainerElementBlock element={el} />
+                          ) : (
+                            <FieldElementBlock element={el as PdfReportElement} templateId={templateId} />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Rnd
+                      key={el.id}
+                      position={{ x: absoluteX, y: absoluteY }}
+                      size={{ width: el.width, height: el.height }}
+                      onDragStop={makeElementDragStop(el.id)}
+                      onResizeStop={makeElementResizeStop(el.id)}
+                      bounds="parent"
+                      disableDragging={el.locked ?? false}
+                      enableResizing={!el.locked}
+                      cancel="[data-delete-element], [data-text-edit], [data-image-upload], [data-element-settings]"
+                      dragHandleClassName="pdf-element-drag-handle"
+                      className={`relative z-10 flex flex-col overflow-hidden border bg-slate-50 transition-shadow ${
+                        isFlashing
+                          ? 'border-amber-400 ring-4 ring-amber-400 ring-offset-1 animate-pulse'
+                          : isSelected
+                          ? 'border-blue-500 ring-1 ring-blue-500'
+                          : 'border-slate-300'
+                      }`}
+                      style={{
+                        opacity: el.style?.opacity ?? 1,
+                        transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
+                        borderRadius: el.style?.radius != null ? `${el.style.radius}px` : undefined,
+                        background: el.type === 'shape' ? el.style?.background : undefined,
+                      }}
+                    >
+                      <div
+                        data-element-select
+                        className="absolute inset-0 z-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedIds([el.id]);
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        role="presentation"
+                      />
+                      <div
+                        data-drag-handle
+                        className="pdf-element-drag-handle relative z-10 flex h-5 shrink-0 cursor-grab items-center justify-center border-b border-slate-200 bg-slate-100/80 active:cursor-grabbing"
+                        onClick={(e) => e.stopPropagation()}
+                        role="presentation"
+                      >
+                        <GripVertical className="size-3.5 text-slate-500" />
+                      </div>
+                      <ElementSettingsPopover element={el} templateId={templateId} />
+                      <button
+                        type="button"
+                        data-delete-element
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteDialogElementId(el.id);
+                        }}
+                        className="absolute right-1 top-1 z-10 rounded p-1 text-slate-500 hover:bg-red-100 hover:text-red-600"
+                        title={t('reportDesigner.actions.remove')}
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                      <div className="relative z-1 min-h-0 flex-1 overflow-hidden">
+                        {isPdfTableElement(el) ? (
+                          <TableElementBlock table={el} />
+                        ) : el.type === 'container' ? (
+                          <ContainerElementBlock element={el} />
+                        ) : (
+                          <FieldElementBlock element={el} templateId={templateId} />
+                        )}
+                      </div>
+                    </Rnd>
+                  );
+                })}
+            </div>
+          </div>
+        );
+      })}
+      <AlertDialog
+        open={deleteDialogElementId != null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteDialogElementId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('common.delete.confirmTitle', { ns: 'common' })}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('common.delete.confirmMessage', { ns: 'common' })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', { ns: 'common' })}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteDialogElementId) removeElement(deleteDialogElementId);
+                setDeleteDialogElementId(null);
               }}
             >
-              <div
-                data-element-select
-                className="absolute inset-0 z-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedIds([el.id]);
-                }}
-                onMouseDown={(e) => e.stopPropagation()}
-                role="presentation"
-              />
-              <div
-                data-drag-handle
-                className="pdf-element-drag-handle relative z-10 flex h-5 shrink-0 cursor-grab items-center justify-center border-b border-slate-200 bg-slate-100/80 active:cursor-grabbing"
-                onClick={(e) => e.stopPropagation()}
-                role="presentation"
-              >
-                <GripVertical className="size-3.5 text-slate-500" />
-              </div>
-              <ElementSettingsPopover element={el} />
-              <button
-                type="button"
-                data-delete-element
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeElement(el.id);
-                }}
-                className="absolute right-1 top-1 z-10 rounded p-1 text-slate-500 hover:bg-red-100 hover:text-red-600"
-                title={t('reportDesigner.actions.remove')}
-              >
-                <Trash2 className="size-3.5" />
-              </button>
-              <div className="relative z-1 min-h-0 flex-1 overflow-hidden">
-                {isPdfTableElement(el) ? (
-                  <TableElementBlock table={el} />
-                ) : el.type === 'container' ? (
-                  <ContainerElementBlock element={el} />
-                ) : (
-                  <FieldElementBlock element={el} />
-                )}
-              </div>
-            </Rnd>
-          ))}
-      </div>
+              {t('common.delete.action', { ns: 'common' })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
