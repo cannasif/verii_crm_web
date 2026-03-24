@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { useEffect, useCallback, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useReportBuilderStore } from '../store';
 import { reportsApi } from '../api';
@@ -11,7 +11,10 @@ import { Download, FileJson, Loader2, Pencil, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
-import type { CalculatedField, ReportPreviewResponse, ReportWidget } from '../types';
+import type { CalculatedField, DataSourceParameterBinding, ReportPreviewResponse, ReportWidget } from '../types';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuthStore } from '@/stores/auth-store';
 
 function getWidgetPanelClass(widget: ReportWidget): string {
   if (widget.size === 'full') return 'xl:col-span-3';
@@ -25,7 +28,13 @@ function getWidgetHeightClass(widget: ReportWidget): string {
   return 'min-h-[320px]';
 }
 
-function buildConfigFromWidget(widget: ReportWidget, allWidgets?: ReportWidget[], calculatedFields?: CalculatedField[], lifecycle?: { status: string; version: number; publishedAt?: string }): string {
+function buildConfigFromWidget(
+  widget: ReportWidget,
+  allWidgets?: ReportWidget[],
+  calculatedFields?: CalculatedField[],
+  lifecycle?: { status: string; version: number; publishedAt?: string },
+  datasetParameters?: DataSourceParameterBinding[]
+): string {
   return JSON.stringify({
     chartType: widget.chartType,
     axis: widget.axis,
@@ -33,10 +42,67 @@ function buildConfigFromWidget(widget: ReportWidget, allWidgets?: ReportWidget[]
     legend: widget.legend,
     sorting: widget.sorting,
     filters: widget.filters,
+    datasetParameters,
     calculatedFields,
     lifecycle,
     widgets: allWidgets,
     activeWidgetId: widget.id,
+  });
+}
+
+function formatDateLiteral(date: Date): string {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function resolveBindingValue(binding: DataSourceParameterBinding, user: { id: number; email: string } | null): string {
+  switch (binding.source) {
+    case 'currentUserId':
+      return user?.id != null ? String(user.id) : '';
+    case 'currentUserEmail':
+      return user?.email ?? '';
+    case 'today':
+      return formatDateLiteral(new Date());
+    case 'now':
+      return new Date().toISOString();
+    case 'literal':
+    default:
+      return binding.value ?? '';
+  }
+}
+
+function buildRuntimeConfigJson(
+  config: {
+    chartType: string;
+    axis?: unknown;
+    values: unknown[];
+    legend?: unknown;
+    sorting?: unknown;
+    filters: unknown[];
+    datasetParameters?: DataSourceParameterBinding[];
+    calculatedFields?: CalculatedField[];
+    lifecycle?: { status: string; version: number; publishedAt?: string };
+    widgets?: ReportWidget[];
+    activeWidgetId?: string;
+    governance?: unknown;
+    history?: unknown;
+  },
+  user: { id: number; email: string } | null,
+  overrides: Record<string, string>
+): string {
+  const datasetParameters = (config.datasetParameters ?? []).map((binding) => {
+    if (binding.allowViewerOverride) {
+      const nextValue = overrides[binding.name] ?? resolveBindingValue(binding, user);
+      return { ...binding, source: 'literal' as const, value: nextValue };
+    }
+    return binding;
+  });
+
+  return JSON.stringify({
+    ...config,
+    datasetParameters,
   });
 }
 
@@ -68,6 +134,7 @@ export function ReportViewerPage(): ReactElement {
   const { t, i18n } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     meta,
     config,
@@ -79,9 +146,13 @@ export function ReportViewerPage(): ReactElement {
     hydrateFromReportDetail,
     loadSchemaForCurrentDataSource,
   } = useReportBuilderStore();
+  const currentUser = useAuthStore((state) => state.user);
   const [widgetPreviews, setWidgetPreviews] = useState<Record<string, { columns: string[]; rows: unknown[][]; loading: boolean; error: string | null }>>({});
+  const [viewerParameterValues, setViewerParameterValues] = useState<Record<string, string>>({});
 
   const reportId = id ? parseInt(id, 10) : NaN;
+  const isMyReportsView = location.pathname.startsWith('/reports/my/');
+  const listPath = isMyReportsView ? '/reports/my' : '/reports';
   const widgetCount = config.widgets?.length ?? 1;
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
   const accessLevelLabel = meta.accessLevel && meta.accessLevel !== 'none'
@@ -107,6 +178,7 @@ export function ReportViewerPage(): ReactElement {
   const refreshCadenceLabel = governance.refreshCadence ? t(`common.reportBuilder.refreshCadences.${governance.refreshCadence}`) : '-';
   const subscriptionFrequencyLabel = governance.subscriptionFrequency ? t(`common.reportBuilder.subscriptionFrequencies.${governance.subscriptionFrequency}`) : t('common.reportBuilder.subscriptionFrequencies.manual');
   const subscriptionChannelLabel = governance.subscriptionChannel ? t(`common.reportBuilder.subscriptionChannels.${governance.subscriptionChannel}`) : t('common.reportBuilder.subscriptionChannels.email');
+  const viewerEditableParameters = (config.datasetParameters ?? []).filter((item) => item.allowViewerOverride);
 
   const exportCurrentWidgetCsv = useCallback(() => {
     if (!preview.columns.length) return;
@@ -174,7 +246,7 @@ export function ReportViewerPage(): ReactElement {
     if (!meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName) return;
     setUi({ previewLoading: true, error: null });
     try {
-      const configJson = JSON.stringify(config);
+      const configJson = buildRuntimeConfigJson(config, currentUser, viewerParameterValues);
       const res = await reportsApi.preview({
         connectionKey: meta.connectionKey,
         dataSourceType: meta.dataSourceType,
@@ -186,11 +258,12 @@ export function ReportViewerPage(): ReactElement {
     } catch (e) {
       setUi({ previewLoading: false, error: e instanceof Error ? e.message : t('common.reportBuilder.messages.previewFailed') });
     }
-  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, config, setPreview, setUi]);
+  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, config, currentUser, viewerParameterValues, setPreview, setUi]);
 
   const runAllWidgetPreviews = useCallback(async () => {
     const widgets = config.widgets ?? [];
     if (!meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName || widgets.length === 0) return;
+    const runtimeDatasetParameters = JSON.parse(buildRuntimeConfigJson(config, currentUser, viewerParameterValues)).datasetParameters as DataSourceParameterBinding[] | undefined;
 
     setWidgetPreviews((current) =>
       Object.fromEntries(
@@ -213,7 +286,13 @@ export function ReportViewerPage(): ReactElement {
             connectionKey: meta.connectionKey,
             dataSourceType: meta.dataSourceType,
             dataSourceName: meta.dataSourceName,
-            configJson: buildConfigFromWidget(widget, widgets, config.calculatedFields, lifecycle),
+            configJson: buildConfigFromWidget(
+              widget,
+              widgets,
+              config.calculatedFields,
+              lifecycle,
+              runtimeDatasetParameters
+            ),
           });
           setWidgetPreviews((current) => ({
             ...current,
@@ -237,7 +316,7 @@ export function ReportViewerPage(): ReactElement {
         }
       })
     );
-  }, [config.calculatedFields, config.widgets, lifecycle, meta.connectionKey, meta.dataSourceType, meta.dataSourceName]);
+  }, [config, config.calculatedFields, config.widgets, currentUser, lifecycle, meta.connectionKey, meta.dataSourceType, meta.dataSourceName, viewerParameterValues]);
 
   useEffect(() => {
     loadReport();
@@ -250,6 +329,15 @@ export function ReportViewerPage(): ReactElement {
       runAllWidgetPreviews();
     }
   }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, runPreview, runAllWidgetPreviews, loadSchemaForCurrentDataSource]);
+
+  useEffect(() => {
+    const initialValues = Object.fromEntries(
+      (config.datasetParameters ?? [])
+        .filter((item) => item.allowViewerOverride)
+        .map((item) => [item.name, resolveBindingValue(item, currentUser)])
+    );
+    setViewerParameterValues(initialValues);
+  }, [config.datasetParameters, currentUser]);
 
   if (Number.isNaN(reportId)) {
     return (
@@ -271,7 +359,7 @@ export function ReportViewerPage(): ReactElement {
     return (
       <div className="p-6">
         <p className="text-destructive">{ui.error}</p>
-        <Button variant="outline" className="mt-2" onClick={() => navigate('/reports')}>
+        <Button variant="outline" className="mt-2" onClick={() => navigate(listPath)}>
           {t('common.reportBuilder.backToList')}
         </Button>
       </div>
@@ -326,7 +414,7 @@ export function ReportViewerPage(): ReactElement {
             <FileJson className="mr-2 size-4" />
             {t('common.reportBuilder.exportDefinition')}
           </Button>
-          {meta.canManage !== false && (
+          {!isMyReportsView && meta.canManage !== false && (
             <Button size="sm" onClick={() => navigate(`/reports/${reportId}/edit`)}>
               <Pencil className="mr-2 size-4" />
               {t('common.edit')}
@@ -337,6 +425,43 @@ export function ReportViewerPage(): ReactElement {
 
       <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
         <div className="space-y-4">
+          {viewerEditableParameters.length > 0 && (
+            <Card>
+              <CardContent className="space-y-3 p-4">
+                <div>
+                  <h3 className="text-sm font-semibold">{t('common.reportBuilder.viewerParametersTitle')}</h3>
+                  <p className="text-muted-foreground text-xs">{t('common.reportBuilder.viewerParametersDescription')}</p>
+                </div>
+                <div className="space-y-3">
+                  {viewerEditableParameters.map((parameter) => (
+                    <div key={parameter.name} className="grid gap-2">
+                      <Label>{parameter.viewerLabel || parameter.name}</Label>
+                      <Input
+                        value={viewerParameterValues[parameter.name] ?? ''}
+                        onChange={(e) =>
+                          setViewerParameterValues((current) => ({
+                            ...current,
+                            [parameter.name]: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={async () => {
+                    await runPreview();
+                    await runAllWidgetPreviews();
+                  }}
+                >
+                  {t('common.reportBuilder.applyViewerParameters')}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           <RuntimeFiltersPanel
             schema={schema}
             loading={ui.previewLoading}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ReportChart } from './ReportChart';
 import { cn } from '@/lib/utils';
 import type { ChartType } from '../types';
+import { BarChart3, DatabaseZap, Loader2 } from 'lucide-react';
 
 interface PreviewPanelProps {
   columns: string[];
@@ -51,8 +52,9 @@ export function PreviewPanel({
         )}
       </div>
       {loading && (
-        <div className="flex flex-1 items-center justify-center text-muted-foreground text-sm">
-          {t('common.reportBuilder.loadingPreview')}
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-muted-foreground text-sm">
+          <Loader2 className="size-6 animate-spin" />
+          <span>{t('common.reportBuilder.loadingPreview')}</span>
         </div>
       )}
       {error && !loading && (
@@ -61,8 +63,18 @@ export function PreviewPanel({
         </div>
       )}
       {empty && !loading && !error && (
-        <div className="text-muted-foreground flex flex-1 items-center justify-center text-sm">
-          {t('common.reportBuilder.previewEmpty')}
+        <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-3 text-sm">
+          <div className="flex size-14 items-center justify-center rounded-2xl border bg-muted/40">
+            <BarChart3 className="size-6" />
+          </div>
+          <div className="space-y-1 text-center">
+            <p className="font-medium">{t('common.reportBuilder.previewEmptyTitle')}</p>
+            <p className="max-w-sm text-xs">{t('common.reportBuilder.previewEmpty')}</p>
+          </div>
+          <div className="flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-[11px]">
+            <DatabaseZap className="size-3.5" />
+            {t('common.reportBuilder.previewEmptyHint')}
+          </div>
         </div>
       )}
       {!loading && !error && !empty && (

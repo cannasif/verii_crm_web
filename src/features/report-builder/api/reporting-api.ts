@@ -1,5 +1,5 @@
 import { api } from '@/lib/axios';
-import type { ConnectionDto, DataSourceCatalogItem, DataSourceCheckResponseDto, Field } from '../types';
+import type { ConnectionDto, DataSourceCatalogItem, DataSourceCheckResponseDto, DataSourceParameter, Field } from '../types';
 
 const BASE = '/api/reportbuilder';
 
@@ -29,6 +29,30 @@ function schemaToFields(schema: unknown): Field[] {
   return schema.map((item) =>
     typeof item === 'object' && item !== null ? normalizeField(item as Record<string, unknown>) : { name: '', sqlType: '', dotNetType: '', isNullable: false }
   );
+}
+
+function normalizeParameter(raw: Record<string, unknown>): DataSourceParameter {
+  return {
+    name: String(raw.name ?? raw.Name ?? ''),
+    displayName:
+      raw.displayName != null || raw.DisplayName != null
+        ? String(raw.displayName ?? raw.DisplayName ?? '')
+        : undefined,
+    semanticType:
+      raw.semanticType != null || raw.SemanticType != null
+        ? String(raw.semanticType ?? raw.SemanticType ?? '')
+        : undefined,
+    sqlType: String(raw.sqlType ?? raw.SqlType ?? ''),
+    dotNetType: String(raw.dotNetType ?? raw.DotNetType ?? ''),
+    isNullable: Boolean(raw.isNullable ?? raw.IsNullable ?? false),
+  };
+}
+
+function toParameters(list: unknown): DataSourceParameter[] {
+  if (!Array.isArray(list)) return [];
+  return list
+    .map((item) => (typeof item === 'object' && item !== null ? normalizeParameter(item as Record<string, unknown>) : null))
+    .filter((item): item is DataSourceParameter => item != null && item.name !== '');
 }
 
 function normalizeConnection(raw: Record<string, unknown>): ConnectionDto {
@@ -68,14 +92,16 @@ export const reportingApi = {
     connectionKey: string;
     type: string;
     name: string;
-  }): Promise<{ exists: boolean; message?: string; schema: Field[] }> {
+  }): Promise<{ exists: boolean; message?: string; schema: Field[]; parameters: DataSourceParameter[] }> {
     const res = await api.post<DataSourceCheckResponseDto>(`${BASE}/datasources/check`, body);
     const schema = res?.schema ?? (res as { Schema?: unknown[] }).Schema ?? [];
+    const parameters = res?.parameters ?? (res as { Parameters?: unknown[] }).Parameters ?? [];
     const schemaArr = Array.isArray(schema) ? schema : [];
     return {
       exists: Boolean(res?.exists ?? (res as { Exists?: boolean }).Exists ?? schemaArr.length > 0),
       message: String(res?.message ?? (res as { Message?: string }).Message ?? ''),
       schema: schemaToFields(schemaArr),
+      parameters: toParameters(parameters),
     };
   },
 

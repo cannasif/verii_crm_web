@@ -3,24 +3,34 @@ import { useDroppable } from '@dnd-kit/core';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { X } from 'lucide-react';
+import { Filter, Palette, Sigma, X } from 'lucide-react';
 
 export type SlotType = 'axis' | 'values' | 'legend' | 'filters';
 
 interface SlotProps {
   id: string;
   label: string;
+  description?: string;
+  icon?: React.ReactNode;
   children: React.ReactNode;
   invalid?: boolean;
   errorMessage?: string;
 }
 
-function Slot({ id, label, children, invalid, errorMessage }: SlotProps): ReactElement {
+function Slot({ id, label, description, icon, children, invalid, errorMessage }: SlotProps): ReactElement {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
     <div className="space-y-1">
-      <span className="text-muted-foreground text-xs font-medium">{label}</span>
+      <div className="flex items-start gap-2">
+        <div className="mt-0.5 text-primary">{icon}</div>
+        <div>
+          <span className="text-muted-foreground text-xs font-medium">{label}</span>
+          {description ? (
+            <p className="text-muted-foreground mt-0.5 text-[11px]">{description}</p>
+          ) : null}
+        </div>
+      </div>
       <div
         ref={setNodeRef}
         className={cn(
@@ -68,7 +78,14 @@ export function SlotsPanel({
 
   return (
     <div className="space-y-4">
-      <Slot id="slot-axis" label={t('common.reportBuilder.axis')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
+      <Slot
+        id="slot-axis"
+        label={t('common.reportBuilder.axis')}
+        description={t('common.reportBuilder.axisDescription')}
+        icon={<Palette className="size-4" />}
+        invalid={!!slotError}
+        errorMessage={slotError ?? undefined}
+      >
         {disabled ? (
           <span className="text-muted-foreground text-xs">{t('common.reportBuilder.checkRequired')}</span>
         ) : axis ? (
@@ -79,15 +96,28 @@ export function SlotsPanel({
             </Button>
           </div>
         ) : (
-          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
+          <div className="space-y-1">
+            <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
+            <p className="text-[11px] text-muted-foreground">{t('common.reportBuilder.slotAxisTip')}</p>
+          </div>
         )}
       </Slot>
 
-      <Slot id="slot-values" label={t('common.reportBuilder.value')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
+      <Slot
+        id="slot-values"
+        label={t('common.reportBuilder.value')}
+        description={t('common.reportBuilder.valuesDescription')}
+        icon={<Sigma className="size-4" />}
+        invalid={!!slotError}
+        errorMessage={slotError ?? undefined}
+      >
         {disabled ? (
           <span className="text-muted-foreground text-xs">{t('common.reportBuilder.checkRequired')}</span>
         ) : values.length === 0 ? (
-          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropNumericField')}</span>
+          <div className="space-y-1">
+            <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropNumericField')}</span>
+            <p className="text-[11px] text-muted-foreground">{t('common.reportBuilder.slotValuesTip')}</p>
+          </div>
         ) : (
           <div className="space-y-1">
             {values.map((v, i) => (
@@ -102,7 +132,14 @@ export function SlotsPanel({
         )}
       </Slot>
 
-      <Slot id="slot-legend" label={t('common.reportBuilder.legend')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
+      <Slot
+        id="slot-legend"
+        label={t('common.reportBuilder.legend')}
+        description={t('common.reportBuilder.legendDescription')}
+        icon={<Palette className="size-4" />}
+        invalid={!!slotError}
+        errorMessage={slotError ?? undefined}
+      >
         {disabled ? (
           <span className="text-muted-foreground text-xs">{t('common.reportBuilder.checkRequired')}</span>
         ) : legend ? (
@@ -113,15 +150,28 @@ export function SlotsPanel({
             </Button>
           </div>
         ) : (
-          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
+          <div className="space-y-1">
+            <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
+            <p className="text-[11px] text-muted-foreground">{t('common.reportBuilder.slotLegendTip')}</p>
+          </div>
         )}
       </Slot>
 
-      <Slot id="slot-filters" label={t('common.filters')} invalid={!!slotError} errorMessage={slotError ?? undefined}>
+      <Slot
+        id="slot-filters"
+        label={t('common.filters')}
+        description={t('common.reportBuilder.filtersDescription')}
+        icon={<Filter className="size-4" />}
+        invalid={!!slotError}
+        errorMessage={slotError ?? undefined}
+      >
         {disabled ? (
           <span className="text-muted-foreground text-xs">{t('common.reportBuilder.checkRequired')}</span>
         ) : filters.length === 0 ? (
-          <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
+          <div className="space-y-1">
+            <span className="text-muted-foreground text-xs">{t('common.reportBuilder.dropField')}</span>
+            <p className="text-[11px] text-muted-foreground">{t('common.reportBuilder.slotFiltersTip')}</p>
+          </div>
         ) : (
           <div className="space-y-1">
             {filters.map((f, i) => (

@@ -4,6 +4,7 @@ export type ReportLifecycleStatus = 'draft' | 'published' | 'archived';
 export type DateGrouping = 'day' | 'week' | 'month' | 'year';
 
 export type Aggregation = 'sum' | 'count' | 'avg' | 'min' | 'max';
+export type DataSourceParameterBindingType = 'literal' | 'currentUserId' | 'currentUserEmail' | 'today' | 'now';
 
 export interface ReportConfigAxis {
   field: string;
@@ -32,6 +33,23 @@ export interface ReportConfigFilter {
   values?: unknown[];
   from?: unknown;
   to?: unknown;
+}
+
+export interface DataSourceParameter {
+  name: string;
+  displayName?: string;
+  semanticType?: string;
+  sqlType: string;
+  dotNetType: string;
+  isNullable: boolean;
+}
+
+export interface DataSourceParameterBinding {
+  name: string;
+  source: DataSourceParameterBindingType;
+  value?: string;
+  allowViewerOverride?: boolean;
+  viewerLabel?: string;
 }
 
 export type CalculatedFieldOperation = 'add' | 'subtract' | 'multiply' | 'divide';
@@ -75,6 +93,12 @@ export interface ReportGovernanceMetadata {
   lastReviewedAt?: string;
 }
 
+export interface AssignedUserSummary {
+  id: number;
+  email: string;
+  fullName?: string;
+}
+
 export interface ReportConfig {
   chartType: ChartType;
   axis?: ReportConfigAxis;
@@ -82,6 +106,7 @@ export interface ReportConfig {
   legend?: ReportConfigLegend;
   sorting?: ReportConfigSorting;
   filters: ReportConfigFilter[];
+  datasetParameters?: DataSourceParameterBinding[];
   calculatedFields?: CalculatedField[];
   lifecycle?: ReportLifecycleMetadata;
   history?: ReportHistoryEntry[];
@@ -117,6 +142,7 @@ export interface DataSourceCheckResponseDto {
   exists?: boolean;
   message?: string;
   schema?: Field[];
+  parameters?: DataSourceParameter[];
 }
 
 export interface ConnectionDto {
@@ -145,6 +171,7 @@ export interface ReportDto {
   isDeleted?: boolean;
   canManage?: boolean;
   accessLevel?: 'owner' | 'shared' | 'organization' | 'none';
+  assignedUserIds?: number[];
 }
 
 export interface ReportPreviewRequest {

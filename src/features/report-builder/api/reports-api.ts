@@ -10,6 +10,7 @@ export interface ReportCreateUpdateBody {
   dataSourceType: string;
   dataSourceName: string;
   configJson: string;
+  assignedUserIds?: number[];
 }
 
 function normalizeReportItem(raw: Record<string, unknown>): ReportDto {
@@ -33,6 +34,9 @@ function normalizeReportItem(raw: Record<string, unknown>): ReportDto {
       raw.accessLevel != null || raw.AccessLevel != null
         ? String(raw.accessLevel ?? raw.AccessLevel ?? '') as 'owner' | 'shared' | 'organization' | 'none'
         : undefined,
+    assignedUserIds: Array.isArray((raw.assignedUserIds ?? raw.AssignedUserIds) as unknown[])
+      ? ((raw.assignedUserIds ?? raw.AssignedUserIds) as unknown[]).map((value: unknown) => Number(value)).filter((value: number) => Number.isFinite(value) && value > 0)
+      : undefined,
   };
 }
 
@@ -61,8 +65,11 @@ function toReportDetail(res: unknown): ReportDto {
 }
 
 export const reportsApi = {
-  async list(search?: string): Promise<ReportDto[]> {
-    const q = search != null && search !== '' ? `?search=${encodeURIComponent(search)}` : '';
+  async list(search?: string, scope: 'all' | 'assigned' = 'all'): Promise<ReportDto[]> {
+    const params = new URLSearchParams();
+    if (search != null && search !== '') params.set('search', search);
+    if (scope !== 'all') params.set('scope', scope);
+    const q = params.toString() ? `?${params.toString()}` : '';
     const res = await api.get<unknown>(`${BASE}${q}`);
     return toReportList(res);
   },

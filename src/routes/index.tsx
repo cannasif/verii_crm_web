@@ -109,6 +109,8 @@ export function createAppRouter() {
         { path: 'report-designer/edit/:id', element: <ReportDesignerCreatePage /> },
         { path: 'report-designer/table-presets', element: <PdfTablePresetManagementPage /> },
         { path: 'reports', element: <ReportsListPage /> },
+        { path: 'reports/my', element: <ReportsListPage /> },
+        { path: 'reports/my/:id', element: <ReportViewerPage /> },
         { path: 'reports/new', element: <ReportBuilderPage /> },
         { path: 'reports/:id/edit', element: <ReportBuilderPage /> },
         { path: 'reports/:id', element: <ReportViewerPage /> },

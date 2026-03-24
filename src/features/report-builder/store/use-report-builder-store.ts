@@ -10,6 +10,8 @@ import type {
   Field,
   ConnectionDto,
   DataSourceCatalogItem,
+  DataSourceParameter,
+  DataSourceParameterBindingType,
   ChartType,
   Aggregation,
   DateGrouping,
@@ -43,6 +45,7 @@ function createConfigFromWidget(widget: ReportWidget, widgets?: ReportWidget[], 
     legend: widget.legend,
     sorting: widget.sorting,
     filters: widget.filters,
+    datasetParameters: [],
     widgets,
     activeWidgetId,
     lifecycle: { status: 'draft', version: 1 },
@@ -85,6 +88,7 @@ function ensureWidgets(config?: Partial<ReportConfig> | null): ReportConfig {
   const activeWidget = widgets.find((widget) => widget.id === activeWidgetId) ?? widgets[0];
   return {
     ...createConfigFromWidget(activeWidget, widgets, activeWidgetId),
+    datasetParameters: incoming.datasetParameters ?? [],
     calculatedFields: incoming.calculatedFields ?? [],
     lifecycle: incoming.lifecycle ?? { status: 'draft', version: 1 },
     history: incoming.history ?? [],
@@ -102,6 +106,35 @@ function ensureWidgets(config?: Partial<ReportConfig> | null): ReportConfig {
   };
 }
 
+function formatDateLiteral(date: Date): string {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getDefaultBindingForParameter(parameter: DataSourceParameter) {
+  const normalizedName = parameter.name.trim().toLowerCase();
+  if (normalizedName.includes('current_user_id') || normalizedName.includes('currentuserid')) {
+    return { source: 'currentUserId' as const, value: undefined };
+  }
+  if (normalizedName.includes('current_user_email') || normalizedName.includes('currentuseremail')) {
+    return { source: 'currentUserEmail' as const, value: undefined };
+  }
+  if (parameter.semanticType === 'date') {
+    const today = new Date();
+    if (normalizedName.includes('start')) {
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { source: 'literal' as const, value: formatDateLiteral(startOfMonth) };
+    }
+    if (normalizedName.includes('end')) {
+      return { source: 'literal' as const, value: formatDateLiteral(today) };
+    }
+    return { source: 'today' as const, value: undefined };
+  }
+  return { source: 'literal' as const, value: '' };
+}
+
 const DEFAULT_CONFIG: ReportConfig = ensureWidgets();
 
 interface BuilderMeta {
@@ -113,6 +146,7 @@ interface BuilderMeta {
   dataSourceName: string;
   canManage?: boolean;
   accessLevel?: 'owner' | 'shared' | 'organization' | 'none';
+  assignedUserIds?: number[];
 }
 
 interface BuilderUI {
@@ -129,6 +163,7 @@ interface BuilderUI {
 interface ReportBuilderState {
   connections: ConnectionDto[];
   dataSources: DataSourceCatalogItem[];
+  dataSourceParameters: DataSourceParameter[];
   meta: BuilderMeta;
   schema: Field[];
   dataSourceChecked: boolean;
@@ -145,6 +180,12 @@ interface ReportBuilderState {
   setConnectionKey: (v: string) => void;
   setType: (v: string) => void;
   setDataSourceName: (v: string) => void;
+  setDatasetParameterBinding: (
+    name: string,
+    source: DataSourceParameterBindingType,
+    value?: string,
+    options?: { allowViewerOverride?: boolean; viewerLabel?: string }
+  ) => void;
   checkDataSource: () => Promise<void>;
   setChartType: (t: ChartType) => void;
   addWidget: () => void;
@@ -187,6 +228,7 @@ const defaultMeta: BuilderMeta = {
   connectionKey: '',
   dataSourceType: '',
   dataSourceName: '',
+  assignedUserIds: [],
 };
 
 const defaultUi: BuilderUI = {
@@ -203,6 +245,7 @@ const defaultUi: BuilderUI = {
 const initialState = {
   connections: [] as ConnectionDto[],
   dataSources: [] as DataSourceCatalogItem[],
+  dataSourceParameters: [] as DataSourceParameter[],
   meta: { ...defaultMeta },
   schema: [] as Field[],
   dataSourceChecked: false,
@@ -351,6 +394,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
       const fields = result.schema ?? [];
       set((s) => ({
         schema: fields,
+        dataSourceParameters: result.parameters ?? [],
         dataSourceChecked: result.exists && fields.length > 0,
         ui: { ...s.ui, checkLoading: false },
       }));
@@ -368,6 +412,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
     set((s) => ({
       meta: { ...s.meta, connectionKey: v, dataSourceName: '' },
       dataSources: [],
+      dataSourceParameters: [],
       schema: [],
       dataSourceChecked: false,
       preview: { columns: [], rows: [] },
@@ -378,6 +423,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
     set((s) => ({
       meta: { ...s.meta, dataSourceType: v, dataSourceName: '' },
       dataSources: [],
+      dataSourceParameters: [],
       schema: [],
       dataSourceChecked: false,
       preview: { columns: [], rows: [] },
@@ -387,6 +433,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
   setDataSourceName: (v) =>
     set((s) => ({
       meta: { ...s.meta, dataSourceName: v },
+      dataSourceParameters: [],
       schema: [],
       dataSourceChecked: false,
       preview: { columns: [], rows: [] },
@@ -410,9 +457,22 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
         name: meta.dataSourceName.trim(),
       });
       const fields = result.schema ?? [];
+      const parameters = result.parameters ?? [];
+      const existingBindings = ensureWidgets(get().config).datasetParameters ?? [];
+      const defaultDatasetParameters = parameters.map((parameter: DataSourceParameter) => {
+        const existing = existingBindings.find((item) => item.name === parameter.name);
+        if (existing) return existing;
+        const defaults = getDefaultBindingForParameter(parameter);
+        return {
+          name: parameter.name,
+          source: defaults.source,
+          value: defaults.value,
+        };
+      }) as ReportConfig['datasetParameters'];
       set((s) => ({
         schema: fields,
-        config: { ...DEFAULT_CONFIG },
+        dataSourceParameters: parameters,
+        config: ensureWidgets({ ...s.config, datasetParameters: defaultDatasetParameters }),
         preview: { columns: [], rows: [] },
         dataSourceChecked: result.exists && fields.length > 0,
         ui: { ...s.ui, checkLoading: false },
@@ -451,6 +511,24 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
       return { config: ensureWidgets({ ...c, widgets }), ui: { ...s.ui, slotError: null } };
     });
   },
+
+  setDatasetParameterBinding: (name, source, value, options) =>
+    set((s) => {
+      const current = ensureWidgets(s.config);
+      const bindings = [...(current.datasetParameters ?? [])];
+      const existingIndex = bindings.findIndex((item) => item.name === name);
+      const previous = existingIndex >= 0 ? bindings[existingIndex] : undefined;
+      const nextBinding = {
+        name,
+        source,
+        value,
+        allowViewerOverride: options?.allowViewerOverride ?? previous?.allowViewerOverride ?? false,
+        viewerLabel: options?.viewerLabel ?? previous?.viewerLabel,
+      };
+      if (existingIndex >= 0) bindings[existingIndex] = nextBinding;
+      else bindings.push(nextBinding);
+      return { config: ensureWidgets({ ...current, datasetParameters: bindings }) };
+    }),
 
   removeFromSlot: (slot, indexOrField) => {
     set((s) => {
@@ -718,6 +796,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
         dataSourceName: report.dataSourceName,
         canManage: report.canManage,
         accessLevel: report.accessLevel,
+        assignedUserIds: report.assignedUserIds ?? [],
       },
     });
     try {
@@ -796,6 +875,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
         dataSourceType: meta.dataSourceType,
         dataSourceName: meta.dataSourceName,
         configJson: JSON.stringify(ensureWidgets(config)),
+        assignedUserIds: meta.assignedUserIds ?? [],
       };
       const report = await reportsApi.create(body);
       get().setUi({ saveLoading: false, toast: { message: tr('common.saved'), variant: 'success' } });
@@ -828,6 +908,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
         dataSourceType: meta.dataSourceType,
         dataSourceName: meta.dataSourceName,
         configJson: JSON.stringify(ensureWidgets(config)),
+        assignedUserIds: meta.assignedUserIds ?? [],
       };
       const report = await reportsApi.update(meta.id, body);
       get().setUi({ saveLoading: false, toast: { message: tr('common.updated'), variant: 'success' } });

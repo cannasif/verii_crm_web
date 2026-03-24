@@ -132,6 +132,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             title: t('sidebar.reportBuilder'),
             children: [
               { title: t('sidebar.reportsList'), href: '/reports' },
+              { title: t('sidebar.myReports'), href: '/reports/my' },
               { title: t('sidebar.reportsCreate'), href: '/reports/new' },
             ],
           },

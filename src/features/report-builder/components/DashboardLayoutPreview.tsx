@@ -138,6 +138,11 @@ export function DashboardLayoutPreview({
           {t('common.reportBuilder.dashboardLayoutDescription')}
         </p>
       </div>
+      {widgets.length === 0 ? (
+        <div className="rounded-xl border border-dashed bg-muted/30 p-8 text-center text-sm text-muted-foreground">
+          {t('common.reportBuilder.dashboardLayoutEmpty')}
+        </div>
+      ) : null}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={widgets.map((widget) => widget.id)} strategy={rectSortingStrategy}>
           <div className="grid gap-3 md:grid-cols-3">

@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,8 +85,13 @@ function getReportSummary(configJson: string): {
 export function ReportsListPage(): ReactElement {
   const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMyReports = location.pathname === '/reports/my';
   const { search, setSearch } = useReportsStore();
-  const { data: items = [], isLoading: loading, error: queryError, refetch } = useReportsList(search || undefined);
+  const { data: items = [], isLoading: loading, error: queryError, refetch } = useReportsList(
+    search || undefined,
+    isMyReports ? 'assigned' : 'all',
+  );
   const [pendingId, setPendingId] = useState<number | null>(null);
   const error = queryError?.message ?? null;
   const getStatusLabel = (status: string): string =>
@@ -137,11 +142,20 @@ export function ReportsListPage(): ReactElement {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">{t('sidebar.reportBuilder')}</h1>
-        <Button onClick={() => navigate('/reports/new')}>
-          <Plus className="mr-2 size-4" />
-          {t('common.reportBuilder.newReport')}
-        </Button>
+        <div>
+          <h1 className="text-2xl font-bold">
+            {isMyReports ? t('common.reportBuilder.myReportsTitle') : t('common.reportBuilder.allReportsTitle')}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {isMyReports ? t('common.reportBuilder.myReportsDescription') : t('common.reportBuilder.allReportsDescription')}
+          </p>
+        </div>
+        {!isMyReports && (
+          <Button onClick={() => navigate('/reports/new')}>
+            <Plus className="mr-2 size-4" />
+            {t('common.reportBuilder.newReport')}
+          </Button>
+        )}
       </div>
 
       <div className="flex gap-2">
@@ -167,10 +181,12 @@ export function ReportsListPage(): ReactElement {
       {!loading && items.length === 0 && !error && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-            <p>{t('common.reportBuilder.noReports')}</p>
-            <Button variant="outline" className="mt-2" onClick={() => navigate('/reports/new')}>
-              {t('common.reportBuilder.newReport')}
-            </Button>
+            <p>{isMyReports ? t('common.reportBuilder.noAssignedReports') : t('common.reportBuilder.noReports')}</p>
+            {!isMyReports && (
+              <Button variant="outline" className="mt-2" onClick={() => navigate('/reports/new')}>
+                {t('common.reportBuilder.newReport')}
+              </Button>
+            )}
           </CardContent>
         </Card>
       )}
@@ -180,7 +196,11 @@ export function ReportsListPage(): ReactElement {
           {items.map((r) => {
             const summary = getReportSummary(r.configJson);
             return (
-            <Card key={r.id} className="cursor-pointer transition-colors hover:bg-muted/50" onClick={() => navigate(`/reports/${r.id}`)}>
+            <Card
+              key={r.id}
+              className="cursor-pointer transition-colors hover:bg-muted/50"
+              onClick={() => navigate(isMyReports ? `/reports/my/${r.id}` : `/reports/${r.id}`)}
+            >
               <CardContent className="flex flex-row items-center justify-between gap-4 py-4">
                 <div>
                   <p className="font-medium">{r.name}</p>
@@ -237,7 +257,7 @@ export function ReportsListPage(): ReactElement {
                         ? new Date(r.updatedAt).toLocaleDateString(i18n.language)
                         : ''}
                   </p>
-                  {r.canManage !== false && (
+                  {!isMyReports && r.canManage !== false && (
                     <Button
                       type="button"
                       variant="ghost"
@@ -251,19 +271,21 @@ export function ReportsListPage(): ReactElement {
                       <Pencil className="size-4" />
                     </Button>
                   )}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    disabled={pendingId === r.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void handleDuplicate(r.id);
-                    }}
-                  >
-                    {pendingId === r.id ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
-                  </Button>
-                  {r.canManage !== false && (
+                  {!isMyReports && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      disabled={pendingId === r.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleDuplicate(r.id);
+                      }}
+                    >
+                      {pendingId === r.id ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
+                    </Button>
+                  )}
+                  {!isMyReports && r.canManage !== false && (
                     <Button
                       type="button"
                       variant="ghost"

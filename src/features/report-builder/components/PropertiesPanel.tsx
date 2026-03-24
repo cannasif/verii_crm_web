@@ -1,8 +1,10 @@
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import {
   Select,
   SelectContent,
@@ -14,8 +16,9 @@ import { useReportBuilderStore } from '../store';
 import type { ChartType, Aggregation, DateGrouping, CalculatedFieldOperation } from '../types';
 import { getFieldSemanticType, getOperatorsForField } from '../utils';
 import type { Field } from '../types';
-import { GripVertical, X } from 'lucide-react';
+import { BarChart3, Calculator, Filter, GripVertical, LayoutTemplate, PieChart, Table2, TrendingUp, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useUserList } from '@/features/user-management/hooks/useUserList';
 
 const CHART_TYPES: { value: ChartType; label: string }[] = [
   { value: 'table', label: 'Table' }, // translated at render time
@@ -80,6 +83,21 @@ interface PropertiesPanelProps {
   disabled?: boolean;
 }
 
+function getChartIcon(type: ChartType): ReactElement {
+  switch (type) {
+    case 'table':
+    case 'matrix':
+      return <Table2 className="size-4" />;
+    case 'pie':
+    case 'donut':
+      return <PieChart className="size-4" />;
+    case 'line':
+      return <TrendingUp className="size-4" />;
+    default:
+      return <BarChart3 className="size-4" />;
+  }
+}
+
 export function PropertiesPanel({ schema, slotError: _slotError, disabled }: PropertiesPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const numericFields = schema.filter((field) => getFieldSemanticType(field) === 'number');
@@ -90,6 +108,8 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
   const [calcOperation, setCalcOperation] = useState<CalculatedFieldOperation>('add');
   const {
     config,
+    meta,
+    setMeta,
     setChartType,
     setDateGrouping,
     setSorting,
@@ -116,6 +136,34 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
     subscriptionFrequency: 'weekly' as const,
     certified: false,
   };
+  const { data: usersResponse } = useUserList({
+    pageNumber: 1,
+    pageSize: 100,
+    sortBy: 'fullName',
+    sortDirection: 'asc',
+  });
+  const userOptions = useMemo<ComboboxOption[]>(
+    () =>
+      (usersResponse?.data ?? [])
+        .filter((user) => Boolean(user.email))
+        .map((user) => ({
+          value: String(user.id),
+          label: `${user.fullName || user.username} (${user.email})`,
+        })),
+    [usersResponse?.data],
+  );
+  const assignedUserIds = meta.assignedUserIds ?? [];
+  const selectedAssignedUserOptions = useMemo(
+    () =>
+      assignedUserIds.map((userId) => {
+        const match = userOptions.find((option) => option.value === String(userId));
+        return {
+          userId,
+          label: match?.label ?? String(userId),
+        };
+      }),
+    [assignedUserIds, userOptions],
+  );
 
   const axisField = config.axis?.field;
   const axisSchema = schema.find((f) => f.name === axisField);
@@ -148,8 +196,66 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
     setCalcOperation('add');
   };
 
+  const handleAddAssignedUser = (userIdRaw: string): void => {
+    const userId = Number(userIdRaw);
+    if (!Number.isFinite(userId) || userId <= 0) return;
+    if (assignedUserIds.includes(userId)) return;
+    const user = (usersResponse?.data ?? []).find((item) => item.id === userId);
+    const email = user?.email?.toLowerCase();
+    setMeta({
+      assignedUserIds: [...assignedUserIds, userId],
+    });
+    setGovernanceMetadata({
+      sharedWith: email && !(governance.sharedWith ?? []).includes(email)
+        ? [...(governance.sharedWith ?? []), email]
+        : governance.sharedWith ?? [],
+    });
+  };
+
+  const handleRemoveAssignedUser = (userId: number): void => {
+    const user = (usersResponse?.data ?? []).find((item) => item.id === userId);
+    const email = user?.email?.toLowerCase();
+    setMeta({
+      assignedUserIds: assignedUserIds.filter((value) => value !== userId),
+    });
+    setGovernanceMetadata({
+      sharedWith: email ? (governance.sharedWith ?? []).filter((value) => value !== email) : governance.sharedWith ?? [],
+    });
+  };
+
   return (
     <div className="flex flex-col gap-4 overflow-y-auto">
+      <div className="rounded-lg border border-dashed p-3">
+        <div className="mb-3 flex items-center gap-2">
+          <LayoutTemplate className="size-4 text-primary" />
+          <Label>{t('common.reportBuilder.visualGallery')}</Label>
+        </div>
+        <p className="text-muted-foreground mb-3 text-xs">{t('common.reportBuilder.visualGalleryDescription')}</p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {CHART_TYPES.map((item) => {
+            const active = config.chartType === item.value;
+            return (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => setChartType(item.value)}
+                className={`rounded-xl border px-3 py-3 text-left transition-colors ${
+                  active ? 'border-primary bg-primary/5' : 'border-border bg-background hover:bg-muted/40'
+                }`}
+              >
+                <div className="mb-2 flex items-center gap-2 font-medium">
+                  {getChartIcon(item.value)}
+                  {chartTypeLabel(item.value)}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  {t(`common.reportBuilder.chartTypeDescriptions.${item.value}`)}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="space-y-2">
         <Label>{t('common.reportBuilder.chartType')}</Label>
         <Select value={config.chartType} onValueChange={(v) => setChartType(v as ChartType)}>
@@ -164,6 +270,14 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="rounded-lg border border-dashed p-3">
+        <div className="mb-2 flex items-center gap-2">
+          <Filter className="size-4 text-primary" />
+          <Label>{t('common.reportBuilder.configGuide')}</Label>
+        </div>
+        <p className="text-muted-foreground text-xs">{t('common.reportBuilder.configGuideDescription')}</p>
       </div>
 
       {config.axis &&
@@ -426,18 +540,42 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
             {t('common.reportBuilder.stampReview')}
           </Button>
         </div>
-        <Input
-          placeholder={t('common.reportBuilder.sharedWithPlaceholder')}
-          value={(governance.sharedWith ?? []).join(', ')}
-          onChange={(e) =>
-            setGovernanceMetadata({
-              sharedWith: e.target.value
-                .split(',')
-                .map((item) => item.trim())
-                .filter(Boolean),
-            })
-          }
-        />
+        <div className="space-y-3 rounded-xl border border-dashed p-3">
+          <div className="space-y-1">
+            <Label>{t('common.reportBuilder.sharedWith')}</Label>
+            <p className="text-muted-foreground text-xs">{t('common.reportBuilder.sharedWithDescription')}</p>
+          </div>
+          <div className="bg-muted/40 rounded-lg border px-3 py-2 text-xs">
+            <div className="font-medium">{t('common.reportBuilder.sharedWithHelpTitle')}</div>
+            <div className="text-muted-foreground mt-1">{t('common.reportBuilder.sharedWithHelpDescription')}</div>
+          </div>
+          <Combobox
+            options={userOptions.filter((option) => !assignedUserIds.includes(Number(option.value)))}
+            onValueChange={handleAddAssignedUser}
+            placeholder={t('common.reportBuilder.sharedWithSelect')}
+            searchPlaceholder={t('common.reportBuilder.sharedWithSearch')}
+            emptyText={t('common.reportBuilder.sharedWithEmpty')}
+          />
+          <div className="flex flex-wrap gap-2">
+            {selectedAssignedUserOptions.length > 0 ? (
+              selectedAssignedUserOptions.map((user) => (
+                <Badge key={user.userId} variant="secondary" className="gap-2 pr-1">
+                  <span className="max-w-[240px] truncate">{user.label}</span>
+                  <button
+                    type="button"
+                    className="rounded-sm p-0.5 hover:bg-black/10"
+                    onClick={() => handleRemoveAssignedUser(user.userId)}
+                    aria-label={t('common.reportBuilder.removeAssignedUser')}
+                  >
+                    <X className="size-3" />
+                  </button>
+                </Badge>
+              ))
+            ) : (
+              <p className="text-muted-foreground text-xs">{t('common.reportBuilder.sharedWithNone')}</p>
+            )}
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <Button
             type="button"
@@ -510,7 +648,10 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
 
       <div className="space-y-3 rounded-lg border border-dashed p-3">
         <div>
-          <Label>{t('common.reportBuilder.calculatedFields')}</Label>
+          <div className="flex items-center gap-2">
+            <Calculator className="size-4 text-primary" />
+            <Label>{t('common.reportBuilder.calculatedFields')}</Label>
+          </div>
           <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.calculatedFieldsDescription')}</p>
         </div>
         <div className="grid gap-2">

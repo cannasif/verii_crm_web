@@ -37,6 +37,8 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/pricing-rules': 'pricing.pricing-rules.view',
 
   '/reports': 'reports.list.view',
+  '/reports/my': 'reports.list.view',
+  '/reports/my/:id': 'reports.viewer.view',
   '/reports/new': 'reports.builder.view',
   '/reports/:id': 'reports.viewer.view',
   '/reports/:id/edit': 'reports.builder.view',
@@ -106,6 +108,8 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
 
   { pattern: /^\/reports\/[^/]+\/edit(\/|$)/, permission: 'reports.builder.view' },
   { pattern: /^\/reports\/new(\/|$)/, permission: 'reports.builder.view' },
+  { pattern: /^\/reports\/my\/[^/]+(\/|$)/, permission: 'reports.viewer.view' },
+  { pattern: /^\/reports\/my(\/|$)/, permission: 'reports.list.view' },
   { pattern: /^\/reports\/[^/]+(\/|$)/, permission: 'reports.viewer.view' },
   { pattern: /^\/reports(\/|$)/, permission: 'reports.list.view' },
 

@@ -3,20 +3,36 @@ import { useMemo } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import type { CalculatedField, Field } from '../types';
-import { getFieldSemanticLabel } from '../utils';
+import { getFieldSemanticLabel, getFieldSemanticType } from '../utils';
 
 interface FieldItemProps {
   field: Field;
+  onUseAsAxis?: (field: Field) => void;
+  onUseAsValue?: (field: Field) => void;
+  onUseAsLegend?: (field: Field) => void;
+  onUseAsFilter?: (field: Field) => void;
 }
 
-function FieldItem({ field }: FieldItemProps): ReactElement {
+function FieldItem({
+  field,
+  onUseAsAxis,
+  onUseAsValue,
+  onUseAsLegend,
+  onUseAsFilter,
+}: FieldItemProps): ReactElement {
+  const { t } = useTranslation('common');
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `field:${field.name}`,
     data: { type: 'field', field },
   });
+  const semanticType = getFieldSemanticType(field);
+  const canUseAsAxis = semanticType === 'text' || semanticType === 'date';
+  const canUseAsValue = semanticType === 'number';
+  const canUseAsLegend = semanticType === 'text';
 
   return (
     <div
@@ -39,6 +55,26 @@ function FieldItem({ field }: FieldItemProps): ReactElement {
         <span>•</span>
         <span>{field.dotNetType ?? field.sqlType}</span>
       </div>
+      <div className="mt-2 flex flex-wrap gap-1">
+        {canUseAsAxis ? (
+          <Button type="button" variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => onUseAsAxis?.(field)}>
+            {t('common.reportBuilder.useAsAxis')}
+          </Button>
+        ) : null}
+        {canUseAsValue ? (
+          <Button type="button" variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => onUseAsValue?.(field)}>
+            {t('common.reportBuilder.useAsValue')}
+          </Button>
+        ) : null}
+        {canUseAsLegend ? (
+          <Button type="button" variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => onUseAsLegend?.(field)}>
+            {t('common.reportBuilder.useAsLegend')}
+          </Button>
+        ) : null}
+        <Button type="button" variant="ghost" size="sm" className="h-7 text-[11px]" onClick={() => onUseAsFilter?.(field)}>
+          {t('common.reportBuilder.useAsFilter')}
+        </Button>
+      </div>
     </div>
   );
 }
@@ -48,10 +84,24 @@ interface FieldsPanelProps {
   calculatedFields?: CalculatedField[];
   search: string;
   onSearchChange: (v: string) => void;
+  onUseAsAxis?: (field: Field) => void;
+  onUseAsValue?: (field: Field) => void;
+  onUseAsLegend?: (field: Field) => void;
+  onUseAsFilter?: (field: Field) => void;
   disabled?: boolean;
 }
 
-export function FieldsPanel({ schema, calculatedFields = [], search, onSearchChange, disabled }: FieldsPanelProps): ReactElement {
+export function FieldsPanel({
+  schema,
+  calculatedFields = [],
+  search,
+  onSearchChange,
+  onUseAsAxis,
+  onUseAsValue,
+  onUseAsLegend,
+  onUseAsFilter,
+  disabled,
+}: FieldsPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const mergedFields = useMemo(
     () => [
@@ -81,10 +131,26 @@ export function FieldsPanel({ schema, calculatedFields = [], search, onSearchCha
     );
   }, [mergedFields, search]);
 
+  const semanticCounts = useMemo(() => {
+    return filtered.reduce<Record<string, number>>((acc, field) => {
+      const key = field.semanticType ?? 'text';
+      acc[key] = (acc[key] ?? 0) + 1;
+      return acc;
+    }, {});
+  }, [filtered]);
+
   return (
     <div className="flex h-full flex-col gap-2">
-      <div className="space-y-1">
-        <Label>{t('common.reportBuilder.fields')}</Label>
+      <div className="space-y-2">
+        <div>
+          <Label>{t('common.reportBuilder.fields')}</Label>
+          <p className="text-muted-foreground mt-1 text-xs">
+            {t('common.reportBuilder.fieldsDescription')}
+          </p>
+          <div className="mt-2 rounded-xl border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
+            {t('common.reportBuilder.fieldsTip')}
+          </div>
+        </div>
         <Input
           placeholder={t('common.reportBuilder.searchFields')}
           value={search}
@@ -93,6 +159,18 @@ export function FieldsPanel({ schema, calculatedFields = [], search, onSearchCha
           disabled={disabled}
         />
       </div>
+      {!disabled && filtered.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(semanticCounts).map(([key, count]) => (
+            <span
+              key={key}
+              className="rounded-full border bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
+            >
+              {getFieldSemanticLabel({ name: '', sqlType: '', dotNetType: '', isNullable: true, semanticType: key })} · {count}
+            </span>
+          ))}
+        </div>
+      ) : null}
       <div
         className={cn(
           'flex-1 space-y-1 overflow-y-auto rounded border border-muted-foreground/20 p-2',
@@ -107,7 +185,14 @@ export function FieldsPanel({ schema, calculatedFields = [], search, onSearchCha
         )}
         {!disabled &&
           filtered.map((f) => (
-            <FieldItem key={f.name} field={f} />
+            <FieldItem
+              key={f.name}
+              field={f}
+              onUseAsAxis={onUseAsAxis}
+              onUseAsValue={onUseAsValue}
+              onUseAsLegend={onUseAsLegend}
+              onUseAsFilter={onUseAsFilter}
+            />
           ))}
       </div>
     </div>

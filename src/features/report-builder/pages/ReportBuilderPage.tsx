@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   DndContext,
@@ -13,6 +13,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { TopBarSelector } from '../components/TopBarSelector';
 import { FieldsPanel } from '../components/FieldsPanel';
 import { SlotsPanel } from '../components/SlotsPanel';
@@ -25,14 +38,16 @@ import {
   isAxisCompatible,
   isValuesCompatible,
   isLegendCompatible,
+  getFieldSemanticType,
   validateKpiConfig,
   validateMatrixConfig,
   validatePieConfig,
 } from '../utils';
 import type { Field } from '../types';
 import { Loader2 } from 'lucide-react';
-import { ArrowLeft, ArrowRight, LayoutGrid, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Database, LayoutGrid, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useUserList } from '@/features/user-management/hooks/useUserList';
 
 function getSlotTypeFromId(id: string): 'axis' | 'values' | 'legend' | 'filters' | null {
   if (id === 'slot-axis') return 'axis';
@@ -52,6 +67,7 @@ export function ReportBuilderPage(): ReactElement {
   const {
     connections,
     dataSources,
+    dataSourceParameters,
     meta,
     schema,
     dataSourceChecked,
@@ -64,6 +80,7 @@ export function ReportBuilderPage(): ReactElement {
     setConnectionKey,
     setType,
     setDataSourceName,
+    setDatasetParameterBinding,
     checkDataSource,
     setMeta,
     setFieldsSearch,
@@ -75,6 +92,7 @@ export function ReportBuilderPage(): ReactElement {
     setWidgetSize,
     setWidgetHeight,
     reorderWidgets,
+    setChartType,
     setLifecycleStatus,
     setUi,
     saveNewReport,
@@ -85,6 +103,73 @@ export function ReportBuilderPage(): ReactElement {
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
   const widgetSizeLabel = (size?: 'third' | 'half' | 'full'): string => t(`common.reportBuilder.widgetSizes.${size ?? 'half'}`);
   const widgetHeightLabel = (height?: 'sm' | 'md' | 'lg'): string => t(`common.reportBuilder.widgetHeights.${height ?? 'md'}`);
+  const [deleteWidgetId, setDeleteWidgetId] = useState<string | null>(null);
+  const [removeAssignedUserId, setRemoveAssignedUserId] = useState<number | null>(null);
+  const { data: usersResponse } = useUserList({
+    pageNumber: 1,
+    pageSize: 100,
+    sortBy: 'fullName',
+    sortDirection: 'asc',
+    filters: [{ column: 'isActive', operator: 'eq', value: 'true' }],
+  });
+  const userOptions = useMemo<ComboboxOption[]>(
+    () =>
+      (usersResponse?.data ?? [])
+        .filter((user) => user.isActive === true && Boolean(user.email))
+        .map((user) => ({
+          value: String(user.id),
+          label: `${user.fullName || user.username} (${user.email})`,
+        })),
+    [usersResponse?.data],
+  );
+  const assignedUserIds = meta.assignedUserIds ?? [];
+  const selectedAssignedUsers = useMemo(
+    () =>
+      assignedUserIds.map((userId) => {
+        const match = userOptions.find((option) => option.value === String(userId));
+        return { userId, label: match?.label ?? String(userId) };
+      }),
+    [assignedUserIds, userOptions],
+  );
+  const fieldsCount = schema.length + (config.calculatedFields?.length ?? 0);
+  const widgetsCount = config.widgets?.length ?? 0;
+  const datasetReady = Boolean(dataSourceChecked && meta.dataSourceName);
+  const hasAxis = Boolean(config.axis?.field);
+  const hasValue = config.values.length > 0;
+  const hasLegend = Boolean(config.legend?.field);
+  const hasFilters = config.filters.length > 0;
+  const firstAxisField = schema.find((field) => {
+    const type = getFieldSemanticType(field);
+    return type === 'text' || type === 'date';
+  });
+  const firstValueField = schema.find((field) => getFieldSemanticType(field) === 'number');
+  const firstLegendField = schema.find((field) => getFieldSemanticType(field) === 'text' && field.name !== firstAxisField?.name);
+  const builderReadinessSteps = [
+    {
+      key: 'dataset',
+      done: datasetReady,
+      title: t('common.reportBuilder.readiness.datasetTitle'),
+      description: t('common.reportBuilder.readiness.datasetDescription'),
+    },
+    {
+      key: 'visual',
+      done: Boolean(config.chartType),
+      title: t('common.reportBuilder.readiness.visualTitle'),
+      description: t('common.reportBuilder.readiness.visualDescription'),
+    },
+    {
+      key: 'axis',
+      done: hasAxis,
+      title: t('common.reportBuilder.readiness.axisTitle'),
+      description: t('common.reportBuilder.readiness.axisDescription'),
+    },
+    {
+      key: 'value',
+      done: hasValue,
+      title: t('common.reportBuilder.readiness.valueTitle'),
+      description: t('common.reportBuilder.readiness.valueDescription'),
+    },
+  ];
 
   const previewRunnerRef = useRef<{ execute: () => void; cancel: () => void } | null>(null);
 
@@ -181,16 +266,171 @@ export function ReportBuilderPage(): ReactElement {
     }
   };
 
+  const handleQuickUseAxis = useCallback(
+    (field: Field) => {
+      addToSlot('axis', field.name);
+      setUi({ slotError: null });
+    },
+    [addToSlot, setUi]
+  );
+
+  const handleQuickUseValue = useCallback(
+    (field: Field) => {
+      addToSlot('values', field.name);
+      setUi({ slotError: null });
+    },
+    [addToSlot, setUi]
+  );
+
+  const handleQuickUseLegend = useCallback(
+    (field: Field) => {
+      addToSlot('legend', field.name);
+      setUi({ slotError: null });
+    },
+    [addToSlot, setUi]
+  );
+
+  const handleQuickUseFilter = useCallback(
+    (field: Field) => {
+      addToSlot('filters', field.name);
+      setUi({ slotError: null });
+    },
+    [addToSlot, setUi]
+  );
+
+  const handleQuickSetup = useCallback(
+    (mode: 'table' | 'chart' | 'trend' | 'kpi') => {
+      if (mode === 'table') {
+        setChartType('table');
+        if (firstAxisField) addToSlot('axis', firstAxisField.name);
+        if (firstValueField) addToSlot('values', firstValueField.name);
+        return;
+      }
+      if (mode === 'chart') {
+        setChartType('bar');
+        if (firstAxisField) addToSlot('axis', firstAxisField.name);
+        if (firstValueField) addToSlot('values', firstValueField.name);
+        if (firstLegendField) addToSlot('legend', firstLegendField.name);
+        return;
+      }
+      if (mode === 'trend') {
+        setChartType('line');
+        if (firstAxisField) addToSlot('axis', firstAxisField.name);
+        if (firstValueField) addToSlot('values', firstValueField.name);
+        return;
+      }
+      setChartType('kpi');
+      if (firstValueField) addToSlot('values', firstValueField.name);
+    },
+    [addToSlot, firstAxisField, firstLegendField, firstValueField, setChartType]
+  );
+
+  const handleSmartComplete = useCallback(() => {
+    if (!hasAxis && firstAxisField) addToSlot('axis', firstAxisField.name);
+    if (!hasValue && firstValueField) addToSlot('values', firstValueField.name);
+    if (!hasLegend && (config.chartType === 'bar' || config.chartType === 'stackedBar' || config.chartType === 'pie' || config.chartType === 'donut') && firstLegendField) {
+      addToSlot('legend', firstLegendField.name);
+    }
+    setUi({ slotError: null });
+  }, [addToSlot, config.chartType, firstAxisField, firstLegendField, firstValueField, hasAxis, hasLegend, hasValue, setUi]);
+
+  const handleAddAssignedUser = useCallback(
+    (userIdRaw: string) => {
+      const userId = Number(userIdRaw);
+      if (!Number.isFinite(userId) || userId <= 0 || assignedUserIds.includes(userId)) return;
+      setMeta({ assignedUserIds: [...assignedUserIds, userId] });
+    },
+    [assignedUserIds, setMeta],
+  );
+
+  const handleRemoveAssignedUser = useCallback(
+    (userId: number) => {
+      setMeta({ assignedUserIds: assignedUserIds.filter((value) => value !== userId) });
+    },
+    [assignedUserIds, setMeta],
+  );
+
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={pointerWithin}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-[calc(100vh-4rem)] flex-col gap-4 p-4">
+      <div className="flex h-[calc(100vh-4rem)] min-h-0 flex-col gap-4 p-4">
+        <div className="shrink-0 rounded-2xl border bg-gradient-to-r from-slate-50 via-white to-sky-50 px-5 py-4 shadow-xs dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+          <div className="flex flex-wrap items-start gap-4">
+            <div className="min-w-[260px] flex-1">
+              <div className="mb-3 flex items-center gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => navigate('/reports')}>
+                  <ArrowLeft className="mr-1 size-4" />
+                  {t('common.back')}
+                </Button>
+                <Badge variant="outline" className="font-mono">{lifecycle.status}</Badge>
+                <Badge variant="secondary" className="font-mono">v{lifecycle.version}</Badge>
+              </div>
+              <h1 className="text-xl font-semibold">
+                {isEdit ? t('common.reportBuilder.editStudioTitle') : t('common.reportBuilder.newStudioTitle')}
+              </h1>
+              <p className="text-muted-foreground mt-2 max-w-3xl text-sm">
+                {t('common.reportBuilder.studioDescription')}
+              </p>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                {builderReadinessSteps.map((step, index) => (
+                  <div key={step.key} className={`rounded-xl border px-3 py-2 text-xs ${step.done ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-background text-muted-foreground'}`}>
+                    <div className="font-semibold">{index + 1}. {step.title}</div>
+                    <div className="mt-1 text-[11px]">{step.description}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="grid min-w-[300px] gap-3 md:grid-cols-3">
+              <div className="rounded-xl border bg-background p-3">
+                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <Database className="size-4 text-primary" />
+                  {t('common.reportBuilder.datasetHealth')}
+                </div>
+                <div className="text-sm font-semibold">
+                  {datasetReady ? meta.dataSourceName : t('common.reportBuilder.notConnected')}
+                </div>
+                <div className="text-muted-foreground mt-1 text-xs">
+                  {datasetReady ? t('common.reportBuilder.datasetChecked') : t('common.reportBuilder.datasetPending')}
+                </div>
+              </div>
+              <div className="rounded-xl border bg-background p-3">
+                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <LayoutGrid className="size-4 text-primary" />
+                  {t('common.reportBuilder.widgetSummary')}
+                </div>
+                <div className="text-2xl font-semibold">{widgetsCount}</div>
+                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.widgetSummaryDescription')}</div>
+              </div>
+              <div className="rounded-xl border bg-background p-3">
+                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <BarChart3 className="size-4 text-primary" />
+                  {t('common.reportBuilder.fieldSummary')}
+                </div>
+                <div className="text-2xl font-semibold">{fieldsCount}</div>
+                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.fieldSummaryDescription')}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {isEdit && (
+                <Button variant="outline" onClick={() => navigate(`/reports/${reportId}`)}>
+                  {t('common.cancel')}
+                </Button>
+              )}
+              <Button onClick={handleSave} disabled={ui.saveLoading}>
+                {ui.saveLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+                {isEdit ? t('common.update') : t('common.save')}
+              </Button>
+            </div>
+          </div>
+        </div>
         <TopBarSelector
           connections={connections}
           dataSources={dataSources}
+          dataSourceParameters={dataSourceParameters}
+          datasetParameterBindings={config.datasetParameters ?? []}
           connectionKey={meta.connectionKey}
           dataSourceType={meta.dataSourceType}
           dataSourceName={meta.dataSourceName}
@@ -201,11 +441,73 @@ export function ReportBuilderPage(): ReactElement {
           onConnectionChange={setConnectionKey}
           onTypeChange={setType}
           onNameChange={setDataSourceName}
+          onParameterBindingChange={setDatasetParameterBinding}
           onSearchChange={setDataSourceSearch}
           onCheck={checkDataSource}
         />
 
-        <div className="flex flex-wrap items-center gap-4 border-b pb-4">
+        <div className="rounded-2xl border bg-card p-4">
+          <div className="mb-3">
+            <h2 className="text-sm font-semibold">{t('common.reportBuilder.sharedWith')}</h2>
+            <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.sharedWithDescription')}</p>
+          </div>
+          <div className="grid gap-3 xl:grid-cols-[320px_1fr]">
+            <Combobox
+              options={userOptions.filter((option) => !assignedUserIds.includes(Number(option.value)))}
+              onValueChange={handleAddAssignedUser}
+              placeholder={t('common.reportBuilder.sharedWithSelect')}
+              searchPlaceholder={t('common.reportBuilder.sharedWithSearch')}
+              emptyText={t('common.reportBuilder.sharedWithEmpty')}
+            />
+            <div className="rounded-xl border bg-muted/20 p-2 text-xs text-muted-foreground">
+              {t('common.reportBuilder.sharedWithTableHint')}
+            </div>
+          </div>
+          <div className="mt-3 rounded-xl border bg-background">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('common.reportBuilder.assignedUserName')}</TableHead>
+                  <TableHead>{t('common.reportBuilder.assignedUserEmail')}</TableHead>
+                  <TableHead className="w-[120px]">{t('common.actions')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+              {selectedAssignedUsers.length > 0 ? (
+                selectedAssignedUsers.map((user) => {
+                  const parts = user.label.match(/^(.*)\s+\((.*)\)$/);
+                  const name = parts?.[1] ?? user.label;
+                  const email = parts?.[2] ?? '-';
+                  return (
+                    <TableRow key={user.userId}>
+                      <TableCell className="font-medium">{name}</TableCell>
+                      <TableCell>{email}</TableCell>
+                      <TableCell>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setRemoveAssignedUserId(user.userId)}
+                        >
+                          {t('common.remove')}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-muted-foreground">
+                    {t('common.reportBuilder.sharedWithNone')}
+                  </TableCell>
+                </TableRow>
+              )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4 rounded-2xl border bg-card p-4">
           <div className="flex-1 space-y-1 min-w-[200px]">
             <Label>{t('common.reportBuilder.reportName')}</Label>
             <Input
@@ -215,7 +517,8 @@ export function ReportBuilderPage(): ReactElement {
               className="max-w-md"
             />
           </div>
-          <div className="flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-sm">
+          <div className="flex items-center gap-2 rounded-xl border bg-muted/30 px-3 py-2 text-sm">
+            <CheckCircle2 className="size-4 text-primary" />
             <span className="font-medium uppercase">{lifecycle.status}</span>
             <span className="text-muted-foreground">v{lifecycle.version}</span>
           </div>
@@ -229,19 +532,86 @@ export function ReportBuilderPage(): ReactElement {
             <Button type="button" variant="outline" onClick={() => setLifecycleStatus('archived')}>
               {t('common.reportBuilder.lifecycle.archive')}
             </Button>
-            <Button onClick={handleSave} disabled={ui.saveLoading}>
-              {ui.saveLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-              {isEdit ? t('common.update') : t('common.save')}
-            </Button>
-            {isEdit && (
-              <Button variant="outline" onClick={() => navigate(`/reports/${reportId}`)}>
-                {t('common.cancel')}
-              </Button>
-            )}
+          </div>
+          <div className="flex items-center gap-2 rounded-full border bg-background px-3 py-2 text-xs text-muted-foreground">
+            <Sparkles className="size-3.5" />
+            {t('common.reportBuilder.builderHint')}
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-3">
+        {datasetReady ? (
+          <div className="rounded-2xl border bg-card p-4">
+            <div className="mb-3">
+              <h2 className="text-sm font-semibold">{t('common.reportBuilder.quickStartTitle')}</h2>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {t('common.reportBuilder.quickStartDescription')}
+              </p>
+            </div>
+            <div className="grid gap-2 md:grid-cols-4">
+              <Button type="button" variant="outline" onClick={() => handleQuickSetup('table')}>
+                {t('common.reportBuilder.quickStartTable')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleQuickSetup('chart')}>
+                {t('common.reportBuilder.quickStartChart')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleQuickSetup('trend')}>
+                {t('common.reportBuilder.quickStartTrend')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleQuickSetup('kpi')}>
+                {t('common.reportBuilder.quickStartKpi')}
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady ? (
+          <div className="rounded-2xl border bg-card p-4">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-[260px] flex-1">
+                <h2 className="text-sm font-semibold">{t('common.reportBuilder.guidedSetupTitle')}</h2>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {t('common.reportBuilder.guidedSetupDescription')}
+                </p>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                  <div className={`rounded-xl border px-3 py-2 text-xs ${hasAxis ? 'border-emerald-200 bg-emerald-50/80 dark:border-emerald-900 dark:bg-emerald-950/40' : 'bg-background'}`}>
+                    <div className="font-semibold">{t('common.reportBuilder.axis')}</div>
+                    <div className="mt-1 text-muted-foreground">{hasAxis ? config.axis?.field : t('common.reportBuilder.guidedMissingAxis')}</div>
+                  </div>
+                  <div className={`rounded-xl border px-3 py-2 text-xs ${hasValue ? 'border-emerald-200 bg-emerald-50/80 dark:border-emerald-900 dark:bg-emerald-950/40' : 'bg-background'}`}>
+                    <div className="font-semibold">{t('common.reportBuilder.values')}</div>
+                    <div className="mt-1 text-muted-foreground">{hasValue ? config.values.map((value) => value.field).join(', ') : t('common.reportBuilder.guidedMissingValue')}</div>
+                  </div>
+                  <div className={`rounded-xl border px-3 py-2 text-xs ${hasLegend ? 'border-emerald-200 bg-emerald-50/80 dark:border-emerald-900 dark:bg-emerald-950/40' : 'bg-background'}`}>
+                    <div className="font-semibold">{t('common.reportBuilder.legend')}</div>
+                    <div className="mt-1 text-muted-foreground">{hasLegend ? config.legend?.field : t('common.reportBuilder.guidedOptionalLegend')}</div>
+                  </div>
+                  <div className={`rounded-xl border px-3 py-2 text-xs ${hasFilters ? 'border-emerald-200 bg-emerald-50/80 dark:border-emerald-900 dark:bg-emerald-950/40' : 'bg-background'}`}>
+                    <div className="font-semibold">{t('common.filters')}</div>
+                    <div className="mt-1 text-muted-foreground">{hasFilters ? String(config.filters.length) : t('common.reportBuilder.guidedOptionalFilter')}</div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex min-w-[220px] flex-col gap-2">
+                <Button type="button" onClick={handleSmartComplete} variant="outline">
+                  <Sparkles className="mr-2 size-4" />
+                  {t('common.reportBuilder.smartComplete')}
+                </Button>
+                {!hasValue && firstValueField ? (
+                  <Button type="button" variant="secondary" onClick={() => handleQuickUseValue(firstValueField)}>
+                    {t('common.reportBuilder.addRecommendedValue', { field: firstValueField.displayName || firstValueField.name })}
+                  </Button>
+                ) : null}
+                {!hasAxis && firstAxisField ? (
+                  <Button type="button" variant="secondary" onClick={() => handleQuickUseAxis(firstAxisField)}>
+                    {t('common.reportBuilder.addRecommendedAxis', { field: firstAxisField.displayName || firstAxisField.name })}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
           <div className="flex items-center gap-2 text-sm font-medium">
             <LayoutGrid className="size-4 text-muted-foreground" />
             {t('common.reportBuilder.widgets')}
@@ -313,7 +683,7 @@ export function ReportBuilderPage(): ReactElement {
                     {widget.height === 'lg' ? 'H3' : widget.height === 'md' ? 'H2' : 'H1'}
                   </Button>
                   {(config.widgets?.length ?? 0) > 1 && (
-                    <Button type="button" variant="ghost" size="icon-sm" onClick={() => removeWidget(widget.id)}>
+                    <Button type="button" variant="ghost" size="icon-sm" onClick={() => setDeleteWidgetId(widget.id)}>
                       <Trash2 className="size-3.5" />
                     </Button>
                   )}
@@ -337,29 +707,35 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         )}
 
-        <div className="grid flex-1 grid-cols-[240px_1fr_280px] gap-4 overflow-hidden">
-          <div className="flex flex-col overflow-hidden rounded-lg border bg-card p-4">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden xl:grid-cols-[280px_1fr_340px]">
+          <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card p-4">
             <FieldsPanel
               schema={schema}
               calculatedFields={config.calculatedFields}
               search={fieldsSearch}
               onSearchChange={setFieldsSearch}
+              onUseAsAxis={handleQuickUseAxis}
+              onUseAsValue={handleQuickUseValue}
+              onUseAsLegend={handleQuickUseLegend}
+              onUseAsFilter={handleQuickUseFilter}
               disabled={!dataSourceChecked}
             />
           </div>
 
-          <div className="flex min-h-0 flex-col overflow-hidden">
-            <PreviewPanel
-              title={t('common.reportBuilder.activeWidgetPreview')}
-              subtitle={t('common.reportBuilder.activeWidgetPreviewDescription')}
-              columns={preview.columns}
-              rows={preview.rows}
-              chartType={config.chartType}
-              loading={ui.previewLoading}
-              error={ui.error}
-              empty={!dataSourceChecked}
-            />
-            <div className="mt-4">
+          <div className="flex min-h-0 flex-col overflow-y-auto pr-1">
+            <div className="shrink-0">
+              <PreviewPanel
+                title={t('common.reportBuilder.activeWidgetPreview')}
+                subtitle={t('common.reportBuilder.activeWidgetPreviewDescription')}
+                columns={preview.columns}
+                rows={preview.rows}
+                chartType={config.chartType}
+                loading={ui.previewLoading}
+                error={ui.error}
+                empty={!dataSourceChecked}
+              />
+            </div>
+            <div className="mt-4 min-h-0 pb-2">
               <DashboardLayoutPreview
                 widgets={config.widgets ?? []}
                 activeWidgetId={config.activeWidgetId}
@@ -369,8 +745,17 @@ export function ReportBuilderPage(): ReactElement {
             </div>
           </div>
 
-          <div className="sticky top-0 flex flex-col overflow-hidden rounded-lg border bg-card p-4">
-            <h3 className="text-muted-foreground mb-2 text-sm font-medium">{t('common.reportBuilder.properties')}</h3>
+          <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card p-4">
+            <h3 className="text-muted-foreground mb-1 text-sm font-medium">{t('common.reportBuilder.properties')}</h3>
+            <p className="text-muted-foreground mb-3 text-xs">
+              {t('common.reportBuilder.propertiesDescription')}
+            </p>
+            {ui.slotError ? (
+              <div className="mb-3 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm">
+                <div className="font-semibold text-destructive">{t('common.reportBuilder.needAttentionTitle')}</div>
+                <div className="mt-1 text-muted-foreground">{ui.slotError}</div>
+              </div>
+            ) : null}
             <SlotsPanel
               axis={config.axis}
               values={config.values}
@@ -386,6 +771,44 @@ export function ReportBuilderPage(): ReactElement {
             <PropertiesPanel schema={schema} slotError={ui.slotError} disabled={!dataSourceChecked} />
           </div>
         </div>
+        <AlertDialog open={deleteWidgetId != null} onOpenChange={(open) => !open && setDeleteWidgetId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('common.delete.confirmTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('common.delete.confirmMessage')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (deleteWidgetId) removeWidget(deleteWidgetId);
+                  setDeleteWidgetId(null);
+                }}
+              >
+                {t('common.delete.action')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <AlertDialog open={removeAssignedUserId != null} onOpenChange={(open) => !open && setRemoveAssignedUserId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('common.delete.confirmTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('common.reportBuilder.removeAssignedUserConfirm')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (removeAssignedUserId != null) handleRemoveAssignedUser(removeAssignedUserId);
+                  setRemoveAssignedUserId(null);
+                }}
+              >
+                {t('common.remove')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </DndContext>
   );
