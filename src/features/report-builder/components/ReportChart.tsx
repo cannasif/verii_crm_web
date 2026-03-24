@@ -111,55 +111,73 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
 
   if (chartType === 'table') {
     return (
-      <div className={cn('max-h-[400px] overflow-auto', className)}>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columnLabels.map((col, i) => (
-                <TableHead key={col || i}>{col}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {normalizedRows.slice(0, 5000).map((row, ri) => (
-              <TableRow key={ri}>
-                {row.map((cell, ci) => (
-                  <TableCell key={ci}>{String(cell ?? '')}</TableCell>
+      <div className={cn('max-h-[400px] space-y-2', className)}>
+        <div
+          className="max-h-[360px] overflow-x-auto overflow-y-auto pb-2"
+          style={{ scrollbarGutter: 'stable both-edges' }}
+        >
+          <Table className="w-full table-fixed text-xs">
+            <TableHeader>
+              <TableRow>
+                {columnLabels.map((col, i) => (
+                  <TableHead key={col || i} className="whitespace-normal wrap-break-word align-top">
+                    {col}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {normalizedRows.slice(0, 5000).map((row, ri) => (
+                <TableRow key={ri}>
+                  {row.map((cell, ci) => (
+                    <TableCell key={ci} className="whitespace-normal wrap-break-word align-top">
+                      {String(cell ?? '')}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     );
   }
 
   if (chartType === 'matrix' && matrixData) {
     return (
-      <div className={cn('max-h-[400px] overflow-auto', className)}>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{matrixData.rowKey}</TableHead>
-              {matrixData.columnHeaders.map((header) => (
-                <TableHead key={header}>{header}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {matrixData.rowLabels.map((rowLabel) => {
-              const cells = matrixData.grid.get(rowLabel) ?? {};
-              return (
-                <TableRow key={rowLabel}>
-                  <TableCell className="font-medium">{rowLabel}</TableCell>
-                  {matrixData.columnHeaders.map((header) => (
-                    <TableCell key={`${rowLabel}-${header}`}>{String(cells[header] ?? '')}</TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+      <div className={cn('max-h-[400px] space-y-2', className)}>
+        <div
+          className="max-h-[360px] overflow-x-auto overflow-y-auto pb-2"
+          style={{ scrollbarGutter: 'stable both-edges' }}
+        >
+          <Table className="w-full table-fixed text-xs">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="whitespace-normal wrap-break-word align-top">{matrixData.rowKey}</TableHead>
+                {matrixData.columnHeaders.map((header) => (
+                  <TableHead key={header} className="whitespace-normal wrap-break-word align-top">
+                    {header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {matrixData.rowLabels.map((rowLabel) => {
+                const cells = matrixData.grid.get(rowLabel) ?? {};
+                return (
+                  <TableRow key={rowLabel}>
+                    <TableCell className="font-medium whitespace-normal wrap-break-word align-top">{rowLabel}</TableCell>
+                    {matrixData.columnHeaders.map((header) => (
+                      <TableCell key={`${rowLabel}-${header}`} className="whitespace-normal wrap-break-word align-top">
+                        {String(cells[header] ?? '')}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     );
   }
@@ -182,7 +200,7 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
 
     return (
       <div className={cn('grid h-full min-h-[220px] gap-4 md:grid-cols-2', className)}>
-        <div className="rounded-xl border bg-gradient-to-br from-primary/10 to-background p-6">
+        <div className="rounded-xl border bg-linear-to-br from-primary/10 to-background p-6">
           <div className="text-muted-foreground text-xs uppercase tracking-[0.2em]">{t('common.reportBuilder.primaryKpi')}</div>
           <div className="mt-4 text-4xl font-bold tracking-tight">{primaryValue.toLocaleString()}</div>
           <div className="text-muted-foreground mt-2 text-sm">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
