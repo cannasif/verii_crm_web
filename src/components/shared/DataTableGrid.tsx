@@ -1,4 +1,5 @@
 import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -107,6 +108,13 @@ export function DataTableGrid<TRow, TKey extends string>({
   paginationInfoText,
   disablePaginationButtons = false,
 }: DataTableGridProps<TRow, TKey>): ReactElement {
+  const { t } = useTranslation('common');
+  const MISSING_TRANSLATION = 'Çeviri eksik';
+
+  const resolvedPreviousLabel = previousLabel === MISSING_TRANSLATION ? t('previous', { ns: 'common' }) : previousLabel;
+  const resolvedNextLabel = nextLabel === MISSING_TRANSLATION ? t('next', { ns: 'common' }) : nextLabel;
+  const resolvedActionsHeaderLabel = actionsHeaderLabel === MISSING_TRANSLATION ? t('actions', { ns: 'common' }) : actionsHeaderLabel;
+
   const [isDragging, setIsDragging] = useState(false);
   const lastRowClickRef = useRef<{ key: string | number; timestamp: number } | null>(null);
   const suppressNativeDoubleClickUntilRef = useRef(0);
@@ -196,7 +204,7 @@ export function DataTableGrid<TRow, TKey extends string>({
       <div
         ref={tableScrollRef}
         className={cn(
-          'rounded-md border overflow-x-auto w-full min-w-0 [&>[data-slot=table-container]]:overflow-visible',
+          'rounded-md border overflow-x-auto w-full min-w-0 *:data-[slot=table-container]:overflow-visible',
           isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
         )}
         onPointerDown={handleDragStart}
@@ -230,7 +238,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                 );
               })}
               {showActionsColumn && (
-                <TableHead className="text-right w-[84px]">{actionsHeaderLabel}</TableHead>
+                <TableHead className="text-right w-[84px]">{resolvedActionsHeaderLabel}</TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -334,7 +342,7 @@ export function DataTableGrid<TRow, TKey extends string>({
             onClick={onPreviousPage}
             disabled={!hasPreviousPage || disablePaginationButtons}
           >
-            {previousLabel}
+            {resolvedPreviousLabel}
           </Button>
           <span className="text-xs text-muted-foreground px-2">
             {pageNumber} / {Math.max(totalPages, 1)}
@@ -345,7 +353,7 @@ export function DataTableGrid<TRow, TKey extends string>({
             onClick={onNextPage}
             disabled={!hasNextPage || disablePaginationButtons}
           >
-            {nextLabel}
+            {resolvedNextLabel}
           </Button>
         </div>
       </div>

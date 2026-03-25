@@ -68,6 +68,7 @@ export function AdvancedFilter({
   embedded = false,
 }: AdvancedFilterProps): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
+  const MISSING_TRANSLATION = 'Çeviri eksik';
 
   const addRow = (): void => {
     onDraftRowsChange([
@@ -95,9 +96,9 @@ export function AdvancedFilter({
 
   const getLabel = (key: string, fallback?: string): string => {
     const commonVal = t(`advancedFilter.${key}`, { ns: 'common' });
-    if (commonVal && commonVal !== `advancedFilter.${key}`) return commonVal;
+    if (commonVal && commonVal !== MISSING_TRANSLATION && commonVal !== `advancedFilter.${key}`) return commonVal;
     const nsVal = t(`advancedFilter.${key}`, { ns: translationNamespace });
-    if (nsVal && nsVal !== `advancedFilter.${key}`) return nsVal;
+    if (nsVal && nsVal !== MISSING_TRANSLATION && nsVal !== `advancedFilter.${key}`) return nsVal;
     return fallback ?? key;
   };
 
@@ -106,12 +107,31 @@ export function AdvancedFilter({
     const key = `advancedFilter.operator${mapped}`;
 
     const commonVal = t(key, { ns: 'common' });
-    if (commonVal && commonVal !== key) return commonVal;
+    if (commonVal && commonVal !== MISSING_TRANSLATION && commonVal !== key) return commonVal;
 
     const nsVal = t(key, { ns: translationNamespace });
-    if (nsVal && nsVal !== key) return nsVal;
+    if (nsVal && nsVal !== MISSING_TRANSLATION && nsVal !== key) return nsVal;
 
-    const trFallback = OPERATOR_LABEL_TR_FALLBACK[operator];
+    const opLower = operator.toLowerCase();
+    let trFallback: string | undefined = OPERATOR_LABEL_TR_FALLBACK[operator];
+    if (!trFallback) {
+      switch (opLower) {
+        case 'contains':
+          trFallback = 'İçerir';
+          break;
+        case 'startswith':
+          trFallback = 'Şununla başlar';
+          break;
+        case 'endswith':
+          trFallback = 'Şununla biter';
+          break;
+        case 'equals':
+          trFallback = 'Eşittir';
+          break;
+        default:
+          break;
+      }
+    }
     if (trFallback) return trFallback;
 
     return operator;

@@ -42,6 +42,7 @@ export function ActivityAdvancedFilter({
   embedded = false,
 }: ActivityAdvancedFilterProps): ReactElement {
   const { t } = useTranslation(['activity-management']);
+  const MISSING_TRANSLATION = 'Çeviri eksik';
 
   const addRow = (): void => {
     onDraftRowsChange([
@@ -118,7 +119,24 @@ export function ActivityAdvancedFilter({
                 <SelectContent>
                   {getOperatorsForColumn(row.column).map((op) => (
                     <SelectItem key={op} value={op}>
-                      {t(`advancedFilter.operator${op}`, op)}
+                      {(() => {
+                        const val = t(`advancedFilter.operator${op}`, op);
+                        if (val && val !== MISSING_TRANSLATION) return val;
+
+                        const opLower = op.toLowerCase();
+                        switch (opLower) {
+                          case 'contains':
+                            return 'İçerir';
+                          case 'startswith':
+                            return 'Şununla başlar';
+                          case 'endswith':
+                            return 'Şununla biter';
+                          case 'equals':
+                            return 'Eşittir';
+                          default:
+                            return op;
+                        }
+                      })()}
                     </SelectItem>
                   ))}
                 </SelectContent>

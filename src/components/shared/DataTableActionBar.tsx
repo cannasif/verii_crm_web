@@ -183,7 +183,10 @@ export function DataTableActionBar({
     setLegacyDisplayValue(value);
   };
 
-  const resolvedSearchPlaceholder = search?.placeholder ?? searchPlaceholder ?? t('search', { ns: 'common' });
+  const resolvedSearchPlaceholderProp = search?.placeholder ?? searchPlaceholder;
+  const resolvedSearchPlaceholder = resolvedSearchPlaceholderProp === MISSING_TRANSLATION
+    ? t('search', { ns: 'common' })
+    : resolvedSearchPlaceholderProp ?? t('search', { ns: 'common' });
   const resolvedSearchClassName = search?.className ?? searchClassName;
   const shouldRenderSearch = Boolean(search || onSearchChange);
   const refreshCooldownSeconds = Math.max(refresh?.cooldownSeconds ?? 60, 0);
@@ -191,7 +194,7 @@ export function DataTableActionBar({
     ? 0
     : Math.max(0, Math.ceil((refreshCooldownUntil - refreshNow) / 1000));
   const isRefreshDisabled = Boolean(refresh?.disabled || refresh?.isLoading || refreshRemainingSeconds > 0);
-  const refreshLabel = refresh?.label ?? t('refresh', { ns: 'common' });
+  const refreshLabel = refresh?.label && refresh.label === MISSING_TRANSLATION ? t('refresh', { ns: 'common' }) : refresh?.label ?? t('refresh', { ns: 'common' });
 
   const handleRefresh = (): void => {
     if (!refresh || isRefreshDisabled) return;
