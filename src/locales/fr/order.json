@@ -20,10 +20,23 @@
   "saveAndApply": "Enregistrer et Appliquer",
   "list": {
     "revise": "Réviser",
-    "showing": "Affichage de {{from}} à {{to}} sur {{total}}"
+    "showing": "Affichage de {{from}} à {{to}} sur {{total}}",
+    "detail": "Detay",
+    "cardTitle": "Sipariş listesi",
+    "refresh": "Yenile",
+    "title": "Sipariş Listesi",
+    "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
+    "createNew": "Yeni Sipariş Créer",
+    "actions": "İşlemler"
   },
   "detail": {
-    "title": "Détail du Devis"
+    "title": "Détail du Devis",
+    "subtitle": "Sipariş bilgilerini, onay akışını ve raporları görüntüleyin",
+    "notFound": "Sipariş bulunamadı",
+    "revisionNo": "Revizyon No",
+    "tabDetail": "Detay",
+    "tabApprovalFlow": "Onay Akışı",
+    "tabReport": "Rapor"
   },
   "create": {
     "title": "Créer Nouveau Devis",
@@ -31,7 +44,12 @@
     "success": "Devis Créé avec Succès",
     "successMessage": "Le devis a été envoyé au processus d'approbation.",
     "error": "Échec de la Création du Devis",
-    "errorMessage": "Une erreur est survenue lors de la création du devis."
+    "errorMessage": "Une erreur est survenue lors de la création du devis.",
+    "subtitle": "Sipariş başlığı, satırlar ve kur bilgilerini yönetin",
+    "deliveryDateRequired": "Teslimat tarihi zorunludur.",
+    "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
+    "invalidCurrency": "Geçerli bir para birimi seçin.",
+    "validationError": "Lütfen zorunlu alanları kontrol edin."
   },
   "header": {
     "title": "Informations Devis",
@@ -59,7 +77,9 @@
       "message": "Lorsque la devise est modifiée, toutes les lignes existantes seront recalculées en fonction de la nouvelle devise. Confirmez-vous cette opération ?"
     },
     "deliveryMethod": "Mode de livraison",
-    "documentDetail": "Détails du document"
+    "documentDetail": "Détails du document",
+    "projectCode": "Proje Kodu",
+    "projectCodePlaceholder": "Proje kodunu girin"
   },
   "lines": {
     "title": "Lignes de Devis",
@@ -91,8 +111,23 @@
     "noProductsFound": "Aucun produit trouvé",
     "delete": {
       "confirmTitle": "Supprimer Ligne",
-      "confirmMessage": "Êtes-vous sûr de vouloir supprimer cette ligne ?"
-    }
+      "confirmMessage": "Êtes-vous sûr de vouloir supprimer cette ligne ?",
+      "confirmTitleMultiple": "Satırları Sil",
+      "confirmMessageMultiple": "Seçili satırları silmek istediğinizden emin misiniz?"
+    },
+    "max200Chars": "Maksimum 200 karakter",
+    "addLine": "Satır Ekle",
+    "noItems": "Henüz satır bulunmuyor",
+    "groupCode": "Grup Kodu",
+    "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
+    "relatedStocks": "Bağlı Stoklar",
+    "approvalRequired": "Onay Gerekli",
+    "createSuccess": "Sipariş satırları eklendi.",
+    "createError": "Sipariş satırları eklenemedi.",
+    "updateSuccess": "Sipariş satırları güncellendi.",
+    "updateError": "Sipariş satırları güncellenemedi.",
+    "deleteSuccess": "Sipariş satırı silindi.",
+    "deleteError": "Sipariş satırı silinemedi."
   },
   "exchangeRates": {
     "title": "Taux de Change",
@@ -106,15 +141,25 @@
     "status": "Statut",
     "dialog": {
       "title": "Taux de Change",
-      "description": "Voir les valeurs de taux et modifier si nécessaire. Les taux modifiés ne seront pas marqués comme taux officiels."
-    }
+      "description": "Voir les valeurs de taux et modifier si nécessaire. Les taux modifiés ne seront pas marqués comme taux officiels.",
+      "subtitle": "Siparişte kullanılacak döviz kurlarını kontrol edin",
+      "info": "Kur değişiklikleri satır hesaplamalarını etkiler."
+    },
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin.",
+    "updateSuccess": "Döviz kurları güncellendi.",
+    "updateError": "Döviz kurları güncellenemedi.",
+    "cannotEditUsedCurrency": "Kullanılan para birimi için kur değiştirilemez."
   },
   "summary": {
     "title": "Résumé",
     "subtotal": "Sous-total",
     "totalVat": "Total TVA",
     "grandTotal": "Total Général",
-    "orderTotalAnalysis": "Analyse du total de commande"
+    "orderTotalAnalysis": "Analyse du total de commande",
+    "generalDiscount": "Genel İskonto",
+    "generalDiscountRate": "Genel İskonto Oranı",
+    "generalDiscountAmount": "Genel İskonto Tutarı",
+    "generalDiscountHelp": "Bu alan tüm sipariş toplamına uygulanacak genel iskontoyu ifade eder."
   },
   "offerType": {
     "domestic": "National",
@@ -165,5 +210,59 @@
         "info": "Après l'enregistrement, l'offre sera automatiquement envoyée au processus d'approbation"
       }
     }
+  },
+  "loadError": "Veriler yüklenirken hata oluştu.",
+  "approval": {
+    "approve": "Onayla",
+    "reject": "Reddet",
+    "sending": "Gönderiliyor...",
+    "sendForApproval": "Onaya Gönder",
+    "approveSuccess": "Sipariş başarıyla onaylandı.",
+    "approveError": "Sipariş onaylanamadı.",
+    "rejectSuccess": "Sipariş reddedildi.",
+    "rejectError": "Sipariş reddedilemedi.",
+    "startSuccess": "Onay süreci başlatıldı.",
+    "startError": "Onay süreci başlatılamadı.",
+    "rejectTitle": "Siparişi Reddet",
+    "rejectDescription": "Siparişi reddetme nedeninizi girin.",
+    "rejectReasonPlaceholder": "Red nedeni"
+  },
+  "approvalFlow": {
+    "loading": "Onay akışı yükleniyor...",
+    "noData": "Onay akışı kaydı bulunamadı",
+    "notStarted": "Onay akışı henüz başlatılmadı",
+    "stepCompleted": "Tamamlandı",
+    "stepInProgress": "Devam Ediyor",
+    "stepNotStarted": "Başlamadı",
+    "stepRejected": "Reddedildi"
+  },
+  "sections": {
+    "header": "Başlık Bilgileri",
+    "lines": "Satırlar",
+    "summary": "Özet"
+  },
+  "revision": {
+    "success": "Revizyon kaydı oluşturuldu.",
+    "error": "Revizyon kaydı oluşturulamadı."
+  },
+  "update": {
+    "success": "Sipariş güncellendi.",
+    "successMessage": "Sipariş bilgileri başarıyla güncellendi.",
+    "error": "Sipariş güncellenemedi.",
+    "errorMessage": "Sipariş güncellenirken bir hata oluştu.",
+    "invalidCurrency": "Geçerli bir para birimi seçin.",
+    "validationError": "Lütfen zorunlu alanları kontrol edin."
+  },
+  "waitingApprovals": {
+    "title": "Bekleyen Sipariş Onayları",
+    "description": "Onay bekleyen sipariş kayıtlarını görüntüleyin.",
+    "list": "Bekleyen Onay Listesi",
+    "waiting": "Bekliyor",
+    "noApprovals": "Bekleyen onay kaydı bulunamadı.",
+    "requestId": "Talep No",
+    "status": "Durum",
+    "stepOrder": "Adım Sırası",
+    "approvedBy": "Onaylayan",
+    "actionDate": "İşlem Tarihi"
   }
 }

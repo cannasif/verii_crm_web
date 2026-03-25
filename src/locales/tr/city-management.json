@@ -22,6 +22,10 @@
     "page": "Sayfa {{current}} / {{total}}"
   },
   "cityManagement": {
+    "table": {
+      "title": "Şehir Listesi"
+    },
+    "error": "Hata oluştu",
     "form": {
       "tabs": {
         "header": "Genel Bilgiler"

@@ -27,7 +27,8 @@
     "searchPlaceholder": "Nach Anforderungs-Nr. oder Kundenname suchen...",
     "cardTitle": "Demand list",
     "refresh": "Refresh",
-    "actions": "Actions"
+    "actions": "Actions",
+    "detail": "Detay"
   },
   "detail": {
     "title": "Anforderungsdetails",
@@ -45,7 +46,7 @@
     "successMessage": "Die Anforderung wurde an den Genehmigungsprozess gesendet.",
     "error": "Anforderung konnte nicht erstellt werden",
     "errorMessage": "Beim Erstellen der Anforderung ist ein Fehler aufgetreten.",
-    "subtitle": "Fill in demand details and save.",
+    "subtitle": "Fill in demand details and Speichern.",
     "deliveryDateRequired": "Delivery date is required.",
     "paymentTypeRequired": "Payment type is required.",
     "invalidCurrency": "Invalid currency.",
@@ -114,7 +115,7 @@
       "confirmMessageMultiple": "Are you sure you want to delete selected lines?"
     },
     "noItems": "No lines yet.",
-    "addLine": "Add Line",
+    "addLine": "Hinzufügen Line",
     "relatedStocks": "Related Stocks",
     "groupCode": "Group Code",
     "approvalRequired": "Approval required",
@@ -125,7 +126,7 @@
     "updateError": "Line could not be updated.",
     "deleteSuccess": "Line deleted.",
     "deleteError": "Line could not be deleted.",
-    "editStockItemDetails": "Edit stock item details",
+    "editStockItemDetails": "Bearbeiten stock item details",
     "description1": "Beschreibung 1",
     "description2": "Beschreibung 2",
     "description3": "Beschreibung 3",
@@ -144,12 +145,13 @@
     "dialog": {
       "title": "Wechselkurse",
       "description": "Wechselkurswerte bei Bedarf anzeigen und bearbeiten. Geänderte Kurse werden nicht als offizielle Kurse markiert.",
-      "subtitle": "You can edit and save exchange rates.",
+      "subtitle": "You can Bearbeiten and Speichern exchange rates.",
       "info": "Manual update is possible for non-official rates."
     },
     "updateSuccess": "Exchange rates updated.",
     "updateError": "Exchange rates could not be updated.",
-    "cannotEditUsedCurrency": "Used currency cannot be edited."
+    "cannotEditUsedCurrency": "Used currency cannot be edited.",
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
   },
   "summary": {
     "title": "Zusammenfassung",
@@ -159,7 +161,8 @@
     "generalDiscount": "General Discount",
     "generalDiscountRate": "General Discount Rate",
     "generalDiscountAmount": "General Discount Amount",
-    "generalDiscountHelp": "Applied on total amount."
+    "generalDiscountHelp": "Applied on total amount.",
+    "grandTotalAnalysis": "Genel Toplam Analizi"
   },
   "offerType": {
     "domestic": "Inland",

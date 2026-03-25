@@ -12,7 +12,8 @@
       "createdBy": "Created By",
       "actions": "Actions",
       "showing": "Showing {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}"
+      "page": "Page {{current}} / {{total}}",
+      "title": "Onay Akışları"
     },
     "form": {
       "addTitle": "Add New Approval Flow",
@@ -62,7 +63,8 @@
     "messages": {
       "deleteSuccess": "Onay akışı başarıyla silindi",
       "deleteError": "Onay akışı silinirken hata oluştu"
-    }
+    },
+    "error": "Hata oluştu"
   },
   "approvalFlowStep": {
     "title": "Flow Steps",

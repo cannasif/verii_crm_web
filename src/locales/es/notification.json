@@ -14,5 +14,6 @@
   "loading": "Cargando",
   "noNotifications": "No se encontraron notificaciones",
   "close": "Cerrar",
-  "unread": "No leído"
+  "unread": "No leído",
+  "notifications": "Bildirimler"
 }

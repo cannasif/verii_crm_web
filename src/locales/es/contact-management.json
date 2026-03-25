@@ -68,12 +68,17 @@
     "firstNameRequired": "El nombre es obligatorio",
     "lastNameRequired": "Se requiere apellido",
     "middleNameMaxLength": "El segundo nombre puede tener hasta 100 caracteres.",
-    "titleNone": "sin título"
+    "titleNone": "sin título",
+    "phonePlaceholderExample": "0212...",
+    "mobilePlaceholderExample": "05XX...",
+    "emailPlaceholderExample": "ornek@email.com"
   },
   "delete": {
     "action": "Eliminar",
     "confirmTitle": "Eliminar Contacto",
-    "confirmMessage": "¿Está seguro de que desea eliminar el contacto {{name}}?"
+    "confirmMessage": "¿Está seguro de que desea eliminar el contacto {{name}}?",
+    "success": "İletişim başarıyla silindi",
+    "error": "İletişim silinemedi"
   },
   "loading": "Cargando...",
   "noData": "Sin datos",
@@ -101,5 +106,20 @@
     "columnMobile": "Mobile",
     "columnCustomerName": "Customer",
     "columnTitleName": "Title"
-  }
+  },
+  "contactManagement": {
+    "form": {
+      "mobilePlaceholderExample": "05XX...",
+      "phonePlaceholderExample": "0212...",
+      "emailPlaceholderExample": "ornek@email.com"
+    },
+    "error": "Se produjo un error",
+    "delete": {
+      "success": "İletişim başarıyla silindi",
+      "error": "İletişim silinemedi"
+    },
+    "quickActivity": "Hızlı Aktivite"
+  },
+  "quickActivity": "Hızlı Aktivite",
+  "error": "Se produjo un error"
 }

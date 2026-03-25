@@ -2,7 +2,17 @@
   "menu": "Customer Contact Management",
   "description": "Manage and edit customer contacts",
   "addButton": "Add New Contact",
-  "advancedFilter":{"columnFullName":"Full Name","columnFirstName":"First Name","columnLastName":"Last Name","columnEmail":"Email","columnPhone":"Phone","columnMobile":"Mobile","columnCustomerName":"Customer","columnTitleName":"Title"},"stats": {
+  "advancedFilter": {
+    "columnFullName": "Full Name",
+    "columnFirstName": "First Name",
+    "columnLastName": "Last Name",
+    "columnEmail": "Email",
+    "columnPhone": "Phone",
+    "columnMobile": "Mobile",
+    "columnCustomerName": "Customer",
+    "columnTitleName": "Title"
+  },
+  "stats": {
     "totalContacts": "Total Contacts",
     "activeContacts": "Active Contacts",
     "newThisMonth": "New This Month"
@@ -76,7 +86,9 @@
   "delete": {
     "action": "Delete",
     "confirmTitle": "Delete Contact",
-    "confirmMessage": "Are you sure you want to delete {{name}} contact?"
+    "confirmMessage": "Are you sure you want to delete {{name}} contact?",
+    "success": "İletişim başarıyla silindi",
+    "error": "İletişim silinemedi"
   },
   "loading": "Loading...",
   "noData": "No data",
@@ -94,5 +106,20 @@
     "updateError": "Contact could not be updated",
     "deleteSuccess": "Contact deleted successfully",
     "deleteError": "Contact could not be deleted"
-  }
+  },
+  "contactManagement": {
+    "error": "Hata oluştu",
+    "delete": {
+      "success": "İletişim başarıyla silindi",
+      "error": "İletişim silinemedi"
+    },
+    "quickActivity": "Hızlı Aktivite",
+    "form": {
+      "mobilePlaceholderExample": "05XX...",
+      "phonePlaceholderExample": "0212...",
+      "emailPlaceholderExample": "ornek@email.com"
+    }
+  },
+  "quickActivity": "Hızlı Aktivite",
+  "error": "Hata oluştu"
 }

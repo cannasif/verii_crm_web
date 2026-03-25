@@ -1,7 +1,7 @@
 {
   "menu": "Kundenkontaktverwaltung",
   "description": "Kundenkontakte verwalten und bearbeiten",
-  "addButton": "Add New Contact",
+  "addButton": "Hinzufügen Neu Contact",
   "stats": {
     "totalContacts": "Gesamtkontakte",
     "activeContacts": "Aktive Kontakte",
@@ -25,7 +25,7 @@
     "salutation": "Adresse"
   },
   "form": {
-    "addContact": "Add New Contact",
+    "addContact": "Hinzufügen Neu Contact",
     "editContact": "Kontakt bearbeiten",
     "addDescription": "Geben Sie neue Kontaktinformationen ein",
     "editDescription": "Kontaktinformationen bearbeiten",
@@ -68,12 +68,17 @@
     "firstNameRequired": "Name ist erforderlich",
     "lastNameRequired": "Nachname ist erforderlich",
     "middleNameMaxLength": "Der zweite Vorname kann bis zu 100 Zeichen lang sein",
-    "titleNone": "kein Titel"
+    "titleNone": "kein Titel",
+    "phonePlaceholderExample": "0212...",
+    "mobilePlaceholderExample": "05XX...",
+    "emailPlaceholderExample": "ornek@email.com"
   },
   "delete": {
     "action": "Delete",
     "confirmTitle": "Delete Contact",
-    "confirmMessage": "Are you sure you want to delete {{name}} contact?"
+    "confirmMessage": "Are you sure you want to delete {{name}} contact?",
+    "success": "İletişim başarıyla silindi",
+    "error": "İletişim silinemedi"
   },
   "loading": "Laden...",
   "noData": "Keine Daten",
@@ -101,5 +106,19 @@
     "columnMobile": "Mobile",
     "columnCustomerName": "Customer",
     "columnTitleName": "Title"
-  }
+  },
+  "contactManagement": {
+    "form": {
+      "mobilePlaceholderExample": "05XX...",
+      "phonePlaceholderExample": "0212...",
+      "emailPlaceholderExample": "ornek@email.com"
+    },
+    "error": "Fehler ist aufgetreten",
+    "delete": {
+      "success": "İletişim başarıyla silindi",
+      "error": "İletişim silinemedi"
+    }
+  },
+  "quickActivity": "Hızlı Aktivite",
+  "error": "Fehler ist aufgetreten"
 }

@@ -1,7 +1,7 @@
 {
   "menu": "Aktivitätsartverwaltung",
   "description": "Aktivitätsarten verwalten und bearbeiten",
-  "addButton": "Add New Activity Type",
+  "addButton": "Hinzufügen Neu Activity Type",
   "loading": "Laden...",
   "noData": "Keine Daten gefunden",
   "actions": "Aktionen",
@@ -13,7 +13,7 @@
   "previous": "Previous",
   "next": "Weiter",
   "form": {
-    "addTitle": "Add New Activity Type",
+    "addTitle": "Hinzufügen Neu Activity Type",
     "editTitle": "Aktivitätsart bearbeiten",
     "addDescription": "Geben Sie die neuen Aktivitätsartinformationen ein",
     "editDescription": "Bearbeiten Sie die Aktivitätsartinformationen",
@@ -32,7 +32,8 @@
     "createdDate": "Erstellungsdatum",
     "createdBy": "Erstellt von",
     "showing": "Zeige {{from}}-{{to}} von {{total}}",
-    "page": "Seite {{current}} / {{total}}"
+    "page": "Seite {{current}} / {{total}}",
+    "title": "Aktivite Tipi Listesi"
   },
   "stats": {
     "totalActivityTypes": "Gesamtanzahl Aktivitätsarten",
@@ -55,5 +56,13 @@
     "columnName": "Activity Type Name",
     "columnDescription": "Description",
     "columnCreatedBy": "Created By"
-  }
+  },
+  "activityType": {
+    "table": {
+      "title": "Aktivite Tipi Listesi"
+    },
+    "error": "Bir hata oluştu"
+  },
+  "create": "Yeni Aktivite Tipi",
+  "error": "Bir hata oluştu"
 }

@@ -96,7 +96,7 @@
   "getBySalespersonAndGroup": "جلب حسب المندوب والمجموعة",
   "advancedFilter": {
     "title": "Advanced Filter",
-    "add": "Add Filter",
+    "add": "إضافة Filter",
     "column": "Column",
     "operator": "Operator",
     "value": "القيمة",

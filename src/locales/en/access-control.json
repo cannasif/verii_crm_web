@@ -47,7 +47,8 @@
       "name": "Name",
       "isActive": "Active",
       "updatedDate": "Updated",
-      "showing": "{{from}}-{{to}} of {{total}}"
+      "showing": "{{from}}-{{to}} of {{total}}",
+      "title": "İzin Tanımları"
     },
     "delete": {
       "confirmTitle": "Delete Permission Definition",
@@ -79,7 +80,8 @@
       "isSystemAdmin": "System Admin",
       "isActive": "Active",
       "permissionCount": "Permissions",
-      "showing": "{{from}}-{{to}} of {{total}}"
+      "showing": "{{from}}-{{to}} of {{total}}",
+      "title": "İzin Grupları"
     },
     "managePermissions": "Manage permissions",
     "permissionsPanel": {
@@ -91,7 +93,8 @@
       "confirmTitle": "Delete Permission Group",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
-    "search": "Search..."
+    "search": "Search...",
+    "systemAdminLocked": "Sistem Admin grubu değiştirilemez"
   },
   "userGroupAssignments": {
     "title": "User Group Assignments",

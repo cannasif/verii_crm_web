@@ -35,8 +35,8 @@
     "required": "مطلوب",
     "successAdd": "تم إضافة اللقب بنجاح",
     "successUpdate": "تم تحديث اللقب بنجاح",
-    "addDescription": "Enter new title details",
-    "editDescription": "Edit title details",
+    "addDescription": "Enter جديد title details",
+    "editDescription": "تعديل title details",
     "titleName": "Title Name",
     "titleNamePlaceholder": "Enter title name",
     "titleCode": "Title Code",
@@ -67,5 +67,9 @@
   "advancedFilter": {
     "columnTitleName": "Title Name",
     "columnCode": "Code"
-  }
+  },
+  "titleManagement": {
+    "error": "حدث خطأ"
+  },
+  "error": "حدث خطأ"
 }

@@ -46,5 +46,9 @@
   "advancedFilter": {
     "columnTitleName": "Title Name",
     "columnCode": "Code"
-  }
+  },
+  "titleManagement": {
+    "error": "Une erreur est survenue"
+  },
+  "error": "Une erreur est survenue"
 }

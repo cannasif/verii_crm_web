@@ -5,6 +5,7 @@
     "description": "Onay akışlarını yönetin ve düzenleyin",
     "addButton": "Yeni Onay Akışı Ekle",
     "table": {
+      "title": "Onay Akışları",
       "id": "ID",
       "documentType": "Belge Tipi",
       "description": "Açıklama",
@@ -35,6 +36,7 @@
     },
     "loading": "Yükleniyor...",
     "noData": "Veri yok",
+    "error": "Hata oluştu",
     "active": "Aktif",
     "inactive": "Pasif",
     "previous": "Önceki",

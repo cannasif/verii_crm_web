@@ -3,7 +3,7 @@
   "description": "Verwalten Sie Dokumentenserien-Typen.",
   "search": "Suchen...",
   "refresh": "Aktualisieren",
-  "addButton": "Add New Document Serial Type",
+  "addButton": "Hinzufügen Neu Document Serial Type",
   "loading": "Laden...",
   "noData": "Keine Daten",
   "actions": "Aktionen",
@@ -25,7 +25,7 @@
     "title": "Dosya Tip Listesi"
   },
   "form": {
-    "addTitle": "Add New Document Serial Type",
+    "addTitle": "Hinzufügen Neu Document Serial Type",
     "editTitle": "Dateityp bearbeiten",
     "addDescription": "Geben Sie die neuen Dateityp-Informationen ein",
     "editDescription": "Bearbeiten Sie die Dateityp-Informationen",

@@ -92,7 +92,18 @@
     "none": "None",
     "defaultShippingAddress": "Dirección de envío predeterminada",
     "selectDefaultShippingAddress": "Elija la dirección de envío predeterminada",
-    "salesRepCodePlaceholder": "Código del representante de ventas..."
+    "salesRepCodePlaceholder": "Código del representante de ventas...",
+    "conflictTitle": "Çakışan müşteri kayıtları bulundu",
+    "conflictDescription": "Kayıt işlemi durduruldu. Aşağıdaki müşterilerle çakışan tüm alanlar listelendi.",
+    "conflictItem": "{{customerName}} (ID: {{customerId}}) kaydında {{field}} alanı \"{{value}}\" değeriyle çakışıyor. Şube: {{branchCode}}",
+    "conflictFieldError": "Bu alan mevcut bir müşteri kaydıyla çakışıyor.",
+    "taxOfficePlaceholderExample": "Vergi dairesi...",
+    "tcknPlaceholderExample": "TCKN...",
+    "emailPlaceholderExample": "ornek@sirket.com",
+    "websitePlaceholderExample": "www.sirket.com",
+    "phonePlaceholderExample": "0555...",
+    "phone2PlaceholderExample": "Alternatif telefon...",
+    "groupCodePlaceholder": "Grup kodu..."
   },
   "delete": {
     "action": "Eliminar",
@@ -120,7 +131,7 @@
     "menu": "Müşteri Yönetimi",
     "description": "Müşterileri yönetin ve düzenleyin",
     "addButton": "Yeni Müşteri Ekle",
-    "loading": "Yükleniyor...",
+    "loading": "Cargando...",
     "table": {
       "id": "ID",
       "customerCode": "Müşteri Kodu",
@@ -137,7 +148,8 @@
       "tckn": "TCKN",
       "tax": "Vergi No",
       "website": "Web Sitesi",
-      "createdDate": "Oluşturulma Tarihi"
+      "createdDate": "Crearulma Tarihi",
+      "title": "Müşteri Listesi"
     },
     "delete": {
       "confirmTitle": "Müşteriyi Sil",
@@ -152,7 +164,9 @@
       "updateSuccess": "Müşteri başarıyla güncellendi",
       "updateError": "Müşteri güncellenemedi",
       "deleteSuccess": "Müşteri başarıyla silindi",
-      "deleteError": "Müşteri silinemedi"
+      "deleteError": "Müşteri silinemedi",
+      "syncQueued": "Müşteri senkronizasyonu kuyruğa alındı. İş: {{jobId}}",
+      "syncError": "Müşteri senkronizasyonu tetiklenemedi"
     },
     "stats": {
       "totalCustomers": "Toplam Müşteri",
@@ -166,8 +180,21 @@
       "businessUnitCode": {
         "label": "İş Birimi Kodu"
       },
-      "salesRepCodePlaceholder": "Código del representante de ventas..."
-    }
+      "salesRepCodePlaceholder": "Código del representante de ventas...",
+      "conflictFieldError": "Bu alan mevcut bir müşteri kaydıyla çakışıyor.",
+      "customerCode": "Müşteri Kodu",
+      "conflictTitle": "Çakışan müşteri kayıtları bulundu",
+      "conflictDescription": "Kayıt işlemi durduruldu. Aşağıdaki müşterilerle çakışan tüm alanlar listelendi.",
+      "conflictItem": "{{customerName}} (ID: {{customerId}}) kaydında {{field}} alanı \"{{value}}\" değeriyle çakışıyor. Şube: {{branchCode}}",
+      "namePlaceholder": "Müşteri adını girin",
+      "customerCodePlaceholder": "Müşteri kodunu girin (opsiyonel)",
+      "taxNumberPlaceholder": "Vergi numarasını girin (opsiyonel)",
+      "addressPlaceholder": "Adresi girin (opsiyonel)"
+    },
+    "error": "Se produjo un error",
+    "quickActivity": "Hızlı Aktivite",
+    "manualSync": "Manuel Senkronizasyon",
+    "syncing": "Senkronizasyon çalışıyor"
   },
   "advancedFilter": {
     "columnName": "Müşteri Adı",

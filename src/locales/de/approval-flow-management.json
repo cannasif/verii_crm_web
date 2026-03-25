@@ -2,7 +2,7 @@
   "approvalFlow": {
     "menu": "Genehmigungsablauf-Verwaltung",
     "description": "Genehmigungsabläufe verwalten und bearbeiten",
-    "addButton": "Add New Approval Flow",
+    "addButton": "Hinzufügen Neu Approval Flow",
     "table": {
       "id": "AUSWEIS",
       "documentType": "Dokumententyp",
@@ -12,12 +12,13 @@
       "createdBy": "Erstellt von",
       "actions": "Aktionen",
       "showing": "Zeige {{from}}-{{to}} / {{total}}",
-      "page": "Seite {{current}} / {{total}}"
+      "page": "Seite {{current}} / {{total}}",
+      "title": "Onay Akışları"
     },
     "form": {
-      "addTitle": "Add New Approval Flow",
+      "addTitle": "Hinzufügen Neu Approval Flow",
       "editTitle": "Genehmigungsablauf bearbeiten",
-      "addDescription": "Enter new approval flow information",
+      "addDescription": "Enter Neu approval flow information",
       "editDescription": "Bearbeiten Sie die Informationen des Genehmigungsablaufs",
       "documentType": "Dokumententyp",
       "selectDocumentType": "Dokumententyp auswählen",
@@ -57,23 +58,24 @@
       "columnDocumentType": "Belge Tipi",
       "columnDescription": "Açıklama",
       "columnIsActive": "Aktif",
-      "columnCreatedBy": "Oluşturan"
+      "columnCreatedBy": "Erstellenan"
     },
     "messages": {
       "deleteSuccess": "Onay akışı başarıyla silindi",
       "deleteError": "Onay akışı silinirken hata oluştu"
-    }
+    },
+    "error": "Fehler ist aufgetreten"
   },
   "approvalFlowStep": {
     "title": "Ablaufschritte",
-    "addButton": "Add Step",
+    "addButton": "Hinzufügen Step",
     "empty": "No steps added yet",
     "unknownRoleGroup": "Keine Rollengruppe",
     "stepDescription": "Genehmigungsreihenfolge: {{order}}",
     "form": {
-      "addTitle": "Add New Step",
+      "addTitle": "Hinzufügen Neu Step",
       "editTitle": "Schritt bearbeiten",
-      "addDescription": "Add new flow step",
+      "addDescription": "Hinzufügen Neu flow step",
       "editDescription": "Ablaufschritt bearbeiten",
       "approvalRoleGroup": "Rollengruppe",
       "selectRoleGroup": "Rollengruppe auswählen",

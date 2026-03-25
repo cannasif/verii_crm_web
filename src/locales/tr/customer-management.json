@@ -5,7 +5,9 @@
     "addButton": "Yeni Müşteri Ekle",
     "quickActivity": "Hızlı Aktivite",
     "loading": "Yükleniyor...",
+    "error": "Hata oluştu",
     "table": {
+      "title": "Müşteri Listesi",
       "id": "ID",
       "customerCode": "Müşteri Kodu",
       "name": "Müşteri Adı",
@@ -54,6 +56,15 @@
       "businessUnitCode": {
         "label": "İş Birimi Kodu"
       },
+      "customerCode": "Müşteri Kodu",
+      "customerCodePlaceholder": "Müşteri kodunu girin (opsiyonel)",
+      "namePlaceholder": "Müşteri adını girin",
+      "taxNumberPlaceholder": "Vergi numarasını girin (opsiyonel)",
+      "addressPlaceholder": "Adresi girin (opsiyonel)",
+      "conflictTitle": "Çakışan müşteri kayıtları bulundu",
+      "conflictDescription": "Kayıt işlemi durduruldu. Aşağıdaki müşterilerle çakışan tüm alanlar listelendi.",
+      "conflictItem": "{{customerName}} (ID: {{customerId}}) kaydında {{field}} alanı \"{{value}}\" değeriyle çakışıyor. Şube: {{branchCode}}",
+      "conflictFieldError": "Bu alan mevcut bir müşteri kaydıyla çakışıyor.",
       "salesRepCodePlaceholder": "Satış temsilci kodu..."
     }
   },

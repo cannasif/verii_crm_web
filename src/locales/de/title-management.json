@@ -31,7 +31,7 @@
     "title": "Ünvan Listesi"
   },
   "form": {
-    "addTitle": "Add New Title",
+    "addTitle": "Hinzufügen Neu Title",
     "editTitle": "Titel bearbeiten",
     "addDescription": "Geben Sie die neuen Titeldetails ein",
     "editDescription": "Bearbeiten Sie die Titeldetails",
@@ -46,5 +46,9 @@
   "advancedFilter": {
     "columnTitleName": "Title Name",
     "columnCode": "Code"
-  }
+  },
+  "titleManagement": {
+    "error": "Fehler ist aufgetreten"
+  },
+  "error": "Fehler ist aufgetreten"
 }

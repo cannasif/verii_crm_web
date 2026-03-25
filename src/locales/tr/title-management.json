@@ -1,6 +1,7 @@
 {
   "loading": "Yükleniyor...",
   "noData": "Veri bulunamadı",
+  "error": "Hata oluştu",
   "search": "Ara...",
   "refresh": "Yenile",
   "previous": "Önceki",

@@ -12,7 +12,8 @@
       "createdBy": "Creado Por",
       "actions": "Acciones",
       "showing": "Mostrando {{from}}-{{to}} de {{total}}",
-      "page": "Página {{current}} / {{total}}"
+      "page": "Página {{current}} / {{total}}",
+      "title": "Onay Akışları"
     },
     "form": {
       "addTitle": "Añadir Nuevo Flujo",
@@ -57,12 +58,13 @@
       "columnDocumentType": "Belge Tipi",
       "columnDescription": "Açıklama",
       "columnIsActive": "Aktif",
-      "columnCreatedBy": "Oluşturan"
+      "columnCreatedBy": "Crearan"
     },
     "messages": {
       "deleteSuccess": "Onay akışı başarıyla silindi",
       "deleteError": "Onay akışı silinirken hata oluştu"
-    }
+    },
+    "error": "Se produjo un error"
   },
   "approvalFlowStep": {
     "title": "Pasos del Flujo",

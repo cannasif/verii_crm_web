@@ -14,7 +14,8 @@
     "quickQuotations": "Quick Quotations",
     "mailLogs": "Mail History",
     "images": "Images",
-    "imagesDefaultDescription": "Business card image"
+    "imagesDefaultDescription": "Business card image",
+    "erpMovements": "ERP Hareket"
   },
   "quickQuotations": {
     "empty": "No quick quotations found for this customer",
@@ -120,5 +121,31 @@
     "executeAction": "Execute action"
   },
   "button": "Customer 360",
-  "status": {}
+  "status": {},
+  "erpMovements": {
+    "title": "ERP Hareket",
+    "tableTitle": "Cari Hareketleri",
+    "error": "ERP hareket verileri yüklenemedi",
+    "columns": {
+      "date": "Tarih",
+      "dueDate": "Vade Tarihi",
+      "documentNo": "Belge No",
+      "description": "Açıklama",
+      "currency": "Para Birimi",
+      "debit": "Borç",
+      "credit": "Alacak",
+      "tlBalanceByDate": "Tarih Sıralı TL Bakiye",
+      "tlBalanceByDueDate": "Vade Sıralı TL Bakiye",
+      "fxDebit": "Döviz Borç",
+      "fxCredit": "Döviz Alacak",
+      "fxBalanceByDate": "Tarih Sıralı Döviz Bakiye",
+      "fxBalanceByDueDate": "Vade Sıralı Döviz Bakiye"
+    },
+    "summary": {
+      "totalDebit": "Toplam Borç",
+      "totalCredit": "Toplam Alacak",
+      "balance": "Bakiye",
+      "closed": "Kapalı"
+    }
+  }
 }

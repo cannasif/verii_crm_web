@@ -24,5 +24,6 @@
   "retry": "versuchen Sie es erneut",
   "TaxNumber": "Steuernummer",
   "TcknNumber": "TR-ID-Nummer",
-  "CustomerCode": "Kundencode"
+  "CustomerCode": "Kundencode",
+  "tableTitle": "Mükerrer Müşteri Adayları"
 }

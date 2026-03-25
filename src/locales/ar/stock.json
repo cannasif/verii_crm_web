@@ -45,7 +45,7 @@
     "next": "التالي",
     "cardTitle": "Stock list",
     "refresh": "Refresh",
-    "loading": "Loading...",
+    "loading": "جارٍ التحميل...",
     "loadError": "An error occurred while loading data.",
     "noData": "No records found."
   },
@@ -84,8 +84,15 @@
     "copied": "تم النسخ",
     "copy": "نسخ",
     "tipTitle": "نصيحة",
-    "tipDescription": "Do not forget to save after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
-    "relationHint": "Define lower or upper related products for this stock."
+    "tipDescription": "Do not forget to حفظ after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
+    "relationHint": "Define lower or upper related products for this stock.",
+    "noCode": "Kod Yok",
+    "subtitle": "Stok bilgilerini, görselleri ve bağlı stokları yönetin",
+    "gallery": "Galeri",
+    "summary": "Özet",
+    "addRelation": "Bağlı Stok Ekle",
+    "saving": "Kaydediliyor...",
+    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı"
   },
   "images": {
     "upload": "رفع",
@@ -98,7 +105,13 @@
     "delete": "حذف",
     "noImages": "لا توجد صور",
     "deleteConfirm": "حذف الصورة",
-    "deleteConfirmMessage": "هل أنت متأكد من حذف هذه الصورة؟"
+    "deleteConfirmMessage": "هل أنت متأكد من حذف هذه الصورة؟",
+    "uploading": "Görseller yükleniyor...",
+    "isPrimary": "Ana görsel",
+    "noImagesDesc": "Bu stok için henüz bir görsel kaydı bulunmuyor.",
+    "cancel": "إلغاء",
+    "deleting": "Siliniyor...",
+    "confirmDelete": "Evet, Sil"
   },
   "relations": {
     "add": "إضافة علاقة",

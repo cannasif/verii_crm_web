@@ -6,7 +6,8 @@
   "delete": {
     "button": "Delete",
     "confirmTitle": "Delete Confirmation",
-    "confirmMessage": "Are you sure you want to delete this record?"
+    "confirmMessage": "Are you sure you want to delete this record?",
+    "action": "Sil"
   },
   "table": {
     "id": "ID",
@@ -36,16 +37,16 @@
     "endDate": "Data Fine",
     "conditions": "Condizioni",
     "actions": "Azioni Prezzo",
-    "cancel": "Cancel",
-    "save": "Save",
+    "cancel": "Annulla",
+    "save": "Salva",
     "saving": "Saving...",
     "confirm": "Confirm",
     "update": "Update",
-    "createButton": "Create",
-    "create": "New Pricing Rule",
-    "edit": "Edit Pricing Rule",
-    "createDescription": "Enter new pricing rule information",
-    "editDescription": "Edit pricing rule information",
+    "createButton": "Crea",
+    "create": "Nuovo Pricing Rule",
+    "edit": "Modifica Pricing Rule",
+    "createDescription": "Enter Nuovo pricing rule information",
+    "editDescription": "Modifica pricing rule information",
     "tabs": {
       "header": "General Information",
       "lines": "Lines",
@@ -53,14 +54,14 @@
     },
     "createSuccess": "Pricing Rule Created",
     "createSuccessMessage": "Pricing rule created successfully",
-    "createError": "Failed to Create Pricing Rule",
+    "createError": "Failed to Crea Pricing Rule",
     "updateSuccess": "Pricing Rule Updated",
     "updateSuccessMessage": "Pricing rule updated successfully",
     "updateError": "Failed to Update Pricing Rule",
     "error": "Error",
     "lines": {
       "required": "At least 1 line must be added",
-      "requiredMessage": "Please add at least one line",
+      "requiredMessage": "Please Aggiungi at least one line",
       "stokCodeRequired": "Stock Code Required",
       "stokCodeRequiredMessage": "Stock code must be entered for all lines",
       "currencyCodeRequired": "Currency Type Required",
@@ -93,7 +94,7 @@
     "deleteSuccessMessage": "Il venditore è stato eliminato correttamente",
     "deleteError": "Errore di eliminazione",
     "deleteErrorMessage": "Impossibile eliminare il venditore",
-    "add": "Add Salesman",
+    "add": "Aggiungi Salesman",
     "empty": "No salesmen added yet",
     "emptyDescription": "Will be valid for all salesmen",
     "salesman": "Salesman"
@@ -172,10 +173,10 @@
     "expired": "Scaduto"
   },
   "pricingRule": {
-    "loading": "Yükleniyor...",
+    "loading": "Caricamento...",
     "loadingDescription": "Veriler yükleniyor, lütfen bekleyin",
     "noData": "Veri yok",
-    "error": "Hata oluştu",
+    "error": "Si è verificato un errore",
     "actions": "İşlemler",
     "list": {
       "title": "Fiyat Kuralları",
@@ -183,7 +184,8 @@
       "add": "Yeni Kural Ekle"
     },
     "table": {
-      "title": "Fiyat Kuralı Listesi"
+      "title": "Fiyat Kuralı Listesi",
+      "actions": "İşlemler"
     },
     "status": {
       "active": "Aktif",
@@ -194,6 +196,56 @@
       "quotation": "Teklif",
       "order": "Sipariş",
       "unknown": "Bilinmiyor"
+    },
+    "lines": {
+      "section": {
+        "stock": "Stok Bilgileri",
+        "pricing": "Fiyat Bilgileri"
+      },
+      "badgeCount": "Satır",
+      "createTitle": "Satır Ekle",
+      "editTitle": "Satırı Modifica",
+      "dialogDescription": "Fiyat kuralı satır bilgilerini girin",
+      "title": "Fiyat Kuralı Satırları",
+      "selectStock": "Satırlara Stok Ekle",
+      "empty": "Henüz satır eklenmedi",
+      "addFirst": "İlk satırı ekleyin",
+      "stokCode": "Stok Kodu",
+      "minQuantity": "Min Miktar",
+      "maxQuantity": "Max Miktar",
+      "fixedUnitPrice": "Sabit Birim Fiyat",
+      "currencyCode": "Döviz",
+      "discount1": "İndirim 1",
+      "discount2": "İndirim 2",
+      "discount3": "İndirim 3",
+      "addConfirmTitle": "Satır Ekle",
+      "addConfirmMessage": "{{code}} bu kurala eklenecek. Onaylıyor musunuz?",
+      "addSuccess": "Satır eklendi",
+      "addSuccessMessage": "Fiyat kuralı satırı başarıyla eklendi",
+      "addError": "Satır eklenemedi",
+      "deleteConfirmTitle": "Satırı Sil",
+      "deleteConfirmMessage": "{{code}} satırını silmek istediğinizden emin misiniz?",
+      "deleteSuccess": "Satır silindi",
+      "deleteSuccessMessage": "Fiyat kuralı satırı başarıyla silindi",
+      "deleteError": "Satır silinemedi",
+      "stokCodeRequired": "Stok kodu zorunludur"
+    },
+    "form": {
+      "cancel": "Annulla",
+      "save": "Salva",
+      "create": "Yeni Fiyat Kuralı",
+      "edit": "Fiyat Kuralı Modifica",
+      "createDescription": "Yeni fiyat kuralı bilgilerini girin",
+      "editDescription": "Fiyat kuralı bilgilerini düzenleyin",
+      "tabs": {
+        "header": "Genel Bilgiler",
+        "lines": "Satırlar",
+        "salesmen": "Satışçılar"
+      },
+      "lines": {
+        "required": "En az 1 satır eklenmelidir",
+        "requiredMessage": "Lütfen en az bir satır ekleyin"
+      }
     }
   }
 }

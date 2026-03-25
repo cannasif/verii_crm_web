@@ -1,7 +1,7 @@
 {
   "menu": "Länderverwaltung",
   "description": "Länder verwalten und bearbeiten",
-  "addButton": "Add New Country",
+  "addButton": "Hinzufügen Neu Country",
   "search": "Suchen...",
   "loading": "Laden...",
   "noData": "Keine Daten gefunden",
@@ -35,7 +35,7 @@
     "title": "Ülke Listesi"
   },
   "form": {
-    "addCountry": "Add New Country",
+    "addCountry": "Hinzufügen Neu Country",
     "editCountry": "Land bearbeiten",
     "addDescription": "Geben Sie die neuen Länderinformationen ein",
     "editDescription": "Bearbeiten Sie die Länderinformationen",
@@ -71,16 +71,16 @@
     "menu": "Ülke Yönetimi",
     "description": "Ülkeleri yönetin ve düzenleyin",
     "addButton": "Yeni Ülke Ekle",
-    "searchPlaceholder": "Ara...",
-    "loading": "Yükleniyor...",
-    "error": "Hata oluştu",
+    "searchPlaceholder": "Suchen...",
+    "loading": "Wird geladen...",
+    "error": "Fehler ist aufgetreten",
     "table": {
       "id": "ID",
       "name": "Ülke Adı",
       "code": "Kod",
       "erpCode": "ERP Kodu",
-      "createdDate": "Oluşturulma Tarihi",
-      "createdBy": "Oluşturan",
+      "createdDate": "Erstellenulma Tarihi",
+      "createdBy": "Erstellenan",
       "noData": "Veri bulunamadı",
       "title": "Ülke Listesi"
     },
@@ -98,7 +98,7 @@
     },
     "form": {
       "addCountry": "Yeni Ülke Ekle",
-      "editCountry": "Ülke Düzenle",
+      "editCountry": "Ülke Bearbeiten",
       "addDescription": "Yeni ülke bilgilerini girin",
       "editDescription": "Ülke bilgilerini düzenleyin",
       "name": "Ülke Adı",
@@ -112,8 +112,8 @@
       "codeMinLength": "Ülke kodu en az 2 karakter olmalıdır",
       "codeMaxLength": "Ülke kodu en fazla 5 karakter olabilir",
       "erpCodeMaxLength": "ERP kodu en fazla 10 karakter olabilir",
-      "cancel": "İptal",
-      "save": "Kaydet",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
       "tabs": {
         "header": "Genel Bilgiler"
       }

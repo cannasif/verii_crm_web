@@ -31,12 +31,12 @@
     "currentStatusDescription": "This page shows required setup details for Outlook OAuth.",
     "currentStatusHint": "Tenant-level Outlook OAuth settings endpoint is not enabled in API yet, so this page is guide-only for now.",
     "setupGuideTitle": "Outlook OAuth Setup Guide",
-    "setupGuideDescription": "Create an application registration in Microsoft Entra Admin Center, then configure callback and permissions.",
+    "setupGuideDescription": "Crea an application registration in Microsoft Entra Admin Center, then configure callback and permissions.",
     "setupStep1": "Apri Microsoft Entra Admin Center and select the correct tenant.",
-    "setupStep2": "Create a web app registration from App registrations > New registration.",
-    "setupStep3": "In Authentication, add the callback URL below as Redirect URI (Web).",
-    "setupStep4": "In API permissions, add Calendar and Mail permissions and grant admin consent.",
-    "setupStep5": "Once backend enables Outlook OAuth tenant settings endpoint, save Client ID/Secret in the related screen.",
+    "setupStep2": "Crea a web app registration from App registrations > Nuovo registration.",
+    "setupStep3": "In Authentication, Aggiungi the callback URL below as Redirect URI (Web).",
+    "setupStep4": "In API permissions, Aggiungi Calendar and Mail permissions and grant admin consent.",
+    "setupStep5": "Once backend enables Outlook OAuth tenant settings endpoint, Salva Client ID/Secret in the related screen.",
     "callbackLabel": "URL callback",
     "consoleLinkLabel": "Apri Microsoft Entra",
     "permissionTitle": "Permessi consigliati",
@@ -103,6 +103,51 @@
       "userId": "ID utente",
       "activityId": "ID attività",
       "providerEventId": "ID evento provider"
+    }
+  },
+  "mailDialog": {
+    "openButton": "Outlook E-posta",
+    "title": "Outlook E-postası Gönder",
+    "description": "{{module}} #{{id}} kaydı için gönderilecek e-postayı düzenleyin.",
+    "missingCustomer": "Bu kayıtla ilişkili müşteri bulunamadı. E-posta gönderilebilmesi için müşteri zorunludur.",
+    "templateLabel": "Şablon",
+    "toLabel": "Alıcı (Kime)",
+    "ccLabel": "Bilgi (Bilgi Kopyası)",
+    "bccLabel": "Gizli (Gizli Kopya)",
+    "subjectLabel": "Konu",
+    "bodyLabel": "Mesaj",
+    "isHtmlLabel": "HTML olarak gönder",
+    "autoRecipientHint": "Boş bırakılırsa kişi veya müşteri e-postası otomatik olarak kullanılır",
+    "recipientPlaceholder": "mail1@example.com; mail2@example.com",
+    "cancel": "Vazgeç",
+    "send": "Gönder",
+    "sending": "Gönderiliyor...",
+    "sendSuccess": "Outlook e-postası başarıyla gönderildi.",
+    "sendError": "Outlook e-postası gönderilemedi.",
+    "modules": {
+      "activity": "Aktivite",
+      "demand": "Talep",
+      "quotation": "Teklif",
+      "order": "Sipariş"
+    },
+    "templateNames": {
+      "generic-info": "Bilgilendirme",
+      "follow-up": "Takip",
+      "reminder": "Hatırlatma"
+    },
+    "templates": {
+      "generic": {
+        "subject": "{{module}} #{{id}} hakkında bilgilendirme",
+        "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı hakkında bilgi paylaşmak istiyorum.\n\nİyi çalışmalar."
+      },
+      "followUp": {
+        "subject": "{{module}} #{{id}} takip bilgisi",
+        "body": "Merhaba,\n\n{{customer}} / {{contact}} için {{module}} #{{id}} kaydının takibi kapsamında sizinle iletişime geçiyoruz.\n\nUygun olduğunuzda geri dönüş yapabilir misiniz?"
+      },
+      "reminder": {
+        "subject": "{{module}} #{{id}} hatırlatma",
+        "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı için hatırlatma iletisi.\n\nTeşekkürler."
+      }
     }
   }
 }

@@ -53,6 +53,10 @@
       "tabs": {
         "header": "Genel Bilgiler"
       }
-    }
+    },
+    "table": {
+      "title": "Şehir Listesi"
+    },
+    "error": "Se produjo un error"
   }
 }

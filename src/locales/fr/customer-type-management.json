@@ -21,7 +21,8 @@
     "updatedDate": "Date de Mise à Jour",
     "updatedBy": "Mis à Jour Par",
     "showing": "Affichage de {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}"
+    "page": "Page {{current}} / {{total}}",
+    "title": "Müşteri Tipi Listesi"
   },
   "form": {
     "addCustomerType": "Ajouter un Nouveau Type de Client",
@@ -43,7 +44,10 @@
     "confirmTitle": "Supprimer le Type de Client",
     "confirmMessage": "Êtes-vous sûr de vouloir supprimer le type de client {{name}} ?",
     "confirmButton": "Supprimer",
-    "deleting": "Suppression..."
+    "deleting": "Suppression...",
+    "action": "Sil",
+    "success": "Müşteri tipi başarıyla silindi",
+    "error": "Müşteri tipi silinemedi"
   },
   "messages": {
     "createSuccess": "Type de client créé avec succès",
@@ -56,5 +60,17 @@
   "advancedFilter": {
     "columnName": "Customer Type Name",
     "columnDescription": "Description"
-  }
+  },
+  "customerTypeManagement": {
+    "table": {
+      "title": "Müşteri Tipi Listesi"
+    },
+    "error": "Une erreur est survenue",
+    "delete": {
+      "success": "Müşteri tipi başarıyla silindi",
+      "error": "Müşteri tipi silinemedi",
+      "action": "Sil"
+    }
+  },
+  "error": "Une erreur est survenue"
 }

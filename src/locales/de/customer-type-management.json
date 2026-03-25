@@ -1,7 +1,7 @@
 {
   "menu": "Kundentyp-Verwaltung",
   "description": "Kundentypen verwalten und bearbeiten",
-  "addButton": "Add New Customer Type",
+  "addButton": "Hinzufügen Neu Customer Type",
   "loading": "Laden...",
   "noData": "Keine Daten gefunden",
   "actions": "Aktionen",
@@ -21,10 +21,11 @@
     "updatedDate": "Aktualisierungsdatum",
     "updatedBy": "Aktualisiert von",
     "showing": "Zeige {{from}}-{{to}} / {{total}}",
-    "page": "Seite {{current}} / {{total}}"
+    "page": "Seite {{current}} / {{total}}",
+    "title": "Müşteri Tipi Listesi"
   },
   "form": {
-    "addCustomerType": "Add New Customer Type",
+    "addCustomerType": "Hinzufügen Neu Customer Type",
     "editCustomerType": "Kundentyp bearbeiten",
     "addDescription": "Geben Sie neue Kundentyp-Informationen ein",
     "editDescription": "Kundentyp-Informationen bearbeiten",
@@ -43,7 +44,10 @@
     "confirmTitle": "Delete Customer Type",
     "confirmMessage": "Are you sure you want to delete {{name}} customer type?",
     "confirmButton": "Delete",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "action": "Sil",
+    "success": "Müşteri tipi başarıyla silindi",
+    "error": "Müşteri tipi silinemedi"
   },
   "messages": {
     "createSuccess": "Kundentyp erfolgreich erstellt",
@@ -56,5 +60,17 @@
   "advancedFilter": {
     "columnName": "Customer Type Name",
     "columnDescription": "Description"
-  }
+  },
+  "customerTypeManagement": {
+    "table": {
+      "title": "Müşteri Tipi Listesi"
+    },
+    "error": "Fehler ist aufgetreten",
+    "delete": {
+      "success": "Müşteri tipi başarıyla silindi",
+      "error": "Müşteri tipi silinemedi",
+      "action": "Sil"
+    }
+  },
+  "error": "Fehler ist aufgetreten"
 }

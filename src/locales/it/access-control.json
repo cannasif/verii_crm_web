@@ -24,12 +24,12 @@
   "permissionDefinitions": {
     "title": "Permission Definitions",
     "description": "Manage permission codes used in the system",
-    "add": "Add Definition",
+    "add": "Aggiungi Definition",
     "form": {
-      "editTitle": "Edit Permission Definition",
-      "addTitle": "Add Permission Definition",
+      "editTitle": "Modifica Permission Definition",
+      "addTitle": "Aggiungi Permission Definition",
       "editDescription": "Update permission definition details",
-      "addDescription": "Create a new permission definition",
+      "addDescription": "Crea a Nuovo permission definition",
       "code": "Code",
       "name": "Name",
       "namePlaceholder": "Display name",
@@ -47,7 +47,8 @@
       "name": "Name",
       "isActive": "Active",
       "updatedDate": "Updated",
-      "showing": "{{from}}-{{to}} of {{total}}"
+      "showing": "{{from}}-{{to}} of {{total}}",
+      "title": "İzin Tanımları"
     },
     "delete": {
       "confirmTitle": "Delete Permission Definition",
@@ -58,14 +59,14 @@
   "permissionGroups": {
     "title": "Permission Groups",
     "description": "Manage permission groups and their assignments",
-    "add": "Add Group",
+    "add": "Aggiungi Group",
     "selectAll": "Select all",
     "noDefinitions": "No permission definitions available",
     "form": {
-      "editTitle": "Edit Permission Group",
-      "addTitle": "Add Permission Group",
+      "editTitle": "Modifica Permission Group",
+      "addTitle": "Aggiungi Permission Group",
       "editDescription": "Update permission group details",
-      "addDescription": "Create a new permission group",
+      "addDescription": "Crea a Nuovo permission group",
       "name": "Name",
       "namePlaceholder": "Group name",
       "description": "Description",
@@ -79,11 +80,12 @@
       "isSystemAdmin": "System Admin",
       "isActive": "Active",
       "permissionCount": "Permissions",
-      "showing": "{{from}}-{{to}} of {{total}}"
+      "showing": "{{from}}-{{to}} of {{total}}",
+      "title": "İzin Grupları"
     },
     "managePermissions": "Manage permissions",
     "permissionsPanel": {
-      "title": "Edit Group Permissions",
+      "title": "Modifica Group Permissions",
       "description": "Select permissions for this group",
       "currentCodes": "Current permission codes"
     },
@@ -91,23 +93,24 @@
       "confirmTitle": "Delete Permission Group",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
-    "search": "Cerca..."
+    "search": "Cerca...",
+    "systemAdminLocked": "Sistem Admin grubu değiştirilemez"
   },
   "userGroupAssignments": {
     "title": "User Group Assignments",
-    "description": "Assign permission groups to users",
+    "description": "Assign permission groups to Utenti",
     "selectUser": "Select User",
     "selectUserPlaceholder": "Search and select user...",
     "selectUserHint": "Select a user to manage their permission group assignments",
     "assignedGroups": "Assigned Permission Groups",
-    "noUsers": "No users found",
+    "noUsers": "No Utenti found",
     "noGroups": "No permission groups available",
     "selectAll": "Select all"
   },
   "common": {
     "cancel": "Annulla",
     "saving": "Registrazione...",
-    "save": "Save and Apply",
+    "save": "Salva e applica",
     "loading": "Caricamento...",
     "search": "Cerca...",
     "noData": "Nessun dato",

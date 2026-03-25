@@ -24,10 +24,10 @@
     "inactive": "Inactive",
     "confirmed": "Confirmed",
     "noData": "No data",
-    "loading": "Loading...",
+    "loading": "Caricamento...",
     "previous": "Previous",
     "next": "Next",
-    "edit": "Edit",
+    "edit": "Modifica",
     "delete": "Delete"
   },
   "form": {
@@ -47,10 +47,10 @@
     "required": "Obbligatorio",
     "successAdd": "Utente aggiunto con successo",
     "successUpdate": "Utente aggiornato con successo",
-    "editUser": "Edit User",
-    "addUser": "Add New User",
-    "editDescription": "Edit user information",
-    "addDescription": "Enter new user information",
+    "editUser": "Modifica User",
+    "addUser": "Aggiungi Nuovo User",
+    "editDescription": "Modifica user information",
+    "addDescription": "Enter Nuovo user information",
     "username": "Username",
     "usernamePlaceholder": "Enter username",
     "emailPlaceholder": "Enter email address",
@@ -130,9 +130,9 @@
       "next": "Next"
     },
     "menu": "User Management",
-    "description": "Manage and edit users",
-    "addButton": "Add New User",
-    "searchPlaceholder": "Search users...",
+    "description": "Manage and Modifica Utenti",
+    "addButton": "Aggiungi Nuovo User",
+    "searchPlaceholder": "Search Utenti...",
     "advancedFilter": {
       "columnUsername": "Username",
       "columnEmail": "Email",
@@ -140,11 +140,11 @@
       "columnRole": "Role"
     },
     "stats": {
-      "totalUsers": "Total Users",
-      "activeUsers": "Active Users",
-      "newThisMonth": "New This Month",
-      "confirmedUsers": "Confirmed Users",
-      "loading": "Loading..."
+      "totalUsers": "Total Utenti",
+      "activeUsers": "Active Utenti",
+      "newThisMonth": "Nuovo This Month",
+      "confirmedUsers": "Confirmed Utenti",
+      "loading": "Caricamento..."
     },
     "messages": {
       "error": "Si è verificato un errore"

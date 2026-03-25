@@ -3,6 +3,7 @@
   "description": "Müşteri tiplerini yönetin ve düzenleyin",
   "addButton": "Yeni Müşteri Tipi Ekle",
   "loading": "Yükleniyor...",
+  "error": "Hata oluştu",
   "noData": "Veri bulunamadı",
   "actions": "İşlemler",
   "previous": "Önceki",
@@ -17,6 +18,7 @@
     "newThisMonth": "Bu Ay Yeni"
   },
   "table": {
+    "title": "Müşteri Tipi Listesi",
     "id": "ID",
     "name": "Müşteri Tipi Adı",
     "description": "Açıklama",
@@ -44,9 +46,12 @@
     "saving": "Kaydediliyor..."
   },
   "delete": {
+    "action": "Sil",
     "confirmTitle": "Müşteri Tipini Sil",
     "confirmMessage": "{{name}} müşteri tipini silmek istediğinizden emin misiniz?",
     "confirmButton": "Sil",
+    "success": "Müşteri tipi başarıyla silindi",
+    "error": "Müşteri tipi silinemedi",
     "deleting": "Siliniyor..."
   },
   "messages": {

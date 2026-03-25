@@ -84,7 +84,7 @@
   "cancelActivity": "Abbrechen",
   "confirmMarkAsCompleted": "Are you sure you want to mark this activity as completed?",
   "confirmMarkAsInProgress": "Are you sure you want to mark this activity as in progress?",
-  "confirmCancel": "Are you sure you want to cancel this activity?",
+  "confirmCancel": "Are you sure you want to Abbrechen this activity?",
   "markAsCompletedSuccess": "Aktivität als abgeschlossen markiert",
   "markAsInProgressSuccess": "Aktivität als in Bearbeitung markiert",
   "cancelSuccess": "Aktivität abgebrochen",
@@ -136,7 +136,8 @@
     "updatedDate": "Aktualisierungsdatum",
     "showing": "Zeige {{from}}-{{to}} von {{total}}",
     "page": "Seite {{current}} / {{total}}",
-    "erpLabel": "ERP: {{code}}"
+    "erpLabel": "ERP: {{code}}",
+    "title": "Aktivite Listesi"
   },
   "advancedFilter": {
     "title": "Erweiterter Filter",
@@ -179,5 +180,51 @@
     "visibleColumns": "Visible Columns",
     "moveUp": "Up",
     "moveDown": "Down"
-  }
+  },
+  "activityManagement": {
+    "reminderChannelInApp": "Uygulama İçi",
+    "reminderChannelEmail": "E-posta",
+    "error": "Aktivite kaydedilemedi",
+    "paymentType": "Ödeme",
+    "activityMeetingType": "Görüşme",
+    "activityTopicPurpose": "İlgilenilen Konular",
+    "activityShipping": "Teslimat",
+    "reminderPresetDays": "{{count}} gün",
+    "reminderPresetMinutes": "{{count}} dk",
+    "complete": "Tamamla",
+    "table": {
+      "title": "Aktivite Listesi"
+    },
+    "activityTypeRequired": "Aktivite tipi seçimi gereklidir",
+    "assignedUserRequired": "Atanan kullanıcı gereklidir",
+    "endDateRequired": "Bitiş tarihi gereklidir",
+    "listLoadError": "Aktivite listesi yüklenemedi",
+    "detailLoadError": "Aktivite detayı yüklenemedi",
+    "cancel": "Abbrechen"
+  },
+  "deleteActivity": "Aktiviteyi Sil",
+  "deleteConfirmation": "Bu aktiviteyi silmek istediğinizden emin misiniz?",
+  "id": "ID",
+  "detailsTab": "Detaylar",
+  "imagesTab": "Resimler",
+  "basicInfo": "Temel Bilgiler",
+  "relations": "İlişkili Bilgiler",
+  "details": "Detay",
+  "reminders": "Hatırlatmalar",
+  "noReminder": "Hatırlatma eklenmedi",
+  "allDay": "Tüm Gün",
+  "endDate": "Bitiş Tarihi",
+  "error": "Aktivite kaydedilemedi",
+  "paymentType": "Ödeme",
+  "activityMeetingType": "Görüşme",
+  "activityTopicPurpose": "İlgilenilen Konular",
+  "activityShipping": "Teslimat",
+  "validationError": "Lütfen zorunlu alanları doldurun",
+  "reminderChannelInApp": "Uygulama İçi",
+  "reminderChannelIn-App": "Uygulama İçi",
+  "reminderChannelEmail": "E-posta",
+  "reminderPresetDays": "{{count}} gün",
+  "reminderPresetMinutes": "{{count}} dk",
+  "select": "Seç",
+  "complete": "Tamamla"
 }

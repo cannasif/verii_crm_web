@@ -27,7 +27,8 @@
     "searchPlaceholder": "Search by demand no or customer name...",
     "cardTitle": "Demand list",
     "refresh": "Refresh",
-    "actions": "Actions"
+    "actions": "Actions",
+    "detail": "Detay"
   },
   "detail": {
     "title": "Demand Detail",
@@ -149,7 +150,8 @@
     },
     "updateSuccess": "Exchange rates updated.",
     "updateError": "Exchange rates could not be updated.",
-    "cannotEditUsedCurrency": "Used currency cannot be edited."
+    "cannotEditUsedCurrency": "Used currency cannot be edited.",
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
   },
   "summary": {
     "title": "Summary",
@@ -267,5 +269,36 @@
     "actionDate": "Action Date",
     "status": "Status",
     "waiting": "Waiting"
+  },
+  "demand": {
+    "exchangeRates": {
+      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
+    },
+    "list": {
+      "detail": "Detay",
+      "cardTitle": "Talep listesi",
+      "refresh": "Yenile"
+    },
+    "lines": {
+      "descriptionPlaceholder": "Açıklama giriniz...",
+      "editStockItemDetails": "Stok kalemi detaylarını düzenleyin",
+      "description1": "Açıklama 1",
+      "description2": "Açıklama 2",
+      "description3": "Açıklama 3"
+    },
+    "approvalFlow": {
+      "errorTitle": "Hata Oluştu"
+    },
+    "header": {
+      "paymentType": "Ödeme Tipi",
+      "deliveryMethod": "Teslim Şekli",
+      "offerDate": "Talep Tarihi",
+      "documentDetail": "Belge Detayı"
+    },
+    "loadError": "Veriler yüklenirken hata oluştu.",
+    "summary": {
+      "grandTotalAnalysis": "Genel Toplam Analizi"
+    },
+    "untitled": "Başlıksız"
   }
 }

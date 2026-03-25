@@ -121,7 +121,25 @@
       "logicAnd": "AND",
       "logicOr": "OR",
       "true": "Yes",
-      "false": "No"
+      "false": "No",
+      "columnId": "ID",
+      "columnErpStockCode": "ERP Kodu",
+      "columnStockName": "Stok Adı",
+      "columnGroupCode": "Grup Kodu",
+      "columnGroupName": "Grup Adı",
+      "columnCode1": "Kod-1",
+      "columnCode1Name": "Kod-1 Adı",
+      "columnCode2": "Kod-2",
+      "columnCode2Name": "Kod-2 Adı",
+      "columnCode3": "Kod-3",
+      "columnCode3Name": "Kod-3 Adı",
+      "columnCode4": "Kod-4",
+      "columnCode4Name": "Kod-4 Adı",
+      "columnCode5": "Kod-5",
+      "columnCode5Name": "Kod-5 Adı",
+      "columnManufacturerCode": "Üretici Kodu",
+      "columnUnit": "Birim",
+      "columnBranchCode": "Şube Kodu"
     },
     "selectAll": "Select All",
     "export": "Export",
@@ -507,8 +525,16 @@
         "draft": "Draft",
         "publish": "Publish",
         "archive": "Archive"
-      }
-    }
+      },
+      "exportCurrentCsv": "Mevcut CSV'yi dışa aktar",
+      "exportAllCsv": "Tüm CSV'leri dışa aktar",
+      "exportDefinition": "Tanımı dışa aktar"
+    },
+    "create": "Oluştur",
+    "remove": "Kaldır",
+    "hide": "Gizle",
+    "hiddenColumns": "Gizli Sütunlar",
+    "exportPreparing": "Hazırlanıyor..."
   },
   "auth": {
     "login": {
@@ -636,6 +662,9 @@
     "customersConflictInbox": "Conflict Inbox",
     "contactManagement": "Customer Contact Management",
     "paymentTypeManagement": "Payment Type Management",
+    "activityMeetingTypeManagement": "Meeting",
+    "activityTopicPurposeManagement": "Interested Topics",
+    "activityShippingManagement": "Shipping",
     "userDiscountLimitManagement": "User Discount Limit Management",
     "googleIntegration": "Google Integration",
     "googleIntegrationConnection": "Connection",
@@ -3079,6 +3108,18 @@
       "visibleColumns": "Visible Columns",
       "moveUp": "Up",
       "moveDown": "Down"
+    },
+    "activityTypeRequired": "Aktivite tipi seçimi gereklidir",
+    "assignedUserRequired": "Atanan kullanıcı gereklidir",
+    "endDateRequired": "Bitiş tarihi gereklidir",
+    "listLoadError": "Aktivite listesi yüklenemedi",
+    "detailLoadError": "Aktivite detayı yüklenemedi",
+    "cancel": "İptal",
+    "complete": "Tamamla",
+    "reminderChannelIn-App": "Uygulama İçi",
+    "reminderChannelEmail": "E-posta",
+    "table": {
+      "title": "Aktivite Listesi"
     }
   },
   "status": {
@@ -3112,7 +3153,8 @@
       "createdDate": "Creation",
       "createdBy": "Created by",
       "showing": "Showing {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}"
+      "page": "Page {{current}} / {{total}}",
+      "title": "Aktivite Tipi Listesi"
     },
     "delete": {
       "confirmTitle": "Delete Activity Type",
@@ -3136,7 +3178,8 @@
     "quickActivity": "Quick Activity",
     "actions": "Transactions",
     "previous": "Former",
-    "next": "Next"
+    "next": "Next",
+    "error": "Bir hata oluştu"
   },
   "approval": {
     "approve": {
@@ -3364,7 +3407,15 @@
       "notesPlaceholder": "Add note...",
       "cancel": "Cancel",
       "saving": "Recording...",
-      "save": "Save"
+      "save": "Save",
+      "taxOfficePlaceholderExample": "Vergi dairesi...",
+      "tcknPlaceholderExample": "TCKN...",
+      "emailPlaceholderExample": "ornek@sirket.com",
+      "websitePlaceholderExample": "www.sirket.com",
+      "phonePlaceholderExample": "0555...",
+      "phone2PlaceholderExample": "Alternatif telefon...",
+      "groupCodePlaceholder": "Grup kodu...",
+      "salesRepCodePlaceholder": "Satış temsilci kodu..."
     },
     "filter": {
       "name": "Search by Customer Name...",
@@ -4583,5 +4634,6 @@
   "menu": "Hangfire Monitoring",
   "language_choice": "Language Option",
   "appearance": "View Mode",
-  "logout": "LOG OUT"
+  "logout": "LOG OUT",
+  "exportPreparing": "Hazırlanıyor..."
 }

@@ -1,7 +1,7 @@
 {
   "menu": "Genehmigungsrollengruppen-Verwaltung",
   "description": "Verwalten und bearbeiten Sie Genehmigungsrollengruppen",
-  "addButton": "Add New Group",
+  "addButton": "Hinzufügen Neu Group",
   "refresh": "Aktualisieren",
   "searchPlaceholder": "Suchen...",
   "loading": "Laden...",
@@ -25,7 +25,7 @@
   "deleteButton": "Delete",
   "form": {
     "editTitle": "Genehmigungsrollengruppe bearbeiten",
-    "addTitle": "Add New Approval Role Group",
+    "addTitle": "Hinzufügen Neu Approval Role Group",
     "editDescription": "Genehmigungsrollengruppen-Informationen bearbeiten",
     "addDescription": "Neue Genehmigungsrollengruppen-Informationen eingeben",
     "name": "Gruppenname",
@@ -37,20 +37,20 @@
   },
   "advancedFilter": {
     "columnName": "Grup Adı",
-    "columnCreatedBy": "Oluşturan"
+    "columnCreatedBy": "Erstellenan"
   },
   "approvalRoleGroup": {
     "menu": "Onay Rol Grubu Yönetimi",
     "description": "Onay rol gruplarını yönetin ve düzenleyin",
     "addButton": "Yeni Grup Ekle",
-    "searchPlaceholder": "Ara...",
+    "searchPlaceholder": "Suchen...",
     "noData": "Veri bulunamadı",
     "table": {
       "title": "Grup Listesi",
       "id": "ID",
       "name": "Grup Adı",
-      "createdDate": "Oluşturulma Tarihi",
-      "createdBy": "Oluşturan Kullanıcı",
+      "createdDate": "Erstellenulma Tarihi",
+      "createdBy": "Erstellenan Kullanıcı",
       "actions": "İşlemler",
       "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
     },

@@ -71,7 +71,7 @@
   },
   "advancedFilter": {
     "title": "Advanced Filter",
-    "add": "Add Filter",
+    "add": "Ajouter Filter",
     "column": "Column",
     "operator": "Operator",
     "value": "Valeur",

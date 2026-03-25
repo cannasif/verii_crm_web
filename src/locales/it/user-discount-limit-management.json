@@ -96,7 +96,7 @@
   "getBySalespersonAndGroup": "Ottieni per venditore e gruppo",
   "advancedFilter": {
     "title": "Advanced Filter",
-    "add": "Add Filter",
+    "add": "Aggiungi Filter",
     "column": "Column",
     "operator": "Operator",
     "value": "Valore",

@@ -2,6 +2,7 @@
   "menu": "Müşteri İletişim Yönetimi",
   "description": "Müşteri iletişimlerini yönetin ve düzenleyin",
   "addButton": "Yeni İletişim Ekle",
+  "quickActivity": "Hızlı Aktivite",
   "advancedFilter":{"columnFullName":"Ad Soyad","columnFirstName":"Ad","columnLastName":"Soyad","columnEmail":"E-posta","columnPhone":"Telefon","columnMobile":"Mobil","columnCustomerName":"Müşteri","columnTitleName":"Ünvan"},"stats": {
     "totalContacts": "Toplam İletişim",
     "activeContacts": "Aktif İletişim",
@@ -75,9 +76,12 @@
   },
   "delete": {
     "action": "Sil",
+    "success": "İletişim başarıyla silindi",
+    "error": "İletişim silinemedi",
     "confirmTitle": "İletişimi Sil",
     "confirmMessage": "{{name}} iletişimini silmek istediğinizden emin misiniz?"
   },
+  "error": "Hata oluştu",
   "loading": "Yükleniyor...",
   "noData": "Veri yok",
   "actions": "İşlemler",

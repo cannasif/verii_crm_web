@@ -43,6 +43,7 @@
       "codeEmpty": "Sonuç bulunamadı"
     },
     "table": {
+      "title": "İzin Tanımları",
       "code": "Kod",
       "name": "Ad",
       "isActive": "Aktif",
@@ -58,6 +59,7 @@
   "permissionGroups": {
     "title": "İzin Grupları",
     "description": "İzin gruplarını ve atamalarını yönetin",
+    "systemAdminLocked": "Sistem Admin grubu değiştirilemez",
     "add": "Grup Ekle",
     "selectAll": "Tümünü seç",
     "noDefinitions": "Kullanılabilir izin tanımı yok",
@@ -75,6 +77,7 @@
       "permissions": "İzinler"
     },
     "table": {
+      "title": "İzin Grupları",
       "name": "Ad",
       "isSystemAdmin": "Sistem Yöneticisi",
       "isActive": "Aktif",

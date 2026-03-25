@@ -17,7 +17,7 @@
     "next": "Weiter",
     "cardTitle": "Stock list",
     "refresh": "Refresh",
-    "loading": "Loading...",
+    "loading": "Laden...",
     "loadError": "An error occurred while loading data."
   },
   "detail": {
@@ -59,8 +59,11 @@
     "technicalSpecs": "Technische Spezifikationen",
     "technicalSpecsPlaceholder": "Technische Spezifikationen eingeben",
     "tipTitle": "Tipp",
-    "tipDescription": "Do not forget to save after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
-    "relationHint": "Define lower or upper related products for this stock."
+    "tipDescription": "Do not forget to Speichern after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
+    "relationHint": "Define lower or upper related products for this stock.",
+    "noCode": "Kod Yok",
+    "saving": "Kaydediliyor...",
+    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı"
   },
   "images": {
     "upload": "Hochladen",
@@ -73,10 +76,16 @@
     "delete": "Delete",
     "noImages": "Keine Bilder",
     "deleteConfirm": "Delete Image",
-    "deleteConfirmMessage": "Are you sure you want to delete this image?"
+    "deleteConfirmMessage": "Are you sure you want to delete this image?",
+    "uploading": "Görseller yükleniyor...",
+    "isPrimary": "Ana görsel",
+    "noImagesDesc": "Bu stok için henüz bir görsel kaydı bulunmuyor.",
+    "cancel": "Abbrechen",
+    "deleting": "Siliniyor...",
+    "confirmDelete": "Evet, Sil"
   },
   "relations": {
-    "add": "Add Related Stock",
+    "add": "Hinzufügen Related Stock",
     "relatedStock": "Related Stock",
     "relatedStock.required": "Related stock selection is required",
     "quantity": "Menge",

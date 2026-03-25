@@ -2,7 +2,7 @@
   "approvalUserRole": {
     "menu": "Genehmigungsbenutzerrollen-Verwaltung",
     "description": "Verwalten und bearbeiten Sie Genehmigungsbenutzerrollen",
-    "addButton": "Add New Role",
+    "addButton": "Hinzufügen Neu Role",
     "searchPlaceholder": "Suchen...",
     "refresh": "Aktualisieren",
     "loading": "Laden...",
@@ -17,7 +17,8 @@
       "showing": "Zeige {{from}}-{{to}} von {{total}}",
       "page": "Seite {{current}} / {{total}}",
       "previous": "Vorherige",
-      "next": "Nächste"
+      "next": "Nächste",
+      "title": "Onay Kullanıcı Rolleri"
     },
     "delete": {
       "title": "Delete Role",
@@ -27,7 +28,7 @@
     },
     "form": {
       "editTitle": "Genehmigungsbenutzerrolle bearbeiten",
-      "addTitle": "Add New Approval User Role",
+      "addTitle": "Hinzufügen Neu Approval User Role",
       "editDescription": "Genehmigungsbenutzerrollen-Informationen bearbeiten",
       "addDescription": "Neue Genehmigungsbenutzerrollen-Informationen eingeben",
       "userId": "Benutzer",
@@ -45,7 +46,8 @@
     "advancedFilter": {
       "columnUserFullName": "Kullanıcı",
       "columnApprovalRoleName": "Onay Rolü",
-      "columnCreatedBy": "Oluşturan"
-    }
+      "columnCreatedBy": "Erstellenan"
+    },
+    "error": "Fehler ist aufgetreten"
   }
 }

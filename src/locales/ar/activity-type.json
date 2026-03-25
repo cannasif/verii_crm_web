@@ -32,7 +32,8 @@
     "createdDate": "تاريخ الإنشاء",
     "createdBy": "تم الإنشاء بواسطة",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
-    "page": "صفحة {{current}} / {{total}}"
+    "page": "صفحة {{current}} / {{total}}",
+    "title": "Aktivite Tipi Listesi"
   },
   "stats": {
     "totalActivityTypes": "إجمالي أنواع الأنشطة",
@@ -55,5 +56,13 @@
     "columnName": "Activity Type Name",
     "columnDescription": "Description",
     "columnCreatedBy": "Created By"
-  }
+  },
+  "activityType": {
+    "table": {
+      "title": "Aktivite Tipi Listesi"
+    },
+    "error": "Bir hata oluştu"
+  },
+  "create": "Yeni Aktivite Tipi",
+  "error": "Bir hata oluştu"
 }

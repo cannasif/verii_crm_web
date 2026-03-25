@@ -24,10 +24,10 @@
     "inactive": "Inactive",
     "confirmed": "Confirmed",
     "noData": "No data",
-    "loading": "Loading...",
+    "loading": "جارٍ التحميل...",
     "previous": "Previous",
     "next": "Next",
-    "edit": "Edit",
+    "edit": "تعديل",
     "delete": "Delete"
   },
   "form": {
@@ -47,10 +47,10 @@
     "required": "مطلوب",
     "successAdd": "تم إضافة المستخدم بنجاح",
     "successUpdate": "تم تحديث المستخدم بنجاح",
-    "editUser": "Edit User",
-    "addUser": "Add New User",
-    "editDescription": "Edit user information",
-    "addDescription": "Enter new user information",
+    "editUser": "تعديل User",
+    "addUser": "إضافة جديد User",
+    "editDescription": "تعديل user information",
+    "addDescription": "Enter جديد user information",
     "username": "Username",
     "usernamePlaceholder": "Enter username",
     "emailPlaceholder": "Enter email address",
@@ -130,9 +130,9 @@
       "next": "Next"
     },
     "menu": "User Management",
-    "description": "Manage and edit users",
-    "addButton": "Add New User",
-    "searchPlaceholder": "Search users...",
+    "description": "Manage and تعديل المستخدمون",
+    "addButton": "إضافة جديد User",
+    "searchPlaceholder": "Search المستخدمون...",
     "advancedFilter": {
       "columnUsername": "Username",
       "columnEmail": "Email",
@@ -140,11 +140,11 @@
       "columnRole": "Role"
     },
     "stats": {
-      "totalUsers": "Total Users",
-      "activeUsers": "Active Users",
-      "newThisMonth": "New This Month",
-      "confirmedUsers": "Confirmed Users",
-      "loading": "Loading..."
+      "totalUsers": "Total المستخدمون",
+      "activeUsers": "Active المستخدمون",
+      "newThisMonth": "جديد This Month",
+      "confirmedUsers": "Confirmed المستخدمون",
+      "loading": "جارٍ التحميل..."
     },
     "messages": {
       "error": "حدث خطأ"

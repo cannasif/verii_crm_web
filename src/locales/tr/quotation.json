@@ -23,6 +23,7 @@
   "list": {
     "title": "Teklif Listesi",
     "description": "Teklif kayıtlarını görüntüleyin ve yönetin",
+    "detail": "Detay",
     "createNew": "Yeni Teklif Oluştur",
     "cardTitle": "Teklif listesi",
     "refresh": "Yenile",
@@ -166,6 +167,7 @@
     "updateSuccess": "Döviz kurları güncellendi.",
     "updateError": "Döviz kurları güncellenemedi.",
     "cannotEditUsedCurrency": "Kullanılan para birimi için kur değiştirilemez.",
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin.",
     "dialog": {
       "title": "Döviz Kurları",
       "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin. Değiştirilen kurlar resmi kur olarak işaretlenmeyecektir.",

@@ -12,7 +12,8 @@
       "createdBy": "تم الإنشاء بواسطة",
       "actions": "إجراءات",
       "showing": "عرض {{from}}-{{to}} من {{total}}",
-      "page": "صفحة {{current}} / {{total}}"
+      "page": "صفحة {{current}} / {{total}}",
+      "title": "Onay Akışları"
     },
     "form": {
       "addTitle": "إضافة تدفق موافقة جديد",
@@ -57,12 +58,13 @@
       "columnDocumentType": "Belge Tipi",
       "columnDescription": "Açıklama",
       "columnIsActive": "Aktif",
-      "columnCreatedBy": "Oluşturan"
+      "columnCreatedBy": "إنشاءan"
     },
     "messages": {
       "deleteSuccess": "Onay akışı başarıyla silindi",
       "deleteError": "Onay akışı silinirken hata oluştu"
-    }
+    },
+    "error": "حدث خطأ"
   },
   "approvalFlowStep": {
     "title": "خطوات التدفق",

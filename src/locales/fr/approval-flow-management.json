@@ -12,7 +12,8 @@
       "createdBy": "Créé par",
       "actions": "Actions",
       "showing": "Affichage {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}"
+      "page": "Page {{current}} / {{total}}",
+      "title": "Onay Akışları"
     },
     "form": {
       "addTitle": "Ajouter Nouveau Flux",
@@ -57,12 +58,13 @@
       "columnDocumentType": "Belge Tipi",
       "columnDescription": "Açıklama",
       "columnIsActive": "Aktif",
-      "columnCreatedBy": "Oluşturan"
+      "columnCreatedBy": "Créeran"
     },
     "messages": {
       "deleteSuccess": "Onay akışı başarıyla silindi",
       "deleteError": "Onay akışı silinirken hata oluştu"
-    }
+    },
+    "error": "Une erreur est survenue"
   },
   "approvalFlowStep": {
     "title": "Étapes du Flux",
@@ -82,8 +84,8 @@
         "required": "La sélection du groupe de rôle est requise"
       },
       "approvalRoleGroupIdRequired": "Role group selection is required",
-      "cancel": "Cancel",
-      "save": "Save",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
       "saving": "Saving..."
     },
     "messages": {

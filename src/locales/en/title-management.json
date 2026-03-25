@@ -46,5 +46,9 @@
     "cancel": "Cancel",
     "save": "Save",
     "saving": "Saving..."
-  }
+  },
+  "titleManagement": {
+    "error": "Hata oluştu"
+  },
+  "error": "Hata oluştu"
 }

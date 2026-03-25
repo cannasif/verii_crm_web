@@ -17,7 +17,8 @@
       "showing": "Showing {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}",
       "previous": "Previous",
-      "next": "Next"
+      "next": "Next",
+      "title": "Onay Kullanıcı Rolleri"
     },
     "delete": {
       "title": "Delete Role",
@@ -46,6 +47,7 @@
       "columnUserFullName": "Kullanıcı",
       "columnApprovalRoleName": "Onay Rolü",
       "columnCreatedBy": "Oluşturan"
-    }
+    },
+    "error": "Hata oluştu"
   }
 }

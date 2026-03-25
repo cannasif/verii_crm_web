@@ -27,7 +27,8 @@
     "searchPlaceholder": "Cerca per n. richiesta o nome cliente...",
     "cardTitle": "Demand list",
     "refresh": "Refresh",
-    "actions": "Actions"
+    "actions": "Actions",
+    "detail": "Detay"
   },
   "detail": {
     "title": "Dettaglio Richiesta",
@@ -45,7 +46,7 @@
     "successMessage": "La richiesta è stata inviata al processo di approvazione.",
     "error": "Impossibile Creare la Richiesta",
     "errorMessage": "Si è verificato un errore durante la creazione della richiesta.",
-    "subtitle": "Fill in demand details and save.",
+    "subtitle": "Fill in demand details and Salva.",
     "deliveryDateRequired": "Delivery date is required.",
     "paymentTypeRequired": "Payment type is required.",
     "invalidCurrency": "Invalid currency.",
@@ -114,7 +115,7 @@
       "confirmMessageMultiple": "Are you sure you want to delete selected lines?"
     },
     "noItems": "No lines yet.",
-    "addLine": "Add Line",
+    "addLine": "Aggiungi Line",
     "relatedStocks": "Related Stocks",
     "groupCode": "Group Code",
     "approvalRequired": "Approval required",
@@ -125,7 +126,7 @@
     "updateError": "Line could not be updated.",
     "deleteSuccess": "Line deleted.",
     "deleteError": "Line could not be deleted.",
-    "editStockItemDetails": "Edit stock item details",
+    "editStockItemDetails": "Modifica stock item details",
     "description1": "Descrizione 1",
     "description2": "Descrizione 2",
     "description3": "Descrizione 3",
@@ -144,12 +145,13 @@
     "dialog": {
       "title": "Tassi di Cambio",
       "description": "Visualizza e modifica i valori dei tassi di cambio se necessario. I tassi modificati non saranno contrassegnati come tassi ufficiali.",
-      "subtitle": "You can edit and save exchange rates.",
+      "subtitle": "You can Modifica and Salva exchange rates.",
       "info": "Manual update is possible for non-official rates."
     },
     "updateSuccess": "Exchange rates updated.",
     "updateError": "Exchange rates could not be updated.",
-    "cannotEditUsedCurrency": "Used currency cannot be edited."
+    "cannotEditUsedCurrency": "Used currency cannot be edited.",
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
   },
   "summary": {
     "title": "Riepilogo",
@@ -159,7 +161,8 @@
     "generalDiscount": "General Discount",
     "generalDiscountRate": "General Discount Rate",
     "generalDiscountAmount": "General Discount Amount",
-    "generalDiscountHelp": "Applied on total amount."
+    "generalDiscountHelp": "Applied on total amount.",
+    "grandTotalAnalysis": "Genel Toplam Analizi"
   },
   "offerType": {
     "domestic": "Nazionale",

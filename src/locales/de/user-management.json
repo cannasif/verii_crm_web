@@ -1,7 +1,7 @@
 {
   "menu": "Benutzerverwaltung",
   "description": "Benutzer verwalten und bearbeiten",
-  "addButton": "Add New User",
+  "addButton": "Hinzufügen Neu User",
   "table": {
     "id": "AUSWEIS",
     "username": "Benutzername",
@@ -25,7 +25,7 @@
   },
   "form": {
     "editUser": "Benutzer bearbeiten",
-    "addUser": "Add New User",
+    "addUser": "Hinzufügen Neu User",
     "editDescription": "Benutzerinformationen bearbeiten",
     "addDescription": "Neue Benutzerinformationen eingeben",
     "username": "Benutzername",
@@ -114,9 +114,9 @@
       "next": "Next"
     },
     "menu": "User Management",
-    "description": "Manage and edit users",
-    "addButton": "Add New User",
-    "searchPlaceholder": "Search users...",
+    "description": "Manage and Bearbeiten Benutzer",
+    "addButton": "Hinzufügen Neu User",
+    "searchPlaceholder": "Search Benutzer...",
     "advancedFilter": {
       "columnUsername": "Username",
       "columnEmail": "Email",
@@ -124,11 +124,11 @@
       "columnRole": "Role"
     },
     "stats": {
-      "totalUsers": "Total Users",
-      "activeUsers": "Active Users",
-      "newThisMonth": "New This Month",
-      "confirmedUsers": "Confirmed Users",
-      "loading": "Loading..."
+      "totalUsers": "Total Benutzer",
+      "activeUsers": "Active Benutzer",
+      "newThisMonth": "Neu This Month",
+      "confirmedUsers": "Confirmed Benutzer",
+      "loading": "Laden..."
     },
     "messages": {
       "error": "Ein Fehler ist aufgetreten"

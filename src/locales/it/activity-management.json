@@ -135,7 +135,8 @@
     "createdDate": "Data Creazione",
     "updatedDate": "Data Aggiornamento",
     "showing": "Visualizzazione {{from}}-{{to}} di {{total}}",
-    "page": "Pagina {{current}} di {{total}}"
+    "page": "Pagina {{current}} di {{total}}",
+    "title": "Aktivite Listesi"
   },
   "advancedFilter": {
     "title": "Filtro avanzato",
@@ -178,5 +179,51 @@
     "visibleColumns": "Visible Columns",
     "moveUp": "Up",
     "moveDown": "Down"
-  }
+  },
+  "activityManagement": {
+    "reminderChannelInApp": "Uygulama İçi",
+    "reminderChannelEmail": "E-posta",
+    "error": "Aktivite kaydedilemedi",
+    "paymentType": "Ödeme",
+    "activityMeetingType": "Görüşme",
+    "activityTopicPurpose": "İlgilenilen Konular",
+    "activityShipping": "Teslimat",
+    "reminderPresetDays": "{{count}} gün",
+    "reminderPresetMinutes": "{{count}} dk",
+    "complete": "Tamamla",
+    "table": {
+      "title": "Aktivite Listesi"
+    },
+    "activityTypeRequired": "Aktivite tipi seçimi gereklidir",
+    "assignedUserRequired": "Atanan kullanıcı gereklidir",
+    "endDateRequired": "Bitiş tarihi gereklidir",
+    "listLoadError": "Aktivite listesi yüklenemedi",
+    "detailLoadError": "Aktivite detayı yüklenemedi",
+    "cancel": "Annulla"
+  },
+  "deleteActivity": "Aktiviteyi Sil",
+  "deleteConfirmation": "Bu aktiviteyi silmek istediğinizden emin misiniz?",
+  "id": "ID",
+  "detailsTab": "Detaylar",
+  "imagesTab": "Resimler",
+  "basicInfo": "Temel Bilgiler",
+  "relations": "İlişkili Bilgiler",
+  "details": "Detay",
+  "reminders": "Hatırlatmalar",
+  "noReminder": "Hatırlatma eklenmedi",
+  "allDay": "Tüm Gün",
+  "endDate": "Bitiş Tarihi",
+  "error": "Aktivite kaydedilemedi",
+  "paymentType": "Ödeme",
+  "activityMeetingType": "Görüşme",
+  "activityTopicPurpose": "İlgilenilen Konular",
+  "activityShipping": "Teslimat",
+  "validationError": "Lütfen zorunlu alanları doldurun",
+  "reminderChannelInApp": "Uygulama İçi",
+  "reminderChannelIn-App": "Uygulama İçi",
+  "reminderChannelEmail": "E-posta",
+  "reminderPresetDays": "{{count}} gün",
+  "reminderPresetMinutes": "{{count}} dk",
+  "select": "Seç",
+  "complete": "Tamamla"
 }

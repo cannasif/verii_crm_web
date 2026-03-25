@@ -130,9 +130,9 @@
       "next": "Next"
     },
     "menu": "User Management",
-    "description": "Manage and edit users",
-    "addButton": "Add New User",
-    "searchPlaceholder": "Search users...",
+    "description": "Manage and Editar Usuarios",
+    "addButton": "Agregar Nuevo User",
+    "searchPlaceholder": "Search Usuarios...",
     "advancedFilter": {
       "columnUsername": "Username",
       "columnEmail": "Email",
@@ -140,11 +140,11 @@
       "columnRole": "Role"
     },
     "stats": {
-      "totalUsers": "Total Users",
-      "activeUsers": "Active Users",
-      "newThisMonth": "New This Month",
-      "confirmedUsers": "Confirmed Users",
-      "loading": "Loading..."
+      "totalUsers": "Total Usuarios",
+      "activeUsers": "Active Usuarios",
+      "newThisMonth": "Nuevo This Month",
+      "confirmedUsers": "Confirmed Usuarios",
+      "loading": "Cargando..."
     },
     "messages": {
       "error": "Ocurrió un error"

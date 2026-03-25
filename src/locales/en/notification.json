@@ -4,5 +4,7 @@
   "noNotifications": "No notifications found",
   "markAllAsRead": "Mark all as read",
   "close": "Close",
-  "unread": "Unread"
+  "unread": "Unread",
+  "notifications": "Bildirimler",
+  "new": "yeni"
 }

@@ -68,12 +68,17 @@
     "firstNameRequired": "الاسم مطلوب",
     "lastNameRequired": "اللقب مطلوب",
     "middleNameMaxLength": "يمكن أن يصل الاسم الأوسط إلى 100 حرف",
-    "titleNone": "لا عنوان"
+    "titleNone": "لا عنوان",
+    "phonePlaceholderExample": "0212...",
+    "mobilePlaceholderExample": "05XX...",
+    "emailPlaceholderExample": "ornek@email.com"
   },
   "delete": {
     "action": "حذف",
     "confirmTitle": "حذف جهة الاتصال",
-    "confirmMessage": "هل أنت متأكد أنك تريد حذف جهة الاتصال {{name}}؟"
+    "confirmMessage": "هل أنت متأكد أنك تريد حذف جهة الاتصال {{name}}؟",
+    "success": "İletişim başarıyla silindi",
+    "error": "İletişim silinemedi"
   },
   "loading": "جاري التحميل...",
   "noData": "لا توجد بيانات",
@@ -101,5 +106,20 @@
     "columnMobile": "Mobile",
     "columnCustomerName": "Customer",
     "columnTitleName": "Title"
-  }
+  },
+  "contactManagement": {
+    "form": {
+      "mobilePlaceholderExample": "05XX...",
+      "phonePlaceholderExample": "0212...",
+      "emailPlaceholderExample": "ornek@email.com"
+    },
+    "error": "حدث خطأ",
+    "delete": {
+      "success": "İletişim başarıyla silindi",
+      "error": "İletişim silinemedi"
+    },
+    "quickActivity": "Hızlı Aktivite"
+  },
+  "quickActivity": "Hızlı Aktivite",
+  "error": "حدث خطأ"
 }

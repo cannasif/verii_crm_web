@@ -60,7 +60,7 @@
   },
   "advancedFilter": {
     "title": "Advanced Filter",
-    "add": "Add Filter",
+    "add": "Hinzufügen Filter",
     "column": "Column",
     "operator": "Operator",
     "value": "Wert",

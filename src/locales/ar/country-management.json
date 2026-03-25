@@ -58,16 +58,16 @@
     "menu": "Ülke Yönetimi",
     "description": "Ülkeleri yönetin ve düzenleyin",
     "addButton": "Yeni Ülke Ekle",
-    "searchPlaceholder": "Ara...",
-    "loading": "Yükleniyor...",
-    "error": "Hata oluştu",
+    "searchPlaceholder": "بحث...",
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ",
     "table": {
       "id": "ID",
       "name": "Ülke Adı",
       "code": "Kod",
       "erpCode": "ERP Kodu",
-      "createdDate": "Oluşturulma Tarihi",
-      "createdBy": "Oluşturan",
+      "createdDate": "إنشاءulma Tarihi",
+      "createdBy": "إنشاءan",
       "noData": "Veri bulunamadı",
       "title": "Ülke Listesi"
     },
@@ -85,7 +85,7 @@
     },
     "form": {
       "addCountry": "Yeni Ülke Ekle",
-      "editCountry": "Ülke Düzenle",
+      "editCountry": "Ülke تعديل",
       "addDescription": "Yeni ülke bilgilerini girin",
       "editDescription": "Ülke bilgilerini düzenleyin",
       "name": "Ülke Adı",
@@ -99,8 +99,8 @@
       "codeMinLength": "Ülke kodu en az 2 karakter olmalıdır",
       "codeMaxLength": "Ülke kodu en fazla 5 karakter olabilir",
       "erpCodeMaxLength": "ERP kodu en fazla 10 karakter olabilir",
-      "cancel": "İptal",
-      "save": "Kaydet",
+      "cancel": "إلغاء",
+      "save": "حفظ",
       "tabs": {
         "header": "Genel Bilgiler"
       }

@@ -35,6 +35,7 @@
   "search": "Ara",
   "refresh": "Yenile",
   "noData": "Veri bulunamadı",
+  "error": "Hata oluştu",
   "confirmDelete": "Sevk Adresini Sil",
   "confirmDeleteMessage": "Bu sevk adresini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
   "createSuccess": "Sevk adresi başarıyla oluşturuldu",

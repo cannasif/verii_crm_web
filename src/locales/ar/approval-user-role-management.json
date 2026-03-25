@@ -17,7 +17,8 @@
       "showing": "عرض {{from}}-{{to}} / {{total}}",
       "page": "صفحة {{current}} / {{total}}",
       "previous": "السابق",
-      "next": "التالي"
+      "next": "التالي",
+      "title": "Onay Kullanıcı Rolleri"
     },
     "delete": {
       "title": "حذف الدور",
@@ -45,7 +46,8 @@
     "advancedFilter": {
       "columnUserFullName": "Kullanıcı",
       "columnApprovalRoleName": "Onay Rolü",
-      "columnCreatedBy": "Oluşturan"
-    }
+      "columnCreatedBy": "إنشاءan"
+    },
+    "error": "حدث خطأ"
   }
 }

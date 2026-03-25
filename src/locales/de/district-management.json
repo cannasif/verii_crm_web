@@ -1,7 +1,7 @@
 {
   "menu": "Bezirksverwaltung",
   "description": "Bezirke verwalten und bearbeiten",
-  "addButton": "Add New District",
+  "addButton": "Hinzufügen Neu District",
   "listTitle": "Bezirksliste",
   "listDescription": "You can manage all registered districts in the system here.",
   "loading": "Laden...",
@@ -25,7 +25,7 @@
   },
   "form": {
     "editDistrict": "Bezirk bearbeiten",
-    "addDistrict": "Add New District",
+    "addDistrict": "Hinzufügen Neu District",
     "editDescription": "Bezirksinformationen bearbeiten",
     "addDescription": "Neue Bezirksinformationen eingeben",
     "name": "Bezirksname",
@@ -56,7 +56,7 @@
     "menu": "İlçe Yönetimi",
     "description": "İlçeleri yönetin ve düzenleyin",
     "addButton": "Yeni İlçe Ekle",
-    "loading": "Yükleniyor...",
+    "loading": "Wird geladen...",
     "noData": "Veri yok",
     "table": {
       "id": "ID",

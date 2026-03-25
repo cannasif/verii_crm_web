@@ -9,6 +9,7 @@
     "loading": "Yükleniyor...",
     "noData": "Veri yok",
     "table": {
+      "title": "Onay Kullanıcı Rolleri",
       "id": "ID",
       "userFullName": "Kullanıcı",
       "approvalRoleName": "Onay Rolü",
@@ -20,6 +21,7 @@
       "previous": "Önceki",
       "next": "Sonraki"
     },
+    "error": "Hata oluştu",
     "delete": {
       "title": "Rolü Sil",
       "confirmMessage": "Bu kullanıcı rolünü silmek istediğinizden emin misiniz?",

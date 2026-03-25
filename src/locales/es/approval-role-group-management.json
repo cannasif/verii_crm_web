@@ -35,20 +35,20 @@
   },
   "advancedFilter": {
     "columnName": "Grup Adı",
-    "columnCreatedBy": "Oluşturan"
+    "columnCreatedBy": "Crearan"
   },
   "approvalRoleGroup": {
     "menu": "Onay Rol Grubu Yönetimi",
     "description": "Onay rol gruplarını yönetin ve düzenleyin",
     "addButton": "Yeni Grup Ekle",
-    "searchPlaceholder": "Ara...",
+    "searchPlaceholder": "Buscar...",
     "noData": "Veri bulunamadı",
     "table": {
       "title": "Grup Listesi",
       "id": "ID",
       "name": "Grup Adı",
-      "createdDate": "Oluşturulma Tarihi",
-      "createdBy": "Oluşturan Kullanıcı",
+      "createdDate": "Crearulma Tarihi",
+      "createdBy": "Crearan Kullanıcı",
       "actions": "İşlemler",
       "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
     },

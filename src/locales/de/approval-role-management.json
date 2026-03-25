@@ -2,7 +2,7 @@
   "approvalRole": {
     "menu": "Genehmigungsrollen-Verwaltung",
     "description": "Verwalten und bearbeiten Sie Genehmigungsrollen",
-    "addButton": "Add New Approval Role",
+    "addButton": "Hinzufügen Neu Approval Role",
     "searchPlaceholder": "Suchen...",
     "refresh": "Aktualisieren",
     "loading": "Laden...",
@@ -30,7 +30,7 @@
     },
     "form": {
       "editTitle": "Genehmigungsrolle bearbeiten",
-      "addTitle": "Add New Approval Role",
+      "addTitle": "Hinzufügen Neu Approval Role",
       "editDescription": "Bearbeiten Sie die Details der Genehmigungsrolle",
       "addDescription": "Geben Sie die Details der neuen Genehmigungsrolle ein",
       "approvalRoleGroupId": "Genehmigungsrollengruppe",
@@ -54,7 +54,7 @@
       "columnMaxAmount": "Maks. Tutar"
     },
     "messages": {
-      "error": "Hata oluştu"
+      "error": "Fehler ist aufgetreten"
     }
   }
 }

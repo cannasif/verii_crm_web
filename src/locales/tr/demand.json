@@ -23,6 +23,7 @@
     "showing": "{{total}} kayıttan {{from}}-{{to}} arası gösteriliyor",
     "title": "Talep Listesi",
     "description": "Tüm talepleri görüntüle ve yönet",
+    "detail": "Detay",
     "createNew": "Yeni Talep Oluştur",
     "searchPlaceholder": "Talep no veya müşteri adı ile ara...",
     "cardTitle": "Talep listesi",
@@ -149,7 +150,8 @@
     },
     "updateSuccess": "Döviz kurları güncellendi.",
     "updateError": "Döviz kurları güncellenemedi.",
-    "cannotEditUsedCurrency": "Kullanılan para birimi düzenlenemez."
+    "cannotEditUsedCurrency": "Kullanılan para birimi düzenlenemez.",
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
   },
   "summary": {
     "title": "Özet",

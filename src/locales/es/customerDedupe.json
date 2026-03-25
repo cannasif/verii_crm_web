@@ -24,5 +24,6 @@
   "retry": "intentar otra vez",
   "TaxNumber": "número de impuesto",
   "TcknNumber": "Número de identificación TR",
-  "CustomerCode": "código de cliente"
+  "CustomerCode": "código de cliente",
+  "tableTitle": "Mükerrer Müşteri Adayları"
 }

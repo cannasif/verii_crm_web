@@ -21,6 +21,7 @@
   "list": {
     "title": "Sipariş Listesi",
     "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
+    "detail": "Detay",
     "createNew": "Yeni Sipariş Oluştur",
     "cardTitle": "Sipariş listesi",
     "refresh": "Yenile",
@@ -142,6 +143,7 @@
     "updateSuccess": "Döviz kurları güncellendi.",
     "updateError": "Döviz kurları güncellenemedi.",
     "cannotEditUsedCurrency": "Kullanılan para birimi için kur değiştirilemez.",
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin.",
     "dialog": {
       "title": "Döviz Kurları",
       "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin. Değiştirilen kurlar resmi kur olarak işaretlenmeyecektir.",

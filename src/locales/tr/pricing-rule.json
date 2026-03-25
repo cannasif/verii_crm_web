@@ -43,6 +43,14 @@
     },
     "lines": {
       "title": "Fiyat Kuralı Satırları",
+      "section": {
+        "stock": "Stok Bilgileri",
+        "pricing": "Fiyat Bilgileri"
+      },
+      "badgeCount": "Satır",
+      "createTitle": "Satır Ekle",
+      "editTitle": "Satırı Düzenle",
+      "dialogDescription": "Fiyat kuralı satır bilgilerini girin",
       "selectStock": "Satırlara Stok Ekle",
       "empty": "Henüz satır eklenmedi",
       "addFirst": "İlk satırı ekleyin",

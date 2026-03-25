@@ -52,7 +52,7 @@
     "menu": "İlçe Yönetimi",
     "description": "İlçeleri yönetin ve düzenleyin",
     "addButton": "Yeni İlçe Ekle",
-    "loading": "Yükleniyor...",
+    "loading": "Caricamento...",
     "noData": "Veri yok",
     "table": {
       "id": "ID",

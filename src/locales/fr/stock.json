@@ -16,7 +16,7 @@
     "next": "Suivant",
     "cardTitle": "Stock list",
     "refresh": "Refresh",
-    "loading": "Loading...",
+    "loading": "Chargement...",
     "loadError": "An error occurred while loading data.",
     "noData": "No records found."
   },
@@ -55,8 +55,15 @@
     "copied": "Copié",
     "copy": "Copier",
     "tipTitle": "Astuce",
-    "tipDescription": "Do not forget to save after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
-    "relationHint": "Define lower or upper related products for this stock."
+    "tipDescription": "Do not forget to Enregistrer after updating stock details. If ERP integration is enabled, data will be updated in the next synchronization.",
+    "relationHint": "Define lower or upper related products for this stock.",
+    "noCode": "Kod Yok",
+    "subtitle": "Stok bilgilerini, görselleri ve bağlı stokları yönetin",
+    "gallery": "Galeri",
+    "summary": "Özet",
+    "addRelation": "Bağlı Stok Ekle",
+    "saving": "Kaydediliyor...",
+    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı"
   },
   "images": {
     "upload": "Glisser-déposer les images ici ou cliquer",
@@ -69,7 +76,13 @@
     "delete": "Supprimer",
     "noImages": "Aucune image téléchargée pour le moment",
     "deleteConfirm": "Supprimer l'image",
-    "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cette image ?"
+    "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cette image ?",
+    "uploading": "Görseller yükleniyor...",
+    "isPrimary": "Ana görsel",
+    "noImagesDesc": "Bu stok için henüz bir görsel kaydı bulunmuyor.",
+    "cancel": "Annuler",
+    "deleting": "Siliniyor...",
+    "confirmDelete": "Evet, Sil"
   },
   "relations": {
     "add": "Ajouter un stock associé",

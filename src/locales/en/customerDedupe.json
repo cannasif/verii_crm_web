@@ -24,5 +24,6 @@
   "retry": "Retry",
   "TaxNumber": "Tax number",
   "TcknNumber": "TCKN number",
-  "CustomerCode": "Customer code"
+  "CustomerCode": "Customer code",
+  "tableTitle": "Mükerrer Müşteri Adayları"
 }

@@ -62,7 +62,7 @@
   },
   "note": {
     "label": "Notiz",
-    "placeholder": "You can add an approval/rejection note (optional)",
+    "placeholder": "You can Hinzufügen an approval/rejection note (optional)",
     "maxLength": "Notiz darf maximal 500 Zeichen lang sein"
   },
   "approve": {

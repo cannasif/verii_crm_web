@@ -32,7 +32,8 @@
     "createdDate": "Fecha de creación",
     "createdBy": "Creado por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Página {{current}} / {{total}}"
+    "page": "Página {{current}} / {{total}}",
+    "title": "Aktivite Tipi Listesi"
   },
   "stats": {
     "totalActivityTypes": "Total de tipos de actividad",
@@ -55,5 +56,13 @@
     "columnName": "Activity Type Name",
     "columnDescription": "Description",
     "columnCreatedBy": "Created By"
-  }
+  },
+  "activityType": {
+    "table": {
+      "title": "Aktivite Tipi Listesi"
+    },
+    "error": "Bir hata oluştu"
+  },
+  "create": "Yeni Aktivite Tipi",
+  "error": "Bir hata oluştu"
 }

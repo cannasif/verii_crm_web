@@ -135,7 +135,7 @@
     },
     "advancedFilter": {
       "title": "Advanced Filter",
-      "add": "Add Filter",
+      "add": "Agregar Filter",
       "column": "Column",
       "operator": "Operator",
       "value": "Valor",
@@ -151,7 +151,28 @@
       "operator<": "<",
       "operator<=": "<=",
       "true": "Yes",
-      "false": "No"
+      "false": "No",
+      "logic": "Koşul",
+      "logicAnd": "VE",
+      "logicOr": "VEYA",
+      "columnId": "ID",
+      "columnErpStockCode": "ERP Kodu",
+      "columnStockName": "Stok Adı",
+      "columnGroupCode": "Grup Kodu",
+      "columnGroupName": "Grup Adı",
+      "columnCode1": "Kod-1",
+      "columnCode1Name": "Kod-1 Adı",
+      "columnCode2": "Kod-2",
+      "columnCode2Name": "Kod-2 Adı",
+      "columnCode3": "Kod-3",
+      "columnCode3Name": "Kod-3 Adı",
+      "columnCode4": "Kod-4",
+      "columnCode4Name": "Kod-4 Adı",
+      "columnCode5": "Kod-5",
+      "columnCode5Name": "Kod-5 Adı",
+      "columnManufacturerCode": "Üretici Kodu",
+      "columnUnit": "Birim",
+      "columnBranchCode": "Şube Kodu"
     },
     "inactive": "Pasif",
     "routeError": {
@@ -182,8 +203,338 @@
       "asc": "Ascendente",
       "desc": "Descendente",
       "valuesAggregation": "Agregación de valores",
-      "filtersOperator": "Operador de filtro"
-    }
+      "filtersOperator": "Operador de filtro",
+      "widgetTitleFallback": "Widget {{index}}",
+      "sharedWith": "Usuarios who will see this in My Reports",
+      "checkRequired": "Run check first",
+      "lifecycle": {
+        "publish": "Publicar",
+        "archive": "Archivar",
+        "draft": "Borrador"
+      },
+      "legend": "Legend",
+      "owner": "Owner",
+      "certified": "Certified",
+      "favorite": "Favorite",
+      "values": "Values",
+      "dropField": "Drop a field",
+      "preview": "Preview",
+      "dismiss": "Dismiss",
+      "from": "From",
+      "to": "To",
+      "sharedWithDescription": "Use this area to choose which Usuarios should see the report under My Reports.",
+      "sharedWithSelect": "Assign by selecting a user",
+      "sharedWithSearch": "Search user or email...",
+      "sharedWithEmpty": "No Usuarios available to assign.",
+      "sharedWithNone": "No Usuarios assigned yet.",
+      "subscriptionFrequencies": {
+        "manual": "Manual",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+      },
+      "subscriptionChannels": {
+        "email": "Email",
+        "inbox": "Inbox",
+        "webhook": "Webhook"
+      },
+      "releaseNote": "Release note",
+      "field": "Field",
+      "widgets": "Widgets",
+      "messages": {
+        "previewFailed": "Preview failed",
+        "loadReportFailed": "Failed to load report",
+        "loadConnectionsFailed": "Bağlantılar yüklenemedi",
+        "loadDatasetsFailed": "Veri setleri yüklenemedi",
+        "checkFailed": "Kontrol başarısız",
+        "connectionTypeDatasetRequired": "Bağlantı, tip ve veri seti zorunludur",
+        "connectionDatasetRequired": "Bağlantı ve veri seti zorunludur",
+        "reportNameRequired": "Rapor adı zorunludur",
+        "saveFailed": "Guardarme başarısız",
+        "updateFailed": "Güncelleme başarısız"
+      },
+      "subscriptionShort": "sub:{{value}}",
+      "sharedShort": "shared:{{count}}",
+      "widgetCountBadge": "{{count}} widgets",
+      "semanticTypes": {
+        "date": "Date",
+        "number": "Measure",
+        "boolean": "Flag",
+        "text": "Dimension"
+      },
+      "widgetSize": {
+        "full": "full",
+        "half": "half",
+        "third": "third"
+      },
+      "widgetHeight": {
+        "lg": "tall",
+        "sm": "compact",
+        "md": "regular"
+      },
+      "header": "Header",
+      "dashboardLayout": "Dashboard layout",
+      "dashboardLayoutDescription": "A quick view of how widgets will be arranged in the report screen. Drag to change order.",
+      "dashboardLayoutEmpty": "No dashboard panels yet. The layout appears here after the first widget is added.",
+      "useAsAxis": "Use as axis",
+      "useAsValue": "Use as value",
+      "useAsLegend": "Use as legend",
+      "useAsFilter": "Use as filter",
+      "fieldsDescription": "Drag dimensions, measures, and date fields to feed the visualization.",
+      "fieldsTip": "You do not have to drag and drop. Use the quick buttons on each field card to Agregar it as axis, value, or filter.",
+      "columns": "columns",
+      "rows": "rows",
+      "loadingPreview": "Loading report preview...",
+      "previewEmptyTitle": "Preview is not ready yet",
+      "previewEmpty": "Preview will appear here after you select and check a dataset.",
+      "previewEmptyHint": "A validated dataset and at least one configured widget are required.",
+      "visualGallery": "Visual gallery",
+      "visualGalleryDescription": "Pick the best visual with a short explanation; the rest of the screen adapts to it.",
+      "configGuide": "Configuration guide",
+      "configGuideDescription": "Start with axis and values, then refine sorting and filters.",
+      "valuesListCompactPlaceholder": "a,b,c",
+      "governance": "Governance",
+      "governanceDescription": "Product metadata such as category, tags, audience, and refresh cadence.",
+      "category": "Category",
+      "tagsPlaceholder": "tag1, tag2, tag3",
+      "audiences": {
+        "private": "Private",
+        "team": "Team",
+        "organization": "Organization"
+      },
+      "refreshCadences": {
+        "manual": "Manual",
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly"
+      },
+      "markCertified": "Mark Certified",
+      "stampReview": "Stamp Review",
+      "sharedWithHelpTitle": "What is this used for?",
+      "sharedWithHelpDescription": "Usuarios selected here will only see the report under My Reports. Editar and delete permissions in /reports are handled separately.",
+      "removeAssignedUser": "Remove assigned user",
+      "subscriptionOn": "Subscription On",
+      "subscriptionOff": "Subscription Off",
+      "markFavorite": "Mark Favorite",
+      "releaseManagement": "Release management",
+      "releaseManagementDescription": "Agregar a release note and roll back to a previous version if needed.",
+      "noReleaseNote": "No release note",
+      "rollback": "Rollback",
+      "calculatedFields": "Calculated fields",
+      "calculatedFieldsDescription": "Crear Nuevo measures from numeric fields and use them in values.",
+      "fieldNamePlaceholder": "field_name",
+      "displayLabel": "Display label",
+      "leftField": "Left field",
+      "rightField": "Right field",
+      "addCalculatedField": "Agregar calculated field",
+      "use": "Use",
+      "loadingChart": "Loading chart...",
+      "primaryKpi": "Primary KPI",
+      "comparison": "Comparison",
+      "emptyDash": "—",
+      "deltaSuffix": "{{value}}% delta",
+      "noComparisonValue": "No comparison value",
+      "runtimeFilters": "Runtime filters",
+      "runtimeFiltersDescription": "Narrow down dataset fields at runtime.",
+      "valuesListPlaceholder": "a, b, c",
+      "axisDescription": "Drop the main category, date, or grouping field here.",
+      "slotAxisTip": "This is usually a grouping field like product, customer, city, or date.",
+      "valuesDescription": "Drop numeric fields to aggregate or calculate.",
+      "dropNumericField": "Drop a numeric field",
+      "slotValuesTip": "This should usually be a numeric field like amount, quantity, stock, or total.",
+      "legendDescription": "Agregar the secondary dimension that splits colors or series.",
+      "slotLegendTip": "Not required. Use it when you want to split the chart into colored series.",
+      "filtersDescription": "Drop fields that should narrow the preview and choose operators.",
+      "slotFiltersTip": "Use fields like region, date, or status to narrow the result.",
+      "parameterSources": {
+        "literal": "Fixed value",
+        "currentUserId": "Signed-in user ID",
+        "currentUserEmail": "Signed-in user email",
+        "today": "Today",
+        "now": "Current time"
+      },
+      "datasetSetupTitle": "Dataset setup",
+      "datasetSetupDescription": "Choose a connection, find the right view or function, and validate it for reporting.",
+      "datasetSetupTip": "Once validated, fields and preview open automatically.",
+      "connection": "Connection",
+      "datasetType": "Dataset type",
+      "datasetTypePlaceholder": "Select view / function",
+      "datasetSearch": "View / Function Search",
+      "datasetSearchPlaceholder": "Search: sales, quotation, customer...",
+      "dataset": "Dataset",
+      "datasetPlaceholder": "Select an IT-defined view/function",
+      "check": "Check",
+      "parametersTitle": "Function parameters",
+      "parametersDescription": "Fill the parameters this function needs at runtime. You can use a fixed value or auto-fill from user or date context.",
+      "viewerCanOverride": "Allow the My Reports user to change this",
+      "viewerParameterLabel": "Label shown to the user",
+      "parameterSource": "Parameter source",
+      "parameterValue": "Parameter value",
+      "parameterValuePlaceholder": "Example: 42, 2026-03-24, TR",
+      "parameterAutoValue": "This value will be generated automatically",
+      "readiness": {
+        "datasetTitle": "Dataset",
+        "datasetDescription": "Pick and validate the dataset first.",
+        "visualTitle": "Visual type",
+        "visualDescription": "Choose a table, chart, trend, or KPI.",
+        "axisTitle": "Axis",
+        "axisDescription": "Agregar the main grouping field.",
+        "valueTitle": "Value",
+        "valueDescription": "Agregar at least one numeric field."
+      },
+      "validation": {
+        "axisRequiresStringOrDate": "Axis requires a text or date field",
+        "valuesRequireNumeric": "Values require a numeric field",
+        "legendRequiresString": "Legend requires a text field",
+        "pieRequiresAxisOrLegend": "Pie requires an axis or legend",
+        "pieRequiresSingleNumericValue": "Pie requires a single numeric value",
+        "pieShouldHaveSingleValue": "Pie should have a single value field",
+        "kpiRequiresNumericValue": "KPI requires at least one numeric value",
+        "matrixRequiresAxis": "Matrix requires an axis field",
+        "matrixRequiresLegend": "Matrix requires a legend field",
+        "matrixRequiresNumericValue": "Matrix requires at least one numeric value"
+      },
+      "editStudioTitle": "Editar report studio",
+      "newStudioTitle": "Nuevo report studio",
+      "studioDescription": "Build managed reports from IT-curated datasets with guided visuals and multi-widget layouts.",
+      "datasetHealth": "Dataset status",
+      "notConnected": "Not connected yet",
+      "datasetChecked": "Dataset validated and ready for preview.",
+      "datasetPending": "The schema will appear here once the connection and dataset are selected.",
+      "widgetSummary": "Widget summary",
+      "widgetSummaryDescription": "Shows how many visual panels this report contains.",
+      "fieldSummary": "Field summary",
+      "fieldSummaryDescription": "Total schema fields plus calculated fields.",
+      "assignedUserName": "Full name",
+      "assignedUserEmail": "Email",
+      "builderHint": "Validate the dataset first, then shape the widget layout.",
+      "quickStartTitle": "Quick start",
+      "quickStartDescription": "If you're not sure how to begin, use one of these starter setups.",
+      "quickStartTable": "Build a table",
+      "quickStartChart": "Build a bar chart",
+      "quickStartTrend": "Build a trend chart",
+      "quickStartKpi": "Build a KPI card",
+      "guidedSetupTitle": "Let us show what's missing",
+      "guidedSetupDescription": "See the missing pieces for this report and fill them with one click.",
+      "guidedMissingAxis": "No axis selected yet",
+      "guidedMissingValue": "No value field selected yet",
+      "guidedOptionalLegend": "Optional",
+      "guidedOptionalFilter": "Optional",
+      "smartComplete": "Auto-complete missing parts",
+      "addRecommendedValue": "Agregar \"{{field}}\" as value",
+      "addRecommendedAxis": "Agregar \"{{field}}\" as axis",
+      "addWidget": "Agregar widget",
+      "activeWidgetPreview": "Active widget preview",
+      "activeWidgetPreviewDescription": "You can see the live result of the selected widget here.",
+      "propertiesDescription": "Manage visual type, calculations, filters, and governance settings for the selected widget.",
+      "needAttentionTitle": "This report still needs one required field",
+      "removeAssignedUserConfirm": "Are you sure you want to remove this user from the report assignment?",
+      "exportCurrentCsv": "Mevcut CSV'yi dışa aktar",
+      "exportAllCsv": "Tüm CSV'leri dışa aktar",
+      "exportDefinition": "Tanımı dışa aktar",
+      "viewerParametersTitle": "Parameters the user can change",
+      "viewerParametersDescription": "Parameters enabled here can be changed by the user when they open the report from My Reports.",
+      "applyViewerParameters": "Apply parameters",
+      "reportSummary": "Report summary",
+      "reportSummaryDescription": "A short summary of the saved report configuration.",
+      "fieldCountBadge": "{{count}} fields",
+      "version": "Version",
+      "audience": "Audience",
+      "subscription": "Subscription",
+      "off": "Off",
+      "publishedAt": "Published at",
+      "lastReview": "Last review",
+      "primaryWidgetPreview": "Primary widget preview",
+      "additionalWidgetPreview": "Additional widget preview",
+      "copyName": "{{name}} Copy",
+      "myReportsTitle": "My Reports",
+      "allReportsTitle": "Report List",
+      "myReportsDescription": "See the reports you own, the ones shared with you, and organization-wide reports here.",
+      "allReportsDescription": "Manage all created reports, update them, and track sharing status.",
+      "noAssignedReports": "No reports have been assigned to you yet.",
+      "reviewed": "Reviewed",
+      "stepDataset": "Veri setini bağla",
+      "stepCompose": "Widget'ları tasarla",
+      "stepPublish": "Yayın ve paylaş",
+      "datasetTypes": {
+        "view": "Görünüm",
+        "function": "Fonksiyon"
+      },
+      "widgetSizes": {
+        "third": "Üçte bir genişlik",
+        "half": "Yarım genişlik",
+        "full": "Tam genişlik"
+      },
+      "widgetHeights": {
+        "sm": "Kısa yükseklik",
+        "md": "Orta yükseklik",
+        "lg": "Büyük yükseklik"
+      },
+      "noRuntimeFilters": "Bu raporda tanımlı çalışma zamanı filtresi yok.",
+      "accessLevels": {
+        "owner": "Sahibi",
+        "shared": "Paylaşılan erişim",
+        "organization": "Organizasyon erişimi"
+      },
+      "sharedWithPlaceholder": "Elle e-posta ekle",
+      "sharedWithTableHint": "Aşağıda bu rapora atanmış aktif kullanıcılar listelenir.",
+      "addUser": "Kullanıcı ekle",
+      "chartTypeDescriptions": {
+        "table": "Detaylı satır verisini doğrudan karşılaştırmak için.",
+        "bar": "Kategoriler arası miktar farkını hızlı görmek için.",
+        "stackedBar": "Toplam içindeki segment katkılarını karşılaştırmak için.",
+        "line": "Zaman içindeki trendi ve hareketi izlemek için.",
+        "pie": "Tek metrikte oran dağılımını göstermek için.",
+        "donut": "Oran dağılımını daha yönetici dostu kart hissiyle sunmak için.",
+        "kpi": "Öne çıkan tek metriği ve değişimini vurgulamak için.",
+        "matrix": "Satır ve kolon kırılımıyla pivot benzeri özet tablo kurmak için."
+      },
+      "chartTypes": {
+        "table": "Tablo",
+        "bar": "Çubuk",
+        "stackedBar": "Yığılmış çubuk",
+        "line": "Çizgi",
+        "pie": "Pasta",
+        "donut": "Halka",
+        "kpi": "KPI",
+        "matrix": "Matris"
+      },
+      "aggregations": {
+        "sum": "Toplam",
+        "count": "Adet",
+        "avg": "Ortalama",
+        "min": "Min",
+        "max": "Maks"
+      },
+      "dateGroupings": {
+        "day": "Gün",
+        "week": "Hafta",
+        "month": "Ay",
+        "year": "Yıl"
+      },
+      "calculatedOperations": {
+        "add": "A + B",
+        "subtract": "A - B",
+        "multiply": "A × B",
+        "divide": "A ÷ B"
+      },
+      "operators": {
+        "between": "Buscarsında",
+        "contains": "İçerir",
+        "startsWith": "Şununla başlar",
+        "endsWith": "Şununla biter",
+        "in": "Listede",
+        "isNull": "Boş",
+        "isNotNull": "Dolu"
+      }
+    },
+    "create": "Crear",
+    "imageUploadFailed": "Failed to upload image",
+    "remove": "Kaldır",
+    "hide": "Gizle",
+    "hiddenColumns": "Gizli Sütunlar",
+    "voiceSearchTitle": "Voice Search",
+    "exportPreparing": "Hazırlanıyor..."
   },
   "auth": {
     "login": {
@@ -352,7 +703,11 @@
     "outlookIntegrationConnection": "Connection",
     "outlookIntegrationSync": "Sync",
     "outlookIntegrationLogs": "Logs",
-    "outlookIntegrationAuthInformation": "Outlook Auth Information"
+    "outlookIntegrationAuthInformation": "Outlook Auth Information",
+    "myReports": "My Reports",
+    "activityMeetingTypeManagement": "Meeting",
+    "activityTopicPurposeManagement": "Interested Topics",
+    "activityShippingManagement": "Shipping"
   },
   "dashboard": {
     "title": "Tablero",
@@ -1400,21 +1755,21 @@
         "description": "Enter package header information"
       },
       "step2": {
-        "title": "2. Add Package",
-        "description": "Add packages for packaging",
-        "addPackage": "Add New Package",
-        "editPackage": "Edit Package",
-        "editPackageDescription": "Edit package information",
-        "addPackageDescription": "Add a new package",
+        "title": "2. Agregar Package",
+        "description": "Agregar packages for packaging",
+        "addPackage": "Agregar Nuevo Package",
+        "editPackage": "Editar Package",
+        "editPackageDescription": "Editar package information",
+        "addPackageDescription": "Agregar a Nuevo package",
         "noPackages": "No packages added yet"
       },
       "step3": {
         "title": "3. Package Lines",
-        "description": "Add lines to packages (Optional)",
-        "addLine": "Add New Line",
-        "addLineDescription": "Add a new line",
-        "noPackages": "You must add packages first",
-        "noPackagesMessage": "You must add packages first",
+        "description": "Agregar lines to packages (Optional)",
+        "addLine": "Agregar Nuevo Line",
+        "addLineDescription": "Agregar a Nuevo line",
+        "noPackages": "You must Agregar packages first",
+        "noPackagesMessage": "You must Agregar packages first",
         "noLines": "No lines added yet"
       },
       "step4": {
@@ -1423,19 +1778,19 @@
         "summaryTotals": "Summary Totals",
         "packages": "Packages",
         "lines": "Lines",
-        "editHeader": "Edit Header",
-        "editPackages": "Edit Packages",
-        "editLines": "Edit Lines",
+        "editHeader": "Editar Header",
+        "editPackages": "Editar Packages",
+        "editLines": "Editar Lines",
         "noPackages": "No packages found",
         "noLines": "No lines found",
-        "complete": "Complete & Save"
+        "complete": "Complete & Guardar"
       },
       "stepProgress": "Step {{current}}/{{total}}",
-      "editHeader": "Edit Header",
+      "editHeader": "Editar Header",
       "previousStep": "Previous Step",
       "nextStep": "Next Step",
-      "saveAndContinue": "Save and Continue",
-      "saveAndExit": "Save and Exit",
+      "saveAndContinue": "Guardar y continuar",
+      "saveAndExit": "Guardar y salir",
       "headerCreated": "Package header created",
       "headerError": "An error occurred while creating package header",
       "packageAdded": "Package added",
@@ -1443,7 +1798,7 @@
       "packageDeleted": "Package deleted",
       "packageError": "An error occurred while adding package",
       "packageDeleteError": "An error occurred while deleting package",
-      "atLeastOnePackage": "You must add at least 1 package",
+      "atLeastOnePackage": "You must Agregar at least 1 package",
       "lineAdded": "Line added",
       "lineDeleted": "Line deleted",
       "lineError": "An error occurred while adding line",
@@ -1451,16 +1806,16 @@
       "saved": "Package saved",
       "completed": "Package completed successfully",
       "completeError": "An error occurred while completing package",
-      "headerRequired": "You must create package header first",
+      "headerRequired": "You must Crear package header first",
       "unknownStep": "Unknown step",
-      "cancelTitle": "Cancel Operation",
-      "cancelMessage": "Are you sure you want to cancel?",
-      "cancelMessageWithData": "All data will be deleted. Are you sure you want to cancel?"
+      "cancelTitle": "Cancelar la operación",
+      "cancelMessage": "Are you sure you want to Cancelar?",
+      "cancelMessageWithData": "All data will be deleted. Are you sure you want to Cancelar?"
     },
     "cargoCompany": {
       "None": "Ninguno",
       "YurtiçiKargo": "Carga Nacional",
-      "ArasKargo": "Carga Aras",
+      "ArasKargo": "Carga Buscars",
       "MNGKargo": "Carga MNG",
       "PTTKargo": "Carga PTT",
       "SüratKargo": "Carga rápida",
@@ -2174,7 +2529,7 @@
   },
   "pdfReportDesigner": {
     "list": "Lista",
-    "create": "Create",
+    "create": "Crear",
     "templatesTitle": "Plantillas de informes",
     "createNew": "Crear nuevo",
     "title": "Título",
@@ -2212,13 +2567,24 @@
     "draftFound": "Se encontró borrador. Puedes restaurarlo o borrarlo.",
     "restoreDraft": "Restaurar",
     "discardDraft": "Pulisci",
-    "snapToGrid": "Alinear a la cuadrícula"
+    "snapToGrid": "Alinear a la cuadrícula",
+    "pageNumber": "Page {{page}}",
+    "layoutPreset": {
+      "label": "Layout type",
+      "customTitle": "Custom canvas layout",
+      "customDescription": "Metin, alan, tablo ve görselleri canvas üzerinde elle yerleştirerek özel bir PDF şablonu oluşturun."
+    },
+    "visiblePages": "Visible pages",
+    "visiblePagesPlaceholder": "E.g. 1,2",
+    "pageCount": "Page count",
+    "pages": "Pages"
   },
   "reportDesigner": {
     "ruleType": {
       "demand": "Solicitud",
       "quotation": "Oferta",
-      "order": "Pedido"
+      "order": "Pedido",
+      "fastQuotation": "Fast Quotation"
     },
     "palette": {
       "title": "Paleta de campos",
@@ -2228,12 +2594,18 @@
       "exchangeRates": "Tipos de cambio",
       "addTable": "Insertar tabla",
       "images": "Imágenes",
-      "logoImage": "Imagen del logotipo"
+      "logoImage": "Imagen del logotipo",
+      "shape": "Card / shape",
+      "container": "Container",
+      "note": "Note block",
+      "summary": "Summary block",
+      "quotationTotals": "Quotation totals"
     },
     "sections": {
       "header": "Encabezado",
       "content": "Contenido",
-      "footer": "Pie de página"
+      "footer": "Pie de página",
+      "page": "Tam sayfa"
     },
     "tableDropHint": "Arrastre desde la paleta para agregar columnas",
     "tableSettingsHint": "Arrastre las columnas de la tabla desde la paleta izquierda y suéltelas en esta área.",
@@ -2258,7 +2630,10 @@
       "selectImageMax2Mb": "Seleccionar imagen (máx. 2 MB)",
       "max2MbNote": "(máx. 2 MB)",
       "preview": "Avance",
-      "colorPlaceholder": "#374151"
+      "colorPlaceholder": "#374151",
+      "imageFit": "Image fit",
+      "imageFitContain": "Contain",
+      "imageFitCover": "Cover"
     },
     "actions": {
       "settings": "Configuración",
@@ -2302,7 +2677,8 @@
       "loadFailed": "No se pudo cargar el PDF. Seleccione la plantilla nuevamente o actualice la página.",
       "emptyDemand": "Plantilla de solicitud no encontrada",
       "emptyQuotation": "Plantilla de cotización no encontrada",
-      "emptyOrder": "Plantilla de pedido no encontrada"
+      "emptyOrder": "Plantilla de pedido no encontrada",
+      "emptyFastQuotation": "Hızlı teklif şablonu bulunamadı"
     },
     "inspector": {
       "title": "controlador",
@@ -2316,7 +2692,12 @@
       "right": "Bien",
       "background": "Fondo",
       "backgroundPlaceholder": "transparente",
-      "opacity": "Opacidad (0-1)"
+      "opacity": "Opacidad (0-1)",
+      "parentContainer": "Parent container",
+      "noParent": "None",
+      "border": "Border",
+      "borderPlaceholder": "1px solid #d7dde8",
+      "radius": "Corner radius"
     },
     "layers": {
       "title": "capas",
@@ -2330,7 +2711,76 @@
       "tableLabel": "Tabla (columna {{count}})",
       "textLabel": "Texto",
       "fieldLabel": "Área",
-      "imageLabel": "Imagen"
+      "imageLabel": "Imagen",
+      "shapeLabel": "Shape",
+      "containerLabel": "Container",
+      "noteLabel": "Note",
+      "summaryLabel": "Summary",
+      "quotationTotalsLabel": "Quotation totals"
+    },
+    "noteDesigner": {
+      "bodyPlaceholder": "Static note content",
+      "title": "Note title",
+      "body": "Note body",
+      "binding": "Bound note field",
+      "bindingPlaceholder": "For example: Description"
+    },
+    "tableDesigner": {
+      "presetLibrary": "Preset library",
+      "customPreset": "Custom table",
+      "presetName": "Grid preset name",
+      "presetNamePlaceholder": "For example: Default offer lines",
+      "pageBreak": "Page break",
+      "density": "Density",
+      "comfortable": "Comfortable",
+      "dense": "Dense",
+      "columns": "Columns",
+      "addColumn": "Agregar column",
+      "columnLabel": "Column {{index}}",
+      "header": "Header",
+      "binding": "Binding path",
+      "width": "Width"
+    },
+    "summaryDesigner": {
+      "items": "Summary rows",
+      "addItem": "Agregar row",
+      "itemLabel": "Row {{index}}",
+      "label": "Label",
+      "binding": "Binding path"
+    },
+    "quotationTotalsDesigner": {
+      "title": "Quotation totals designer",
+      "titlePlaceholder": "For example: Quotation totals",
+      "layout": "Layout",
+      "layoutSingle": "Single column",
+      "layoutTwoColumn": "Two column",
+      "currencyMode": "Currency display",
+      "currencyNone": "Do not show",
+      "currencyCode": "Append code",
+      "grossLabel": "Gross total label",
+      "discountLabel": "Discount label",
+      "netLabel": "Net total label",
+      "vatLabel": "VAT label",
+      "grandLabel": "Grand total label",
+      "currencyPath": "Currency field",
+      "noteTitle": "Note title",
+      "notePath": "Note binding path",
+      "noteText": "Static note text",
+      "showGross": "Show gross total",
+      "showDiscount": "Show discount",
+      "showVat": "Show VAT row",
+      "emphasizeGrandTotal": "Emphasize grand total",
+      "showNote": "Show note area",
+      "hideEmptyNote": "Hide when note is empty"
+    },
+    "starter": {
+      "manualQuotationTitle": "Editarnebilir teklif + görsel başlangıcı",
+      "manualQuotationDescription": "4 sayfalı bir custom canvas kurar: teklif sayfası, hakkımızda görsel sayfası, timeline görsel sayfası ve son olarak notlar + 3 referans görsel sayfası. Tümü düzenlenebilir kalır.",
+      "loadManualQuotationStarter": "Editarnebilir teklifi yükle",
+      "manualQuotationTemplateTitle": "Editarnebilir Teklif Taslağı",
+      "visualBrochureTitle": "Görsel broşür başlangıcı",
+      "visualBrochureDescription": "Kapak, hakkımızda ve zaman çizelgesi sayfaları için 3 sayfalı görsel bir canvas oluşturur. Referans görselleri tam sayfa resim alanlarına yükleyebilirsiniz.",
+      "loadVisualBrochureStarter": "Görsel broşürü yükle"
     }
   },
   "salesTypeManagement": {
@@ -2440,7 +2890,7 @@
     "edit": "Editar",
     "cancel": "Cancelar",
     "saving": "Guardando...",
-    "saveAndApply": "Save and Apply",
+    "saveAndApply": "Guardar y aplicar",
     "approvalFlow": {
       "stepCompleted": "Completada",
       "stepInProgress": "en curso",
@@ -2479,14 +2929,14 @@
       "title": "Artículos de oferta",
       "itemCount": "Se enumeran {count} elementos",
       "noItems": "Aún no se han añadido productos",
-      "add": "Add Line",
+      "add": "Agregar Line",
       "empty": "Tu carrito está vacío",
       "emptyDescription": "Para crear una oferta",
       "discount1": "Ind.1",
       "discount2": "Ind.2",
       "discount3": "Ind.3",
-      "addTitle": "Add New Line",
-      "editTitle": "Edit Line",
+      "addTitle": "Agregar Nuevo Line",
+      "editTitle": "Editar Line",
       "delete": {
         "confirmTitleMultiple": "Eliminar acciones vinculadas",
         "confirmTitle": "Delete Line",
@@ -2623,7 +3073,10 @@
     "cardView": "Vista de tarjeta",
     "listView": "Vista de lista",
     "stocks": "cepo",
-    "stocksWithImages": "Acciones con imágenes"
+    "stocksWithImages": "Acciones con imágenes",
+    "balance": "Balance",
+    "code1": "Code-1",
+    "code2": "Code-2"
   },
   "relatedStocksSelectionDialog": {
     "title": "Seleccione stocks relacionados",
@@ -2701,6 +3154,18 @@
       "visibleColumns": "Columnas visibles",
       "moveUp": "Arriba",
       "moveDown": "Abajo"
+    },
+    "activityTypeRequired": "Aktivite tipi seçimi gereklidir",
+    "assignedUserRequired": "Atanan kullanıcı gereklidir",
+    "endDateRequired": "Bitiş tarihi gereklidir",
+    "listLoadError": "Aktivite listesi yüklenemedi",
+    "detailLoadError": "Aktivite detayı yüklenemedi",
+    "cancel": "Cancelar",
+    "complete": "Tamamla",
+    "reminderChannelIn-App": "Uygulama İçi",
+    "reminderChannelEmail": "E-posta",
+    "table": {
+      "title": "Aktivite Listesi"
     }
   },
   "status": {
@@ -2739,7 +3204,8 @@
       "createdDate": "Creado",
       "createdBy": "Creado Por",
       "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-      "page": "Página {{current}} / {{total}}"
+      "page": "Página {{current}} / {{total}}",
+      "title": "Aktivite Tipi Listesi"
     },
     "noData": "Sin datos",
     "actions": "Acciones",
@@ -2757,7 +3223,9 @@
       "deleteError": "No se pudo eliminar el tipo de actividad",
       "updateSuccess": "Tipo de actividad actualizado correctamente",
       "updateError": "No se pudo actualizar el tipo de actividad"
-    }
+    },
+    "error": "Bir hata oluştu",
+    "quickActivity": "Hızlı Aktivite"
   },
   "approval": {
     "approve": {
@@ -2985,7 +3453,15 @@
       "notesPlaceholder": "Añadir nota...",
       "cancel": "Cancelar",
       "saving": "Guardando...",
-      "save": "Guardar"
+      "save": "Guardar",
+      "taxOfficePlaceholderExample": "Vergi dairesi...",
+      "tcknPlaceholderExample": "TCKN...",
+      "emailPlaceholderExample": "ornek@sirket.com",
+      "websitePlaceholderExample": "www.sirket.com",
+      "phonePlaceholderExample": "0555...",
+      "phone2PlaceholderExample": "Alternatif telefon...",
+      "groupCodePlaceholder": "Grup kodu...",
+      "salesRepCodePlaceholder": "Satış temsilci kodu..."
     },
     "menu": "Gestión de Clientes",
     "description": "Gestiona y organiza a tus clientes",
@@ -3149,7 +3625,7 @@
     },
     "lines": {
       "required": "At least 1 line must be added",
-      "editLine": "Edit Line",
+      "editLine": "Editar Line",
       "approvalRequired": "Aprobación requerida",
       "selectStockFirst": "Stock not selected",
       "stock": "Stock",
@@ -3173,10 +3649,10 @@
       "title": "Artículos de oferta",
       "itemCount": "Se enumeran {count} elementos",
       "noItems": "Aún no se han añadido productos",
-      "add": "Add Line",
+      "add": "Agregar Line",
       "empty": "Tu carrito está vacío",
       "emptyDescription": "Para crear una oferta",
-      "addLine": "Add New Line",
+      "addLine": "Agregar Nuevo Line",
       "delete": {
         "confirmTitleMultiple": "Eliminar acciones vinculadas",
         "confirmTitle": "Delete Line",
@@ -3305,7 +3781,7 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "edit": "Editar",
-    "saveAndApply": "Save and Apply",
+    "saveAndApply": "Guardar y aplicar",
     "waitingApprovals": {
       "title": "Ofertas pendientes de aprobación",
       "list": "Lista de ofertas pendientes de aprobación",
@@ -3387,7 +3863,7 @@
     "form": {
       "lines": {
         "required": "At least 1 line must be added",
-        "requiredMessage": "Please add at least one line",
+        "requiredMessage": "Please Agregar at least one line",
         "minQuantityInvalid": "Invalid Min Quantity",
         "minQuantityInvalidMessage": "Cantidad mínima 0\\",
         "currencyCodeRequired": "Currency Type Required",
@@ -3398,10 +3874,10 @@
       "createSuccess": "Pricing Rule Created",
       "createSuccessMessage": "Pricing rule created successfully",
       "error": "An error occurred",
-      "edit": "Edit Pricing Rule",
-      "create": "New Pricing Rule",
-      "editDescription": "Edit pricing rule information",
-      "createDescription": "Enter new pricing rule information",
+      "edit": "Editar Pricing Rule",
+      "create": "Nuevo Pricing Rule",
+      "editDescription": "Editar pricing rule information",
+      "createDescription": "Enter Nuevo pricing rule information",
       "tabs": {
         "header": "General Information",
         "lines": "Lines",
@@ -3455,7 +3931,7 @@
       "empty": "No lines added yet",
       "addFirst": "Agregar primera fila",
       "stokCodeRequired": "El código de stock es obligatorio",
-      "addConfirmTitle": "Add Line",
+      "addConfirmTitle": "Agregar Line",
       "addConfirmMessage": "El código de stock {{code}} se agregará a la regla de precio. ¿Lo apruebas?",
       "deleteConfirmTitle": "Quitar fila",
       "deleteConfirmMessage": "La línea con código de stock {{code}} se eliminará de la regla de precios. ¿Lo apruebas?"
@@ -3567,7 +4043,7 @@
     "edit": "Editar",
     "cancel": "Cancelar",
     "saving": "Guardando...",
-    "saveAndApply": "Save and Apply",
+    "saveAndApply": "Guardar y aplicar",
     "approvalFlow": {
       "stepCompleted": "Completada",
       "stepInProgress": "en curso",
@@ -3591,7 +4067,7 @@
     },
     "lines": {
       "required": "At least 1 line must be added",
-      "editLine": "Edit Line",
+      "editLine": "Editar Line",
       "approvalRequired": "Aprobación requerida",
       "selectStockFirst": "Stock not selected",
       "stock": "Stock",
@@ -3615,10 +4091,10 @@
       "title": "Ordenar artículos",
       "itemCount": "Se enumeran {count} elementos",
       "noItems": "Aún no se han añadido productos",
-      "add": "Add Line",
+      "add": "Agregar Line",
       "empty": "Tu carrito está vacío",
       "emptyDescription": "Para crear un pedido",
-      "addLine": "Add New Line",
+      "addLine": "Agregar Nuevo Line",
       "delete": {
         "confirmTitleMultiple": "Eliminar acciones vinculadas",
         "confirmTitle": "Delete Line",
@@ -4203,5 +4679,6 @@
     "deleteError": "No se pudo eliminar el límite de descuento",
     "updateSuccess": "Límite de descuento actualizado",
     "updateError": "No se pudo actualizar el límite de descuento"
-  }
+  },
+  "exportPreparing": "Hazırlanıyor..."
 }

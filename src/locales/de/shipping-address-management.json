@@ -87,5 +87,9 @@
     "columnName": "Adres Adı",
     "columnPostalCode": "Posta Kodu",
     "columnPhone": "Telefon"
-  }
+  },
+  "shippingAddressManagement": {
+    "error": "Fehler ist aufgetreten"
+  },
+  "error": "Fehler ist aufgetreten"
 }
