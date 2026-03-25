@@ -561,7 +561,8 @@
       "slogan": "İşinizi tahminlerle değil, <1>VERII CRM</1> ile yönetin.",
       "capsLockOn": "Büyük harf kilidi açık",
       "animationOff": "Animasyonu Kapat",
-      "animationOn": "Animasyonu Aç"
+      "animationOn": "Animasyonu Aç",
+      "comingSoon": "Yakında"
     },
     "logout": "Çıkış",
     "changePassword": {
@@ -572,6 +573,9 @@
       "successRedirect": "Şifreniz başarıyla sıfırlandı. Giriş sayfasına yönlendiriliyorsunuz...",
       "failed": "Şifre sıfırlama işlemi başarısız oldu",
       "error": "Şifre sıfırlama işlemi sırasında bir hata oluştu"
+    },
+    "validation": {
+      "requiredFieldsNotFilled": "Zorunlu alanlar doldurulmadı."
     }
   },
   "navbar": {
@@ -769,7 +773,8 @@
       "demand": "Talep",
       "quotation": "Teklif",
       "order": "Sipariş",
-      "fastQuotation": "Hızlı Teklif"
+      "fastQuotation": "Hızlı Teklif",
+      "activity": "Aktivite"
     },
     "palette": {
       "title": "Alan paleti",
@@ -863,7 +868,8 @@
       "emptyDemand": "Talep şablonu bulunamadı",
       "emptyQuotation": "Teklif şablonu bulunamadı",
       "emptyOrder": "Sipariş şablonu bulunamadı",
-      "emptyFastQuotation": "Hızlı teklif şablonu bulunamadı"
+      "emptyFastQuotation": "Hızlı teklif şablonu bulunamadı",
+      "emptyActivity": "Aktivite şablonu bulunamadı"
     },
     "inspector": {
       "title": "Denetleyici",
@@ -2818,7 +2824,10 @@
       "currencyChange": {
         "title": "Kur Değişikliği",
         "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
-      }
+      },
+      "paymentType": "Ödeme Tipi",
+      "deliveryMethod": "Teslim Şekli",
+      "documentDetail": "Belge Detayı"
     },
     "exchangeRates": {
       "dialog": {
@@ -2838,7 +2847,8 @@
       "date": "Kur Tarihi",
       "isOfficial": "Resmi",
       "updateSuccess": "Döviz kurları güncellendi",
-      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu",
+      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
     },
     "loading": "Kurlar yükleniyor...",
     "actions": "İşlemler",
@@ -2903,7 +2913,16 @@
       "deleteSuccess": "Satır silindi",
       "deleteError": "Satır silinirken bir hata oluştu",
       "updateSuccess": "Satırlar güncellendi",
-      "updateError": "Satırlar güncellenirken bir hata oluştu"
+      "updateError": "Satırlar güncellenirken bir hata oluştu",
+      "max200Chars": "Maksimum 200 karakter",
+      "currencyTry": "TL",
+      "approvalNeeded": "Onay Gerekiyor",
+      "discountLimitExceeded": "İndirim oranları yetki limitlerinizi aşıyor.",
+      "subtotal": "Ara Toplam",
+      "totalDiscount": "Toplam İndirim",
+      "vatAmount": "KDV Tutarı",
+      "grandTotal": "Genel Toplam",
+      "approvalRequired": "Onay Gerekli"
     },
     "date": "Tarih",
     "share": {
@@ -2988,7 +3007,8 @@
       "subtotal": "Ara Toplam",
       "generalDiscount": "Genel İskonto",
       "totalVat": "Toplam KDV",
-      "grandTotal": "Genel Toplam"
+      "grandTotal": "Genel Toplam",
+      "grandTotalAnalysis": "Genel Toplam Analizi"
     },
     "noData": "Veri yok",
     "previous": "Önceki",
@@ -3121,7 +3141,11 @@
     },
     "table": {
       "title": "Aktivite Listesi"
-    }
+    },
+    "paymentType": "Ödeme",
+    "activityMeetingType": "Görüşme",
+    "activityTopicPurpose": "İlgilenilen Konular",
+    "activityShipping": "Teslimat"
   },
   "status": {
     "active": "Aktif",
@@ -3319,7 +3343,10 @@
       "phone": "Telefon",
       "email": "E-posta",
       "notes": "Notlar",
-      "notesPlaceholder": "Varsa notlarınızı buraya ekleyin..."
+      "notesPlaceholder": "Varsa notlarınızı buraya ekleyin...",
+      "mobilePlaceholderExample": "05XX...",
+      "phonePlaceholderExample": "0212...",
+      "emailPlaceholderExample": "ornek@email.com"
     },
     "cancel": "İptal",
     "saving": "Kaydediliyor...",
@@ -3416,7 +3443,16 @@
       "groupCodePlaceholder": "Grup kodu...",
       "cancel": "İptal",
       "saving": "Kaydediliyor...",
-      "save": "Kaydet"
+      "save": "Kaydet",
+      "conflictFieldError": "Bu alan mevcut bir müşteri kaydıyla çakışıyor.",
+      "customerCode": "Müşteri Kodu",
+      "conflictTitle": "Çakışan müşteri kayıtları bulundu",
+      "conflictDescription": "Kayıt işlemi durduruldu. Aşağıdaki müşterilerle çakışan tüm alanlar listelendi.",
+      "conflictItem": "{{customerName}} (ID: {{customerId}}) kaydında {{field}} alanı \"{{value}}\" değeriyle çakışıyor. Şube: {{branchCode}}",
+      "namePlaceholder": "Müşteri adını girin",
+      "customerCodePlaceholder": "Müşteri kodunu girin (opsiyonel)",
+      "taxNumberPlaceholder": "Vergi numarasını girin (opsiyonel)",
+      "addressPlaceholder": "Adresi girin (opsiyonel)"
     },
     "menu": "Müşteri Yönetimi",
     "description": "Müşterilerinizi yönetin ve düzenleyin",
@@ -3564,7 +3600,8 @@
       "stepNotStarted": "Başlamadı",
       "loading": "Onay akışı yükleniyor...",
       "noData": "Veri bulunamadı.",
-      "notStarted": "Henüz onay süreci başlatılmamış."
+      "notStarted": "Henüz onay süreci başlatılmamış.",
+      "errorTitle": "Hata Oluştu"
     },
     "create": {
       "title": "Yeni Teklif Oluştur",
@@ -3619,7 +3656,12 @@
       "deleteSuccess": "Satır silindi",
       "deleteError": "Satır silinirken bir hata oluştu",
       "updateSuccess": "Satırlar güncellendi",
-      "updateError": "Satırlar güncellenirken bir hata oluştu"
+      "updateError": "Satırlar güncellenirken bir hata oluştu",
+      "descriptionPlaceholder": "Açıklama giriniz...",
+      "editStockItemDetails": "Stok kalemi detaylarını düzenleyin",
+      "description1": "Açıklama 1",
+      "description2": "Açıklama 2",
+      "description3": "Açıklama 3"
     },
     "sections": {
       "header": "Müşteri ve belge bilgileri",
@@ -3681,7 +3723,8 @@
       "status": "Durum",
       "cannotEditUsedCurrency": "Kullanımda olan kur değiştirilemez",
       "updateSuccess": "Döviz kurları güncellendi",
-      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu",
+      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
     },
     "select": "Seçiniz",
     "add": "Ekle",
@@ -3698,7 +3741,11 @@
       "currencyChange": {
         "title": "Kur Değişikliği",
         "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
-      }
+      },
+      "paymentType": "Ödeme Tipi",
+      "deliveryMethod": "Teslim Şekli",
+      "offerDate": "Talep Tarihi",
+      "documentDetail": "Belge Detayı"
     },
     "confirm": "Onayla",
     "error": "Hata",
@@ -3730,7 +3777,8 @@
       "subtotal": "Ara Toplam",
       "generalDiscount": "Genel İskonto",
       "totalVat": "Toplam KDV",
-      "grandTotal": "Genel Toplam"
+      "grandTotal": "Genel Toplam",
+      "grandTotalAnalysis": "Genel Toplam Analizi"
     },
     "noData": "Veri yok",
     "previous": "Önceki",
@@ -3753,7 +3801,8 @@
     "revision": {
       "success": "Teklif revizyonu başarıyla oluşturuldu",
       "error": "Teklif revizyonu oluşturulurken bir hata oluştu"
-    }
+    },
+    "untitled": "Başlıksız"
   },
   "documentSerialTypeManagement": {
     "form": {
@@ -3889,7 +3938,15 @@
       "addConfirmTitle": "Satır Ekle",
       "addConfirmMessage": "{{code}} stok kodu fiyat kuralına eklenecektir. Onaylıyor musunuz?",
       "deleteConfirmTitle": "Satır Kaldır",
-      "deleteConfirmMessage": "{{code}} stok kodlu satır fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?"
+      "deleteConfirmMessage": "{{code}} stok kodlu satır fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?",
+      "section": {
+        "stock": "Stok Bilgileri",
+        "pricing": "Fiyat Bilgileri"
+      },
+      "badgeCount": "Satır",
+      "createTitle": "Satır Ekle",
+      "editTitle": "Satırı Düzenle",
+      "dialogDescription": "Fiyat kuralı satır bilgilerini girin"
     },
     "loading": "Yükleniyor...",
     "table": {
@@ -3991,7 +4048,8 @@
       "date": "Kur Tarihi",
       "isOfficial": "Resmi",
       "updateSuccess": "Döviz kurları güncellendi",
-      "updateError": "Döviz kurları güncellenirken bir hata oluştu"
+      "updateError": "Döviz kurları güncellenirken bir hata oluştu",
+      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
     },
     "loading": "Kurlar yükleniyor...",
     "actions": "İşlemler",
@@ -4061,7 +4119,8 @@
       "deleteSuccess": "Satır silindi",
       "deleteError": "Satır silinirken bir hata oluştu",
       "updateSuccess": "Satırlar güncellendi",
-      "updateError": "Satırlar güncellenirken bir hata oluştu"
+      "updateError": "Satırlar güncellenirken bir hata oluştu",
+      "max200Chars": "Maksimum 200 karakter"
     },
     "sections": {
       "header": "Müşteri ve belge bilgileri",
@@ -4116,7 +4175,11 @@
       "currencyChange": {
         "title": "Kur Değişikliği",
         "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
-      }
+      },
+      "paymentType": "Ödeme Tipi",
+      "deliveryMethod": "Teslim Şekli",
+      "offerDate": "Sipariş Tarihi",
+      "documentDetail": "Belge Detayı"
     },
     "confirm": "Onayla",
     "error": "Hata",
@@ -4148,7 +4211,8 @@
       "subtotal": "Ara Toplam",
       "generalDiscount": "Genel İskonto",
       "totalVat": "Toplam KDV",
-      "grandTotal": "Genel Toplam"
+      "grandTotal": "Genel Toplam",
+      "orderTotalAnalysis": "Sipariş Toplam Analizi"
     },
     "noData": "Veri yok",
     "previous": "Önceki",
@@ -4469,7 +4533,11 @@
       "relations": "Bağlı Stoklar",
       "summary": "Hızlı Bakış",
       "gallery": "Galeri",
-      "addRelation": "Bağlantı Ekle"
+      "addRelation": "Bağlantı Ekle",
+      "noCode": "Kod Yok",
+      "tipTitle": "İpucu",
+      "tipDescription": "Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.",
+      "relationHint": "Bu stoka ait alt veya üst ürün tanımlayın."
     },
     "images": {
       "noImages": "Henüz görsel yüklenmemiş",
@@ -4581,7 +4649,14 @@
     "updateSuccess": "Kullanıcı detayı başarıyla güncellendi",
     "updateError": "Kullanıcı detayı güncellenirken bir hata oluştu",
     "uploadProfilePictureSuccess": "Profil resmi başarıyla yüklendi",
-    "uploadProfilePictureError": "Profil resmi yüklenirken bir hata oluştu"
+    "uploadProfilePictureError": "Profil resmi yüklenirken bir hata oluştu",
+    "heightPlaceholderExample": "Örn: 175",
+    "weightPlaceholderExample": "Örn: 70",
+    "title": "Kullanıcı Detayları",
+    "profileEditTitle": "Profil Düzenle",
+    "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
+    "weightPlaceholderExampleDecimal": "Örn: 70.5",
+    "newPasswordPlaceholderShort": "Yeni şifreniz"
   },
   "profile": {
     "title": "Profil Bilgileri"
@@ -4634,5 +4709,29 @@
     "deleteError": "İskonto limiti silinirken bir hata oluştu",
     "updateSuccess": "İskonto limiti başarıyla güncellendi",
     "updateError": "İskonto limiti güncellenirken bir hata oluştu"
+  },
+  "exportPdf": "PDF İndir",
+  "table": {
+    "id": "ID",
+    "ruleType": "Kural Tipi",
+    "customerType": "Müşteri Tipi",
+    "salesRep": "Satış Temsilcisi",
+    "serialPrefix": "Seri Öneki",
+    "serialLength": "Seri Uzunluğu",
+    "createdDate": "Oluşturulma Tarihi",
+    "branchCode": "Şube Kodu",
+    "businessUnitCode": "İş Birimi Kodu",
+    "customerCode": "Müşteri Kodu",
+    "customerName": "Müşteri Adı",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "city": "Şehir",
+    "district": "İlçe",
+    "address": "Adres",
+    "countryCode": "Ülke Kodu",
+    "website": "Web Sitesi",
+    "taxNumber": "Vergi Numarası",
+    "taxOffice": "Vergi Dairesi",
+    "tcknNumber": "TCKN Numarası"
   }
 }

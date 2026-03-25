@@ -3,7 +3,17 @@
   "description": "Müşteri iletişimlerini yönetin ve düzenleyin",
   "addButton": "Yeni İletişim Ekle",
   "quickActivity": "Hızlı Aktivite",
-  "advancedFilter":{"columnFullName":"Ad Soyad","columnFirstName":"Ad","columnLastName":"Soyad","columnEmail":"E-posta","columnPhone":"Telefon","columnMobile":"Mobil","columnCustomerName":"Müşteri","columnTitleName":"Ünvan"},"stats": {
+  "advancedFilter": {
+    "columnFullName": "Ad Soyad",
+    "columnFirstName": "Ad",
+    "columnLastName": "Soyad",
+    "columnEmail": "E-posta",
+    "columnPhone": "Telefon",
+    "columnMobile": "Mobil",
+    "columnCustomerName": "Müşteri",
+    "columnTitleName": "Ünvan"
+  },
+  "stats": {
     "totalContacts": "Toplam İletişim",
     "activeContacts": "Aktif İletişim",
     "newThisMonth": "Bu Ay Yeni"
@@ -22,6 +32,7 @@
     "createdBy": "Oluşturan",
     "updatedDate": "Güncellenme Tarihi",
     "updatedBy": "Güncelleyen",
+    "status": "Durum",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "page": "Sayfa {{current}} / {{total}}"
   },

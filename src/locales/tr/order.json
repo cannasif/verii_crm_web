@@ -164,7 +164,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Onay durumu",
+    "status": {
+      "notRequired": "Gerekli Değil",
+      "waiting": "Bekliyor",
+      "approved": "Onaylandı",
+      "rejected": "Reddedildi",
+      "closed": "Kapandı"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",

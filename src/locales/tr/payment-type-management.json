@@ -59,5 +59,9 @@
     "description": {
       "maxLength": "Açıklama en fazla 500 karakter olabilir"
     }
+  },
+  "status": {
+    "inactive": "Pasif",
+    "active": "Aktif"
   }
 }

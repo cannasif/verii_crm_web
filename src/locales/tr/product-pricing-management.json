@@ -97,9 +97,9 @@
   "checkingDuplicate": "Kontrol ediliyor...",
   "noDuplicate": "Bu kombinasyon kullanılabilir",
   "selectStokCode": "Stok seçin",
-    "selectStok": "Stok Seç",
-    "erpGroupCodePlaceholder": "Stok seçildiğinde otomatik doldurulur",
-    "profitAmount": "Kar Tutarı",
+  "selectStok": "Stok Seç",
+  "erpGroupCodePlaceholder": "Stok seçildiğinde otomatik doldurulur",
+  "profitAmount": "Kar Tutarı",
   "profitPercentage": "Kar Yüzdesi",
   "searchProductCode": "Ürün Kodu Ara",
   "searchGroupCode": "Grup Kodu Ara",
@@ -130,5 +130,11 @@
   "previous": "Önceki",
   "next": "Sonraki",
   "deleteConfirmTitle": "Silme Onayı",
-  "deleteConfirmMessage": "Bu kaydı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+  "deleteConfirmMessage": "Bu kaydı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+  "common": {
+    "delete": "Sil"
+  },
+  "productPricingGroupByManagement": {
+    "selectCurrency": "Lütfen para birimi seçin"
+  }
 }

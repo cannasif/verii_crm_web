@@ -13,7 +13,11 @@
   "cancel": "İptal",
   "save": "Kaydet",
   "saving": "Kaydediliyor...",
-  "delete": "Sil",
+  "delete": {
+    "confirmTitle": "Ünvanı Sil",
+    "confirmMessage": "{{titleName}} ünvanını silmek istediğinizden emin misiniz?",
+    "button": "Sil"
+  },
   "deleting": "Siliniyor...",
   "actions": "İşlemler",
   "edit": "Düzenle",
@@ -44,9 +48,16 @@
     "save": "Kaydet",
     "saving": "Kaydediliyor..."
   },
-  "delete": {
-    "confirmTitle": "Ünvanı Sil",
-    "confirmMessage": "{{titleName}} ünvanını silmek istediğinizden emin misiniz?",
-    "button": "Sil"
+  "menu": "Ünvan Yönetimi",
+  "stats": {
+    "totalTitles": "Toplam Ünvan",
+    "activeTitles": "Aktif Ünvan",
+    "newThisMonth": "Bu Ay Yeni"
+  },
+  "description": "Ünvanları yönetin ve düzenleyin",
+  "addButton": "Yeni Ünvan Ekle",
+  "messages": {
+    "deleteSuccess": "Ünvan başarıyla silindi",
+    "deleteError": "Ünvan silinemedi"
   }
 }

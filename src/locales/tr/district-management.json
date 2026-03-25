@@ -75,5 +75,12 @@
     "totalDistricts": "TOPLAM İLÇE",
     "activeDistricts": "AKTİF İLÇE",
     "newThisMonth": "BU AY YENİ"
+  },
+  "countryManagement": {
+    "error": "Hata oluştu"
+  },
+  "status": {
+    "inactive": "Pasif",
+    "active": "Aktif"
   }
 }

@@ -32,18 +32,18 @@
       "success": "Müşteri başarıyla silindi",
       "error": "Müşteri silinemedi"
     },
-  "messages": {
-    "createSuccess": "Müşteri başarıyla oluşturuldu",
-    "createError": "Müşteri oluşturulamadı",
-    "updateSuccess": "Müşteri başarıyla güncellendi",
-    "updateError": "Müşteri güncellenemedi",
-    "deleteSuccess": "Müşteri başarıyla silindi",
-    "deleteError": "Müşteri silinemedi",
-    "syncQueued": "Müşteri senkronizasyonu kuyruğa alındı. İş: {{jobId}}",
-    "syncError": "Müşteri senkronizasyonu tetiklenemedi"
-  },
-  "manualSync": "Manuel Senkronizasyon",
-  "syncing": "Senkronizasyon çalışıyor",
+    "messages": {
+      "createSuccess": "Müşteri başarıyla oluşturuldu",
+      "createError": "Müşteri oluşturulamadı",
+      "updateSuccess": "Müşteri başarıyla güncellendi",
+      "updateError": "Müşteri güncellenemedi",
+      "deleteSuccess": "Müşteri başarıyla silindi",
+      "deleteError": "Müşteri silinemedi",
+      "syncQueued": "Müşteri senkronizasyonu kuyruğa alındı. İş: {{jobId}}",
+      "syncError": "Müşteri senkronizasyonu tetiklenemedi"
+    },
+    "manualSync": "Manuel Senkronizasyon",
+    "syncing": "Senkronizasyon çalışıyor",
     "stats": {
       "totalCustomers": "Toplam Müşteri",
       "approvedCustomers": "Onaylı Müşteri",
@@ -66,7 +66,9 @@
       "conflictItem": "{{customerName}} (ID: {{customerId}}) kaydında {{field}} alanı \"{{value}}\" değeriyle çakışıyor. Şube: {{branchCode}}",
       "conflictFieldError": "Bu alan mevcut bir müşteri kaydıyla çakışıyor.",
       "salesRepCodePlaceholder": "Satış temsilci kodu..."
-    }
+    },
+    "noData": "Veri yok",
+    "actions": "İşlemler"
   },
   "menu": "Müşteri Yönetimi",
   "description": "Müşterileri yönetin ve düzenleyin",
@@ -95,7 +97,8 @@
     "createdDate": "Oluşturulma Tarihi",
     "createdBy": "Oluşturan",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-    "page": "Sayfa {{current}} / {{total}}"
+    "page": "Sayfa {{current}} / {{total}}",
+    "title": "Aktivite Listesi"
   },
   "form": {
     "addCustomer": "Yeni Müşteri Ekle",
@@ -203,5 +206,8 @@
     "updateError": "Müşteri güncellenemedi",
     "deleteSuccess": "Müşteri başarıyla silindi",
     "deleteError": "Müşteri silinemedi"
+  },
+  "customer360": {
+    "button": "Müşteri 360"
   }
 }

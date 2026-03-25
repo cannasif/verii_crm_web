@@ -235,7 +235,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Talebi Reddet",
     "rejectDescription": "Reddetme gerekçesini girin.",
-    "rejectReasonPlaceholder": "Reddetme nedeni"
+    "rejectReasonPlaceholder": "Reddetme nedeni",
+    "statusFilterLabel": "Onay durumu",
+    "status": {
+      "notRequired": "Gerekli Değil",
+      "waiting": "Bekliyor",
+      "approved": "Onaylandı",
+      "rejected": "Reddedildi",
+      "closed": "Kapandı"
+    }
   },
   "approvalFlow": {
     "noData": "Onay adımı bulunamadı.",
@@ -269,5 +277,10 @@
     "actionDate": "İşlem Tarihi",
     "status": "Durum",
     "waiting": "Bekliyor"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "Her not en fazla 100 karakter olabilir. Lütfen kontrol edin."
+    }
   }
 }

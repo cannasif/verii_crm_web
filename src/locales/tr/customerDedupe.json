@@ -25,5 +25,10 @@
   "retry": "Tekrar dene",
   "TaxNumber": "Vergi numarası",
   "TcknNumber": "TCKN numarası",
-  "CustomerCode": "Müşteri kodu"
+  "CustomerCode": "Müşteri kodu",
+  "common": {
+    "table": {
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor"
+    }
+  }
 }

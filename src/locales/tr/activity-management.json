@@ -130,6 +130,7 @@
     "columnActivityTypeId": "Aktivite Tipi No",
     "columnPriority": "Öncelik",
     "columnDueDate": "Bitiş Tarihi",
+    "columnStatus": "Durum",
     "columnIsCompleted": "Tamamlandı",
     "filterButton": "Gelişmiş Filtre"
   },

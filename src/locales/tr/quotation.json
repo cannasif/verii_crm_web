@@ -188,7 +188,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Teklifi Reddet",
     "rejectDescription": "Teklifi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Onay durumu",
+    "status": {
+      "notRequired": "Gerekli Değil",
+      "waiting": "Bekliyor",
+      "approved": "Onaylandı",
+      "rejected": "Reddedildi",
+      "closed": "Kapandı"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",

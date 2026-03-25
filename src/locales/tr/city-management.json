@@ -23,13 +23,32 @@
   },
   "cityManagement": {
     "table": {
-      "title": "Şehir Listesi"
+      "title": "Şehir Listesi",
+      "id": "ID",
+      "name": "Şehir Adı",
+      "erpCode": "ERP Kodu",
+      "countryName": "Ülke Adı",
+      "createdDate": "Oluşturulma Tarihi",
+      "createdBy": "Oluşturan"
     },
     "error": "Hata oluştu",
     "form": {
       "tabs": {
         "header": "Genel Bilgiler"
       }
+    },
+    "menu": "Şehir Yönetimi",
+    "description": "Şehirleri yönetin ve düzenleyin",
+    "addButton": "Yeni Şehir Ekle",
+    "searchPlaceholder": "Hızlı Ara...",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "delete": {
+      "success": "Şehir başarıyla silindi",
+      "error": "Şehir silinirken bir hata oluştu",
+      "confirmTitle": "Şehri Sil",
+      "confirmMessage": "{{name}} şehrini silmek istediğinizden emin misiniz?"
     }
   },
   "form": {
