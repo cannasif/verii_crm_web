@@ -27,6 +27,10 @@ import {
   Briefcase,
   List,
   Mail,
+  CreditCard,
+  Truck,
+  MessageSquareText,
+  Shapes,
 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
@@ -309,6 +313,10 @@ export function ActivityManagementPage(): ReactElement {
       subject: data.subject,
       description: data.description,
       activityTypeId,
+      paymentTypeId: data.paymentTypeId ?? undefined,
+      activityMeetingTypeId: data.activityMeetingTypeId ?? undefined,
+      activityTopicPurposeId: data.activityTopicPurposeId ?? undefined,
+      activityShippingId: data.activityShippingId ?? undefined,
       potentialCustomerId: data.potentialCustomerId || undefined,
       erpCustomerCode: data.erpCustomerCode || undefined,
       status: data.status ?? ActivityStatus.Scheduled,
@@ -344,6 +352,10 @@ export function ActivityManagementPage(): ReactElement {
     id: 'Id',
     subject: 'Subject',
     activityType: 'ActivityTypeId',
+    paymentTypeName: 'PaymentTypeId',
+    activityMeetingTypeName: 'ActivityMeetingTypeId',
+    activityTopicPurposeName: 'ActivityTopicPurposeId',
+    activityShippingName: 'ActivityShippingId',
     status: 'Status',
     priority: 'Priority',
     potentialCustomer: 'PotentialCustomerId',
@@ -428,6 +440,38 @@ export function ActivityManagementPage(): ReactElement {
         <div className="flex items-center gap-2">
           <List size={14} className="text-pink-500" />
           {display}
+        </div>
+      );
+    }
+    if (key === 'paymentTypeName') {
+      return (
+        <div className="flex items-center gap-2 text-xs">
+          <CreditCard size={14} className="text-emerald-500/70" />
+          <span>{activity.paymentTypeName || '-'}</span>
+        </div>
+      );
+    }
+    if (key === 'activityMeetingTypeName') {
+      return (
+        <div className="flex items-center gap-2 text-xs">
+          <MessageSquareText size={14} className="text-sky-500/70" />
+          <span>{activity.activityMeetingTypeName || '-'}</span>
+        </div>
+      );
+    }
+    if (key === 'activityTopicPurposeName') {
+      return (
+        <div className="flex items-center gap-2 text-xs">
+          <Shapes size={14} className="text-violet-500/70" />
+          <span>{activity.activityTopicPurposeName || '-'}</span>
+        </div>
+      );
+    }
+    if (key === 'activityShippingName') {
+      return (
+        <div className="flex items-center gap-2 text-xs">
+          <Truck size={14} className="text-amber-500/70" />
+          <span>{activity.activityShippingName || '-'}</span>
         </div>
       );
     }
@@ -564,7 +608,7 @@ export function ActivityManagementPage(): ReactElement {
               appliedFilterCount,
               search: {
                 onSearchChange: setSearchTerm,
-                placeholder: t('common.search'),
+                placeholder: t('search', { ns: 'common' }),
                 minLength: 1,
                 resetKey: searchResetKey,
               },
@@ -574,7 +618,7 @@ export function ActivityManagementPage(): ReactElement {
                 },
                 isLoading: activitiesLoading,
                 cooldownSeconds: 60,
-                label: t('common.refresh'),
+                label: t('refresh', { ns: 'common' }),
               },
             } satisfies DataTableActionBarProps}
             columns={columns}
@@ -599,12 +643,12 @@ export function ActivityManagementPage(): ReactElement {
               );
             }}
             isLoading={activitiesLoading || activitiesFetching}
-            loadingText={t('common.loading')}
-            errorText={t('common.error', { defaultValue: 'Hata oluştu' })}
-            emptyText={t('common.noData')}
+            loadingText={t('loading', { ns: 'common' })}
+            errorText={t('error', { ns: 'common', defaultValue: 'Hata oluştu' })}
+            emptyText={t('noData', { ns: 'common' })}
             minTableWidthClassName="min-w-[1100px]"
             showActionsColumn
-            actionsHeaderLabel={t('common.actions')}
+            actionsHeaderLabel={t('actions', { ns: 'common' })}
             renderActionsCell={renderActionsCell}
             rowClassName={(row) => {
               const status = row.status;
@@ -626,8 +670,8 @@ export function ActivityManagementPage(): ReactElement {
             hasNextPage={pageNumber < totalPages}
             onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
             onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
+            previousLabel={t('previous', { ns: 'common' })}
+            nextLabel={t('next', { ns: 'common' })}
             paginationInfoText={t('common.table.showing', {
               from: startRow,
               to: endRow,
@@ -653,7 +697,7 @@ export function ActivityManagementPage(): ReactElement {
           </DialogHeader>
           <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/10 flex justify-end gap-2">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="h-9 px-4 rounded-lg text-sm">
-              {t('common.cancel')}
+              {t('cancel', { ns: 'common' })}
             </Button>
             <Button
               variant="destructive"
@@ -661,7 +705,9 @@ export function ActivityManagementPage(): ReactElement {
               disabled={deleteActivity.isPending}
               className="h-9 px-4 rounded-lg text-sm"
             >
-              {deleteActivity.isPending ? t('common.deleting') : t('common.delete.action')}
+              {deleteActivity.isPending
+                ? t('deleting', { ns: 'common' })
+                : t('delete.action', { ns: 'common' })}
             </Button>
           </DialogFooter>
         </DialogContent>
