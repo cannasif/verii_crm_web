@@ -120,7 +120,7 @@ export function ApprovalFlowTable({
         await deleteApprovalFlow.mutateAsync(selectedApprovalFlow.id);
         setDeleteDialogOpen(false);
         setSelectedApprovalFlow(null);
-        toast.success(t('approvalFlow.messages.deleteSuccess', { defaultValue: t('common.delete') }));
+        toast.success(t('approvalFlow.messages.deleteSuccess', { defaultValue: t('common.delete.action') }));
       } catch (error) {
         console.error(error);
         toast.error(t('approvalFlow.messages.deleteError', { defaultValue: 'Silme hatası' }));

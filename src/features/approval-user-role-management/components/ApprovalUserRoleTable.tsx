@@ -119,7 +119,7 @@ export function ApprovalUserRoleTable({
         await deleteUserRole.mutateAsync(selectedUserRole.id);
         setDeleteDialogOpen(false);
         setSelectedUserRole(null);
-        toast.success(t('approvalUserRole.messages.deleteSuccess', { defaultValue: t('common.delete') }));
+        toast.success(t('approvalUserRole.messages.deleteSuccess', { defaultValue: t('common.delete.action') }));
       } catch (error) {
         console.error(error);
         toast.error(t('approvalUserRole.messages.deleteError', { defaultValue: 'Silme hatası' }));
