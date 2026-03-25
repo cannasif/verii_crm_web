@@ -53,6 +53,7 @@ const RULE_TYPE_OPTIONS: TemplateDesignerRuleTypeValue[] = [
   TemplateDesignerRuleType.Quotation,
   TemplateDesignerRuleType.Order,
   TemplateDesignerRuleType.FastQuotation,
+  TemplateDesignerRuleType.Activity,
 ];
 
 const DEFAULT_ELEMENT_WIDTH = 200;
@@ -68,10 +69,22 @@ function apiRuleTypeToForm(apiRuleType: number): TemplateDesignerRuleTypeValue {
     n === TemplateDesignerRuleType.Demand ||
     n === TemplateDesignerRuleType.Quotation ||
     n === TemplateDesignerRuleType.Order ||
-    n === TemplateDesignerRuleType.FastQuotation
+    n === TemplateDesignerRuleType.FastQuotation ||
+    n === TemplateDesignerRuleType.Activity
   )
     return n;
   return TemplateDesignerRuleType.Demand;
+}
+
+function getRuleTypeLabel(
+  ruleType: TemplateDesignerRuleTypeValue,
+  t: (key: string) => string
+): string {
+  if (ruleType === TemplateDesignerRuleType.Demand) return t('reportDesigner.ruleType.demand');
+  if (ruleType === TemplateDesignerRuleType.Quotation) return t('reportDesigner.ruleType.quotation');
+  if (ruleType === TemplateDesignerRuleType.Order) return t('reportDesigner.ruleType.order');
+  if (ruleType === TemplateDesignerRuleType.FastQuotation) return t('reportDesigner.ruleType.fastQuotation');
+  return t('reportDesigner.ruleType.activity');
 }
 
 function isSidebarDragData(data: unknown): data is SidebarDragData {
@@ -361,13 +374,7 @@ export function ReportDesignerCreatePage(): ReactElement {
                     <SelectContent>
                       {RULE_TYPE_OPTIONS.map((value) => (
                         <SelectItem key={value} value={value.toString()}>
-                          {value === TemplateDesignerRuleType.Demand
-                            ? t('reportDesigner.ruleType.demand')
-                            : value === TemplateDesignerRuleType.Quotation
-                              ? t('reportDesigner.ruleType.quotation')
-                              : value === TemplateDesignerRuleType.Order
-                                ? t('reportDesigner.ruleType.order')
-                                : t('reportDesigner.ruleType.fastQuotation')}
+                          {getRuleTypeLabel(value, t)}
                         </SelectItem>
                       ))}
                     </SelectContent>

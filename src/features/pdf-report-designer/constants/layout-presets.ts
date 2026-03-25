@@ -24,6 +24,7 @@ export const PDF_LAYOUT_PRESETS: PdfLayoutPresetDefinition[] = [
       TemplateDesignerRuleType.Quotation,
       TemplateDesignerRuleType.Order,
       TemplateDesignerRuleType.FastQuotation,
+      TemplateDesignerRuleType.Activity,
     ],
     locksCanvas: false,
   },

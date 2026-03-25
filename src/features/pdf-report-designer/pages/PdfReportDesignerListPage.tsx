@@ -41,6 +41,7 @@ const RULE_TYPE_LABEL_KEYS: Record<DocumentRuleType, string> = {
   [DocumentRuleType.Quotation]: 'reportDesigner.ruleType.quotation',
   [DocumentRuleType.Order]: 'reportDesigner.ruleType.order',
   [DocumentRuleType.FastQuotation]: 'reportDesigner.ruleType.fastQuotation',
+  [DocumentRuleType.Activity]: 'reportDesigner.ruleType.activity',
 };
 
 function downloadBlobAsPdf(blob: Blob, filename: string): void {

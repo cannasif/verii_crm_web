@@ -158,7 +158,9 @@ export function ReportDesignerListPage(): ReactElement {
                           ? t('reportDesigner.ruleType.order')
                           : template.ruleType === DocumentRuleType.FastQuotation
                             ? t('reportDesigner.ruleType.fastQuotation')
-                          : template.ruleType}
+                            : template.ruleType === DocumentRuleType.Activity
+                              ? t('reportDesigner.ruleType.activity')
+                              : template.ruleType}
                   </TableCell>
                   <TableCell>{template.isActive ? t('common.yes') : t('common.no')}</TableCell>
                   <TableCell>

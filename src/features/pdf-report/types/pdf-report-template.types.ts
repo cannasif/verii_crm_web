@@ -3,6 +3,7 @@ export const DocumentRuleType = {
   Quotation: 1,
   Order: 2,
   FastQuotation: 3,
+  Activity: 4,
 } as const;
 
 export type DocumentRuleType = (typeof DocumentRuleType)[keyof typeof DocumentRuleType];
@@ -12,6 +13,7 @@ export const TemplateDesignerRuleType = {
   Quotation: 2,
   Order: 3,
   FastQuotation: 4,
+  Activity: 5,
 } as const;
 
 export type TemplateDesignerRuleType =

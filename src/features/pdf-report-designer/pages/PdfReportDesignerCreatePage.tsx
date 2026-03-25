@@ -84,6 +84,7 @@ const RULE_TYPE_OPTIONS: TemplateDesignerRuleTypeValue[] = [
   TemplateDesignerRuleType.Quotation,
   TemplateDesignerRuleType.Order,
   TemplateDesignerRuleType.FastQuotation,
+  TemplateDesignerRuleType.Activity,
 ];
 
 const DEFAULT_ELEMENT_WIDTH = 200;
@@ -135,7 +136,8 @@ function apiRuleTypeToForm(apiRuleType: number): TemplateDesignerRuleTypeValue {
     n === TemplateDesignerRuleType.Demand ||
     n === TemplateDesignerRuleType.Quotation ||
     n === TemplateDesignerRuleType.Order ||
-    n === TemplateDesignerRuleType.FastQuotation
+    n === TemplateDesignerRuleType.FastQuotation ||
+    n === TemplateDesignerRuleType.Activity
   )
     return n;
   return TemplateDesignerRuleType.Demand;
@@ -146,12 +148,198 @@ function normalizeFormRuleType(value: number | null | undefined): TemplateDesign
     value === TemplateDesignerRuleType.Demand ||
     value === TemplateDesignerRuleType.Quotation ||
     value === TemplateDesignerRuleType.Order ||
-    value === TemplateDesignerRuleType.FastQuotation
+    value === TemplateDesignerRuleType.FastQuotation ||
+    value === TemplateDesignerRuleType.Activity
   ) {
     return value;
   }
 
   return TemplateDesignerRuleType.Demand;
+}
+
+function getRuleTypeLabel(
+  ruleType: TemplateDesignerRuleTypeValue,
+  t: (key: string) => string
+): string {
+  if (ruleType === TemplateDesignerRuleType.Demand) return t('reportDesigner.ruleType.demand');
+  if (ruleType === TemplateDesignerRuleType.Quotation) return t('reportDesigner.ruleType.quotation');
+  if (ruleType === TemplateDesignerRuleType.Order) return t('reportDesigner.ruleType.order');
+  if (ruleType === TemplateDesignerRuleType.FastQuotation) return t('reportDesigner.ruleType.fastQuotation');
+  return t('reportDesigner.ruleType.activity');
+}
+
+function createActivityStarterElements(): PdfCanvasElement[] {
+  return [
+    {
+      id: createClientId(),
+      type: 'text',
+      section: 'page',
+      x: 60,
+      y: 36,
+      width: 690,
+      height: 36,
+      text: 'FUAR GORUSME FORMU',
+      fontSize: 22,
+      fontFamily: 'Helvetica-Bold',
+      color: '#0f172a',
+      style: { textAlign: 'center' },
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 60,
+      y: 92,
+      width: 320,
+      height: 24,
+      text: 'Firma',
+      path: 'CustomerName',
+      fontSize: 12,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 400,
+      y: 92,
+      width: 350,
+      height: 24,
+      text: 'Gorusulen kisi',
+      path: 'ContactName',
+      fontSize: 12,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 60,
+      y: 124,
+      width: 520,
+      height: 42,
+      text: 'Adres',
+      path: 'CustomerAddress',
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#334155',
+      style: { padding: 8, border: '1px solid #cbd5e1', radius: 8 },
+    },
+    {
+      id: createClientId(),
+      type: 'image',
+      section: 'page',
+      x: 600,
+      y: 124,
+      width: 150,
+      height: 90,
+      text: 'Kartvizit',
+      path: 'PrimaryImageUrl',
+      style: { imageFit: 'contain', border: '1px dashed #94a3b8', radius: 8, padding: 6 },
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 60,
+      y: 190,
+      width: 220,
+      height: 22,
+      text: 'Odeme',
+      path: 'PaymentTypeName',
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 300,
+      y: 190,
+      width: 220,
+      height: 22,
+      text: 'Gorusme',
+      path: 'ActivityMeetingTypeName',
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 540,
+      y: 190,
+      width: 210,
+      height: 22,
+      text: 'Teslimat',
+      path: 'ActivityShippingName',
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 60,
+      y: 224,
+      width: 690,
+      height: 30,
+      text: 'Ilgilenilen konular',
+      path: 'ActivityTopicPurposeName',
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+      style: { padding: 8, border: '1px solid #cbd5e1', radius: 8 },
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 60,
+      y: 270,
+      width: 690,
+      height: 130,
+      text: 'Gorusme ozeti',
+      path: 'Description',
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+      style: { padding: 10, border: '1px solid #cbd5e1', radius: 8 },
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 60,
+      y: 420,
+      width: 330,
+      height: 24,
+      text: 'Gorusen kisi',
+      path: 'AssignedUserName',
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 430,
+      y: 420,
+      width: 320,
+      height: 24,
+      text: 'Tarih',
+      path: 'StartDateTime',
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+  ];
 }
 
 function isPdfSidebarDragData(data: unknown): data is PdfSidebarDragData {
@@ -706,6 +894,21 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   };
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
+  const activityStarterAppliedRef = useRef(false);
+
+  useEffect(() => {
+    if (isEdit || copyFrom) return;
+    if (ruleType !== TemplateDesignerRuleType.Activity) {
+      activityStarterAppliedRef.current = false;
+      return;
+    }
+
+    if (activityStarterAppliedRef.current) return;
+    if (getOrderedElements().length > 0) return;
+
+    setElements(createActivityStarterElements());
+    activityStarterAppliedRef.current = true;
+  }, [ruleType, isEdit, copyFrom, getOrderedElements, setElements]);
   const pageCount = form.watch('pageCount') ?? 1;
 
   useEffect(() => {
@@ -844,13 +1047,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                       <SelectContent>
                         {RULE_TYPE_OPTIONS.map((value) => (
                           <SelectItem key={value} value={value.toString()}>
-                            {value === TemplateDesignerRuleType.Demand
-                              ? t('reportDesigner.ruleType.demand')
-                              : value === TemplateDesignerRuleType.Quotation
-                                ? t('reportDesigner.ruleType.quotation')
-                                : value === TemplateDesignerRuleType.Order
-                                  ? t('reportDesigner.ruleType.order')
-                                  : t('reportDesigner.ruleType.fastQuotation')}
+                            {getRuleTypeLabel(value, t)}
                           </SelectItem>
                         ))}
                       </SelectContent>

@@ -56,6 +56,7 @@ const RULE_TYPE_LABELS: Record<DocumentRuleType, string> = {
   [DocumentRuleType.Quotation]: 'Quotation',
   [DocumentRuleType.Order]: 'Order',
   [DocumentRuleType.FastQuotation]: 'Fast Quotation',
+  [DocumentRuleType.Activity]: 'Activity',
 };
 
 function toFormState(preset?: PdfTablePresetDto | null): PresetFormState {
@@ -248,6 +249,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                     <SelectItem value={String(DocumentRuleType.Quotation)}>Quotation</SelectItem>
                     <SelectItem value={String(DocumentRuleType.Order)}>Order</SelectItem>
                     <SelectItem value={String(DocumentRuleType.FastQuotation)}>Fast Quotation</SelectItem>
+                    <SelectItem value={String(DocumentRuleType.Activity)}>Activity</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

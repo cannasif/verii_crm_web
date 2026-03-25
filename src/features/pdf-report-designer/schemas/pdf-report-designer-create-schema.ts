@@ -11,7 +11,8 @@ export const pdfReportDesignerCreateSchema = z.object({
         value === TemplateDesignerRuleType.Demand ||
         value === TemplateDesignerRuleType.Quotation ||
         value === TemplateDesignerRuleType.Order ||
-        value === TemplateDesignerRuleType.FastQuotation,
+        value === TemplateDesignerRuleType.FastQuotation ||
+        value === TemplateDesignerRuleType.Activity,
       { message: i18n.t('reportDesigner.form.requiredDocumentType') }
     ),
   title: z.string().min(1, i18n.t('reportDesigner.form.requiredTitle')),

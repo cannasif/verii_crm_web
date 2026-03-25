@@ -20,6 +20,7 @@ const RULE_TYPE_EMPTY_LABELS: Record<DocumentRuleType, string> = {
   [DocumentRuleType.Quotation]: 'reportDesigner.preview.emptyQuotation',
   [DocumentRuleType.Order]: 'reportDesigner.preview.emptyOrder',
   [DocumentRuleType.FastQuotation]: 'reportDesigner.preview.emptyFastQuotation',
+  [DocumentRuleType.Activity]: 'reportDesigner.preview.emptyActivity',
 };
 
 const EMPTY_BUILT_IN_TEMPLATES: NonNullable<ReportTemplateTabProps['builtInTemplates']> = [];
