@@ -99,7 +99,7 @@ export function UserProfileModal({
             : "bg-slate-100 text-slate-400 hover:bg-red-600 hover:text-white"
         )}>
           <Cancel01Icon size={20} strokeWidth={2.5} />
-          <span className="sr-only">Close</span>
+          <span className="sr-only">{t('common.close')}</span>
         </DialogPrimitive.Close>
 
         <DialogTitle className="sr-only">{t('sidebar.settings')}</DialogTitle>

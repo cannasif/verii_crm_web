@@ -68,6 +68,9 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/shipping-address-management': 'definitions.shipping-address-management.view',
   '/title-management': 'definitions.title-management.view',
   '/payment-type-management': 'definitions.payment-type-management.view',
+  '/definitions/activity-meeting-type-management': 'definitions.activity-meeting-type-management.view',
+  '/definitions/activity-topic-purpose-management': 'definitions.activity-topic-purpose-management.view',
+  '/definitions/activity-shipping-management': 'definitions.activity-shipping-management.view',
   '/document-serial-type-management': 'definitions.document-serial-type-management.view',
   '/definitions/sales-type-management': 'definitions.sales-type-management.view',
 
@@ -137,6 +140,9 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/shipping-address-management(\/|$)/, permission: 'definitions.shipping-address-management.view' },
   { pattern: /^\/title-management(\/|$)/, permission: 'definitions.title-management.view' },
   { pattern: /^\/payment-type-management(\/|$)/, permission: 'definitions.payment-type-management.view' },
+  { pattern: /^\/definitions\/activity-meeting-type-management(\/|$)/, permission: 'definitions.activity-meeting-type-management.view' },
+  { pattern: /^\/definitions\/activity-topic-purpose-management(\/|$)/, permission: 'definitions.activity-topic-purpose-management.view' },
+  { pattern: /^\/definitions\/activity-shipping-management(\/|$)/, permission: 'definitions.activity-shipping-management.view' },
   { pattern: /^\/document-serial-type-management(\/|$)/, permission: 'definitions.document-serial-type-management.view' },
   { pattern: /^\/definitions\/sales-type-management(\/|$)/, permission: 'definitions.sales-type-management.view' },
 
@@ -220,6 +226,9 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key: string; fallback: st
   'definitions.shipping-address-management.view': { key: 'sidebar.shippingAddressManagement', fallback: 'Sevk Adresi Yonetimi' },
   'definitions.title-management.view': { key: 'sidebar.titleManagement', fallback: 'Unvan Yonetimi' },
   'definitions.payment-type-management.view': { key: 'sidebar.paymentTypeManagement', fallback: 'Odeme Tipi Yonetimi' },
+  'definitions.activity-meeting-type-management.view': { key: 'sidebar.activityMeetingTypeManagement', fallback: 'Aktivite Toplanma Tipi' },
+  'definitions.activity-topic-purpose-management.view': { key: 'sidebar.activityTopicPurposeManagement', fallback: 'Aktivite Amaci' },
+  'definitions.activity-shipping-management.view': { key: 'sidebar.activityShippingManagement', fallback: 'Aktivite Teslim Bilgisi' },
   'definitions.document-serial-type-management.view': { key: 'sidebar.documentSerialTypeManagement', fallback: 'Dosya Tip Yonetimi' },
   'definitions.sales-type-management.view': { key: 'sidebar.salesTypeManagement', fallback: 'Satis Tipi Yonetimi' },
 

@@ -160,8 +160,8 @@ export function ConflictInboxTable({
         renderCell={renderCell}
         isLoading={false}
         isError={false}
-        loadingText={t('loading', { defaultValue: 'Loading...' })}
-        errorText={t('loadError', { defaultValue: 'An error occurred' })}
+        loadingText={t('common.loading', { ns: 'common' })}
+        errorText={t('common.error', { ns: 'common' })}
         emptyText={t('emptyDescription')}
         minTableWidthClassName="min-w-[800px]"
         showActionsColumn
@@ -179,8 +179,8 @@ export function ConflictInboxTable({
         hasNextPage={pageNumber < totalPages}
         onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
         onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-        previousLabel={t('common:previous', { ns: 'common', defaultValue: 'Previous' })}
-        nextLabel={t('common:next', { ns: 'common', defaultValue: 'Next' })}
+        previousLabel={t('common.previous', { ns: 'common' })}
+        nextLabel={t('common.next', { ns: 'common' })}
         paginationInfoText={t('common.table.showing', {
           from: allRows.length === 0 ? 0 : (pageNumber - 1) * pageSize + 1,
           to: Math.min(pageNumber * pageSize, allRows.length),

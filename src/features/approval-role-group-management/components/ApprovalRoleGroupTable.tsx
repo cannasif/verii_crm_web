@@ -208,7 +208,7 @@ export function ApprovalRoleGroupTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('cancel')}
+              {t('cancel', { defaultValue: t('common.cancel') })}
             </Button>
             <Button
               type="button"

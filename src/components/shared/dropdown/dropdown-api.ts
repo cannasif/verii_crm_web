@@ -123,6 +123,15 @@ export const dropdownApi = {
   getPaymentTypePage: (request: DropdownPageRequest): Promise<PagedResponse<PaymentTypeDto>> => {
     return getDropdownPage<PaymentTypeDto>('/api/PaymentType', request, 'pageNumber');
   },
+  getActivityMeetingTypePage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
+    return getDropdownPage<ActivityTypeDto>('/api/ActivityMeetingType', request, 'pageNumber');
+  },
+  getActivityTopicPurposePage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
+    return getDropdownPage<ActivityTypeDto>('/api/ActivityTopicPurpose', request, 'pageNumber');
+  },
+  getActivityShippingPage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
+    return getDropdownPage<ActivityTypeDto>('/api/ActivityShipping', request, 'pageNumber');
+  },
   getSalesTypePage: (request: DropdownPageRequest): Promise<PagedResponse<SalesTypeGetDto>> => {
     return getDropdownPage<SalesTypeGetDto>('/api/SalesType', request, 'pageNumber');
   },

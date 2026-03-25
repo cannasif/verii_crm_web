@@ -26,21 +26,10 @@ const supportedLngs = Object.keys(loaders);
 const toCamelCase = (value: string): string =>
   value.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
 
-const humanizeToken = (token: string): string => {
-  const normalized = token
-    .replace(/[_-]+/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .trim();
-
-  if (!normalized) return token;
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-};
-
-const formatMissingKey = (rawKey: string): string => {
-  const withoutNs = rawKey.includes(':') ? rawKey.split(':').slice(1).join(':') : rawKey;
-  const parts = withoutNs.split('.').filter(Boolean);
-  const candidate = parts.length > 0 ? parts[parts.length - 1] : withoutNs;
-  return humanizeToken(candidate);
+const formatMissingKey = (): string => {
+  // Eksik çeviri durumunda kullanıcıya hiçbir İngilizce anahtar/kelime göstermemek için
+  // sabit Türkçe bir placeholder kullanıyoruz.
+  return 'Çeviri eksik';
 };
 
 const withNamespaceCompatibility = (
@@ -104,7 +93,7 @@ const initPromise = (async () => {
     defaultNS,
     resources: {},
     interpolation: { escapeValue: false },
-    parseMissingKeyHandler: (key) => formatMissingKey(key),
+    parseMissingKeyHandler: () => formatMissingKey(),
     returnEmptyString: false,
     detection: {
       order: [],

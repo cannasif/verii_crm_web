@@ -281,6 +281,54 @@ export function usePaymentTypeOptionsInfinite(searchTerm: string, enabled = true
   return { ...result, options };
 }
 
+export function useActivityMeetingTypeOptionsInfinite(searchTerm: string, enabled = true) {
+  const result = useDropdownInfiniteSearch<ActivityTypeDto>({
+    entityKey: 'activityMeetingTypes',
+    searchTerm,
+    enabled,
+    minChars: DROPDOWN_MIN_CHARS,
+    pageSize: DROPDOWN_PAGE_SIZE,
+    sortBy: 'Id',
+    sortDirection: 'asc',
+    buildFilters: COMMON_BUILD_FILTERS('name'),
+    fetchPage: dropdownApi.getActivityMeetingTypePage,
+  });
+  const options = useMemo(() => toActivityTypeOptions(result.items), [result.items]);
+  return { ...result, options };
+}
+
+export function useActivityTopicPurposeOptionsInfinite(searchTerm: string, enabled = true) {
+  const result = useDropdownInfiniteSearch<ActivityTypeDto>({
+    entityKey: 'activityTopicPurposes',
+    searchTerm,
+    enabled,
+    minChars: DROPDOWN_MIN_CHARS,
+    pageSize: DROPDOWN_PAGE_SIZE,
+    sortBy: 'Id',
+    sortDirection: 'asc',
+    buildFilters: COMMON_BUILD_FILTERS('name'),
+    fetchPage: dropdownApi.getActivityTopicPurposePage,
+  });
+  const options = useMemo(() => toActivityTypeOptions(result.items), [result.items]);
+  return { ...result, options };
+}
+
+export function useActivityShippingOptionsInfinite(searchTerm: string, enabled = true) {
+  const result = useDropdownInfiniteSearch<ActivityTypeDto>({
+    entityKey: 'activityShippings',
+    searchTerm,
+    enabled,
+    minChars: DROPDOWN_MIN_CHARS,
+    pageSize: DROPDOWN_PAGE_SIZE,
+    sortBy: 'Id',
+    sortDirection: 'asc',
+    buildFilters: COMMON_BUILD_FILTERS('name'),
+    fetchPage: dropdownApi.getActivityShippingPage,
+  });
+  const options = useMemo(() => toActivityTypeOptions(result.items), [result.items]);
+  return { ...result, options };
+}
+
 export function useSalesTypeOptionsInfinite(
   searchTerm: string,
   enabled = true,

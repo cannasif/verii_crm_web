@@ -95,6 +95,12 @@ export function DataTableActionBar({
   leftSlot,
 }: DataTableActionBarProps): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
+  const MISSING_TRANSLATION = 'Çeviri eksik';
+  const resolveAdvancedFilterTitle = (): string => {
+    const featureTitle = t('advancedFilter.title', { ns: translationNamespace });
+    if (featureTitle && featureTitle !== MISSING_TRANSLATION && featureTitle !== 'advancedFilter.title') return featureTitle;
+    return t('advancedFilter.title', { ns: 'common' });
+  };
   const [showFilters, setShowFilters] = useState(false);
   const [internalSearchValue, setInternalSearchValue] = useState(search?.defaultValue ?? '');
   const [legacyDisplayValue, setLegacyDisplayValue] = useState(searchValue ?? '');
@@ -244,12 +250,12 @@ export function DataTableActionBar({
           <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden">
             <div className="flex items-center justify-between p-3 border-b border-white/5">
               <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                {t('advancedFilter.title', { ns: translationNamespace, defaultValue: t('advancedFilter.title', { ns: 'common' }) })}
+                {resolveAdvancedFilterTitle()}
               </h3>
               <button
                 onClick={() => setShowFilters(false)}
                 className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-                aria-label={t('common.close', { ns: 'common', defaultValue: 'Close' })}
+                aria-label={t('common.close')}
               >
                 <X size={16} />
               </button>

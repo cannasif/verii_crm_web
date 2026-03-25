@@ -1,7 +1,7 @@
 export const ACTIVITY_TYPE_QUERY_KEYS = {
-  LIST: 'activityType.list',
-  DETAIL: 'activityType.detail',
-  STATS: 'activityType.stats',
+  LIST: 'activityTypeManagement.activityType.list',
+  DETAIL: 'activityTypeManagement.activityType.detail',
+  STATS: 'activityTypeManagement.activityType.stats',
 } as const;
 
 export const queryKeys = {

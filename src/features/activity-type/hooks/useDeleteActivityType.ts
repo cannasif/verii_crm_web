@@ -11,6 +11,8 @@ export const useDeleteActivityType = () => {
   return useMutation({
     mutationFn: (id: number) => activityTypeApi.delete(id),
     onSuccess: () => {
+      // Update ActivityForm dropdown immediately.
+      queryClient.invalidateQueries({ queryKey: ['activityTypes'], exact: false });
       queryClient.invalidateQueries({ 
         queryKey: [ACTIVITY_TYPE_QUERY_KEYS.LIST],
         exact: false,

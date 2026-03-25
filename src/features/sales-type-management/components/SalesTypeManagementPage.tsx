@@ -357,7 +357,7 @@ export function SalesTypeManagementPage(): ReactElement {
             }}
             isLoading={isLoading}
             loadingText={t('common.loading', { ns: 'common' })}
-            errorText={t('error', { defaultValue: 'Hata oluştu' })}
+            errorText={t('error', { defaultValue: t('common.error', { ns: 'common' }) })}
             emptyText={t('common.noData', { ns: 'common' })}
             minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
             showActionsColumn

@@ -12,6 +12,8 @@ export const useCreateActivityType = () => {
   return useMutation({
     mutationFn: (data: CreateActivityTypeDto) => activityTypeApi.create(data),
     onSuccess: () => {
+      // Update ActivityForm dropdown immediately by invalidating dropdown queries.
+      queryClient.invalidateQueries({ queryKey: ['activityTypes'], exact: false });
       queryClient.invalidateQueries({ 
         queryKey: [ACTIVITY_TYPE_QUERY_KEYS.LIST],
         exact: false,

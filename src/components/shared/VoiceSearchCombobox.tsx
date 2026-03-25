@@ -264,7 +264,7 @@ export function VoiceSearchCombobox({
             {isLoading ? (
               <div className="flex items-center justify-center py-6 text-sm text-slate-500 dark:text-slate-400">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('common.loading', { defaultValue: 'Loading...' })}
+                {t('common.loading')}
               </div>
             ) : (
               <CommandGroup>
@@ -292,7 +292,7 @@ export function VoiceSearchCombobox({
             {isFetchingNextPage ? (
               <div className="flex items-center justify-center py-2 text-xs text-slate-500 dark:text-slate-400">
                 <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                {t('common.loading', { defaultValue: 'Loading...' })}
+                {t('common.loading')}
               </div>
             ) : null}
           </CommandList>

@@ -80,6 +80,14 @@ export interface ActivityDto {
   description?: string;
   activityTypeId: number;
   activityType: ActivityTypeRef;
+  paymentTypeId?: number | null;
+  paymentTypeName?: string | null;
+  activityMeetingTypeId?: number | null;
+  activityMeetingTypeName?: string | null;
+  activityTopicPurposeId?: number | null;
+  activityTopicPurposeName?: string | null;
+  activityShippingId?: number | null;
+  activityShippingName?: string | null;
   startDateTime: string;
   endDateTime?: string;
   isAllDay: boolean;
@@ -133,6 +141,10 @@ export interface CreateActivityDto {
   status: ActivityStatus | number;
   priority: ActivityPriority | number;
   assignedUserId: number;
+  paymentTypeId?: number | null;
+  activityMeetingTypeId?: number | null;
+  activityTopicPurposeId?: number | null;
+  activityShippingId?: number | null;
   contactId?: number;
   potentialCustomerId?: number;
   erpCustomerCode?: string;
@@ -149,6 +161,10 @@ export interface UpdateActivityDto {
   status: ActivityStatus | number;
   priority: ActivityPriority | number;
   assignedUserId: number;
+  paymentTypeId?: number | null;
+  activityMeetingTypeId?: number | null;
+  activityTopicPurposeId?: number | null;
+  activityShippingId?: number | null;
   contactId?: number;
   potentialCustomerId?: number;
   erpCustomerCode?: string;
@@ -175,6 +191,10 @@ export interface ActivityFormData {
   erpCustomerCode?: string;
   status: number;
   priority?: number;
+  paymentTypeId?: number | null;
+  activityMeetingTypeId?: number | null;
+  activityTopicPurposeId?: number | null;
+  activityShippingId?: number | null;
   contactId?: number;
   assignedUserId: number;
   startDateTime: string;
@@ -190,7 +210,7 @@ export const activityFormSchema = z.object({
     .max(100, 'activityManagement.subjectMaxLength'),
   description: z
     .string()
-    .max(500, 'activityManagement.descriptionMaxLength')
+    .max(2000, 'activityManagement.descriptionMaxLength')
     .optional(),
   activityType: z
     .string()
@@ -209,6 +229,10 @@ export const activityFormSchema = z.object({
     .nullable(),
   status: z.number(),
   priority: z.number().optional().nullable(),
+  paymentTypeId: z.number().optional().nullable(),
+  activityMeetingTypeId: z.number().optional().nullable(),
+  activityTopicPurposeId: z.number().optional().nullable(),
+  activityShippingId: z.number().optional().nullable(),
   contactId: z
     .number()
     .optional()

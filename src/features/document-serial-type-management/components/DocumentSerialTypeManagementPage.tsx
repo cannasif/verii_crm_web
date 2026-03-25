@@ -400,7 +400,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
             }}
             isLoading={isLoading || isFetching}
             loadingText={t('loading')}
-            errorText={t('error', { defaultValue: 'Hata oluştu' })}
+            errorText={t('error', { defaultValue: t('common.error') })}
             emptyText={t('noData')}
             minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
             showActionsColumn
@@ -472,7 +472,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('cancel')}
+              {t('cancel', { defaultValue: t('common.cancel') })}
             </Button>
             <Button
               type="button"
@@ -482,7 +482,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteDocumentSerialType.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('delete')}
+              {t('delete', { defaultValue: t('common.delete') })}
             </Button>
           </DialogFooter>
         </DialogContent>

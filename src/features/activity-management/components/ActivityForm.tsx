@@ -1,4 +1,4 @@
-import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
+import { type ReactElement, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,10 @@ import { Combobox } from '@/components/ui/combobox';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import {
   useActivityTypeOptionsInfinite,
+  useActivityMeetingTypeOptionsInfinite,
+  useActivityShippingOptionsInfinite,
+  useActivityTopicPurposeOptionsInfinite,
+  usePaymentTypeOptionsInfinite,
   useUserOptionsInfinite,
 } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -151,11 +155,6 @@ function toDefaultEndDateTime(initialEnd?: string | null, startValue?: string): 
   return toDateTimeInputValue(end.toISOString());
 }
 
-const REMINDER_CHANNEL_OPTIONS = [
-  { value: String(ReminderChannel.InApp), label: 'In-App' },
-  { value: String(ReminderChannel.Email), label: 'Email' },
-] as const;
-
 export function ActivityForm({
   open,
   onOpenChange,
@@ -170,19 +169,34 @@ export function ActivityForm({
   initialContactId,
   initialCustomerDisplayName,
 }: ActivityFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['activity-management', 'common']);
   const { user } = useAuthStore();
   const { data: customerOptions = [] } = useCustomerOptions();
   const [activityTypeSearchTerm, setActivityTypeSearchTerm] = useState('');
   const [assignedUserSearchTerm, setAssignedUserSearchTerm] = useState('');
+  const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
+  const [meetingTypeSearchTerm, setMeetingTypeSearchTerm] = useState('');
+  const [topicPurposeSearchTerm, setTopicPurposeSearchTerm] = useState('');
+  const [shippingSearchTerm, setShippingSearchTerm] = useState('');
   const activityTypeDropdown = useActivityTypeOptionsInfinite(activityTypeSearchTerm, open);
   const assignedUserDropdown = useUserOptionsInfinite(assignedUserSearchTerm, open);
+  const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, open);
+  const meetingTypeDropdown = useActivityMeetingTypeOptionsInfinite(meetingTypeSearchTerm, open);
+  const topicPurposeDropdown = useActivityTopicPurposeOptionsInfinite(topicPurposeSearchTerm, open);
+  const shippingDropdown = useActivityShippingOptionsInfinite(shippingSearchTerm, open);
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [selectedCustomerDisplayName, setSelectedCustomerDisplayName] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('details');
+  const reminderChannelOptions = [
+    { value: String(ReminderChannel.InApp), label: t('activityManagement.reminderChannelInApp') },
+    { value: String(ReminderChannel.Email), label: t('activityManagement.reminderChannelEmail') },
+  ] as const;
 
-  const defaultStartDateTime = toDefaultStartDateTime(initialDate, initialStartDateTime);
-  const defaultEndDateTime = toDefaultEndDateTime(initialEndDateTime, defaultStartDateTime);
+  const defaultStartDateTime = useMemo(
+    () => toDefaultStartDateTime(initialDate, initialStartDateTime),
+    [initialDate, initialStartDateTime]
+  );
+  const defaultEndDateTime = useMemo(() => toDefaultEndDateTime(initialEndDateTime, defaultStartDateTime), [initialEndDateTime, defaultStartDateTime]);
 
   const form = useForm<ActivityFormSchema>({
     resolver: zodResolver(activityFormSchema),
@@ -195,6 +209,10 @@ export function ActivityForm({
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
       assignedUserId: user?.id ?? 0,
+      paymentTypeId: undefined,
+      activityMeetingTypeId: undefined,
+      activityTopicPurposeId: undefined,
+      activityShippingId: undefined,
       startDateTime: defaultStartDateTime,
       endDateTime: defaultEndDateTime,
       isAllDay: false,
@@ -255,6 +273,10 @@ export function ActivityForm({
         priority: normalizePriority(activity.priority),
         contactId: activity.contactId || undefined,
         assignedUserId: activity.assignedUserId || undefined,
+        paymentTypeId: activity.paymentTypeId || undefined,
+        activityMeetingTypeId: activity.activityMeetingTypeId || undefined,
+        activityTopicPurposeId: activity.activityTopicPurposeId || undefined,
+        activityShippingId: activity.activityShippingId || undefined,
         startDateTime: toDateTimeInputValue(activity.startDateTime) || toDefaultStartDateTime(),
         endDateTime: toDateTimeInputValue(activity.endDateTime) || toDefaultEndDateTime(undefined, toDateTimeInputValue(activity.startDateTime)),
         isAllDay: activity.isAllDay,
@@ -278,6 +300,10 @@ export function ActivityForm({
       priority: ActivityPriority.Medium,
       contactId: initialContactId ?? undefined,
       assignedUserId: user?.id ?? 0,
+      paymentTypeId: undefined,
+      activityMeetingTypeId: undefined,
+      activityTopicPurposeId: undefined,
+      activityShippingId: undefined,
       startDateTime: defaultStartDateTime,
       endDateTime: toDefaultEndDateTime(initialEndDateTime, defaultStartDateTime),
       isAllDay: false,
@@ -325,7 +351,7 @@ export function ActivityForm({
 
   const handleInvalidSubmit = (): void => {
     toast.error(t('activityManagement.error'), {
-      description: 'Zorunlu alanlar doldurulmadı.',
+      description: t('activityManagement.validationError'),
     });
   };
 
@@ -594,13 +620,97 @@ export function ActivityForm({
                     </FormItem>
                   )} />
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField control={form.control} name="paymentTypeId" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>{t('activityManagement.paymentType')}</FormLabel>
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          options={paymentTypeDropdown.options}
+                          value={field.value ? String(field.value) : ''}
+                          onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
+                          onDebouncedSearchChange={setPaymentTypeSearchTerm}
+                          onFetchNextPage={paymentTypeDropdown.fetchNextPage}
+                          hasNextPage={paymentTypeDropdown.hasNextPage}
+                          isLoading={paymentTypeDropdown.isLoading}
+                          isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
+                          placeholder={t('activityManagement.select')}
+                          className={INPUT_STYLE}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500" />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="activityMeetingTypeId" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityMeetingType')}</FormLabel>
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          options={meetingTypeDropdown.options}
+                          value={field.value ? String(field.value) : ''}
+                          onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
+                          onDebouncedSearchChange={setMeetingTypeSearchTerm}
+                          onFetchNextPage={meetingTypeDropdown.fetchNextPage}
+                          hasNextPage={meetingTypeDropdown.hasNextPage}
+                          isLoading={meetingTypeDropdown.isLoading}
+                          isFetchingNextPage={meetingTypeDropdown.isFetchingNextPage}
+                          placeholder={t('activityManagement.select')}
+                          className={INPUT_STYLE}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500" />
+                    </FormItem>
+                  )} />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField control={form.control} name="activityTopicPurposeId" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityTopicPurpose')}</FormLabel>
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          options={topicPurposeDropdown.options}
+                          value={field.value ? String(field.value) : ''}
+                          onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
+                          onDebouncedSearchChange={setTopicPurposeSearchTerm}
+                          onFetchNextPage={topicPurposeDropdown.fetchNextPage}
+                          hasNextPage={topicPurposeDropdown.hasNextPage}
+                          isLoading={topicPurposeDropdown.isLoading}
+                          isFetchingNextPage={topicPurposeDropdown.isFetchingNextPage}
+                          placeholder={t('activityManagement.select')}
+                          className={INPUT_STYLE}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500" />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="activityShippingId" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityShipping')}</FormLabel>
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          options={shippingDropdown.options}
+                          value={field.value ? String(field.value) : ''}
+                          onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
+                          onDebouncedSearchChange={setShippingSearchTerm}
+                          onFetchNextPage={shippingDropdown.fetchNextPage}
+                          hasNextPage={shippingDropdown.hasNextPage}
+                          isLoading={shippingDropdown.isLoading}
+                          isFetchingNextPage={shippingDropdown.isFetchingNextPage}
+                          placeholder={t('activityManagement.select')}
+                          className={INPUT_STYLE}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500" />
+                    </FormItem>
+                  )} />
+                </div>
               </FormSection>
 
               <FormSection title={t('activityManagement.details')}>
                 <FormField control={form.control} name="description" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.description')}</FormLabel>
-                    <FormControl><Textarea {...field} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('activityManagement.enterDescription')} /></FormControl>
+                    <FormControl><Textarea {...field} maxLength={2000} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('activityManagement.enterDescription')} /></FormControl>
                     <FormMessage className="text-xs text-red-500" />
                   </FormItem>
                 )} />
@@ -616,7 +726,9 @@ export function ActivityForm({
                   <div className="flex flex-wrap gap-2">
                     {REMINDER_MINUTE_PRESETS.map((offset) => (
                       <Button key={offset} type="button" variant="ghost" size="sm" className="border border-slate-200 dark:border-white/10" onClick={() => addPresetReminder(offset)}>
-                        {offset >= 1440 ? `${Math.floor(offset / 1440)} gün` : `${offset} dk`}
+                        {offset >= 1440
+                          ? t('activityManagement.reminderPresetDays', { count: Math.floor(offset / 1440) })
+                          : t('activityManagement.reminderPresetMinutes', { count: offset })}
                       </Button>
                     ))}
                   </div>
@@ -658,10 +770,10 @@ export function ActivityForm({
                               <FormItem>
                                 <FormControl>
                                   <Combobox
-                                    options={REMINDER_CHANNEL_OPTIONS.map((option) => ({
-                                      value: option.value,
-                                      label: t(`activityManagement.reminderChannel${option.label}`, option.label),
-                                    }))}
+                                  options={reminderChannelOptions.map((option) => ({
+                                    value: option.value,
+                                    label: option.label,
+                                  }))}
                                     value={String(reminderChannelField.value ?? ReminderChannel.InApp)}
                                     onValueChange={(value) => reminderChannelField.onChange(Number(value))}
                                     placeholder={t('activityManagement.select')}

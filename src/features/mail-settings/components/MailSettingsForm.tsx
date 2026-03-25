@@ -232,7 +232,7 @@ export function MailSettingsForm({
               : t('mailSettings.TestMail.Send')}
           </Button>
           <Button type="submit" disabled={isSubmitting || !isFormValid}>
-            {isSubmitting ? t('common.saving') : t('mailSettings.Save')}
+            {isSubmitting ? t('common.saving') : t('common.save')}
           </Button>
         </div>
       </form>

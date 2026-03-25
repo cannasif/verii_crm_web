@@ -301,7 +301,7 @@ export function PermissionDefinitionsPage(): ReactElement {
             isLoading={isLoading}
             isError={false}
             loadingText={t('common.loading')}
-            errorText={t('common.error', { defaultValue: 'An error occurred' })}
+            errorText={t('common.error')}
             emptyText={t('common.noData')}
             minTableWidthClassName="min-w-[700px]"
             showActionsColumn
