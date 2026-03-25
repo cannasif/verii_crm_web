@@ -1,0 +1,82 @@
+{
+  "menu": "Interested Topics Management",
+  "description": "Manage and edit interested topics",
+  "addButton": "Add New Topic",
+  "loading": "Loading...",
+  "noData": "No data found",
+  "actions": "Actions",
+  "edit": "Edit",
+  "deleteButton": "Delete",
+  "cancel": "Cancel",
+  "save": "Save",
+  "saving": "Saving...",
+  "previous": "Previous",
+  "next": "Next",
+  "advancedFilter": {
+    "columnName": "Topic Name",
+    "columnDescription": "Description",
+    "columnCreatedBy": "Created By"
+  },
+  "activityType": {
+    "form": {
+      "addTitle": "Add New Topic",
+      "editTitle": "Edit Topic",
+      "addDescription": "Enter new topic information",
+      "editDescription": "Edit topic information",
+      "name": "Topic Name",
+      "namePlaceholder": "Enter topic name",
+      "nameRequired": "Topic name is required",
+      "nameMaxLength": "Topic name can be at most 100 characters",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter description (optional)",
+      "descriptionMaxLength": "Description can be at most 500 characters"
+    },
+    "table": {
+      "title": "Interested Topics List",
+      "id": "ID",
+      "name": "Topic Name",
+      "description": "Description",
+      "createdDate": "Created Date",
+      "createdBy": "Created By",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalActivityTypes": "Total Topics",
+      "activeActivityTypes": "Active Topics",
+      "newThisMonth": "New This Month"
+    },
+    "messages": {
+      "createSuccess": "Topic created successfully",
+      "createError": "Failed to create topic",
+      "updateSuccess": "Topic updated successfully",
+      "updateError": "Failed to update topic",
+      "deleteSuccess": "Topic deleted successfully",
+      "deleteError": "Failed to delete topic"
+    },
+    "error": "Hata oluştu",
+    "create": "Yeni Konu Ekle",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor..."
+  },
+  "deleteConfirm": {
+    "confirmTitle": "Delete Topic",
+    "confirmMessage": "Are you sure you want to delete {{name}}?"
+  },
+  "messages": {
+    "deleteSuccess": "Topic deleted successfully",
+    "deleteError": "Failed to delete topic"
+  },
+  "table": {
+    "title": "Interested Topics List",
+    "id": "ID",
+    "name": "Konu Adı",
+    "description": "Açıklama",
+    "createdDate": "Oluşturulma Tarihi",
+    "createdBy": "Oluşturan Kullanıcı"
+  }
+}

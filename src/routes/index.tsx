@@ -38,6 +38,9 @@ const ProductPricingGroupByManagementPage = lazyImport(() => import('@/features/
 const ProductPricingManagementPage = lazyImport(() => import('@/features/product-pricing-management'), 'ProductPricingManagementPage');
 const ActivityManagementPage = lazyImport(() => import('@/features/activity-management'), 'ActivityManagementPage');
 const ActivityTypeManagementPage = lazyImport(() => import('@/features/activity-type'), 'ActivityTypeManagementPage');
+const ActivityMeetingTypeManagementPage = lazyImport(() => import('@/features/activity-meeting-type-management'), 'ActivityTypeManagementPage');
+const ActivityTopicPurposeManagementPage = lazyImport(() => import('@/features/activity-topic-purpose-management'), 'ActivityTypeManagementPage');
+const ActivityShippingManagementPage = lazyImport(() => import('@/features/activity-shipping-management'), 'ActivityTypeManagementPage');
 const ShippingAddressManagementPage = lazyImport(() => import('@/features/shipping-address-management'), 'ShippingAddressManagementPage');
 const DailyTasksPage = lazyImport(() => import('@/features/daily-tasks'), 'DailyTasksPage');
 const ErpCustomerManagementPage = lazyImport(() => import('@/features/erp-customer-management'), 'ErpCustomerManagementPage');
@@ -142,6 +145,9 @@ export function createAppRouter() {
         { path: 'product-pricing-management', element: <ProductPricingManagementPage /> },
         { path: 'activity-management', element: <ActivityManagementPage /> },
         { path: 'activity-type-management', element: <ActivityTypeManagementPage /> },
+        { path: 'definitions/activity-meeting-type-management', element: <ActivityMeetingTypeManagementPage /> },
+        { path: 'definitions/activity-topic-purpose-management', element: <ActivityTopicPurposeManagementPage /> },
+        { path: 'definitions/activity-shipping-management', element: <ActivityShippingManagementPage /> },
         { path: 'shipping-address-management', element: <ShippingAddressManagementPage /> },
         { path: 'daily-tasks', element: <DailyTasksPage /> },
         { path: 'erp-customers', element: <ErpCustomerManagementPage /> },

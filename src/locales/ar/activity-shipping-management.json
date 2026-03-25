@@ -1,0 +1,82 @@
+{
+  "activityType": {
+    "table": {
+      "title": "Shipping List",
+      "id": "ID",
+      "name": "Teslimat Adı",
+      "description": "Açıklama",
+      "createdDate": "إنشاءulma Tarihi",
+      "createdBy": "إنشاءan Kullanıcı",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "error": "حدث خطأ",
+    "create": "Yeni Teslimat Ekle",
+    "loading": "جارٍ التحميل...",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "saving": "Kaydediliyor...",
+    "form": {
+      "addTitle": "Yeni Teslimat Ekle",
+      "editTitle": "Teslimat تعديل",
+      "addDescription": "Yeni teslimat bilgisini girin",
+      "editDescription": "Teslimat bilgisini düzenleyin",
+      "name": "Teslimat Adı",
+      "namePlaceholder": "Teslimat adını girin",
+      "nameRequired": "Teslimat adı zorunludur",
+      "nameMaxLength": "Teslimat adı en fazla 100 karakter olabilir",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
+      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
+    },
+    "stats": {
+      "totalActivityTypes": "Toplam Teslimat",
+      "activeActivityTypes": "Aktif Teslimat",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "messages": {
+      "createSuccess": "Teslimat başarıyla oluşturuldu",
+      "createError": "Teslimat oluşturulamadı",
+      "updateSuccess": "Teslimat başarıyla güncellendi",
+      "updateError": "Teslimat güncellenemedi",
+      "deleteSuccess": "Teslimat başarıyla silindi",
+      "deleteError": "Teslimat silinemedi"
+    }
+  },
+  "menu": "Teslimat Yönetimi",
+  "description": "Teslimat tanımlarını yönetin ve düzenleyin",
+  "addButton": "Yeni Teslimat Ekle",
+  "loading": "جارٍ التحميل...",
+  "noData": "Veri yok",
+  "actions": "İşlemler",
+  "edit": "تعديل",
+  "deleteButton": "Sil",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "saving": "Kaydediliyor...",
+  "previous": "Önceki",
+  "next": "Sonraki",
+  "advancedFilter": {
+    "columnName": "Teslimat Adı",
+    "columnDescription": "Açıklama",
+    "columnCreatedBy": "إنشاءan"
+  },
+  "deleteConfirm": {
+    "confirmTitle": "Teslimatı Sil",
+    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+  },
+  "messages": {
+    "deleteSuccess": "Teslimat başarıyla silindi",
+    "deleteError": "Teslimat silinemedi"
+  },
+  "table": {
+    "title": "Teslimat Listesi",
+    "id": "ID",
+    "name": "Teslimat Adı",
+    "description": "Açıklama",
+    "createdDate": "إنشاءulma Tarihi",
+    "createdBy": "إنشاءan Kullanıcı"
+  }
+}

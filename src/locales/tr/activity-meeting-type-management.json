@@ -1,0 +1,82 @@
+{
+  "menu": "Görüşme Yönetimi",
+  "description": "Görüşme tanımlarını yönetin ve düzenleyin",
+  "addButton": "Yeni Görüşme Ekle",
+  "loading": "Yükleniyor...",
+  "noData": "Veri yok",
+  "actions": "İşlemler",
+  "edit": "Düzenle",
+  "deleteButton": "Sil",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "saving": "Kaydediliyor...",
+  "previous": "Önceki",
+  "next": "Sonraki",
+  "advancedFilter": {
+    "columnName": "Görüşme Adı",
+    "columnDescription": "Açıklama",
+    "columnCreatedBy": "Oluşturan"
+  },
+  "activityType": {
+    "create": "Yeni Görüşme Ekle",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor...",
+    "error": "Hata oluştu",
+    "form": {
+      "addTitle": "Yeni Görüşme Ekle",
+      "editTitle": "Görüşme Düzenle",
+      "addDescription": "Yeni görüşme bilgilerini girin",
+      "editDescription": "Görüşme bilgilerini düzenleyin",
+      "name": "Görüşme Adı",
+      "namePlaceholder": "Görüşme adını girin",
+      "nameRequired": "Görüşme adı zorunludur",
+      "nameMaxLength": "Görüşme adı en fazla 100 karakter olabilir",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
+      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
+    },
+    "table": {
+      "title": "Görüşme Listesi",
+      "id": "ID",
+      "name": "Görüşme Adı",
+      "description": "Açıklama",
+      "createdDate": "Oluşturulma Tarihi",
+      "createdBy": "Oluşturan Kullanıcı",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalActivityTypes": "Toplam Görüşme",
+      "activeActivityTypes": "Aktif Görüşme",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "messages": {
+      "createSuccess": "Görüşme başarıyla oluşturuldu",
+      "createError": "Görüşme oluşturulamadı",
+      "updateSuccess": "Görüşme başarıyla güncellendi",
+      "updateError": "Görüşme güncellenemedi",
+      "deleteSuccess": "Görüşme başarıyla silindi",
+      "deleteError": "Görüşme silinemedi"
+    }
+  },
+  "deleteConfirm": {
+    "confirmTitle": "Görüşmeyi Sil",
+    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+  },
+  "messages": {
+    "deleteSuccess": "Görüşme başarıyla silindi",
+    "deleteError": "Görüşme silinemedi"
+  },
+  "table": {
+    "title": "Görüşme Listesi",
+    "id": "ID",
+    "name": "Görüşme Adı",
+    "description": "Açıklama",
+    "createdDate": "Oluşturulma Tarihi",
+    "createdBy": "Oluşturan Kullanıcı"
+  }
+}

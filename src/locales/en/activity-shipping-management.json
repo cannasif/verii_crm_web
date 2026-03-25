@@ -1,0 +1,82 @@
+{
+  "menu": "Shipping Management",
+  "description": "Manage and edit shipping definitions",
+  "addButton": "Add New Shipping",
+  "loading": "Loading...",
+  "noData": "No data found",
+  "actions": "Actions",
+  "edit": "Edit",
+  "deleteButton": "Delete",
+  "cancel": "Cancel",
+  "save": "Save",
+  "saving": "Saving...",
+  "previous": "Previous",
+  "next": "Next",
+  "advancedFilter": {
+    "columnName": "Shipping Name",
+    "columnDescription": "Description",
+    "columnCreatedBy": "Created By"
+  },
+  "activityType": {
+    "form": {
+      "addTitle": "Add New Shipping",
+      "editTitle": "Edit Shipping",
+      "addDescription": "Enter new shipping information",
+      "editDescription": "Edit shipping information",
+      "name": "Shipping Name",
+      "namePlaceholder": "Enter shipping name",
+      "nameRequired": "Shipping name is required",
+      "nameMaxLength": "Shipping name can be at most 100 characters",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter description (optional)",
+      "descriptionMaxLength": "Description can be at most 500 characters"
+    },
+    "table": {
+      "title": "Shipping List",
+      "id": "ID",
+      "name": "Shipping Name",
+      "description": "Description",
+      "createdDate": "Created Date",
+      "createdBy": "Created By",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalActivityTypes": "Total Shipping Records",
+      "activeActivityTypes": "Active Shipping Records",
+      "newThisMonth": "New This Month"
+    },
+    "messages": {
+      "createSuccess": "Shipping created successfully",
+      "createError": "Failed to create shipping",
+      "updateSuccess": "Shipping updated successfully",
+      "updateError": "Failed to update shipping",
+      "deleteSuccess": "Shipping deleted successfully",
+      "deleteError": "Failed to delete shipping"
+    },
+    "error": "Hata oluştu",
+    "create": "Yeni Teslimat Ekle",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor..."
+  },
+  "deleteConfirm": {
+    "confirmTitle": "Delete Shipping",
+    "confirmMessage": "Are you sure you want to delete {{name}}?"
+  },
+  "messages": {
+    "deleteSuccess": "Shipping deleted successfully",
+    "deleteError": "Failed to delete shipping"
+  },
+  "table": {
+    "title": "Shipping List",
+    "id": "ID",
+    "name": "Teslimat Adı",
+    "description": "Açıklama",
+    "createdDate": "Oluşturulma Tarihi",
+    "createdBy": "Oluşturan Kullanıcı"
+  }
+}

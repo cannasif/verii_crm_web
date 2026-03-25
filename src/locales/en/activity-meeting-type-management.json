@@ -1,0 +1,82 @@
+{
+  "menu": "Meeting Management",
+  "description": "Manage and edit meeting definitions",
+  "addButton": "Add New Meeting",
+  "loading": "Loading...",
+  "noData": "No data found",
+  "actions": "Actions",
+  "edit": "Edit",
+  "deleteButton": "Delete",
+  "cancel": "Cancel",
+  "save": "Save",
+  "saving": "Saving...",
+  "previous": "Previous",
+  "next": "Next",
+  "advancedFilter": {
+    "columnName": "Meeting Name",
+    "columnDescription": "Description",
+    "columnCreatedBy": "Created By"
+  },
+  "activityType": {
+    "form": {
+      "addTitle": "Add New Meeting",
+      "editTitle": "Edit Meeting",
+      "addDescription": "Enter new meeting information",
+      "editDescription": "Edit meeting information",
+      "name": "Meeting Name",
+      "namePlaceholder": "Enter meeting name",
+      "nameRequired": "Meeting name is required",
+      "nameMaxLength": "Meeting name can be at most 100 characters",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter description (optional)",
+      "descriptionMaxLength": "Description can be at most 500 characters"
+    },
+    "table": {
+      "title": "Meeting List",
+      "id": "ID",
+      "name": "Meeting Name",
+      "description": "Description",
+      "createdDate": "Created Date",
+      "createdBy": "Created By",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalActivityTypes": "Total Meetings",
+      "activeActivityTypes": "Active Meetings",
+      "newThisMonth": "New This Month"
+    },
+    "messages": {
+      "createSuccess": "Meeting created successfully",
+      "createError": "Failed to create meeting",
+      "updateSuccess": "Meeting updated successfully",
+      "updateError": "Failed to update meeting",
+      "deleteSuccess": "Meeting deleted successfully",
+      "deleteError": "Failed to delete meeting"
+    },
+    "error": "Hata oluştu",
+    "create": "Yeni Görüşme Ekle",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor..."
+  },
+  "deleteConfirm": {
+    "confirmTitle": "Delete Meeting",
+    "confirmMessage": "Are you sure you want to delete {{name}}?"
+  },
+  "messages": {
+    "deleteSuccess": "Meeting deleted successfully",
+    "deleteError": "Failed to delete meeting"
+  },
+  "table": {
+    "title": "Meeting List",
+    "id": "ID",
+    "name": "Görüşme Adı",
+    "description": "Açıklama",
+    "createdDate": "Oluşturulma Tarihi",
+    "createdBy": "Oluşturan Kullanıcı"
+  }
+}

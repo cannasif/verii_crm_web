@@ -1,0 +1,82 @@
+{
+  "activityType": {
+    "table": {
+      "title": "Interested Topics List",
+      "id": "ID",
+      "name": "Konu Adı",
+      "description": "Açıklama",
+      "createdDate": "إنشاءulma Tarihi",
+      "createdBy": "إنشاءan Kullanıcı",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}"
+    },
+    "error": "حدث خطأ",
+    "create": "Yeni Konu Ekle",
+    "loading": "جارٍ التحميل...",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "saving": "Kaydediliyor...",
+    "form": {
+      "addTitle": "Yeni Konu Ekle",
+      "editTitle": "Konu تعديل",
+      "addDescription": "Yeni konu bilgisini girin",
+      "editDescription": "Konu bilgisini düzenleyin",
+      "name": "Konu Adı",
+      "namePlaceholder": "Konu adını girin",
+      "nameRequired": "Konu adı zorunludur",
+      "nameMaxLength": "Konu adı en fazla 100 karakter olabilir",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
+      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
+    },
+    "stats": {
+      "totalActivityTypes": "Toplam Konu",
+      "activeActivityTypes": "Aktif Konu",
+      "newThisMonth": "Bu Ay Yeni"
+    },
+    "messages": {
+      "createSuccess": "Konu başarıyla oluşturuldu",
+      "createError": "Konu oluşturulamadı",
+      "updateSuccess": "Konu başarıyla güncellendi",
+      "updateError": "Konu güncellenemedi",
+      "deleteSuccess": "Konu başarıyla silindi",
+      "deleteError": "Konu silinemedi"
+    }
+  },
+  "menu": "İlgilenilen Konular Yönetimi",
+  "description": "İlgilenilen konu tanımlarını yönetin ve düzenleyin",
+  "addButton": "Yeni Konu Ekle",
+  "loading": "جارٍ التحميل...",
+  "noData": "Veri yok",
+  "actions": "İşlemler",
+  "edit": "تعديل",
+  "deleteButton": "Sil",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "saving": "Kaydediliyor...",
+  "previous": "Önceki",
+  "next": "Sonraki",
+  "advancedFilter": {
+    "columnName": "Konu Adı",
+    "columnDescription": "Açıklama",
+    "columnCreatedBy": "إنشاءan"
+  },
+  "deleteConfirm": {
+    "confirmTitle": "Konuyu Sil",
+    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+  },
+  "messages": {
+    "deleteSuccess": "Konu başarıyla silindi",
+    "deleteError": "Konu silinemedi"
+  },
+  "table": {
+    "title": "İlgilenilen Konular Listesi",
+    "id": "ID",
+    "name": "Konu Adı",
+    "description": "Açıklama",
+    "createdDate": "إنشاءulma Tarihi",
+    "createdBy": "إنشاءan Kullanıcı"
+  }
+}
