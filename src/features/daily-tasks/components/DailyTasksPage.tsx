@@ -1,9 +1,33 @@
 import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useActivities } from '@/features/activity-management/hooks/useActivities';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useUpdateActivity } from '@/features/activity-management/hooks/useUpdateActivity';
 import { useDeleteActivity } from '@/features/activity-management/hooks/useDeleteActivity';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
@@ -15,11 +39,31 @@ import { buildUpdateActivityPayload } from '@/features/activity-management/utils
 import { toUpdateActivityDto } from '@/features/activity-management/utils/to-update-activity-dto';
 import type { ActivityDto } from '@/features/activity-management/types/activity-types';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
-import { ActivityStatus } from '@/features/activity-management/types/activity-types';
+import { ActivityStatus, ActivityPriority } from '@/features/activity-management/types/activity-types';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
 import { useAuthStore } from '@/stores/auth-store';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { activityApi } from '@/features/activity-management/api/activity-api';
 // Modern İkon Seti
 import { 
   Plus, 
@@ -37,12 +81,85 @@ import {
   Sparkles,
   Clock,
   Target,
-  } from 'lucide-react';
+  Search,
+  RefreshCw,
+  AlertTriangle,
+  GripVertical,
+} from 'lucide-react';
 
 const EMPTY_ACTIVITIES: ActivityDto[] = [];
 
+interface SortableActivityItemProps {
+  activity: ActivityDto;
+  onEdit: (activity: ActivityDto) => void;
+  formatTimeRange: (activity: ActivityDto) => string;
+  getAssignedUserName: (id?: number) => string;
+  statusBadge: (activity: ActivityDto) => ReactElement;
+  priorityBadge: (activity: ActivityDto) => ReactElement;
+}
+
+function SortableActivityItem({
+  activity,
+  onEdit,
+  formatTimeRange,
+  getAssignedUserName,
+  statusBadge,
+  priorityBadge,
+}: SortableActivityItemProps): ReactElement {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: activity.id,
+  });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.45 : 1,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-stretch gap-2">
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        className="flex cursor-grab items-center rounded-xl px-1 text-slate-300 hover:text-slate-500 dark:text-white/20 dark:hover:text-white/50 active:cursor-grabbing"
+      >
+        <GripVertical size={16} />
+      </button>
+      <button
+        type="button"
+        onClick={() => onEdit(activity)}
+        className="flex-1 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left transition hover:border-pink-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/50 dark:hover:bg-white/10"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+                {activity.subject}
+              </span>
+              {statusBadge(activity)}
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <span>{formatTimeRange(activity)}</span>
+              <span>•</span>
+              <span>{getAssignedUserName(activity.assignedUserId)}</span>
+            </div>
+            {activity.description ? (
+              <p className="line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+                {activity.description}
+              </p>
+            ) : null}
+          </div>
+          {priorityBadge(activity)}
+        </div>
+      </button>
+    </div>
+  );
+}
+
 export function DailyTasksPage(): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['daily-tasks', 'activity-management', 'common']);
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('tasks');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -62,10 +179,36 @@ export function DailyTasksPage(): ReactElement {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [slotStart, setSlotStart] = useState<string | null>(null);
   const [slotEnd, setSlotEnd] = useState<string | null>(null);
+  const [calendarFocusDate, setCalendarFocusDate] = useState<string>(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
+  const [calendarFocusHour, setCalendarFocusHour] = useState<number | null>(null);
   const [greeting, setGreeting] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activityPendingDelete, setActivityPendingDelete] = useState<ActivityDto | null>(null);
+  const [calendarInspectState, setCalendarInspectState] = useState<{
+    title: string;
+    description?: string;
+    activities: ActivityDto[];
+  } | null>(null);
+  const [agendaSheetOpen, setAgendaSheetOpen] = useState(false);
+  const [sheetActivities, setSheetActivities] = useState<ActivityDto[]>([]);
+  const [dragConfirm, setDragConfirm] = useState<{
+    activity: ActivityDto;
+    oldStart: string;
+    oldEnd: string;
+    newStart: string;
+    newEnd: string;
+  } | null>(null);
+  const contentSectionRef = useRef<HTMLDivElement | null>(null);
 
   const [userFilterSearchTerm, setUserFilterSearchTerm] = useState('');
   const hasShownContentOnce = useRef(false);
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, 450);
   const { data: userOptions = [] } = useUserOptions();
   const userDropdown = useUserOptionsInfinite(userFilterSearchTerm, true);
   const userFilterOptions = [
@@ -87,6 +230,18 @@ export function DailyTasksPage(): ReactElement {
     }
   }, [user, assignedUserFilter]);
 
+  const dndSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const formatDateKey = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // --- Date Helpers ---
   const getWeekDateRange = (): { startDate: string; endDate: string } => {
     const today = new Date();
@@ -97,7 +252,7 @@ export function DailyTasksPage(): ReactElement {
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
     sunday.setHours(23, 59, 59, 999);
-    return { startDate: monday.toISOString().split('T')[0], endDate: sunday.toISOString().split('T')[0] };
+    return { startDate: formatDateKey(monday), endDate: formatDateKey(sunday) };
   };
 
   const getCalendarDateRange = (): { startDate: string; endDate: string } => {
@@ -108,7 +263,7 @@ export function DailyTasksPage(): ReactElement {
     startDate.setDate(startDate.getDate() - startDate.getDay());
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 41);
-    return { startDate: startDate.toISOString().split('T')[0], endDate: endDate.toISOString().split('T')[0] };
+    return { startDate: formatDateKey(startDate), endDate: formatDateKey(endDate) };
   };
 
   const getWeeklyDateRange = (): { startDate: string; endDate: string } => {
@@ -117,7 +272,7 @@ export function DailyTasksPage(): ReactElement {
     const end = new Date(start);
     end.setDate(end.getDate() + 6);
     end.setHours(23, 59, 59, 999);
-    return { startDate: start.toISOString().split('T')[0], endDate: end.toISOString().split('T')[0] };
+    return { startDate: formatDateKey(start), endDate: formatDateKey(end) };
   };
 
   const weekDateRange = getWeekDateRange();
@@ -136,12 +291,33 @@ export function DailyTasksPage(): ReactElement {
     activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'lte', value: calendarRange.endDate } : undefined,
   ].filter((f): f is { column: string; operator: string; value: string } => f !== undefined);
 
-  const { data, isLoading, isFetching, refetch } = useActivities({
-    pageNumber: 1,
-    pageSize: 1000,
-    sortBy: 'StartDateTime',
-    sortDirection: 'asc',
-    filters: filters.length > 0 ? filters : undefined,
+  const { data, isLoading, isFetching, error, refetch, dataUpdatedAt } = useQuery({
+    queryKey: [
+      'daily-tasks',
+      'activities',
+      activeTab,
+      calendarViewMode,
+      calendarMonth.getFullYear(),
+      calendarMonth.getMonth(),
+      calendarWeekStart.toISOString(),
+      statusFilter,
+      assignedUserFilter ?? 'all',
+      debouncedSearchTerm,
+      apiDateRange.startDate,
+      apiDateRange.endDate,
+      calendarRange.startDate,
+      calendarRange.endDate,
+    ],
+    queryFn: () =>
+      activityApi.getAllList({
+        pageNumber: 1,
+        pageSize: 250,
+        sortBy: 'StartDateTime',
+        sortDirection: 'asc',
+        search: debouncedSearchTerm.trim() || undefined,
+        filters: filters.length > 0 ? filters : undefined,
+      }),
+    staleTime: 60 * 1000,
   });
 
   const updateActivity = useUpdateActivity();
@@ -155,7 +331,7 @@ export function DailyTasksPage(): ReactElement {
         activityDate: activity.activityDate ?? activity.startDateTime,
         isCompleted:
           activity.isCompleted ??
-          Number(activity.status) === ActivityStatus.Scheduled,
+          Number(activity.status) === ActivityStatus.Completed,
       })),
     [data?.data]
   );
@@ -190,6 +366,71 @@ export function DailyTasksPage(): ReactElement {
     return filtered;
   }, [activities, statusFilter, assignedUserFilter, activeTab, weekDateRange, calendarDateRange, calendarViewMode, weeklyDateRange]);
 
+  const getAssignedUserName = (userId?: number) =>
+    userOptions.find((option) => option.id === userId)?.fullName || t('dailyTasks.unassigned');
+
+  const enterpriseMetrics = useMemo(() => {
+    const now = new Date();
+    const isSameDay = (value?: string) => {
+      if (!value) return false;
+      const date = new Date(value);
+      return (
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate()
+      );
+    };
+
+    const activeItems = filteredActivities.filter((activity) => Number(activity.status) !== ActivityStatus.Completed);
+    const completedItems = filteredActivities.filter((activity) => Number(activity.status) === ActivityStatus.Completed);
+    const overdueItems = activeItems.filter((activity) => {
+      const dueDate = activity.endDateTime ?? activity.startDateTime ?? activity.activityDate;
+      if (!dueDate) return false;
+      return new Date(dueDate) < now;
+    });
+    const dueTodayItems = activeItems.filter((activity) =>
+      isSameDay(activity.endDateTime ?? activity.startDateTime ?? activity.activityDate)
+    );
+    const highPriorityItems = activeItems.filter((activity) => Number(activity.priority) === 2);
+    const upcomingItems = activeItems
+      .filter((activity) => {
+        const dueDate = activity.startDateTime ?? activity.activityDate;
+        if (!dueDate) return false;
+        return new Date(dueDate) >= now;
+      })
+      .sort(
+        (left, right) =>
+          new Date(left.startDateTime ?? left.activityDate ?? left.createdDate).getTime() -
+          new Date(right.startDateTime ?? right.activityDate ?? right.createdDate).getTime()
+      )
+      .slice(0, 5);
+
+    const workload = Object.entries(
+      activeItems.reduce<Record<string, number>>((accumulator, activity) => {
+        const userName = getAssignedUserName(activity.assignedUserId);
+        accumulator[userName] = (accumulator[userName] ?? 0) + 1;
+        return accumulator;
+      }, {})
+    )
+      .map(([name, count]) => ({ name, count }))
+      .sort((left, right) => right.count - left.count)
+      .slice(0, 5);
+
+    return {
+      activeCount: activeItems.length,
+      completedCount: completedItems.length,
+      overdueItems,
+      dueTodayCount: dueTodayItems.length,
+      highPriorityCount: highPriorityItems.length,
+      completionRate:
+        filteredActivities.length > 0
+          ? Math.round((completedItems.length / filteredActivities.length) * 100)
+          : 0,
+      upcomingItems,
+      workload,
+    };
+  }, [filteredActivities]);
+
   // --- Handlers ---
   const handleToggleComplete = async (activity: ActivityDto) => {
     await updateActivity.mutateAsync({
@@ -200,7 +441,12 @@ export function DailyTasksPage(): ReactElement {
     });
     void refetch();
   };
-  const handleDelete = async (id: number) => { await deleteActivity.mutateAsync(id); void refetch(); };
+  const handleDelete = async () => {
+    if (!activityPendingDelete) return;
+    await deleteActivity.mutateAsync(activityPendingDelete.id);
+    setActivityPendingDelete(null);
+    void refetch();
+  };
   const handleNewTask = () => {
     setEditingActivity(null);
     setSelectedDate(null);
@@ -257,6 +503,14 @@ export function DailyTasksPage(): ReactElement {
     setCalendarWeekStart(mon);
   };
 
+  const handleReviewOpenTasks = () => {
+    setActiveTab('list');
+    setStatusFilter(String(ActivityStatus.Scheduled));
+    window.requestAnimationFrame(() => {
+      contentSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   const formatSlotStart = (day: Date, hour: number): string => {
     const y = day.getFullYear();
     const m = String(day.getMonth() + 1).padStart(2, '0');
@@ -299,6 +553,36 @@ export function DailyTasksPage(): ReactElement {
     });
   };
 
+  const formatActivityTimeRange = (activity: ActivityDto): string => {
+    if (!activity.startDateTime) return t('dailyTasks.noTime');
+
+    const start = new Date(activity.startDateTime);
+    const startLabel = start.toLocaleTimeString(i18n.language, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    if (!activity.endDateTime) {
+      return startLabel;
+    }
+
+    const end = new Date(activity.endDateTime);
+    const endLabel = end.toLocaleTimeString(i18n.language, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    return `${startLabel} - ${endLabel}`;
+  };
+
+  const openCalendarInspect = (title: string, activitiesToInspect: ActivityDto[], description?: string) => {
+    setCalendarInspectState({
+      title,
+      description,
+      activities: activitiesToInspect,
+    });
+  };
+
   const getActivityTypeDisplay = (activityType: ActivityDto['activityType']): string => {
     if (activityType == null) return '';
     return typeof activityType === 'object' && 'name' in activityType ? activityType.name : String(activityType);
@@ -313,12 +597,11 @@ export function DailyTasksPage(): ReactElement {
       default: return 'border-slate-500 text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300';
     }
   };
-  const getAssignedUserName = (userId?: number) => userOptions.find((u) => u.id === userId)?.fullName || t('dailyTasks.unassigned');
-  
+
   const getActivitiesByDate = (): Record<string, ActivityDto[]> => {
     const grouped: Record<string, ActivityDto[]> = {};
     filteredActivities.forEach((activity) => {
-      const dateKey = activity.activityDate ? new Date(activity.activityDate).toISOString().split('T')[0] : 'no-date';
+      const dateKey = activity.activityDate ? formatDateKey(new Date(activity.activityDate)) : 'no-date';
       if (!grouped[dateKey]) grouped[dateKey] = [];
       grouped[dateKey].push(activity);
     });
@@ -336,11 +619,182 @@ export function DailyTasksPage(): ReactElement {
     for (let i = 0; i < 42; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
-      const dateKey = date.toISOString().split('T')[0];
+      const dateKey = formatDateKey(date);
       days.push({ date, activities: activitiesByDate[dateKey] || [] });
     }
     return days;
   };
+
+  const handleCalendarCellSelect = (date: Date, hour?: number) => {
+    setCalendarFocusDate(formatDateKey(date));
+    setCalendarFocusHour(typeof hour === 'number' ? hour : null);
+    setAgendaSheetOpen(true);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = sheetActivities.findIndex((a) => a.id === active.id);
+    const newIndex = sheetActivities.findIndex((a) => a.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const movedActivity = sheetActivities[oldIndex];
+    const targetActivity = sheetActivities[newIndex];
+
+    const oldStart = movedActivity.startDateTime;
+    const oldEnd = movedActivity.endDateTime ?? movedActivity.startDateTime;
+    const newStart = targetActivity.startDateTime;
+    const newEnd = targetActivity.endDateTime ?? targetActivity.startDateTime;
+
+    setSheetActivities(arrayMove(sheetActivities, oldIndex, newIndex));
+    setDragConfirm({ activity: movedActivity, oldStart, oldEnd, newStart, newEnd });
+  };
+
+  const handleConfirmReschedule = () => {
+    if (!dragConfirm) return;
+    const { activity, newStart, newEnd } = dragConfirm;
+
+    const durationMs =
+      activity.endDateTime
+        ? new Date(activity.endDateTime).getTime() - new Date(activity.startDateTime).getTime()
+        : 3600000;
+
+    const newStartDate = new Date(newStart);
+    const newEndDate = newEnd !== newStart ? new Date(newEnd) : new Date(newStartDate.getTime() + durationMs);
+
+    updateActivity.mutate({
+      id: activity.id,
+      data: {
+        subject: activity.subject,
+        description: activity.description,
+        activityTypeId: activity.activityTypeId,
+        startDateTime: newStartDate.toISOString(),
+        endDateTime: newEndDate.toISOString(),
+        isAllDay: activity.isAllDay,
+        status: activity.status as ActivityStatus | number,
+        priority: activity.priority as ActivityPriority | number,
+        assignedUserId: activity.assignedUserId,
+        paymentTypeId: activity.paymentTypeId ?? null,
+        activityMeetingTypeId: activity.activityMeetingTypeId ?? null,
+        activityTopicPurposeId: activity.activityTopicPurposeId ?? null,
+        activityShippingId: activity.activityShippingId ?? null,
+        contactId: activity.contactId,
+        potentialCustomerId: activity.potentialCustomerId,
+        erpCustomerCode: activity.erpCustomerCode,
+        reminders: activity.reminders ?? [],
+      },
+    });
+
+    setDragConfirm(null);
+  };
+
+  const handleCreateFromCalendar = (date: Date, hour?: number) => {
+    const dateString = formatDateKey(date);
+    setCalendarFocusDate(dateString);
+    setCalendarFocusHour(typeof hour === 'number' ? hour : null);
+    setSelectedDate(dateString);
+    if (typeof hour === 'number') {
+      setSlotStart(formatSlotStart(date, hour));
+      setSlotEnd(formatSlotEnd(date, hour));
+    } else {
+      setSlotStart(`${dateString}T09:00`);
+      setSlotEnd(`${dateString}T10:00`);
+    }
+    setFormOpen(true);
+  };
+
+  const calendarSummary = useMemo(() => {
+    const visibleActivities = filteredActivities;
+    const completed = visibleActivities.filter((activity) => Number(activity.status) === ActivityStatus.Completed).length;
+    const groupedByDay = visibleActivities.reduce<Record<string, number>>((accumulator, activity) => {
+      const key = activity.activityDate ? formatDateKey(new Date(activity.activityDate)) : 'no-date';
+      accumulator[key] = (accumulator[key] ?? 0) + 1;
+      return accumulator;
+    }, {});
+
+    const busiestEntry = Object.entries(groupedByDay).sort((left, right) => right[1] - left[1])[0];
+    const busiestDayLabel =
+      busiestEntry && busiestEntry[0] !== 'no-date'
+        ? new Date(busiestEntry[0]).toLocaleDateString(i18n.language, {
+            day: 'numeric',
+            month: 'short',
+          })
+        : t('dailyTasks.noTasks');
+
+    return {
+      visibleCount: visibleActivities.length,
+      completedCount: completed,
+      scheduledCount: visibleActivities.length - completed,
+      busiestDayLabel,
+      busiestDayCount: busiestEntry?.[1] ?? 0,
+    };
+  }, [filteredActivities, i18n.language, t]);
+
+  const focusedCalendarActivities = useMemo(() => {
+    const dayActivities = filteredActivities
+      .filter((activity) => {
+        if (!activity.activityDate) return false;
+        return formatDateKey(new Date(activity.activityDate)) === calendarFocusDate;
+      })
+      .sort(
+        (left, right) =>
+          new Date(left.startDateTime ?? left.activityDate ?? left.createdDate).getTime() -
+          new Date(right.startDateTime ?? right.activityDate ?? right.createdDate).getTime()
+      );
+
+    if (calendarViewMode !== 'weekly' || calendarFocusHour === null) {
+      return dayActivities;
+    }
+
+    const focusDate = new Date(calendarFocusDate);
+    const slotStartMs = new Date(
+      focusDate.getFullYear(),
+      focusDate.getMonth(),
+      focusDate.getDate(),
+      calendarFocusHour,
+      0,
+      0,
+      0
+    ).getTime();
+    const slotEndMs = new Date(
+      focusDate.getFullYear(),
+      focusDate.getMonth(),
+      focusDate.getDate(),
+      calendarFocusHour + 1,
+      0,
+      0,
+      0
+    ).getTime();
+
+    return dayActivities.filter((activity) => {
+      if (!activity.startDateTime) return false;
+      const start = new Date(activity.startDateTime).getTime();
+      const end = activity.endDateTime ? new Date(activity.endDateTime).getTime() : start;
+      return start < slotEndMs && end > slotStartMs;
+    });
+  }, [calendarFocusDate, calendarFocusHour, calendarViewMode, filteredActivities]);
+
+  useEffect(() => {
+    if (agendaSheetOpen) {
+      setSheetActivities(focusedCalendarActivities);
+    }
+  }, [focusedCalendarActivities, agendaSheetOpen]);
+
+  const focusedCalendarDateLabel = useMemo(() => {
+    const date = new Date(calendarFocusDate);
+    const baseLabel = date.toLocaleDateString(i18n.language, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+
+    if (calendarViewMode === 'weekly' && calendarFocusHour !== null) {
+      return `${baseLabel} • ${String(calendarFocusHour).padStart(2, '0')}:00`;
+    }
+
+    return baseLabel;
+  }, [calendarFocusDate, calendarFocusHour, calendarViewMode, i18n.language]);
 
   const filterButtonStyle = (isActive: boolean) => `
     h-8 text-xs font-medium transition-all rounded-lg shrink-0
@@ -352,6 +806,19 @@ export function DailyTasksPage(): ReactElement {
   const getUserDisplayName = (): string => {
     if (!user) return '';
     return user.name || user.email || 'Kullanıcı';
+  };
+
+  const formatLastUpdated = (): string => {
+    if (!dataUpdatedAt) {
+      return t('dailyTasks.notUpdatedYet', { defaultValue: 'Henüz güncellenmedi' });
+    }
+
+    return new Date(dataUpdatedAt).toLocaleString(i18n.language, {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   const backgroundBlobs = (
@@ -386,7 +853,7 @@ export function DailyTasksPage(): ReactElement {
       
       {/* 1. HERO SECTION: Responsive Layout */}
       <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-linear-to-br from-indigo-900 via-purple-900 to-slate-900 p-6 md:p-8 shadow-2xl ring-1 ring-white/10">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+        <div className="absolute inset-0 opacity-20 brightness-100 contrast-150 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.14)_1px,transparent_0)] bg-size-[8px_8px]"></div>
         <div className="absolute -right-20 -top-20 h-40 w-40 md:h-64 md:w-64 rounded-full bg-pink-500/30 blur-3xl"></div>
         
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
@@ -422,6 +889,189 @@ export function DailyTasksPage(): ReactElement {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+        {[
+          {
+            label: t('dailyTasks.activePipeline', { defaultValue: 'Açık iş yükü' }),
+            value: enterpriseMetrics.activeCount,
+            tone: 'from-sky-500/20 to-blue-500/10 border-sky-400/20',
+          },
+          {
+            label: t('dailyTasks.completedRange', { defaultValue: 'Tamamlanan' }),
+            value: enterpriseMetrics.completedCount,
+            tone: 'from-emerald-500/20 to-green-500/10 border-emerald-400/20',
+          },
+          {
+            label: t('dailyTasks.overdue', { defaultValue: 'Geciken işler' }),
+            value: enterpriseMetrics.overdueItems.length,
+            tone: 'from-rose-500/20 to-red-500/10 border-rose-400/20',
+          },
+          {
+            label: t('dailyTasks.dueToday', { defaultValue: 'Bugün aksiyon bekleyen' }),
+            value: enterpriseMetrics.dueTodayCount,
+            tone: 'from-amber-500/20 to-orange-500/10 border-amber-400/20',
+          },
+          {
+            label: t('dailyTasks.completionRate', { defaultValue: 'Tamamlanma oranı' }),
+            value: `%${enterpriseMetrics.completionRate}`,
+            tone: 'from-fuchsia-500/20 to-pink-500/10 border-fuchsia-400/20',
+          },
+        ].map((card) => (
+          <div
+            key={card.label}
+            className={`rounded-2xl border bg-linear-to-br ${card.tone} p-4 shadow-sm backdrop-blur-xl`}
+          >
+            <div className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {card.label}
+            </div>
+            <div className="mt-3 text-3xl font-bold text-slate-900 dark:text-white">
+              {card.value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {enterpriseMetrics.overdueItems.length > 0 ? (
+        <div className="rounded-2xl border border-rose-300/30 bg-rose-50/80 px-4 py-3 text-sm text-rose-900 shadow-sm backdrop-blur-xl dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-100">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
+              <div>
+                <div className="font-semibold">
+                  {t('dailyTasks.overdueWarningTitle', {
+                    defaultValue: 'Takip gerektiren gecikmiş aktiviteler var',
+                  })}
+                </div>
+                <div className="text-rose-700 dark:text-rose-200">
+                  {t('dailyTasks.overdueWarningDescription', {
+                    defaultValue: '{{count}} aktivite plan tarihini geçti. Önceliklendirme önerilir.',
+                    count: enterpriseMetrics.overdueItems.length,
+                  })}
+                </div>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              className="border-rose-300 bg-white/70 text-rose-700 hover:bg-rose-100 dark:border-rose-400/20 dark:bg-transparent dark:text-rose-100 dark:hover:bg-rose-500/10"
+              onClick={handleReviewOpenTasks}
+            >
+              {t('dailyTasks.reviewOpenTasks', { defaultValue: 'Açık işleri incele' })}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_0.7fr]">
+        <div className="rounded-3xl border border-white/20 bg-white/70 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#130c1f]/70">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                {t('dailyTasks.focusQueue', { defaultValue: 'Öncelikli gündem' })}
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {t('dailyTasks.focusQueueDescription', {
+                  defaultValue: 'Yaklaşan ve riskli işleri tek bakışta yönet.',
+                })}
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="rounded-xl"
+              onClick={() => void refetch()}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+              {t('dailyTasks.refresh', { defaultValue: 'Yenile' })}
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {(enterpriseMetrics.overdueItems.slice(0, 3).concat(enterpriseMetrics.upcomingItems)).slice(0, 5).map((activity) => (
+              <button
+                key={`${activity.id}-${activity.startDateTime}`}
+                type="button"
+                onClick={() => handleEdit(activity)}
+                className="flex w-full items-start justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/80 p-4 text-left transition hover:-translate-y-0.5 hover:border-pink-300 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/40"
+              >
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                      {activity.subject}
+                    </span>
+                    <ActivityStatusBadge status={activity.status} />
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span>{formatActivityTimeRange(activity)}</span>
+                    <span>•</span>
+                    <span>{getAssignedUserName(activity.assignedUserId)}</span>
+                  </div>
+                </div>
+                <ActivityPriorityBadge priority={activity.priority} />
+              </button>
+            ))}
+            {enterpriseMetrics.overdueItems.length === 0 && enterpriseMetrics.upcomingItems.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                {t('dailyTasks.focusQueueEmpty', {
+                  defaultValue: 'Takip bekleyen kritik iş bulunmuyor.',
+                })}
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-white/20 bg-white/70 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#130c1f]/70">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+              {t('dailyTasks.workloadTitle', { defaultValue: 'İş yükü dağılımı' })}
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {t('dailyTasks.workloadDescription', {
+                defaultValue: 'Açık aktivitelerin kullanıcı bazlı yoğunluğu.',
+              })}
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {enterpriseMetrics.workload.map((item) => {
+              const percentage =
+                enterpriseMetrics.activeCount > 0
+                  ? Math.max(8, Math.round((item.count / enterpriseMetrics.activeCount) * 100))
+                  : 0;
+
+              return (
+                <div key={item.name} className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="truncate font-medium text-slate-700 dark:text-slate-200">
+                      {item.name}
+                    </span>
+                    <span className="text-slate-500 dark:text-slate-400">{item.count}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-slate-200 dark:bg-white/10">
+                    <div
+                      className="h-2 rounded-full bg-linear-to-r from-pink-500 to-orange-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            {enterpriseMetrics.workload.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                {t('dailyTasks.workloadEmpty', {
+                  defaultValue: 'Dağıtılacak açık iş bulunmuyor.',
+                })}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="mt-6 rounded-2xl bg-slate-100/70 p-4 text-xs text-slate-500 dark:bg-white/5 dark:text-slate-400">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">
+              {t('dailyTasks.lastUpdated', { defaultValue: 'Son güncelleme' })}:
+            </span>{' '}
+            {formatLastUpdated()}
+          </div>
+        </div>
+      </div>
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         
         {/* 2. KONTROL PANELİ: Responsive Layout */}
@@ -446,6 +1096,18 @@ export function DailyTasksPage(): ReactElement {
 
                 {/* Sağ: Filtreler (Mobilde Stack) */}
                 <div className="flex flex-col sm:flex-row w-full xl:w-auto gap-3">
+                    <div className="relative w-full sm:w-[240px]">
+                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                      <Input
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        placeholder={t('dailyTasks.searchPlaceholder')}
+                        className="h-10 rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 pl-9 pr-10 focus-visible:ring-pink-500"
+                      />
+                      {isFetching ? (
+                        <RefreshCw className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-pink-500" />
+                      ) : null}
+                    </div>
                     
                     {/* Status Pill Group (Scrollable on mobile) */}
                     <div className="flex items-center p-1 bg-slate-100/50 dark:bg-white/5 rounded-xl border border-slate-200/50 dark:border-white/5 w-full sm:w-auto overflow-x-auto no-scrollbar">
@@ -457,7 +1119,7 @@ export function DailyTasksPage(): ReactElement {
                                 <Clock size={12} className="mr-1" /> {t('dailyTasks.pending')}
                             </Button>
                             <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Cancelled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Cancelled))}>
-                                <PauseCircle size={12} className="mr-1" /> {t('activityManagement.statusCanceled')}
+                                <PauseCircle size={12} className="mr-1" /> {t('statusCanceled', { ns: 'activity-management' })}
                             </Button>
                             <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Completed))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Completed))}>
                                 <CheckCircle2 size={12} className="mr-1" /> {t('dailyTasks.completed')}
@@ -486,7 +1148,26 @@ export function DailyTasksPage(): ReactElement {
         </div>
 
         {/* 3. İÇERİK ALANI */}
-        <div className="mt-6 md:mt-8 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
+        <div ref={contentSectionRef} className="mt-6 md:mt-8 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
+            {error ? (
+              <div className="mb-6 flex flex-col items-center justify-center gap-4 rounded-2xl border border-red-200 bg-red-50/80 p-8 text-center dark:border-red-500/20 dark:bg-red-500/10">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-300">
+                  <AlertTriangle size={28} />
+                </div>
+                <div className="space-y-1">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                    {t('dailyTasks.loadErrorTitle')}
+                  </h2>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    {t('dailyTasks.loadErrorDescription')}
+                  </p>
+                </div>
+                <Button onClick={() => void refetch()} className="rounded-xl">
+                  <RefreshCw size={16} className="mr-2" />
+                  {t('dailyTasks.retry')}
+                </Button>
+              </div>
+            ) : null}
             {isFetching && (
               <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 dark:bg-[#0c0516]/60 backdrop-blur-sm rounded-2xl min-h-[200px]">
                 <div className="flex flex-col items-center gap-3">
@@ -534,7 +1215,10 @@ export function DailyTasksPage(): ReactElement {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                onClick={(e) => { e.stopPropagation(); handleDelete(activity.id); }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActivityPendingDelete(activity);
+                                }}
                             >
                                 <Trash2 size={16} />
                             </Button>
@@ -646,7 +1330,7 @@ export function DailyTasksPage(): ReactElement {
                                         </div>
                                     </div>
                                     <div className="flex justify-end w-full md:w-auto pl-8 md:pl-0 mt-2 md:mt-0" onClick={(e) => e.stopPropagation()}>
-                                        <Button variant="ghost" size="sm" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => handleDelete(activity.id)}>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => setActivityPendingDelete(activity)}>
                                             <Trash2 size={16} />
                                         </Button>
                                     </div>
@@ -659,6 +1343,43 @@ export function DailyTasksPage(): ReactElement {
 
             {/* --- TAKVİM GÖRÜNÜMÜ (Haftalık saatlik / Aylık) --- */}
             <TabsContent value="calendar" className="mt-0">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+                    {[
+                      {
+                        label: t('dailyTasks.calendarVisibleItems', { defaultValue: 'Takvimde görünen' }),
+                        value: calendarSummary.visibleCount,
+                      },
+                      {
+                        label: t('dailyTasks.calendarScheduledItems', { defaultValue: 'Planlı kayıt' }),
+                        value: calendarSummary.scheduledCount,
+                      },
+                      {
+                        label: t('dailyTasks.calendarCompletedItems', { defaultValue: 'Tamamlanan kayıt' }),
+                        value: calendarSummary.completedCount,
+                      },
+                      {
+                        label: t('dailyTasks.calendarBusiestDay', { defaultValue: 'En yoğun gün' }),
+                        value: calendarSummary.busiestDayCount > 0
+                          ? `${calendarSummary.busiestDayLabel} • ${calendarSummary.busiestDayCount}`
+                          : '-',
+                      },
+                    ].map((item, index) => (
+                      <div
+                        key={`calendar-summary-${index}`}
+                        className="rounded-2xl border border-white/50 bg-white/65 p-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#140d20]/65"
+                      >
+                        <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                          {item.label}
+                        </div>
+                        <div className="mt-3 text-2xl font-semibold text-slate-900 dark:text-white">
+                          {item.value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                <div className="grid grid-cols-1 gap-4">
                 <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-4 md:p-6 overflow-hidden">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                         <div className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 rounded-lg p-1">
@@ -701,42 +1422,50 @@ export function DailyTasksPage(): ReactElement {
                         </h2>
                     </div>
 
+                    <div className="mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200/70 bg-slate-50/80 px-4 py-3 text-xs text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                      <span className="inline-flex items-center gap-2 font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-2 w-2 rounded-full bg-indigo-500" />
+                        {t('dailyTasks.calendarLegendPlanned', { defaultValue: 'Planlı / aktif' })}
+                      </span>
+                      <span className="inline-flex items-center gap-2 font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-2 w-2 rounded-full bg-green-500" />
+                        {t('dailyTasks.calendarLegendCompleted', { defaultValue: 'Tamamlanan' })}
+                      </span>
+                      <span className="inline-flex items-center gap-2 font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-2 w-2 rounded-full bg-pink-500" />
+                        {t('dailyTasks.calendarLegendSelected', { defaultValue: 'Seçili odak alanı' })}
+                      </span>
+                    </div>
+
                     {calendarViewMode === 'weekly' ? (
                       <div className="overflow-x-auto pb-2">
                         <div className="min-w-[600px]">
                           <div className="grid grid-cols-8 gap-px bg-slate-200 dark:bg-white/10 rounded-xl overflow-hidden">
-                            <div className="bg-slate-100 dark:bg-white/5 p-2 text-xs font-bold text-slate-500 dark:text-slate-400" />
+                            <div className="sticky left-0 z-20 bg-slate-100 dark:bg-[#140d20] p-2 text-xs font-bold text-slate-500 dark:text-slate-400" />
                             {getWeekDays().map((day) => (
-                              <div key={day.toISOString()} className="bg-slate-100 dark:bg-white/5 p-2 text-center text-xs font-bold text-slate-600 dark:text-slate-300">
+                              <div key={day.toISOString()} className="sticky top-0 z-10 bg-slate-100 dark:bg-[#140d20] p-2 text-center text-xs font-bold text-slate-600 dark:text-slate-300">
                                 {day.toLocaleDateString(i18n.language, { weekday: 'short' })}
                                 <span className="block text-slate-500 dark:text-slate-400">{day.getDate()}</span>
                               </div>
                             ))}
                             {Array.from({ length: 24 }, (_, hour) => (
                               <div key={hour} className="contents">
-                                <div className="bg-slate-50 dark:bg-white/5 p-1.5 text-[10px] font-medium text-slate-500 dark:text-slate-400 text-right pr-2">
+                                <div className="sticky left-0 z-10 bg-slate-50 dark:bg-[#120b1b] p-1.5 text-[10px] font-medium text-slate-500 dark:text-slate-400 text-right pr-2">
                                   {String(hour).padStart(2, '0')}:00
                                 </div>
                                 {getWeekDays().map((day) => {
                                   const slotActivities = getActivitiesForSlot(day, hour);
                                   const isToday = day.toDateString() === new Date().toDateString();
+                                  const isSelectedSlot =
+                                    calendarFocusDate === formatDateKey(day) && calendarFocusHour === hour;
                                   return (
                                     <div
                                       key={`${day.toISOString()}-${hour}`}
-                                      onClick={() => {
-                                        setSlotStart(formatSlotStart(day, hour));
-                                        setSlotEnd(formatSlotEnd(day, hour));
-                                        setSelectedDate(null);
-                                        setFormOpen(true);
-                                      }}
-                                      onDoubleClick={() => {
-                                        setSlotStart(formatSlotStart(day, hour));
-                                        setSlotEnd(formatSlotEnd(day, hour));
-                                        setSelectedDate(null);
-                                        setFormOpen(true);
-                                      }}
+                                      onClick={() => handleCalendarCellSelect(day, hour)}
+                                      onDoubleClick={() => handleCreateFromCalendar(day, hour)}
                                       className={`
-                                        min-h-[44px] md:min-h-[52px] p-1 cursor-pointer border border-transparent hover:border-pink-500/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all
+                                        min-h-[44px] md:min-h-[52px] p-1 cursor-pointer border hover:border-pink-500/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all
+                                        ${isSelectedSlot ? 'border-pink-500/70 bg-pink-50/70 dark:bg-pink-500/15 shadow-inner' : 'border-transparent'}
                                         ${isToday ? 'bg-pink-50/30 dark:bg-pink-500/5' : 'bg-white/60 dark:bg-white/5'}
                                       `}
                                     >
@@ -755,7 +1484,20 @@ export function DailyTasksPage(): ReactElement {
                                           </div>
                                         ))}
                                         {slotActivities.length > 2 && (
-                                          <div className="text-[8px] text-slate-400 pl-1">+{slotActivities.length - 2}</div>
+                                          <button
+                                            type="button"
+                                            className="pl-1 text-[8px] font-semibold text-pink-500 hover:text-pink-400"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openCalendarInspect(
+                                                `${day.toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })} ${String(hour).padStart(2, '0')}:00`,
+                                                slotActivities,
+                                                t('dailyTasks.slotActivitiesDescription')
+                                              );
+                                            }}
+                                          >
+                                            +{slotActivities.length - 2} {t('dailyTasks.more')}
+                                          </button>
                                         )}
                                       </div>
                                     </div>
@@ -770,35 +1512,25 @@ export function DailyTasksPage(): ReactElement {
                       <div className="overflow-x-auto pb-2">
                         <div className="min-w-[520px] sm:min-w-[600px]">
                           <div className="grid grid-cols-7 gap-2 md:gap-4">
-                            {[t('dailyTasks.days.mon'), t('dailyTasks.days.tue'), t('dailyTasks.days.wed'), t('dailyTasks.days.thu'), t('dailyTasks.days.fri'), t('dailyTasks.days.sat'), t('dailyTasks.days.sun')].map((day) => (
-                              <div key={day} className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest pb-4 border-b border-slate-100 dark:border-white/5">
+                            {[t('dailyTasks.days.mon'), t('dailyTasks.days.tue'), t('dailyTasks.days.wed'), t('dailyTasks.days.thu'), t('dailyTasks.days.fri'), t('dailyTasks.days.sat'), t('dailyTasks.days.sun')].map((day, dayIndex) => (
+                              <div key={`calendar-weekday-${dayIndex}`} className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest pb-4 border-b border-slate-100 dark:border-white/5">
                                 {day}
                               </div>
                             ))}
                             {getCalendarDays().map((dayData, index) => {
                               const isCurrentMonth = dayData.date.getMonth() === calendarMonth.getMonth();
                               const isToday = dayData.date.toDateString() === new Date().toDateString();
+                              const isSelectedDay = calendarFocusDate === formatDateKey(dayData.date);
                               return (
                                 <div
                                   key={index}
-                                  onClick={() => {
-                                    const dateString = dayData.date.toISOString().split('T')[0];
-                                    setSelectedDate(dateString);
-                                    setSlotStart(`${dateString}T09:00`);
-                                    setSlotEnd(`${dateString}T10:00`);
-                                    setFormOpen(true);
-                                  }}
-                                  onDoubleClick={() => {
-                                    const dateString = dayData.date.toISOString().split('T')[0];
-                                    setSelectedDate(dateString);
-                                    setSlotStart(`${dateString}T09:00`);
-                                    setSlotEnd(`${dateString}T10:00`);
-                                    setFormOpen(true);
-                                  }}
+                                  onClick={() => handleCalendarCellSelect(dayData.date)}
+                                  onDoubleClick={() => handleCreateFromCalendar(dayData.date)}
                                   className={`
                                     min-h-[80px] md:min-h-[120px] rounded-xl md:rounded-2xl p-2 md:p-3 cursor-pointer transition-all duration-200 border group
                                     ${!isCurrentMonth ? 'opacity-30 bg-transparent border-transparent' : 'bg-white/40 dark:bg-white/5 border-slate-100 dark:border-white/10 hover:border-pink-500/50 hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-lg hover:-translate-y-1'}
                                     ${isToday ? 'ring-2 ring-pink-500 ring-offset-2 dark:ring-offset-[#1a1025] bg-pink-50/50 dark:bg-pink-500/10' : ''}
+                                    ${isSelectedDay ? 'border-pink-500/60 bg-pink-50/70 dark:bg-pink-500/15 shadow-lg' : ''}
                                   `}
                                 >
                                   <div className="flex justify-between items-start mb-2">
@@ -825,9 +1557,25 @@ export function DailyTasksPage(): ReactElement {
                                       </div>
                                     ))}
                                     {dayData.activities.length > 3 && (
-                                      <div className="text-[9px] md:text-[10px] font-semibold text-slate-400 pl-1">
+                                      <button
+                                        type="button"
+                                        className="pl-1 text-[9px] font-semibold text-pink-500 hover:text-pink-400 md:text-[10px]"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          openCalendarInspect(
+                                            dayData.date.toLocaleDateString(i18n.language, {
+                                              weekday: 'long',
+                                              day: 'numeric',
+                                              month: 'long',
+                                              year: 'numeric',
+                                            }),
+                                            dayData.activities,
+                                            t('dailyTasks.dayActivitiesDescription')
+                                          );
+                                        }}
+                                      >
                                         +{dayData.activities.length - 3} {t('dailyTasks.more')}
-                                      </div>
+                                      </button>
                                     )}
                                   </div>
                                 </div>
@@ -838,9 +1586,158 @@ export function DailyTasksPage(): ReactElement {
                       </div>
                     )}
                 </div>
+
+                </div>
+                </div>
             </TabsContent>
         </div>
       </Tabs>
+
+      <Sheet open={agendaSheetOpen} onOpenChange={setAgendaSheetOpen}>
+        <SheetContent
+          side="right"
+          className="flex w-full flex-col gap-0 border-l border-white/10 bg-white/95 p-0 backdrop-blur-2xl dark:bg-[#140d20]/95 sm:max-w-lg"
+        >
+          <SheetHeader className="border-b border-slate-100 px-6 py-5 dark:border-white/10">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                  {t('dailyTasks.calendarAgenda', { defaultValue: 'Gün ajandası' })}
+                </div>
+                <SheetTitle className="mt-1 text-xl font-bold text-slate-900 dark:text-white">
+                  {focusedCalendarDateLabel}
+                </SheetTitle>
+                <SheetDescription className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                  {sheetActivities.length > 0
+                    ? t('dailyTasks.agendaSheetDragHint', {
+                        defaultValue: 'Aktiviteleri sürükleyerek zamanlarını değiştirebilirsiniz.',
+                      })
+                    : t('dailyTasks.calendarAgendaEmpty', {
+                        defaultValue: 'Seçili alanda aktivite bulunmuyor.',
+                      })}
+                </SheetDescription>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setAgendaSheetOpen(false);
+                  handleCreateFromCalendar(
+                    new Date(calendarFocusDate),
+                    calendarViewMode === 'weekly' ? (calendarFocusHour ?? 9) : undefined
+                  );
+                }}
+                className="mt-1 shrink-0 rounded-xl"
+              >
+                <Plus className="mr-1.5 h-4 w-4" />
+                {t('dailyTasks.newTask')}
+              </Button>
+            </div>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-y-auto px-6 py-4">
+            {sheetActivities.length > 0 ? (
+              <DndContext
+                sensors={dndSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={sheetActivities.map((a) => a.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-3">
+                    {sheetActivities.map((activity) => (
+                      <SortableActivityItem
+                        key={activity.id}
+                        activity={activity}
+                        onEdit={(a) => {
+                          setAgendaSheetOpen(false);
+                          handleEdit(a);
+                        }}
+                        formatTimeRange={formatActivityTimeRange}
+                        getAssignedUserName={getAssignedUserName}
+                        statusBadge={(a) => <ActivityStatusBadge status={a.status} />}
+                        priorityBadge={(a) => <ActivityPriorityBadge priority={a.priority} />}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-4 py-16 text-center">
+                <div className="rounded-2xl border border-dashed border-slate-200 p-8 dark:border-white/10">
+                  <CalendarDays className="mx-auto mb-3 h-10 w-10 text-slate-300 dark:text-white/20" />
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {t('dailyTasks.calendarAgendaEmpty', {
+                      defaultValue: 'Seçili alanda aktivite bulunmuyor. Yeni kayıt oluşturabilirsiniz.',
+                    })}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <AlertDialog open={dragConfirm !== null} onOpenChange={(open) => { if (!open) setDragConfirm(null); }}>
+        <AlertDialogContent className="border-white/10 bg-white/95 backdrop-blur-2xl dark:bg-[#140d20]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t('dailyTasks.rescheduleTitle', { defaultValue: 'Aktiviteyi yeniden zamanla' })}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
+                <p>
+                  <span className="font-semibold text-slate-900 dark:text-white">
+                    {dragConfirm?.activity.subject}
+                  </span>{' '}
+                  {t('dailyTasks.rescheduleQuestion', { defaultValue: 'aktivitesini yeni zaman dilimine taşımak istiyor musunuz?' })}
+                </p>
+                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-white/10 dark:bg-white/5">
+                  <div className="flex-1 text-center">
+                    <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      {t('dailyTasks.rescheduleFrom', { defaultValue: 'Mevcut zaman' })}
+                    </div>
+                    <div className="mt-0.5 font-semibold text-slate-700 dark:text-slate-200">
+                      {dragConfirm?.oldStart
+                        ? new Date(dragConfirm.oldStart).toLocaleTimeString(i18n.language, {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
+                        : '—'}
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />
+                  <div className="flex-1 text-center">
+                    <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      {t('dailyTasks.rescheduleTo', { defaultValue: 'Yeni zaman' })}
+                    </div>
+                    <div className="mt-0.5 font-semibold text-pink-600 dark:text-pink-400">
+                      {dragConfirm?.newStart
+                        ? new Date(dragConfirm.newStart).toLocaleTimeString(i18n.language, {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
+                        : '—'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDragConfirm(null)}>
+              {t('dailyTasks.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmReschedule}
+              className="bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-500"
+            >
+              {t('dailyTasks.rescheduleConfirm', { defaultValue: 'Güncelle' })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <ActivityForm
         open={formOpen}
@@ -860,6 +1757,86 @@ export function DailyTasksPage(): ReactElement {
         initialStartDateTime={editingActivity ? undefined : (slotStart ?? undefined)}
         initialEndDateTime={editingActivity ? undefined : (slotEnd ?? undefined)}
       />
+      <AlertDialog
+        open={activityPendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setActivityPendingDelete(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('dailyTasks.deleteConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('dailyTasks.deleteConfirmDescription', {
+                subject: activityPendingDelete?.subject ?? '',
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('dailyTasks.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void handleDelete()}
+              className="bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:text-white"
+            >
+              {t('dailyTasks.confirmDelete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <Dialog
+        open={calendarInspectState !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCalendarInspectState(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-2xl border-white/10 bg-white/95 dark:bg-[#140d20]">
+          <DialogHeader>
+            <DialogTitle>{calendarInspectState?.title}</DialogTitle>
+            <DialogDescription>
+              {calendarInspectState?.description ?? t('dailyTasks.calendarInspectDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] space-y-3 overflow-y-auto pr-1">
+            {calendarInspectState?.activities.map((activity) => (
+              <button
+                key={activity.id}
+                type="button"
+                onClick={() => {
+                  setCalendarInspectState(null);
+                  handleEdit(activity);
+                }}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left transition hover:border-pink-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/50 dark:hover:bg-white/10"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+                        {activity.subject}
+                      </span>
+                      <ActivityStatusBadge status={activity.status} />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      <span>{formatActivityTimeRange(activity)}</span>
+                      <span>•</span>
+                      <span>{getAssignedUserName(activity.assignedUserId)}</span>
+                    </div>
+                    {activity.description ? (
+                      <p className="line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+                        {activity.description}
+                      </p>
+                    ) : null}
+                  </div>
+                  <ActivityPriorityBadge priority={activity.priority} />
+                </div>
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
