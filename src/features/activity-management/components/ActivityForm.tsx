@@ -378,7 +378,7 @@ export function ActivityForm({
               </DialogDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="shrink-0 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white" aria-label={t('common.close')}>
+          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="shrink-0 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white" aria-label={t('close', { ns: 'common' })}>
             <X size={20} />
           </Button>
         </DialogHeader>
@@ -572,7 +572,7 @@ export function ActivityForm({
                             <Search size={18} />
                           </Button>
                           {(field.value != null || watchedErpCode) && (
-                            <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(event) => { event.stopPropagation(); field.onChange(undefined); form.setValue('erpCustomerCode', ''); setSelectedCustomerDisplayName(null); }} aria-label={t('common.clear')}>
+                            <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(event) => { event.stopPropagation(); field.onChange(undefined); form.setValue('erpCustomerCode', ''); setSelectedCustomerDisplayName(null); }} aria-label={t('clear', { ns: 'common' })}>
                               <X size={18} />
                             </Button>
                           )}
@@ -719,7 +719,7 @@ export function ActivityForm({
                   <div className="flex items-center justify-between">
                     <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders')}</FormLabel>
                     <Button type="button" variant="outline" size="sm" onClick={() => appendReminder({ offsetMinutes: 15, channel: ReminderChannel.InApp })}>
-                      <Plus size={14} className="mr-1" /> {t('common.add')}
+                      <Plus size={14} className="mr-1" /> {t('add', { ns: 'common' })}
                     </Button>
                   </div>
 
@@ -797,10 +797,10 @@ export function ActivityForm({
 
                   <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2 border-t border-slate-100 dark:border-white/5">
                     <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="h-11 px-5 rounded-lg font-medium">
-                      {t('common.cancel')}
+                      {t('cancel', { ns: 'common' })}
                     </Button>
                     <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none">
-                      {isSubmitting ? t('common.saving') : activity ? t('common.update') : t('common.save')}
+                      {isSubmitting ? t('saving', { ns: 'common' }) : activity ? t('update', { ns: 'common' }) : t('save', { ns: 'common' })}
                     </Button>
                   </div>
                 </form>
