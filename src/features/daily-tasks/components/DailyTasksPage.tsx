@@ -626,8 +626,22 @@ export function DailyTasksPage(): ReactElement {
   };
 
   const handleCalendarCellSelect = (date: Date, hour?: number) => {
-    setCalendarFocusDate(formatDateKey(date));
+    const dateKey = formatDateKey(date);
+    setCalendarFocusDate(dateKey);
     setCalendarFocusHour(typeof hour === 'number' ? hour : null);
+
+    const dayActivities = filteredActivities
+      .filter((activity) => {
+        if (!activity.activityDate) return false;
+        return formatDateKey(new Date(activity.activityDate)) === dateKey;
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.startDateTime ?? a.activityDate ?? a.createdDate).getTime() -
+          new Date(b.startDateTime ?? b.activityDate ?? b.createdDate).getTime()
+      );
+
+    setSheetActivities(dayActivities);
     setAgendaSheetOpen(true);
   };
 
@@ -687,6 +701,7 @@ export function DailyTasksPage(): ReactElement {
     });
 
     setDragConfirm(null);
+    setSheetActivities([]);
   };
 
   const handleCreateFromCalendar = (date: Date, hour?: number) => {
@@ -730,56 +745,6 @@ export function DailyTasksPage(): ReactElement {
       busiestDayCount: busiestEntry?.[1] ?? 0,
     };
   }, [filteredActivities, i18n.language, t]);
-
-  const focusedCalendarActivities = useMemo(() => {
-    const dayActivities = filteredActivities
-      .filter((activity) => {
-        if (!activity.activityDate) return false;
-        return formatDateKey(new Date(activity.activityDate)) === calendarFocusDate;
-      })
-      .sort(
-        (left, right) =>
-          new Date(left.startDateTime ?? left.activityDate ?? left.createdDate).getTime() -
-          new Date(right.startDateTime ?? right.activityDate ?? right.createdDate).getTime()
-      );
-
-    if (calendarViewMode !== 'weekly' || calendarFocusHour === null) {
-      return dayActivities;
-    }
-
-    const focusDate = new Date(calendarFocusDate);
-    const slotStartMs = new Date(
-      focusDate.getFullYear(),
-      focusDate.getMonth(),
-      focusDate.getDate(),
-      calendarFocusHour,
-      0,
-      0,
-      0
-    ).getTime();
-    const slotEndMs = new Date(
-      focusDate.getFullYear(),
-      focusDate.getMonth(),
-      focusDate.getDate(),
-      calendarFocusHour + 1,
-      0,
-      0,
-      0
-    ).getTime();
-
-    return dayActivities.filter((activity) => {
-      if (!activity.startDateTime) return false;
-      const start = new Date(activity.startDateTime).getTime();
-      const end = activity.endDateTime ? new Date(activity.endDateTime).getTime() : start;
-      return start < slotEndMs && end > slotStartMs;
-    });
-  }, [calendarFocusDate, calendarFocusHour, calendarViewMode, filteredActivities]);
-
-  useEffect(() => {
-    if (agendaSheetOpen) {
-      setSheetActivities(focusedCalendarActivities);
-    }
-  }, [focusedCalendarActivities, agendaSheetOpen]);
 
   const focusedCalendarDateLabel = useMemo(() => {
     const date = new Date(calendarFocusDate);
@@ -1593,7 +1558,7 @@ export function DailyTasksPage(): ReactElement {
         </div>
       </Tabs>
 
-      <Sheet open={agendaSheetOpen} onOpenChange={setAgendaSheetOpen}>
+      <Sheet open={agendaSheetOpen} onOpenChange={(open) => { setAgendaSheetOpen(open); if (!open) setSheetActivities([]); }}>
         <SheetContent
           side="right"
           className="flex w-full flex-col gap-0 border-l border-white/10 bg-white/95 p-0 backdrop-blur-2xl dark:bg-[#140d20]/95 sm:max-w-lg"
@@ -1726,7 +1691,7 @@ export function DailyTasksPage(): ReactElement {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDragConfirm(null)}>
+            <AlertDialogCancel onClick={() => { setDragConfirm(null); setSheetActivities([]); }}>
               {t('dailyTasks.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
