@@ -13,12 +13,16 @@ import {
 } from '@/components/ui/sheet';
 import {
   DndContext,
+  DragOverlay,
   closestCenter,
   PointerSensor,
   KeyboardSensor,
   useSensor,
   useSensors,
+  useDraggable,
+  useDroppable,
   type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -88,6 +92,136 @@ import {
 } from 'lucide-react';
 
 const EMPTY_ACTIVITIES: ActivityDto[] = [];
+
+function MonthlyDragChip({
+  activity,
+  onEdit,
+}: {
+  activity: ActivityDto;
+  onEdit: () => void;
+}): ReactElement {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `monthly-drag-${activity.id}`,
+    data: { activity, type: 'monthly' },
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.25 : 1 }}
+      onClick={(e) => { e.stopPropagation(); onEdit(); }}
+      className={`text-[9px] md:text-[10px] px-1 md:px-2 py-0.5 md:py-1 rounded-md truncate flex items-center gap-1 border font-medium transition-all cursor-grab active:cursor-grabbing touch-none
+        ${activity.isCompleted
+          ? 'bg-green-50/50 text-green-700 border-green-200/50 line-through opacity-70'
+          : 'bg-indigo-50/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-500/20 hover:scale-105'}`}
+      title={activity.subject}
+    >
+      <div className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full shrink-0 ${activity.priority === 'High' ? 'bg-red-500' : activity.isCompleted ? 'bg-green-500' : 'bg-indigo-500'}`} />
+      <span className="truncate">{activity.subject}</span>
+    </div>
+  );
+}
+
+function MonthlyDropCell({
+  dateKey,
+  isCurrentMonth,
+  isToday,
+  isSelectedDay,
+  onClick,
+  onDoubleClick,
+  children,
+}: {
+  dateKey: string;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  isSelectedDay: boolean;
+  onClick: () => void;
+  onDoubleClick: () => void;
+  children: React.ReactNode;
+}): ReactElement {
+  const { setNodeRef, isOver } = useDroppable({ id: `day-${dateKey}` });
+  return (
+    <div
+      ref={setNodeRef}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      className={[
+        'min-h-[80px] md:min-h-[120px] rounded-xl md:rounded-2xl p-2 md:p-3 cursor-pointer transition-all duration-200 border group',
+        !isCurrentMonth
+          ? 'opacity-30 bg-transparent border-transparent pointer-events-none'
+          : 'bg-white/40 dark:bg-white/5 border-slate-100 dark:border-white/10 hover:border-pink-500/50 hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-lg hover:-translate-y-1',
+        isToday ? 'ring-2 ring-pink-500 ring-offset-2 dark:ring-offset-[#1a1025] bg-pink-50/50 dark:bg-pink-500/10' : '',
+        isSelectedDay ? 'border-pink-500/60 bg-pink-50/70 dark:bg-pink-500/15 shadow-lg' : '',
+        isOver ? 'ring-2 ring-pink-400 ring-offset-1 dark:ring-offset-[#1a1025] bg-pink-100/60 dark:bg-pink-500/25 scale-[1.02]' : '',
+      ].join(' ')}
+    >
+      {children}
+    </div>
+  );
+}
+
+function WeeklyDragChip({
+  activity,
+  onEdit,
+}: {
+  activity: ActivityDto;
+  onEdit: () => void;
+}): ReactElement {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `weekly-drag-${activity.id}`,
+    data: { activity, type: 'weekly' },
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.25 : 1 }}
+      onClick={(e) => { e.stopPropagation(); onEdit(); }}
+      className={`text-[9px] px-1 py-0.5 rounded truncate border font-medium cursor-grab active:cursor-grabbing touch-none
+        ${activity.isCompleted
+          ? 'bg-green-100/80 dark:bg-green-900/30 text-green-700 dark:text-green-400 line-through'
+          : 'bg-indigo-100/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-200/50'}`}
+      title={activity.subject}
+    >
+      {activity.subject}
+    </div>
+  );
+}
+
+function WeeklyDropSlot({
+  slotId,
+  isToday,
+  isSelected,
+  onClick,
+  onDoubleClick,
+  children,
+}: {
+  slotId: string;
+  isToday: boolean;
+  isSelected: boolean;
+  onClick: () => void;
+  onDoubleClick: () => void;
+  children: React.ReactNode;
+}): ReactElement {
+  const { setNodeRef, isOver } = useDroppable({ id: slotId });
+  return (
+    <div
+      ref={setNodeRef}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      className={[
+        'min-h-[44px] md:min-h-[52px] p-1 cursor-pointer border hover:border-pink-500/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all',
+        isSelected ? 'border-pink-500/70 bg-pink-50/70 dark:bg-pink-500/15 shadow-inner' : 'border-transparent',
+        isToday ? 'bg-pink-50/30 dark:bg-pink-500/5' : 'bg-white/60 dark:bg-white/5',
+        isOver ? 'border-pink-400 bg-pink-100/60 dark:bg-pink-500/25' : '',
+      ].join(' ')}
+    >
+      {children}
+    </div>
+  );
+}
 
 interface SortableActivityItemProps {
   activity: ActivityDto;
@@ -203,6 +337,14 @@ export function DailyTasksPage(): ReactElement {
     oldEnd: string;
     newStart: string;
     newEnd: string;
+  } | null>(null);
+  const [activeDragActivity, setActiveDragActivity] = useState<ActivityDto | null>(null);
+  const [calendarDragConfirm, setCalendarDragConfirm] = useState<{
+    activity: ActivityDto;
+    oldDateKey: string;
+    newDateKey: string;
+    oldHour?: number;
+    newHour?: number;
   } | null>(null);
   const contentSectionRef = useRef<HTMLDivElement | null>(null);
 
@@ -702,6 +844,92 @@ export function DailyTasksPage(): ReactElement {
 
     setDragConfirm(null);
     setSheetActivities([]);
+  };
+
+  const handleCalendarDragStart = (event: DragStartEvent) => {
+    const a = event.active.data.current?.activity as ActivityDto | undefined;
+    setActiveDragActivity(a ?? null);
+  };
+
+  const handleCalendarDragEnd = (event: DragEndEvent) => {
+    setActiveDragActivity(null);
+    const { active, over } = event;
+    if (!over || !active.data.current) return;
+
+    const activity = active.data.current.activity as ActivityDto;
+    const type = active.data.current.type as string;
+
+    if (type === 'monthly') {
+      const overId = String(over.id);
+      if (!overId.startsWith('day-')) return;
+      const newDateKey = overId.slice(4);
+      const oldDateKey = activity.activityDate ? formatDateKey(new Date(activity.activityDate)) : null;
+      if (!oldDateKey || newDateKey === oldDateKey) return;
+      setCalendarDragConfirm({ activity, oldDateKey, newDateKey });
+    } else if (type === 'weekly') {
+      const overId = String(over.id);
+      if (!overId.startsWith('slot-')) return;
+      const parts = overId.slice(5).split('-h-');
+      const newDateKey = parts[0];
+      const newHour = parseInt(parts[1], 10);
+      const oldDateKey = activity.activityDate ? formatDateKey(new Date(activity.activityDate)) : null;
+      const oldHour = activity.startDateTime ? new Date(activity.startDateTime).getHours() : null;
+      if (!oldDateKey || (newDateKey === oldDateKey && newHour === oldHour)) return;
+      setCalendarDragConfirm({ activity, oldDateKey, newDateKey, oldHour: oldHour ?? 0, newHour });
+    }
+  };
+
+  const handleConfirmCalendarDrag = () => {
+    if (!calendarDragConfirm) return;
+    const { activity, newDateKey, newHour } = calendarDragConfirm;
+    const [y, m, d] = newDateKey.split('-').map(Number);
+
+    let newStart: Date;
+    let durationMs = 3600000;
+    if (activity.endDateTime) {
+      durationMs = new Date(activity.endDateTime).getTime() - new Date(activity.startDateTime).getTime();
+    }
+
+    if (newHour !== undefined) {
+      newStart = new Date(y, m - 1, d, newHour, 0, 0, 0);
+    } else {
+      const oldStart = new Date(activity.startDateTime);
+      newStart = new Date(y, m - 1, d, oldStart.getHours(), oldStart.getMinutes(), 0, 0);
+    }
+    const newEnd = new Date(newStart.getTime() + durationMs);
+
+    updateActivity.mutate({
+      id: activity.id,
+      data: {
+        subject: activity.subject,
+        description: activity.description,
+        activityTypeId: activity.activityTypeId,
+        startDateTime: newStart.toISOString(),
+        endDateTime: newEnd.toISOString(),
+        isAllDay: activity.isAllDay,
+        status: activity.status as ActivityStatus | number,
+        priority: activity.priority as ActivityPriority | number,
+        assignedUserId: activity.assignedUserId,
+        paymentTypeId: activity.paymentTypeId ?? null,
+        activityMeetingTypeId: activity.activityMeetingTypeId ?? null,
+        activityTopicPurposeId: activity.activityTopicPurposeId ?? null,
+        activityShippingId: activity.activityShippingId ?? null,
+        contactId: activity.contactId,
+        potentialCustomerId: activity.potentialCustomerId,
+        erpCustomerCode: activity.erpCustomerCode,
+        reminders: activity.reminders ?? [],
+      },
+    });
+    setCalendarDragConfirm(null);
+  };
+
+  const formatDateKeyLabel = (dateKey: string): string => {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString(i18n.language, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
   };
 
   const handleCreateFromCalendar = (date: Date, hour?: number) => {
@@ -1402,6 +1630,12 @@ export function DailyTasksPage(): ReactElement {
                       </span>
                     </div>
 
+                    <DndContext
+                      sensors={dndSensors}
+                      collisionDetection={closestCenter}
+                      onDragStart={handleCalendarDragStart}
+                      onDragEnd={handleCalendarDragEnd}
+                    >
                     {calendarViewMode === 'weekly' ? (
                       <div className="overflow-x-auto pb-2">
                         <div className="min-w-[600px]">
@@ -1423,30 +1657,23 @@ export function DailyTasksPage(): ReactElement {
                                   const isToday = day.toDateString() === new Date().toDateString();
                                   const isSelectedSlot =
                                     calendarFocusDate === formatDateKey(day) && calendarFocusHour === hour;
+                                  const slotId = `slot-${formatDateKey(day)}-h-${hour}`;
                                   return (
-                                    <div
-                                      key={`${day.toISOString()}-${hour}`}
+                                    <WeeklyDropSlot
+                                      key={slotId}
+                                      slotId={slotId}
+                                      isToday={isToday}
+                                      isSelected={isSelectedSlot}
                                       onClick={() => handleCalendarCellSelect(day, hour)}
                                       onDoubleClick={() => handleCreateFromCalendar(day, hour)}
-                                      className={`
-                                        min-h-[44px] md:min-h-[52px] p-1 cursor-pointer border hover:border-pink-500/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all
-                                        ${isSelectedSlot ? 'border-pink-500/70 bg-pink-50/70 dark:bg-pink-500/15 shadow-inner' : 'border-transparent'}
-                                        ${isToday ? 'bg-pink-50/30 dark:bg-pink-500/5' : 'bg-white/60 dark:bg-white/5'}
-                                      `}
                                     >
                                       <div className="space-y-0.5 overflow-hidden">
                                         {slotActivities.slice(0, 2).map((activity) => (
-                                          <div
+                                          <WeeklyDragChip
                                             key={activity.id}
-                                            role="button"
-                                            tabIndex={0}
-                                            className={`text-[9px] px-1 py-0.5 rounded truncate border font-medium cursor-pointer
-                                              ${activity.isCompleted ? 'bg-green-100/80 dark:bg-green-900/30 text-green-700 dark:text-green-400 line-through' : 'bg-indigo-100/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-200/50'}`}
-                                            title={activity.subject}
-                                            onClick={(e) => { e.stopPropagation(); handleEdit(activity); }}
-                                          >
-                                            {activity.subject}
-                                          </div>
+                                            activity={activity}
+                                            onEdit={() => handleEdit(activity)}
+                                          />
                                         ))}
                                         {slotActivities.length > 2 && (
                                           <button
@@ -1465,7 +1692,7 @@ export function DailyTasksPage(): ReactElement {
                                           </button>
                                         )}
                                       </div>
-                                    </div>
+                                    </WeeklyDropSlot>
                                   );
                                 })}
                               </div>
@@ -1486,17 +1713,16 @@ export function DailyTasksPage(): ReactElement {
                               const isCurrentMonth = dayData.date.getMonth() === calendarMonth.getMonth();
                               const isToday = dayData.date.toDateString() === new Date().toDateString();
                               const isSelectedDay = calendarFocusDate === formatDateKey(dayData.date);
+                              const dateKey = formatDateKey(dayData.date);
                               return (
-                                <div
+                                <MonthlyDropCell
                                   key={index}
+                                  dateKey={dateKey}
+                                  isCurrentMonth={isCurrentMonth}
+                                  isToday={isToday}
+                                  isSelectedDay={isSelectedDay}
                                   onClick={() => handleCalendarCellSelect(dayData.date)}
                                   onDoubleClick={() => handleCreateFromCalendar(dayData.date)}
-                                  className={`
-                                    min-h-[80px] md:min-h-[120px] rounded-xl md:rounded-2xl p-2 md:p-3 cursor-pointer transition-all duration-200 border group
-                                    ${!isCurrentMonth ? 'opacity-30 bg-transparent border-transparent' : 'bg-white/40 dark:bg-white/5 border-slate-100 dark:border-white/10 hover:border-pink-500/50 hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-lg hover:-translate-y-1'}
-                                    ${isToday ? 'ring-2 ring-pink-500 ring-offset-2 dark:ring-offset-[#1a1025] bg-pink-50/50 dark:bg-pink-500/10' : ''}
-                                    ${isSelectedDay ? 'border-pink-500/60 bg-pink-50/70 dark:bg-pink-500/15 shadow-lg' : ''}
-                                  `}
                                 >
                                   <div className="flex justify-between items-start mb-2">
                                     <div className={`text-xs md:text-sm font-bold w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full ${isToday ? 'bg-pink-600 text-white shadow-lg shadow-pink-500/30' : 'text-slate-600 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-white/20'}`}>
@@ -1506,20 +1732,11 @@ export function DailyTasksPage(): ReactElement {
                                   </div>
                                   <div className="space-y-1 md:space-y-1.5 overflow-hidden">
                                     {dayData.activities.slice(0, 3).map((activity) => (
-                                      <div
+                                      <MonthlyDragChip
                                         key={activity.id}
-                                        role="button"
-                                        tabIndex={0}
-                                        className={`text-[9px] md:text-[10px] px-1 md:px-2 py-0.5 md:py-1 rounded-md truncate flex items-center gap-1 border font-medium transition-all cursor-pointer
-                                          ${activity.isCompleted 
-                                            ? 'bg-green-50/50 text-green-700 border-green-200/50 line-through opacity-70' 
-                                            : 'bg-indigo-50/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-500/20 hover:scale-105'}`}
-                                        title={activity.subject}
-                                        onClick={(e) => { e.stopPropagation(); handleEdit(activity); }}
-                                      >
-                                        <div className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full shrink-0 ${activity.priority === 'High' ? 'bg-red-500' : activity.isCompleted ? 'bg-green-500' : 'bg-indigo-500'}`} />
-                                        <span className="truncate">{activity.subject}</span>
-                                      </div>
+                                        activity={activity}
+                                        onEdit={() => handleEdit(activity)}
+                                      />
                                     ))}
                                     {dayData.activities.length > 3 && (
                                       <button
@@ -1543,13 +1760,22 @@ export function DailyTasksPage(): ReactElement {
                                       </button>
                                     )}
                                   </div>
-                                </div>
+                                </MonthlyDropCell>
                               );
                             })}
                           </div>
                         </div>
                       </div>
                     )}
+                    <DragOverlay dropAnimation={null}>
+                      {activeDragActivity ? (
+                        <div className="flex items-center gap-1.5 rounded-lg border border-pink-400 bg-white px-2 py-1 text-[10px] font-semibold text-pink-700 shadow-lg shadow-pink-500/30 dark:border-pink-500/60 dark:bg-[#1a1025] dark:text-pink-300">
+                          <div className="h-1.5 w-1.5 rounded-full bg-pink-500" />
+                          <span className="max-w-[140px] truncate">{activeDragActivity.subject}</span>
+                        </div>
+                      ) : null}
+                    </DragOverlay>
+                    </DndContext>
                 </div>
 
                 </div>
@@ -1643,6 +1869,69 @@ export function DailyTasksPage(): ReactElement {
           </div>
         </SheetContent>
       </Sheet>
+
+      <AlertDialog
+        open={calendarDragConfirm !== null}
+        onOpenChange={(open) => { if (!open) setCalendarDragConfirm(null); }}
+      >
+        <AlertDialogContent className="border-white/10 bg-white/95 backdrop-blur-2xl dark:bg-[#140d20]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t('dailyTasks.rescheduleTitle', { defaultValue: 'Aktiviteyi yeniden zamanla' })}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
+                <p>
+                  <span className="font-semibold text-slate-900 dark:text-white">
+                    {calendarDragConfirm?.activity.subject}
+                  </span>{' '}
+                  {t('dailyTasks.rescheduleQuestion', { defaultValue: 'aktivitesini taşımak istiyor musunuz?' })}
+                </p>
+                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-white/10 dark:bg-white/5">
+                  <div className="flex-1 text-center">
+                    <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      {t('dailyTasks.rescheduleFrom', { defaultValue: 'Mevcut' })}
+                    </div>
+                    <div className="mt-0.5 font-semibold text-slate-700 dark:text-slate-200">
+                      {calendarDragConfirm ? formatDateKeyLabel(calendarDragConfirm.oldDateKey) : '—'}
+                      {calendarDragConfirm?.oldHour !== undefined && (
+                        <span className="ml-1 text-xs font-normal text-slate-500">
+                          {String(calendarDragConfirm.oldHour).padStart(2, '0')}:00
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />
+                  <div className="flex-1 text-center">
+                    <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      {t('dailyTasks.rescheduleTo', { defaultValue: 'Yeni' })}
+                    </div>
+                    <div className="mt-0.5 font-semibold text-pink-600 dark:text-pink-400">
+                      {calendarDragConfirm ? formatDateKeyLabel(calendarDragConfirm.newDateKey) : '—'}
+                      {calendarDragConfirm?.newHour !== undefined && (
+                        <span className="ml-1 text-xs font-normal text-pink-500">
+                          {String(calendarDragConfirm.newHour).padStart(2, '0')}:00
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setCalendarDragConfirm(null)}>
+              {t('dailyTasks.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmCalendarDrag}
+              className="bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-500"
+            >
+              {t('dailyTasks.rescheduleConfirm', { defaultValue: 'Güncelle' })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={dragConfirm !== null} onOpenChange={(open) => { if (!open) setDragConfirm(null); }}>
         <AlertDialogContent className="border-white/10 bg-white/95 backdrop-blur-2xl dark:bg-[#140d20]">
