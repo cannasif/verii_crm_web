@@ -27,6 +27,44 @@ export const activityApi = {
     throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.listLoadError'));
   },
 
+  getAllList: async (
+    params: Omit<PagedParams, 'filters'> & { filters?: PagedFilter[] | Record<string, unknown> }
+  ): Promise<PagedResponse<ActivityDto>> => {
+    const firstPage = await activityApi.getList({
+      ...params,
+      pageNumber: 1,
+    });
+
+    if (firstPage.totalPages <= 1) {
+      return firstPage;
+    }
+
+    const remainingPages = await Promise.all(
+      Array.from({ length: firstPage.totalPages - 1 }, (_, index) =>
+        activityApi.getList({
+          ...params,
+          pageNumber: index + 2,
+        })
+      )
+    );
+
+    const mergedData = [
+      ...(firstPage.data ?? []),
+      ...remainingPages.flatMap((page) => page.data ?? []),
+    ];
+
+    return {
+      ...firstPage,
+      data: mergedData,
+      pageNumber: 1,
+      pageSize: mergedData.length || firstPage.pageSize,
+      totalCount: mergedData.length,
+      totalPages: 1,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    };
+  },
+
   getById: async (id: number): Promise<ActivityDto> => {
     const response = await api.get<ApiResponse<ActivityDto>>(`/api/Activity/${id}`);
     if (response.success && response.data) {
