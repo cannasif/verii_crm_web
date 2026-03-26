@@ -352,6 +352,9 @@ export function OrderCreateForm(): ReactElement {
                       quotationNotes={quotationNotes}
                       onQuotationNotesChange={setQuotationNotes}
                       lines={lines}
+                      onCurrencyChange={async (_oldCurrency, newCurrency) => {
+                        await handleCurrencyChange(String(newCurrency));
+                      }}
                       onLinesChange={async () => {
                         const newCurrency = form.getValues('order.currency');
                         if (newCurrency) {

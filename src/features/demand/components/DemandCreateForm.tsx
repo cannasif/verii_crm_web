@@ -355,6 +355,9 @@ export function DemandCreateForm(): ReactElement {
                       quotationNotes={quotationNotes}
                       onQuotationNotesChange={setQuotationNotes}
                       lines={lines}
+                      onCurrencyChange={async (_oldCurrency, newCurrency) => {
+                        await handleCurrencyChange(String(newCurrency));
+                      }}
                       onLinesChange={async () => {
                         const newCurrency = form.getValues('demand.currency');
                         if (newCurrency) {

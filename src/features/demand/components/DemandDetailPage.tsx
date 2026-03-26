@@ -565,6 +565,9 @@ export function DemandDetailPage(): ReactElement {
                           await handleCurrencyChange(newCurrency);
                         }
                       }}
+                      onCurrencyChange={async (_oldCurrency, newCurrency) => {
+                        await handleCurrencyChange(String(newCurrency));
+                      }}
                       initialCurrency={demand?.currency}
                       revisionNo={demand?.revisionNo}
                       demandId={demandId}
