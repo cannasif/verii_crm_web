@@ -235,8 +235,8 @@ function createActivityStarterElements(): PdfCanvasElement[] {
       y: 124,
       width: 150,
       height: 90,
-      text: 'Kartvizit',
-      path: 'PrimaryImageUrl',
+      text: 'Müşteri Kartviziti',
+      path: 'CustomerLatestImageUrl',
       style: { imageFit: 'contain', border: '1px dashed #94a3b8', radius: 8, padding: 6 },
     },
     {
