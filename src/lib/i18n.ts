@@ -72,12 +72,30 @@ export async function loadLanguage(lang: string): Promise<void> {
   const target = normalizeLang(lang) ?? fallbackLng;
   const langLoaders = loaders[target] || {};
   const entries = Object.entries(langLoaders);
-  await Promise.all(
-    entries.map(async ([ns, loader]) => {
-      const mod = await loader();
-      i18n.addResourceBundle(target, ns, withNamespaceCompatibility(ns, mod.default), true, true);
-    })
-  );
+
+  const loadedModules: Record<string, Record<string, unknown>> = {};
+  for (const [ns, loader] of entries) {
+    const mod = await loader();
+    loadedModules[ns] = mod.default;
+  }
+
+  const scopedBundleByNs: Record<string, Record<string, unknown>> = {};
+  for (const [ns, bundle] of Object.entries(loadedModules)) {
+    const scoped =
+      typeof bundle[ns] === 'object' && bundle[ns] !== null ? (bundle[ns] as Record<string, unknown>) : bundle;
+    scopedBundleByNs[ns] = scoped;
+  }
+
+  for (const ns of Object.keys(loadedModules)) {
+    const baseCompatibility = withNamespaceCompatibility(ns, loadedModules[ns]);
+    for (const [otherNs, scopedBundle] of Object.entries(scopedBundleByNs)) {
+      // Ensures `t('quotation.*')` works even when the active namespace is `common`.
+      (baseCompatibility as Record<string, unknown>)[otherNs] = scopedBundle;
+      (baseCompatibility as Record<string, unknown>)[toCamelCase(otherNs)] = scopedBundle;
+    }
+
+    i18n.addResourceBundle(target, ns, baseCompatibility, true, true);
+  }
 }
 
 const initPromise = (async () => {
