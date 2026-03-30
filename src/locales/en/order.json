@@ -27,7 +27,18 @@
     "createNew": "Yeni Sipariş Oluştur",
     "cardTitle": "Sipariş listesi",
     "refresh": "Yenile",
-    "actions": "İşlemler"
+    "actions": "İşlemler",
+    "id": "ID",
+    "offerNo": "Offer No",
+    "revisionNo": "Revizyon No",
+    "customer": "Customer",
+    "customerCode": "Customer Code",
+    "representative": "Sales Representative",
+    "offerDate": "Offer Date",
+    "validUntil": "Valid Until",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status"
   },
   "detail": {
     "title": "Order Detail",
@@ -86,7 +97,7 @@
     "add": "Add Line",
     "empty": "No lines added yet",
     "emptyDescription": "Use \"Select Stock\" or \"Add Line\" button to add order lines",
-    "itemCount": "line",
+    "itemCount": "{{count}} lines",
     "editLine": "Edit Line",
     "selectStock": "Select Stock",
     "selectProduct": "Select Product",

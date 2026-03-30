@@ -202,8 +202,11 @@ export interface OrderGetDto {
   revisionNo?: string | null;
   revisionId?: number | null;
   currency: string;
+  currencyCode?: string | null;
+  currencyDisplay?: string | null;
   total: number;
   grandTotal: number;
+  grandTotalDisplay?: string | null;
   hasCustomerSpecificDiscount: boolean;
   validUntil?: string | null;
   contactId?: number | null;

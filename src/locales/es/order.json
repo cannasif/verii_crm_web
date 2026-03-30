@@ -27,7 +27,18 @@
     "title": "Sipariş Listesi",
     "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
     "createNew": "Yeni Sipariş Crear",
-    "actions": "İşlemler"
+    "actions": "İşlemler",
+    "id": "ID",
+    "offerNo": "Nº de Oferta",
+    "revisionNo": "Revizyon No",
+    "customer": "Cliente",
+    "customerCode": "Código de cliente",
+    "representative": "Representante de Ventas",
+    "offerDate": "Fecha de Oferta",
+    "validUntil": "Válido hasta",
+    "currency": "Moneda",
+    "grandTotal": "Gran Total",
+    "status": "Estado"
   },
   "detail": {
     "title": "Detalle de Cotización",
@@ -86,7 +97,7 @@
     "add": "Agregar Línea",
     "empty": "Aún no hay líneas agregadas",
     "emptyDescription": "Use el botón \"Seleccionar Stock\" o \"Agregar Línea\" para agregar líneas de cotización",
-    "itemCount": "línea",
+    "itemCount": "{{count}} líneas",
     "editLine": "Editar Línea",
     "selectStock": "Seleccionar Stock",
     "selectProduct": "Seleccionar Producto",

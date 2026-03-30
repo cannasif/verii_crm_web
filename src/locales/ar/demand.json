@@ -28,7 +28,18 @@
     "cardTitle": "Demand list",
     "refresh": "Refresh",
     "actions": "Actions",
-    "detail": "Detay"
+    "detail": "Detay",
+    "id": "ID",
+    "offerNo": "رقم الطلب",
+    "revisionNo": "Revision No",
+    "customer": "العميل",
+    "customerCode": "رمز العميل",
+    "representative": "مندوب المبيعات",
+    "offerDate": "تاريخ الطلب",
+    "validUntil": "صالح حتى",
+    "currency": "العملة",
+    "grandTotal": "المجموع الكلي",
+    "status": "الحالة"
   },
   "detail": {
     "title": "تفاصيل الطلب",
@@ -85,7 +96,7 @@
     "add": "إضافة بند",
     "empty": "لم تتم إضافة بنود بعد",
     "emptyDescription": "استخدم زر \"اختيار المخزون\" أو \"إضافة بند\" لإضافة بنود الطلب",
-    "itemCount": "بند",
+    "itemCount": "{{count}} بنود",
     "editLine": "تعديل البند",
     "selectStock": "اختيار المخزون",
     "selectProduct": "اختيار المنتج",

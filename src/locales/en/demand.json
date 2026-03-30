@@ -28,7 +28,18 @@
     "cardTitle": "Demand list",
     "refresh": "Refresh",
     "actions": "Actions",
-    "detail": "Detay"
+    "detail": "Detay",
+    "id": "ID",
+    "offerNo": "Demand No",
+    "revisionNo": "Revision No",
+    "customer": "Customer",
+    "customerCode": "Customer Code",
+    "representative": "Sales Representative",
+    "offerDate": "Demand Date",
+    "validUntil": "Valid Until",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status"
   },
   "detail": {
     "title": "Demand Detail",
@@ -85,7 +96,7 @@
     "add": "Add Line",
     "empty": "No lines added yet",
     "emptyDescription": "Use \"Select Stock\" or \"Add Line\" button to add demand lines",
-    "itemCount": "line",
+    "itemCount": "{{count}} lines",
     "editLine": "Edit Line",
     "selectStock": "Select Stock",
     "selectProduct": "Select Product",

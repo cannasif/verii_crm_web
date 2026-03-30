@@ -27,7 +27,18 @@
     "title": "Sipariş Listesi",
     "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
     "createNew": "Yeni Sipariş إنشاء",
-    "actions": "İşlemler"
+    "actions": "İşlemler",
+    "id": "ID",
+    "offerNo": "رقم العرض",
+    "revisionNo": "Revizyon No",
+    "customer": "العميل",
+    "customerCode": "رمز العميل",
+    "representative": "مندوب المبيعات",
+    "offerDate": "تاريخ العرض",
+    "validUntil": "صالح حتى",
+    "currency": "العملة",
+    "grandTotal": "الإجمالي الكلي",
+    "status": "الحالة"
   },
   "detail": {
     "title": "تفاصيل عرض السعر",
@@ -86,7 +97,7 @@
     "add": "إضافة بند",
     "empty": "لم تتم إضافة بنود بعد",
     "emptyDescription": "استخدم زر \"تحديد المخزون\" أو \"إضافة بند\" لإضافة بنود لعرض السعر",
-    "itemCount": "بند",
+    "itemCount": "{{count}} بنود",
     "editLine": "تعديل البند",
     "selectStock": "تحديد المخزون",
     "selectProduct": "تحديد المنتج",

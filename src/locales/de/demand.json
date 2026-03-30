@@ -28,7 +28,18 @@
     "cardTitle": "Demand list",
     "refresh": "Refresh",
     "actions": "Actions",
-    "detail": "Detay"
+    "detail": "Detay",
+    "id": "ID",
+    "offerNo": "Anforderungs-Nr.",
+    "revisionNo": "Revision No",
+    "customer": "Kunde",
+    "customerCode": "Kundencode",
+    "representative": "Vertriebsmitarbeiter",
+    "offerDate": "Anforderungsdatum",
+    "validUntil": "Gültig bis",
+    "currency": "Währung",
+    "grandTotal": "Gesamtsumme",
+    "status": "Status"
   },
   "detail": {
     "title": "Anforderungsdetails",
@@ -85,7 +96,7 @@
     "add": "Zeile hinzufügen",
     "empty": "Noch keine Zeilen hinzugefügt",
     "emptyDescription": "Verwenden Sie die Schaltfläche \"Lager auswählen\" oder \"Zeile hinzufügen\", um Anforderungszeilen hinzuzufügen",
-    "itemCount": "Zeile",
+    "itemCount": "{{count}} Zeilen",
     "editLine": "Zeile bearbeiten",
     "selectStock": "Lager auswählen",
     "selectProduct": "Produkt auswählen",

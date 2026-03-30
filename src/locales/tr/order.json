@@ -27,7 +27,18 @@
     "refresh": "Yenile",
     "actions": "İşlemler",
     "revise": "Revize et",
-    "showing": "{{from}}-{{to}} / {{total}} gösteriliyor"
+    "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+    "id": "ID",
+    "offerNo": "Sipariş No",
+    "revisionNo": "Revizyon No",
+    "customer": "Müşteri",
+    "customerCode": "Cari Kodu",
+    "representative": "Satış Temsilcisi",
+    "offerDate": "Sipariş Tarihi",
+    "validUntil": "Geçerlilik",
+    "currency": "Para Birimi",
+    "grandTotal": "Genel Toplam",
+    "status": "Durum"
   },
   "loadError": "Veriler yüklenirken hata oluştu.",
   "detail": {
@@ -90,7 +101,7 @@
     "empty": "Henüz satır eklenmedi",
     "noItems": "Henüz satır bulunmuyor",
     "emptyDescription": "Sipariş satırları eklemek için \"Stok Seç\" veya \"Satır Ekle\" butonunu kullanın",
-    "itemCount": "satır",
+    "itemCount": "{{count}} satır",
     "editLine": "Satır Düzenle",
     "selectStock": "Stok Seç",
     "selectProduct": "Ürün Seç",

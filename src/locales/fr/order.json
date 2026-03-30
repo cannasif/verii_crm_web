@@ -27,7 +27,18 @@
     "title": "Sipariş Listesi",
     "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
     "createNew": "Yeni Sipariş Créer",
-    "actions": "İşlemler"
+    "actions": "İşlemler",
+    "id": "ID",
+    "offerNo": "N° Offre",
+    "revisionNo": "Revizyon No",
+    "customer": "Client",
+    "customerCode": "Code client",
+    "representative": "Représentant Commercial",
+    "offerDate": "Date de l'Offre",
+    "validUntil": "Valable jusqu’au",
+    "currency": "Devise",
+    "grandTotal": "Total Général",
+    "status": "Statut"
   },
   "detail": {
     "title": "Détail du Devis",
@@ -86,7 +97,7 @@
     "add": "Ajouter Ligne",
     "empty": "Aucune ligne ajoutée pour le moment",
     "emptyDescription": "Utilisez le bouton \"Sélectionner Stock\" ou \"Ajouter Ligne\" pour ajouter des lignes de devis",
-    "itemCount": "articles",
+    "itemCount": "{{count}} lignes",
     "editLine": "Modifier Ligne",
     "selectStock": "Sélectionner Stock",
     "selectProduct": "Sélectionner Produit",

@@ -28,7 +28,18 @@
     "searchPlaceholder": "Talep no veya müşteri adı ile ara...",
     "cardTitle": "Talep listesi",
     "refresh": "Yenile",
-    "actions": "İşlemler"
+    "actions": "İşlemler",
+    "id": "ID",
+    "offerNo": "Talep No",
+    "revisionNo": "Revizyon No",
+    "customer": "Müşteri",
+    "customerCode": "Cari Kodu",
+    "representative": "Satış Temsilcisi",
+    "offerDate": "Talep Tarihi",
+    "validUntil": "Geçerlilik",
+    "currency": "Para Birimi",
+    "grandTotal": "Genel Toplam",
+    "status": "Durum"
   },
   "detail": {
     "title": "Talep Detayı",
@@ -85,7 +96,7 @@
     "add": "Satır Ekle",
     "empty": "Henüz satır eklenmedi",
     "emptyDescription": "Talep satırları eklemek için \"Stok Seç\" veya \"Satır Ekle\" butonunu kullanın",
-    "itemCount": "satır",
+    "itemCount": "{{count}} satır",
     "editLine": "Satırı Düzenle",
     "selectStock": "Stok Seç",
     "selectProduct": "Ürün Seç",

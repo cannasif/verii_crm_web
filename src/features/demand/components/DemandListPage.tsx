@@ -36,9 +36,12 @@ const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 type DemandColumnKey =
   | 'Id'
   | 'OfferNo'
+  | 'RevisionNo'
   | 'PotentialCustomerName'
+  | 'ErpCustomerCode'
   | 'RepresentativeName'
   | 'OfferDate'
+  | 'ValidUntil'
   | 'Currency'
   | 'GrandTotal'
   | 'Status';
@@ -54,9 +57,12 @@ type DemandColumnConfig = {
 const DEMAND_COLUMN_CONFIG: readonly DemandColumnConfig[] = [
   { key: 'Id', labelKey: 'demand.list.id', fallbackLabel: 'ID', filterType: 'number' },
   { key: 'OfferNo', labelKey: 'demand.list.offerNo', fallbackLabel: 'Teklif No', filterType: 'string' },
+  { key: 'RevisionNo', labelKey: 'demand.list.revisionNo', fallbackLabel: 'Revize No', filterType: 'string' },
   { key: 'PotentialCustomerName', labelKey: 'demand.list.customer', fallbackLabel: 'Müşteri', filterType: 'string' },
+  { key: 'ErpCustomerCode', labelKey: 'demand.list.customerCode', fallbackLabel: 'Cari Kodu', filterType: 'string' },
   { key: 'RepresentativeName', labelKey: 'demand.list.representative', fallbackLabel: 'Temsilci', filterType: 'string' },
   { key: 'OfferDate', labelKey: 'demand.list.offerDate', fallbackLabel: 'Tarih', filterType: 'date' },
+  { key: 'ValidUntil', labelKey: 'demand.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'demand.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
   { key: 'GrandTotal', labelKey: 'demand.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
   { key: 'Status', labelKey: 'demand.list.status', fallbackLabel: 'Durum', filterType: 'number' },
@@ -67,8 +73,11 @@ function resolveLabel(
   key: string,
   fallback: string
 ): string {
-  const translated = t(key);
-  return translated && translated !== key ? translated : fallback;
+  const MISSING_TRANSLATION = 'Çeviri eksik';
+  const ns = key.split('.')[0];
+  const translated = t(key, { ns });
+  if (!translated || translated === MISSING_TRANSLATION || translated === key) return fallback;
+  return translated;
 }
 
 export function DemandListPage(): ReactElement {
@@ -167,22 +176,42 @@ export function DemandListPage(): ReactElement {
     []
   );
 
+  const getCurrencyLabel = useCallback((demand: DemandGetDto): string => {
+    return demand.currencyDisplay || demand.currencyCode || demand.currency || '-';
+  }, []);
+
+  const getGrandTotalLabel = useCallback((demand: DemandGetDto): string => {
+    if (demand.grandTotalDisplay) {
+      return demand.grandTotalDisplay;
+    }
+
+    const numericGrandTotal = Number(demand.grandTotal);
+    if (Number.isNaN(numericGrandTotal)) {
+      return '-';
+    }
+
+    return formatCurrency(numericGrandTotal, demand.currencyCode || demand.currency || 'TRY');
+  }, []);
+
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
       currentPageRows.map((demand) => ({
         Id: demand.id,
         OfferNo: demand.offerNo ?? '-',
+        RevisionNo: demand.revisionNo ?? '-',
         PotentialCustomerName: demand.potentialCustomerName ?? '-',
+        ErpCustomerCode: demand.erpCustomerCode ?? '-',
         RepresentativeName: demand.representativeName ?? '-',
         OfferDate: demand.offerDate ? new Date(demand.offerDate).toLocaleDateString(i18n.language) : '-',
-        Currency: demand.currency ?? '-',
-        GrandTotal: formatCurrency(demand.grandTotal, demand.currency ?? 'TRY'),
+        ValidUntil: demand.validUntil ? new Date(demand.validUntil).toLocaleDateString(i18n.language) : '-',
+        Currency: getCurrencyLabel(demand),
+        GrandTotal: getGrandTotalLabel(demand),
         Status:
           typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
             : '-',
       })),
-    [currentPageRows, t, i18n.language]
+    [currentPageRows, getCurrencyLabel, getGrandTotalLabel, t, i18n.language]
   );
 
   const exportColumns = useMemo(
@@ -211,18 +240,21 @@ export function DemandListPage(): ReactElement {
       rows: list.map((demand: DemandGetDto) => ({
         Id: demand.id,
         OfferNo: demand.offerNo ?? '-',
+        RevisionNo: demand.revisionNo ?? '-',
         PotentialCustomerName: demand.potentialCustomerName ?? '-',
+        ErpCustomerCode: demand.erpCustomerCode ?? '-',
         RepresentativeName: demand.representativeName ?? '-',
         OfferDate: demand.offerDate ? new Date(demand.offerDate).toLocaleDateString(i18n.language) : '-',
-        Currency: demand.currency ?? '-',
-        GrandTotal: formatCurrency(demand.grandTotal, demand.currency ?? 'TRY'),
+        ValidUntil: demand.validUntil ? new Date(demand.validUntil).toLocaleDateString(i18n.language) : '-',
+        Currency: getCurrencyLabel(demand),
+        GrandTotal: getGrandTotalLabel(demand),
         Status:
           typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
             : '-',
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, t, i18n.language]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, getCurrencyLabel, getGrandTotalLabel, t, i18n.language]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -256,11 +288,14 @@ export function DemandListPage(): ReactElement {
   const renderCell = (demand: DemandGetDto, key: DemandColumnKey): ReactElement | string | number => {
     if (key === 'Id') return demand.id;
     if (key === 'OfferNo') return demand.offerNo || '-';
+    if (key === 'RevisionNo') return demand.revisionNo || '-';
     if (key === 'PotentialCustomerName') return demand.potentialCustomerName || '-';
+    if (key === 'ErpCustomerCode') return demand.erpCustomerCode || '-';
     if (key === 'RepresentativeName') return demand.representativeName || '-';
     if (key === 'OfferDate') return formatDate(demand.offerDate);
-    if (key === 'Currency') return demand.currency || '-';
-    if (key === 'GrandTotal') return formatCurrency(demand.grandTotal, demand.currency || 'TRY');
+    if (key === 'ValidUntil') return formatDate(demand.validUntil);
+    if (key === 'Currency') return getCurrencyLabel(demand);
+    if (key === 'GrandTotal') return getGrandTotalLabel(demand);
     if (key === 'Status') {
       return typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4 ? (
         <ApprovalStatusBadge status={demand.status as ApprovalStatus} />
@@ -342,7 +377,7 @@ export function DemandListPage(): ReactElement {
       >
         <Mail className="h-4 w-4" />
       </Button>
-      {(demand.status === 0 || demand.status === 1) && (
+      {(demand.status === 0 || demand.status === 3) && (
         <Button
           variant="ghost"
           size="icon"
@@ -498,6 +533,12 @@ export function DemandListPage(): ReactElement {
         customerId={selectedDemand?.potentialCustomerId}
         contactId={selectedDemand?.contactId}
         customerName={selectedDemand?.potentialCustomerName}
+        customerCode={selectedDemand?.erpCustomerCode}
+        recordNo={selectedDemand?.offerNo}
+        revisionNo={selectedDemand?.revisionNo}
+        totalAmountDisplay={selectedDemand?.grandTotalDisplay ?? undefined}
+        validUntil={selectedDemand?.validUntil}
+        recordOwnerName={selectedDemand?.representativeName}
       />
       <OutlookCustomerMailDialog
         open={outlookMailDialogOpen}
@@ -507,6 +548,12 @@ export function DemandListPage(): ReactElement {
         customerId={selectedDemand?.potentialCustomerId}
         contactId={selectedDemand?.contactId}
         customerName={selectedDemand?.potentialCustomerName}
+        customerCode={selectedDemand?.erpCustomerCode}
+        recordNo={selectedDemand?.offerNo}
+        revisionNo={selectedDemand?.revisionNo}
+        totalAmountDisplay={selectedDemand?.grandTotalDisplay ?? undefined}
+        validUntil={selectedDemand?.validUntil}
+        recordOwnerName={selectedDemand?.representativeName}
       />
     </div>
   );

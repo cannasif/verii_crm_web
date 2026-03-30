@@ -28,7 +28,18 @@
     "cardTitle": "Demand list",
     "refresh": "Refresh",
     "actions": "Actions",
-    "detail": "Detay"
+    "detail": "Detay",
+    "id": "ID",
+    "offerNo": "N° de Demande",
+    "revisionNo": "Revision No",
+    "customer": "Client",
+    "customerCode": "Code client",
+    "representative": "Représentant Commercial",
+    "offerDate": "Date de la Demande",
+    "validUntil": "Valable jusqu’au",
+    "currency": "Devise",
+    "grandTotal": "Total Général",
+    "status": "Statut"
   },
   "detail": {
     "title": "Détail de la Demande",
@@ -85,7 +96,7 @@
     "add": "Ajouter une Ligne",
     "empty": "Aucune ligne ajoutée pour le moment",
     "emptyDescription": "Utilisez le bouton \"Sélectionner Stock\" ou \"Ajouter Ligne\" pour ajouter des lignes",
-    "itemCount": "ligne",
+    "itemCount": "{{count}} lignes",
     "editLine": "Modifier la Ligne",
     "selectStock": "Sélectionner Stock",
     "selectProduct": "Sélectionner Produit",

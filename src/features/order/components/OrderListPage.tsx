@@ -36,9 +36,12 @@ const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 type OrderColumnKey =
   | 'Id'
   | 'OfferNo'
+  | 'RevisionNo'
   | 'PotentialCustomerName'
+  | 'ErpCustomerCode'
   | 'RepresentativeName'
   | 'OfferDate'
+  | 'ValidUntil'
   | 'Currency'
   | 'GrandTotal'
   | 'Status';
@@ -54,9 +57,12 @@ type OrderColumnConfig = {
 const ORDER_COLUMN_CONFIG: readonly OrderColumnConfig[] = [
   { key: 'Id', labelKey: 'order.list.id', fallbackLabel: 'ID', filterType: 'number' },
   { key: 'OfferNo', labelKey: 'order.list.offerNo', fallbackLabel: 'Teklif No', filterType: 'string' },
+  { key: 'RevisionNo', labelKey: 'order.list.revisionNo', fallbackLabel: 'Revize No', filterType: 'string' },
   { key: 'PotentialCustomerName', labelKey: 'order.list.customer', fallbackLabel: 'Müşteri', filterType: 'string' },
+  { key: 'ErpCustomerCode', labelKey: 'order.list.customerCode', fallbackLabel: 'Cari Kodu', filterType: 'string' },
   { key: 'RepresentativeName', labelKey: 'order.list.representative', fallbackLabel: 'Temsilci', filterType: 'string' },
   { key: 'OfferDate', labelKey: 'order.list.offerDate', fallbackLabel: 'Tarih', filterType: 'date' },
+  { key: 'ValidUntil', labelKey: 'order.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'order.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
   { key: 'GrandTotal', labelKey: 'order.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
   { key: 'Status', labelKey: 'order.list.status', fallbackLabel: 'Durum', filterType: 'number' },
@@ -67,8 +73,11 @@ function resolveLabel(
   key: string,
   fallback: string
 ): string {
-  const translated = t(key);
-  return translated && translated !== key ? translated : fallback;
+  const MISSING_TRANSLATION = 'Çeviri eksik';
+  const ns = key.split('.')[0];
+  const translated = t(key, { ns });
+  if (!translated || translated === MISSING_TRANSLATION || translated === key) return fallback;
+  return translated;
 }
 
 export function OrderListPage(): ReactElement {
@@ -174,6 +183,23 @@ export function OrderListPage(): ReactElement {
     []
   );
 
+  const getCurrencyLabel = useCallback((order: OrderGetDto): string => {
+    return order.currencyDisplay || order.currencyCode || order.currency || '-';
+  }, []);
+
+  const getGrandTotalLabel = useCallback((order: OrderGetDto): string => {
+    if (order.grandTotalDisplay) {
+      return order.grandTotalDisplay;
+    }
+
+    const numericGrandTotal = Number(order.grandTotal);
+    if (Number.isNaN(numericGrandTotal)) {
+      return '-';
+    }
+
+    return formatCurrency(numericGrandTotal, order.currencyCode || order.currency || 'TRY');
+  }, []);
+
   const exportColumns = useMemo(
     () =>
       orderedVisibleColumns.map((key) => {
@@ -193,16 +219,19 @@ export function OrderListPage(): ReactElement {
       currentPageRows.map((order) => ({
         Id: order.id,
         OfferNo: order.offerNo ?? '-',
+        RevisionNo: order.revisionNo ?? '-',
         PotentialCustomerName: order.potentialCustomerName ?? '-',
+        ErpCustomerCode: order.erpCustomerCode ?? '-',
         RepresentativeName: order.representativeName ?? '-',
         OfferDate: order.offerDate ? new Date(order.offerDate).toLocaleDateString(i18n.language) : '-',
-        Currency: order.currency ?? '-',
-        GrandTotal: formatCurrency(order.grandTotal, order.currency ?? 'TRY'),
+        ValidUntil: order.validUntil ? new Date(order.validUntil).toLocaleDateString(i18n.language) : '-',
+        Currency: getCurrencyLabel(order),
+        GrandTotal: getGrandTotalLabel(order),
         Status: typeof order.status === 'number' && order.status >= 0 && order.status <= 4
           ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][order.status]}`)
           : '-',
       })),
-    [currentPageRows, t, i18n.language]
+    [currentPageRows, getCurrencyLabel, getGrandTotalLabel, t, i18n.language]
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
@@ -222,17 +251,20 @@ export function OrderListPage(): ReactElement {
       rows: list.map((order: OrderGetDto) => ({
         Id: order.id,
         OfferNo: order.offerNo ?? '-',
+        RevisionNo: order.revisionNo ?? '-',
         PotentialCustomerName: order.potentialCustomerName ?? '-',
+        ErpCustomerCode: order.erpCustomerCode ?? '-',
         RepresentativeName: order.representativeName ?? '-',
         OfferDate: order.offerDate ? new Date(order.offerDate).toLocaleDateString(i18n.language) : '-',
-        Currency: order.currency ?? '-',
-        GrandTotal: formatCurrency(order.grandTotal, order.currency ?? 'TRY'),
+        ValidUntil: order.validUntil ? new Date(order.validUntil).toLocaleDateString(i18n.language) : '-',
+        Currency: getCurrencyLabel(order),
+        GrandTotal: getGrandTotalLabel(order),
         Status: typeof order.status === 'number' && order.status >= 0 && order.status <= 4
           ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][order.status]}`)
           : '-',
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, t, i18n.language]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, getCurrencyLabel, getGrandTotalLabel, t, i18n.language]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -261,11 +293,14 @@ export function OrderListPage(): ReactElement {
   const renderCell = (order: OrderGetDto, key: OrderColumnKey): ReactElement | string | number => {
     if (key === 'Id') return order.id;
     if (key === 'OfferNo') return order.offerNo || '-';
+    if (key === 'RevisionNo') return order.revisionNo || '-';
     if (key === 'PotentialCustomerName') return order.potentialCustomerName || '-';
+    if (key === 'ErpCustomerCode') return order.erpCustomerCode || '-';
     if (key === 'RepresentativeName') return order.representativeName || '-';
     if (key === 'OfferDate') return formatDate(order.offerDate);
-    if (key === 'Currency') return order.currency || '-';
-    if (key === 'GrandTotal') return formatCurrency(order.grandTotal, order.currency || 'TRY');
+    if (key === 'ValidUntil') return formatDate(order.validUntil);
+    if (key === 'Currency') return getCurrencyLabel(order);
+    if (key === 'GrandTotal') return getGrandTotalLabel(order);
     if (key === 'Status') {
       return typeof order.status === 'number' && order.status >= 0 && order.status <= 4 ? (
         <ApprovalStatusBadge status={order.status as ApprovalStatus} />
@@ -332,7 +367,7 @@ export function OrderListPage(): ReactElement {
         <Mail className="h-4 w-4 mr-1" />
         {t('outlook-integration:mailDialog.openButton')}
       </Button>
-      {(order.status === 0 || order.status === 1) && (
+      {(order.status === 0 || order.status === 3) && (
         <Button
           variant="outline"
           size="sm"
@@ -486,6 +521,12 @@ export function OrderListPage(): ReactElement {
         customerId={selectedOrder?.potentialCustomerId}
         contactId={selectedOrder?.contactId}
         customerName={selectedOrder?.potentialCustomerName}
+        customerCode={selectedOrder?.erpCustomerCode}
+        recordNo={selectedOrder?.offerNo}
+        revisionNo={selectedOrder?.revisionNo}
+        totalAmountDisplay={selectedOrder?.grandTotalDisplay ?? undefined}
+        validUntil={selectedOrder?.validUntil}
+        recordOwnerName={selectedOrder?.representativeName}
       />
       <OutlookCustomerMailDialog
         open={outlookMailDialogOpen}
@@ -495,6 +536,12 @@ export function OrderListPage(): ReactElement {
         customerId={selectedOrder?.potentialCustomerId}
         contactId={selectedOrder?.contactId}
         customerName={selectedOrder?.potentialCustomerName}
+        customerCode={selectedOrder?.erpCustomerCode}
+        recordNo={selectedOrder?.offerNo}
+        revisionNo={selectedOrder?.revisionNo}
+        totalAmountDisplay={selectedOrder?.grandTotalDisplay ?? undefined}
+        validUntil={selectedOrder?.validUntil}
+        recordOwnerName={selectedOrder?.representativeName}
       />
     </div>
   );

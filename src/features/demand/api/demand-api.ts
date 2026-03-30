@@ -275,9 +275,25 @@ export const demandApi = {
   },
 
   getWaitingApprovals: async (): Promise<ApprovalActionGetDto[]> => {
-    const response = await api.get<ApiResponse<ApprovalActionGetDto[]>>('/api/demand/waiting-approvals');
+    const response = await api.get<
+      ApiResponse<ApprovalActionGetDto[] | PagedResponse<ApprovalActionGetDto>>
+    >('/api/demand/waiting-approvals');
     if (response.success && response.data) {
-      return response.data;
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+
+      const pagedData = response.data as PagedResponse<ApprovalActionGetDto> & {
+        items?: ApprovalActionGetDto[];
+      };
+
+      if (Array.isArray(pagedData.data)) {
+        return pagedData.data;
+      }
+
+      if (Array.isArray(pagedData.items)) {
+        return pagedData.items;
+      }
     }
     return [];
   },
@@ -494,7 +510,17 @@ export const demandApi = {
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: unknown; status?: number } };
         if (axiosError.response?.data) {
-          throw new Error(JSON.stringify(axiosError.response.data));
+          const payload = axiosError.response.data as {
+            message?: string;
+            exceptionMessage?: string;
+            errors?: string[];
+          };
+          const userMessage =
+            payload.message ||
+            payload.exceptionMessage ||
+            payload.errors?.find((item) => typeof item === 'string' && item.trim().length > 0) ||
+            'Talep revizyonu oluşturulamadı';
+          throw new Error(userMessage);
         }
       }
       throw error;

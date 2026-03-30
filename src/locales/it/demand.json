@@ -28,7 +28,18 @@
     "cardTitle": "Demand list",
     "refresh": "Refresh",
     "actions": "Actions",
-    "detail": "Detay"
+    "detail": "Detay",
+    "id": "ID",
+    "offerNo": "N. Richiesta",
+    "revisionNo": "Revision No",
+    "customer": "Cliente",
+    "customerCode": "Codice cliente",
+    "representative": "Rappresentante Vendite",
+    "offerDate": "Data Richiesta",
+    "validUntil": "Valido fino a",
+    "currency": "Valuta",
+    "grandTotal": "Totale Generale",
+    "status": "Stato"
   },
   "detail": {
     "title": "Dettaglio Richiesta",
@@ -85,7 +96,7 @@
     "add": "Aggiungi Riga",
     "empty": "Nessuna riga aggiunta ancora",
     "emptyDescription": "Usa il pulsante \"Seleziona Stock\" o \"Aggiungi Riga\" per aggiungere righe alla richiesta",
-    "itemCount": "riga",
+    "itemCount": "{{count}} righe",
     "editLine": "Modifica Riga",
     "selectStock": "Seleziona Stock",
     "selectProduct": "Seleziona Prodotto",
