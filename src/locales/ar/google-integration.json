@@ -100,28 +100,96 @@
   },
   "mailDialog": {
     "openButton": "إرسال بريد",
-    "title": "إرسال Google Mail",
-    "description": "تعديل the outgoing email for {{module}} #{{id}}.",
-    "missingCustomer": "لا customer is linked to this record. Customer is required to send mail.",
+    "title": "إرسال بريد Google",
+    "description": "حرّر البريد الصادر لـ {{module}} رقم {{id}}.",
+    "missingCustomer": "لا يوجد عميل مرتبط بهذا السجل. يلزم وجود عميل لإرسال البريد.",
     "templateLabel": "قالب",
-    "toLabel": "المستلم (To)",
-    "ccLabel": "CC",
-    "bccLabel": "BCC",
+    "toLabel": "المستلم (إلى)",
+    "ccLabel": "نسخة",
+    "bccLabel": "نسخة مخفية",
     "subjectLabel": "الموضوع",
     "bodyLabel": "الرسالة",
-    "isHtmlLabel": "إرسال as HTML",
-    "autoRecipientHint": "If empty, contact/customer email will be used automatically",
+    "isHtmlLabel": "إرسال كـ HTML",
+    "autoRecipientHint": "إذا تُرك فارغًا يُستخدم بريد جهة الاتصال أو العميل تلقائيًا",
     "recipientPlaceholder": "mail1@example.com; mail2@example.com",
     "cancel": "إلغاء",
     "send": "إرسال",
     "sending": "جارٍ الإرسال...",
-    "sendSuccess": "Mail sent successfully.",
-    "sendError": "Mail could not be sent.",
+    "sendSuccess": "تم إرسال البريد بنجاح.",
+    "sendError": "تعذّر إرسال البريد.",
+    "pdfCardTitle": "إنشاء وإرفاق PDF",
+    "pdfCardDescription": "اختر قالبًا لهذا النوع من المستندات. سيتم إضافة ملف PDF الناتج مباشرة كمرفق.",
+    "pdfTemplateLabel": "قالب PDF",
+    "pdfTemplatePlaceholder": "اختر قالبًا",
+    "pdfTemplateRequired": "يرجى اختيار قالب PDF أولاً.",
+    "generatingPdf": "جارٍ تجهيز PDF...",
+    "generatePdfAndAttach": "إنشاء وإرفاق",
+    "pdfAttached": "تم إنشاء PDF وإضافته إلى المرفقات.",
+    "pdfGenerateFailed": "تعذّر إنشاء PDF.",
+    "pdfTemplatesLoadFailed": "تعذّر تحميل قوالب PDF.",
+    "noPdfTemplates": "لا يوجد قالب PDF نشط لهذا النوع من المستندات.",
+    "readyToSend": "جاهز للإرسال",
+    "notReadyToSend": "حقول إلزامية مفقودة",
+    "subjectShort": "م",
+    "bodyShort": "ن",
+    "contextHeader": "سياق السجل",
+    "loadingContext": "جارٍ تحميل السياق",
+    "invalidRecipients": "يجب تصحيح عناوين البريد غير الصالحة قبل الإرسال.",
+    "fields": {
+      "recordNo": "رقم المستند",
+      "revisionNo": "المراجعة",
+      "customerCode": "رمز العميل",
+      "total": "الإجمالي",
+      "validUntil": "صالح حتى",
+      "owner": "مالك السجل"
+    },
+    "variableLabels": {
+      "module": "الوحدة",
+      "recordNo": "رقم المستند",
+      "revisionNo": "المراجعة",
+      "customer": "العميل",
+      "customerCode": "رمز العميل",
+      "contact": "جهة الاتصال",
+      "total": "الإجمالي",
+      "validUntil": "صالح حتى",
+      "owner": "مالك السجل"
+    },
+    "recipientAssistant": "اقتراحات المستلمين",
+    "addTo": "إضافة إلى إلى",
+    "ccShort": "نسخة",
+    "bccShort": "مخفي",
+    "noRecipientSuggestions": "لا توجد اقتراحات مستلمين بعد.",
+    "tabs": {
+      "compose": "تحرير",
+      "preview": "معاينة"
+    },
+    "autoResolvedTo": "سيستخدم الإرسال مستلمين تلقائيًا: {{emails}}",
+    "resolvedSubject": "الموضوع بعد الاستبدال",
+    "attachmentsTitle": "المرفقات",
+    "addAttachment": "إضافة ملف",
+    "removeAttachment": "إزالة المرفق",
+    "noAttachments": "لم يُحدد ملف بعد.",
+    "variablesTitle": "متغيرات القالب",
+    "insertSubject": "إدراج في الموضوع",
+    "insertBody": "إدراج في النص",
+    "deliveryPolicy": "سياسة الإرسال",
+    "policies": {
+      "validation": "يُمنع الإرسال إن وُجد عنوان غير صالح.",
+      "activity": "يُنشأ نشاط في CRM بعد إرسال ناجح.",
+      "logging": "يُحفظ سجل إرسال في النظام."
+    },
+    "previewHeader": "معاينة الإرسال",
+    "sources": {
+      "selectedContact": "جهة الاتصال المحددة",
+      "customerDefault": "افتراضي العميل",
+      "recentSend": "إرسالات حديثة"
+    },
+    "contextLoadError": "تعذّر تحميل السياق.",
     "modules": {
-      "activity": "Activity",
-      "demand": "Demand",
-      "quotation": "Quotation",
-      "order": "Order"
+      "activity": "نشاط",
+      "demand": "طلب",
+      "quotation": "عرض سعر",
+      "order": "أمر"
     },
     "templateNames": {
       "generic-info": "معلومات",
@@ -130,18 +198,23 @@
     },
     "templates": {
       "generic": {
-        "subject": "معلومات about {{module}} #{{id}}",
-        "body": "Hello,\n\nI would like to share information about {{module}} #{{id}} for customer {{customer}}.\n\nBest regards."
+        "subject": "{{module}} {{recordNo}} — معلومات",
+        "body": "<p>مرحبًا،</p><p>نود إبلاغكم بسجل <strong>{{module}}</strong> للعميل {{customer}}.</p><ul><li>المستند: {{recordNo}}</li><li>المراجعة: {{revisionNo}}</li><li>رمز العميل: {{customerCode}}</li><li>الإجمالي: {{total}}</li><li>صالح حتى: {{validUntil}}</li></ul><p>مع التحية،</p>"
       },
       "followUp": {
-        "subject": "Follow-up for {{module}} #{{id}}",
-        "body": "Hello,\n\nWe are reaching out for follow-up regarding {{module}} #{{id}} for {{customer}} / {{contact}}.\n\nCould you please get back to us when available?"
+        "subject": "{{module}} {{recordNo}} — متابعة",
+        "body": "<p>مرحبًا،</p><p>متابعة بشأن سجل {{module}} لـ {{customer}} / {{contact}}.</p><p>{{contextTitle}}</p><p>نرجو الرد عند التيسر.</p>"
       },
       "reminder": {
-        "subject": "تذكير for {{module}} #{{id}}",
-        "body": "Hello,\n\nThis is a reminder for {{module}} #{{id}} related to customer {{customer}}.\n\nThank you."
+        "subject": "{{module}} {{recordNo}} — تذكير",
+        "body": "<p>مرحبًا،</p><p>هذا تذكير بسجل {{module}} للعميل {{customer}}.</p><p>المستند: {{recordNo}}<br/>الإجمالي: {{total}}<br/>صالح حتى: {{validUntil}}</p><p>شكرًا.</p>"
       }
-    }
+    },
+    "activityLogEnabled": "A CRM activity and log are automatically created after successful sending.",
+    "clearDraft": "Clear draft",
+    "defaultPdfTemplate": "Recommended template",
+    "optionalPdfTemplate": "Selectable template",
+    "selectedPdfTemplateSummary": "Selected PDF template: {{name}}"
   },
   "logs": {
     "cardTitle": "سجلات تكامل Google",

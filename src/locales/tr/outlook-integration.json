@@ -148,6 +148,87 @@
         "subject": "{{module}} #{{id}} hatırlatma",
         "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı için hatırlatma iletisi.\n\nTeşekkürler."
       }
-    }
+    },
+    "contextHeader": "Kayıt bağlamı",
+    "loadingContext": "Bağlam yükleniyor",
+    "invalidRecipients": "Geçersiz e-posta adreslerini düzeltmeden gönderim yapılamaz.",
+    "fields": {
+      "recordNo": "Belge No",
+      "revisionNo": "Revize No",
+      "customerCode": "Cari Kodu",
+      "total": "Toplam",
+      "validUntil": "Geçerlilik",
+      "owner": "Kayıt Sahibi"
+    },
+    "variableLabels": {
+      "module": "Modül",
+      "recordNo": "Belge No",
+      "revisionNo": "Revize No",
+      "customer": "Müşteri",
+      "customerCode": "Cari Kodu",
+      "contact": "Kontak",
+      "total": "Toplam",
+      "validUntil": "Geçerlilik",
+      "owner": "Kayıt Sahibi"
+    },
+    "recipientAssistant": "Akıllı alıcı yardımı",
+    "addTo": "Kime ekle",
+    "ccShort": "CC",
+    "bccShort": "BCC",
+    "noRecipientSuggestions": "Henüz önerilen alıcı bulunamadı.",
+    "tabs": {
+      "compose": "Düzenle",
+      "preview": "Önizleme"
+    },
+    "autoResolvedTo": "Gönderimde otomatik alıcı kullanılacak: {{emails}}",
+    "resolvedSubject": "Önizleme konusu",
+    "attachmentsTitle": "Ekler",
+    "addAttachment": "Dosya ekle",
+    "removeAttachment": "Eki kaldır",
+    "noAttachments": "Henüz ek dosya seçilmedi.",
+    "variablesTitle": "Şablon değişkenleri",
+    "insertSubject": "Konuya ekle",
+    "insertBody": "Mesaja ekle",
+    "deliveryPolicy": "Gönderim politikası",
+    "policies": {
+      "validation": "Geçersiz adres varsa gönderim engellenir.",
+      "activity": "Başarılı gönderim sonrası CRM aktivitesi oluşturulur.",
+      "logging": "Gönderim kaydı sistemde saklanır."
+    },
+    "previewHeader": "Gönderim önizlemesi",
+    "sources": {
+      "selectedContact": "Seçili kontak",
+      "customerDefault": "Müşteri varsayılanı",
+      "recentSend": "Son gönderimler"
+    },
+    "contextLoadError": "Bağlam bilgileri yüklenemedi.",
+    "pdfCardTitle": "PDF oluştur ve ekle",
+    "pdfCardDescription": "Belge tipine uygun şablonu seçin. Oluşturulan PDF doğrudan bu e-postanın ekine eklenir.",
+    "pdfTemplateLabel": "PDF şablonu",
+    "pdfTemplatePlaceholder": "Şablon seçin",
+    "pdfTemplateRequired": "Önce kullanılacak PDF şablonunu seçin.",
+    "generatingPdf": "PDF hazırlanıyor...",
+    "generatePdfAndAttach": "Oluştur ve ekle",
+    "pdfAttached": "PDF oluşturuldu ve ekler listesine eklendi.",
+    "pdfGenerateFailed": "PDF oluşturulamadı.",
+    "pdfTemplatesLoadFailed": "PDF şablonları yüklenemedi.",
+    "noPdfTemplates": "Bu belge tipi için aktif PDF şablonu bulunamadı.",
+    "defaultPdfTemplate": "Varsayılan tasarım",
+    "optionalPdfTemplate": "Alternatif tasarım",
+    "selectedPdfTemplateSummary": "Seçili PDF tasarımı: {{name}}",
+    "sidebarTitle": "Hızlı yardım",
+    "sidebarSubtitle": "Mesajınızı hızlıca tamamlayın",
+    "subjectShort": "K",
+    "bodyShort": "M",
+    "summaryTitle": "Son kontrol",
+    "editorMode": "Editör",
+    "htmlMode": "Zengin HTML",
+    "textMode": "Düz metin",
+    "previewHint": "Gönderilmeden önce alıcıların göreceği son hali burada kontrol edin.",
+    "footerHint": "Geçersiz alıcılar gönderimden önce engellenir, başarılı gönderimler CRM aktivitesi olarak loglanır.",
+    "activityLogEnabled": "Başarılı gönderim sonrası CRM aktivitesi ve log kaydı otomatik oluşur.",
+    "clearDraft": "Taslağı Temizle",
+    "readyToSend": "Gönderime hazır",
+    "notReadyToSend": "Gönderim için zorunlu alanlar eksik"
   }
 }

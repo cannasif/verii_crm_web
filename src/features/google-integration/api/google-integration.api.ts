@@ -18,6 +18,7 @@ const GOOGLE_CUSTOMER_MAIL_BASE = '/api/customer-mail/google';
 
 function getErrorMessage(response: ApiResponse<unknown>, fallback: string): string {
   if (response.message?.trim()) return response.message;
+  if (response.exceptionMessage?.trim()) return response.exceptionMessage;
   if (response.errors?.length) return response.errors.join(' ');
   return fallback;
 }

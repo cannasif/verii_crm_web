@@ -148,6 +148,87 @@
         "subject": "Reminder for {{module}} #{{id}}",
         "body": "Hello,\n\nThis is a reminder for {{module}} #{{id}} belonging to customer {{customer}}.\n\nThank you."
       }
-    }
+    },
+    "contextHeader": "Record context",
+    "loadingContext": "Loading context",
+    "invalidRecipients": "Invalid email addresses must be fixed before sending.",
+    "fields": {
+      "recordNo": "Document no.",
+      "revisionNo": "Revision",
+      "customerCode": "Customer code",
+      "total": "Total",
+      "validUntil": "Valid until",
+      "owner": "Record owner"
+    },
+    "variableLabels": {
+      "module": "Module",
+      "recordNo": "Document no.",
+      "revisionNo": "Revision",
+      "customer": "Customer",
+      "customerCode": "Customer code",
+      "contact": "Contact",
+      "total": "Total",
+      "validUntil": "Valid until",
+      "owner": "Record owner"
+    },
+    "recipientAssistant": "Recipient suggestions",
+    "addTo": "Add to To",
+    "ccShort": "CC",
+    "bccShort": "BCC",
+    "noRecipientSuggestions": "No recipient suggestions yet.",
+    "tabs": {
+      "compose": "Compose",
+      "preview": "Preview"
+    },
+    "autoResolvedTo": "Send will use automatic recipients: {{emails}}",
+    "resolvedSubject": "Resolved subject",
+    "attachmentsTitle": "Attachments",
+    "addAttachment": "Add file",
+    "removeAttachment": "Remove attachment",
+    "noAttachments": "No files selected yet.",
+    "variablesTitle": "Template variables",
+    "insertSubject": "Insert in subject",
+    "insertBody": "Insert in body",
+    "deliveryPolicy": "Sending policy",
+    "policies": {
+      "validation": "Sending is blocked if any address is invalid.",
+      "activity": "A CRM activity is created after a successful send.",
+      "logging": "A send log is stored in the system."
+    },
+    "previewHeader": "Send preview",
+    "sources": {
+      "selectedContact": "Selected contact",
+      "customerDefault": "Customer default",
+      "recentSend": "Recent sends"
+    },
+    "contextLoadError": "Context could not be loaded.",
+    "pdfCardTitle": "Generate and attach PDF",
+    "pdfCardDescription": "Choose a template for this document type. The generated PDF is added directly as an attachment.",
+    "pdfTemplateLabel": "PDF template",
+    "pdfTemplatePlaceholder": "Select template",
+    "pdfTemplateRequired": "Please select a PDF template first.",
+    "generatingPdf": "Preparing PDF...",
+    "generatePdfAndAttach": "Generate and attach",
+    "pdfAttached": "PDF generated and added to attachments.",
+    "pdfGenerateFailed": "PDF could not be generated.",
+    "pdfTemplatesLoadFailed": "PDF templates could not be loaded.",
+    "noPdfTemplates": "No active PDF template found for this document type.",
+    "defaultPdfTemplate": "Default template",
+    "optionalPdfTemplate": "Alternative template",
+    "selectedPdfTemplateSummary": "Selected PDF template: {{name}}",
+    "sidebarTitle": "Quick help",
+    "sidebarSubtitle": "Complete your message quickly",
+    "subjectShort": "S",
+    "bodyShort": "B",
+    "summaryTitle": "Final check",
+    "editorMode": "Editor",
+    "htmlMode": "Rich HTML",
+    "textMode": "Plain text",
+    "previewHint": "Check the final version before sending.",
+    "footerHint": "Invalid recipients are blocked before sending and successful sends are logged as CRM activity.",
+    "activityLogEnabled": "A CRM activity and log are automatically created after successful sending.",
+    "clearDraft": "Clear draft",
+    "readyToSend": "Ready to send",
+    "notReadyToSend": "Required fields are missing"
   }
 }

@@ -38,6 +38,23 @@ export interface SendOutlookMailDto {
   templateKey?: string;
   templateName?: string;
   templateVersion?: string;
+  moduleKey?: 'activity' | 'demand' | 'quotation' | 'order';
+  recordId?: number;
+  recordNo?: string;
+  revisionNo?: string;
+  customerCode?: string;
+  totalAmountDisplay?: string;
+  validUntil?: string;
+  recordOwnerName?: string;
+  contextTitle?: string;
+  createActivityLog?: boolean;
+  attachments?: OutlookCustomerMailAttachmentDto[];
+}
+
+export interface OutlookCustomerMailAttachmentDto {
+  fileName: string;
+  contentType?: string | null;
+  base64Content: string;
 }
 
 export interface OutlookMailSendResultDto {
@@ -46,6 +63,7 @@ export interface OutlookMailSendResultDto {
   messageId?: string | null;
   conversationId?: string | null;
   sentAt?: string | null;
+  activityId?: number | null;
 }
 
 export interface OutlookCustomerMailLogDto {

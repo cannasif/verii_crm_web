@@ -100,28 +100,96 @@
   },
   "mailDialog": {
     "openButton": "Invia email",
-    "title": "Invia Google Mail",
-    "description": "Modifica the outgoing email for {{module}} #{{id}}.",
-    "missingCustomer": "No customer is linked to this record. Customer is required to send mail.",
-    "templateLabel": "Template",
-    "toLabel": "Destinatario (To)",
+    "title": "Invia email Google",
+    "description": "Modifica l'email in uscita per {{module}} n. {{id}}.",
+    "missingCustomer": "Nessun cliente è collegato a questo record. È necessario un cliente per inviare email.",
+    "templateLabel": "Modello",
+    "toLabel": "Destinatario (A)",
     "ccLabel": "CC",
-    "bccLabel": "BCC",
+    "bccLabel": "CCN",
     "subjectLabel": "Oggetto",
     "bodyLabel": "Messaggio",
-    "isHtmlLabel": "Invia as HTML",
-    "autoRecipientHint": "If empty, contact/customer email will be used automatically",
+    "isHtmlLabel": "Invia come HTML",
+    "autoRecipientHint": "Se vuoto, verrà usata automaticamente l'email del contatto o del cliente",
     "recipientPlaceholder": "mail1@example.com; mail2@example.com",
     "cancel": "Annulla",
     "send": "Invia",
     "sending": "Invio...",
-    "sendSuccess": "Mail sent successfully.",
-    "sendError": "Mail could not be sent.",
+    "sendSuccess": "Email inviata correttamente.",
+    "sendError": "Impossibile inviare l'email.",
+    "pdfCardTitle": "Genera e allega PDF",
+    "pdfCardDescription": "Seleziona un modello per questo tipo di documento. Il PDF generato viene aggiunto direttamente come allegato.",
+    "pdfTemplateLabel": "Modello PDF",
+    "pdfTemplatePlaceholder": "Seleziona modello",
+    "pdfTemplateRequired": "Seleziona prima un modello PDF.",
+    "generatingPdf": "Preparazione PDF...",
+    "generatePdfAndAttach": "Genera e allega",
+    "pdfAttached": "PDF generato e aggiunto agli allegati.",
+    "pdfGenerateFailed": "Impossibile generare il PDF.",
+    "pdfTemplatesLoadFailed": "Impossibile caricare i modelli PDF.",
+    "noPdfTemplates": "Nessun modello PDF attivo trovato per questo tipo di documento.",
+    "readyToSend": "Pronto per l'invio",
+    "notReadyToSend": "Campi obbligatori mancanti",
+    "subjectShort": "O",
+    "bodyShort": "M",
+    "contextHeader": "Contesto del record",
+    "loadingContext": "Caricamento contesto",
+    "invalidRecipients": "Correggere gli indirizzi non validi prima dell'invio.",
+    "fields": {
+      "recordNo": "N. documento",
+      "revisionNo": "Revisione",
+      "customerCode": "Codice cliente",
+      "total": "Totale",
+      "validUntil": "Valido fino al",
+      "owner": "Titolare del record"
+    },
+    "variableLabels": {
+      "module": "Modulo",
+      "recordNo": "N. documento",
+      "revisionNo": "Revisione",
+      "customer": "Cliente",
+      "customerCode": "Codice cliente",
+      "contact": "Contatto",
+      "total": "Totale",
+      "validUntil": "Valido fino al",
+      "owner": "Titolare del record"
+    },
+    "recipientAssistant": "Suggerimenti destinatari",
+    "addTo": "Aggiungi ad A",
+    "ccShort": "CC",
+    "bccShort": "CCN",
+    "noRecipientSuggestions": "Nessun suggerimento destinatario ancora.",
+    "tabs": {
+      "compose": "Componi",
+      "preview": "Anteprima"
+    },
+    "autoResolvedTo": "L'invio userà destinatari automatici: {{emails}}",
+    "resolvedSubject": "Oggetto risolto",
+    "attachmentsTitle": "Allegati",
+    "addAttachment": "Aggiungi file",
+    "removeAttachment": "Rimuovi allegato",
+    "noAttachments": "Nessun file selezionato.",
+    "variablesTitle": "Variabili del modello",
+    "insertSubject": "Inserisci nell'oggetto",
+    "insertBody": "Inserisci nel messaggio",
+    "deliveryPolicy": "Politica di invio",
+    "policies": {
+      "validation": "L'invio è bloccato se un indirizzo non è valido.",
+      "activity": "Dopo un invio riuscito viene creata un'attività CRM.",
+      "logging": "Viene salvato un log di invio nel sistema."
+    },
+    "previewHeader": "Anteprima invio",
+    "sources": {
+      "selectedContact": "Contatto selezionato",
+      "customerDefault": "Predefinito cliente",
+      "recentSend": "Invii recenti"
+    },
+    "contextLoadError": "Impossibile caricare il contesto.",
     "modules": {
-      "activity": "Activity",
-      "demand": "Demand",
-      "quotation": "Quotation",
-      "order": "Order"
+      "activity": "Attività",
+      "demand": "Richiesta",
+      "quotation": "Preventivo",
+      "order": "Ordine"
     },
     "templateNames": {
       "generic-info": "Informazione",
@@ -130,18 +198,23 @@
     },
     "templates": {
       "generic": {
-        "subject": "Informazione about {{module}} #{{id}}",
-        "body": "Hello,\n\nI would like to share information about {{module}} #{{id}} for customer {{customer}}.\n\nBest regards."
+        "subject": "{{module}} {{recordNo}} — informazione",
+        "body": "<p>Buongiorno,</p><p>vorremmo informarla sul record <strong>{{module}}</strong> del cliente {{customer}}.</p><ul><li>Documento: {{recordNo}}</li><li>Revisione: {{revisionNo}}</li><li>Codice cliente: {{customerCode}}</li><li>Totale: {{total}}</li><li>Valido fino al: {{validUntil}}</li></ul><p>Cordiali saluti,</p>"
       },
       "followUp": {
-        "subject": "Follow-up for {{module}} #{{id}}",
-        "body": "Hello,\n\nWe are reaching out for follow-up regarding {{module}} #{{id}} for {{customer}} / {{contact}}.\n\nCould you please get back to us when available?"
+        "subject": "{{module}} {{recordNo}} — follow-up",
+        "body": "<p>Buongiorno,</p><p>follow-up sul record {{module}} per {{customer}} / {{contact}}.</p><p>{{contextTitle}}</p><p>La preghiamo di rispondere quando possibile.</p>"
       },
       "reminder": {
-        "subject": "Promemoria for {{module}} #{{id}}",
-        "body": "Hello,\n\nThis is a reminder for {{module}} #{{id}} related to customer {{customer}}.\n\nThank you."
+        "subject": "{{module}} {{recordNo}} — promemoria",
+        "body": "<p>Buongiorno,</p><p>questo è un promemoria sul record {{module}} del cliente {{customer}}.</p><p>Documento: {{recordNo}}<br/>Totale: {{total}}<br/>Valido fino al: {{validUntil}}</p><p>Grazie.</p>"
       }
-    }
+    },
+    "activityLogEnabled": "A CRM activity and log are automatically created after successful sending.",
+    "clearDraft": "Clear draft",
+    "defaultPdfTemplate": "Recommended template",
+    "optionalPdfTemplate": "Selectable template",
+    "selectedPdfTemplateSummary": "Selected PDF template: {{name}}"
   },
   "logs": {
     "cardTitle": "Log integrazione Google",

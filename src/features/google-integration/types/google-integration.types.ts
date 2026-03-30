@@ -28,6 +28,23 @@ export interface SendGoogleCustomerMailDto {
   templateKey?: string;
   templateName?: string;
   templateVersion?: string;
+  moduleKey?: 'activity' | 'demand' | 'quotation' | 'order';
+  recordId?: number;
+  recordNo?: string;
+  revisionNo?: string;
+  customerCode?: string;
+  totalAmountDisplay?: string;
+  validUntil?: string;
+  recordOwnerName?: string;
+  contextTitle?: string;
+  createActivityLog?: boolean;
+  attachments?: GoogleCustomerMailAttachmentDto[];
+}
+
+export interface GoogleCustomerMailAttachmentDto {
+  fileName: string;
+  contentType?: string | null;
+  base64Content: string;
 }
 
 export interface GoogleCustomerMailSendResultDto {
@@ -36,6 +53,7 @@ export interface GoogleCustomerMailSendResultDto {
   googleMessageId?: string | null;
   googleThreadId?: string | null;
   sentAt?: string | null;
+  activityId?: number | null;
 }
 
 export interface GoogleCustomerMailLogDto {

@@ -117,6 +117,74 @@
     "sending": "Sending...",
     "sendSuccess": "Mail sent successfully.",
     "sendError": "Mail could not be sent.",
+    "pdfCardTitle": "Generate and attach PDF",
+    "pdfCardDescription": "Choose a template for this document type. The generated PDF is added directly as an attachment.",
+    "pdfTemplateLabel": "PDF template",
+    "pdfTemplatePlaceholder": "Select template",
+    "pdfTemplateRequired": "Please select a PDF template first.",
+    "generatingPdf": "Preparing PDF...",
+    "generatePdfAndAttach": "Generate and attach",
+    "pdfAttached": "PDF generated and added to attachments.",
+    "pdfGenerateFailed": "PDF could not be generated.",
+    "pdfTemplatesLoadFailed": "PDF templates could not be loaded.",
+    "noPdfTemplates": "No active PDF template found for this document type.",
+    "readyToSend": "Ready to send",
+    "notReadyToSend": "Required fields are missing",
+    "subjectShort": "S",
+    "bodyShort": "B",
+    "contextHeader": "Record context",
+    "loadingContext": "Loading context",
+    "invalidRecipients": "Invalid email addresses must be fixed before sending.",
+    "fields": {
+      "recordNo": "Document no.",
+      "revisionNo": "Revision",
+      "customerCode": "Customer code",
+      "total": "Total",
+      "validUntil": "Valid until",
+      "owner": "Record owner"
+    },
+    "variableLabels": {
+      "module": "Module",
+      "recordNo": "Document no.",
+      "revisionNo": "Revision",
+      "customer": "Customer",
+      "customerCode": "Customer code",
+      "contact": "Contact",
+      "total": "Total",
+      "validUntil": "Valid until",
+      "owner": "Record owner"
+    },
+    "recipientAssistant": "Recipient suggestions",
+    "addTo": "Add to To",
+    "ccShort": "CC",
+    "bccShort": "BCC",
+    "noRecipientSuggestions": "No recipient suggestions yet.",
+    "tabs": {
+      "compose": "Compose",
+      "preview": "Preview"
+    },
+    "autoResolvedTo": "Send will use automatic recipients: {{emails}}",
+    "resolvedSubject": "Resolved subject",
+    "attachmentsTitle": "Attachments",
+    "addAttachment": "Add file",
+    "removeAttachment": "Remove attachment",
+    "noAttachments": "No files selected yet.",
+    "variablesTitle": "Template variables",
+    "insertSubject": "Insert in subject",
+    "insertBody": "Insert in body",
+    "deliveryPolicy": "Sending policy",
+    "policies": {
+      "validation": "Sending is blocked if any address is invalid.",
+      "activity": "A CRM activity is created after a successful send.",
+      "logging": "A send log is stored in the system."
+    },
+    "previewHeader": "Send preview",
+    "sources": {
+      "selectedContact": "Selected contact",
+      "customerDefault": "Customer default",
+      "recentSend": "Recent sends"
+    },
+    "contextLoadError": "Context could not be loaded.",
     "modules": {
       "activity": "Activity",
       "demand": "Demand",
@@ -130,18 +198,23 @@
     },
     "templates": {
       "generic": {
-        "subject": "Information about {{module}} #{{id}}",
-        "body": "Hello,\n\nI would like to share information about {{module}} #{{id}} for customer {{customer}}.\n\nBest regards."
+        "subject": "{{module}} {{recordNo}} — information",
+        "body": "<p>Hello,</p><p>We would like to inform you about the <strong>{{module}}</strong> record for customer {{customer}}.</p><ul><li>Document: {{recordNo}}</li><li>Revision: {{revisionNo}}</li><li>Customer code: {{customerCode}}</li><li>Total: {{total}}</li><li>Valid until: {{validUntil}}</li></ul><p>Best regards.</p>"
       },
       "followUp": {
-        "subject": "Follow-up for {{module}} #{{id}}",
-        "body": "Hello,\n\nWe are reaching out for follow-up regarding {{module}} #{{id}} for {{customer}} / {{contact}}.\n\nCould you please get back to us when available?"
+        "subject": "{{module}} {{recordNo}} — follow-up",
+        "body": "<p>Hello,</p><p>Following up on the {{module}} record for {{customer}} / {{contact}}.</p><p>{{contextTitle}}</p><p>Please reply when convenient.</p>"
       },
       "reminder": {
-        "subject": "Reminder for {{module}} #{{id}}",
-        "body": "Hello,\n\nThis is a reminder for {{module}} #{{id}} related to customer {{customer}}.\n\nThank you."
+        "subject": "{{module}} {{recordNo}} — reminder",
+        "body": "<p>Hello,</p><p>This is a reminder regarding the {{module}} record for {{customer}}.</p><p>Document: {{recordNo}}<br/>Total: {{total}}<br/>Valid until: {{validUntil}}</p><p>Thank you.</p>"
       }
-    }
+    },
+    "activityLogEnabled": "A CRM activity and log are automatically created after successful sending.",
+    "clearDraft": "Clear draft",
+    "defaultPdfTemplate": "Recommended template",
+    "optionalPdfTemplate": "Selectable template",
+    "selectedPdfTemplateSummary": "Selected PDF template: {{name}}"
   },
   "logs": {
     "cardTitle": "Google Integration Logs",

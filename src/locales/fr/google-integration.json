@@ -100,28 +100,96 @@
   },
   "mailDialog": {
     "openButton": "Envoyer un e-mail",
-    "title": "Envoyer Google Mail",
-    "description": "Modifier the outgoing email for {{module}} #{{id}}.",
-    "missingCustomer": "Non customer is linked to this record. Customer is required to send mail.",
+    "title": "Envoyer un e-mail Google",
+    "description": "Modifiez l'e-mail sortant pour {{module}} n°{{id}}.",
+    "missingCustomer": "Aucun client n'est lié à cet enregistrement. Un client est requis pour envoyer un e-mail.",
     "templateLabel": "Modèle",
-    "toLabel": "Destinataire (To)",
+    "toLabel": "Destinataire (À)",
     "ccLabel": "CC",
     "bccLabel": "BCC",
     "subjectLabel": "Objet",
     "bodyLabel": "Message",
-    "isHtmlLabel": "Envoyer as HTML",
-    "autoRecipientHint": "If empty, contact/customer email will be used automatically",
+    "isHtmlLabel": "Envoyer en HTML",
+    "autoRecipientHint": "Si vide, l'e-mail du contact ou du client sera utilisé automatiquement",
     "recipientPlaceholder": "mail1@example.com; mail2@example.com",
     "cancel": "Annuler",
     "send": "Envoyer",
     "sending": "Envoi...",
-    "sendSuccess": "Mail sent successfully.",
-    "sendError": "Mail could not be sent.",
+    "sendSuccess": "E-mail envoyé avec succès.",
+    "sendError": "L'e-mail n'a pas pu être envoyé.",
+    "pdfCardTitle": "Générer et joindre le PDF",
+    "pdfCardDescription": "Sélectionnez un modèle pour ce type de document. Le PDF généré est ajouté directement en pièce jointe.",
+    "pdfTemplateLabel": "Modèle PDF",
+    "pdfTemplatePlaceholder": "Sélectionner un modèle",
+    "pdfTemplateRequired": "Veuillez d'abord sélectionner un modèle PDF.",
+    "generatingPdf": "Préparation du PDF...",
+    "generatePdfAndAttach": "Générer et joindre",
+    "pdfAttached": "Le PDF a été généré et ajouté aux pièces jointes.",
+    "pdfGenerateFailed": "Le PDF n'a pas pu être généré.",
+    "pdfTemplatesLoadFailed": "Les modèles PDF n'ont pas pu être chargés.",
+    "noPdfTemplates": "Aucun modèle PDF actif trouvé pour ce type de document.",
+    "readyToSend": "Prêt à envoyer",
+    "notReadyToSend": "Des champs obligatoires sont manquants",
+    "subjectShort": "O",
+    "bodyShort": "M",
+    "contextHeader": "Contexte de l'enregistrement",
+    "loadingContext": "Chargement du contexte",
+    "invalidRecipients": "Les adresses e-mail invalides doivent être corrigées avant l'envoi.",
+    "fields": {
+      "recordNo": "N° document",
+      "revisionNo": "Révision",
+      "customerCode": "Code client",
+      "total": "Total",
+      "validUntil": "Valable jusqu'au",
+      "owner": "Propriétaire de l'enregistrement"
+    },
+    "variableLabels": {
+      "module": "Module",
+      "recordNo": "N° document",
+      "revisionNo": "Révision",
+      "customer": "Client",
+      "customerCode": "Code client",
+      "contact": "Contact",
+      "total": "Total",
+      "validUntil": "Valable jusqu'au",
+      "owner": "Propriétaire de l'enregistrement"
+    },
+    "recipientAssistant": "Suggestions de destinataires",
+    "addTo": "Ajouter à À",
+    "ccShort": "CC",
+    "bccShort": "BCC",
+    "noRecipientSuggestions": "Aucune suggestion de destinataire pour le moment.",
+    "tabs": {
+      "compose": "Rédiger",
+      "preview": "Aperçu"
+    },
+    "autoResolvedTo": "L'envoi utilisera des destinataires automatiques : {{emails}}",
+    "resolvedSubject": "Objet résolu",
+    "attachmentsTitle": "Pièces jointes",
+    "addAttachment": "Ajouter un fichier",
+    "removeAttachment": "Retirer la pièce jointe",
+    "noAttachments": "Aucun fichier sélectionné.",
+    "variablesTitle": "Variables du modèle",
+    "insertSubject": "Insérer dans l'objet",
+    "insertBody": "Insérer dans le message",
+    "deliveryPolicy": "Politique d'envoi",
+    "policies": {
+      "validation": "L'envoi est bloqué si une adresse est invalide.",
+      "activity": "Une activité CRM est créée après un envoi réussi.",
+      "logging": "Un journal d'envoi est conservé dans le système."
+    },
+    "previewHeader": "Aperçu d'envoi",
+    "sources": {
+      "selectedContact": "Contact sélectionné",
+      "customerDefault": "Par défaut client",
+      "recentSend": "Envois récents"
+    },
+    "contextLoadError": "Le contexte n'a pas pu être chargé.",
     "modules": {
-      "activity": "Activity",
-      "demand": "Demand",
-      "quotation": "Quotation",
-      "order": "Order"
+      "activity": "Activité",
+      "demand": "Demande",
+      "quotation": "Devis",
+      "order": "Commande"
     },
     "templateNames": {
       "generic-info": "Information",
@@ -130,18 +198,23 @@
     },
     "templates": {
       "generic": {
-        "subject": "Information about {{module}} #{{id}}",
-        "body": "Hello,\n\nI would like to share information about {{module}} #{{id}} for customer {{customer}}.\n\nBest regards."
+        "subject": "{{module}} {{recordNo}} — information",
+        "body": "<p>Bonjour,</p><p>nous souhaitons vous informer sur l'enregistrement <strong>{{module}}</strong> pour le client {{customer}}.</p><ul><li>Document : {{recordNo}}</li><li>Révision : {{revisionNo}}</li><li>Code client : {{customerCode}}</li><li>Total : {{total}}</li><li>Valable jusqu'au : {{validUntil}}</li></ul><p>Cordialement,</p>"
       },
       "followUp": {
-        "subject": "Follow-up for {{module}} #{{id}}",
-        "body": "Hello,\n\nWe are reaching out for follow-up regarding {{module}} #{{id}} for {{customer}} / {{contact}}.\n\nCould you please get back to us when available?"
+        "subject": "{{module}} {{recordNo}} — suivi",
+        "body": "<p>Bonjour,</p><p>relance concernant l'enregistrement {{module}} pour {{customer}} / {{contact}}.</p><p>{{contextTitle}}</p><p>Merci de répondre quand cela vous convient.</p>"
       },
       "reminder": {
-        "subject": "Rappel for {{module}} #{{id}}",
-        "body": "Hello,\n\nThis is a reminder for {{module}} #{{id}} related to customer {{customer}}.\n\nThank you."
+        "subject": "{{module}} {{recordNo}} — rappel",
+        "body": "<p>Bonjour,</p><p>ceci est un rappel pour l'enregistrement {{module}} du client {{customer}}.</p><p>Document : {{recordNo}}<br/>Total : {{total}}<br/>Valable jusqu'au : {{validUntil}}</p><p>Merci.</p>"
       }
-    }
+    },
+    "activityLogEnabled": "A CRM activity and log are automatically created after successful sending.",
+    "clearDraft": "Clear draft",
+    "defaultPdfTemplate": "Recommended template",
+    "optionalPdfTemplate": "Selectable template",
+    "selectedPdfTemplateSummary": "Selected PDF template: {{name}}"
   },
   "logs": {
     "cardTitle": "Journaux d'intégration Google",

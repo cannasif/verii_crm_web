@@ -117,6 +117,74 @@
     "sending": "Gönderiliyor...",
     "sendSuccess": "E-posta başarıyla gönderildi.",
     "sendError": "E-posta gönderilemedi.",
+    "pdfCardTitle": "PDF oluştur ve ekle",
+    "pdfCardDescription": "Belge tipine uygun şablonu seçin. Oluşturulan PDF doğrudan bu e-postanın ekine eklenir.",
+    "pdfTemplateLabel": "PDF şablonu",
+    "pdfTemplatePlaceholder": "Şablon seçin",
+    "pdfTemplateRequired": "Önce kullanılacak PDF şablonunu seçin.",
+    "generatingPdf": "PDF hazırlanıyor...",
+    "generatePdfAndAttach": "Oluştur ve ekle",
+    "pdfAttached": "PDF oluşturuldu ve ekler listesine eklendi.",
+    "pdfGenerateFailed": "PDF oluşturulamadı.",
+    "pdfTemplatesLoadFailed": "PDF şablonları yüklenemedi.",
+    "noPdfTemplates": "Bu belge tipi için aktif PDF şablonu bulunamadı.",
+    "readyToSend": "Gönderime hazır",
+    "notReadyToSend": "Gönderim için zorunlu alanlar eksik",
+    "subjectShort": "K",
+    "bodyShort": "M",
+    "contextHeader": "Kayıt bağlamı",
+    "loadingContext": "Bağlam yükleniyor",
+    "invalidRecipients": "Geçersiz e-posta adreslerini düzeltmeden gönderim yapılamaz.",
+    "fields": {
+      "recordNo": "Belge No",
+      "revisionNo": "Revize No",
+      "customerCode": "Cari Kodu",
+      "total": "Toplam",
+      "validUntil": "Geçerlilik",
+      "owner": "Kayıt Sahibi"
+    },
+    "variableLabels": {
+      "module": "Modül",
+      "recordNo": "Belge No",
+      "revisionNo": "Revize No",
+      "customer": "Müşteri",
+      "customerCode": "Cari Kodu",
+      "contact": "Kontak",
+      "total": "Toplam",
+      "validUntil": "Geçerlilik",
+      "owner": "Kayıt Sahibi"
+    },
+    "recipientAssistant": "Akıllı alıcı yardımı",
+    "addTo": "Kime ekle",
+    "ccShort": "CC",
+    "bccShort": "BCC",
+    "noRecipientSuggestions": "Henüz önerilen alıcı bulunamadı.",
+    "tabs": {
+      "compose": "Düzenle",
+      "preview": "Önizleme"
+    },
+    "autoResolvedTo": "Gönderimde otomatik alıcı kullanılacak: {{emails}}",
+    "resolvedSubject": "Önizleme konusu",
+    "attachmentsTitle": "Ekler",
+    "addAttachment": "Dosya ekle",
+    "removeAttachment": "Eki kaldır",
+    "noAttachments": "Henüz ek dosya seçilmedi.",
+    "variablesTitle": "Şablon değişkenleri",
+    "insertSubject": "Konuya ekle",
+    "insertBody": "Mesaja ekle",
+    "deliveryPolicy": "Gönderim politikası",
+    "policies": {
+      "validation": "Geçersiz adres varsa gönderim engellenir.",
+      "activity": "Başarılı gönderim sonrası CRM aktivitesi oluşturulur.",
+      "logging": "Gönderim kaydı sistemde saklanır."
+    },
+    "previewHeader": "Gönderim önizlemesi",
+    "sources": {
+      "selectedContact": "Seçili kontak",
+      "customerDefault": "Müşteri varsayılanı",
+      "recentSend": "Son gönderimler"
+    },
+    "contextLoadError": "Bağlam bilgileri yüklenemedi.",
     "modules": {
       "activity": "Aktivite",
       "demand": "Talep",
@@ -130,18 +198,23 @@
     },
     "templates": {
       "generic": {
-        "subject": "{{module}} #{{id}} hakkında bilgilendirme",
-        "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı hakkında bilgi paylaşmak istiyorum.\n\nİyi çalışmalar."
+        "subject": "{{module}} {{recordNo}} — bilgilendirme",
+        "body": "<p>Merhaba,</p><p>{{customer}} müşterisine ait <strong>{{module}}</strong> kaydı hakkında sizi bilgilendirmek istiyoruz.</p><ul><li>Belge No: {{recordNo}}</li><li>Revize No: {{revisionNo}}</li><li>Cari Kodu: {{customerCode}}</li><li>Toplam: {{total}}</li><li>Geçerlilik: {{validUntil}}</li></ul><p>İyi çalışmalar.</p>"
       },
       "followUp": {
-        "subject": "{{module}} #{{id}} takip bilgisi",
-        "body": "Merhaba,\n\n{{customer}} / {{contact}} için {{module}} #{{id}} kaydının takibi kapsamında sizinle iletişime geçiyoruz.\n\nUygun olduğunuzda geri dönüş yapabilir misiniz?"
+        "subject": "{{module}} {{recordNo}} — takip bilgisi",
+        "body": "<p>Merhaba,</p><p>{{customer}} / {{contact}} için {{module}} kaydımızın takibini paylaşmak istiyoruz.</p><p>{{contextTitle}}</p><p>Uygun olduğunuzda geri dönüşünüzü rica ederiz.</p>"
       },
       "reminder": {
-        "subject": "{{module}} #{{id}} hatırlatma",
-        "body": "Merhaba,\n\n{{customer}} müşterisine ait {{module}} #{{id}} kaydı için hatırlatma iletisi.\n\nTeşekkürler."
+        "subject": "{{module}} {{recordNo}} — hatırlatma",
+        "body": "<p>Merhaba,</p><p>{{customer}} müşterisine ait {{module}} kaydı için hatırlatma paylaşımıdır.</p><p>Belge No: {{recordNo}}<br/>Toplam: {{total}}<br/>Geçerlilik: {{validUntil}}</p><p>Teşekkürler.</p>"
       }
-    }
+    },
+    "activityLogEnabled": "Başarılı gönderim sonrası CRM aktivitesi ve log kaydı otomatik oluşur.",
+    "clearDraft": "Taslağı Temizle",
+    "defaultPdfTemplate": "Önerilen tasarım",
+    "optionalPdfTemplate": "Seçilebilir tasarım",
+    "selectedPdfTemplateSummary": "Seçili PDF tasarımı: {{name}}"
   },
   "logs": {
     "cardTitle": "Google Entegrasyon Logları",

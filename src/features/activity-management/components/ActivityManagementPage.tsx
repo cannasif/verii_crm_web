@@ -722,6 +722,9 @@ export function ActivityManagementPage(): ReactElement {
         contactId={selectedActivity?.contactId}
         customerName={selectedActivity?.potentialCustomer?.name}
         contactName={selectedActivity?.contact?.fullName}
+        customerCode={selectedActivity?.erpCustomerCode}
+        contextTitle={selectedActivity?.subject}
+        recordOwnerName={selectedActivity?.assignedUser?.fullName}
       />
       <OutlookCustomerMailDialog
         open={outlookMailDialogOpen}
@@ -732,6 +735,9 @@ export function ActivityManagementPage(): ReactElement {
         contactId={selectedActivity?.contactId}
         customerName={selectedActivity?.potentialCustomer?.name}
         contactName={selectedActivity?.contact?.fullName}
+        customerCode={selectedActivity?.erpCustomerCode}
+        contextTitle={selectedActivity?.subject}
+        recordOwnerName={selectedActivity?.assignedUser?.fullName}
       />
 
       <ActivityForm
