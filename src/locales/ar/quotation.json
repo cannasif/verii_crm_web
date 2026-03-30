@@ -27,6 +27,8 @@
     "cardTitle": "Quotation list",
     "refresh": "Refresh",
     "actions": "Actions",
+    "sendGmail": "إرسال Gmail",
+    "sendOutlook": "إرسال Outlook",
     "id": "ID",
     "offerNo": "Offer No",
     "customer": "Customer",
@@ -35,7 +37,10 @@
     "currency": "Currency",
     "grandTotal": "Grand Total",
     "status": "Status",
-    "detail": "Detay"
+    "detail": "Detay",
+    "customerCode": "رمز العميل",
+    "validUntil": "صالح حتى",
+    "revisionNo": "Revizyon No"
   },
   "detail": {
     "title": "تفاصيل عرض السعر",
@@ -92,7 +97,7 @@
     "add": "إضافة بند",
     "empty": "لم تتم إضافة بنود بعد",
     "emptyDescription": "استخدم زر \"تحديد المخزون\" أو \"إضافة بند\" لإضافة بنود لعرض السعر",
-    "itemCount": "بند",
+    "itemCount": "{{count}} بنود",
     "editLine": "تعديل البند",
     "selectStock": "تحديد المخزون",
     "selectProduct": "تحديد المنتج",
@@ -287,6 +292,7 @@
     "error": "Revizyon kaydı oluşturulamadı."
   },
   "update": {
+    "saveButton": "حفظ التحديثات",
     "success": "Teklif güncellendi.",
     "successMessage": "Teklif bilgileri başarıyla güncellendi.",
     "error": "Teklif güncellenemedi.",

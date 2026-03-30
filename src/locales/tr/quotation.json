@@ -28,6 +28,8 @@
     "cardTitle": "Teklif listesi",
     "refresh": "Yenile",
     "actions": "İşlemler",
+    "sendGmail": "Gmail Gönder",
+    "sendOutlook": "Outlook Gönder",
     "id": "ID",
     "offerNo": "Teklif No",
     "customer": "Müşteri",
@@ -37,7 +39,10 @@
     "grandTotal": "Genel Toplam",
     "status": "Durum",
     "revise": "Revize et",
-    "showing": "{{from}}-{{to}} / {{total}} gösteriliyor"
+    "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+    "customerCode": "Cari Kodu",
+    "validUntil": "Geçerlilik",
+    "revisionNo": "Revizyon No"
   },
   "date": "Tarih",
   "offerNo": "Teklif No",
@@ -104,7 +109,7 @@
     "empty": "Henüz satır eklenmedi",
     "noItems": "Henüz satır bulunmuyor",
     "emptyDescription": "Teklif satırları eklemek için \"Stok Seç\" veya \"Satır Ekle\" butonunu kullanın",
-    "itemCount": "satır",
+    "itemCount": "{{count}} satır",
     "editLine": "Satır Düzenle",
     "selectStock": "Stok Seç",
     "selectProduct": "Ürün Seç",
@@ -245,6 +250,7 @@
     "error": "Revizyon kaydı oluşturulamadı."
   },
   "update": {
+    "saveButton": "Güncellemeyi Kaydet",
     "success": "Teklif güncellendi.",
     "successMessage": "Teklif bilgileri başarıyla güncellendi.",
     "error": "Teklif güncellenemedi.",

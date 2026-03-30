@@ -2,7 +2,7 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, Mail, Plus } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, GitBranchPlus, Mail, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
@@ -36,9 +36,12 @@ const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 type QuotationColumnKey =
   | 'Id'
   | 'OfferNo'
+  | 'RevisionNo'
   | 'PotentialCustomerName'
+  | 'ErpCustomerCode'
   | 'RepresentativeName'
   | 'OfferDate'
+  | 'ValidUntil'
   | 'Currency'
   | 'GrandTotal'
   | 'Status';
@@ -54,9 +57,12 @@ type QuotationColumnConfig = {
 const QUOTATION_COLUMN_CONFIG: readonly QuotationColumnConfig[] = [
   { key: 'Id', labelKey: 'quotation.list.id', fallbackLabel: 'ID', filterType: 'number' },
   { key: 'OfferNo', labelKey: 'quotation.list.offerNo', fallbackLabel: 'Teklif No', filterType: 'string' },
+  { key: 'RevisionNo', labelKey: 'quotation.list.revisionNo', fallbackLabel: 'Revize No', filterType: 'string' },
   { key: 'PotentialCustomerName', labelKey: 'quotation.list.customer', fallbackLabel: 'Müşteri', filterType: 'string' },
+  { key: 'ErpCustomerCode', labelKey: 'quotation.list.customerCode', fallbackLabel: 'Cari Kodu', filterType: 'string' },
   { key: 'RepresentativeName', labelKey: 'quotation.list.representative', fallbackLabel: 'Temsilci', filterType: 'string' },
   { key: 'OfferDate', labelKey: 'quotation.list.offerDate', fallbackLabel: 'Tarih', filterType: 'date' },
+  { key: 'ValidUntil', labelKey: 'quotation.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'quotation.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
   { key: 'GrandTotal', labelKey: 'quotation.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
   { key: 'Status', labelKey: 'quotation.list.status', fallbackLabel: 'Durum', filterType: 'number' },
@@ -67,8 +73,11 @@ function resolveLabel(
   key: string,
   fallback: string
 ): string {
-  const translated = t(key);
-  return translated && translated !== key ? translated : fallback;
+  const MISSING_TRANSLATION = 'Çeviri eksik';
+  const ns = key.split('.')[0];
+  const translated = t(key, { ns });
+  if (!translated || translated === MISSING_TRANSLATION || translated === key) return fallback;
+  return translated;
 }
 
 export function QuotationListPage(): ReactElement {
@@ -157,6 +166,27 @@ export function QuotationListPage(): ReactElement {
   const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
   const orderedVisibleColumns = columnOrder.filter((key) => visibleColumns.includes(key)) as QuotationColumnKey[];
 
+  const getCurrencyLabel = useCallback(
+    (quotation: QuotationGetDto): string => quotation.currencyDisplay || quotation.currencyCode || quotation.currency || '-',
+    []
+  );
+
+  const getGrandTotalLabel = useCallback(
+    (quotation: QuotationGetDto): string => {
+      if (quotation.grandTotalDisplay) {
+        return quotation.grandTotalDisplay;
+      }
+
+      const amount = typeof quotation.grandTotal === 'number' ? quotation.grandTotal : Number(quotation.grandTotal);
+      if (Number.isNaN(amount)) {
+        return '-';
+      }
+
+      return formatCurrency(amount, quotation.currencyCode || quotation.currency || 'TRY');
+    },
+    []
+  );
+
   const filterColumns = useMemo<FilterColumnConfig[]>(
     () =>
       QUOTATION_COLUMN_CONFIG.map((col) => ({
@@ -172,17 +202,20 @@ export function QuotationListPage(): ReactElement {
       currentPageRows.map((quotation) => ({
         Id: quotation.id,
         OfferNo: quotation.offerNo ?? '-',
+        RevisionNo: quotation.revisionNo ?? '-',
         PotentialCustomerName: quotation.potentialCustomerName ?? '-',
+        ErpCustomerCode: quotation.erpCustomerCode ?? '-',
         RepresentativeName: quotation.representativeName ?? '-',
         OfferDate: quotation.offerDate ? new Date(quotation.offerDate).toLocaleDateString(i18n.language) : '-',
-        Currency: quotation.currency ?? '-',
-        GrandTotal: formatCurrency(quotation.grandTotal, quotation.currency ?? 'TRY'),
+        ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
+        Currency: getCurrencyLabel(quotation),
+        GrandTotal: getGrandTotalLabel(quotation),
         Status:
           typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
             : '-',
       })),
-    [currentPageRows, t, i18n.language]
+    [currentPageRows, t, i18n.language, getCurrencyLabel, getGrandTotalLabel]
   );
 
   const exportColumns = useMemo(
@@ -211,18 +244,21 @@ export function QuotationListPage(): ReactElement {
       rows: list.map((quotation: QuotationGetDto) => ({
         Id: quotation.id,
         OfferNo: quotation.offerNo ?? '-',
+        RevisionNo: quotation.revisionNo ?? '-',
         PotentialCustomerName: quotation.potentialCustomerName ?? '-',
+        ErpCustomerCode: quotation.erpCustomerCode ?? '-',
         RepresentativeName: quotation.representativeName ?? '-',
         OfferDate: quotation.offerDate ? new Date(quotation.offerDate).toLocaleDateString(i18n.language) : '-',
-        Currency: quotation.currency ?? '-',
-        GrandTotal: formatCurrency(quotation.grandTotal, quotation.currency ?? 'TRY'),
+        ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
+        Currency: getCurrencyLabel(quotation),
+        GrandTotal: getGrandTotalLabel(quotation),
         Status:
           typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
             : '-',
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, t, i18n.language]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, t, i18n.language, getCurrencyLabel, getGrandTotalLabel]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -256,11 +292,14 @@ export function QuotationListPage(): ReactElement {
   const renderCell = (quotation: QuotationGetDto, key: QuotationColumnKey): ReactElement | string | number => {
     if (key === 'Id') return quotation.id;
     if (key === 'OfferNo') return quotation.offerNo || '-';
+    if (key === 'RevisionNo') return quotation.revisionNo || '-';
     if (key === 'PotentialCustomerName') return quotation.potentialCustomerName || '-';
+    if (key === 'ErpCustomerCode') return quotation.erpCustomerCode || '-';
     if (key === 'RepresentativeName') return quotation.representativeName || '-';
     if (key === 'OfferDate') return formatDate(quotation.offerDate);
-    if (key === 'Currency') return quotation.currency || '-';
-    if (key === 'GrandTotal') return formatCurrency(quotation.grandTotal, quotation.currency || 'TRY');
+    if (key === 'ValidUntil') return formatDate(quotation.validUntil);
+    if (key === 'Currency') return getCurrencyLabel(quotation);
+    if (key === 'GrandTotal') return getGrandTotalLabel(quotation);
     if (key === 'Status') {
       return typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4 ? (
         <ApprovalStatusBadge status={quotation.status as ApprovalStatus} />
@@ -321,13 +360,13 @@ export function QuotationListPage(): ReactElement {
       </Button>
       <Button variant="outline" size="sm" onClick={(event) => handleOpenMailDialog(event, quotation)}>
         <Mail className="h-4 w-4 mr-1" />
-        {t('google-integration:mailDialog.openButton')}
+        {t('quotation.list.sendGmail', { defaultValue: 'Gmail Gonder' })}
       </Button>
       <Button variant="outline" size="sm" onClick={(event) => handleOpenOutlookMailDialog(event, quotation)}>
         <Mail className="h-4 w-4 mr-1" />
-        {t('outlook-integration:mailDialog.openButton')}
+        {t('quotation.list.sendOutlook', { defaultValue: 'Outlook Gonder' })}
       </Button>
-      {(quotation.status === 0 || quotation.status === 1) && (
+      {(quotation.status === 0 || quotation.status === 3) && (
         <Button
           variant="outline"
           size="sm"
@@ -336,7 +375,10 @@ export function QuotationListPage(): ReactElement {
           }}
           disabled={createRevisionMutation.isPending}
         >
-          {createRevisionMutation.isPending ? t('quotation.loading') : t('quotation.list.revise')}
+          <GitBranchPlus className="h-4 w-4 mr-1" />
+          {createRevisionMutation.isPending
+            ? t('quotation.loading')
+            : t('quotation.list.revise', { defaultValue: 'Revize Et' })}
         </Button>
       )}
     </div>
@@ -415,10 +457,10 @@ export function QuotationListPage(): ReactElement {
                     <>
                       <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
                         <SelectTrigger className="w-[180px] h-9">
-                          <SelectValue placeholder={t('approval.statusFilterLabel')} />
+                          <SelectValue placeholder={t('approval.statusFilterLabel', { defaultValue: 'Onay durumu' })} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">{t('common.all')}</SelectItem>
+                          <SelectItem value="all">{t('common.all', { ns: 'common', defaultValue: 'Tumu' })}</SelectItem>
                           <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
                           <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
                           <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
@@ -447,6 +489,7 @@ export function QuotationListPage(): ReactElement {
                 showActionsColumn
                 actionsHeaderLabel={t('quotation.list.actions')}
                 renderActionsCell={renderActionsCell}
+                iconOnlyActions={false}
                 rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                 onRowClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
                 onRowDoubleClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
@@ -480,6 +523,12 @@ export function QuotationListPage(): ReactElement {
           customerId={selectedQuotation?.potentialCustomerId}
           contactId={selectedQuotation?.contactId}
           customerName={selectedQuotation?.potentialCustomerName}
+          customerCode={selectedQuotation?.erpCustomerCode}
+          recordNo={selectedQuotation?.offerNo}
+          revisionNo={selectedQuotation?.revisionNo}
+          totalAmountDisplay={selectedQuotation?.grandTotalDisplay ?? undefined}
+          validUntil={selectedQuotation?.validUntil}
+          recordOwnerName={selectedQuotation?.representativeName}
         />
         <OutlookCustomerMailDialog
           open={outlookMailDialogOpen}
@@ -489,6 +538,12 @@ export function QuotationListPage(): ReactElement {
           customerId={selectedQuotation?.potentialCustomerId}
           contactId={selectedQuotation?.contactId}
           customerName={selectedQuotation?.potentialCustomerName}
+          customerCode={selectedQuotation?.erpCustomerCode}
+          recordNo={selectedQuotation?.offerNo}
+          revisionNo={selectedQuotation?.revisionNo}
+          totalAmountDisplay={selectedQuotation?.grandTotalDisplay ?? undefined}
+          validUntil={selectedQuotation?.validUntil}
+          recordOwnerName={selectedQuotation?.representativeName}
         />
       </div>
     </div>

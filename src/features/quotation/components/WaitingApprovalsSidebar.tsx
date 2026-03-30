@@ -11,7 +11,13 @@ import { Clock, FileText } from 'lucide-react';
 export function WaitingApprovalsSidebar(): ReactElement {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { data: approvals, isLoading } = useWaitingApprovals();
+  const { data: approvalsResponse, isLoading } = useWaitingApprovals({
+    pageNumber: 1,
+    pageSize: 10,
+    sortBy: 'ActionDate',
+    sortDirection: 'desc',
+  });
+  const approvals = approvalsResponse?.data ?? [];
 
   const handleApprovalClick = (approvalRequestId: number): void => {
     navigate(`/quotations/${approvalRequestId}`);
@@ -73,11 +79,11 @@ export function WaitingApprovalsSidebar(): ReactElement {
             key={approval.id}
             variant="outline"
             className="w-full justify-start h-auto p-3 flex flex-col items-start gap-1 hover:bg-accent"
-            onClick={() => handleApprovalClick(approval.approvalRequestId)}
+            onClick={() => handleApprovalClick(approval.entityId || approval.approvalRequestId)}
           >
             <div className="flex items-center justify-between w-full">
               <span className="text-sm font-medium truncate">
-                {approval.approvalRequestDescription || `#${approval.approvalRequestId}`}
+                {approval.quotationOfferNo || approval.approvalRequestDescription || `#${approval.approvalRequestId}`}
               </span>
               <Badge 
                 variant={approval.status === 1 ? 'default' : 'secondary'}
@@ -87,6 +93,12 @@ export function WaitingApprovalsSidebar(): ReactElement {
               </Badge>
             </div>
             <div className="text-xs text-muted-foreground w-full">
+              <div>
+                {approval.quotationCustomerName || '-'}
+              </div>
+              <div>
+                {approval.quotationRevisionNo || '-'} • {approval.quotationGrandTotalDisplay || '-'}
+              </div>
               <div>
                 {t('quotation.waitingApprovals.stepOrder')}: {approval.stepOrder}
               </div>

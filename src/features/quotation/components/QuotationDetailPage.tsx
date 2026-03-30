@@ -60,6 +60,22 @@ function parseQuotationIdFromPath(pathname: string): number {
   return Number.isNaN(num) ? 0 : num;
 }
 
+function parsePersistedId(formId: string | number | undefined, prefix: string): number | null {
+  if (formId == null) return null;
+  if (typeof formId === 'number' && Number.isFinite(formId) && formId > 0) return formId;
+  const value = String(formId).trim();
+  const prefixed = value.match(new RegExp(`^${prefix}-(\\d+)(?:-|$)`));
+  if (prefixed) {
+    const parsed = parseInt(prefixed[1], 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  if (/^\d+$/.test(value)) {
+    const parsed = parseInt(value, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  return null;
+}
+
 export function QuotationDetailPage(): ReactElement {
   const { t } = useTranslation();
   const { id: paramId } = useParams<{ id: string }>();
@@ -403,12 +419,13 @@ export function QuotationDetailPage(): ReactElement {
 
     try {
       const linesToSend = lines.map((line) => {
-        const { id, isEditing, ...lineData } = line;
-        const { relatedLines, ...cleanLineData } = lineData as QuotationLineFormState & { relatedLines?: unknown[] };
+        const { id, isEditing, relatedLines, ...cleanLineData } =
+          line as QuotationLineFormState & { relatedLines?: unknown[] };
         return {
           ...cleanLineData,
+          id: parsePersistedId(id, 'line'),
           quotationId: quotationId,
-          productId: 0,
+          productId: cleanLineData.productId ?? null,
           description: cleanLineData.description || null,
           description1: cleanLineData.description1 || null,
           description2: cleanLineData.description2 || null,
@@ -423,6 +440,7 @@ export function QuotationDetailPage(): ReactElement {
         ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
             const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
             return {
+              id: parsePersistedId(id, 'rate'),
               ...rate,
               currency: currencyValue,
               quotationId: quotationId,
@@ -465,18 +483,10 @@ export function QuotationDetailPage(): ReactElement {
         quotation: quotationData,
         lines: linesToSend,
         exchangeRates: exchangeRatesToSend,
+        quotationNotes,
       };
 
       const result = await updateMutation.mutateAsync({ id: quotationId, data: payload });
-
-      const notesList = quotationNotesDtoToNotesList(quotationNotes);
-      if (notesList.length > 15) {
-        toast.error(t('quotation.update.error'), {
-          description: t('quotation.notes.maxCountError'),
-        });
-        return;
-      }
-      await updateNotesMutation.mutateAsync({ notes: notesList });
 
       if (result.success && result.data) {
         toast.success(t('quotation.update.success'), {
@@ -804,7 +814,7 @@ export function QuotationDetailPage(): ReactElement {
                     <Save className="mr-2 h-4 w-4" />
                     {updateMutation.isPending
                       ? t('quotation.saving')
-                      : t('quotation.save')
+                      : t('quotation.update.saveButton', { defaultValue: 'Güncellemeyi Kaydet' })
                     }
                   </Button>
                 )}

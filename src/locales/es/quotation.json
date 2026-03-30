@@ -27,6 +27,8 @@
     "cardTitle": "Quotation list",
     "refresh": "Refresh",
     "actions": "Actions",
+    "sendGmail": "Enviar Gmail",
+    "sendOutlook": "Enviar Outlook",
     "id": "ID",
     "offerNo": "Offer No",
     "customer": "Customer",
@@ -35,7 +37,10 @@
     "currency": "Currency",
     "grandTotal": "Grand Total",
     "status": "Status",
-    "detail": "Detay"
+    "detail": "Detay",
+    "customerCode": "Código de cliente",
+    "validUntil": "Válido hasta",
+    "revisionNo": "Revizyon No"
   },
   "detail": {
     "title": "Detalle de Cotización",
@@ -92,7 +97,7 @@
     "add": "Agregar Línea",
     "empty": "Aún no hay líneas agregadas",
     "emptyDescription": "Use el botón \"Seleccionar Stock\" o \"Agregar Línea\" para agregar líneas de cotización",
-    "itemCount": "línea",
+    "itemCount": "{{count}} líneas",
     "editLine": "Editar Línea",
     "selectStock": "Seleccionar Stock",
     "selectProduct": "Seleccionar Producto",
@@ -287,6 +292,7 @@
     "error": "Revizyon kaydı oluşturulamadı."
   },
   "update": {
+    "saveButton": "Guardar cambios",
     "success": "Teklif güncellendi.",
     "successMessage": "Teklif bilgileri başarıyla güncellendi.",
     "error": "Teklif güncellenemedi.",

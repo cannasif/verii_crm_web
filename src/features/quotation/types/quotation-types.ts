@@ -65,9 +65,17 @@ export interface UpdateQuotationNotesListDto {
 
 export interface QuotationBulkCreateDto {
   quotation: CreateQuotationDto;
-  lines: CreateQuotationLineDto[];
-  exchangeRates?: QuotationExchangeRateCreateDto[];
+  lines: QuotationBulkLineDto[];
+  exchangeRates?: QuotationBulkExchangeRateDto[];
   quotationNotes?: QuotationNotesDto;
+}
+
+export interface QuotationBulkLineDto extends CreateQuotationLineDto {
+  id?: number | null;
+}
+
+export interface QuotationBulkExchangeRateDto extends QuotationExchangeRateCreateDto {
+  id?: number | null;
 }
 
 export interface CreateQuotationDto {
@@ -231,8 +239,11 @@ export interface QuotationGetDto {
   revisionNo?: string | null;
   revisionId?: number | null;
   currency: string;
+  currencyCode?: string | null;
+  currencyDisplay?: string | null;
   total: number;
   grandTotal: number;
+  grandTotalDisplay?: string | null;
   hasCustomerSpecificDiscount: boolean;
   validUntil?: string | null;
   contactId?: number | null;
@@ -365,7 +376,15 @@ export interface UserDiscountLimitDto {
 export interface ApprovalActionGetDto {
   id: number;
   approvalRequestId: number;
+  entityId: number;
   approvalRequestDescription?: string | null;
+  quotationOfferNo?: string | null;
+  quotationRevisionNo?: string | null;
+  quotationCustomerName?: string | null;
+  quotationCustomerCode?: string | null;
+  quotationOwnerName?: string | null;
+  quotationGrandTotal?: number | null;
+  quotationGrandTotalDisplay?: string | null;
   stepOrder: number;
   approvedByUserId: number;
   approvedByUserFullName?: string | null;

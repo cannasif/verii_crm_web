@@ -26,6 +26,8 @@
     "cardTitle": "Quotation list",
     "refresh": "Refresh",
     "actions": "Actions",
+    "sendGmail": "Send Gmail",
+    "sendOutlook": "Send Outlook",
     "id": "ID",
     "offerNo": "Offer No",
     "customer": "Customer",
@@ -36,7 +38,10 @@
     "status": "Status",
     "revise": "Revise",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
-    "detail": "Detay"
+    "detail": "Detay",
+    "customerCode": "Customer Code",
+    "validUntil": "Valid Until",
+    "revisionNo": "Revizyon No"
   },
   "detail": {
     "title": "Quotation Detail",
@@ -93,7 +98,7 @@
     "add": "Add Line",
     "empty": "No lines added yet",
     "emptyDescription": "Use \"Select Stock\" or \"Add Line\" button to add quotation lines",
-    "itemCount": "line",
+    "itemCount": "{{count}} lines",
     "editLine": "Edit Line",
     "selectStock": "Select Stock",
     "selectProduct": "Select Product",
@@ -317,6 +322,7 @@
     "error": "Revizyon kaydı oluşturulamadı."
   },
   "update": {
+    "saveButton": "Save Changes",
     "success": "Teklif güncellendi.",
     "successMessage": "Teklif bilgileri başarıyla güncellendi.",
     "error": "Teklif güncellenemedi.",

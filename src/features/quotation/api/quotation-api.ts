@@ -274,12 +274,29 @@ export const quotationApi = {
     }
   },
 
-  getWaitingApprovals: async (): Promise<ApprovalActionGetDto[]> => {
-    const response = await api.get<ApiResponse<ApprovalActionGetDto[]>>('/api/quotation/waiting-approvals');
+  getWaitingApprovals: async (params: PagedParams): Promise<PagedResponse<ApprovalActionGetDto>> => {
+    const response = await api.get<ApiResponse<PagedResponse<ApprovalActionGetDto>>>('/api/quotation/waiting-approvals', { params });
     if (response.success && response.data) {
-      return response.data;
+      const pagedData = response.data;
+      const pagedDataWithItems = pagedData as PagedResponse<ApprovalActionGetDto> & { items?: ApprovalActionGetDto[] };
+      if (pagedDataWithItems.items && !pagedData.data) {
+        return {
+          ...pagedData,
+          data: pagedDataWithItems.items,
+        };
+      }
+
+      return pagedData;
     }
-    return [];
+    return {
+      data: [],
+      totalCount: 0,
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 20,
+      totalPages: 0,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    };
   },
 
   approve: async (data: ApproveActionDto): Promise<ApiResponse<boolean>> => {
@@ -438,12 +455,25 @@ export const quotationApi = {
         `/api/quotation/bulk-quotation/${id}`,
         data
       );
+      if (!response.success) {
+        throw new Error(response.message || response.exceptionMessage || 'Teklif güncellenemedi');
+      }
       return response;
     } catch (error: unknown) {
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: unknown; status?: number } };
         if (axiosError.response?.data) {
-          throw new Error(JSON.stringify(axiosError.response.data));
+          const payload = axiosError.response.data as {
+            message?: string;
+            exceptionMessage?: string;
+            errors?: string[];
+          };
+          const userMessage =
+            payload.message ||
+            payload.exceptionMessage ||
+            payload.errors?.find((item) => typeof item === 'string' && item.trim().length > 0) ||
+            'Teklif güncellenemedi';
+          throw new Error(userMessage);
         }
       }
       throw error;
@@ -494,7 +524,17 @@ export const quotationApi = {
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: unknown; status?: number } };
         if (axiosError.response?.data) {
-          throw new Error(JSON.stringify(axiosError.response.data));
+          const payload = axiosError.response.data as {
+            message?: string;
+            exceptionMessage?: string;
+            errors?: string[];
+          };
+          const userMessage =
+            payload.message ||
+            payload.exceptionMessage ||
+            payload.errors?.find((item) => typeof item === 'string' && item.trim().length > 0) ||
+            'Teklif revizyonu oluşturulamadı';
+          throw new Error(userMessage);
         }
       }
       throw error;

@@ -162,13 +162,13 @@ export function QuotationCreateForm(): ReactElement {
 
     try {
       const linesToSend = lines.map((line) => {
-        const { id, isEditing, ...lineData } = line;
-        const { relatedLines, ...cleanLineData } = lineData as QuotationLineFormState & { relatedLines?: unknown[] };
+        const { id: _ignoredId, isEditing, relatedLines, ...cleanLineData } =
+          line as QuotationLineFormState & { relatedLines?: unknown[] };
         
         return {
           ...cleanLineData,
           quotationId: 0,
-          productId: 0,
+          productId: cleanLineData.productId ?? null,
           description: cleanLineData.description || null,
           description1: cleanLineData.description1 || null,
           description2: cleanLineData.description2 || null,

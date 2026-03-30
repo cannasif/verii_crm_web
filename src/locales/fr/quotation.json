@@ -27,6 +27,8 @@
     "cardTitle": "Quotation list",
     "refresh": "Refresh",
     "actions": "Actions",
+    "sendGmail": "Envoyer Gmail",
+    "sendOutlook": "Envoyer Outlook",
     "id": "ID",
     "offerNo": "Offer No",
     "customer": "Customer",
@@ -35,7 +37,10 @@
     "currency": "Currency",
     "grandTotal": "Grand Total",
     "status": "Status",
-    "detail": "Detay"
+    "detail": "Detay",
+    "customerCode": "Code client",
+    "validUntil": "Valable jusqu’au",
+    "revisionNo": "Revizyon No"
   },
   "detail": {
     "title": "Détail du Devis",
@@ -92,7 +97,7 @@
     "add": "Ajouter Ligne",
     "empty": "Aucune ligne ajoutée pour le moment",
     "emptyDescription": "Utilisez le bouton \"Sélectionner Stock\" ou \"Ajouter Ligne\" pour ajouter des lignes de devis",
-    "itemCount": "articles",
+    "itemCount": "{{count}} lignes",
     "editLine": "Modifier Ligne",
     "selectStock": "Sélectionner Stock",
     "selectProduct": "Sélectionner Produit",
@@ -287,6 +292,7 @@
     "error": "Revizyon kaydı oluşturulamadı."
   },
   "update": {
+    "saveButton": "Enregistrer les modifications",
     "success": "Teklif güncellendi.",
     "successMessage": "Teklif bilgileri başarıyla güncellendi.",
     "error": "Teklif güncellenemedi.",
