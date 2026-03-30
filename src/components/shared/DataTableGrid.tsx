@@ -238,7 +238,9 @@ export function DataTableGrid<TRow, TKey extends string>({
                 );
               })}
               {showActionsColumn && (
-                <TableHead className="text-right w-[84px]">{resolvedActionsHeaderLabel}</TableHead>
+                <TableHead className={cn('text-right', iconOnlyActions ? 'w-[84px]' : 'min-w-[280px]')}>
+                  {resolvedActionsHeaderLabel}
+                </TableHead>
               )}
             </TableRow>
           </TableHeader>
