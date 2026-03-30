@@ -5,6 +5,31 @@ export type DateGrouping = 'day' | 'week' | 'month' | 'year';
 
 export type Aggregation = 'sum' | 'count' | 'avg' | 'min' | 'max';
 export type DataSourceParameterBindingType = 'literal' | 'currentUserId' | 'currentUserEmail' | 'today' | 'now';
+export type WidgetTone = 'neutral' | 'soft' | 'bold';
+export type WidgetTableDensity = 'comfortable' | 'compact';
+export type WidgetThemePreset = 'executive' | 'operations' | 'performance';
+export type WidgetTitleAlign = 'left' | 'center';
+export type WidgetKpiFormat = 'number' | 'currency' | 'percent';
+export type WidgetBackgroundStyle = 'card' | 'glass' | 'gradient' | 'muted';
+export type WidgetKpiLayout = 'split' | 'spotlight' | 'compact';
+export type WidgetValueFormat = 'default' | 'number' | 'currency' | 'percent';
+
+export interface ReportWidgetAppearance {
+  subtitle?: string;
+  accentColor?: string;
+  tone?: WidgetTone;
+  showStats?: boolean;
+  tableDensity?: WidgetTableDensity;
+  themePreset?: WidgetThemePreset;
+  titleAlign?: WidgetTitleAlign;
+  sectionLabel?: string;
+  sectionDescription?: string;
+  kpiFormat?: WidgetKpiFormat;
+  backgroundStyle?: WidgetBackgroundStyle;
+  kpiLayout?: WidgetKpiLayout;
+  valueFormat?: WidgetValueFormat;
+  decimalPlaces?: number;
+}
 
 export interface ReportConfigAxis {
   field: string;
@@ -120,6 +145,7 @@ export interface ReportWidget {
   title: string;
   size?: 'third' | 'half' | 'full';
   height?: 'sm' | 'md' | 'lg';
+  appearance?: ReportWidgetAppearance;
   chartType: ChartType;
   axis?: ReportConfigAxis;
   values: ReportConfigValue[];

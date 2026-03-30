@@ -199,6 +199,8 @@
       "allReportsDescription": "Oluşturulan tüm raporları yönetin, düzenleyin ve paylaşım durumlarını takip edin.",
       "newStudioTitle": "Yeni rapor stüdyosu",
       "editStudioTitle": "Rapor stüdyosunu düzenle",
+      "basicMode": "Temel mod",
+      "advancedMode": "Gelişmiş mod",
       "studioDescription": "IT tarafından hazırlanmış veri setlerinden, açıklamalı görseller ve çoklu widget yerleşimi ile yönetilebilir raporlar oluşturun.",
       "stepDataset": "Veri setini bağla",
       "stepCompose": "Widget'ları tasarla",
@@ -228,6 +230,39 @@
       "quickStartChart": "Bar grafik kur",
       "quickStartTrend": "Trend grafiği kur",
       "quickStartKpi": "KPI kartı kur",
+      "starterKitTitle": "Hazır kurumsal başlangıç paketleri",
+      "starterKitDescription": "Hiç düşünmeden başlamak istersen aşağıdaki paketlerden birini seç; grafik, bölüm ve stil birlikte kurulur.",
+      "starterKitLabels": {
+        "executive": "Yönetici özeti",
+        "operations": "Operasyon takibi",
+        "performance": "Performans görünümü"
+      },
+      "starterKitDescriptions": {
+        "executive": "Trend ve özet bilgileri ilk bakışta gösteren güvenli başlangıç.",
+        "operations": "Tablo ve liste ağırlıklı, günlük takip için uygun başlangıç.",
+        "performance": "Büyük KPI kartı ile sonuç odaklı hızlı başlangıç."
+      },
+      "starterKitSubtitles": {
+        "executive": "Öne çıkan kırılımlar ve trendler",
+        "operations": "Takip edilmesi gereken detay liste",
+        "performance": "Ana hedef göstergesi"
+      },
+      "basicBigChoiceTitle": "Nasıl bir rapor istiyorsun?",
+      "basicBigChoiceDescription": "Aşağıdaki üç seçenekten birini seç; sistem seni uygun başlangıçla başlatır.",
+      "basicChoiceExecutive": "Yönetime sunulacak özet bir ekran istiyorum.",
+      "basicChoiceOperations": "Günlük takip edeceğim tablo ağırlıklı bir ekran istiyorum.",
+      "basicChoicePerformance": "Büyük KPI ve hedef odaklı bir görünüm istiyorum.",
+      "nextStepTitle": "Sıradaki adım",
+      "nextStepDatasetTitle": "Önce veri setini doğrula",
+      "nextStepDatasetDescription": "Bağlantı, veri kaynağı tipi ve dataset seçildikten sonra kontrol et butonuna bas.",
+      "nextStepDatasetAction": "Veri setini kontrol et",
+      "nextStepMappingTitle": "Şimdi eksen ve değerleri doldur",
+      "nextStepMappingDescription": "Temel alanlar eksik. Tek tuşla önerilen alanları yerleştirebiliriz.",
+      "nextStepMappingAction": "Eksikleri otomatik tamamla",
+      "nextStepDesignTitle": "Artık tasarım ayarlarına geçebilirsin",
+      "nextStepDesignDescription": "Widget seçip sağ panelden bölüm etiketi, arka plan ve sayı gösterimini ayarla.",
+      "nextStepDesignAction": "Tasarım ipucunu göster",
+      "designControlsHint": "Sağ paneldeki Tasarım kontrolleri bölümünden görünümü basit şekilde düzenleyebilirsin.",
       "searchReport": "Rapor ara...",
       "noReports": "Henüz rapor yok.",
       "myReportsTitle": "Raporlarım",
@@ -282,6 +317,72 @@
       "visualGalleryDescription": "İhtiyacınıza en uygun görseli açıklamasıyla seçin; ekran buna göre yapılandırılır.",
       "configGuide": "Yapılandırma rehberi",
       "configGuideDescription": "Önce eksen ve değerleri kurun, sonra sıralama ve filtreleri daraltın.",
+      "designControls": "Tasarım kontrolleri",
+      "designControlsDescription": "Aktif widget'ın başlık altı metnini, bölüm etiketini, vurgu rengini ve sunum tonunu kullanıcı tarafında düzenleyin.",
+      "stylePresets": "Hazır kurumsal stiller",
+      "widgetSubtitle": "Widget açıklaması",
+      "widgetSubtitlePlaceholder": "Örn: Bölgelere göre son 30 gün satış eğilimi",
+      "widgetSectionLabel": "Bölüm etiketi",
+      "widgetSectionLabelPlaceholder": "Örn: Yönetici Özeti",
+      "widgetSectionDescription": "Bölüm açıklaması",
+      "widgetSectionDescriptionPlaceholder": "Bu bölümün ne anlattığını kısa bir cümleyle özetle",
+      "widgetThemePreset": "Tema preset'i",
+      "widgetTone": "Sunum tonu",
+      "widgetAccentColor": "Vurgu rengi",
+      "widgetTitleAlign": "Başlık hizası",
+      "widgetValueFormat": "Sayı gösterimi",
+      "widgetTableDensity": "Tablo yoğunluğu",
+      "widgetKpiFormat": "KPI sayı formatı",
+      "widgetKpiLayout": "KPI kart şablonu",
+      "widgetBackgroundStyle": "Arka plan stili",
+      "widgetDecimalPlaces": "Ondalık basamak",
+      "widgetCanvasHint": "Kanvas notu",
+      "widgetCanvasHintDescription": "Bu widget tipi için arka plan, vurgu ve bölüm etiketini kullanarak daha güçlü bir sunum kimliği oluşturabilirsin.",
+      "widgetStatsVisibility": "Üst bilgi rozetleri",
+      "widgetStatsVisible": "Göster",
+      "widgetStatsHidden": "Gizle",
+      "widgetThemePresets": {
+        "executive": "Yönetici özeti",
+        "operations": "Operasyon ekranı",
+        "performance": "Performans görünümü"
+      },
+      "widgetTones": {
+        "neutral": "Kurumsal",
+        "soft": "Yumuşak vurgu",
+        "bold": "Güçlü vurgu"
+      },
+      "widgetTitleAligns": {
+        "left": "Sola hizalı",
+        "center": "Ortalanmış"
+      },
+      "widgetKpiFormats": {
+        "number": "Sayı",
+        "currency": "Para",
+        "percent": "Yüzde"
+      },
+      "widgetValueFormats": {
+        "default": "Otomatik",
+        "number": "Sayı",
+        "currency": "Para",
+        "percent": "Yüzde"
+      },
+      "widgetKpiLayouts": {
+        "split": "İki kolonlu",
+        "spotlight": "Odak kartı",
+        "compact": "Kompakt özet"
+      },
+      "widgetBackgroundStyles": {
+        "card": "Standart kart",
+        "glass": "Cam efektli",
+        "gradient": "Gradyan yüzey",
+        "muted": "Yumuşak zemin"
+      },
+      "tableDensities": {
+        "comfortable": "Rahat",
+        "compact": "Sıkı"
+      },
+      "sectionWidgetCount": "{{count}} widget bu bölümde",
+      "sectionBadge": "Bölüm",
       "dateGrouping": "Tarih grupla",
       "sorting": "Sıralama",
       "sortBy": "Sıralama ölçütü",
@@ -442,6 +543,9 @@
       "dashboardLayoutEmpty": "Henüz dashboard paneli yok. İlk widget eklendiğinde yerleşim burada görünür.",
       "header": "Başlık",
       "propertiesDescription": "Seçili widget için görsel türü, hesaplama, filtre ve yönetişim ayarlarını yönetin.",
+      "propertiesDescriptionBasic": "Bu alanda sadece gerekli görünen temel ayarlar gösterilir. Karmaşık ayarlar için gelişmiş moda geçebilirsin.",
+      "basicModeTitle": "Temel mod açık",
+      "basicModeDescription": "Şu anda yalnızca en gerekli ayarlar gösteriliyor. Hazır başlangıç paketleri ve sağdaki tasarım kartları ile daha hızlı ilerleyebilirsin.",
       "chartTypeDescriptions": {
         "table": "Detaylı satır verisini doğrudan karşılaştırmak için.",
         "bar": "Kategoriler arası miktar farkını hızlı görmek için.",

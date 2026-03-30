@@ -194,6 +194,8 @@
       "allReportsDescription": "Manage all created reports, update them, and track sharing status.",
       "newStudioTitle": "New report studio",
       "editStudioTitle": "Edit report studio",
+      "basicMode": "Basic mode",
+      "advancedMode": "Advanced mode",
       "studioDescription": "Build managed reports from IT-curated datasets with guided visuals and multi-widget layouts.",
       "stepDataset": "Connect dataset",
       "stepCompose": "Design widgets",
@@ -223,6 +225,39 @@
       "quickStartChart": "Build a bar chart",
       "quickStartTrend": "Build a trend chart",
       "quickStartKpi": "Build a KPI card",
+      "starterKitTitle": "Ready-made enterprise starter kits",
+      "starterKitDescription": "If you want to start without thinking too much, choose one of these kits; chart, section, and style are set together.",
+      "starterKitLabels": {
+        "executive": "Executive summary",
+        "operations": "Operations tracking",
+        "performance": "Performance view"
+      },
+      "starterKitDescriptions": {
+        "executive": "A safe start that highlights trends and summary information at first glance.",
+        "operations": "A table-first start that fits daily follow-up work.",
+        "performance": "A fast, result-focused start with a large KPI card."
+      },
+      "starterKitSubtitles": {
+        "executive": "Top breakdowns and trends",
+        "operations": "Detailed list for follow-up",
+        "performance": "Primary target indicator"
+      },
+      "basicBigChoiceTitle": "What kind of report do you want?",
+      "basicBigChoiceDescription": "Choose one of the three options below and the system will start you with the right setup.",
+      "basicChoiceExecutive": "I want a summary screen for management.",
+      "basicChoiceOperations": "I want a table-first screen for daily follow-up.",
+      "basicChoicePerformance": "I want a KPI-led screen focused on targets.",
+      "nextStepTitle": "Next step",
+      "nextStepDatasetTitle": "Validate the dataset first",
+      "nextStepDatasetDescription": "After selecting connection, source type, and dataset, press the check button.",
+      "nextStepDatasetAction": "Check dataset",
+      "nextStepMappingTitle": "Now fill axis and values",
+      "nextStepMappingDescription": "The main fields are missing. We can place the recommended fields with one click.",
+      "nextStepMappingAction": "Auto-complete missing parts",
+      "nextStepDesignTitle": "You can move to design settings now",
+      "nextStepDesignDescription": "Select a widget and adjust section label, background, and number display from the right panel.",
+      "nextStepDesignAction": "Show design tip",
+      "designControlsHint": "You can adjust the widget appearance easily from the Design controls section on the right.",
       "searchReport": "Search report...",
       "noReports": "No reports yet.",
       "myReportsTitle": "My Reports",
@@ -277,6 +312,72 @@
       "visualGalleryDescription": "Pick the best visual with a short explanation; the rest of the screen adapts to it.",
       "configGuide": "Configuration guide",
       "configGuideDescription": "Start with axis and values, then refine sorting and filters.",
+      "designControls": "Design controls",
+      "designControlsDescription": "Let the user shape the active widget with subtitle, section label, accent color, and display tone.",
+      "stylePresets": "Enterprise style presets",
+      "widgetSubtitle": "Widget subtitle",
+      "widgetSubtitlePlaceholder": "E.g. sales trend by region for the last 30 days",
+      "widgetSectionLabel": "Section label",
+      "widgetSectionLabelPlaceholder": "E.g. Executive Summary",
+      "widgetSectionDescription": "Section description",
+      "widgetSectionDescriptionPlaceholder": "Summarize what this section is about in one short sentence",
+      "widgetThemePreset": "Theme preset",
+      "widgetTone": "Presentation tone",
+      "widgetAccentColor": "Accent color",
+      "widgetTitleAlign": "Title alignment",
+      "widgetValueFormat": "Number display",
+      "widgetTableDensity": "Table density",
+      "widgetKpiFormat": "KPI number format",
+      "widgetKpiLayout": "KPI card layout",
+      "widgetBackgroundStyle": "Background style",
+      "widgetDecimalPlaces": "Decimal places",
+      "widgetCanvasHint": "Canvas note",
+      "widgetCanvasHintDescription": "For this widget type, use background, accent, and section label to create a stronger presentation identity.",
+      "widgetStatsVisibility": "Header stats chips",
+      "widgetStatsVisible": "Show",
+      "widgetStatsHidden": "Hide",
+      "widgetThemePresets": {
+        "executive": "Executive summary",
+        "operations": "Operations board",
+        "performance": "Performance view"
+      },
+      "widgetTones": {
+        "neutral": "Corporate",
+        "soft": "Soft highlight",
+        "bold": "Bold highlight"
+      },
+      "widgetTitleAligns": {
+        "left": "Left aligned",
+        "center": "Centered"
+      },
+      "widgetKpiFormats": {
+        "number": "Number",
+        "currency": "Currency",
+        "percent": "Percent"
+      },
+      "widgetValueFormats": {
+        "default": "Automatic",
+        "number": "Number",
+        "currency": "Currency",
+        "percent": "Percent"
+      },
+      "widgetKpiLayouts": {
+        "split": "Two-column",
+        "spotlight": "Spotlight card",
+        "compact": "Compact summary"
+      },
+      "widgetBackgroundStyles": {
+        "card": "Standard card",
+        "glass": "Glass effect",
+        "gradient": "Gradient surface",
+        "muted": "Soft surface"
+      },
+      "tableDensities": {
+        "comfortable": "Comfortable",
+        "compact": "Compact"
+      },
+      "sectionWidgetCount": "{{count}} widgets in this section",
+      "sectionBadge": "Section",
       "dateGrouping": "Date grouping",
       "sorting": "Sorting",
       "sortBy": "Sort by",
@@ -434,6 +535,9 @@
       "dashboardLayoutEmpty": "No dashboard panels yet. The layout appears here after the first widget is added.",
       "header": "Header",
       "propertiesDescription": "Manage visual type, calculations, filters, and governance settings for the selected widget.",
+      "propertiesDescriptionBasic": "Only the most important settings are shown here. Switch to advanced mode for deeper controls.",
+      "basicModeTitle": "Basic mode is on",
+      "basicModeDescription": "Only the essential settings are shown right now. You can move faster with the ready-made starter kits and the design cards on the right.",
       "widgetSize": {
         "full": "full",
         "half": "half",

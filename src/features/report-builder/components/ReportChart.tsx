@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import type { ChartType } from '../types';
+import type { ChartType, ReportWidgetAppearance } from '../types';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 
 type ColumnItem = string | { name: string; sqlType?: string; dotNetType?: string; isNullable?: boolean };
@@ -20,6 +20,7 @@ interface ReportChartProps {
   rows: unknown[][];
   chartType: ChartType;
   className?: string;
+  appearance?: ReportWidgetAppearance;
 }
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1', '#a4de6c'];
@@ -38,10 +39,66 @@ function normalizeColumns(cols: ColumnItem[]): string[] {
   return (cols ?? []).map((c) => columnToLabel(c));
 }
 
-export function ReportChart({ columns, rows, chartType, className }: ReportChartProps): ReactElement {
+function buildPalette(accentColor?: string): string[] {
+  return [accentColor || COLORS[0], ...COLORS.filter((color) => color !== accentColor)];
+}
+
+function formatKpiValue(value: number, format: NonNullable<ReportWidgetAppearance['kpiFormat']>): string {
+  if (format === 'currency') {
+    return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(value);
+  }
+  if (format === 'percent') {
+    return `${value.toLocaleString('tr-TR')}%`;
+  }
+  return value.toLocaleString('tr-TR');
+}
+
+function formatMetricValue(
+  value: number,
+  format: NonNullable<ReportWidgetAppearance['valueFormat']>,
+  decimalPlaces: number
+): string {
+  if (format === 'currency') {
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: 'TRY',
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
+    }).format(value);
+  }
+  if (format === 'percent') {
+    return `${new Intl.NumberFormat('tr-TR', {
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
+    }).format(value)}%`;
+  }
+  return new Intl.NumberFormat('tr-TR', {
+    minimumFractionDigits: format === 'default' ? 0 : decimalPlaces,
+    maximumFractionDigits: format === 'default' ? 2 : decimalPlaces,
+  }).format(value);
+}
+
+function renderCellValue(cell: unknown, appearance?: ReportWidgetAppearance): string {
+  if (typeof cell === 'number') {
+    return formatMetricValue(cell, appearance?.valueFormat ?? 'default', appearance?.decimalPlaces ?? 0);
+  }
+  if (typeof cell === 'string' && cell.trim() !== '' && !Number.isNaN(Number(cell))) {
+    return formatMetricValue(Number(cell), appearance?.valueFormat ?? 'default', appearance?.decimalPlaces ?? 0);
+  }
+  return String(cell ?? '');
+}
+
+export function ReportChart({ columns, rows, chartType, className, appearance }: ReportChartProps): ReactElement {
   const { t } = useTranslation('common');
   const recharts = useRechartsModule();
   const Recharts = recharts;
+  const palette = useMemo(() => buildPalette(appearance?.accentColor), [appearance?.accentColor]);
+  const tableDensity = appearance?.tableDensity ?? 'comfortable';
+  const themePreset = appearance?.themePreset ?? 'executive';
+  const kpiFormat = appearance?.kpiFormat ?? 'number';
+  const kpiLayout = appearance?.kpiLayout ?? 'split';
+  const valueFormat = appearance?.valueFormat ?? 'default';
+  const decimalPlaces = appearance?.decimalPlaces ?? 0;
   const columnLabels = useMemo(() => normalizeColumns(columns), [columns]);
   const normalizedRows = useMemo(
     () => (Array.isArray(rows) ? rows.map(ensureRowArray) : []),
@@ -116,11 +173,11 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
           className="max-h-[360px] overflow-x-auto overflow-y-auto pb-2"
           style={{ scrollbarGutter: 'stable both-edges' }}
         >
-          <Table className="w-full table-fixed text-xs">
+          <Table className={cn('w-full table-fixed', tableDensity === 'compact' ? 'text-[11px]' : 'text-xs')}>
             <TableHeader>
               <TableRow>
                 {columnLabels.map((col, i) => (
-                  <TableHead key={col || i} className="whitespace-normal wrap-break-word align-top">
+                  <TableHead key={col || i} className={cn('whitespace-normal wrap-break-word align-top', tableDensity === 'compact' ? 'py-2' : 'py-3')}>
                     {col}
                   </TableHead>
                 ))}
@@ -128,10 +185,10 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
             </TableHeader>
             <TableBody>
               {normalizedRows.slice(0, 5000).map((row, ri) => (
-                <TableRow key={ri}>
+                <TableRow key={ri} className={cn(ri % 2 === 1 && 'bg-muted/30')}>
                   {row.map((cell, ci) => (
-                    <TableCell key={ci} className="whitespace-normal wrap-break-word align-top">
-                      {String(cell ?? '')}
+                    <TableCell key={ci} className={cn('whitespace-normal wrap-break-word align-top', tableDensity === 'compact' ? 'py-2' : 'py-3')}>
+                      {renderCellValue(cell, appearance)}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -169,7 +226,7 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
                     <TableCell className="font-medium whitespace-normal wrap-break-word align-top">{rowLabel}</TableCell>
                     {matrixData.columnHeaders.map((header) => (
                       <TableCell key={`${rowLabel}-${header}`} className="whitespace-normal wrap-break-word align-top">
-                        {String(cells[header] ?? '')}
+                        {renderCellValue(cells[header] ?? '', appearance)}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -198,19 +255,72 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
       ? (((primaryValue - secondaryValue) / Math.abs(secondaryValue)) * 100).toFixed(1)
       : null;
 
+    const primaryCardClassName =
+      themePreset === 'performance'
+        ? 'from-emerald-500/15 to-background'
+        : themePreset === 'operations'
+          ? 'from-amber-500/15 to-background'
+          : 'from-primary/10 to-background';
+    const deltaClassName =
+      themePreset === 'performance'
+        ? 'text-emerald-600'
+        : themePreset === 'operations'
+          ? 'text-amber-600'
+          : 'text-primary';
+
+    if (kpiLayout === 'spotlight') {
+      return (
+        <div className={cn('flex h-full min-h-[220px] items-center justify-center', className)}>
+          <div className={cn('w-full rounded-2xl border bg-linear-to-br p-8 text-center', primaryCardClassName)}>
+            <div className="text-muted-foreground text-xs uppercase tracking-[0.24em]">{t('common.reportBuilder.primaryKpi')}</div>
+            <div className="mt-5 text-5xl font-bold tracking-tight">{formatKpiValue(primaryValue, kpiFormat)}</div>
+            <div className="text-muted-foreground mt-2 text-sm">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
+            <div className={cn('mt-6 inline-flex rounded-full px-3 py-1 text-sm font-medium', deltaClassName, 'bg-muted')}>
+              {secondaryDiff != null ? t('common.reportBuilder.deltaSuffix', { value: secondaryDiff }) : t('common.reportBuilder.noComparisonValue')}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (kpiLayout === 'compact') {
+      return (
+        <div className={cn('grid h-full min-h-[220px] gap-3', className)}>
+          <div className={cn('rounded-xl border bg-linear-to-br p-4', primaryCardClassName)}>
+            <div className="text-muted-foreground text-[11px] uppercase tracking-[0.18em]">{t('common.reportBuilder.primaryKpi')}</div>
+            <div className="mt-3 text-3xl font-bold tracking-tight">{formatKpiValue(primaryValue, kpiFormat)}</div>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="rounded-xl border bg-card p-4">
+              <div className="text-muted-foreground text-[11px] uppercase tracking-[0.18em]">{t('common.reportBuilder.comparison')}</div>
+              <div className="mt-2 text-xl font-semibold">
+                {secondaryValue != null ? formatKpiValue(secondaryValue, kpiFormat) : t('common.reportBuilder.emptyDash')}
+              </div>
+            </div>
+            <div className="rounded-xl border bg-card p-4">
+              <div className="text-muted-foreground text-[11px] uppercase tracking-[0.18em]">{t('common.reportBuilder.delta')}</div>
+              <div className={cn('mt-2 text-xl font-semibold', deltaClassName)}>
+                {secondaryDiff != null ? `${secondaryDiff}%` : t('common.reportBuilder.emptyDash')}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={cn('grid h-full min-h-[220px] gap-4 md:grid-cols-2', className)}>
-        <div className="rounded-xl border bg-linear-to-br from-primary/10 to-background p-6">
+        <div className={cn('rounded-xl border bg-linear-to-br p-6', primaryCardClassName)}>
           <div className="text-muted-foreground text-xs uppercase tracking-[0.2em]">{t('common.reportBuilder.primaryKpi')}</div>
-          <div className="mt-4 text-4xl font-bold tracking-tight">{primaryValue.toLocaleString()}</div>
+          <div className="mt-4 text-4xl font-bold tracking-tight">{formatKpiValue(primaryValue, kpiFormat)}</div>
           <div className="text-muted-foreground mt-2 text-sm">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
         </div>
         <div className="rounded-xl border bg-card p-6">
           <div className="text-muted-foreground text-xs uppercase tracking-[0.2em]">{t('common.reportBuilder.comparison')}</div>
           <div className="mt-4 text-2xl font-semibold">
-            {secondaryValue != null ? secondaryValue.toLocaleString() : t('common.reportBuilder.emptyDash')}
+            {secondaryValue != null ? formatKpiValue(secondaryValue, kpiFormat) : t('common.reportBuilder.emptyDash')}
           </div>
-          <div className="mt-2 text-sm font-medium text-primary">
+          <div className={cn('mt-2 text-sm font-medium', deltaClassName)}>
             {secondaryDiff != null ? t('common.reportBuilder.deltaSuffix', { value: secondaryDiff }) : t('common.reportBuilder.noComparisonValue')}
           </div>
         </div>
@@ -238,10 +348,15 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
               label
             >
               {data.map((_, i) => (
-                <Recharts.Cell key={i} fill={COLORS[i % COLORS.length]} />
+                <Recharts.Cell key={i} fill={palette[i % palette.length]} />
               ))}
             </Recharts.Pie>
             <Recharts.Tooltip />
+            <Recharts.Tooltip formatter={(value: unknown) => {
+              if (typeof value === 'number') return formatMetricValue(value, valueFormat, decimalPlaces);
+              if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) return formatMetricValue(Number(value), valueFormat, decimalPlaces);
+              return String(value ?? '');
+            }} />
             <Recharts.Legend />
           </Recharts.PieChart>
         </Recharts.ResponsiveContainer>
@@ -261,18 +376,22 @@ export function ReportChart({ columns, rows, chartType, className }: ReportChart
             <Recharts.CartesianGrid strokeDasharray="3 3" />
             <Recharts.XAxis dataKey={labelKey} />
             <Recharts.YAxis />
-            <Recharts.Tooltip />
+            <Recharts.Tooltip formatter={(value: unknown) => {
+              if (typeof value === 'number') return formatMetricValue(value, valueFormat, decimalPlaces);
+              if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) return formatMetricValue(Number(value), valueFormat, decimalPlaces);
+              return String(value ?? '');
+            }} />
             <Recharts.Legend />
             {valueKeys.map((key, i) =>
               chartType === 'bar' || chartType === 'stackedBar' ? (
                 <Recharts.Bar
                   key={key}
-                  dataKey={key}
-                  fill={COLORS[i % COLORS.length]}
+                 dataKey={key}
+                  fill={palette[i % palette.length]}
                   stackId={chartType === 'stackedBar' ? 'stack' : undefined}
                 />
               ) : (
-                <Recharts.Line key={key} type="monotone" dataKey={key} stroke={COLORS[i % COLORS.length]} />
+                <Recharts.Line key={key} type="monotone" dataKey={key} stroke={palette[i % palette.length]} />
               )
             )}
           </ChartComponent>

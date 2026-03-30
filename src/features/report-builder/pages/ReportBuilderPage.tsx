@@ -93,6 +93,7 @@ export function ReportBuilderPage(): ReactElement {
     setWidgetHeight,
     reorderWidgets,
     setChartType,
+    setWidgetAppearance,
     setLifecycleStatus,
     setUi,
     saveNewReport,
@@ -100,6 +101,7 @@ export function ReportBuilderPage(): ReactElement {
     loadReportById,
   } = useReportBuilderStore();
   const [dataSourceSearch, setDataSourceSearch] = useState('');
+  const [builderMode, setBuilderMode] = useState<'basic' | 'advanced'>('basic');
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
   const lifecycleStatusLabel = lifecycle.status === 'published'
     ? t('common.reportBuilder.lifecycle.publish')
@@ -177,6 +179,26 @@ export function ReportBuilderPage(): ReactElement {
   ];
 
   const previewRunnerRef = useRef<{ execute: () => void; cancel: () => void } | null>(null);
+  const nextStep = !datasetReady
+    ? {
+        title: t('common.reportBuilder.nextStepDatasetTitle'),
+        description: t('common.reportBuilder.nextStepDatasetDescription'),
+        actionLabel: t('common.reportBuilder.nextStepDatasetAction'),
+        action: () => checkDataSource(),
+      }
+    : !hasAxis || !hasValue
+      ? {
+          title: t('common.reportBuilder.nextStepMappingTitle'),
+          description: t('common.reportBuilder.nextStepMappingDescription'),
+          actionLabel: t('common.reportBuilder.nextStepMappingAction'),
+          action: () => handleSmartComplete(),
+        }
+      : {
+          title: t('common.reportBuilder.nextStepDesignTitle'),
+          description: t('common.reportBuilder.nextStepDesignDescription'),
+          actionLabel: t('common.reportBuilder.nextStepDesignAction'),
+          action: () => setUi({ toast: { message: t('common.reportBuilder.designControlsHint'), variant: 'success' } }),
+        };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -339,6 +361,63 @@ export function ReportBuilderPage(): ReactElement {
     setUi({ slotError: null });
   }, [addToSlot, config.chartType, firstAxisField, firstLegendField, firstValueField, hasAxis, hasLegend, hasValue, setUi]);
 
+  const handleStarterKit = useCallback(
+    (kit: 'executive' | 'operations' | 'performance') => {
+      const activeWidgetId = config.activeWidgetId ?? config.widgets?.[0]?.id;
+      if (kit === 'executive') {
+        handleQuickSetup('chart');
+        if (activeWidgetId) {
+          setWidgetAppearance(activeWidgetId, {
+            themePreset: 'executive',
+            sectionLabel: t('common.reportBuilder.starterKitLabels.executive'),
+            sectionDescription: t('common.reportBuilder.starterKitDescriptions.executive'),
+            subtitle: t('common.reportBuilder.starterKitSubtitles.executive'),
+            backgroundStyle: 'card',
+            tone: 'neutral',
+            titleAlign: 'left',
+            valueFormat: 'number',
+            decimalPlaces: 0,
+          });
+        }
+        return;
+      }
+      if (kit === 'operations') {
+        handleQuickSetup('table');
+        if (activeWidgetId) {
+          setWidgetAppearance(activeWidgetId, {
+            themePreset: 'operations',
+            sectionLabel: t('common.reportBuilder.starterKitLabels.operations'),
+            sectionDescription: t('common.reportBuilder.starterKitDescriptions.operations'),
+            subtitle: t('common.reportBuilder.starterKitSubtitles.operations'),
+            backgroundStyle: 'muted',
+            tone: 'soft',
+            titleAlign: 'left',
+            valueFormat: 'number',
+            decimalPlaces: 0,
+          });
+        }
+        return;
+      }
+      handleQuickSetup('kpi');
+      if (activeWidgetId) {
+        setWidgetAppearance(activeWidgetId, {
+          themePreset: 'performance',
+          sectionLabel: t('common.reportBuilder.starterKitLabels.performance'),
+          sectionDescription: t('common.reportBuilder.starterKitDescriptions.performance'),
+          subtitle: t('common.reportBuilder.starterKitSubtitles.performance'),
+          backgroundStyle: 'gradient',
+          tone: 'bold',
+          titleAlign: 'center',
+          kpiLayout: 'spotlight',
+          kpiFormat: 'currency',
+          valueFormat: 'currency',
+          decimalPlaces: 0,
+        });
+      }
+    },
+    [config.activeWidgetId, config.widgets, handleQuickSetup, setWidgetAppearance, t]
+  );
+
   const handleAddAssignedUser = useCallback(
     (userIdRaw: string) => {
       const userId = Number(userIdRaw);
@@ -419,6 +498,24 @@ export function ReportBuilderPage(): ReactElement {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <div className="mr-2 flex rounded-xl border bg-background p-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={builderMode === 'basic' ? 'default' : 'ghost'}
+                  onClick={() => setBuilderMode('basic')}
+                >
+                  {t('common.reportBuilder.basicMode')}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={builderMode === 'advanced' ? 'default' : 'ghost'}
+                  onClick={() => setBuilderMode('advanced')}
+                >
+                  {t('common.reportBuilder.advancedMode')}
+                </Button>
+              </div>
               {isEdit && (
                 <Button variant="outline" asChild>
                   <Link to={`/reports/${reportId}/edit/preview`} target="_blank" rel="noreferrer">
@@ -575,6 +672,70 @@ export function ReportBuilderPage(): ReactElement {
 
         {datasetReady ? (
           <div className="rounded-2xl border bg-card p-4">
+            <div className="mb-3">
+              <h2 className="text-sm font-semibold">{t('common.reportBuilder.starterKitTitle')}</h2>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.starterKitDescription')}</p>
+            </div>
+            <div className={`grid gap-3 ${builderMode === 'basic' ? 'md:grid-cols-3' : 'md:grid-cols-3'}`}>
+              <Button type="button" variant="outline" className="h-auto justify-start px-4 py-3 text-left" onClick={() => handleStarterKit('executive')}>
+                <div>
+                  <div className="font-semibold">{t('common.reportBuilder.starterKitLabels.executive')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.starterKitDescriptions.executive')}</div>
+                </div>
+              </Button>
+              <Button type="button" variant="outline" className="h-auto justify-start px-4 py-3 text-left" onClick={() => handleStarterKit('operations')}>
+                <div>
+                  <div className="font-semibold">{t('common.reportBuilder.starterKitLabels.operations')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.starterKitDescriptions.operations')}</div>
+                </div>
+              </Button>
+              <Button type="button" variant="outline" className="h-auto justify-start px-4 py-3 text-left" onClick={() => handleStarterKit('performance')}>
+                <div>
+                  <div className="font-semibold">{t('common.reportBuilder.starterKitLabels.performance')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.starterKitDescriptions.performance')}</div>
+                </div>
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady && builderMode === 'basic' ? (
+          <div className="rounded-2xl border bg-card p-4">
+            <div className="mb-3">
+              <h2 className="text-sm font-semibold">{t('common.reportBuilder.basicBigChoiceTitle')}</h2>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicBigChoiceDescription')}</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <button
+                type="button"
+                className="rounded-2xl border bg-background p-5 text-left transition-colors hover:border-primary hover:bg-primary/5"
+                onClick={() => handleStarterKit('executive')}
+              >
+                <div className="text-base font-semibold">{t('common.reportBuilder.starterKitLabels.executive')}</div>
+                <div className="text-muted-foreground mt-2 text-sm">{t('common.reportBuilder.basicChoiceExecutive')}</div>
+              </button>
+              <button
+                type="button"
+                className="rounded-2xl border bg-background p-5 text-left transition-colors hover:border-primary hover:bg-primary/5"
+                onClick={() => handleStarterKit('operations')}
+              >
+                <div className="text-base font-semibold">{t('common.reportBuilder.starterKitLabels.operations')}</div>
+                <div className="text-muted-foreground mt-2 text-sm">{t('common.reportBuilder.basicChoiceOperations')}</div>
+              </button>
+              <button
+                type="button"
+                className="rounded-2xl border bg-background p-5 text-left transition-colors hover:border-primary hover:bg-primary/5"
+                onClick={() => handleStarterKit('performance')}
+              >
+                <div className="text-base font-semibold">{t('common.reportBuilder.starterKitLabels.performance')}</div>
+                <div className="text-muted-foreground mt-2 text-sm">{t('common.reportBuilder.basicChoicePerformance')}</div>
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady ? (
+          <div className="rounded-2xl border bg-card p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-[260px] flex-1">
                 <h2 className="text-sm font-semibold">{t('common.reportBuilder.guidedSetupTitle')}</h2>
@@ -619,6 +780,19 @@ export function ReportBuilderPage(): ReactElement {
             </div>
           </div>
         ) : null}
+
+        <div className="rounded-2xl border bg-card p-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-[260px] flex-1">
+              <h2 className="text-sm font-semibold">{t('common.reportBuilder.nextStepTitle')}</h2>
+              <p className="mt-1 text-sm font-medium">{nextStep.title}</p>
+              <p className="text-muted-foreground mt-1 text-xs">{nextStep.description}</p>
+            </div>
+            <Button type="button" onClick={nextStep.action}>
+              {nextStep.actionLabel}
+            </Button>
+          </div>
+        </div>
 
         <div className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
           <div className="flex items-center gap-2 text-sm font-medium">
@@ -735,10 +909,11 @@ export function ReportBuilderPage(): ReactElement {
             <div className="shrink-0">
               <PreviewPanel
                 title={t('common.reportBuilder.activeWidgetPreview')}
-                subtitle={t('common.reportBuilder.activeWidgetPreviewDescription')}
+                subtitle={(config.widgets ?? []).find((widget) => widget.id === config.activeWidgetId)?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
                 columns={preview.columns}
                 rows={preview.rows}
                 chartType={config.chartType}
+                appearance={(config.widgets ?? []).find((widget) => widget.id === config.activeWidgetId)?.appearance}
                 loading={ui.previewLoading}
                 error={ui.error}
                 empty={!dataSourceChecked}
@@ -757,7 +932,7 @@ export function ReportBuilderPage(): ReactElement {
           <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card p-4">
             <h3 className="text-muted-foreground mb-1 text-sm font-medium">{t('common.reportBuilder.properties')}</h3>
             <p className="text-muted-foreground mb-3 text-xs">
-              {t('common.reportBuilder.propertiesDescription')}
+              {builderMode === 'basic' ? t('common.reportBuilder.propertiesDescriptionBasic') : t('common.reportBuilder.propertiesDescription')}
             </p>
             {ui.slotError ? (
               <div className="mb-3 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm">
@@ -777,7 +952,7 @@ export function ReportBuilderPage(): ReactElement {
               onRemoveFilter={(i) => useReportBuilderStore.getState().removeFilter(i)}
               disabled={!dataSourceChecked}
             />
-            <PropertiesPanel schema={schema} slotError={ui.slotError} disabled={!dataSourceChecked} />
+            <PropertiesPanel schema={schema} slotError={ui.slotError} disabled={!dataSourceChecked} mode={builderMode} />
           </div>
         </div>
         <AlertDialog open={deleteWidgetId != null} onOpenChange={(open) => !open && setDeleteWidgetId(null)}>

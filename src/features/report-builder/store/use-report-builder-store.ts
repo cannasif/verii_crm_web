@@ -27,6 +27,19 @@ function createDefaultWidget(id = 'widget-1', title = tr('common.reportBuilder.w
     title,
     size: 'half',
     height: 'md',
+    appearance: {
+      tone: 'neutral',
+      accentColor: '#1d4ed8',
+      showStats: true,
+      tableDensity: 'comfortable',
+      themePreset: 'executive',
+      titleAlign: 'left',
+      kpiFormat: 'number',
+      backgroundStyle: 'card',
+      kpiLayout: 'split',
+      valueFormat: 'default',
+      decimalPlaces: 0,
+    },
     chartType: 'table',
     values: [],
     filters: [],
@@ -74,6 +87,19 @@ function ensureWidgets(config?: Partial<ReportConfig> | null): ReportConfig {
           title: tr('common.reportBuilder.widgetTitleFallback', { index: 1 }),
           size: 'half' as const,
           height: 'md' as const,
+          appearance: {
+            tone: 'neutral' as const,
+            accentColor: '#1d4ed8',
+            showStats: true,
+            tableDensity: 'comfortable' as const,
+            themePreset: 'executive' as const,
+            titleAlign: 'left' as const,
+            kpiFormat: 'number' as const,
+            backgroundStyle: 'card' as const,
+            kpiLayout: 'split' as const,
+            valueFormat: 'default' as const,
+            decimalPlaces: 0,
+          },
           chartType: incoming.chartType ?? 'table',
           axis: incoming.axis,
           values: incoming.values ?? [],
@@ -193,6 +219,7 @@ interface ReportBuilderState {
   renameWidget: (widgetId: string, title: string) => void;
   setWidgetSize: (widgetId: string, size: 'third' | 'half' | 'full') => void;
   setWidgetHeight: (widgetId: string, height: 'sm' | 'md' | 'lg') => void;
+  setWidgetAppearance: (widgetId: string, patch: Partial<NonNullable<ReportWidget['appearance']>>) => void;
   reorderWidgets: (fromIndex: number, toIndex: number) => void;
   removeWidget: (widgetId: string) => void;
   addToSlot: (slot: 'axis' | 'values' | 'legend' | 'filters', field: string, options?: { aggregation?: Aggregation }) => void;
@@ -313,6 +340,34 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
       const current = ensureWidgets(s.config);
       const widgets = (current.widgets ?? []).map((widget) =>
         widget.id === widgetId ? { ...widget, height } : widget
+      );
+      return { config: ensureWidgets({ ...current, widgets }) };
+    }),
+
+  setWidgetAppearance: (widgetId, patch) =>
+    set((s) => {
+      const current = ensureWidgets(s.config);
+      const widgets = (current.widgets ?? []).map((widget) =>
+        widget.id === widgetId
+          ? {
+              ...widget,
+              appearance: {
+                tone: 'neutral' as const,
+                accentColor: '#1d4ed8',
+                showStats: true,
+                tableDensity: 'comfortable' as const,
+                themePreset: 'executive' as const,
+                titleAlign: 'left' as const,
+                kpiFormat: 'number' as const,
+                backgroundStyle: 'card' as const,
+                kpiLayout: 'split' as const,
+                valueFormat: 'default' as const,
+                decimalPlaces: 0,
+                ...(widget.appearance ?? {}),
+                ...patch,
+              },
+            }
+          : widget
       );
       return { config: ensureWidgets({ ...current, widgets }) };
     }),

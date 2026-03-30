@@ -13,7 +13,20 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useReportBuilderStore } from '../store';
-import type { ChartType, Aggregation, DateGrouping, CalculatedFieldOperation } from '../types';
+import type {
+  ChartType,
+  Aggregation,
+  DateGrouping,
+  CalculatedFieldOperation,
+  WidgetKpiFormat,
+  WidgetBackgroundStyle,
+  WidgetKpiLayout,
+  WidgetValueFormat,
+  WidgetTableDensity,
+  WidgetThemePreset,
+  WidgetTitleAlign,
+  WidgetTone,
+} from '../types';
 import { getFieldSemanticType, getOperatorsForField } from '../utils';
 import type { Field } from '../types';
 import { BarChart3, Calculator, Filter, GripVertical, LayoutTemplate, PieChart, Table2, TrendingUp, X } from 'lucide-react';
@@ -53,6 +66,15 @@ const CALCULATED_FIELD_OPERATIONS: { value: CalculatedFieldOperation; label: str
   { value: 'divide', label: 'A ÷ B' },
 ];
 
+const WIDGET_TONES: WidgetTone[] = ['neutral', 'soft', 'bold'];
+const TABLE_DENSITIES: WidgetTableDensity[] = ['comfortable', 'compact'];
+const THEME_PRESETS: WidgetThemePreset[] = ['executive', 'operations', 'performance'];
+const TITLE_ALIGNS: WidgetTitleAlign[] = ['left', 'center'];
+const KPI_FORMATS: WidgetKpiFormat[] = ['number', 'currency', 'percent'];
+const BACKGROUND_STYLES: WidgetBackgroundStyle[] = ['card', 'glass', 'gradient', 'muted'];
+const KPI_LAYOUTS: WidgetKpiLayout[] = ['split', 'spotlight', 'compact'];
+const VALUE_FORMATS: WidgetValueFormat[] = ['default', 'number', 'currency', 'percent'];
+
 const OPERATOR_LABELS: Record<string, string> = {
   eq: '=',
   ne: '!=',
@@ -81,6 +103,7 @@ interface PropertiesPanelProps {
   schema: Field[];
   slotError: string | null;
   disabled?: boolean;
+  mode?: 'basic' | 'advanced';
 }
 
 function getChartIcon(type: ChartType): ReactElement {
@@ -98,7 +121,7 @@ function getChartIcon(type: ChartType): ReactElement {
   }
 }
 
-export function PropertiesPanel({ schema, slotError: _slotError, disabled }: PropertiesPanelProps): ReactElement {
+export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode = 'advanced' }: PropertiesPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const numericFields = schema.filter((field) => getFieldSemanticType(field) === 'number');
   const [calcName, setCalcName] = useState('');
@@ -123,6 +146,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
     updateFilter,
     removeFilter,
     addToSlot,
+    setWidgetAppearance,
   } = useReportBuilderStore();
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
   const governance = config.governance ?? {
@@ -153,6 +177,13 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
     [usersResponse?.data],
   );
   const assignedUserIds = meta.assignedUserIds ?? [];
+  const activeWidget = (config.widgets ?? []).find((widget) => widget.id === config.activeWidgetId);
+  const activeAppearance = activeWidget?.appearance ?? {
+    tone: 'neutral' as const,
+    accentColor: '#1d4ed8',
+    showStats: true,
+    tableDensity: 'comfortable' as const,
+  };
   const selectedAssignedUserOptions = useMemo(
     () =>
       assignedUserIds.map((userId) => {
@@ -171,6 +202,40 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
   const aggregationLabel = (value: string): string => t(`common.reportBuilder.aggregations.${value}`);
   const dateGroupingLabel = (value: string): string => t(`common.reportBuilder.dateGroupings.${value}`);
   const operatorLabel = (value: string): string => t(`common.reportBuilder.operators.${value}`, { defaultValue: OPERATOR_LABELS[value] ?? value });
+  const isBasicMode = mode === 'basic';
+  const handleApplyStylePreset = (preset: WidgetThemePreset): void => {
+    if (!activeWidget) return;
+    if (preset === 'executive') {
+      setWidgetAppearance(activeWidget.id, {
+        themePreset: 'executive',
+        tone: 'neutral',
+        backgroundStyle: 'card',
+        titleAlign: 'left',
+        showStats: true,
+        accentColor: '#1d4ed8',
+      });
+      return;
+    }
+    if (preset === 'operations') {
+      setWidgetAppearance(activeWidget.id, {
+        themePreset: 'operations',
+        tone: 'soft',
+        backgroundStyle: 'muted',
+        titleAlign: 'left',
+        showStats: true,
+        accentColor: '#d97706',
+      });
+      return;
+    }
+    setWidgetAppearance(activeWidget.id, {
+      themePreset: 'performance',
+      tone: 'bold',
+      backgroundStyle: 'gradient',
+      titleAlign: 'center',
+      showStats: true,
+      accentColor: '#059669',
+    });
+  };
 
   if (disabled) {
     return (
@@ -280,7 +345,275 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
         <p className="text-muted-foreground text-xs">{t('common.reportBuilder.configGuideDescription')}</p>
       </div>
 
-      {config.axis &&
+      {activeWidget ? (
+        <div className="rounded-lg border border-dashed p-3">
+          <div className="mb-2 flex items-center gap-2">
+            <GripVertical className="size-4 text-primary" />
+            <Label>{t('common.reportBuilder.designControls')}</Label>
+          </div>
+          <p className="text-muted-foreground mb-3 text-xs">{t('common.reportBuilder.designControlsDescription')}</p>
+
+          <div className="mb-3 space-y-2">
+            <Label>{t('common.reportBuilder.stylePresets')}</Label>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {THEME_PRESETS.map((preset) => (
+                <Button
+                  key={preset}
+                  type="button"
+                  variant={(activeAppearance.themePreset ?? 'executive') === preset ? 'default' : 'outline'}
+                  className="justify-start"
+                  onClick={() => handleApplyStylePreset(preset)}
+                >
+                  {t(`common.reportBuilder.widgetThemePresets.${preset}`)}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t('common.reportBuilder.widgetSubtitle')}</Label>
+            <Input
+              value={activeAppearance.subtitle ?? ''}
+              placeholder={t('common.reportBuilder.widgetSubtitlePlaceholder')}
+              onChange={(e) => setWidgetAppearance(activeWidget.id, { subtitle: e.target.value })}
+            />
+          </div>
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetThemePreset')}</Label>
+              <Select
+                value={activeAppearance.themePreset ?? 'executive'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { themePreset: value as WidgetThemePreset })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {THEME_PRESETS.map((preset) => (
+                    <SelectItem key={preset} value={preset}>
+                      {t(`common.reportBuilder.widgetThemePresets.${preset}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetTone')}</Label>
+              <Select
+                value={activeAppearance.tone ?? 'neutral'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { tone: value as WidgetTone })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {WIDGET_TONES.map((tone) => (
+                    <SelectItem key={tone} value={tone}>
+                      {t(`common.reportBuilder.widgetTones.${tone}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetAccentColor')}</Label>
+              <Input
+                type="color"
+                value={activeAppearance.accentColor ?? '#1d4ed8'}
+                onChange={(e) => setWidgetAppearance(activeWidget.id, { accentColor: e.target.value })}
+                className="h-11 w-full"
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetSectionLabel')}</Label>
+              <Input
+                value={activeAppearance.sectionLabel ?? ''}
+                placeholder={t('common.reportBuilder.widgetSectionLabelPlaceholder')}
+                onChange={(e) => setWidgetAppearance(activeWidget.id, { sectionLabel: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetSectionDescription')}</Label>
+              <Input
+                value={activeAppearance.sectionDescription ?? ''}
+                placeholder={t('common.reportBuilder.widgetSectionDescriptionPlaceholder')}
+                onChange={(e) => setWidgetAppearance(activeWidget.id, { sectionDescription: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetTitleAlign')}</Label>
+              <Select
+                value={activeAppearance.titleAlign ?? 'left'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { titleAlign: value as WidgetTitleAlign })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TITLE_ALIGNS.map((align) => (
+                    <SelectItem key={align} value={align}>
+                      {t(`common.reportBuilder.widgetTitleAligns.${align}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetValueFormat')}</Label>
+              <Select
+                value={activeAppearance.valueFormat ?? 'default'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { valueFormat: value as WidgetValueFormat })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {VALUE_FORMATS.map((format) => (
+                    <SelectItem key={format} value={format}>
+                      {t(`common.reportBuilder.widgetValueFormats.${format}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetTableDensity')}</Label>
+              <Select
+                value={activeAppearance.tableDensity ?? 'comfortable'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { tableDensity: value as WidgetTableDensity })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TABLE_DENSITIES.map((density) => (
+                    <SelectItem key={density} value={density}>
+                      {t(`common.reportBuilder.tableDensities.${density}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetBackgroundStyle')}</Label>
+              <Select
+                value={activeAppearance.backgroundStyle ?? 'card'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { backgroundStyle: value as WidgetBackgroundStyle })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {BACKGROUND_STYLES.map((style) => (
+                    <SelectItem key={style} value={style}>
+                      {t(`common.reportBuilder.widgetBackgroundStyles.${style}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetDecimalPlaces')}</Label>
+              <Input
+                type="number"
+                min={0}
+                max={4}
+                value={String(activeAppearance.decimalPlaces ?? 0)}
+                onChange={(e) =>
+                  setWidgetAppearance(activeWidget.id, {
+                    decimalPlaces: Math.max(0, Math.min(4, Number(e.target.value || 0))),
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.widgetStatsVisibility')}</Label>
+              <Select
+                value={activeAppearance.showStats === false ? 'hidden' : 'visible'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { showStats: value === 'visible' })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="visible">{t('common.reportBuilder.widgetStatsVisible')}</SelectItem>
+                  <SelectItem value="hidden">{t('common.reportBuilder.widgetStatsHidden')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {activeWidget.chartType === 'kpi' ? (
+              <div className="space-y-2">
+                <Label>{t('common.reportBuilder.widgetKpiFormat')}</Label>
+                <Select
+                  value={activeAppearance.kpiFormat ?? 'number'}
+                  onValueChange={(value) => setWidgetAppearance(activeWidget.id, { kpiFormat: value as WidgetKpiFormat })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {KPI_FORMATS.map((format) => (
+                      <SelectItem key={format} value={format}>
+                        {t(`common.reportBuilder.widgetKpiFormats.${format}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label>{t('common.reportBuilder.widgetCanvasHint')}</Label>
+                <div className="text-muted-foreground rounded-md border border-dashed px-3 py-2 text-xs">
+                  {t('common.reportBuilder.widgetCanvasHintDescription')}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {activeWidget.chartType === 'kpi' ? (
+            <div className="mt-3 space-y-2">
+              <Label>{t('common.reportBuilder.widgetKpiLayout')}</Label>
+              <Select
+                value={activeAppearance.kpiLayout ?? 'split'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { kpiLayout: value as WidgetKpiLayout })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {KPI_LAYOUTS.map((layout) => (
+                    <SelectItem key={layout} value={layout}>
+                      {t(`common.reportBuilder.widgetKpiLayouts.${layout}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {isBasicMode ? (
+        <div className="rounded-lg border border-dashed p-3">
+          <div className="mb-2 font-medium">{t('common.reportBuilder.basicModeTitle')}</div>
+          <p className="text-muted-foreground text-xs">{t('common.reportBuilder.basicModeDescription')}</p>
+        </div>
+      ) : null}
+
+      {!isBasicMode && config.axis &&
         axisSchema &&
         (axisSchema.dotNetType?.includes('DateTime') ?? axisSchema.sqlType?.toLowerCase().includes('date')) && (
           <div className="space-y-2">
@@ -303,6 +636,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
           </div>
         )}
 
+      {!isBasicMode && (
       <div className="space-y-2">
         <Label>{t('common.reportBuilder.sorting')}</Label>
         <div className="flex gap-2">
@@ -344,8 +678,9 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
           </Select>
         </div>
       </div>
+      )}
 
-      {config.values.length > 0 && (
+      {!isBasicMode && config.values.length > 0 && (
         <div className="space-y-2">
           <Label>{t('common.reportBuilder.valuesAggregation')}</Label>
           <div className="space-y-1">
@@ -374,7 +709,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
         </div>
       )}
 
-      {config.filters.length > 0 && (
+      {!isBasicMode && config.filters.length > 0 && (
         <div className="space-y-2">
           <Label>{t('common.reportBuilder.filtersOperator')}</Label>
           <div className="space-y-1">
@@ -469,7 +804,7 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
         </div>
       )}
 
-      <div className="space-y-3 rounded-lg border border-dashed p-3">
+      {!isBasicMode && <div className="space-y-3 rounded-lg border border-dashed p-3">
         <div>
           <Label>{t('common.reportBuilder.governance')}</Label>
           <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.governanceDescription')}</p>
@@ -616,8 +951,8 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled }: Pro
         </Select>
         <Button type="button" variant={governance.favorite ? 'default' : 'outline'} onClick={() => setGovernanceMetadata({ favorite: !governance.favorite })}>
           {governance.favorite ? t('common.reportBuilder.favorite') : t('common.reportBuilder.markFavorite')}
-      </Button>
-      </div>
+        </Button>
+      </div>}
 
       <div className="space-y-3 rounded-lg border border-dashed p-3">
         <div>

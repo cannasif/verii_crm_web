@@ -199,6 +199,18 @@ export function ReportViewerPage(): ReactElement {
     if (currentKeys.length !== initialKeys.length) return true;
     return currentKeys.some((key) => (viewerParameterValues[key] ?? '') !== (initialViewerParameterValues[key] ?? ''));
   }, [viewerParameterValues, initialViewerParameterValues]);
+  const groupedWidgets = useMemo(() => {
+    const sections = new Map<string, ReportWidget[]>();
+    (config.widgets ?? []).forEach((widget) => {
+      const key = widget.appearance?.sectionLabel?.trim() || '__default__';
+      sections.set(key, [...(sections.get(key) ?? []), widget]);
+    });
+    return Array.from(sections.entries()).map(([label, widgets]) => ({
+      label: label === '__default__' ? '' : label,
+      description: widgets.find((widget) => widget.appearance?.sectionDescription?.trim())?.appearance?.sectionDescription?.trim() ?? '',
+      widgets,
+    }));
+  }, [config.widgets]);
 
   const exportCurrentWidgetCsv = useCallback(() => {
     if (!preview.columns.length) return;
@@ -586,45 +598,68 @@ export function ReportViewerPage(): ReactElement {
             </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4 xl:grid-cols-3">
-          {(config.widgets ?? []).map((widget, index) => {
-            const widgetPreview = widgetPreviews[widget.id];
-            const isPrimaryWidget = widget.id === config.activeWidgetId || index === 0;
-            const panelClassName = getWidgetPanelClass(widget);
-            const minHeightClassName = getWidgetHeightClass(widget);
-            if (isPrimaryWidget) {
-              return (
-                <PreviewPanel
-                  key={widget.id}
-                  columns={preview.columns}
-                  rows={preview.rows}
-                  chartType={config.chartType}
-                  loading={ui.previewLoading}
-                  error={ui.error}
-                  empty={false}
-                  title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: index + 1 })}
-                  subtitle={t('common.reportBuilder.primaryWidgetPreview')}
-                  className={panelClassName}
-                  minHeightClassName={minHeightClassName}
-                />
-              );
-            }
-            return (
-              <PreviewPanel
-                key={widget.id}
-                columns={widgetPreview?.columns ?? []}
-                rows={widgetPreview?.rows ?? []}
-                chartType={widget.chartType}
-                loading={widgetPreview?.loading ?? false}
-                error={widgetPreview?.error ?? null}
-                empty={!(widgetPreview?.columns?.length || widgetPreview?.rows?.length)}
-                title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: index + 1 })}
-                subtitle={t('common.reportBuilder.additionalWidgetPreview')}
-                className={panelClassName}
-                minHeightClassName={minHeightClassName}
-              />
-            );
-          })}
+        <div className="space-y-6">
+          {groupedWidgets.map((section, sectionIndex) => (
+            <div key={section.label || `section-${sectionIndex}`} className="space-y-3">
+              {section.label ? (
+                <div className="rounded-2xl border bg-card px-4 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-semibold tracking-tight">{section.label}</div>
+                      <div className="text-muted-foreground text-xs">{t('common.reportBuilder.sectionWidgetCount', { count: section.widgets.length })}</div>
+                      {section.description ? (
+                        <div className="text-muted-foreground mt-1 max-w-2xl text-xs">{section.description}</div>
+                      ) : null}
+                    </div>
+                    <Badge variant="outline">{t('common.reportBuilder.sectionBadge')}</Badge>
+                  </div>
+                </div>
+              ) : null}
+              <div className="grid gap-4 xl:grid-cols-3">
+                {section.widgets.map((widget) => {
+                  const widgetPreview = widgetPreviews[widget.id];
+                  const widgetIndex = (config.widgets ?? []).findIndex((item) => item.id === widget.id);
+                  const isPrimaryWidget = widget.id === config.activeWidgetId || widgetIndex === 0;
+                  const panelClassName = getWidgetPanelClass(widget);
+                  const minHeightClassName = getWidgetHeightClass(widget);
+                  if (isPrimaryWidget) {
+                    return (
+                      <PreviewPanel
+                        key={widget.id}
+                        columns={preview.columns}
+                        rows={preview.rows}
+                        chartType={config.chartType}
+                        loading={ui.previewLoading}
+                        error={ui.error}
+                        empty={false}
+                        title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
+                        subtitle={widget.appearance?.subtitle || t('common.reportBuilder.primaryWidgetPreview')}
+                        appearance={widget.appearance}
+                        className={panelClassName}
+                        minHeightClassName={minHeightClassName}
+                      />
+                    );
+                  }
+                  return (
+                    <PreviewPanel
+                      key={widget.id}
+                      columns={widgetPreview?.columns ?? []}
+                      rows={widgetPreview?.rows ?? []}
+                      chartType={widget.chartType}
+                      loading={widgetPreview?.loading ?? false}
+                      error={widgetPreview?.error ?? null}
+                      empty={!(widgetPreview?.columns?.length || widgetPreview?.rows?.length)}
+                      title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
+                      subtitle={widget.appearance?.subtitle || t('common.reportBuilder.additionalWidgetPreview')}
+                      appearance={widget.appearance}
+                      className={panelClassName}
+                      minHeightClassName={minHeightClassName}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
