@@ -11,6 +11,7 @@ import { getFieldSemanticLabel, getFieldSemanticType } from '../utils';
 
 interface FieldItemProps {
   field: Field;
+  mode?: 'basic' | 'advanced';
   onUseAsAxis?: (field: Field) => void;
   onUseAsValue?: (field: Field) => void;
   onUseAsLegend?: (field: Field) => void;
@@ -19,6 +20,7 @@ interface FieldItemProps {
 
 function FieldItem({
   field,
+  mode = 'advanced',
   onUseAsAxis,
   onUseAsValue,
   onUseAsLegend,
@@ -30,6 +32,7 @@ function FieldItem({
     data: { type: 'field', field },
   });
   const semanticType = getFieldSemanticType(field);
+  const isBasicMode = mode === 'basic';
   const canUseAsAxis = semanticType === 'text' || semanticType === 'date';
   const canUseAsValue = semanticType === 'number';
   const canUseAsLegend = semanticType === 'text';
@@ -50,11 +53,23 @@ function FieldItem({
           {getFieldSemanticLabel(field)}
         </span>
       </div>
-      <div className="text-muted-foreground ml-0.5 flex items-center gap-2 text-xs">
-        <span>{field.name}</span>
-        <span>•</span>
-        <span>{field.dotNetType ?? field.sqlType}</span>
-      </div>
+      {isBasicMode ? (
+        <div className="text-muted-foreground ml-0.5 text-xs">
+          {semanticType === 'date'
+            ? t('common.reportBuilder.fieldHintDate')
+            : semanticType === 'number'
+              ? t('common.reportBuilder.fieldHintMetric')
+              : semanticType === 'boolean'
+                ? t('common.reportBuilder.fieldHintStatus')
+                : t('common.reportBuilder.fieldHintDimension')}
+        </div>
+      ) : (
+        <div className="text-muted-foreground ml-0.5 flex items-center gap-2 text-xs">
+          <span>{field.name}</span>
+          <span>•</span>
+          <span>{field.dotNetType ?? field.sqlType}</span>
+        </div>
+      )}
       <div className="mt-2 flex flex-wrap gap-1">
         {canUseAsAxis ? (
           <Button type="button" variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => onUseAsAxis?.(field)}>
@@ -89,6 +104,7 @@ interface FieldsPanelProps {
   onUseAsLegend?: (field: Field) => void;
   onUseAsFilter?: (field: Field) => void;
   disabled?: boolean;
+  mode?: 'basic' | 'advanced';
 }
 
 export function FieldsPanel({
@@ -101,6 +117,7 @@ export function FieldsPanel({
   onUseAsLegend,
   onUseAsFilter,
   disabled,
+  mode = 'advanced',
 }: FieldsPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const mergedFields = useMemo(
@@ -188,6 +205,7 @@ export function FieldsPanel({
             <FieldItem
               key={f.name}
               field={f}
+              mode={mode}
               onUseAsAxis={onUseAsAxis}
               onUseAsValue={onUseAsValue}
               onUseAsLegend={onUseAsLegend}

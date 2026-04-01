@@ -226,6 +226,9 @@ interface ReportBuilderState {
   removeFromSlot: (slot: 'axis' | 'values' | 'legend' | 'filters', indexOrField: number | string) => void;
   reorderSlot: (slot: 'values' | 'filters', fromIndex: number, toIndex: number) => void;
   setAggregation: (valuesIndex: number, aggregation: Aggregation) => void;
+  setAxisLabel: (label: string) => void;
+  setLegendLabel: (label: string) => void;
+  setValueLabel: (valuesIndex: number, label: string) => void;
   setDateGrouping: (grouping: DateGrouping) => void;
   setSorting: (s: ReportConfigSorting | null) => void;
   addFilter: (f: ReportConfigFilter) => void;
@@ -642,6 +645,43 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
       const values = [...s.config.values];
       if (values[valuesIndex]) values[valuesIndex] = { ...values[valuesIndex], aggregation };
       const current = ensureWidgets(s.config);
+      const widgets = (current.widgets ?? []).map((widget) =>
+        widget.id === current.activeWidgetId ? { ...widget, values } : widget
+      );
+      return { config: ensureWidgets({ ...current, values, widgets }) };
+    });
+  },
+
+  setAxisLabel: (label) => {
+    set((s) => {
+      const current = ensureWidgets(s.config);
+      if (!current.axis) return { config: current };
+      const axis = { ...current.axis, label };
+      const widgets = (current.widgets ?? []).map((widget) =>
+        widget.id === current.activeWidgetId ? { ...widget, axis } : widget
+      );
+      return { config: ensureWidgets({ ...current, axis, widgets }) };
+    });
+  },
+
+  setLegendLabel: (label) => {
+    set((s) => {
+      const current = ensureWidgets(s.config);
+      if (!current.legend) return { config: current };
+      const legend = { ...current.legend, label };
+      const widgets = (current.widgets ?? []).map((widget) =>
+        widget.id === current.activeWidgetId ? { ...widget, legend } : widget
+      );
+      return { config: ensureWidgets({ ...current, legend, widgets }) };
+    });
+  },
+
+  setValueLabel: (valuesIndex, label) => {
+    set((s) => {
+      const current = ensureWidgets(s.config);
+      const values = [...current.values];
+      if (!values[valuesIndex]) return { config: current };
+      values[valuesIndex] = { ...values[valuesIndex], label };
       const widgets = (current.widgets ?? []).map((widget) =>
         widget.id === current.activeWidgetId ? { ...widget, values } : widget
       );

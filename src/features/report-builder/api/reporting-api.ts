@@ -3,13 +3,37 @@ import type { ConnectionDto, DataSourceCatalogItem, DataSourceCheckResponseDto, 
 
 const BASE = '/api/reportbuilder';
 
+function humanizeIdentifier(value: string): string {
+  const normalized = value
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_\-.]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!normalized) return value;
+
+  const upperWords = new Set(['id', 'erp', 'crm', 'pdf', 'api', 'sql', 'tl', 'usd', 'eur', 'no']);
+
+  return normalized
+    .split(' ')
+    .map((part) => {
+      const lower = part.toLowerCase();
+      if (upperWords.has(lower)) return lower.toUpperCase();
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join(' ');
+}
+
 function normalizeField(raw: Record<string, unknown>): Field {
+  const name = String(raw.name ?? raw.Name ?? '');
+  const providedDisplayName =
+    raw.displayName != null || raw.DisplayName != null
+      ? String(raw.displayName ?? raw.DisplayName ?? '')
+      : undefined;
+
   return {
-    name: String(raw.name ?? raw.Name ?? ''),
-    displayName:
-      raw.displayName != null || raw.DisplayName != null
-        ? String(raw.displayName ?? raw.DisplayName ?? '')
-        : undefined,
+    name,
+    displayName: providedDisplayName && providedDisplayName.trim() ? providedDisplayName : humanizeIdentifier(name),
     semanticType:
       raw.semanticType != null || raw.SemanticType != null
         ? String(raw.semanticType ?? raw.SemanticType ?? '')
@@ -32,12 +56,15 @@ function schemaToFields(schema: unknown): Field[] {
 }
 
 function normalizeParameter(raw: Record<string, unknown>): DataSourceParameter {
+  const name = String(raw.name ?? raw.Name ?? '');
+  const providedDisplayName =
+    raw.displayName != null || raw.DisplayName != null
+      ? String(raw.displayName ?? raw.DisplayName ?? '')
+      : undefined;
+
   return {
-    name: String(raw.name ?? raw.Name ?? ''),
-    displayName:
-      raw.displayName != null || raw.DisplayName != null
-        ? String(raw.displayName ?? raw.DisplayName ?? '')
-        : undefined,
+    name,
+    displayName: providedDisplayName && providedDisplayName.trim() ? providedDisplayName : humanizeIdentifier(name),
     semanticType:
       raw.semanticType != null || raw.SemanticType != null
         ? String(raw.semanticType ?? raw.SemanticType ?? '')

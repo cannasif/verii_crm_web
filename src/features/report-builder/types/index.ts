@@ -13,6 +13,16 @@ export type WidgetKpiFormat = 'number' | 'currency' | 'percent';
 export type WidgetBackgroundStyle = 'card' | 'glass' | 'gradient' | 'muted';
 export type WidgetKpiLayout = 'split' | 'spotlight' | 'compact';
 export type WidgetValueFormat = 'default' | 'number' | 'currency' | 'percent';
+export type WidgetTableColumnAlign = 'left' | 'center' | 'right';
+export type WidgetTableColumnWidth = 'auto' | 'sm' | 'md' | 'lg';
+
+export interface ReportWidgetTableColumnSetting {
+  key: string;
+  align?: WidgetTableColumnAlign;
+  width?: WidgetTableColumnWidth;
+  valueFormat?: WidgetValueFormat;
+  decimalPlaces?: number;
+}
 
 export interface ReportWidgetAppearance {
   subtitle?: string;
@@ -20,6 +30,9 @@ export interface ReportWidgetAppearance {
   tone?: WidgetTone;
   showStats?: boolean;
   tableDensity?: WidgetTableDensity;
+  hiddenColumns?: string[];
+  tableColumnOrder?: string[];
+  tableColumnSettings?: ReportWidgetTableColumnSetting[];
   themePreset?: WidgetThemePreset;
   titleAlign?: WidgetTitleAlign;
   sectionLabel?: string;
@@ -33,16 +46,19 @@ export interface ReportWidgetAppearance {
 
 export interface ReportConfigAxis {
   field: string;
+  label?: string;
   dateGrouping?: DateGrouping;
 }
 
 export interface ReportConfigValue {
   field: string;
+  label?: string;
   aggregation: Aggregation;
 }
 
 export interface ReportConfigLegend {
   field: string;
+  label?: string;
 }
 
 export interface ReportConfigSorting {

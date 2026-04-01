@@ -130,6 +130,20 @@ function buildCsv(columns: string[], rows: unknown[][]): string {
   return [header, body].filter(Boolean).join('\n');
 }
 
+function buildWidgetLabelOverrides(widget?: {
+  axis?: { field: string; label?: string };
+  legend?: { field: string; label?: string };
+  values?: Array<{ field: string; label?: string }>;
+}): Record<string, string> {
+  const overrides: Record<string, string> = {};
+  if (widget?.axis?.field && widget.axis.label?.trim()) overrides[widget.axis.field] = widget.axis.label.trim();
+  if (widget?.legend?.field && widget.legend.label?.trim()) overrides[widget.legend.field] = widget.legend.label.trim();
+  widget?.values?.forEach((value) => {
+    if (value.field && value.label?.trim()) overrides[value.field] = value.label.trim();
+  });
+  return overrides;
+}
+
 export function ReportViewerPage(): ReactElement {
   const { t, i18n } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
@@ -632,12 +646,13 @@ export function ReportViewerPage(): ReactElement {
                         loading={ui.previewLoading}
                         error={ui.error}
                         empty={false}
-                        title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
-                        subtitle={widget.appearance?.subtitle || t('common.reportBuilder.primaryWidgetPreview')}
-                        appearance={widget.appearance}
-                        className={panelClassName}
-                        minHeightClassName={minHeightClassName}
-                      />
+                      title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
+                      subtitle={widget.appearance?.subtitle || t('common.reportBuilder.primaryWidgetPreview')}
+                      appearance={widget.appearance}
+                      labelOverrides={buildWidgetLabelOverrides(widget)}
+                      className={panelClassName}
+                      minHeightClassName={minHeightClassName}
+                    />
                     );
                   }
                   return (
@@ -652,6 +667,7 @@ export function ReportViewerPage(): ReactElement {
                       title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
                       subtitle={widget.appearance?.subtitle || t('common.reportBuilder.additionalWidgetPreview')}
                       appearance={widget.appearance}
+                      labelOverrides={buildWidgetLabelOverrides(widget)}
                       className={panelClassName}
                       minHeightClassName={minHeightClassName}
                     />

@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import type { ChartType, ReportWidgetAppearance } from '../types';
+import type { ChartType, ReportWidgetAppearance, ReportWidgetTableColumnSetting } from '../types';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 
 type ColumnItem = string | { name: string; sqlType?: string; dotNetType?: string; isNullable?: boolean };
@@ -21,6 +21,7 @@ interface ReportChartProps {
   chartType: ChartType;
   className?: string;
   appearance?: ReportWidgetAppearance;
+  labelOverrides?: Record<string, string>;
 }
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1', '#a4de6c'];
@@ -35,7 +36,14 @@ function columnToLabel(col: ColumnItem): string {
   return typeof col === 'string' ? col : (col?.name ?? '');
 }
 
-function normalizeColumns(cols: ColumnItem[]): string[] {
+function normalizeColumns(cols: ColumnItem[], labelOverrides?: Record<string, string>): string[] {
+  return (cols ?? []).map((c) => {
+    const label = columnToLabel(c);
+    return labelOverrides?.[label] || label;
+  });
+}
+
+function getRawColumns(cols: ColumnItem[]): string[] {
   return (cols ?? []).map((c) => columnToLabel(c));
 }
 
@@ -79,30 +87,76 @@ function formatMetricValue(
 }
 
 function renderCellValue(cell: unknown, appearance?: ReportWidgetAppearance): string {
+  return renderCellValueWithSetting(cell, appearance);
+}
+
+function renderCellValueWithSetting(
+  cell: unknown,
+  appearance?: ReportWidgetAppearance,
+  columnSetting?: ReportWidgetTableColumnSetting,
+): string {
+  const format = columnSetting?.valueFormat ?? appearance?.valueFormat ?? 'default';
+  const decimalPlaces = columnSetting?.decimalPlaces ?? appearance?.decimalPlaces ?? 0;
   if (typeof cell === 'number') {
-    return formatMetricValue(cell, appearance?.valueFormat ?? 'default', appearance?.decimalPlaces ?? 0);
+    return formatMetricValue(cell, format, decimalPlaces);
   }
   if (typeof cell === 'string' && cell.trim() !== '' && !Number.isNaN(Number(cell))) {
-    return formatMetricValue(Number(cell), appearance?.valueFormat ?? 'default', appearance?.decimalPlaces ?? 0);
+    return formatMetricValue(Number(cell), format, decimalPlaces);
   }
   return String(cell ?? '');
 }
 
-export function ReportChart({ columns, rows, chartType, className, appearance }: ReportChartProps): ReactElement {
+function getColumnWidthClass(width?: ReportWidgetTableColumnSetting['width']): string {
+  if (width === 'sm') return 'w-[140px]';
+  if (width === 'md') return 'w-[220px]';
+  if (width === 'lg') return 'w-[320px]';
+  return '';
+}
+
+function getColumnAlignClass(align?: ReportWidgetTableColumnSetting['align']): string {
+  if (align === 'center') return 'text-center';
+  if (align === 'right') return 'text-right';
+  return 'text-left';
+}
+
+export function ReportChart({ columns, rows, chartType, className, appearance, labelOverrides }: ReportChartProps): ReactElement {
   const { t } = useTranslation('common');
   const recharts = useRechartsModule();
   const Recharts = recharts;
   const palette = useMemo(() => buildPalette(appearance?.accentColor), [appearance?.accentColor]);
   const tableDensity = appearance?.tableDensity ?? 'comfortable';
+  const hiddenColumns = appearance?.hiddenColumns ?? [];
+  const tableColumnOrder = appearance?.tableColumnOrder ?? [];
+  const tableColumnSettings = appearance?.tableColumnSettings ?? [];
   const themePreset = appearance?.themePreset ?? 'executive';
   const kpiFormat = appearance?.kpiFormat ?? 'number';
   const kpiLayout = appearance?.kpiLayout ?? 'split';
   const valueFormat = appearance?.valueFormat ?? 'default';
   const decimalPlaces = appearance?.decimalPlaces ?? 0;
-  const columnLabels = useMemo(() => normalizeColumns(columns), [columns]);
+  const rawColumns = useMemo(() => getRawColumns(columns), [columns]);
+  const columnLabels = useMemo(() => normalizeColumns(columns, labelOverrides), [columns, labelOverrides]);
   const normalizedRows = useMemo(
     () => (Array.isArray(rows) ? rows.map(ensureRowArray) : []),
     [rows]
+  );
+  const visibleColumnIndexes = useMemo(() => {
+    const allIndexes = rawColumns.map((_, index) => index);
+    const explicitIndexes = tableColumnOrder
+      .map((name) => rawColumns.findIndex((raw) => raw === name))
+      .filter((index) => index >= 0);
+    const remainingIndexes = allIndexes.filter((index) => !explicitIndexes.includes(index));
+    return [...explicitIndexes, ...remainingIndexes].filter((index) => !hiddenColumns.includes(rawColumns[index]));
+  }, [hiddenColumns, rawColumns, tableColumnOrder]);
+  const orderedColumnLabels = useMemo(() => visibleColumnIndexes.map((index) => columnLabels[index]), [columnLabels, visibleColumnIndexes]);
+  const orderedRawColumns = useMemo(() => visibleColumnIndexes.map((index) => rawColumns[index]), [rawColumns, visibleColumnIndexes]);
+  const orderedColumnSettings = useMemo(
+    () =>
+      orderedRawColumns.map((column) => tableColumnSettings.find((item) => item.key === column)),
+    [orderedRawColumns, tableColumnSettings],
+  );
+  const orderedRows = useMemo(
+    () => normalizedRows.map((row) => visibleColumnIndexes.map((index) => row[index])),
+    [normalizedRows, visibleColumnIndexes],
   );
 
   const tableData = useMemo(() => {
@@ -176,19 +230,35 @@ export function ReportChart({ columns, rows, chartType, className, appearance }:
           <Table className={cn('w-full table-fixed', tableDensity === 'compact' ? 'text-[11px]' : 'text-xs')}>
             <TableHeader>
               <TableRow>
-                {columnLabels.map((col, i) => (
-                  <TableHead key={col || i} className={cn('whitespace-normal wrap-break-word align-top', tableDensity === 'compact' ? 'py-2' : 'py-3')}>
+                {orderedColumnLabels.map((col, i) => (
+                  <TableHead
+                    key={col || i}
+                    className={cn(
+                      'whitespace-normal wrap-break-word align-top',
+                      tableDensity === 'compact' ? 'py-2' : 'py-3',
+                      getColumnWidthClass(orderedColumnSettings[i]?.width),
+                      getColumnAlignClass(orderedColumnSettings[i]?.align),
+                    )}
+                  >
                     {col}
                   </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {normalizedRows.slice(0, 5000).map((row, ri) => (
+              {orderedRows.slice(0, 5000).map((row, ri) => (
                 <TableRow key={ri} className={cn(ri % 2 === 1 && 'bg-muted/30')}>
                   {row.map((cell, ci) => (
-                    <TableCell key={ci} className={cn('whitespace-normal wrap-break-word align-top', tableDensity === 'compact' ? 'py-2' : 'py-3')}>
-                      {renderCellValue(cell, appearance)}
+                    <TableCell
+                      key={ci}
+                      className={cn(
+                        'whitespace-normal wrap-break-word align-top',
+                        tableDensity === 'compact' ? 'py-2' : 'py-3',
+                        getColumnWidthClass(orderedColumnSettings[ci]?.width),
+                        getColumnAlignClass(orderedColumnSettings[ci]?.align),
+                      )}
+                    >
+                      {renderCellValueWithSetting(cell, appearance, orderedColumnSettings[ci])}
                     </TableCell>
                   ))}
                 </TableRow>

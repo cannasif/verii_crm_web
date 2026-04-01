@@ -57,6 +57,20 @@ function getSlotTypeFromId(id: string): 'axis' | 'values' | 'legend' | 'filters'
   return null;
 }
 
+function buildWidgetLabelOverrides(widget?: {
+  axis?: { field: string; label?: string };
+  legend?: { field: string; label?: string };
+  values?: Array<{ field: string; label?: string }>;
+}): Record<string, string> {
+  const overrides: Record<string, string> = {};
+  if (widget?.axis?.field && widget.axis.label?.trim()) overrides[widget.axis.field] = widget.axis.label.trim();
+  if (widget?.legend?.field && widget.legend.label?.trim()) overrides[widget.legend.field] = widget.legend.label.trim();
+  widget?.values?.forEach((value) => {
+    if (value.field && value.label?.trim()) overrides[value.field] = value.label.trim();
+  });
+  return overrides;
+}
+
 export function ReportBuilderPage(): ReactElement {
   const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
@@ -151,6 +165,18 @@ export function ReportBuilderPage(): ReactElement {
   });
   const firstValueField = schema.find((field) => getFieldSemanticType(field) === 'number');
   const firstLegendField = schema.find((field) => getFieldSemanticType(field) === 'text' && field.name !== firstAxisField?.name);
+  const activeWidget = (config.widgets ?? []).find((widget) => widget.id === config.activeWidgetId);
+  const fieldLabelMap = useMemo(
+    () => new Map([
+      ...schema.map((field) => [field.name, field.displayName || field.name] as const),
+      ...(config.calculatedFields ?? []).map((field) => [field.name, field.label || field.name] as const),
+    ]),
+    [config.calculatedFields, schema],
+  );
+  const getFieldLabel = useCallback((fieldName?: string) => {
+    if (!fieldName) return t('common.reportBuilder.basicNoneSelected');
+    return fieldLabelMap.get(fieldName) ?? fieldName;
+  }, [fieldLabelMap, t]);
   const builderReadinessSteps = [
     {
       key: 'dataset',
@@ -902,6 +928,7 @@ export function ReportBuilderPage(): ReactElement {
               onUseAsLegend={handleQuickUseLegend}
               onUseAsFilter={handleQuickUseFilter}
               disabled={!dataSourceChecked}
+              mode={builderMode}
             />
           </div>
 
@@ -909,11 +936,12 @@ export function ReportBuilderPage(): ReactElement {
             <div className="shrink-0">
               <PreviewPanel
                 title={t('common.reportBuilder.activeWidgetPreview')}
-                subtitle={(config.widgets ?? []).find((widget) => widget.id === config.activeWidgetId)?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
+                subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
                 columns={preview.columns}
                 rows={preview.rows}
                 chartType={config.chartType}
-                appearance={(config.widgets ?? []).find((widget) => widget.id === config.activeWidgetId)?.appearance}
+                appearance={activeWidget?.appearance}
+                labelOverrides={buildWidgetLabelOverrides(activeWidget)}
                 loading={ui.previewLoading}
                 error={ui.error}
                 empty={!dataSourceChecked}
@@ -940,18 +968,55 @@ export function ReportBuilderPage(): ReactElement {
                 <div className="mt-1 text-muted-foreground">{ui.slotError}</div>
               </div>
             ) : null}
-            <SlotsPanel
-              axis={config.axis}
-              values={config.values}
-              legend={config.legend}
-              filters={config.filters}
-              slotError={ui.slotError}
-              onRemoveAxis={() => useReportBuilderStore.getState().removeFromSlot('axis', 0)}
-              onRemoveValue={(i) => useReportBuilderStore.getState().removeFromSlot('values', i)}
-              onRemoveLegend={() => useReportBuilderStore.getState().removeFromSlot('legend', 0)}
-              onRemoveFilter={(i) => useReportBuilderStore.getState().removeFilter(i)}
-              disabled={!dataSourceChecked}
-            />
+            {builderMode === 'basic' ? (
+              <div className="mb-4 rounded-xl border bg-muted/20 p-4">
+                <div className="mb-3">
+                  <h4 className="text-sm font-semibold">{t('common.reportBuilder.basicSummaryTitle')}</h4>
+                  <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicSummaryDescription')}</p>
+                </div>
+                <div className="grid gap-2">
+                  <div className="rounded-lg border bg-background p-3">
+                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryVisual')}</div>
+                    <div className="mt-1 text-sm font-medium">{t(`common.reportBuilder.chartTypes.${config.chartType}`)}</div>
+                  </div>
+                  <div className="rounded-lg border bg-background p-3">
+                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryGroupBy')}</div>
+                    <div className="mt-1 text-sm font-medium">
+                      {config.chartType === 'kpi' ? t('common.reportBuilder.basicKpiNoGrouping') : getFieldLabel(config.axis?.field)}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border bg-background p-3">
+                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryMetric')}</div>
+                    <div className="mt-1 text-sm font-medium">{getFieldLabel(config.values[0]?.field)}</div>
+                  </div>
+                  <div className="rounded-lg border bg-background p-3">
+                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryAggregation')}</div>
+                    <div className="mt-1 text-sm font-medium">
+                      {config.values[0]?.aggregation ? t(`common.reportBuilder.aggregations.${config.values[0].aggregation}`) : t('common.reportBuilder.basicNoneSelected')}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border bg-background p-3">
+                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryBreakdown')}</div>
+                    <div className="mt-1 text-sm font-medium">
+                      {config.legend?.field ? getFieldLabel(config.legend.field) : t('common.reportBuilder.basicNoBreakdown')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <SlotsPanel
+                axis={config.axis}
+                values={config.values}
+                legend={config.legend}
+                filters={config.filters}
+                slotError={ui.slotError}
+                onRemoveAxis={() => useReportBuilderStore.getState().removeFromSlot('axis', 0)}
+                onRemoveValue={(i) => useReportBuilderStore.getState().removeFromSlot('values', i)}
+                onRemoveLegend={() => useReportBuilderStore.getState().removeFromSlot('legend', 0)}
+                onRemoveFilter={(i) => useReportBuilderStore.getState().removeFilter(i)}
+                disabled={!dataSourceChecked}
+              />
+            )}
             <PropertiesPanel schema={schema} slotError={ui.slotError} disabled={!dataSourceChecked} mode={builderMode} />
           </div>
         </div>

@@ -1,10 +1,14 @@
 import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
+import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
+import { cn } from '@/lib/utils';
 import {
   Select,
   SelectContent,
@@ -24,12 +28,14 @@ import type {
   WidgetValueFormat,
   WidgetTableDensity,
   WidgetThemePreset,
+  WidgetTableColumnAlign,
+  WidgetTableColumnWidth,
   WidgetTitleAlign,
   WidgetTone,
 } from '../types';
 import { getFieldSemanticType, getOperatorsForField } from '../utils';
 import type { Field } from '../types';
-import { BarChart3, Calculator, Filter, GripVertical, LayoutTemplate, PieChart, Table2, TrendingUp, X } from 'lucide-react';
+import { BarChart3, Calculator, Filter, GripVertical, LayoutTemplate, MoveVertical, PieChart, Sparkles, Table2, TrendingUp, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUserList } from '@/features/user-management/hooks/useUserList';
 
@@ -74,6 +80,8 @@ const KPI_FORMATS: WidgetKpiFormat[] = ['number', 'currency', 'percent'];
 const BACKGROUND_STYLES: WidgetBackgroundStyle[] = ['card', 'glass', 'gradient', 'muted'];
 const KPI_LAYOUTS: WidgetKpiLayout[] = ['split', 'spotlight', 'compact'];
 const VALUE_FORMATS: WidgetValueFormat[] = ['default', 'number', 'currency', 'percent'];
+const TABLE_COLUMN_ALIGNS: WidgetTableColumnAlign[] = ['left', 'center', 'right'];
+const TABLE_COLUMN_WIDTHS: WidgetTableColumnWidth[] = ['auto', 'sm', 'md', 'lg'];
 
 const OPERATOR_LABELS: Record<string, string> = {
   eq: '=',
@@ -121,6 +129,36 @@ function getChartIcon(type: ChartType): ReactElement {
   }
 }
 
+interface SortableColumnRowProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+function SortableColumnRow({ id, children }: SortableColumnRowProps): ReactElement {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(isDragging && 'opacity-70')}
+    >
+      <div className="flex items-start gap-2">
+        <button
+          type="button"
+          className="mt-2 inline-flex size-7 shrink-0 items-center justify-center rounded-md border bg-background text-muted-foreground"
+          {...attributes}
+          {...listeners}
+          aria-label="Sutunu tasimak icin surukle"
+        >
+          <MoveVertical className="size-3.5" />
+        </button>
+        <div className="min-w-0 flex-1">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode = 'advanced' }: PropertiesPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const numericFields = schema.filter((field) => getFieldSemanticType(field) === 'number');
@@ -137,6 +175,9 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
     setDateGrouping,
     setSorting,
     setAggregation,
+    setAxisLabel,
+    setLegendLabel,
+    setValueLabel,
     removeFromSlot,
     addCalculatedField,
     removeCalculatedField,
@@ -203,6 +244,457 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
   const dateGroupingLabel = (value: string): string => t(`common.reportBuilder.dateGroupings.${value}`);
   const operatorLabel = (value: string): string => t(`common.reportBuilder.operators.${value}`, { defaultValue: OPERATOR_LABELS[value] ?? value });
   const isBasicMode = mode === 'basic';
+  const dimensionFields = useMemo(
+    () => schema.filter((field) => {
+      const type = getFieldSemanticType(field);
+      return type === 'text' || type === 'date';
+    }),
+    [schema],
+  );
+  const metricOptions = useMemo(
+    () => [
+      ...schema
+        .filter((field) => getFieldSemanticType(field) === 'number')
+        .map((field) => ({
+          value: field.name,
+          label: field.displayName || field.name,
+          defaultAggregation: (field.defaultAggregation === 'count' ? 'count' : field.defaultAggregation ?? 'sum') as Aggregation,
+        })),
+      ...(config.calculatedFields ?? []).map((field) => ({
+        value: field.name,
+        label: field.label || field.name,
+        defaultAggregation: 'sum' as Aggregation,
+      })),
+    ],
+    [config.calculatedFields, schema],
+  );
+  const selectedMetricField = config.values[0]?.field ?? '';
+  const selectedMetricLabel = config.values[0]?.label ?? '';
+  const selectedAggregation = config.values[0]?.aggregation ?? 'sum';
+  const selectedAxisField = config.axis?.field ?? '';
+  const selectedAxisLabel = config.axis?.label ?? '';
+  const selectedLegendField = config.legend?.field ?? '';
+  const selectedLegendLabel = config.legend?.label ?? '';
+  const selectedAxisFieldSchema = schema.find((field) => field.name === selectedAxisField);
+  const selectedAxisType = selectedAxisFieldSchema ? getFieldSemanticType(selectedAxisFieldSchema) : null;
+  const fieldLabelMap = useMemo(
+    () => new Map([
+      ...schema.map((field) => [field.name, field.displayName || field.name] as const),
+      ...(config.calculatedFields ?? []).map((field) => [field.name, field.label || field.name] as const),
+    ]),
+    [config.calculatedFields, schema],
+  );
+  const getFieldLabel = (fieldName?: string): string =>
+    fieldName ? fieldLabelMap.get(fieldName) ?? fieldName : t('common.reportBuilder.basicNoneSelected');
+  const tableColumnCandidates = useMemo(() => {
+    const items: Array<{ key: string; label: string }> = [];
+    if (config.axis?.field) items.push({ key: config.axis.field, label: config.axis.label?.trim() || getFieldLabel(config.axis.field) });
+    if (config.legend?.field) items.push({ key: config.legend.field, label: config.legend.label?.trim() || getFieldLabel(config.legend.field) });
+    config.values.forEach((value) => {
+      if (!items.some((item) => item.key === value.field)) {
+        items.push({ key: value.field, label: value.label?.trim() || getFieldLabel(value.field) });
+      }
+    });
+    return items;
+  }, [config.axis, config.legend, config.values, getFieldLabel]);
+  const orderedTableColumns = useMemo(() => {
+    const configuredOrder = activeAppearance.tableColumnOrder ?? [];
+    const ordered = configuredOrder
+      .map((key) => tableColumnCandidates.find((item) => item.key === key))
+      .filter((item): item is { key: string; label: string } => Boolean(item));
+    const rest = tableColumnCandidates.filter((item) => !configuredOrder.includes(item.key));
+    return [...ordered, ...rest];
+  }, [activeAppearance.tableColumnOrder, tableColumnCandidates]);
+  const hiddenColumns = activeAppearance.hiddenColumns ?? [];
+  const tableColumnSettings = activeAppearance.tableColumnSettings ?? [];
+  const columnSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+
+  const setSingleMetric = (fieldName: string): void => {
+    for (let index = config.values.length - 1; index >= 0; index -= 1) {
+      removeFromSlot('values', index);
+    }
+    const defaultAggregation = metricOptions.find((option) => option.value === fieldName)?.defaultAggregation ?? 'sum';
+    addToSlot('values', fieldName, { aggregation: defaultAggregation });
+  };
+
+  const setAxisField = (fieldName: string): void => {
+    if (fieldName === 'none') {
+      removeFromSlot('axis', 0);
+      return;
+    }
+    addToSlot('axis', fieldName);
+  };
+
+  const setLegendField = (fieldName: string): void => {
+    if (fieldName === 'none') {
+      removeFromSlot('legend', 0);
+      return;
+    }
+    addToSlot('legend', fieldName);
+  };
+  const toggleTableColumnVisibility = (columnKey: string): void => {
+    if (!activeWidget) return;
+    const next = hiddenColumns.includes(columnKey)
+      ? hiddenColumns.filter((item) => item !== columnKey)
+      : [...hiddenColumns, columnKey];
+    setWidgetAppearance(activeWidget.id, { hiddenColumns: next });
+  };
+  const updateTableColumnSetting = (
+    columnKey: string,
+    patch: { align?: WidgetTableColumnAlign; width?: WidgetTableColumnWidth; valueFormat?: WidgetValueFormat; decimalPlaces?: number },
+  ): void => {
+    if (!activeWidget) return;
+    const nextSettings = [...tableColumnSettings];
+    const existingIndex = nextSettings.findIndex((item) => item.key === columnKey);
+    const current = existingIndex >= 0 ? nextSettings[existingIndex] : { key: columnKey };
+    const next = { ...current, ...patch };
+    if (existingIndex >= 0) nextSettings[existingIndex] = next;
+    else nextSettings.push(next);
+    setWidgetAppearance(activeWidget.id, { tableColumnSettings: nextSettings });
+  };
+  const getTableColumnSetting = (columnKey: string) => tableColumnSettings.find((item) => item.key === columnKey);
+  const handleTableColumnDragEnd = (event: DragEndEvent): void => {
+    if (!activeWidget || !event.over || event.active.id === event.over.id) return;
+    const overId = event.over?.id;
+    if (!overId) return;
+    const currentOrder = [...orderedTableColumns];
+    const oldIndex = currentOrder.findIndex((item) => item.key === String(event.active.id));
+    const newIndex = currentOrder.findIndex((item) => item.key === String(overId));
+    if (oldIndex < 0 || newIndex < 0) return;
+    const reordered = arrayMove(currentOrder, oldIndex, newIndex);
+    setWidgetAppearance(activeWidget.id, { tableColumnOrder: reordered.map((item) => item.key) });
+  };
+
+  if (!disabled && isBasicMode) {
+    const simpleChartTypes: ChartType[] = ['table', 'bar', 'line', 'pie', 'donut', 'kpi'];
+    const showAxisSelector = config.chartType !== 'kpi';
+    const showLegendSelector = config.chartType !== 'kpi';
+
+    return (
+      <div className="flex flex-col gap-4 overflow-y-auto">
+        <div className="rounded-xl border bg-muted/20 p-4">
+          <div className="mb-1 flex items-center gap-2">
+            <Sparkles className="size-4 text-primary" />
+            <Label>{t('common.reportBuilder.basicSetupTitle')}</Label>
+          </div>
+          <p className="text-muted-foreground text-xs">{t('common.reportBuilder.basicSetupDescription')}</p>
+        </div>
+
+        <div className="space-y-3 rounded-xl border p-4">
+          <div>
+            <Label>{t('common.reportBuilder.basicChooseVisualTitle')}</Label>
+            <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicChooseVisualDescription')}</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {simpleChartTypes.map((type) => (
+              <Button
+                key={type}
+                type="button"
+                variant={config.chartType === type ? 'default' : 'outline'}
+                className="h-auto justify-start px-3 py-3 text-left"
+                onClick={() => setChartType(type)}
+              >
+                <div>
+                  <div className="font-medium">{chartTypeLabel(type)}</div>
+                  <div className="mt-1 text-xs opacity-80">{t(`common.reportBuilder.chartTypeDescriptions.${type}`)}</div>
+                </div>
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {showAxisSelector ? (
+          <div className="space-y-2 rounded-xl border p-4">
+            <div>
+              <Label>{t('common.reportBuilder.basicChooseGroupByTitle')}</Label>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicChooseGroupByDescription')}</p>
+            </div>
+            <Select value={selectedAxisField || 'none'} onValueChange={setAxisField}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">{t('common.reportBuilder.basicNoneSelected')}</SelectItem>
+                {dimensionFields.map((field) => (
+                  <SelectItem key={field.name} value={field.name}>
+                    {field.displayName || field.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {selectedAxisType === 'date' ? (
+              <div className="space-y-2 rounded-lg bg-muted/40 p-3">
+                <Label>{t('common.reportBuilder.basicChooseDateGroupingTitle')}</Label>
+                <Select value={config.axis?.dateGrouping ?? 'day'} onValueChange={(value) => setDateGrouping(value as DateGrouping)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DATE_GROUPINGS.map((grouping) => (
+                      <SelectItem key={grouping.value} value={grouping.value}>
+                        {dateGroupingLabel(grouping.value)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div className="space-y-2 rounded-xl border p-4">
+          <div>
+            <Label>{t('common.reportBuilder.basicChooseMetricTitle')}</Label>
+            <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicChooseMetricDescription')}</p>
+          </div>
+          <Select
+            value={selectedMetricField || 'none'}
+            onValueChange={(value) => {
+              if (value === 'none') {
+                for (let index = config.values.length - 1; index >= 0; index -= 1) {
+                  removeFromSlot('values', index);
+                }
+                return;
+              }
+              setSingleMetric(value);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">{t('common.reportBuilder.basicNoneSelected')}</SelectItem>
+              {metricOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {selectedMetricField ? (
+          <div className="space-y-2 rounded-xl border p-4">
+            <div>
+              <Label>{t('common.reportBuilder.basicChooseAggregationTitle')}</Label>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicChooseAggregationDescription')}</p>
+            </div>
+            <Select value={selectedAggregation} onValueChange={(value) => setAggregation(0, value as Aggregation)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {AGGREGATIONS.map((aggregation) => (
+                  <SelectItem key={aggregation.value} value={aggregation.value}>
+                    {aggregationLabel(aggregation.value)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
+
+        {showLegendSelector ? (
+          <div className="space-y-2 rounded-xl border p-4">
+            <div>
+              <Label>{t('common.reportBuilder.basicChooseBreakdownTitle')}</Label>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicChooseBreakdownDescription')}</p>
+            </div>
+            <Select value={selectedLegendField || 'none'} onValueChange={setLegendField}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">{t('common.reportBuilder.basicNoBreakdown')}</SelectItem>
+                {dimensionFields
+                  .filter((field) => field.name !== selectedAxisField)
+                  .map((field) => (
+                    <SelectItem key={field.name} value={field.name}>
+                      {field.displayName || field.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
+
+        {(selectedAxisField || selectedMetricField || selectedLegendField) ? (
+          <div className="space-y-3 rounded-xl border p-4">
+            <div>
+              <Label>{t('common.reportBuilder.basicCustomLabelsTitle')}</Label>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicCustomLabelsDescription')}</p>
+            </div>
+            {selectedAxisField ? (
+              <div className="space-y-2">
+                <Label>{t('common.reportBuilder.basicCustomAxisLabel')}</Label>
+                <Input
+                  value={selectedAxisLabel}
+                  placeholder={getFieldLabel(selectedAxisField)}
+                  onChange={(e) => setAxisLabel(e.target.value)}
+                />
+              </div>
+            ) : null}
+            {selectedMetricField ? (
+              <div className="space-y-2">
+                <Label>{t('common.reportBuilder.basicCustomMetricLabel')}</Label>
+                <Input
+                  value={selectedMetricLabel}
+                  placeholder={getFieldLabel(selectedMetricField)}
+                  onChange={(e) => setValueLabel(0, e.target.value)}
+                />
+              </div>
+            ) : null}
+            {selectedLegendField ? (
+              <div className="space-y-2">
+                <Label>{t('common.reportBuilder.basicCustomBreakdownLabel')}</Label>
+                <Input
+                  value={selectedLegendLabel}
+                  placeholder={getFieldLabel(selectedLegendField)}
+                  onChange={(e) => setLegendLabel(e.target.value)}
+                />
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div className="space-y-3 rounded-xl border bg-slate-50/80 p-4 dark:bg-slate-900/40">
+          <div>
+            <Label>{t('common.reportBuilder.basicSummaryTitle')}</Label>
+            <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicSummaryDescription')}</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-lg border bg-background p-3">
+              <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryVisual')}</div>
+              <div className="mt-1 text-sm font-medium">{chartTypeLabel(config.chartType)}</div>
+            </div>
+            <div className="rounded-lg border bg-background p-3">
+              <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryGroupBy')}</div>
+              <div className="mt-1 text-sm font-medium">
+                {showAxisSelector ? (selectedAxisLabel || getFieldLabel(selectedAxisField)) : t('common.reportBuilder.basicKpiNoGrouping')}
+              </div>
+            </div>
+            <div className="rounded-lg border bg-background p-3">
+              <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryMetric')}</div>
+              <div className="mt-1 text-sm font-medium">{selectedMetricLabel || getFieldLabel(selectedMetricField)}</div>
+            </div>
+            <div className="rounded-lg border bg-background p-3">
+              <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryAggregation')}</div>
+              <div className="mt-1 text-sm font-medium">{selectedMetricField ? aggregationLabel(selectedAggregation) : t('common.reportBuilder.basicNoneSelected')}</div>
+            </div>
+            <div className="rounded-lg border bg-background p-3 sm:col-span-2">
+              <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryBreakdown')}</div>
+              <div className="mt-1 text-sm font-medium">
+                {showLegendSelector ? (selectedLegendField ? (selectedLegendLabel || getFieldLabel(selectedLegendField)) : t('common.reportBuilder.basicNoBreakdown')) : t('common.reportBuilder.basicNoBreakdown')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {activeWidget ? (
+          <div className="space-y-3 rounded-xl border p-4">
+            <div>
+              <Label>{t('common.reportBuilder.stylePresets')}</Label>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicStyleDescription')}</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {THEME_PRESETS.map((preset) => (
+                <Button
+                  key={preset}
+                  type="button"
+                  variant={(activeAppearance.themePreset ?? 'executive') === preset ? 'default' : 'outline'}
+                  className="justify-start"
+                  onClick={() => handleApplyStylePreset(preset)}
+                >
+                  {t(`common.reportBuilder.widgetThemePresets.${preset}`)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {activeWidget && config.chartType === 'table' && orderedTableColumns.length > 0 ? (
+          <div className="space-y-3 rounded-xl border p-4">
+            <div>
+              <Label>{t('common.reportBuilder.basicTableColumnsTitle')}</Label>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicTableColumnsDescription')}</p>
+            </div>
+            <DndContext sensors={columnSensors} collisionDetection={closestCenter} onDragEnd={handleTableColumnDragEnd}>
+              <SortableContext items={orderedTableColumns.map((column) => column.key)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-2">
+                  {orderedTableColumns.map((column) => {
+                    const isHidden = hiddenColumns.includes(column.key);
+                    const setting = getTableColumnSetting(column.key);
+                    return (
+                      <SortableColumnRow key={column.key} id={column.key}>
+                        <div className="space-y-3 rounded-lg border bg-background px-3 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="min-w-0 flex-1">
+                              <div className={cn('text-sm font-medium', isHidden && 'text-muted-foreground line-through')}>{column.label}</div>
+                            </div>
+                            <Button type="button" variant={isHidden ? 'outline' : 'secondary'} size="sm" onClick={() => toggleTableColumnVisibility(column.key)}>
+                              {isHidden ? t('common.reportBuilder.showColumn') : t('common.reportBuilder.hideColumn')}
+                            </Button>
+                          </div>
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            <Select value={setting?.align ?? 'left'} onValueChange={(value) => updateTableColumnSetting(column.key, { align: value as WidgetTableColumnAlign })}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder={t('common.reportBuilder.columnAlign')} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {TABLE_COLUMN_ALIGNS.map((align) => (
+                                  <SelectItem key={align} value={align}>
+                                    {t(`common.reportBuilder.columnAligns.${align}`)}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Select value={setting?.width ?? 'auto'} onValueChange={(value) => updateTableColumnSetting(column.key, { width: value as WidgetTableColumnWidth })}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder={t('common.reportBuilder.columnWidth')} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {TABLE_COLUMN_WIDTHS.map((width) => (
+                                  <SelectItem key={width} value={width}>
+                                    {t(`common.reportBuilder.columnWidths.${width}`)}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Select value={setting?.valueFormat ?? 'default'} onValueChange={(value) => updateTableColumnSetting(column.key, { valueFormat: value as WidgetValueFormat })}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder={t('common.reportBuilder.columnValueFormat')} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {VALUE_FORMATS.map((format) => (
+                                  <SelectItem key={format} value={format}>
+                                    {t(`common.reportBuilder.widgetValueFormats.${format}`)}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={4}
+                              value={String(setting?.decimalPlaces ?? 0)}
+                              onChange={(e) => updateTableColumnSetting(column.key, { decimalPlaces: Math.max(0, Math.min(4, Number(e.target.value || 0))) })}
+                              placeholder={t('common.reportBuilder.columnDecimalPlaces')}
+                            />
+                          </div>
+                        </div>
+                      </SortableColumnRow>
+                    );
+                  })}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   const handleApplyStylePreset = (preset: WidgetThemePreset): void => {
     if (!activeWidget) return;
     if (preset === 'executive') {
@@ -685,7 +1177,8 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
           <Label>{t('common.reportBuilder.valuesAggregation')}</Label>
           <div className="space-y-1">
             {config.values.map((v, i) => (
-              <div key={`${v.field}-${i}`} className="flex items-center gap-1 rounded bg-muted/50 px-2 py-1 text-sm">
+              <div key={`${v.field}-${i}`} className="space-y-2 rounded bg-muted/50 px-2 py-2 text-sm">
+                <div className="flex items-center gap-1">
                 <GripVertical className="size-3.5 text-muted-foreground" />
                 <span className="flex-1 truncate">{v.field}</span>
                 <Select value={v.aggregation} onValueChange={(agg) => setAggregation(i, agg as Aggregation)}>
@@ -703,9 +1196,121 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
                 <Button type="button" variant="ghost" size="icon-sm" onClick={() => removeFromSlot('values', i)} aria-label={t('common.reportBuilder.dismiss')}>
                   <X className="size-3" />
                 </Button>
+                </div>
+                <Input
+                  value={v.label ?? ''}
+                  placeholder={getFieldLabel(v.field)}
+                  onChange={(e) => setValueLabel(i, e.target.value)}
+                />
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {!isBasicMode && (config.axis?.field || config.legend?.field) && (
+        <div className="space-y-3 rounded-lg border border-dashed p-3">
+          <div>
+            <Label>{t('common.reportBuilder.customLabelsTitle')}</Label>
+            <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.customLabelsDescription')}</p>
+          </div>
+          {config.axis?.field ? (
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.customAxisLabel')}</Label>
+              <Input
+                value={config.axis.label ?? ''}
+                placeholder={getFieldLabel(config.axis.field)}
+                onChange={(e) => setAxisLabel(e.target.value)}
+              />
+            </div>
+          ) : null}
+          {config.legend?.field ? (
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.customLegendLabel')}</Label>
+              <Input
+                value={config.legend.label ?? ''}
+                placeholder={getFieldLabel(config.legend.field)}
+                onChange={(e) => setLegendLabel(e.target.value)}
+              />
+            </div>
+          ) : null}
+        </div>
+      )}
+
+      {!isBasicMode && activeWidget && config.chartType === 'table' && orderedTableColumns.length > 0 && (
+        <div className="space-y-3 rounded-lg border border-dashed p-3">
+          <div>
+            <Label>{t('common.reportBuilder.tableColumnsTitle')}</Label>
+            <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.tableColumnsDescription')}</p>
+          </div>
+          <DndContext sensors={columnSensors} collisionDetection={closestCenter} onDragEnd={handleTableColumnDragEnd}>
+            <SortableContext items={orderedTableColumns.map((column) => column.key)} strategy={verticalListSortingStrategy}>
+              <div className="space-y-2">
+                {orderedTableColumns.map((column) => {
+                  const isHidden = hiddenColumns.includes(column.key);
+                  const setting = getTableColumnSetting(column.key);
+                  return (
+                    <SortableColumnRow key={column.key} id={column.key}>
+                      <div className="space-y-2 rounded bg-muted/50 px-2 py-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className={cn('min-w-0 flex-1 truncate', isHidden && 'text-muted-foreground line-through')}>{column.label}</div>
+                          <Button type="button" variant={isHidden ? 'outline' : 'secondary'} size="sm" onClick={() => toggleTableColumnVisibility(column.key)}>
+                            {isHidden ? t('common.reportBuilder.showColumn') : t('common.reportBuilder.hideColumn')}
+                          </Button>
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          <Select value={setting?.align ?? 'left'} onValueChange={(value) => updateTableColumnSetting(column.key, { align: value as WidgetTableColumnAlign })}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder={t('common.reportBuilder.columnAlign')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TABLE_COLUMN_ALIGNS.map((align) => (
+                                <SelectItem key={align} value={align}>
+                                  {t(`common.reportBuilder.columnAligns.${align}`)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Select value={setting?.width ?? 'auto'} onValueChange={(value) => updateTableColumnSetting(column.key, { width: value as WidgetTableColumnWidth })}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder={t('common.reportBuilder.columnWidth')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TABLE_COLUMN_WIDTHS.map((width) => (
+                                <SelectItem key={width} value={width}>
+                                  {t(`common.reportBuilder.columnWidths.${width}`)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Select value={setting?.valueFormat ?? 'default'} onValueChange={(value) => updateTableColumnSetting(column.key, { valueFormat: value as WidgetValueFormat })}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder={t('common.reportBuilder.columnValueFormat')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {VALUE_FORMATS.map((format) => (
+                                <SelectItem key={format} value={format}>
+                                  {t(`common.reportBuilder.widgetValueFormats.${format}`)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            type="number"
+                            min={0}
+                            max={4}
+                            value={String(setting?.decimalPlaces ?? 0)}
+                            onChange={(e) => updateTableColumnSetting(column.key, { decimalPlaces: Math.max(0, Math.min(4, Number(e.target.value || 0))) })}
+                            placeholder={t('common.reportBuilder.columnDecimalPlaces')}
+                          />
+                        </div>
+                      </div>
+                    </SortableColumnRow>
+                  );
+                })}
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
       )}
 

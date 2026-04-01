@@ -17,6 +17,7 @@ interface PreviewPanelProps {
   subtitle?: string;
   minHeightClassName?: string;
   appearance?: ReportWidgetAppearance;
+  labelOverrides?: Record<string, string>;
 }
 
 export function PreviewPanel({
@@ -31,6 +32,7 @@ export function PreviewPanel({
   subtitle,
   minHeightClassName,
   appearance,
+  labelOverrides,
 }: PreviewPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const resolvedTitle = title ?? t('common.reportBuilder.preview');
@@ -121,7 +123,7 @@ export function PreviewPanel({
       )}
       {!loading && !error && !empty && (
         <div className="flex-1 overflow-hidden">
-          <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} />
+          <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} />
         </div>
       )}
     </div>
