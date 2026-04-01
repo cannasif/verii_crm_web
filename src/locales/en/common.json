@@ -6,6 +6,7 @@
     "saving": "Saving...",
     "cancel": "Cancel",
     "close": "Close",
+    "expand": "Expand",
     "previous": "Previous",
     "next": "Next",
     "delete": {
@@ -354,6 +355,12 @@
       "viewerParametersTitle": "Parameters the user can change",
       "viewerParametersDescription": "Parameters enabled here can be changed by the user when they open the report from My Reports.",
       "applyViewerParameters": "Apply parameters",
+      "seriesSummary": "{{count}} sales reps are included in this chart",
+      "visibleSeriesTitle": "Sales reps currently shown in the chart",
+      "showMoreSeries": "Show {{count}} more reps",
+      "showLessSeries": "Show simpler view",
+      "allSeriesVisible": "All sales rep series are currently visible.",
+      "topSeriesVisibleHint": "The busiest reps are shown first to keep the chart easy to read.",
       "parameterSources": {
         "literal": "Fixed value",
         "currentUserId": "Signed-in user ID",

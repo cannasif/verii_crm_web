@@ -7,6 +7,7 @@
     "cancel": "İptal",
     "create": "Oluştur",
     "close": "Kapat",
+    "expand": "Büyüt",
     "previous": "Önceki",
     "next": "Sonraki",
     "delete": {
@@ -359,6 +360,12 @@
       "viewerParametersTitle": "Kullanıcının değiştirebileceği parametreler",
       "viewerParametersDescription": "Burada izin verdiğin parametreleri, raporu açan kullanıcı kendi ekranında değiştirip tekrar çalıştırabilir.",
       "applyViewerParameters": "Parametreleri uygula",
+      "seriesSummary": "{{count}} plasiyer bu grafikte yer alıyor",
+      "visibleSeriesTitle": "Şu anda grafikte görünen plasiyerler",
+      "showMoreSeries": "+{{count}} plasiyeri daha göster",
+      "showLessSeries": "Daha sade göster",
+      "allSeriesVisible": "Şu anda tüm plasiyer serileri gösteriliyor.",
+      "topSeriesVisibleHint": "Grafik ilk bakışta anlaşılır kalsın diye en yoğun plasiyerler gösteriliyor.",
       "parameterSources": {
         "literal": "Sabit değer",
         "currentUserId": "Giriş yapan kullanıcı ID",

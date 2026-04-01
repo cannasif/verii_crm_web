@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Table,
@@ -12,6 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 import type { ChartType, ReportWidgetAppearance, ReportWidgetTableColumnSetting } from '../types';
 import { useRechartsModule } from '@/lib/useRechartsModule';
+import { Button } from '@/components/ui/button';
 
 type ColumnItem = string | { name: string; sqlType?: string; dotNetType?: string; isNullable?: boolean };
 
@@ -119,8 +120,18 @@ function getColumnAlignClass(align?: ReportWidgetTableColumnSetting['align']): s
   return 'text-left';
 }
 
+function formatAxisTooltipLabel(value: unknown): string {
+  if (typeof value !== 'string') return String(value ?? '');
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime()) && value.includes('T')) {
+    return parsed.toLocaleDateString('tr-TR');
+  }
+  return value;
+}
+
 export function ReportChart({ columns, rows, chartType, className, appearance, labelOverrides }: ReportChartProps): ReactElement {
   const { t } = useTranslation('common');
+  const [showAllSeries, setShowAllSeries] = useState(false);
   const recharts = useRechartsModule();
   const Recharts = recharts;
   const palette = useMemo(() => buildPalette(appearance?.accentColor), [appearance?.accentColor]);
@@ -169,6 +180,73 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     });
   }, [columnLabels, normalizedRows]);
 
+  const multiSeriesChartData = useMemo(() => {
+    if (!(chartType === 'bar' || chartType === 'stackedBar' || chartType === 'line')) return null;
+    if (columnLabels.length < 3) return null;
+
+    const axisKey = columnLabels[0];
+    const legendKey = columnLabels[1];
+    const metricKeys = columnLabels.slice(2);
+    if (metricKeys.length === 0) return null;
+
+    const pivot = new Map<string, Record<string, unknown>>();
+    const seriesKeys: string[] = [];
+
+    tableData.forEach((item) => {
+      const axisValue = String(item[axisKey] ?? '');
+      const legendValue = String(item[legendKey] ?? '');
+      const row = pivot.get(axisValue) ?? { [axisKey]: axisValue };
+
+      metricKeys.forEach((metricKey) => {
+        const seriesKey = metricKeys.length === 1 ? legendValue : `${legendValue} · ${metricKey}`;
+        if (!seriesKeys.includes(seriesKey)) seriesKeys.push(seriesKey);
+        const rawValue = item[metricKey];
+        const numericValue =
+          typeof rawValue === 'number'
+            ? rawValue
+            : typeof rawValue === 'string' && rawValue.trim() !== '' && !Number.isNaN(Number(rawValue))
+              ? Number(rawValue)
+              : 0;
+        row[seriesKey] = numericValue;
+      });
+
+      pivot.set(axisValue, row);
+    });
+
+    return {
+      axisKey,
+      seriesKeys,
+      data: Array.from(pivot.values()),
+    };
+  }, [chartType, columnLabels, tableData]);
+
+  const multiSeriesSummary = useMemo(() => {
+    if (!multiSeriesChartData) return null;
+    const totals = multiSeriesChartData.seriesKeys
+      .map((seriesKey) => ({
+        key: seriesKey,
+        total: multiSeriesChartData.data.reduce((sum, row) => {
+          const rawValue = row[seriesKey];
+          const numericValue =
+            typeof rawValue === 'number'
+              ? rawValue
+              : typeof rawValue === 'string' && rawValue.trim() !== '' && !Number.isNaN(Number(rawValue))
+                ? Number(rawValue)
+                : 0;
+          return sum + numericValue;
+        }, 0),
+      }))
+      .sort((a, b) => b.total - a.total);
+
+    const visibleSeries = showAllSeries ? totals : totals.slice(0, 8);
+    return {
+      totals,
+      visibleSeriesKeys: visibleSeries.map((item) => item.key),
+      topSeries: totals.slice(0, 5),
+      hiddenCount: Math.max(totals.length - visibleSeries.length, 0),
+    };
+  }, [multiSeriesChartData, showAllSeries]);
+
   const [labelKey, valueKeys] = useMemo(() => {
     if (columnLabels.length === 0) return [undefined, [] as string[]];
     if (chartType === 'pie' || chartType === 'donut') {
@@ -211,6 +289,48 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
 
     return { rowKey, rowLabels, columnHeaders, grid };
   }, [chartType, columnLabels, tableData]);
+
+  const renderSeriesTooltip = (tooltipProps: {
+    active?: boolean;
+    payload?: ReadonlyArray<{ color?: string; dataKey?: string; value?: unknown }>;
+    label?: unknown;
+  }): ReactElement | null => {
+    if (!tooltipProps.active || !tooltipProps.payload?.length) return null;
+
+    const items = [...tooltipProps.payload]
+      .map((item) => ({
+        key: String(item.dataKey ?? ''),
+        value:
+          typeof item.value === 'number'
+            ? item.value
+            : typeof item.value === 'string' && item.value.trim() !== '' && !Number.isNaN(Number(item.value))
+              ? Number(item.value)
+              : 0,
+        color: item.color,
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    return (
+      <div className="w-[min(560px,calc(100vw-3rem))] rounded-xl border bg-background/95 p-3 shadow-xl backdrop-blur-sm">
+        <div className="mb-2 border-b pb-2 text-sm font-semibold text-foreground">
+          {formatAxisTooltipLabel(tooltipProps.label)}
+        </div>
+        <div className="space-y-1.5">
+          {items.map((item) => (
+            <div key={item.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-xs">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="inline-block size-2 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
+                <span className="break-words text-foreground" title={item.key}>{item.key}</span>
+              </div>
+              <span className="shrink-0 text-right font-semibold tabular-nums text-foreground">
+                {formatMetricValue(item.value, valueFormat, decimalPlaces)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   if (columnLabels.length === 0 || normalizedRows.length === 0) {
     return (
@@ -439,33 +559,73 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
       chartType === 'line'
         ? Recharts.LineChart
         : Recharts.BarChart;
+    const chartData = multiSeriesChartData?.data ?? tableData;
+    const chartLabelKey = multiSeriesChartData?.axisKey ?? labelKey;
+    const chartValueKeys = multiSeriesSummary?.visibleSeriesKeys ?? multiSeriesChartData?.seriesKeys ?? valueKeys;
     return (
-      <div className={cn('h-[300px] w-full', className)}>
-        <Recharts.ResponsiveContainer width="100%" height="100%">
-          <ChartComponent data={tableData}>
-            <Recharts.CartesianGrid strokeDasharray="3 3" />
-            <Recharts.XAxis dataKey={labelKey} />
-            <Recharts.YAxis />
-            <Recharts.Tooltip formatter={(value: unknown) => {
-              if (typeof value === 'number') return formatMetricValue(value, valueFormat, decimalPlaces);
-              if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) return formatMetricValue(Number(value), valueFormat, decimalPlaces);
-              return String(value ?? '');
-            }} />
-            <Recharts.Legend />
-            {valueKeys.map((key, i) =>
-              chartType === 'bar' || chartType === 'stackedBar' ? (
-                <Recharts.Bar
-                  key={key}
-                 dataKey={key}
-                  fill={palette[i % palette.length]}
-                  stackId={chartType === 'stackedBar' ? 'stack' : undefined}
-                />
-              ) : (
-                <Recharts.Line key={key} type="monotone" dataKey={key} stroke={palette[i % palette.length]} />
-              )
-            )}
-          </ChartComponent>
-        </Recharts.ResponsiveContainer>
+      <div className={cn('space-y-3', className)}>
+        {multiSeriesSummary && multiSeriesSummary.totals.length > 1 ? (
+          <div className="space-y-2 rounded-xl border bg-muted/20 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-xs font-medium text-muted-foreground">
+                {t('common.reportBuilder.seriesSummary', { count: multiSeriesSummary.totals.length })}
+              </div>
+              {multiSeriesSummary.hiddenCount > 0 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2 text-[11px]"
+                  onClick={() => setShowAllSeries((current) => !current)}
+                >
+                  {showAllSeries
+                    ? t('common.reportBuilder.showLessSeries')
+                    : t('common.reportBuilder.showMoreSeries', { count: multiSeriesSummary.hiddenCount })}
+                </Button>
+              ) : null}
+            </div>
+            <div className="text-[11px] font-medium text-foreground">
+              {t('common.reportBuilder.visibleSeriesTitle')}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {multiSeriesSummary.topSeries.map((item, index) => (
+                <div key={item.key} className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px]">
+                  <span className="inline-block size-2 rounded-full" style={{ backgroundColor: palette[index % palette.length] }} />
+                  <span className="font-medium">{item.key}</span>
+                  <span className="text-muted-foreground">{formatMetricValue(item.total, valueFormat, decimalPlaces)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="text-[11px] text-muted-foreground">
+              {showAllSeries
+                ? t('common.reportBuilder.allSeriesVisible')
+                : t('common.reportBuilder.topSeriesVisibleHint')}
+            </div>
+          </div>
+        ) : null}
+        <div className="h-[300px] w-full">
+          <Recharts.ResponsiveContainer width="100%" height="100%">
+            <ChartComponent data={chartData}>
+              <Recharts.CartesianGrid strokeDasharray="3 3" />
+              <Recharts.XAxis dataKey={chartLabelKey} />
+              <Recharts.YAxis />
+              <Recharts.Tooltip content={renderSeriesTooltip} />
+              {!multiSeriesSummary && <Recharts.Legend />}
+              {chartValueKeys.map((key, i) =>
+                chartType === 'bar' || chartType === 'stackedBar' ? (
+                  <Recharts.Bar
+                    key={key}
+                    dataKey={key}
+                    fill={palette[i % palette.length]}
+                    stackId={chartType === 'stackedBar' ? 'stack' : undefined}
+                  />
+                ) : (
+                  <Recharts.Line key={key} type="monotone" dataKey={key} stroke={palette[i % palette.length]} />
+                )
+              )}
+            </ChartComponent>
+          </Recharts.ResponsiveContainer>
+        </div>
       </div>
     );
   }

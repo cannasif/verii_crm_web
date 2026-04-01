@@ -1,9 +1,12 @@
 import type { ReactElement } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReportChart } from './ReportChart';
 import { cn } from '@/lib/utils';
 import type { ChartType, ReportWidgetAppearance } from '../types';
-import { BarChart3, DatabaseZap, Loader2 } from 'lucide-react';
+import { BarChart3, DatabaseZap, Loader2, Maximize2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface PreviewPanelProps {
   columns: string[];
@@ -35,6 +38,7 @@ export function PreviewPanel({
   labelOverrides,
 }: PreviewPanelProps): ReactElement {
   const { t } = useTranslation('common');
+  const [expanded, setExpanded] = useState(false);
   const resolvedTitle = title ?? t('common.reportBuilder.preview');
   const tone = appearance?.tone ?? 'neutral';
   const accentColor = appearance?.accentColor ?? '#1d4ed8';
@@ -85,13 +89,23 @@ export function PreviewPanel({
           {subtitle && <p className={cn('mt-1 text-xs', subtitleClassName)}>{subtitle}</p>}
         </div>
         {showStats && !loading && !error && !empty && (
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <span className={metricClassName}>
               {columns.length} {t('common.reportBuilder.columns')}
             </span>
             <span className={metricClassName}>
               {rows.length} {t('common.reportBuilder.rows')}
             </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="size-8 shrink-0 rounded-full"
+              onClick={() => setExpanded(true)}
+              aria-label={t('common.expand')}
+            >
+              <Maximize2 className="size-4" />
+            </Button>
           </div>
         )}
       </div>
@@ -126,6 +140,19 @@ export function PreviewPanel({
           <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} />
         </div>
       )}
+      <Dialog open={expanded} onOpenChange={setExpanded}>
+        <DialogContent className="max-w-[min(1400px,96vw)] w-[96vw] h-[92vh] p-0 overflow-hidden">
+          <DialogHeader className="border-b px-6 py-4">
+            <DialogTitle>{resolvedTitle}</DialogTitle>
+            <DialogDescription>{subtitle || t('common.reportBuilder.preview')}</DialogDescription>
+          </DialogHeader>
+          <div className="h-full min-h-0 p-6">
+            <div className="h-full rounded-2xl border bg-background p-4">
+              <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} className="h-full max-h-none" />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
