@@ -268,6 +268,71 @@
       "basicSummaryMetric": "Metric",
       "basicSummaryAggregation": "Calculation",
       "basicSummaryBreakdown": "Breakdown",
+      "narrativeTitle": "What is this report trying to show?",
+      "narrativeHint": "This summary explains the business meaning of the report without making the user read technical settings.",
+      "narrativeNoDataset": "Connect and validate the dataset first. Then the system will explain the report in plain language.",
+      "narrativeSummary": "In {{chartType}} view, the report will show {{metric}} as {{aggregation}} grouped by {{axis}}{{legendClause}}.",
+      "recommendedVisualTitle": "Recommended visual",
+      "recommendedVisualNormal": "This visual will usually be easier to understand for the current data shape.",
+      "recommendedVisualTooManySeries": "This preview already has {{count}} separate series. A simpler visual will be easier for users to read.",
+      "applyRecommendedVisual": "Apply recommended visual",
+      "widgetTemplatesTitle": "Ready widget templates",
+      "widgetTemplatesDescription": "If you do not know what to choose, start with one of these safe widget patterns.",
+      "widgetTemplateLabels": {
+        "dailyTrend": "Daily trend",
+        "categoryCompare": "Category comparison",
+        "summaryTable": "Summary table"
+      },
+      "widgetTemplateDescriptions": {
+        "dailyTrend": "Starts with a clean trend chart for date-based movement.",
+        "categoryCompare": "Builds a simple bar chart for comparing categories or users.",
+        "summaryTable": "Builds a readable summary table without losing detail."
+      },
+      "widgetTemplateSubtitles": {
+        "dailyTrend": "Date-based movement summary",
+        "categoryCompare": "Breakdown-based performance comparison",
+        "summaryTable": "Detailed but readable management table"
+      },
+      "repairTitles": {
+        "tooComplexPie": "This pie chart is not a good fit for this data",
+        "incompletePie": "The pie chart setup is incomplete",
+        "incompleteKpi": "The KPI card setup is incomplete",
+        "incompleteMatrix": "The matrix setup is incomplete",
+        "tooManySeries": "This chart is generating too many series"
+      },
+      "repairDescriptions": {
+        "tooComplexPie": "When there are too many series or more than one value field, a pie chart becomes hard to read. A simple bar chart is usually a better fit.",
+        "tooManySeries": "This view is currently producing {{count}} separate series. Most users will struggle to read that many lines at once."
+      },
+      "repairActions": {
+        "switchBar": "Switch to a better bar chart",
+        "switchTable": "Switch to summary table",
+        "fixPie": "Fix the pie chart",
+        "fixKpi": "Fix the KPI card",
+        "fixMatrix": "Fix the matrix view"
+      },
+      "guardrailTitle": "This view may be hard for users to read",
+      "guardrailTooManySeries": "This widget is about to render {{count}} separate series. When there are many users or many breakdowns, the chart becomes noisy.",
+      "guardrailSwitchTable": "Switch to summary table",
+      "guardrailSwitchBar": "Use a simpler bar chart",
+      "seriesVisibilityTitle": "How should we handle many users?",
+      "seriesVisibilityDescription": "Choose whether the chart should stay compact or show every sales rep when there are many series.",
+      "seriesVisibilityMode": "Display style",
+      "seriesOverflowMode": "Remaining sales reps",
+      "seriesLimit": "Visible sales reps at once",
+      "seriesLimitOption": "Show first {{count}} reps",
+      "seriesLimitDisabled": "All sales reps are shown in this mode.",
+      "seriesOthersLabel": "+{{count}} other reps",
+      "seriesOthersTooltip": "Other sales reps",
+      "seriesVisibilityModes": {
+        "auto": "Balanced view",
+        "limited": "Always keep it simple",
+        "all": "Show all"
+      },
+      "seriesOverflowModes": {
+        "others": "Combine as Others",
+        "hide": "Do not show"
+      },
       "basicNoneSelected": "Not selected yet",
       "basicNoBreakdown": "No extra breakdown",
       "basicKpiNoGrouping": "KPI cards do not use grouping",

@@ -273,6 +273,71 @@
       "basicSummaryMetric": "Gösterilecek değer",
       "basicSummaryAggregation": "Hesaplama",
       "basicSummaryBreakdown": "Ek kırılım",
+      "narrativeTitle": "Bu rapor ne anlatıyor?",
+      "narrativeHint": "Bu özet, teknik ayarlara bakmadan raporun iş tarafında ne göstereceğini anlatır.",
+      "narrativeNoDataset": "Önce veri setini bağla ve kontrol et. Sonra sistem bu raporun ne anlatacağını sana düz dille özetler.",
+      "narrativeSummary": "{{chartType}} görünümünde, {{axis}} alanına göre {{metric}} değeri {{aggregation}} olarak gösterilecek{{legendClause}}.",
+      "recommendedVisualTitle": "Önerilen görünüm",
+      "recommendedVisualNormal": "Şu anki veri yapısı için bu görünüm daha anlaşılır olur.",
+      "recommendedVisualTooManySeries": "Bu önizlemede {{count}} ayrı seri var. Daha sade bir görünüm seçmek kullanıcı için daha anlaşılır olur.",
+      "applyRecommendedVisual": "Önerilen görünümü uygula",
+      "widgetTemplatesTitle": "Hazır widget şablonları",
+      "widgetTemplatesDescription": "Ne seçeceğini bilmiyorsan aşağıdaki hazır başlangıçlardan biriyle ilerleyebilirsin.",
+      "widgetTemplateLabels": {
+        "dailyTrend": "Günlük trend",
+        "categoryCompare": "Kategori karşılaştırma",
+        "summaryTable": "Özet tablo"
+      },
+      "widgetTemplateDescriptions": {
+        "dailyTrend": "Tarih bazlı hareketi sade bir trend grafiğiyle başlatır.",
+        "categoryCompare": "Kategorileri ya da kullanıcıları karşılaştırmak için sade bar grafik kurar.",
+        "summaryTable": "Detayı kaybetmeden okunur bir özet tablo kurar."
+      },
+      "widgetTemplateSubtitles": {
+        "dailyTrend": "Tarih bazlı hareket özeti",
+        "categoryCompare": "Kırılım bazlı performans karşılaştırması",
+        "summaryTable": "Detaylı ama okunur yönetim tablosu"
+      },
+      "repairTitles": {
+        "tooComplexPie": "Bu pasta grafik bu veri için uygun değil",
+        "incompletePie": "Pasta grafik eksik kurulmuş",
+        "incompleteKpi": "KPI kartı eksik kurulmuş",
+        "incompleteMatrix": "Matris görünümü eksik kurulmuş",
+        "tooManySeries": "Bu grafik çok fazla seri üretiyor"
+      },
+      "repairDescriptions": {
+        "tooComplexPie": "Çok fazla seri veya birden fazla değer alanı olduğunda pasta grafik kullanıcı için zor okunur. Daha sade bir bar grafik daha uygun olur.",
+        "tooManySeries": "Bu görünüm şu anda {{count}} ayrı seri üretiyor. Çoğu kullanıcı bu kadar çok çizgiyi aynı anda okuyamaz."
+      },
+      "repairActions": {
+        "switchBar": "Daha uygun bar grafiğe çevir",
+        "switchTable": "Özet tabloya geç",
+        "fixPie": "Pasta grafiği düzelt",
+        "fixKpi": "KPI kartını düzelt",
+        "fixMatrix": "Matris görünümünü düzelt"
+      },
+      "guardrailTitle": "Bu görünüm kullanıcıyı zorlayabilir",
+      "guardrailTooManySeries": "Bu widget şu an {{count}} ayrı seri üretmeye hazırlanıyor. Çok kullanıcı veya çok kırılım olduğunda grafik karmaşık görünür.",
+      "guardrailSwitchTable": "Özet tabloya çevir",
+      "guardrailSwitchBar": "Daha sade bar grafik yap",
+      "seriesVisibilityTitle": "Çok kullanıcı varsa nasıl gösterelim?",
+      "seriesVisibilityDescription": "Grafikte çok fazla plasiyer olduğunda görünümün sade mi yoksa tam mı olacağını buradan seçebilirsin.",
+      "seriesVisibilityMode": "Gösterim şekli",
+      "seriesOverflowMode": "Geri kalan plasiyerler",
+      "seriesLimit": "Aynı anda görünen plasiyer sayısı",
+      "seriesLimitOption": "İlk {{count}} plasiyeri göster",
+      "seriesLimitDisabled": "Bu modda tüm plasiyerler gösterilir.",
+      "seriesOthersLabel": "+{{count}} diğer plasiyer",
+      "seriesOthersTooltip": "Diğer plasiyerler",
+      "seriesVisibilityModes": {
+        "auto": "Dengeli göster",
+        "limited": "Her zaman sade göster",
+        "all": "Hepsini göster"
+      },
+      "seriesOverflowModes": {
+        "others": "Diğerleri diye birleştir",
+        "hide": "Hiç gösterme"
+      },
       "basicNoneSelected": "Henüz seçilmedi",
       "basicNoBreakdown": "Ek kırılım yok",
       "basicKpiNoGrouping": "KPI kartında gruplama kullanılmaz",
@@ -2995,8 +3060,8 @@
         "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
       },
       "paymentType": "Ödeme Tipi",
-      "deliveryMethod": "Teslim Şekli",
-      "documentDetail": "Belge Detayı"
+      "deliveryMethod": "Teslimat Yöntemi",
+      "documentDetail": "Belge Açıklaması"
     },
     "exchangeRates": {
       "dialog": {
@@ -3773,12 +3838,12 @@
       "errorTitle": "Hata Oluştu"
     },
     "create": {
-      "title": "Yeni Teklif Oluştur",
-      "error": "Teklif Oluşturulamadı",
+      "title": "Yeni Talep Oluştur",
+      "error": "Talep oluşturulamadı",
       "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
-      "success": "Teklif Başarıyla Oluşturuldu",
-      "successMessage": "Teklif onay sürecine gönderildi.",
-      "errorMessage": "Teklif oluşturulurken bir hata oluştu.",
+      "success": "Talep başarıyla oluşturuldu",
+      "successMessage": "Talep onay sürecine gönderildi.",
+      "errorMessage": "Talep oluşturulurken bir hata oluştu.",
       "paymentTypeRequired": "Ödeme tipi seçilmelidir",
       "deliveryDateRequired": "Teslimat tarihi girilmelidir",
       "validationError": "Lütfen form alanlarını kontrol ediniz.",
@@ -3807,12 +3872,12 @@
       "lineTotal": "Satır Toplamı (KDV Dahil)",
       "relatedStocks": "Bağlı Stoklar",
       "requiredFieldsMissing": "Lütfen müşteri, temsilci ve para birimi seçimlerini yapınız.",
-      "title": "Teklif Kalemleri",
+      "title": "Talep Kalemleri",
       "itemCount": "{count} kalem ürün listeleniyor",
       "noItems": "Henüz ürün eklenmedi",
       "add": "Satır Ekle",
       "empty": "Sepetiniz Boş",
-      "emptyDescription": "Teklif oluşturmak için ",
+      "emptyDescription": "Talep oluşturmak için ",
       "addLine": "Yeni Satır Ekle",
       "delete": {
         "confirmTitleMultiple": "Bağlı Stokları Sil",
@@ -3839,10 +3904,10 @@
     },
     "cancel": "İptal",
     "saving": "Kaydediliyor...",
-    "save": "Teklifi Kaydet",
+    "save": "Talebi Kaydet",
     "detail": {
-      "title": "Teklif Detayı: {{offerNo}}",
-      "notFound": "Teklif bulunamadı",
+      "title": "Talep Detayı: {{offerNo}}",
+      "notFound": "Talep bulunamadı",
       "subtitle": "Talep detaylarını görüntüleyin ve düzenleyin.",
       "revisionNo": "Revizyon No",
       "tabDetail": "Talep Bilgileri",
@@ -3850,21 +3915,21 @@
       "tabReport": "Rapor"
     },
     "update": {
-      "error": "Teklif Güncellenemedi",
+      "error": "Talep güncellenemedi",
       "invalidCurrency": "Geçerli bir para birimi seçilmelidir",
-      "success": "Teklif Başarıyla Güncellendi",
-      "successMessage": "Teklif başarıyla güncellendi.",
-      "errorMessage": "Teklif güncellenirken bir hata oluştu.",
+      "success": "Talep başarıyla güncellendi",
+      "successMessage": "Talep başarıyla güncellendi.",
+      "errorMessage": "Talep güncellenirken bir hata oluştu.",
       "validationError": "Lütfen zorunlu alanları kontrol ediniz."
     },
     "loading": "Yükleniyor...",
-    "backToDemands": "Tekliflere Dön",
+    "backToDemands": "Taleplere Dön",
     "approval": {
       "sending": "Gönderiliyor...",
       "sendForApproval": "Onaya Gönder",
       "approve": "Onayla",
       "reject": "Reddet",
-      "rejectTitle": "Teklifi Reddet",
+      "rejectTitle": "Talebi Reddet",
       "rejectDescription": "Red sebebini belirtiniz (opsiyonel)",
       "rejectReasonPlaceholder": "Red sebebi...",
       "approveSuccess": "Onay işlemi başarıyla gerçekleştirildi",
@@ -3899,8 +3964,8 @@
     "add": "Ekle",
     "actions": "İşlem",
     "header": {
-      "title": "Teklif Detayları",
-      "subtitle": "Müşteri ve finansal bilgileri buradan yönetebilirsiniz.",
+      "title": "Talep Detayları",
+      "subtitle": "Müşteri ve belge bilgilerini buradan yönetebilirsiniz.",
       "customer": "Müşteri Hesabı",
       "selectCustomer": "Müşteri seçiniz...",
       "representative": "Satış Temsilcisi",
@@ -3912,20 +3977,20 @@
         "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
       },
       "paymentType": "Ödeme Tipi",
-      "deliveryMethod": "Teslim Şekli",
+      "deliveryMethod": "Teslimat Yöntemi",
       "offerDate": "Talep Tarihi",
-      "documentDetail": "Belge Detayı"
+      "documentDetail": "Belge Açıklaması"
     },
     "confirm": "Onayla",
     "error": "Hata",
     "delete": "Sil",
     "list": {
-      "title": "Teklif Listesi",
-      "description": "Tüm teklifleri görüntüleyin ve yönetin",
-      "createNew": "Yeni Teklif Oluştur",
-      "searchPlaceholder": "Teklif no veya müşteri adı ile ara...",
+      "title": "Talep Listesi",
+      "description": "Tüm talepleri görüntüleyin ve yönetin",
+      "createNew": "Yeni Talep Oluştur",
+      "searchPlaceholder": "Talep no veya müşteri adı ile ara...",
       "id": "ID",
-      "offerNo": "Teklif No",
+      "offerNo": "Talep No",
       "customer": "Müşteri",
       "representative": "Temsilci",
       "offerDate": "Teklif Tarihi",
@@ -3955,9 +4020,9 @@
     "edit": "Düzenle",
     "saveAndApply": "Kaydet ve Uygula",
     "waitingApprovals": {
-      "title": "Onay Bekleyen Teklifler",
-      "list": "Onay Bekleyen Teklifler Listesi",
-      "noApprovals": "Onay bekleyen teklif bulunmamaktadır",
+      "title": "Onay Bekleyen Talepler",
+      "list": "Onay Bekleyen Talepler Listesi",
+      "noApprovals": "Onay bekleyen talep bulunmamaktadır",
       "requestId": "İstek ID",
       "description": "Açıklama",
       "stepOrder": "Adım",
@@ -3968,8 +4033,8 @@
     },
     "back": "Geri",
     "revision": {
-      "success": "Teklif revizyonu başarıyla oluşturuldu",
-      "error": "Teklif revizyonu oluşturulurken bir hata oluştu"
+      "success": "Talep revizyonu başarıyla oluşturuldu",
+      "error": "Talep revizyonu oluşturulurken bir hata oluştu"
     },
     "untitled": "Başlıksız"
   },
@@ -4346,9 +4411,9 @@
         "message": "Para birimi değişikliği tüm satırları etkileyecektir. Devam etmek istiyor musunuz?"
       },
       "paymentType": "Ödeme Tipi",
-      "deliveryMethod": "Teslim Şekli",
+      "deliveryMethod": "Teslimat Yöntemi",
       "offerDate": "Sipariş Tarihi",
-      "documentDetail": "Belge Detayı"
+      "documentDetail": "Belge Açıklaması"
     },
     "confirm": "Onayla",
     "error": "Hata",

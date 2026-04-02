@@ -45,7 +45,7 @@ import {
 } from '../utils';
 import type { Field } from '../types';
 import { Loader2 } from 'lucide-react';
-import { ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Database, LayoutGrid, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Database, LayoutGrid, Lightbulb, Plus, Sparkles, Trash2, TriangleAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUserList } from '@/features/user-management/hooks/useUserList';
 
@@ -70,6 +70,31 @@ function buildWidgetLabelOverrides(widget?: {
   });
   return overrides;
 }
+
+function getRecommendedChartType(args: {
+  hasAxis: boolean;
+  axisField?: Field;
+  hasLegend: boolean;
+  chartType: string;
+  previewSeriesCount: number;
+  previewRowCount: number;
+}): 'table' | 'bar' | 'line' | 'kpi' {
+  const { hasAxis, axisField, hasLegend, previewSeriesCount, previewRowCount } = args;
+  const axisSemanticType = axisField ? getFieldSemanticType(axisField) : null;
+
+  if (!hasAxis) return 'kpi';
+  if (previewSeriesCount > 8) return 'table';
+  if (axisSemanticType === 'date') return 'line';
+  if (hasLegend && previewRowCount > 30) return 'table';
+  return 'bar';
+}
+
+type ChartRepairPlan =
+  | { kind: 'switch-table'; title: string; description: string; buttonLabel: string }
+  | { kind: 'switch-bar'; title: string; description: string; buttonLabel: string }
+  | { kind: 'fix-pie'; title: string; description: string; buttonLabel: string }
+  | { kind: 'fix-kpi'; title: string; description: string; buttonLabel: string }
+  | { kind: 'fix-matrix'; title: string; description: string; buttonLabel: string };
 
 export function ReportBuilderPage(): ReactElement {
   const { t } = useTranslation('common');
@@ -103,6 +128,7 @@ export function ReportBuilderPage(): ReactElement {
     setActiveWidget,
     renameWidget,
     removeWidget,
+    removeFromSlot,
     setWidgetSize,
     setWidgetHeight,
     reorderWidgets,
@@ -177,6 +203,91 @@ export function ReportBuilderPage(): ReactElement {
     if (!fieldName) return t('common.reportBuilder.basicNoneSelected');
     return fieldLabelMap.get(fieldName) ?? fieldName;
   }, [fieldLabelMap, t]);
+  const selectedAxisSchemaField = useMemo(
+    () => schema.find((field) => field.name === config.axis?.field),
+    [config.axis?.field, schema],
+  );
+  const previewSeriesCount = useMemo(() => {
+    if (!config.legend?.field || preview.columns.length < 2 || preview.rows.length === 0) return 0;
+    const legendColumnIndex = preview.columns.findIndex((column) => column === (config.legend?.label?.trim() || config.legend?.field));
+    const fallbackLegendIndex = legendColumnIndex >= 0 ? legendColumnIndex : 1;
+    return new Set(preview.rows.map((row) => String((row as unknown[])[fallbackLegendIndex] ?? ''))).size;
+  }, [config.legend?.field, config.legend?.label, preview.columns, preview.rows]);
+  const recommendedChartType = useMemo(
+    () =>
+      getRecommendedChartType({
+        hasAxis,
+        axisField: selectedAxisSchemaField,
+        hasLegend,
+        chartType: config.chartType,
+        previewSeriesCount,
+        previewRowCount: preview.rows.length,
+      }),
+    [config.chartType, hasAxis, hasLegend, preview.rows.length, previewSeriesCount, selectedAxisSchemaField],
+  );
+  const recommendedChartLabel = t(`common.reportBuilder.chartTypes.${recommendedChartType}`);
+  const chartNeedsSimplification = (config.chartType === 'line' || config.chartType === 'bar' || config.chartType === 'stackedBar') && previewSeriesCount > 8;
+  const pieError = config.chartType === 'pie' || config.chartType === 'donut' ? validatePieConfig(config) : null;
+  const kpiError = config.chartType === 'kpi' ? validateKpiConfig(config) : null;
+  const matrixError = config.chartType === 'matrix' ? validateMatrixConfig(config) : null;
+  const chartRepairPlan = useMemo<ChartRepairPlan | null>(() => {
+    if ((config.chartType === 'pie' || config.chartType === 'donut') && pieError) {
+      if (config.values.length > 1 || previewSeriesCount > 10) {
+        return {
+          kind: 'switch-bar',
+          title: t('common.reportBuilder.repairTitles.tooComplexPie'),
+          description: t('common.reportBuilder.repairDescriptions.tooComplexPie'),
+          buttonLabel: t('common.reportBuilder.repairActions.switchBar'),
+        };
+      }
+      return {
+        kind: 'fix-pie',
+        title: t('common.reportBuilder.repairTitles.incompletePie'),
+        description: pieError,
+        buttonLabel: t('common.reportBuilder.repairActions.fixPie'),
+      };
+    }
+    if (config.chartType === 'kpi' && kpiError) {
+      return {
+        kind: 'fix-kpi',
+        title: t('common.reportBuilder.repairTitles.incompleteKpi'),
+        description: kpiError,
+        buttonLabel: t('common.reportBuilder.repairActions.fixKpi'),
+      };
+    }
+    if (config.chartType === 'matrix' && matrixError) {
+      return {
+        kind: 'fix-matrix',
+        title: t('common.reportBuilder.repairTitles.incompleteMatrix'),
+        description: matrixError,
+        buttonLabel: t('common.reportBuilder.repairActions.fixMatrix'),
+      };
+    }
+    if ((config.chartType === 'line' || config.chartType === 'bar' || config.chartType === 'stackedBar') && previewSeriesCount > 16) {
+      return {
+        kind: 'switch-table',
+        title: t('common.reportBuilder.repairTitles.tooManySeries'),
+        description: t('common.reportBuilder.repairDescriptions.tooManySeries', { count: previewSeriesCount }),
+        buttonLabel: t('common.reportBuilder.repairActions.switchTable'),
+      };
+    }
+    return null;
+  }, [config.chartType, config.values.length, kpiError, matrixError, pieError, previewSeriesCount, t]);
+  const reportNarrative = useMemo(() => {
+    if (!datasetReady) return t('common.reportBuilder.narrativeNoDataset');
+    const visual = t(`common.reportBuilder.chartTypes.${config.chartType}`);
+    const metric = config.values.length > 0
+      ? config.values.map((value) => `${getFieldLabel(value.field)} (${t(`common.reportBuilder.aggregations.${value.aggregation}`)})`).join(', ')
+      : t('common.reportBuilder.basicNoneSelected');
+    const axis = hasAxis ? getFieldLabel(config.axis?.field) : t('common.reportBuilder.basicKpiNoGrouping');
+    const legend = hasLegend ? getFieldLabel(config.legend?.field) : t('common.reportBuilder.basicNoBreakdown');
+    return t('common.reportBuilder.narrativeSummary', {
+      visual,
+      axis,
+      metric,
+      legend,
+    });
+  }, [config.axis?.field, config.chartType, config.legend?.field, config.values, datasetReady, getFieldLabel, hasAxis, hasLegend, t]);
   const builderReadinessSteps = [
     {
       key: 'dataset',
@@ -300,14 +411,11 @@ export function ReportBuilderPage(): ReactElement {
 
   useEffect(() => {
     if (!dataSourceChecked || !meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName) return;
-    const pieError = config.chartType === 'pie' || config.chartType === 'donut' ? validatePieConfig(config) : null;
-    const kpiError = config.chartType === 'kpi' ? validateKpiConfig(config) : null;
-    const matrixError = config.chartType === 'matrix' ? validateMatrixConfig(config) : null;
     if ((config.chartType === 'pie' || config.chartType === 'donut') && pieError) return;
     if (config.chartType === 'kpi' && kpiError) return;
     if (config.chartType === 'matrix' && matrixError) return;
     previewRunnerRef.current?.execute();
-  }, [dataSourceChecked, meta.connectionKey, meta.dataSourceType, meta.dataSourceName, config]);
+  }, [config, dataSourceChecked, kpiError, matrixError, meta.connectionKey, meta.dataSourceName, meta.dataSourceType, pieError]);
 
   const handleSave = async (): Promise<void> => {
     if (isEdit && reportId != null) {
@@ -387,6 +495,44 @@ export function ReportBuilderPage(): ReactElement {
     setUi({ slotError: null });
   }, [addToSlot, config.chartType, firstAxisField, firstLegendField, firstValueField, hasAxis, hasLegend, hasValue, setUi]);
 
+  const handleAutoRepairVisualization = useCallback(() => {
+    if (!chartRepairPlan) return;
+    if (chartRepairPlan.kind === 'switch-table') {
+      setChartType('table');
+      return;
+    }
+    if (chartRepairPlan.kind === 'switch-bar') {
+      setChartType('bar');
+      if (!hasAxis && firstAxisField) addToSlot('axis', firstAxisField.name);
+      if (!hasValue && firstValueField) addToSlot('values', firstValueField.name);
+      if (!hasLegend && firstLegendField) addToSlot('legend', firstLegendField.name);
+      return;
+    }
+    if (chartRepairPlan.kind === 'fix-pie') {
+      if (!hasAxis && !hasLegend) {
+        if (firstAxisField) addToSlot('axis', firstAxisField.name);
+        else if (firstLegendField) addToSlot('legend', firstLegendField.name);
+      }
+      if (!hasValue && firstValueField) addToSlot('values', firstValueField.name);
+      for (let index = config.values.length - 1; index > 0; index -= 1) {
+        removeFromSlot('values', index);
+      }
+      return;
+    }
+    if (chartRepairPlan.kind === 'fix-kpi') {
+      if (!hasValue && firstValueField) addToSlot('values', firstValueField.name);
+      if (hasAxis && config.axis?.field) removeFromSlot('axis', 0);
+      if (hasLegend && config.legend?.field) removeFromSlot('legend', 0);
+      for (let index = config.values.length - 1; index > 0; index -= 1) {
+        removeFromSlot('values', index);
+      }
+      return;
+    }
+    if (!hasAxis && firstAxisField) addToSlot('axis', firstAxisField.name);
+    if (!hasLegend && firstLegendField) addToSlot('legend', firstLegendField.name);
+    if (!hasValue && firstValueField) addToSlot('values', firstValueField.name);
+  }, [addToSlot, chartRepairPlan, config.axis?.field, config.legend?.field, config.values.length, firstAxisField, firstLegendField, firstValueField, hasAxis, hasLegend, hasValue, removeFromSlot, setChartType]);
+
   const handleStarterKit = useCallback(
     (kit: 'executive' | 'operations' | 'performance') => {
       const activeWidgetId = config.activeWidgetId ?? config.widgets?.[0]?.id;
@@ -442,6 +588,53 @@ export function ReportBuilderPage(): ReactElement {
       }
     },
     [config.activeWidgetId, config.widgets, handleQuickSetup, setWidgetAppearance, t]
+  );
+
+  const handleWidgetTemplate = useCallback(
+    (template: 'dailyTrend' | 'categoryCompare' | 'summaryTable') => {
+      const activeWidgetId = config.activeWidgetId ?? config.widgets?.[0]?.id;
+      if (template === 'dailyTrend') {
+        handleQuickSetup('trend');
+        if (activeWidgetId) {
+          setWidgetAppearance(activeWidgetId, {
+            themePreset: 'executive',
+            sectionLabel: t('common.reportBuilder.widgetTemplateLabels.dailyTrend'),
+            sectionDescription: t('common.reportBuilder.widgetTemplateDescriptions.dailyTrend'),
+            subtitle: t('common.reportBuilder.widgetTemplateSubtitles.dailyTrend'),
+            seriesVisibilityMode: 'auto',
+            seriesOverflowMode: 'others',
+            maxVisibleSeries: 8,
+          });
+        }
+        return;
+      }
+      if (template === 'categoryCompare') {
+        handleQuickSetup('chart');
+        if (activeWidgetId) {
+          setWidgetAppearance(activeWidgetId, {
+            themePreset: 'operations',
+            sectionLabel: t('common.reportBuilder.widgetTemplateLabels.categoryCompare'),
+            sectionDescription: t('common.reportBuilder.widgetTemplateDescriptions.categoryCompare'),
+            subtitle: t('common.reportBuilder.widgetTemplateSubtitles.categoryCompare'),
+            seriesVisibilityMode: 'limited',
+            seriesOverflowMode: 'others',
+            maxVisibleSeries: 5,
+          });
+        }
+        return;
+      }
+      handleQuickSetup('table');
+      if (activeWidgetId) {
+        setWidgetAppearance(activeWidgetId, {
+          themePreset: 'operations',
+          sectionLabel: t('common.reportBuilder.widgetTemplateLabels.summaryTable'),
+          sectionDescription: t('common.reportBuilder.widgetTemplateDescriptions.summaryTable'),
+          subtitle: t('common.reportBuilder.widgetTemplateSubtitles.summaryTable'),
+          tableDensity: 'comfortable',
+        });
+      }
+    },
+    [config.activeWidgetId, config.widgets, handleQuickSetup, setWidgetAppearance, t],
   );
 
   const handleAddAssignedUser = useCallback(
@@ -673,6 +866,56 @@ export function ReportBuilderPage(): ReactElement {
 
         {datasetReady ? (
           <div className="rounded-2xl border bg-card p-4">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-[280px] flex-1">
+                <div className="mb-2 flex items-center gap-2">
+                  <Lightbulb className="size-4 text-primary" />
+                  <h2 className="text-sm font-semibold">{t('common.reportBuilder.narrativeTitle')}</h2>
+                </div>
+                <p className="text-sm leading-6 text-foreground">{reportNarrative}</p>
+                <p className="text-muted-foreground mt-2 text-xs">{t('common.reportBuilder.narrativeHint')}</p>
+              </div>
+              <div className="min-w-[260px] rounded-xl border bg-muted/30 p-3">
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('common.reportBuilder.recommendedVisualTitle')}
+                </div>
+                <div className="mt-2 text-sm font-semibold">{recommendedChartLabel}</div>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {chartNeedsSimplification
+                    ? t('common.reportBuilder.recommendedVisualTooManySeries', { count: previewSeriesCount })
+                    : t('common.reportBuilder.recommendedVisualNormal')}
+                </p>
+                {config.chartType !== recommendedChartType ? (
+                  <Button type="button" variant="outline" className="mt-3" onClick={() => setChartType(recommendedChartType)}>
+                    {t('common.reportBuilder.applyRecommendedVisual')}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady && chartRepairPlan ? (
+          <div className="rounded-2xl border border-rose-300 bg-rose-50/80 p-4 dark:border-rose-900 dark:bg-rose-950/20">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-[280px] flex-1">
+                <div className="mb-2 flex items-center gap-2 text-rose-700 dark:text-rose-300">
+                  <TriangleAlert className="size-4" />
+                  <h2 className="text-sm font-semibold">{chartRepairPlan.title}</h2>
+                </div>
+                <p className="text-sm text-rose-900 dark:text-rose-100">{chartRepairPlan.description}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button type="button" variant="outline" onClick={handleAutoRepairVisualization}>
+                  {chartRepairPlan.buttonLabel}
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady ? (
+          <div className="rounded-2xl border bg-card p-4">
             <div className="mb-3">
               <h2 className="text-sm font-semibold">{t('common.reportBuilder.quickStartTitle')}</h2>
               <p className="text-muted-foreground mt-1 text-xs">
@@ -691,6 +934,37 @@ export function ReportBuilderPage(): ReactElement {
               </Button>
               <Button type="button" variant="outline" onClick={() => handleQuickSetup('kpi')}>
                 {t('common.reportBuilder.quickStartKpi')}
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady ? (
+          <div className="rounded-2xl border bg-card p-4">
+            <div className="mb-3">
+              <h2 className="text-sm font-semibold">{t('common.reportBuilder.widgetTemplatesTitle')}</h2>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {t('common.reportBuilder.widgetTemplatesDescription')}
+              </p>
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              <Button type="button" variant="outline" className="h-auto justify-start px-4 py-3 text-left" onClick={() => handleWidgetTemplate('dailyTrend')}>
+                <div>
+                  <div className="font-semibold">{t('common.reportBuilder.widgetTemplateLabels.dailyTrend')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.widgetTemplateDescriptions.dailyTrend')}</div>
+                </div>
+              </Button>
+              <Button type="button" variant="outline" className="h-auto justify-start px-4 py-3 text-left" onClick={() => handleWidgetTemplate('categoryCompare')}>
+                <div>
+                  <div className="font-semibold">{t('common.reportBuilder.widgetTemplateLabels.categoryCompare')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.widgetTemplateDescriptions.categoryCompare')}</div>
+                </div>
+              </Button>
+              <Button type="button" variant="outline" className="h-auto justify-start px-4 py-3 text-left" onClick={() => handleWidgetTemplate('summaryTable')}>
+                <div>
+                  <div className="font-semibold">{t('common.reportBuilder.widgetTemplateLabels.summaryTable')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.widgetTemplateDescriptions.summaryTable')}</div>
+                </div>
               </Button>
             </div>
           </div>
@@ -802,6 +1076,30 @@ export function ReportBuilderPage(): ReactElement {
                     {t('common.reportBuilder.addRecommendedAxis', { field: firstAxisField.displayName || firstAxisField.name })}
                   </Button>
                 ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady && chartNeedsSimplification ? (
+          <div className="rounded-2xl border border-amber-300 bg-amber-50/80 p-4 dark:border-amber-900 dark:bg-amber-950/30">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-[280px] flex-1">
+                <div className="mb-2 flex items-center gap-2 text-amber-700 dark:text-amber-300">
+                  <TriangleAlert className="size-4" />
+                  <h2 className="text-sm font-semibold">{t('common.reportBuilder.guardrailTitle')}</h2>
+                </div>
+                <p className="text-sm text-amber-900 dark:text-amber-100">
+                  {t('common.reportBuilder.guardrailTooManySeries', { count: previewSeriesCount })}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="outline" onClick={() => setChartType('table')}>
+                  {t('common.reportBuilder.guardrailSwitchTable')}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setChartType('bar')}>
+                  {t('common.reportBuilder.guardrailSwitchBar')}
+                </Button>
               </div>
             </div>
           </div>

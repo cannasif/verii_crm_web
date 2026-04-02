@@ -144,6 +144,9 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
   const kpiLayout = appearance?.kpiLayout ?? 'split';
   const valueFormat = appearance?.valueFormat ?? 'default';
   const decimalPlaces = appearance?.decimalPlaces ?? 0;
+  const seriesVisibilityMode = appearance?.seriesVisibilityMode ?? 'auto';
+  const maxVisibleSeries = appearance?.maxVisibleSeries ?? 8;
+  const seriesOverflowMode = appearance?.seriesOverflowMode ?? 'others';
   const rawColumns = useMemo(() => getRawColumns(columns), [columns]);
   const columnLabels = useMemo(() => normalizeColumns(columns, labelOverrides), [columns, labelOverrides]);
   const normalizedRows = useMemo(
@@ -238,14 +241,51 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
       }))
       .sort((a, b) => b.total - a.total);
 
-    const visibleSeries = showAllSeries ? totals : totals.slice(0, 8);
+    const effectiveLimit =
+      seriesVisibilityMode === 'all'
+        ? totals.length
+        : Math.max(1, Math.min(maxVisibleSeries, totals.length));
+    const canExpand = seriesVisibilityMode === 'auto' && totals.length > effectiveLimit;
+    const baseVisibleSeries =
+      seriesVisibilityMode === 'all' || showAllSeries || !canExpand
+        ? (seriesVisibilityMode === 'limited' ? totals.slice(0, effectiveLimit) : totals)
+        : totals.slice(0, effectiveLimit);
+    const hiddenSeries = totals.filter((item) => !baseVisibleSeries.some((visible) => visible.key === item.key));
+    const visibleSeries = seriesOverflowMode === 'others' && hiddenSeries.length > 0 && seriesVisibilityMode !== 'all'
+      ? [...baseVisibleSeries, { key: '__others__', total: hiddenSeries.reduce((sum, item) => sum + item.total, 0) }]
+      : baseVisibleSeries;
     return {
       totals,
       visibleSeriesKeys: visibleSeries.map((item) => item.key),
-      topSeries: totals.slice(0, 5),
-      hiddenCount: Math.max(totals.length - visibleSeries.length, 0),
+      topSeries: baseVisibleSeries.slice(0, 5),
+      canExpand,
+      hiddenCount: hiddenSeries.length,
+      hiddenSeries,
     };
-  }, [multiSeriesChartData, showAllSeries]);
+  }, [maxVisibleSeries, multiSeriesChartData, seriesOverflowMode, seriesVisibilityMode, showAllSeries]);
+
+  const displayChartData = useMemo(() => {
+    if (!multiSeriesChartData || !multiSeriesSummary) return multiSeriesChartData?.data ?? null;
+    if (!(seriesOverflowMode === 'others' && multiSeriesSummary.hiddenSeries.length > 0 && seriesVisibilityMode !== 'all')) {
+      return multiSeriesChartData.data;
+    }
+    return multiSeriesChartData.data.map((row) => {
+      const othersValue = multiSeriesSummary.hiddenSeries.reduce((sum, item) => {
+        const rawValue = row[item.key];
+        const numericValue =
+          typeof rawValue === 'number'
+            ? rawValue
+            : typeof rawValue === 'string' && rawValue.trim() !== '' && !Number.isNaN(Number(rawValue))
+              ? Number(rawValue)
+              : 0;
+        return sum + numericValue;
+      }, 0);
+      return {
+        ...row,
+        __others__: othersValue,
+      };
+    });
+  }, [multiSeriesChartData, multiSeriesSummary, seriesOverflowMode, seriesVisibilityMode]);
 
   const [labelKey, valueKeys] = useMemo(() => {
     if (columnLabels.length === 0) return [undefined, [] as string[]];
@@ -300,6 +340,10 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     const items = [...tooltipProps.payload]
       .map((item) => ({
         key: String(item.dataKey ?? ''),
+        label:
+          String(item.dataKey ?? '') === '__others__'
+            ? t('common.reportBuilder.seriesOthersTooltip')
+            : String(item.dataKey ?? ''),
         value:
           typeof item.value === 'number'
             ? item.value
@@ -320,7 +364,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
             <div key={item.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-xs">
               <div className="flex min-w-0 items-center gap-2">
                 <span className="inline-block size-2 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
-                <span className="break-words text-foreground" title={item.key}>{item.key}</span>
+                <span className="break-words text-foreground" title={item.label}>{item.label}</span>
               </div>
               <span className="shrink-0 text-right font-semibold tabular-nums text-foreground">
                 {formatMetricValue(item.value, valueFormat, decimalPlaces)}
@@ -559,7 +603,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
       chartType === 'line'
         ? Recharts.LineChart
         : Recharts.BarChart;
-    const chartData = multiSeriesChartData?.data ?? tableData;
+    const chartData = displayChartData ?? tableData;
     const chartLabelKey = multiSeriesChartData?.axisKey ?? labelKey;
     const chartValueKeys = multiSeriesSummary?.visibleSeriesKeys ?? multiSeriesChartData?.seriesKeys ?? valueKeys;
     return (
@@ -570,7 +614,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
               <div className="text-xs font-medium text-muted-foreground">
                 {t('common.reportBuilder.seriesSummary', { count: multiSeriesSummary.totals.length })}
               </div>
-              {multiSeriesSummary.hiddenCount > 0 ? (
+              {multiSeriesSummary.canExpand && multiSeriesSummary.hiddenCount > 0 ? (
                 <Button
                   type="button"
                   variant="outline"
@@ -595,9 +639,18 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
                   <span className="text-muted-foreground">{formatMetricValue(item.total, valueFormat, decimalPlaces)}</span>
                 </div>
               ))}
+              {seriesOverflowMode === 'others' && multiSeriesSummary.hiddenCount > 0 ? (
+                <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px]">
+                  <span className="inline-block size-2 rounded-full" style={{ backgroundColor: palette[multiSeriesSummary.topSeries.length % palette.length] }} />
+                  <span className="font-medium">{t('common.reportBuilder.seriesOthersLabel', { count: multiSeriesSummary.hiddenCount })}</span>
+                  <span className="text-muted-foreground">
+                    {formatMetricValue(multiSeriesSummary.hiddenSeries.reduce((sum, item) => sum + item.total, 0), valueFormat, decimalPlaces)}
+                  </span>
+                </div>
+              ) : null}
             </div>
             <div className="text-[11px] text-muted-foreground">
-              {showAllSeries
+              {showAllSeries || !multiSeriesSummary.canExpand
                 ? t('common.reportBuilder.allSeriesVisible')
                 : t('common.reportBuilder.topSeriesVisibleHint')}
             </div>

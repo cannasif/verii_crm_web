@@ -32,6 +32,8 @@ import type {
   WidgetTableColumnWidth,
   WidgetTitleAlign,
   WidgetTone,
+  WidgetSeriesVisibilityMode,
+  WidgetSeriesOverflowMode,
 } from '../types';
 import { getFieldSemanticType, getOperatorsForField } from '../utils';
 import type { Field } from '../types';
@@ -82,6 +84,9 @@ const KPI_LAYOUTS: WidgetKpiLayout[] = ['split', 'spotlight', 'compact'];
 const VALUE_FORMATS: WidgetValueFormat[] = ['default', 'number', 'currency', 'percent'];
 const TABLE_COLUMN_ALIGNS: WidgetTableColumnAlign[] = ['left', 'center', 'right'];
 const TABLE_COLUMN_WIDTHS: WidgetTableColumnWidth[] = ['auto', 'sm', 'md', 'lg'];
+const SERIES_VISIBILITY_MODES: WidgetSeriesVisibilityMode[] = ['auto', 'limited', 'all'];
+const SERIES_OVERFLOW_MODES: WidgetSeriesOverflowMode[] = ['others', 'hide'];
+const SERIES_LIMIT_OPTIONS = [5, 8, 10, 15];
 
 const OPERATOR_LABELS: Record<string, string> = {
   eq: '=',
@@ -1313,6 +1318,80 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
           </DndContext>
         </div>
       )}
+
+      {activeWidget && (config.chartType === 'line' || config.chartType === 'bar' || config.chartType === 'stackedBar') ? (
+        <div className={cn('space-y-3 rounded-lg border border-dashed p-3', isBasicMode && 'bg-muted/20')}>
+          <div>
+            <Label>{t('common.reportBuilder.seriesVisibilityTitle')}</Label>
+            <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.seriesVisibilityDescription')}</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>{t('common.reportBuilder.seriesVisibilityMode')}</Label>
+              <Select
+                value={activeAppearance.seriesVisibilityMode ?? 'auto'}
+                onValueChange={(value) => setWidgetAppearance(activeWidget.id, { seriesVisibilityMode: value as WidgetSeriesVisibilityMode })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SERIES_VISIBILITY_MODES.map((modeOption) => (
+                    <SelectItem key={modeOption} value={modeOption}>
+                      {t(`common.reportBuilder.seriesVisibilityModes.${modeOption}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t('common.reportBuilder.seriesOverflowMode')}</Label>
+                <Select
+                  value={activeAppearance.seriesOverflowMode ?? 'others'}
+                  onValueChange={(value) => setWidgetAppearance(activeWidget.id, { seriesOverflowMode: value as WidgetSeriesOverflowMode })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SERIES_OVERFLOW_MODES.map((modeOption) => (
+                      <SelectItem key={modeOption} value={modeOption}>
+                        {t(`common.reportBuilder.seriesOverflowModes.${modeOption}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            {(activeAppearance.seriesVisibilityMode ?? 'auto') !== 'all' ? (
+              <div className="space-y-2">
+                <Label>{t('common.reportBuilder.seriesLimit')}</Label>
+                <Select
+                  value={String(activeAppearance.maxVisibleSeries ?? 8)}
+                  onValueChange={(value) => setWidgetAppearance(activeWidget.id, { maxVisibleSeries: Number(value) })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SERIES_LIMIT_OPTIONS.map((option) => (
+                      <SelectItem key={option} value={String(option)}>
+                        {t('common.reportBuilder.seriesLimitOption', { count: option })}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label>{t('common.reportBuilder.seriesLimit')}</Label>
+                <div className="text-muted-foreground rounded-md border border-dashed px-3 py-2 text-xs">
+                  {t('common.reportBuilder.seriesLimitDisabled')}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : null}
 
       {!isBasicMode && config.filters.length > 0 && (
         <div className="space-y-2">

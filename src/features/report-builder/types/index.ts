@@ -15,6 +15,8 @@ export type WidgetKpiLayout = 'split' | 'spotlight' | 'compact';
 export type WidgetValueFormat = 'default' | 'number' | 'currency' | 'percent';
 export type WidgetTableColumnAlign = 'left' | 'center' | 'right';
 export type WidgetTableColumnWidth = 'auto' | 'sm' | 'md' | 'lg';
+export type WidgetSeriesVisibilityMode = 'auto' | 'limited' | 'all';
+export type WidgetSeriesOverflowMode = 'hide' | 'others';
 
 export interface ReportWidgetTableColumnSetting {
   key: string;
@@ -42,6 +44,9 @@ export interface ReportWidgetAppearance {
   kpiLayout?: WidgetKpiLayout;
   valueFormat?: WidgetValueFormat;
   decimalPlaces?: number;
+  seriesVisibilityMode?: WidgetSeriesVisibilityMode;
+  maxVisibleSeries?: number;
+  seriesOverflowMode?: WidgetSeriesOverflowMode;
 }
 
 export interface ReportConfigAxis {
