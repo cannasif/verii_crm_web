@@ -8,6 +8,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import { ProductPricingTable, getColumnsConfig } from './ProductPricingTable';
 import { ProductPricingForm } from './ProductPricingForm';
@@ -319,11 +326,12 @@ export function ProductPricingManagementPage(): ReactElement {
         </Button>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('table.title')}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title')}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
           <ProductPricingTable
             actionBar={{
               pageKey: PAGE_KEY,
@@ -445,6 +453,7 @@ export function ProductPricingManagementPage(): ReactElement {
             })}
             disablePaginationButtons={false}
           />
+          </div>
         </CardContent>
       </Card>
 

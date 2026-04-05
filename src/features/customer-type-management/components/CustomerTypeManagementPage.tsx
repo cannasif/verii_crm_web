@@ -8,6 +8,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { CUSTOMER_TYPE_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { CustomerTypeTable, getColumnsConfig } from './CustomerTypeTable';
 import { CustomerTypeForm } from './CustomerTypeForm';
@@ -261,9 +269,11 @@ export function CustomerTypeManagementPage(): ReactElement {
 
       <CustomerTypeStats />
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('customerTypeManagement.table.title', { defaultValue: t('table.title') })}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+            {t('customerTypeManagement.table.title', { defaultValue: t('table.title') })}
+          </CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -295,6 +305,7 @@ export function CustomerTypeManagementPage(): ReactElement {
                 <Button
                   variant="outline"
                   size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
                   onClick={() => handleRefresh()}
                   disabled={isLoading}
                 >
@@ -309,7 +320,8 @@ export function CustomerTypeManagementPage(): ReactElement {
             }
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
           <CustomerTypeTable
             columns={columns}
             visibleColumnKeys={orderedVisibleColumns}
@@ -362,6 +374,7 @@ export function CustomerTypeManagementPage(): ReactElement {
             })}
             disablePaginationButtons={false}
           />
+          </div>
         </CardContent>
       </Card>
 

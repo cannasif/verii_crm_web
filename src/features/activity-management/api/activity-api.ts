@@ -4,6 +4,8 @@ import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/typ
 import type { ActivityDto, CreateActivityDto, UpdateActivityDto } from '../types/activity-types';
 import { appendPagedQueryParams } from '@/utils/query-params';
 
+const AM_NS = 'activity-management' as const;
+
 export const activityApi = {
   getList: async (params: Omit<PagedParams, 'filters'> & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<ActivityDto>> => {
     const queryParams = appendPagedQueryParams(new URLSearchParams(), params);
@@ -24,7 +26,7 @@ export const activityApi = {
       
       return pagedData;
     }
-    throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.listLoadError'));
+    throw new Error(response.message || response.exceptionMessage || i18n.t('listLoadError', { ns: AM_NS }));
   },
 
   getAllList: async (
@@ -70,7 +72,7 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.detailLoadError'));
+    throw new Error(response.message || response.exceptionMessage || i18n.t('detailLoadError', { ns: AM_NS }));
   },
 
   create: async (data: CreateActivityDto): Promise<ActivityDto> => {
@@ -78,7 +80,7 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.createError'));
+    throw new Error(response.message || response.exceptionMessage || i18n.t('createError', { ns: AM_NS }));
   },
 
   update: async (id: number, data: UpdateActivityDto): Promise<ActivityDto> => {
@@ -86,13 +88,13 @@ export const activityApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.updateError'));
+    throw new Error(response.message || response.exceptionMessage || i18n.t('updateError', { ns: AM_NS }));
   },
 
   delete: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<object>>(`/api/Activity/${id}`);
     if (!response.success) {
-      throw new Error(response.message || response.exceptionMessage || i18n.t('activityManagement.deleteError'));
+      throw new Error(response.message || response.exceptionMessage || i18n.t('deleteError', { ns: AM_NS }));
     }
   },
 };

@@ -8,6 +8,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import { loadTableSortPreference, saveTableSortPreference } from '@/lib/table-sort-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { matchesSearchTerm } from '@/lib/search';
 import { CUSTOMER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { CustomerTable, getColumnsConfig } from './CustomerTable';
@@ -33,16 +42,53 @@ import {
 const EMPTY_CUSTOMERS: CustomerDto[] = [];
 const PAGE_KEY = 'customer-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+const CRM_NS = 'customer-management' as const;
 
 type CustomerColumnKey = keyof CustomerDto;
 
-function resolveLabel(
-  t: (key: string) => string,
-  key: string,
-  fallback: string
-): string {
-  const translated = t(key);
-  return translated && translated !== key ? translated : fallback;
+const DEFAULT_SORT_BY: CustomerColumnKey = 'name';
+const DEFAULT_SORT_DIRECTION: 'asc' | 'desc' = 'asc';
+
+const NUMERIC_CUSTOMER_SORT_KEYS = new Set<CustomerColumnKey>([
+  'id',
+  'creditLimit',
+  'branchCode',
+  'businessUnitCode',
+  'defaultShippingAddressId',
+  'countryId',
+  'cityId',
+  'districtId',
+  'customerTypeId',
+]);
+
+const DATE_CUSTOMER_SORT_KEYS = new Set<CustomerColumnKey>(['createdDate', 'updatedDate']);
+
+function compareCustomerRows(
+  a: CustomerDto,
+  b: CustomerDto,
+  sortBy: CustomerColumnKey,
+  direction: 'asc' | 'desc'
+): number {
+  const mul = direction === 'asc' ? 1 : -1;
+  if (NUMERIC_CUSTOMER_SORT_KEYS.has(sortBy)) {
+    const na = Number(a[sortBy]);
+    const nb = Number(b[sortBy]);
+    const va = Number.isFinite(na) ? na : 0;
+    const vb = Number.isFinite(nb) ? nb : 0;
+    return mul * (va - vb);
+  }
+  if (DATE_CUSTOMER_SORT_KEYS.has(sortBy)) {
+    const rawA = a[sortBy];
+    const rawB = b[sortBy];
+    const ta = rawA ? new Date(String(rawA)).getTime() : 0;
+    const tb = rawB ? new Date(String(rawB)).getTime() : 0;
+    const va = Number.isFinite(ta) ? ta : 0;
+    const vb = Number.isFinite(tb) ? tb : 0;
+    return mul * (va - vb);
+  }
+  const aVal = a[sortBy] != null ? String(a[sortBy]).toLowerCase() : '';
+  const bVal = b[sortBy] != null ? String(b[sortBy]).toLowerCase() : '';
+  return mul * aVal.localeCompare(bVal);
 }
 
 function getQuickActivityWindow(): { start: string; end: string } {
@@ -79,8 +125,8 @@ export function CustomerManagementPage(): ReactElement {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortBy, setSortBy] = useState<CustomerColumnKey>('name');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<CustomerColumnKey>(DEFAULT_SORT_BY);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(DEFAULT_SORT_DIRECTION);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
 
@@ -91,7 +137,10 @@ export function CustomerManagementPage(): ReactElement {
   const createActivity = useCreateActivity();
   const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
 
-  const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+  const tableColumns = useMemo(
+    () => getColumnsConfig(t),
+    [t, i18n.language, i18n.resolvedLanguage]
+  );
   const baseColumns = useMemo(
     () =>
       tableColumns.map((c) => ({
@@ -105,15 +154,47 @@ export function CustomerManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('customerManagement.menu'));
+    setPageTitle(t('customerManagement.menu', { ns: CRM_NS }));
     return () => setPageTitle(null);
-  }, [t, setPageTitle]);
+  }, [t, setPageTitle, i18n.language, i18n.resolvedLanguage]);
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
     setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
+
+  useEffect(() => {
+    const sortPrefs = loadTableSortPreference(
+      PAGE_KEY,
+      user?.id,
+      { sortBy: DEFAULT_SORT_BY, sortDirection: DEFAULT_SORT_DIRECTION },
+      defaultColumnKeys
+    );
+    setSortBy(sortPrefs.sortBy as CustomerColumnKey);
+    setSortDirection(sortPrefs.sortDirection);
+  }, [user?.id, defaultColumnKeys]);
+
+  const handleCustomerSort = useCallback(
+    (k: CustomerColumnKey) => {
+      let nextBy: CustomerColumnKey = sortBy;
+      let nextDir: 'asc' | 'desc' = sortDirection;
+      if (sortBy === k) {
+        nextDir = sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortDirection(nextDir);
+      } else {
+        nextBy = k;
+        nextDir = 'asc';
+        setSortBy(k);
+        setSortDirection('asc');
+      }
+      saveTableSortPreference(PAGE_KEY, user?.id, {
+        sortBy: nextBy,
+        sortDirection: nextDir,
+      });
+    },
+    [sortBy, sortDirection, user?.id]
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -168,12 +249,7 @@ export function CustomerManagementPage(): ReactElement {
 
   const sortedCustomers = useMemo(() => {
     const result = [...filteredCustomers];
-    result.sort((a, b) => {
-      const aVal = a[sortBy] != null ? String(a[sortBy]).toLowerCase() : '';
-      const bVal = b[sortBy] != null ? String(b[sortBy]).toLowerCase() : '';
-      const cmp = aVal.localeCompare(bVal);
-      return sortDirection === 'asc' ? cmp : -cmp;
-    });
+    result.sort((a, b) => compareCustomerRows(a, b, sortBy, sortDirection));
     return result;
   }, [filteredCustomers, sortBy, sortDirection]);
 
@@ -318,6 +394,7 @@ export function CustomerManagementPage(): ReactElement {
       tableColumns.map((c) => ({
         key: c.key as CustomerColumnKey,
         label: c.label,
+        headClassName: c.headClassName,
         cellClassName: c.className,
       })),
     [tableColumns]
@@ -328,10 +405,10 @@ export function CustomerManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('customerManagement.menu')}
+            {t('customerManagement.menu', { ns: CRM_NS })}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('customerManagement.description')}
+            {t('customerManagement.description', { ns: CRM_NS })}
           </p>
         </div>
         <Button
@@ -339,15 +416,17 @@ export function CustomerManagementPage(): ReactElement {
           className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
         >
           <Plus size={18} className="mr-2" />
-          {t('customerManagement.addButton')}
+          {t('customerManagement.addButton', { ns: CRM_NS })}
         </Button>
       </div>
 
       <CustomerStats />
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('customerManagement.table.title', { defaultValue: t('table.title') })}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+            {t('customerManagement.table.title', { ns: CRM_NS })}
+          </CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -372,13 +451,14 @@ export function CustomerManagementPage(): ReactElement {
             translationNamespace="customer-management"
             appliedFilterCount={appliedFilterCount}
             searchValue={searchTerm}
-            searchPlaceholder={t('common.search')}
+            searchPlaceholder={t('search', { ns: 'common' })}
             onSearchChange={setSearchTerm}
             leftSlot={
               <>
                 <Button
                   variant="outline"
                   size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
                   onClick={() => handleRefresh()}
                   disabled={isLoading}
                 >
@@ -387,11 +467,12 @@ export function CustomerManagementPage(): ReactElement {
                   ) : (
                     <RefreshCw className="h-4 w-4 mr-2" />
                   )}
-                  {resolveLabel(t, 'common.refresh', 'Yenile')}
+                  {t('refresh', { ns: 'common' })}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
                   onClick={() => triggerCustomerSync.mutateAsync()}
                   disabled={triggerCustomerSync.isPending}
                 >
@@ -401,67 +482,64 @@ export function CustomerManagementPage(): ReactElement {
                     <RefreshCw className="h-4 w-4 mr-2" />
                   )}
                   {triggerCustomerSync.isPending
-                    ? resolveLabel(t, 'customerManagement.syncing', 'Sync çalışıyor')
-                    : resolveLabel(t, 'customerManagement.manualSync', 'Manuel Sync')}
+                    ? t('customerManagement.syncing', { ns: CRM_NS, defaultValue: 'Sync çalışıyor' })
+                    : t('customerManagement.manualSync', { ns: CRM_NS, defaultValue: 'Manuel Sync' })}
                 </Button>
               </>
             }
           />
         </CardHeader>
-        <CardContent>
-          <CustomerTable
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={currentPageRows}
-            rowKey={(r) => r.id}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={(k) => {
-              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-              else {
-                setSortBy(k);
-                setSortDirection('asc');
-              }
-            }}
-            renderSortIcon={(k) => {
-              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading}
-            loadingText={t('customerManagement.loading')}
-            errorText={t('customerManagement.error', { defaultValue: 'Hata oluştu' })}
-            emptyText={t('customerManagement.noData')}
-            minTableWidthClassName="min-w-[800px] lg:min-w-[1100px]"
-            showActionsColumn
-            actionsHeaderLabel={t('customerManagement.actions')}
-            onEdit={handleEdit}
-            onQuickActivity={handleQuickActivity}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+            <CustomerTable
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={currentPageRows}
+              rowKey={(r) => r.id}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={handleCustomerSort}
+              renderSortIcon={(k) => {
+                if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+                );
+              }}
+              isLoading={isLoading}
+              loadingText={t('customerManagement.loading', { ns: CRM_NS })}
+              errorText={t('customerManagement.error', { ns: CRM_NS, defaultValue: 'Hata oluştu' })}
+              emptyText={t('customerManagement.noData', { ns: CRM_NS })}
+              minTableWidthClassName="min-w-[800px] lg:min-w-[1100px]"
+              showActionsColumn
+              actionsHeaderLabel={t('customerManagement.actions', { ns: CRM_NS })}
+              onEdit={handleEdit}
+              onQuickActivity={handleQuickActivity}
+              rowClassName="group"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('previous', { ns: 'common' })}
+              nextLabel={t('next', { ns: 'common' })}
+              paginationInfoText={t('paginationInfo', {
+                ns: 'common',
+                start: startRow,
+                end: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
+          </div>
         </CardContent>
       </Card>
 

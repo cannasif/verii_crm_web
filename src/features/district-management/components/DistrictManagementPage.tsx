@@ -8,6 +8,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
+
 import { DISTRICT_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { DistrictStats } from './DistrictStats';
 import { DistrictTable, getColumnsConfig } from './DistrictTable';
@@ -280,9 +289,9 @@ export function DistrictManagementPage(): ReactElement {
 
       <DistrictStats />
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('districtManagement.table.title', { defaultValue: 'İlçe Listesi' })}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('districtManagement.table.title', { defaultValue: 'İlçe Listesi' })}</CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -314,6 +323,7 @@ export function DistrictManagementPage(): ReactElement {
                 <Button
                   variant="outline"
                   size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
                   onClick={() => handleRefresh()}
                   disabled={isLoading}
                 >
@@ -328,7 +338,8 @@ export function DistrictManagementPage(): ReactElement {
             }
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
           <DistrictTable
             columns={columns}
             visibleColumnKeys={orderedVisibleColumns}
@@ -382,6 +393,7 @@ export function DistrictManagementPage(): ReactElement {
             })}
             disablePaginationButtons={false}
           />
+          </div>
         </CardContent>
       </Card>
 

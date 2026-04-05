@@ -1,6 +1,6 @@
 import { type ReactElement } from 'react';
 import type { TFunction } from 'i18next';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import type { UserDto } from '../types/user-types';
 import { Edit2 } from 'lucide-react';
@@ -110,7 +110,7 @@ export function UserTable({
   };
 
   const renderActionsCell = (user: UserDto): ReactElement => (
-    <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+    <div className="flex justify-end gap-2 opacity-100 transition-opacity">
       <Button
         variant="ghost"
         size="icon"
@@ -123,6 +123,7 @@ export function UserTable({
   );
 
   return (
+    <ManagementDataTableChrome>
     <DataTableGrid<UserDto, UserColumnKey>
       toolbar={toolbar}
       columns={columns}
@@ -158,6 +159,8 @@ export function UserTable({
       nextLabel={nextLabel}
       paginationInfoText={paginationInfoText}
       disablePaginationButtons={disablePaginationButtons}
+      centerColumnHeaders
     />
+    </ManagementDataTableChrome>
   );
 }

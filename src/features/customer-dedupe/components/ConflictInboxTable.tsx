@@ -1,6 +1,6 @@
 import { type ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { CustomerDuplicateCandidateDto } from '../types/customerDedupe.types';
@@ -152,6 +152,7 @@ export function ConflictInboxTable({
 
   return (
     <>
+      <ManagementDataTableChrome>
       <DataTableGrid<CustomerDuplicateCandidateDto, ConflictInboxColumnKey>
         columns={columns}
         visibleColumnKeys={['masterCustomer', 'duplicateCustomer', 'matchType', 'score']}
@@ -186,7 +187,9 @@ export function ConflictInboxTable({
           to: Math.min(pageNumber * pageSize, allRows.length),
           total: allRows.length,
         })}
+        centerColumnHeaders
       />
+      </ManagementDataTableChrome>
 
       {previewRow && (
         <MergePreviewDialog

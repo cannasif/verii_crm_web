@@ -36,6 +36,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_DATA_GRID_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import type { PagedFilter } from '@/types/api';
 import { getActivityColumns } from './activity-columns';
@@ -60,6 +68,7 @@ import { OutlookCustomerMailDialog } from '@/features/outlook-integration/compon
 
 const PAGE_KEY = 'activity-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+const AM_NS = 'activity-management' as const;
 
 function toActivityTypeId(value: string): number | undefined {
   const num = Number(value);
@@ -299,15 +308,15 @@ export function ActivityManagementPage(): ReactElement {
       (typeof data.activityTypeId === 'number' && data.activityTypeId > 0 ? data.activityTypeId : undefined) ??
       toActivityTypeId(data.activityType);
     if (activityTypeId === undefined) {
-      throw new Error(t('activityManagement.activityTypeRequired'));
+      throw new Error(t('activityTypeRequired', { ns: AM_NS }));
     }
     const assignedUserId = data.assignedUserId ?? fallbackAssignedUserId;
     if (!assignedUserId || assignedUserId <= 0) {
-      throw new Error(t('activityManagement.assignedUserRequired'));
+      throw new Error(t('assignedUserRequired', { ns: AM_NS }));
     }
     const endDateTime = toIsoDateTime(data.endDateTime);
     if (!endDateTime) {
-      throw new Error(t('activityManagement.endDateRequired'));
+      throw new Error(t('endDateRequired', { ns: AM_NS }));
     }
     return {
       subject: data.subject,
@@ -486,7 +495,7 @@ export function ActivityManagementPage(): ReactElement {
       activity.status === 'Canceled';
 
     return (
-      <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+      <div className="flex justify-end gap-1 opacity-100 transition-opacity">
         {!isCompleted && !isCancelled && (
           <>
             <Button
@@ -568,11 +577,15 @@ export function ActivityManagementPage(): ReactElement {
         </Button>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('activityManagement.table.title', { defaultValue: t('table.title') })}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+            {t('activityManagement.table.title', { defaultValue: t('table.title') })}
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+            <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
           <DataTableGrid<ActivityDto, string>
             actionBar={{
               pageKey: PAGE_KEY,
@@ -678,7 +691,10 @@ export function ActivityManagementPage(): ReactElement {
               total: totalCount,
             })}
             disablePaginationButtons={activitiesLoading}
+            centerColumnHeaders
           />
+            </div>
+          </div>
         </CardContent>
       </Card>
 

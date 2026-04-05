@@ -8,6 +8,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
+
 import { ProductPricingGroupByTable, getColumnsConfig } from './ProductPricingGroupByTable';
 import { ProductPricingGroupByForm } from './ProductPricingGroupByForm';
 import { productPricingGroupByApi } from '../api/product-pricing-group-by-api';
@@ -284,9 +293,9 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
         </Button>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('table.title')}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title')}</CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -318,6 +327,7 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
                 <Button
                   variant="outline"
                   size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
                   onClick={() => handleRefresh()}
                   disabled={isLoading}
                 >
@@ -332,7 +342,8 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
             }
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
           <ProductPricingGroupByTable
             columns={columns}
             visibleColumnKeys={orderedVisibleColumns}
@@ -398,6 +409,7 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
             })}
             disablePaginationButtons={false}
           />
+          </div>
         </CardContent>
       </Card>
 

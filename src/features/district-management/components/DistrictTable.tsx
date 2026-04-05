@@ -1,7 +1,7 @@
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -126,7 +126,7 @@ export function DistrictTable({
   };
 
   const renderActionsCell = (district: DistrictDto): ReactElement => (
-    <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+    <div className="flex justify-end gap-2 opacity-100 transition-opacity">
       <Button
         variant="ghost"
         size="icon"
@@ -148,6 +148,7 @@ export function DistrictTable({
 
   return (
     <>
+      <ManagementDataTableChrome>
       <DataTableGrid<DistrictDto, DistrictColumnKey>
         toolbar={toolbar}
         columns={columns}
@@ -182,7 +183,9 @@ export function DistrictTable({
         nextLabel={nextLabel}
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
+        centerColumnHeaders
       />
+      </ManagementDataTableChrome>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">

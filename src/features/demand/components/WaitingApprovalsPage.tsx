@@ -6,6 +6,7 @@ import { useApproveAction } from '../hooks/useApproveAction';
 import { useRejectAction } from '../hooks/useRejectAction';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -40,6 +41,14 @@ import {
 import { WaitingApprovalsSidebar } from './WaitingApprovalsSidebar';
 import type { ApprovalActionGetDto } from '../types/demand-types';
 import { cn } from '@/lib/utils';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+} from '@/lib/management-list-layout';
+import { ManagementDataTableChrome } from '@/components/shared';
 
 export function WaitingApprovalsPage(): ReactElement {
   const { t, i18n } = useTranslation();
@@ -97,9 +106,9 @@ export function WaitingApprovalsPage(): ReactElement {
     });
   };
 
-  // Ortak tablo stili sınıfları
-  const headStyle = "text-slate-500 dark:text-slate-400 py-4 font-bold text-xs uppercase tracking-wider whitespace-nowrap bg-slate-50 dark:bg-[#151025] sticky top-0 z-10 shadow-sm border-b border-slate-200 dark:border-white/10";
-  const cellStyle = "text-slate-600 dark:text-slate-400 text-sm py-4 border-b border-slate-100 dark:border-white/5 align-middle";
+  const headStyle =
+    'whitespace-nowrap py-3 align-middle text-slate-600 dark:text-slate-300';
+  const cellStyle = 'text-slate-600 dark:text-slate-400 text-sm py-3 align-middle';
 
   return (
     <div className="w-full max-w-[1600px] mx-auto pb-10 px-4 md:px-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -151,26 +160,22 @@ export function WaitingApprovalsPage(): ReactElement {
         </div>
 
         <div className="lg:col-span-3">
-          {/* Glassmorphism Tablo Kapsayıcı */}
-          <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-0 overflow-hidden transition-all duration-300 flex flex-col">
-            
-            <div className="px-6 py-5 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
-                  <Clock className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                    {t('demand.waitingApprovals.list')}
-                  </h3>
-                  <p className="text-xs text-slate-500 font-medium">
-                    {approvals ? `${approvals.length} adet bekleyen onay` : t('demand.loading')}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+            <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+              <CardTitle
+                className={cn(MANAGEMENT_LIST_CARD_TITLE_CLASSNAME, 'flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3')}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Clock className="h-5 w-5 shrink-0" />
+                  {t('demand.waitingApprovals.list')}
+                </span>
+                <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
+                  {approvals ? `${approvals.length} adet bekleyen onay` : t('demand.loading')}
+                </span>
+              </CardTitle>
+            </CardHeader>
 
-            <div className="p-0">
+            <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
               {isLoading ? (
                 /* Şık Skeleton Yükleme Durumu */
                 <div className="p-6 space-y-4">
@@ -202,24 +207,26 @@ export function WaitingApprovalsPage(): ReactElement {
                   </p>
                 </div>
               ) : (
-                <div className="w-full overflow-x-auto custom-scrollbar">
+                <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+                  <ManagementDataTableChrome>
+                  <div className="w-full overflow-x-auto custom-scrollbar">
                   <Table className="min-w-[1000px] w-full caption-bottom text-sm whitespace-nowrap">
                     <TableHeader>
-                      <TableRow className="hover:bg-transparent border-none">
-                        <TableHead className={cn(headStyle, "pl-6")}>{t('demand.waitingApprovals.requestId')}</TableHead>
+                      <TableRow className="border-none hover:bg-transparent">
+                        <TableHead className={cn(headStyle, 'pl-6')}>{t('demand.waitingApprovals.requestId')}</TableHead>
                         <TableHead className={headStyle}>{t('demand.waitingApprovals.description')}</TableHead>
-                        <TableHead className={cn(headStyle, "text-center")}>{t('demand.waitingApprovals.stepOrder')}</TableHead>
+                        <TableHead className={cn(headStyle, 'text-center')}>{t('demand.waitingApprovals.stepOrder')}</TableHead>
                         <TableHead className={headStyle}>{t('demand.waitingApprovals.approvedBy')}</TableHead>
                         <TableHead className={headStyle}>{t('demand.waitingApprovals.actionDate')}</TableHead>
                         <TableHead className={headStyle}>{t('demand.waitingApprovals.status')}</TableHead>
-                        <TableHead className={cn(headStyle, "text-right pr-6")}>{t('demand.actions')}</TableHead>
+                        <TableHead className={cn(headStyle, 'text-right pr-6')}>{t('demand.actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {approvals.map((approval) => (
                         <TableRow
                           key={approval.id}
-                          className="group transition-colors duration-200 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10 border-b border-slate-100 dark:border-white/5 cursor-pointer last:border-0"
+                          className="group cursor-pointer border-none"
                           onClick={() => handleRowClick(approval.approvalRequestId)}
                         >
                           {/* ID Badge */}
@@ -275,7 +282,7 @@ export function WaitingApprovalsPage(): ReactElement {
                           
                           <TableCell className={cn(cellStyle, "text-right pr-6")}>
                             {/* Hover Reveal Buttons */}
-                            <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
+                            <div className="flex justify-end gap-2 opacity-100 transition-opacity duration-200">
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -304,10 +311,12 @@ export function WaitingApprovalsPage(): ReactElement {
                       ))}
                     </TableBody>
                   </Table>
+                  </div>
+                  </ManagementDataTableChrome>
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 

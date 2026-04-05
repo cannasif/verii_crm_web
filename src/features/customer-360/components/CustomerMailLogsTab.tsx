@@ -4,8 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
-import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import {
+  DataTableActionBar,
+  DataTableGrid,
+  ManagementDataTableChrome,
+  type DataTableGridColumn,
+} from '@/components/shared';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -311,7 +320,13 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
                   {provider === 'google' ? t('google-integration:logs.errorsOnly') : t('outlook-integration:logs.errorsOnly')}
                 </Label>
               </div>
-              <Button variant="outline" size="sm" onClick={() => logsQuery.refetch()} disabled={logsQuery.isFetching}>
+              <Button
+                variant="outline"
+                size="sm"
+                className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
+                onClick={() => logsQuery.refetch()}
+                disabled={logsQuery.isFetching}
+              >
                 {logsQuery.isFetching ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
@@ -323,6 +338,8 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
           )}
         />
 
+        <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+        <ManagementDataTableChrome>
         <DataTableGrid<CustomerMailLogDto, MailLogColumnKey>
           columns={columns}
           visibleColumnKeys={orderedVisibleColumns}
@@ -342,7 +359,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
           showActionsColumn
           actionsHeaderLabel={provider === 'google' ? t('google-integration:logs.actions') : t('outlook-integration:logs.actions')}
           renderActionsCell={(log) => (
-            <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+            <div className="flex justify-end gap-2 opacity-100 transition-opacity">
               <Button
                 variant="ghost"
                 size="icon"
@@ -373,7 +390,10 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
             ns: 'common',
           })}
           disablePaginationButtons={logsQuery.isFetching}
+          centerColumnHeaders
         />
+        </ManagementDataTableChrome>
+        </div>
       </CardContent>
 
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>

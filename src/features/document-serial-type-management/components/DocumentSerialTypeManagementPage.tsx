@@ -4,7 +4,12 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
+import {
+  DataTableGrid,
+  ManagementDataTableChrome,
+  type DataTableActionBarProps,
+  type DataTableGridColumn,
+} from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
@@ -15,6 +20,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+} from '@/lib/management-list-layout';
+
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import { DOCUMENT_SERIAL_TYPE_QUERY_KEYS } from '../utils/query-keys';
 import {
@@ -338,11 +351,13 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
         </Button>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('table.title')}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title')}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+          <ManagementDataTableChrome>
           <DataTableGrid<DocumentSerialTypeDto, DocumentSerialTypeColumnKey>
             actionBar={{
               pageKey: PAGE_KEY,
@@ -406,7 +421,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
             showActionsColumn
             actionsHeaderLabel={t('actions')}
             renderActionsCell={(documentSerialType) => (
-              <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+              <div className="flex justify-end gap-2 opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -446,7 +461,10 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
               total: totalCount,
             })}
             disablePaginationButtons={false}
+            centerColumnHeaders
           />
+          </ManagementDataTableChrome>
+          </div>
         </CardContent>
       </Card>
 

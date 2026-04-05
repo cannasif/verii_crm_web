@@ -6,9 +6,21 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, Mail, PencilLine, Plus } from '
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
-import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
+import {
+  DataTableGrid,
+  ManagementDataTableChrome,
+  type DataTableActionBarProps,
+  type DataTableGridColumn,
+} from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -349,7 +361,7 @@ export function DemandListPage(): ReactElement {
   };
 
   const renderActionsCell = (demand: DemandGetDto): ReactElement => (
-    <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+    <div className="flex items-center justify-end gap-2 opacity-100 transition-opacity">
       <Button
         variant="ghost"
         size="icon"
@@ -419,12 +431,16 @@ export function DemandListPage(): ReactElement {
           </Button>
         </div>
 
-        <div className="relative z-10 bg-white/80 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-xl shadow-zinc-200/50 dark:shadow-none overflow-hidden p-3 sm:p-6">
-          <Card className="border-0 bg-transparent shadow-none">
-            <CardHeader className="space-y-4">
-              <CardTitle>{t('demand.list.cardTitle', { defaultValue: 'Talep listesi' })}</CardTitle>
+        <div className="relative z-10 w-full">
+          <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+            <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+              <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+                {t('demand.list.cardTitle', { defaultValue: 'Talep listesi' })}
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+              <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+              <ManagementDataTableChrome>
               <DataTableGrid<DemandGetDto, DemandColumnKey>
                 actionBar={{
                   pageKey: PAGE_KEY,
@@ -520,7 +536,10 @@ export function DemandListPage(): ReactElement {
                   ns: 'common',
                 })}
                 disablePaginationButtons={demandQuery.isFetching}
+                centerColumnHeaders
               />
+              </ManagementDataTableChrome>
+              </div>
             </CardContent>
           </Card>
         </div>

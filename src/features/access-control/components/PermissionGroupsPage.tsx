@@ -5,7 +5,12 @@ import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus, RefreshCw, Settings } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import {
+  DataTableActionBar,
+  DataTableGrid,
+  ManagementDataTableChrome,
+  type DataTableGridColumn,
+} from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -16,6 +21,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { usePermissionGroupsQuery } from '../hooks/usePermissionGroupsQuery';
 import { useCreatePermissionGroupMutation } from '../hooks/useCreatePermissionGroupMutation';
 import { useUpdatePermissionGroupMutation } from '../hooks/useUpdatePermissionGroupMutation';
@@ -220,9 +233,11 @@ export function PermissionGroupsPage(): ReactElement {
         </Button>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('permissionGroups.table.title', { defaultValue: t('permissionGroups.title') })}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+            {t('permissionGroups.table.title', { defaultValue: t('permissionGroups.title') })}
+          </CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -247,7 +262,13 @@ export function PermissionGroupsPage(): ReactElement {
             onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : (
@@ -259,7 +280,9 @@ export function PermissionGroupsPage(): ReactElement {
             }
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+          <ManagementDataTableChrome>
           <DataTableGrid<PermissionGroupDto, PermissionGroupColumnKey>
             columns={columns}
             visibleColumnKeys={visibleColumns as PermissionGroupColumnKey[]}
@@ -314,7 +337,10 @@ export function PermissionGroupsPage(): ReactElement {
               to: Math.min(pageNumber * pageSize, totalCount),
               total: totalCount,
             })}
+            centerColumnHeaders
           />
+          </ManagementDataTableChrome>
+          </div>
         </CardContent>
       </Card>
 

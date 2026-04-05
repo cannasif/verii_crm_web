@@ -4,8 +4,21 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, RefreshCw } from 'lucide
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
-import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import {
+  DataTableActionBar,
+  DataTableGrid,
+  ManagementDataTableChrome,
+  type DataTableGridColumn,
+} from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -265,9 +278,9 @@ export function OutlookLogsPage(): ReactElement {
         <p className="text-muted-foreground mt-1">{t('page.logsDescription')}</p>
       </div>
 
-      <Card>
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('logs.cardTitle')}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('logs.cardTitle')}</CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -303,7 +316,13 @@ export function OutlookLogsPage(): ReactElement {
                     {t('logs.errorsOnly')}
                   </Label>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => logsQuery.refetch()} disabled={logsQuery.isFetching}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
+                  onClick={() => logsQuery.refetch()}
+                  disabled={logsQuery.isFetching}
+                >
                   {logsQuery.isFetching ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : (
@@ -315,7 +334,9 @@ export function OutlookLogsPage(): ReactElement {
             }
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+          <ManagementDataTableChrome>
           <DataTableGrid<OutlookIntegrationLogDto, LogColumnKey>
             columns={columns}
             visibleColumnKeys={orderedVisibleColumns}
@@ -335,7 +356,7 @@ export function OutlookLogsPage(): ReactElement {
             showActionsColumn={SHOW_ACTIONS_COLUMN}
             actionsHeaderLabel={t('logs.actions')}
             renderActionsCell={(log) => (
-              <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+              <div className="flex justify-end gap-2 opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -371,7 +392,10 @@ export function OutlookLogsPage(): ReactElement {
               ns: 'common',
             })}
             disablePaginationButtons={logsQuery.isFetching}
+            centerColumnHeaders
           />
+          </ManagementDataTableChrome>
+          </div>
         </CardContent>
       </Card>
 

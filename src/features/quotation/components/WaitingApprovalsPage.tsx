@@ -6,9 +6,22 @@ import { ArrowDown, ArrowLeft, ArrowUp, ArrowUpDown, Check, Clock, X } from 'luc
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+} from '@/lib/management-list-layout';
+import { cn } from '@/lib/utils';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
-import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
+import {
+  DataTableGrid,
+  ManagementDataTableChrome,
+  type DataTableActionBarProps,
+  type DataTableGridColumn,
+} from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -360,14 +373,16 @@ export function WaitingApprovalsPage(): ReactElement {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={cn(MANAGEMENT_LIST_CARD_TITLE_CLASSNAME, 'flex items-center gap-2')}>
             <Clock className="h-5 w-5" />
             {t('quotation.waitingApprovals.title')}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+          <ManagementDataTableChrome>
           <DataTableGrid<ApprovalActionGetDto, WaitingApprovalColumnKey>
             actionBar={{
               pageKey: PAGE_KEY,
@@ -448,7 +463,10 @@ export function WaitingApprovalsPage(): ReactElement {
               ns: 'common',
             })}
             disablePaginationButtons={waitingApprovalsQuery.isFetching}
+            centerColumnHeaders
           />
+          </ManagementDataTableChrome>
+          </div>
         </CardContent>
       </Card>
 

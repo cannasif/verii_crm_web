@@ -9,6 +9,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { ACTIVITY_TYPE_QUERY_KEYS } from '../utils/query-keys';
 import { ActivityTypeTable, getColumnsConfig } from './ActivityTypeTable';
 import { ActivityTypeForm } from './ActivityTypeForm';
@@ -269,9 +277,11 @@ export function ActivityTypeManagementPage(): ReactElement {
         </Button>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('activityType.table.title', { defaultValue: t('table.title') })}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+            {t('activityType.table.title', { defaultValue: t('table.title') })}
+          </CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -303,6 +313,7 @@ export function ActivityTypeManagementPage(): ReactElement {
                 <Button
                   variant="outline"
                   size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
                   onClick={() => handleRefresh()}
                   disabled={isLoading}
                 >
@@ -317,7 +328,8 @@ export function ActivityTypeManagementPage(): ReactElement {
             }
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
           <ActivityTypeTable
             columns={columns}
             visibleColumnKeys={orderedVisibleColumns}
@@ -370,6 +382,7 @@ export function ActivityTypeManagementPage(): ReactElement {
             })}
             disablePaginationButtons={false}
           />
+          </div>
         </CardContent>
       </Card>
 

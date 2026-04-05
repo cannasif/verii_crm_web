@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
 import { useDeleteActivityType } from '../hooks/useDeleteActivityType';
 import type { ActivityTypeDto } from '../types/activity-type-types';
 import { Edit2, Trash2, FileText, Calendar, User, ListTodo } from 'lucide-react';
@@ -181,7 +182,7 @@ export function ActivityTypeTable({
   };
 
   const renderActionsCell = (activityType: ActivityTypeDto): ReactElement => (
-    <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+    <div className="flex justify-end gap-2 opacity-100 transition-opacity">
       <Button
         variant="ghost"
         size="icon"
@@ -203,6 +204,7 @@ export function ActivityTypeTable({
 
   return (
     <>
+      <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
       <DataTableGrid<ActivityTypeDto, ActivityTypeColumnKey>
         toolbar={toolbar}
         columns={columns}
@@ -237,7 +239,9 @@ export function ActivityTypeTable({
         nextLabel={nextLabel}
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
+        centerColumnHeaders
       />
+      </div>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">

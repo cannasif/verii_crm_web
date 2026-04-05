@@ -31,12 +31,22 @@ import {
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
+
+const CRM_NS = 'customer-management' as const;
+
+/** Tablo başlıkları bu namespace altında çözülmeli (çoklu ns ile t('customerManagement…') bazen eksik kalıyordu). */
+function tc(t: TFunction, key: string): string {
+  return t(key, { ns: CRM_NS });
+}
 
 export interface ColumnDef<T> {
   key: keyof T;
   label: string;
   type: 'text' | 'date' | 'user' | 'badge' | 'email' | 'phone' | 'location' | 'money' | 'link' | 'code';
   className?: string;
+  headClassName?: string;
 }
 
 type CustomerColumnKey = keyof CustomerDto;
@@ -76,23 +86,36 @@ interface CustomerTableProps {
   disablePaginationButtons?: boolean;
 }
 
+const idColumnSurface =
+  'bg-slate-200/70 dark:bg-white/[0.07] border-r border-slate-300/90 dark:border-white/10';
+
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerDto>[] => [
-  { key: 'id', label: t('customerManagement.table.id'), type: 'text', className: 'font-medium w-[48px] md:w-[60px]' },
-  { key: 'customerCode', label: t('customerManagement.table.customerCode'), type: 'code', className: 'font-mono text-xs' },
-  { key: 'name', label: t('customerManagement.table.name'), type: 'text', className: 'font-bold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
-  { key: 'customerTypeName', label: t('customerManagement.table.customerType'), type: 'badge', className: 'min-w-[120px] md:min-w-[140px]' },
-  { key: 'email', label: t('customerManagement.table.email'), type: 'email', className: 'min-w-[150px] md:min-w-[180px]' },
-  { key: 'phone', label: t('customerManagement.table.phone'), type: 'phone', className: 'whitespace-nowrap' },
-  { key: 'cityName', label: t('customerManagement.table.city'), type: 'location', className: 'min-w-[96px] md:min-w-[120px]' },
-  { key: 'districtName', label: t('customerManagement.table.district'), type: 'text', className: 'text-slate-500' },
-  { key: 'countryName', label: t('customerManagement.table.country'), type: 'text', className: 'text-slate-500' },
-  { key: 'creditLimit', label: t('customerManagement.table.creditLimit'), type: 'money', className: 'font-medium' },
-  { key: 'defaultShippingAddressId', label: t('customerManagement.table.defaultShippingAddressId'), type: 'code', className: 'font-mono text-xs' },
-  { key: 'salesRepCode', label: t('customerManagement.table.salesRep'), type: 'user', className: 'whitespace-nowrap' },
-  { key: 'tcknNumber', label: t('customerManagement.table.tckn'), type: 'code', className: 'font-mono text-xs' },
-  { key: 'taxNumber', label: t('customerManagement.table.tax'), type: 'code', className: 'font-mono text-xs' },
-  { key: 'website', label: t('customerManagement.table.website'), type: 'link', className: 'text-blue-500' },
-  { key: 'createdDate', label: t('customerManagement.table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
+  {
+    key: 'id',
+    label: tc(t, 'customerManagement.table.id'),
+    type: 'text',
+    headClassName: idColumnSurface,
+    className: cn(
+      'text-center font-medium w-[48px] md:w-[60px]',
+      'bg-slate-100/80 dark:bg-white/[0.04]',
+      'border-r border-slate-200/90 dark:border-white/[0.08]'
+    ),
+  },
+  { key: 'customerCode', label: tc(t, 'customerManagement.table.customerCode'), type: 'code', className: 'font-mono text-xs' },
+  { key: 'name', label: tc(t, 'customerManagement.table.name'), type: 'text', className: 'font-bold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
+  { key: 'customerTypeName', label: tc(t, 'customerManagement.table.customerType'), type: 'badge', className: 'min-w-[120px] md:min-w-[140px]' },
+  { key: 'email', label: tc(t, 'customerManagement.table.email'), type: 'email', className: 'min-w-[150px] md:min-w-[180px]' },
+  { key: 'phone', label: tc(t, 'customerManagement.table.phone'), type: 'phone', className: 'whitespace-nowrap' },
+  { key: 'cityName', label: tc(t, 'customerManagement.table.city'), type: 'location', className: 'min-w-[96px] md:min-w-[120px]' },
+  { key: 'districtName', label: tc(t, 'customerManagement.table.district'), type: 'text', className: 'text-slate-500' },
+  { key: 'countryName', label: tc(t, 'customerManagement.table.country'), type: 'text', className: 'text-slate-500' },
+  { key: 'creditLimit', label: tc(t, 'customerManagement.table.creditLimit'), type: 'money', className: 'font-medium' },
+  { key: 'defaultShippingAddressId', label: tc(t, 'customerManagement.table.defaultShippingAddressId'), type: 'code', className: 'font-mono text-xs' },
+  { key: 'salesRepCode', label: tc(t, 'customerManagement.table.salesRep'), type: 'user', className: 'whitespace-nowrap' },
+  { key: 'tcknNumber', label: tc(t, 'customerManagement.table.tckn'), type: 'code', className: 'font-mono text-xs' },
+  { key: 'taxNumber', label: tc(t, 'customerManagement.table.tax'), type: 'code', className: 'font-mono text-xs' },
+  { key: 'website', label: tc(t, 'customerManagement.table.website'), type: 'link', className: 'text-blue-500' },
+  { key: 'createdDate', label: tc(t, 'customerManagement.table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
 ];
 
 function renderCellContent(
@@ -218,7 +241,10 @@ export function CustomerTable({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerDto | null>(null);
 
-  const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+  const tableColumns = useMemo(
+    () => getColumnsConfig(t),
+    [t, i18n.language, i18n.resolvedLanguage]
+  );
 
   const handleDeleteClick = (customer: CustomerDto): void => {
     setSelectedCustomer(customer);
@@ -231,29 +257,64 @@ export function CustomerTable({
         await deleteCustomer.mutateAsync(selectedCustomer.id);
         setDeleteDialogOpen(false);
         setSelectedCustomer(null);
-        toast.success(t('customerManagement.messages.deleteSuccess', { defaultValue: t('customerManagement.delete.success') }));
+        toast.success(
+          t('customerManagement.messages.deleteSuccess', {
+            ns: CRM_NS,
+            defaultValue: t('customerManagement.delete.success', { ns: CRM_NS }),
+          })
+        );
       } catch (error) {
         console.error(error);
-        toast.error(t('customerManagement.messages.deleteError', { defaultValue: t('customerManagement.delete.error') }));
+        toast.error(
+          t('customerManagement.messages.deleteError', {
+            ns: CRM_NS,
+            defaultValue: t('customerManagement.delete.error', { ns: CRM_NS }),
+          })
+        );
       }
     }
   };
 
   const cellRenderer = (row: CustomerDto, key: CustomerColumnKey): React.ReactNode => {
     const col = tableColumns.find((c) => c.key === key);
-    if (col) return renderCellContent(row, col, i18n);
-    const val = row[key];
-    if (val == null) return '-';
-    return String(val);
+    const inner =
+      col != null
+        ? renderCellContent(row, col, i18n)
+        : row[key] == null
+          ? '-'
+          : String(row[key]);
+
+    if (key === 'name') {
+      return (
+        <span
+          data-skip-row-double-click
+          data-no-drag-scroll="true"
+          className="cursor-pointer select-none rounded px-0.5 -mx-0.5 hover:bg-slate-100/80 dark:hover:bg-white/5"
+          title={t('customerManagement.nameOpen360Hint', {
+            ns: CRM_NS,
+            defaultValue: 'Çift tıklayarak Müşteri 360’a gidin',
+          })}
+          onDoubleClick={(event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            navigate(`/customer-360/${row.id}`);
+          }}
+        >
+          {inner}
+        </span>
+      );
+    }
+
+    return inner;
   };
 
   const renderActionsCell = (customer: CustomerDto): ReactElement => (
-    <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+    <div className="flex justify-end gap-2 opacity-100 transition-opacity">
       <Button
         variant="ghost"
         size="icon"
         onClick={() => onQuickActivity(customer)}
-        title={t('customerManagement.quickActivity')}
+        title={t('customerManagement.quickActivity', { ns: CRM_NS })}
         className="h-8 w-8 text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:text-pink-400 dark:hover:bg-pink-500/10"
       >
         <Activity size={16} />
@@ -262,7 +323,7 @@ export function CustomerTable({
         variant="ghost"
         size="icon"
         onClick={() => navigate(`/customer-360/${customer.id}`)}
-        title={t('customer360.button', { defaultValue: 'Müşteri 360' })}
+        title={t('customer360.button', { ns: CRM_NS, defaultValue: 'Müşteri 360' })}
         className="h-8 w-8 text-violet-600 hover:text-violet-700 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-500/10"
       >
         <LayoutGrid size={16} />
@@ -288,6 +349,7 @@ export function CustomerTable({
 
   return (
     <>
+      <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
       <DataTableGrid<CustomerDto, CustomerColumnKey>
         toolbar={toolbar}
         columns={columns}
@@ -323,7 +385,9 @@ export function CustomerTable({
         nextLabel={nextLabel}
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
+        centerColumnHeaders
       />
+      </div>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
@@ -333,10 +397,11 @@ export function CustomerTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('customerManagement.delete.confirmTitle')}
+                {t('customerManagement.delete.confirmTitle', { ns: CRM_NS })}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
                 {t('customerManagement.delete.confirmMessage', {
+                  ns: CRM_NS,
                   name: selectedCustomer?.name || '',
                 })}
               </DialogDescription>
@@ -358,8 +423,10 @@ export function CustomerTable({
               disabled={deleteCustomer.isPending}
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
-              {deleteCustomer.isPending ? <span className="animate-pulse">{t('customerManagement.loading')}</span> : null}
-              {t('customerManagement.delete.action')}
+              {deleteCustomer.isPending ? (
+                <span className="animate-pulse">{t('customerManagement.loading', { ns: CRM_NS })}</span>
+              ) : null}
+              {t('customerManagement.delete.action', { ns: CRM_NS })}
             </Button>
           </DialogFooter>
         </DialogContent>

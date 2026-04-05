@@ -18,6 +18,14 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { DataTableActionBar } from '@/components/shared';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { ConflictInboxTable } from './ConflictInboxTable';
 import { useDuplicateCandidatesQuery } from '../hooks/useDuplicateCandidatesQuery';
 import { CANDIDATES_QUERY_KEY } from '../hooks/useDuplicateCandidatesQuery';
@@ -117,9 +125,11 @@ export function ConflictInboxPage(): ReactElement {
       )}
 
       {!isLoading && !isError && !isEmpty && (
-        <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-          <CardHeader className="space-y-4">
-            <CardTitle>{t('customerDedupe:tableTitle', { defaultValue: t('customerDedupe:title') })}</CardTitle>
+        <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+          <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+            <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+              {t('customerDedupe:tableTitle', { defaultValue: t('customerDedupe:title') })}
+            </CardTitle>
             <DataTableActionBar
               pageKey="conflict-inbox"
               columns={baseColumns}
@@ -216,7 +226,13 @@ export function ConflictInboxPage(): ReactElement {
                       </div>
                     </PopoverContent>
                   </Popover>
-                  <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
+                    onClick={handleRefresh}
+                    disabled={isLoading}
+                  >
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : (
@@ -228,12 +244,14 @@ export function ConflictInboxPage(): ReactElement {
               }
             />
           </CardHeader>
-          <CardContent>
+          <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+            <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <ConflictInboxTable
               candidates={candidates}
               filters={filters}
               onMergeSuccess={() => void queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY })}
             />
+            </div>
           </CardContent>
         </Card>
       )}

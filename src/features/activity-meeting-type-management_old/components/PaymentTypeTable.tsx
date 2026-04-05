@@ -128,7 +128,7 @@ export function PaymentTypeTable({
   };
 
   const renderActionsCell = (paymentType: PaymentTypeDto): ReactElement => (
-    <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+    <div className="flex justify-end gap-2 opacity-100 transition-opacity">
       <Button
         variant="ghost"
         size="icon"
