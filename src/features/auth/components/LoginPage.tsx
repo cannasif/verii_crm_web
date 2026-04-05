@@ -170,36 +170,32 @@ export function LoginPage(): React.JSX.Element {
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormControl>
-                     <div className="relative group">
+                     <div className="relative group w-full min-w-0">
                       <Location01Icon 
-                        className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${fieldState.invalid ? 'text-red-500' : 'text-slate-400 group-focus-within:text-orange-400'}`} 
+                        className={`absolute z-10 left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${fieldState.invalid ? 'text-red-500' : 'text-slate-400 group-focus-within:text-orange-400'}`} 
                         size={18} 
                       />
                       <Select onValueChange={field.onChange} value={field.value}>
                         <SelectTrigger 
-                          className={`w-full h-auto bg-black/10 rounded-xl px-4 py-6 pl-12 text-base md:text-sm text-white focus:ring-0 focus:ring-offset-0 transition-all duration-300 
-                          /* İçerideki span'i kes ve sola daya, sağdaki boşluğu ikon için koru */
-                          [&>span]:truncate [&>span]:text-left [&>span]:pr-4
-                            ${fieldState.invalid 
-                              ? 'border-red-500/80 focus:border-red-500 hover:border-red-500 bg-red-950/10' 
-                              : 'border border-white/10 focus:border-pink-500 focus:bg-black/30'
-                            }`}
+                          className={`w-full flex items-center justify-between min-w-0 overflow-hidden h-auto bg-black/10 rounded-xl py-6 pl-12 pr-4 text-base md:text-sm text-white focus:ring-0 focus:ring-offset-0 transition-all duration-300 [&>span]:truncate [&>span]:flex-1 [&>span]:min-w-0 [&>span]:text-left ${fieldState.invalid ? 'border-red-500/80 focus:border-red-500 hover:border-red-500 bg-red-950/10' : 'border border-white/10 focus:border-pink-500 focus:bg-black/30'}`}
                         >
                           <SelectValue placeholder={t('auth.login.branchPlaceholder')} />
                         </SelectTrigger>
 
-                        <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/10 text-white max-w-[var(--radix-select-trigger-width)]">
-                          {branches?.map((branch) => (
-                            
-                            <SelectItem 
-                              key={branch.id} 
-                              value={branch.id} 
-                              className="focus:bg-pink-500/20 focus:text-white cursor-pointer truncate"
-                            >
-                              {branch.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
+                        <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/10 text-white w-[var(--radix-select-trigger-width)] max-h-60">
+  {branches?.map((branch) => (
+    <SelectItem 
+      key={branch.id} 
+      value={branch.id} 
+      className="focus:bg-pink-500/20 focus:text-white cursor-pointer py-3 items-start"
+    >
+      {/* Satır atlamasını sağlayan sihirli classlar: whitespace-normal ve break-words */}
+      <span className="whitespace-normal break-words text-left block w-full pr-2 leading-relaxed">
+        {branch.name}
+      </span>
+    </SelectItem>
+  ))}
+</SelectContent>
                       </Select>
                           </div>
                     </FormControl>
@@ -224,11 +220,7 @@ export function LoginPage(): React.JSX.Element {
                               type="email"
                               autoComplete="username" 
                               placeholder={t('auth.login.emailPlaceholder')}
-                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300
-                                ${fieldState.invalid 
-                                  ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' 
-                                  : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'
-                                }`}
+                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ${fieldState.invalid ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'}`}
                             />
                       </div>
                     </FormControl>
@@ -253,11 +245,7 @@ export function LoginPage(): React.JSX.Element {
                               type={isPasswordVisible ? 'text' : 'password'}
                               autoComplete="current-password" 
                               placeholder={t('auth.login.passwordPlaceholder')}
-                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300
-                                ${fieldState.invalid 
-                                  ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' 
-                                  : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'
-                                }`}
+                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ${fieldState.invalid ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'}`}
                               onKeyDown={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
                               onKeyUp={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
                         />
