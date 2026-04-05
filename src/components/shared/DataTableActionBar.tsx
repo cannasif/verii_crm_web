@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Filter, RefreshCw, X } from 'lucide-react';
+import { Filter, RefreshCw, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -10,6 +10,7 @@ import { ColumnPreferencesPopover, type ColumnDef } from './ColumnPreferencesPop
 import { GridExportMenu } from './GridExportMenu';
 import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
 import type { GridExportColumn } from '@/lib/grid-export';
+import { cn } from '@/lib/utils';
 
 export interface DataTableSearchConfig {
   value?: string;
@@ -209,17 +210,24 @@ export function DataTableActionBar({
     <div className="flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-2">
         {shouldRenderSearch && (
-          <Input
-            placeholder={resolvedSearchPlaceholder}
-            value={currentSearchValue}
-            onChange={(event) => handleSearchInputChange(event.target.value)}
-            className={resolvedSearchClassName}
-          />
+          <div className="relative min-w-0">
+            <Search
+              className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+              aria-hidden
+            />
+            <Input
+              placeholder={resolvedSearchPlaceholder}
+              value={currentSearchValue}
+              onChange={(event) => handleSearchInputChange(event.target.value)}
+              className={cn(resolvedSearchClassName, 'border-slate-300 bg-white pl-9 shadow-sm dark:border-white/15 dark:bg-transparent dark:shadow-none')}
+            />
+          </div>
         )}
         {refresh && (
           <Button
             variant="outline"
             size="sm"
+            className="border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
             onClick={handleRefresh}
             disabled={isRefreshDisabled}
           >

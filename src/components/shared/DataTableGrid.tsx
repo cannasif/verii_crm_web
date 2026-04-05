@@ -57,13 +57,15 @@ interface DataTableGridProps<TRow, TKey extends string> {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  /** Tüm sütun başlıklarını ve sıralama butonlarını ortalar (ör. müşteri listesi). */
+  centerColumnHeaders?: boolean;
 }
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   return Boolean(
     target.closest(
-      'button, a, input, select, textarea, label, [role="button"], [data-no-drag-scroll="true"]'
+      'button, a, input, select, textarea, label, [role="button"], [data-no-drag-scroll="true"], [data-skip-row-double-click]'
     )
   );
 }
@@ -107,6 +109,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   nextLabel,
   paginationInfoText,
   disablePaginationButtons = false,
+  centerColumnHeaders = false,
 }: DataTableGridProps<TRow, TKey>): ReactElement {
   const { t } = useTranslation('common');
   const MISSING_TRANSLATION = 'Çeviri eksik';
@@ -171,7 +174,13 @@ export function DataTableGrid<TRow, TKey extends string>({
     dragStateRef.current.moved = false;
   };
 
-  const handleRowClick = (row: TRow): void => {
+  const handleRowClick = (row: TRow, event: ReactMouseEvent<HTMLTableRowElement>): void => {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('[data-skip-row-double-click]')) {
+      lastRowClickRef.current = null;
+      return;
+    }
+
     const key = rowKey(row);
     const now = Date.now();
     const lastClick = lastRowClickRef.current;
@@ -199,7 +208,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   const colSpan = visibleColumnKeys.length + (showActionsColumn ? 1 : 0) || 1;
 
   return (
-    <div className="space-y-4 min-w-0 w-full">
+    <div className="flex min-w-0 w-full flex-col gap-2">
       {actionBar ? <DataTableActionBar {...actionBar} /> : toolbar}
       <div
         ref={tableScrollRef}
@@ -220,17 +229,24 @@ export function DataTableGrid<TRow, TKey extends string>({
                 const column = columns.find((item) => item.key === key);
                 const sortable = Boolean(onSort && column?.sortable !== false);
                 return (
-                  <TableHead key={key} className={column?.headClassName}>
+                  <TableHead key={key} className={cn(centerColumnHeaders && 'text-center', column?.headClassName)}>
                     {sortable ? (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onSort?.(key)}
-                        className="h-7 px-1 -ml-1 hover:bg-transparent"
+                        className={cn(
+                          'h-7 hover:bg-transparent',
+                          centerColumnHeaders
+                            ? 'inline-flex min-h-7 w-full max-w-full flex-nowrap items-center justify-center gap-1 px-2'
+                            : 'px-1 -ml-1'
+                        )}
                       >
-                        <span>{column?.label ?? key}</span>
+                        <span className={cn(centerColumnHeaders && 'truncate')}>{column?.label ?? key}</span>
                         {renderSortIcon?.(key)}
                       </Button>
+                    ) : centerColumnHeaders ? (
+                      <span className="block w-full px-2 text-center">{column?.label ?? key}</span>
                     ) : (
                       <span>{column?.label ?? key}</span>
                     )}
@@ -238,7 +254,9 @@ export function DataTableGrid<TRow, TKey extends string>({
                 );
               })}
               {showActionsColumn && (
-                <TableHead className={cn('text-right', iconOnlyActions ? 'w-[84px]' : 'min-w-[280px]')}>
+                <TableHead
+                  className={cn(iconOnlyActions ? 'w-[84px] text-center' : 'min-w-[280px] text-right')}
+                >
                   {resolvedActionsHeaderLabel}
                 </TableHead>
               )}
@@ -286,7 +304,11 @@ export function DataTableGrid<TRow, TKey extends string>({
                   <TableRow
                     key={rowKey(row)}
                     className={customRowClass}
-                    onClick={onRowClick || onRowDoubleClick ? () => handleRowClick(row) : undefined}
+                    onClick={
+                      onRowClick || onRowDoubleClick
+                        ? (e) => handleRowClick(row, e)
+                        : undefined
+                    }
                     onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
                   >
                     {visibleColumnKeys.map((key) => {
@@ -317,11 +339,15 @@ export function DataTableGrid<TRow, TKey extends string>({
         </Table>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-3">
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-6 pt-3 sm:px-4 dark:border-white/10">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 px-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 border-slate-300 bg-white px-3 shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
+              >
                 <span>{pageSize}</span>
                 <ChevronDown className="ml-1 h-3.5 w-3.5" />
               </Button>
@@ -341,6 +367,7 @@ export function DataTableGrid<TRow, TKey extends string>({
           <Button
             variant="outline"
             size="sm"
+            className="border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
             onClick={onPreviousPage}
             disabled={!hasPreviousPage || disablePaginationButtons}
           >
@@ -352,6 +379,7 @@ export function DataTableGrid<TRow, TKey extends string>({
           <Button
             variant="outline"
             size="sm"
+            className="border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
             onClick={onNextPage}
             disabled={!hasNextPage || disablePaginationButtons}
           >

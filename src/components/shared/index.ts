@@ -7,6 +7,7 @@ export { DataTableActionBar } from './DataTableActionBar';
 export type { DataTableActionBarProps, DataTableSearchConfig } from './DataTableActionBar';
 export { DataTableGrid } from './DataTableGrid';
 export type { DataTableGridColumn, DataTableSortDirection } from './DataTableGrid';
+export { ManagementDataTableChrome } from './ManagementDataTableChrome';
 export { ProtectedRoute } from './ProtectedRoute';
 export { Navbar } from './Navbar';
 export { Sidebar } from './Sidebar';

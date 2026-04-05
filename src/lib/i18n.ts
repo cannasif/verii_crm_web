@@ -89,6 +89,9 @@ export async function loadLanguage(lang: string): Promise<void> {
   for (const ns of Object.keys(loadedModules)) {
     const baseCompatibility = withNamespaceCompatibility(ns, loadedModules[ns]);
     for (const [otherNs, scopedBundle] of Object.entries(scopedBundleByNs)) {
+      // Aynı namespace'i tekrar yazma: örn. customer-management + camelCase'i tüm dosyayla
+      // ezmek, `customerManagement.table.*` yolunu kök `table` objesine kaydırıp eksik anahtarlara düşürüyordu.
+      if (otherNs === ns) continue;
       // Ensures `t('quotation.*')` works even when the active namespace is `common`.
       (baseCompatibility as Record<string, unknown>)[otherNs] = scopedBundle;
       (baseCompatibility as Record<string, unknown>)[toCamelCase(otherNs)] = scopedBundle;
