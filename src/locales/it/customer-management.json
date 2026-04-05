@@ -128,80 +128,86 @@
     "deleteError": "Impossibile eliminare il cliente"
   },
   "customerManagement": {
-    "menu": "Müşteri Yönetimi",
-    "description": "Müşterileri yönetin ve düzenleyin",
-    "addButton": "Yeni Müşteri Ekle",
+    "menu": "Gestione Clienti",
+    "description": "Gestisci e modifica i clienti",
+    "addButton": "Aggiungi Nuovo Cliente",
+    "nameOpen360Hint": "Fare doppio clic per aprire Cliente 360",
     "loading": "Caricamento...",
+    "error": "Si è verificato un errore",
+    "noData": "Nessun dato",
+    "actions": "Azioni",
     "table": {
+      "title": "Lista clienti",
       "id": "ID",
-      "customerCode": "Müşteri Kodu",
-      "name": "Müşteri Adı",
-      "customerType": "Müşteri Tipi",
-      "email": "E-posta",
-      "phone": "Telefon",
-      "city": "Şehir",
-      "district": "İlçe",
-      "country": "Ülke",
-      "creditLimit": "Kredi Limiti",
-      "defaultShippingAddressId": "Varsayılan Sevk Adresi",
-      "salesRep": "Satış Temsilcisi",
+      "customerCode": "Codice Cliente",
+      "name": "Nome Cliente",
+      "customerType": "Tipo Cliente",
+      "email": "Email",
+      "phone": "Telefono",
+      "city": "Città",
+      "district": "Distretto",
+      "country": "Paese",
+      "creditLimit": "Limite di credito",
+      "defaultShippingAddressId": "Indirizzo di spedizione predefinito",
+      "salesRep": "Rappresentante commerciale",
       "tckn": "TCKN",
-      "tax": "Vergi No",
-      "website": "Web Sitesi",
-      "createdDate": "Creaulma Tarihi",
-      "title": "Müşteri Listesi"
+      "tax": "Codice fiscale",
+      "website": "Sito web",
+      "createdDate": "Data di creazione"
     },
     "delete": {
-      "confirmTitle": "Müşteriyi Sil",
-      "confirmMessage": "{{name}} müşterisini silmek istediğinizden emin misiniz?",
-      "action": "Sil",
-      "success": "Müşteri başarıyla silindi",
-      "error": "Müşteri silinemedi"
+      "confirmTitle": "Elimina cliente",
+      "confirmMessage": "Eliminare il cliente {{name}}?",
+      "action": "Elimina",
+      "success": "Cliente eliminato con successo",
+      "error": "Impossibile eliminare il cliente"
     },
     "messages": {
-      "createSuccess": "Müşteri başarıyla oluşturuldu",
-      "createError": "Müşteri oluşturulamadı",
-      "updateSuccess": "Müşteri başarıyla güncellendi",
-      "updateError": "Müşteri güncellenemedi",
-      "deleteSuccess": "Müşteri başarıyla silindi",
-      "deleteError": "Müşteri silinemedi",
-      "syncQueued": "Müşteri senkronizasyonu kuyruğa alındı. İş: {{jobId}}",
-      "syncError": "Müşteri senkronizasyonu tetiklenemedi"
+      "createSuccess": "Cliente creato con successo",
+      "createError": "Impossibile creare il cliente",
+      "updateSuccess": "Cliente aggiornato con successo",
+      "updateError": "Impossibile aggiornare il cliente",
+      "deleteSuccess": "Cliente eliminato con successo",
+      "deleteError": "Impossibile eliminare il cliente",
+      "syncQueued": "Sincronizzazione clienti accodata. Job: {{jobId}}",
+      "syncError": "Impossibile avviare la sincronizzazione clienti"
     },
     "stats": {
-      "totalCustomers": "Toplam Müşteri",
-      "approvedCustomers": "Onaylı Müşteri",
-      "newThisMonth": "Bu Ay Yeni"
+      "totalCustomers": "Totale Clienti",
+      "approvedCustomers": "Clienti Approvati",
+      "newThisMonth": "Nuovi Questo Mese"
     },
     "form": {
       "branchCode": {
-        "label": "Şube Kodu"
+        "label": "Codice filiale"
       },
       "businessUnitCode": {
-        "label": "İş Birimi Kodu"
+        "label": "Codice unità di business"
       },
       "salesRepCodePlaceholder": "Codice del rappresentante vendite...",
-      "conflictFieldError": "Bu alan mevcut bir müşteri kaydıyla çakışıyor.",
-      "customerCode": "Müşteri Kodu",
-      "conflictTitle": "Çakışan müşteri kayıtları bulundu",
-      "conflictDescription": "Kayıt işlemi durduruldu. Aşağıdaki müşterilerle çakışan tüm alanlar listelendi.",
-      "conflictItem": "{{customerName}} (ID: {{customerId}}) kaydında {{field}} alanı \"{{value}}\" değeriyle çakışıyor. Şube: {{branchCode}}",
-      "namePlaceholder": "Müşteri adını girin",
-      "customerCodePlaceholder": "Müşteri kodunu girin (opsiyonel)",
-      "taxNumberPlaceholder": "Vergi numarasını girin (opsiyonel)",
-      "addressPlaceholder": "Adresi girin (opsiyonel)"
+      "conflictFieldError": "Questo campo è in conflitto con un cliente esistente.",
+      "customerCode": "Codice Cliente",
+      "conflictTitle": "Trovati record cliente in conflitto",
+      "conflictDescription": "Salvataggio interrotto. Di seguito tutti i campi in conflitto.",
+      "conflictItem": "{{customerName}} (ID: {{customerId}}) in conflitto su {{field}} con valore \"{{value}}\". Filiale: {{branchCode}}",
+      "namePlaceholder": "Inserisci nome cliente",
+      "customerCodePlaceholder": "Inserisci codice cliente (opzionale)",
+      "taxNumberPlaceholder": "Inserisci codice fiscale (opzionale)",
+      "addressPlaceholder": "Inserisci indirizzo (opzionale)"
     },
-    "error": "Si è verificato un errore",
-    "quickActivity": "Hızlı Aktivite",
-    "manualSync": "Manuel Senkronizasyon",
-    "syncing": "Senkronizasyon çalışıyor"
+    "quickActivity": "Attività rapida",
+    "manualSync": "Sincronizzazione manuale",
+    "syncing": "Sincronizzazione in corso"
   },
   "advancedFilter": {
-    "columnName": "Müşteri Adı",
-    "columnCustomerCode": "Müşteri Kodu",
-    "columnEmail": "E-posta",
-    "columnPhone": "Telefon",
-    "columnTaxNumber": "Vergi No",
-    "columnCityName": "Şehir"
+    "columnName": "Nome Cliente",
+    "columnCustomerCode": "Codice Cliente",
+    "columnEmail": "Email",
+    "columnPhone": "Telefono",
+    "columnTaxNumber": "Codice fiscale",
+    "columnCityName": "Città"
+  },
+  "customer360": {
+    "button": "Cliente 360"
   }
 }

@@ -65,7 +65,7 @@
   "subjectRequired": "Konu gereklidir",
   "subjectMaxLength": "Konu en fazla 100 karakter olabilir",
   "descriptionMaxLength": "Açıklama en fazla 2000 karakter olabilir",
-  "paymentType": "Ödeme",
+  "paymentType": "Ödeme Tipi",
   "activityMeetingType": "Görüşme",
   "activityTopicPurpose": "İlgilenilen Konular",
   "activityShipping": "Teslimat",

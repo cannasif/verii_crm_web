@@ -4,6 +4,7 @@
     "description": "Müşterileri yönetin ve düzenleyin",
     "addButton": "Yeni Müşteri Ekle",
     "quickActivity": "Hızlı Aktivite",
+    "nameOpen360Hint": "Çift tıklayarak Müşteri 360'a gidin",
     "loading": "Yükleniyor...",
     "error": "Hata oluştu",
     "table": {
@@ -98,7 +99,7 @@
     "createdBy": "Oluşturan",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "page": "Sayfa {{current}} / {{total}}",
-    "title": "Aktivite Listesi"
+    "title": "Müşteri Listesi"
   },
   "form": {
     "addCustomer": "Yeni Müşteri Ekle",

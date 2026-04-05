@@ -97,7 +97,7 @@
     "all": "All",
     "editColumns": "Edit Columns",
     "visibleColumns": "Visible Columns",
-    "paginationInfo": "{{start}}-{{end}} / {{total}} register",
+    "paginationInfo": "{{start}}-{{end}} / {{total}} records",
     "refresh": "Refresh",
     "showing": "shown",
     "filters": "Detailed Filter",
