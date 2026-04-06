@@ -140,6 +140,7 @@ export interface OrderLineGetDto {
   productId?: number | null;
   productCode?: string | null;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -235,6 +236,7 @@ export interface OrderExchangeRateGetDto {
 
 export interface OrderLineFormState extends Omit<CreateOrderLineDto, 'orderId'> {
   id: string;
+  unit?: string | null;
   isEditing: boolean;
   relatedLines?: OrderLineFormState[];
 }

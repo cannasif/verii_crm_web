@@ -140,6 +140,7 @@ export interface DemandLineGetDto {
   productId?: number | null;
   productCode?: string | null;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -235,6 +236,7 @@ export interface DemandExchangeRateGetDto {
 
 export interface DemandLineFormState extends Omit<CreateDemandLineDto, 'demandId'> {
   id: string;
+  unit?: string | null;
   isEditing: boolean;
   relatedLines?: DemandLineFormState[];
 }

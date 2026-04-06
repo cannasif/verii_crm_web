@@ -105,6 +105,10 @@ function normalizePriority(value: number | string | undefined): number {
 
 function toDateTimeInputValue(value?: string | null): string {
   if (!value) return '';
+  const localDateTimeMatch = value.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+  if (localDateTimeMatch && !/[zZ]|[+-]\d{2}:\d{2}$/.test(value)) {
+    return `${localDateTimeMatch[1]}T${localDateTimeMatch[2]}`;
+  }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '';
   const year = date.getFullYear();
@@ -125,6 +129,15 @@ function toDateInputValue(value?: string | null): string {
   return `${year}-${month}-${day}`;
 }
 
+function formatLocalDateTime(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 function toDefaultStartDateTime(initialDate?: string | null, initialStart?: string | null): string {
   if (initialStart && initialStart.length >= 16) return initialStart;
   if (initialDate && initialDate.length === 10) {
@@ -138,7 +151,7 @@ function toDefaultStartDateTime(initialDate?: string | null, initialStart?: stri
   }
   const now = new Date();
   now.setSeconds(0, 0);
-  return toDateTimeInputValue(now.toISOString());
+  return formatLocalDateTime(now);
 }
 
 function toDefaultEndDateTime(initialEnd?: string | null, startValue?: string): string {
@@ -148,11 +161,11 @@ function toDefaultEndDateTime(initialEnd?: string | null, startValue?: string): 
   if (Number.isNaN(start.getTime())) {
     const fallback = new Date();
     fallback.setHours(fallback.getHours() + 1, 0, 0, 0);
-    return toDateTimeInputValue(fallback.toISOString());
+    return formatLocalDateTime(fallback);
   }
 
   const end = new Date(start.getTime() + 60 * 60 * 1000);
-  return toDateTimeInputValue(end.toISOString());
+  return formatLocalDateTime(end);
 }
 
 export function ActivityForm({

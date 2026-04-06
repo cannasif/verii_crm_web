@@ -89,6 +89,7 @@ export interface ProductSelectionResult {
   id?: number;
   code: string;
   name: string;
+  unit?: string;
   vatRate?: number;
   groupCode?: string;
   relatedStockIds?: number[];
@@ -893,6 +894,7 @@ export function ProductSelectDialog({
           id: stock.id,
           code: stock.erpStockCode,
           name: stock.stockName,
+          unit: stock.unit,
           groupCode: stock.grupKodu,
         });
         onOpenChange(false);
@@ -913,6 +915,7 @@ export function ProductSelectDialog({
         id: selectedStock.id,
         code: selectedStock.erpStockCode,
         name: selectedStock.stockName,
+        unit: selectedStock.unit,
         groupCode: selectedStock.grupKodu,
         relatedStockIds: selectedStockIds,
       });

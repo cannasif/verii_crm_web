@@ -178,6 +178,7 @@ export interface QuotationLineGetDto {
   productId?: number | null;
   productCode?: string | null;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -272,6 +273,7 @@ export interface QuotationExchangeRateGetDto {
 
 export interface QuotationLineFormState extends Omit<CreateQuotationLineDto, 'quotationId'> {
   id: string;
+  unit?: string | null;
   isEditing: boolean;
   relatedLines?: QuotationLineFormState[];
   supplierCode?: string;

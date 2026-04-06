@@ -11,9 +11,30 @@ function toActivityTypeId(value: string): number | undefined {
 
 function toIsoDateTime(value: string | null | undefined): string | undefined {
   if (!value) return undefined;
+  const localDateTimeMatch = value.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::(\d{2}))?$/);
+  if (localDateTimeMatch) {
+    return `${localDateTimeMatch[1]}T${localDateTimeMatch[2]}:${localDateTimeMatch[3] ?? '00'}`;
+  }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return undefined;
-  return date.toISOString();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
+
+function toCurrentLocalDateTime(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
 export function buildCreateActivityPayload(
@@ -45,7 +66,7 @@ export function buildCreateActivityPayload(
     activityMeetingTypeId: data.activityMeetingTypeId ?? undefined,
     activityTopicPurposeId: data.activityTopicPurposeId ?? undefined,
     activityShippingId: data.activityShippingId ?? undefined,
-    startDateTime: toIsoDateTime(data.startDateTime) || new Date().toISOString(),
+    startDateTime: toIsoDateTime(data.startDateTime) || toCurrentLocalDateTime(),
     endDateTime,
     isAllDay: data.isAllDay,
     status: data.status ?? ActivityStatus.Scheduled,

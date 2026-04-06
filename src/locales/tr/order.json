@@ -90,8 +90,8 @@
       "title": "Para Birimi Değişikliği",
       "message": "Para birimi değiştiğinde mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
     },
-    "deliveryMethod": "Teslim Şekli",
-    "documentDetail": "Belge Detayı"
+    "deliveryMethod": "Teslimat Yöntemi",
+    "documentDetail": "Belge Açıklaması"
   },
   "lines": {
     "title": "Sipariş Satırları",

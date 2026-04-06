@@ -26,7 +26,7 @@ import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineG
 import { cn } from '@/lib/utils';
 
 function toCreateDto(line: DemandLineFormState, demandId: number): CreateDemandLineDto {
-  const { id, isEditing, relatedLines, ...rest } = line;
+  const { id, isEditing, relatedLines, unit, ...rest } = line;
   return {
     ...rest,
     demandId,
@@ -61,6 +61,7 @@ function dtoToFormState(dto: DemandLineGetDto, index: number): DemandLineFormSta
     productId: dto.productId ?? null,
     productCode: dto.productCode ?? '',
     productName: dto.productName,
+    unit: dto.unit ?? null,
     groupCode: dto.groupCode ?? null,
     quantity: dto.quantity,
     unitPrice: dto.unitPrice,
@@ -588,6 +589,11 @@ export function DemandLineTable({
                             {line.productName && (
                               <div className="text-xs font-medium text-zinc-500 line-clamp-1" title={line.productName}>
                                 {line.productName}
+                              </div>
+                            )}
+                            {line.unit && (
+                              <div className="text-[11px] font-semibold text-purple-600 dark:text-purple-300">
+                                {t('demand.lines.unit')}: {line.unit}
                               </div>
                             )}
 
