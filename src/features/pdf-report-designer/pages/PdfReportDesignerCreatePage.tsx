@@ -92,6 +92,11 @@ const DEFAULT_ELEMENT_HEIGHT = 50;
 const DEFAULT_TABLE_WIDTH = 680;
 const DEFAULT_TABLE_HEIGHT = 220;
 
+interface PdfFieldLike {
+  label: string;
+  path: string;
+}
+
 function getElementPaddingValue(element?: PdfCanvasElement): number {
   if (!element || element.type === 'table') return 0;
   const padding = element.style?.padding;
@@ -342,6 +347,181 @@ function createActivityStarterElements(): PdfCanvasElement[] {
   ];
 }
 
+function findFieldDefinition(
+  fields: PdfFieldLike[],
+  pathKeywords: string[],
+  labelKeywords: string[] = pathKeywords
+): PdfFieldLike | undefined {
+  const normalizedPathKeywords = pathKeywords.map((item) => item.toLowerCase());
+  const normalizedLabelKeywords = labelKeywords.map((item) => item.toLowerCase());
+
+  return fields.find((field) => {
+    const path = field.path.toLowerCase();
+    const label = field.label.toLowerCase();
+    return normalizedPathKeywords.some((keyword) => path.includes(keyword))
+      || normalizedLabelKeywords.some((keyword) => label.includes(keyword));
+  });
+}
+
+function createCommercialStarterElements(
+  headerFields: PdfFieldLike[],
+  lineFields: PdfFieldLike[]
+): PdfCanvasElement[] {
+  const customerField = findFieldDefinition(headerFields, ['customername', 'erpcustomername'], ['müşteri', 'cari']);
+  const documentNoField = findFieldDefinition(headerFields, ['offerno', 'quotationno', 'orderno', 'demandno', 'documentno'], ['teklif no', 'sipariş no', 'talep no', 'belge no']);
+  const dateField = findFieldDefinition(headerFields, ['offerdate', 'orderdate', 'demanddate', 'createddate'], ['tarih']);
+  const validityField = findFieldDefinition(headerFields, ['validuntil', 'duedate'], ['geçerlilik', 'vade']);
+  const descriptionField = findFieldDefinition(headerFields, ['description', 'notes'], ['açıklama', 'not']);
+
+  const starterColumns = lineFields.slice(0, 5).map((field, index) => ({
+    label: field.label,
+    path: field.path,
+    width: index === 0 ? 210 : 110,
+  }));
+
+  return [
+    {
+      id: createClientId(),
+      type: 'text',
+      section: 'page',
+      x: 52,
+      y: 30,
+      width: 700,
+      height: 28,
+      text: 'Belge Başlığı',
+      fontSize: 22,
+      fontFamily: 'Helvetica-Bold',
+      color: '#0f172a',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 52,
+      y: 76,
+      width: 280,
+      height: 24,
+      text: customerField?.label ?? 'Müşteri',
+      value: customerField?.label ?? 'Müşteri',
+      path: customerField?.path,
+      fontSize: 12,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 370,
+      y: 76,
+      width: 180,
+      height: 24,
+      text: documentNoField?.label ?? 'Belge No',
+      value: documentNoField?.label ?? 'Belge No',
+      path: documentNoField?.path,
+      fontSize: 12,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 570,
+      y: 76,
+      width: 180,
+      height: 24,
+      text: dateField?.label ?? 'Tarih',
+      value: dateField?.label ?? 'Tarih',
+      path: dateField?.path,
+      fontSize: 12,
+      fontFamily: 'Helvetica',
+      color: '#111827',
+    },
+    {
+      id: createClientId(),
+      type: 'field',
+      section: 'page',
+      x: 570,
+      y: 108,
+      width: 180,
+      height: 24,
+      text: validityField?.label ?? 'Geçerlilik',
+      value: validityField?.label ?? 'Geçerlilik',
+      path: validityField?.path,
+      fontSize: 11,
+      fontFamily: 'Helvetica',
+      color: '#334155',
+    },
+    {
+      id: createClientId(),
+      type: 'table',
+      section: 'content',
+      x: 52,
+      y: 154,
+      width: 698,
+      height: 250,
+      columns: starterColumns,
+      headerStyle: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: '#0f172a', backgroundColor: '#e2e8f0' },
+      rowStyle: { fontSize: 10, fontFamily: 'Helvetica', color: '#0f172a' },
+      alternateRowStyle: { fontSize: 10, fontFamily: 'Helvetica', color: '#0f172a', backgroundColor: '#f8fafc' },
+      tableOptions: { repeatHeader: true, pageBreak: 'auto', showBorders: true },
+    },
+    {
+      id: createClientId(),
+      type: 'quotationTotals',
+      section: 'content',
+      x: 490,
+      y: 430,
+      width: 260,
+      height: 178,
+      text: 'Toplamlar',
+      fontSize: 13,
+      fontFamily: 'Helvetica',
+      style: {
+        background: '#ffffff',
+        border: '1px solid #cbd5e1',
+        radius: 12,
+        padding: 14,
+      },
+      quotationTotalsOptions: {
+        layout: 'single',
+        currencyMode: 'code',
+        currencyPath: 'Currency',
+        grossLabel: 'Brüt Toplam',
+        discountLabel: 'İskonto',
+        netLabel: 'Net Toplam',
+        vatLabel: 'KDV',
+        grandLabel: 'Genel Toplam',
+        showGross: true,
+        showDiscount: true,
+        showVat: true,
+        emphasizeGrandTotal: true,
+      },
+    },
+    {
+      id: createClientId(),
+      type: 'note',
+      section: 'content',
+      x: 52,
+      y: 430,
+      width: 408,
+      height: 178,
+      text: descriptionField?.label ?? 'Belge Açıklaması',
+      value: descriptionField?.label ?? 'Belge Açıklaması',
+      path: descriptionField?.path,
+      fontSize: 12,
+      fontFamily: 'Helvetica',
+      style: {
+        background: '#ffffff',
+        border: '1px solid #cbd5e1',
+        radius: 12,
+        padding: 14,
+      },
+    },
+  ];
+}
+
 function isPdfSidebarDragData(data: unknown): data is PdfSidebarDragData {
   const d = data as PdfSidebarDragData | null;
   return (
@@ -387,6 +567,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   const addElement = usePdfReportDesignerStore((s) => s.addElement);
   const addColumnToTable = usePdfReportDesignerStore((s) => s.addColumnToTable);
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
+  const orderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements());
   const undo = usePdfReportDesignerStore((s) => s.undo);
   const redo = usePdfReportDesignerStore((s) => s.redo);
   const historyIndex = usePdfReportDesignerStore((s) => s.historyIndex);
@@ -490,6 +671,13 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       })),
     [fieldsData?.exchangeRateFields]
   );
+  const starterElements = useMemo(
+    () =>
+      ruleType === TemplateDesignerRuleType.Activity
+        ? createActivityStarterElements()
+        : createCommercialStarterElements(headerFields, lineFields),
+    [headerFields, lineFields, ruleType]
+  );
 
   const draftKey = useMemo(
     () => (isEdit && editId ? `${PDF_REPORT_DRAFT_STORAGE_KEY}-${editId}` : `${PDF_REPORT_DRAFT_STORAGE_KEY}-new`),
@@ -584,6 +772,294 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
   const createMutation = useCreatePdfReportTemplate();
   const updateMutation = useUpdatePdfReportTemplate();
+  const pageCount = form.watch('pageCount') ?? 1;
+  const hasElements = orderedElements.length > 0;
+  const hasTable = orderedElements.some((element) => element.type === 'table');
+  const hasConfiguredTable = orderedElements.some((element) => element.type === 'table' && element.columns.length > 0);
+  const hasBindableHeaderField = orderedElements.some((element) => element.type === 'field' && Boolean(element.path));
+  const hasTotalsBlock = orderedElements.some((element) => element.type === 'summary' || element.type === 'quotationTotals');
+  const hasNoteBlock = orderedElements.some((element) => element.type === 'note');
+  const pdfQualityIssues = useMemo(() => {
+    const issues: string[] = [];
+    if (!form.getValues('title')?.trim()) issues.push(t('pdfReportDesigner.qualityIssues.title'));
+    if (!hasElements) issues.push(t('pdfReportDesigner.qualityIssues.elements'));
+    if (!hasBindableHeaderField) issues.push(t('pdfReportDesigner.qualityIssues.headerFields'));
+    if (ruleType !== TemplateDesignerRuleType.Activity && !hasTable) issues.push(t('pdfReportDesigner.qualityIssues.table'));
+    if (ruleType !== TemplateDesignerRuleType.Activity && hasTable && !hasConfiguredTable) issues.push(t('pdfReportDesigner.qualityIssues.tableColumns'));
+    if (ruleType !== TemplateDesignerRuleType.Activity && !hasTotalsBlock) issues.push(t('pdfReportDesigner.qualityIssues.totals'));
+    if (!hasNoteBlock) issues.push(t('pdfReportDesigner.qualityIssues.note'));
+    return issues;
+  }, [form, hasBindableHeaderField, hasConfiguredTable, hasElements, hasNoteBlock, hasTable, hasTotalsBlock, ruleType, t]);
+  const pdfQualityScore = useMemo(() => Math.max(0, 100 - pdfQualityIssues.length * 14), [pdfQualityIssues.length]);
+  const pdfNarrative = useMemo(() => {
+    const documentLabel = getRuleTypeLabel(ruleType, t);
+    if (!hasElements) {
+      return t('pdfReportDesigner.narrativeEmpty', { documentType: documentLabel });
+    }
+    return t('pdfReportDesigner.narrativeReady', {
+      documentType: documentLabel,
+      elementCount: orderedElements.length,
+      pageCount,
+    });
+  }, [hasElements, orderedElements.length, pageCount, ruleType, t]);
+
+  const handleApplyStarterLayout = useCallback(() => {
+    setElements(starterElements);
+    toast.success(t('pdfReportDesigner.smartStarterApplied'));
+  }, [setElements, starterElements, t]);
+
+  const handleAddSmartTable = useCallback(() => {
+    const columns = lineFields.slice(0, 5).map((field, index) => ({
+      label: field.label,
+      path: field.path,
+      width: index === 0 ? 210 : 110,
+    }));
+    const table: PdfTableElement = {
+      id: createClientId(),
+      type: 'table',
+      section: 'content',
+      x: 52,
+      y: 154,
+      width: 698,
+      height: 250,
+      columns,
+      headerStyle: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: '#0f172a', backgroundColor: '#e2e8f0' },
+      rowStyle: { fontSize: 10, fontFamily: 'Helvetica', color: '#0f172a' },
+      alternateRowStyle: { fontSize: 10, fontFamily: 'Helvetica', color: '#0f172a', backgroundColor: '#f8fafc' },
+      tableOptions: { repeatHeader: true, pageBreak: 'auto', showBorders: true },
+      pageNumbers: [currentPage],
+    };
+    addElement(table);
+    toast.success(t('pdfReportDesigner.smartTableAdded'));
+  }, [addElement, currentPage, lineFields, t]);
+
+  const handleAddSmartTotals = useCallback(() => {
+    const totalsBlock: PdfReportElement = {
+      id: createClientId(),
+      type: 'quotationTotals',
+      section: 'content',
+      x: 490,
+      y: 430,
+      width: 260,
+      height: 178,
+      text: 'Toplamlar',
+      fontSize: 13,
+      fontFamily: 'Helvetica',
+      style: {
+        background: '#ffffff',
+        border: '1px solid #cbd5e1',
+        radius: 12,
+        padding: 14,
+      },
+      quotationTotalsOptions: {
+        layout: 'single',
+        currencyMode: 'code',
+        currencyPath: 'Currency',
+        grossLabel: 'Brüt Toplam',
+        discountLabel: 'İskonto',
+        netLabel: 'Net Toplam',
+        vatLabel: 'KDV',
+        grandLabel: 'Genel Toplam',
+        showGross: true,
+        showDiscount: true,
+        showVat: true,
+        emphasizeGrandTotal: true,
+      },
+      pageNumbers: [currentPage],
+    };
+    addElement(totalsBlock);
+    toast.success(t('pdfReportDesigner.smartTotalsAdded'));
+  }, [addElement, currentPage, t]);
+
+  const handleAddSmartNote = useCallback(() => {
+    const descriptionField = findFieldDefinition(headerFields, ['description', 'notes'], ['açıklama', 'not']);
+    const noteBlock: PdfReportElement = {
+      id: createClientId(),
+      type: 'note',
+      section: 'content',
+      x: 52,
+      y: 430,
+      width: 408,
+      height: 178,
+      text: descriptionField?.label ?? t('pdfReportDesigner.noteTitle'),
+      value: descriptionField?.label ?? t('pdfReportDesigner.noteTitle'),
+      path: descriptionField?.path,
+      fontSize: 12,
+      fontFamily: 'Helvetica',
+      style: {
+        background: '#ffffff',
+        border: '1px solid #cbd5e1',
+        radius: 12,
+        padding: 14,
+      },
+      pageNumbers: [currentPage],
+    };
+    addElement(noteBlock);
+    toast.success(t('pdfReportDesigner.smartNoteAdded'));
+  }, [addElement, currentPage, headerFields, t]);
+
+  const handleAddReusableBlock = useCallback((block: 'customerSummary' | 'documentMeta' | 'signature' | 'noteBox') => {
+    if (block === 'customerSummary') {
+      const customerField = findFieldDefinition(headerFields, ['customername', 'erpcustomername'], ['müşteri', 'cari']);
+      const addressField = findFieldDefinition(headerFields, ['address'], ['adres']);
+      const wrapper: PdfReportElement = {
+        id: createClientId(),
+        type: 'text',
+        section: 'page',
+        x: 52,
+        y: 108,
+        width: 360,
+        height: 92,
+        text: 'Müşteri Özeti',
+        fontSize: 12,
+        fontFamily: 'Helvetica-Bold',
+        color: '#0f172a',
+        style: { background: '#ffffff', border: '1px solid #cbd5e1', radius: 12, padding: 12 },
+        pageNumbers: [currentPage],
+      };
+      const customerValue: PdfReportElement = {
+        id: createClientId(),
+        type: 'field',
+        section: 'page',
+        parentId: wrapper.id,
+        x: 0,
+        y: 28,
+        width: 320,
+        height: 20,
+        text: customerField?.label ?? 'Müşteri',
+        value: customerField?.label ?? 'Müşteri',
+        path: customerField?.path,
+        fontSize: 11,
+        fontFamily: 'Helvetica',
+        color: '#111827',
+        pageNumbers: [currentPage],
+      };
+      const addressValue: PdfReportElement = {
+        id: createClientId(),
+        type: 'field',
+        section: 'page',
+        parentId: wrapper.id,
+        x: 0,
+        y: 54,
+        width: 320,
+        height: 30,
+        text: addressField?.label ?? 'Adres',
+        value: addressField?.label ?? 'Adres',
+        path: addressField?.path,
+        fontSize: 10,
+        fontFamily: 'Helvetica',
+        color: '#475569',
+        pageNumbers: [currentPage],
+      };
+      addElement(wrapper);
+      addElement(customerValue);
+      addElement(addressValue);
+      toast.success(t('pdfReportDesigner.reusableBlocks.customerSummaryAdded'));
+      return;
+    }
+
+    if (block === 'documentMeta') {
+      const documentNoField = findFieldDefinition(headerFields, ['offerno', 'quotationno', 'orderno', 'demandno', 'documentno'], ['belge no', 'teklif no', 'sipariş no', 'talep no']);
+      const dateField = findFieldDefinition(headerFields, ['offerdate', 'orderdate', 'demanddate', 'createddate'], ['tarih']);
+      const validUntilField = findFieldDefinition(headerFields, ['validuntil', 'duedate'], ['geçerlilik', 'vade']);
+      const metaElements: PdfReportElement[] = [
+        {
+          id: createClientId(),
+          type: 'field',
+          section: 'page',
+          x: 470,
+          y: 84,
+          width: 220,
+          height: 20,
+          text: documentNoField?.label ?? 'Belge No',
+          value: documentNoField?.label ?? 'Belge No',
+          path: documentNoField?.path,
+          fontSize: 11,
+          fontFamily: 'Helvetica',
+          color: '#111827',
+          pageNumbers: [currentPage],
+        },
+        {
+          id: createClientId(),
+          type: 'field',
+          section: 'page',
+          x: 470,
+          y: 108,
+          width: 220,
+          height: 20,
+          text: dateField?.label ?? 'Tarih',
+          value: dateField?.label ?? 'Tarih',
+          path: dateField?.path,
+          fontSize: 11,
+          fontFamily: 'Helvetica',
+          color: '#111827',
+          pageNumbers: [currentPage],
+        },
+        {
+          id: createClientId(),
+          type: 'field',
+          section: 'page',
+          x: 470,
+          y: 132,
+          width: 220,
+          height: 20,
+          text: validUntilField?.label ?? 'Geçerlilik',
+          value: validUntilField?.label ?? 'Geçerlilik',
+          path: validUntilField?.path,
+          fontSize: 11,
+          fontFamily: 'Helvetica',
+          color: '#111827',
+          pageNumbers: [currentPage],
+        },
+      ];
+      metaElements.forEach((element) => addElement(element));
+      toast.success(t('pdfReportDesigner.reusableBlocks.documentMetaAdded'));
+      return;
+    }
+
+    if (block === 'signature') {
+      const signature: PdfReportElement = {
+        id: createClientId(),
+        type: 'text',
+        section: 'footer',
+        x: 500,
+        y: 708,
+        width: 210,
+        height: 54,
+        text: 'Yetkili İmza\n____________________',
+        fontSize: 11,
+        fontFamily: 'Helvetica',
+        color: '#0f172a',
+        style: { textAlign: 'center', border: '1px dashed #94a3b8', radius: 10, padding: 12 },
+        pageNumbers: [currentPage],
+      };
+      addElement(signature);
+      toast.success(t('pdfReportDesigner.reusableBlocks.signatureAdded'));
+      return;
+    }
+
+    handleAddSmartNote();
+  }, [addElement, currentPage, handleAddSmartNote, headerFields, t]);
+
+  const handleApplyPdfPreset = useCallback((preset: 'commercialStarter' | 'compactSummary' | 'lineFocused' | 'signatureReady') => {
+    if (preset === 'commercialStarter') {
+      handleApplyStarterLayout();
+      return;
+    }
+    if (preset === 'compactSummary') {
+      handleAddReusableBlock('documentMeta');
+      handleAddReusableBlock('customerSummary');
+      handleAddReusableBlock('noteBox');
+      return;
+    }
+    if (preset === 'lineFocused') {
+      handleAddSmartTable();
+      handleAddSmartTotals();
+      return;
+    }
+    handleAddReusableBlock('signature');
+    handleAddReusableBlock('documentMeta');
+  }, [handleAddReusableBlock, handleAddSmartTable, handleAddSmartTotals, handleApplyStarterLayout]);
 
   useEffect(() => {
     if (layoutPreset !== PDF_LAYOUT_PRESET.Custom) {
@@ -909,7 +1385,6 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     setElements(createActivityStarterElements());
     activityStarterAppliedRef.current = true;
   }, [ruleType, isEdit, copyFrom, getOrderedElements, setElements]);
-  const pageCount = form.watch('pageCount') ?? 1;
 
   useEffect(() => {
     if (currentPage > pageCount) {
@@ -1134,6 +1609,141 @@ export function PdfReportDesignerCreatePage(): ReactElement {
           </form>
         </Form>
 
+        <div className="grid gap-3 border-t border-slate-100 bg-slate-50/70 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/40 xl:grid-cols-[1.1fr_0.9fr_0.9fr_0.9fr_1fr]">
+          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {t('pdfReportDesigner.qualityTitle')}
+                </div>
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+                  {t('pdfReportDesigner.qualitySubtitle')}
+                </h2>
+              </div>
+              <Badge variant={pdfQualityScore >= 84 ? 'default' : pdfQualityScore >= 60 ? 'secondary' : 'destructive'}>
+                {pdfQualityScore}/100
+              </Badge>
+            </div>
+            <p className="text-sm text-slate-700 dark:text-slate-300">{pdfNarrative}</p>
+            {pdfQualityIssues.length > 0 ? (
+              <ul className="mt-3 space-y-1 text-xs text-slate-500 dark:text-slate-400">
+                {pdfQualityIssues.slice(0, 4).map((issue) => (
+                  <li key={issue}>• {issue}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                {t('pdfReportDesigner.qualityReady')}
+              </p>
+            )}
+          </div>
+
+          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {t('pdfReportDesigner.smartStartTitle')}
+            </div>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              {t('pdfReportDesigner.smartStartDescription')}
+            </p>
+            <div className="mt-3 grid gap-2">
+              <Button type="button" variant="outline" onClick={handleApplyStarterLayout}>
+                {t('pdfReportDesigner.smartStartActions.applyStarter')}
+              </Button>
+              {ruleType !== TemplateDesignerRuleType.Activity ? (
+                <>
+                  <Button type="button" variant="outline" onClick={handleAddSmartTable}>
+                    {t('pdfReportDesigner.smartStartActions.addTable')}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={handleAddSmartTotals}>
+                    {t('pdfReportDesigner.smartStartActions.addTotals')}
+                  </Button>
+                </>
+              ) : null}
+              <Button type="button" variant="outline" onClick={handleAddSmartNote}>
+                {t('pdfReportDesigner.smartStartActions.addNote')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {t('pdfReportDesigner.presetGalleryTitle')}
+            </div>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              {t('pdfReportDesigner.presetGalleryDescription')}
+            </p>
+            <div className="mt-3 grid gap-2">
+              <Button type="button" variant="outline" onClick={() => handleApplyPdfPreset('commercialStarter')}>
+                {t('pdfReportDesigner.presetGallery.commercialStarter')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleApplyPdfPreset('compactSummary')}>
+                {t('pdfReportDesigner.presetGallery.compactSummary')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleApplyPdfPreset('lineFocused')}>
+                {t('pdfReportDesigner.presetGallery.lineFocused')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleApplyPdfPreset('signatureReady')}>
+                {t('pdfReportDesigner.presetGallery.signatureReady')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {t('pdfReportDesigner.reusableBlocksTitle')}
+            </div>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              {t('pdfReportDesigner.reusableBlocksDescription')}
+            </p>
+            <div className="mt-3 grid gap-2">
+              <Button type="button" variant="outline" onClick={() => handleAddReusableBlock('customerSummary')}>
+                {t('pdfReportDesigner.reusableBlocks.customerSummary')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleAddReusableBlock('documentMeta')}>
+                {t('pdfReportDesigner.reusableBlocks.documentMeta')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleAddReusableBlock('signature')}>
+                {t('pdfReportDesigner.reusableBlocks.signature')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => handleAddReusableBlock('noteBox')}>
+                {t('pdfReportDesigner.reusableBlocks.noteBox')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {t('pdfReportDesigner.healthTitle')}
+            </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <div className="rounded-xl border px-3 py-2">
+                <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {t('pdfReportDesigner.healthMetrics.elements')}
+                </div>
+                <div className="mt-1 text-lg font-semibold">{orderedElements.length}</div>
+              </div>
+              <div className="rounded-xl border px-3 py-2">
+                <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {t('pdfReportDesigner.healthMetrics.pages')}
+                </div>
+                <div className="mt-1 text-lg font-semibold">{pageCount}</div>
+              </div>
+              <div className="rounded-xl border px-3 py-2">
+                <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {t('pdfReportDesigner.healthMetrics.tables')}
+                </div>
+                <div className="mt-1 text-lg font-semibold">{orderedElements.filter((element) => element.type === 'table').length}</div>
+              </div>
+              <div className="rounded-xl border px-3 py-2">
+                <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {t('pdfReportDesigner.healthMetrics.boundFields')}
+                </div>
+                <div className="mt-1 text-lg font-semibold">{orderedElements.filter((element) => 'path' in element && Boolean(element.path)).length}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center gap-2.5 border-t border-slate-100 bg-white px-4 py-1.5 dark:border-slate-800 dark:bg-slate-950">
           <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
             {t('pdfReportDesigner.pages')}
@@ -1170,10 +1780,22 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 currentPage={currentPage}
                 pageCount={pageCount}
                 templateId={editId}
+                fieldDefinitions={[
+                  ...(fieldsData?.headerFields ?? []),
+                  ...(fieldsData?.lineFields ?? []),
+                  ...(fieldsData?.exchangeRateFields ?? []),
+                ]}
                 onPageRef={handlePageRef}
                 onPageChange={handleNavigateToPage}
               />
-              <PdfInspectorPanel pageCount={pageCount} />
+              <PdfInspectorPanel
+                pageCount={pageCount}
+                fieldDefinitions={[
+                  ...(fieldsData?.headerFields ?? []),
+                  ...(fieldsData?.lineFields ?? []),
+                  ...(fieldsData?.exchangeRateFields ?? []),
+                ]}
+              />
               <PdfLayersPanel onNavigateToPage={handleNavigateToPage} templateId={editId} />
             </div>
           </DndContext>

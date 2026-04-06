@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
+import type { FieldDefinitionDto } from '@/features/pdf-report';
 import {
   isPdfTableElement,
   type PdfCanvasElement,
@@ -35,6 +36,7 @@ import {
   type PdfTableElement,
   type PdfReportSection,
   type PdfSummaryItem,
+  type PdfVisibilityRule,
 } from '../types/pdf-report-template.types';
 import {
   FONT_FAMILIES,
@@ -128,6 +130,7 @@ export interface PdfA4CanvasProps {
   currentPage: number;
   pageCount: number;
   templateId?: number | null;
+  fieldDefinitions?: FieldDefinitionDto[];
   onPageRef?: (page: number, el: HTMLDivElement | null) => void;
   onPageChange?: (page: number) => void;
 }
@@ -135,6 +138,31 @@ export interface PdfA4CanvasProps {
 function shouldRenderOnPage(element: PdfCanvasElement, currentPage: number): boolean {
   if (element.pageNumbers == null || element.pageNumbers.length === 0) return true;
   return element.pageNumbers.includes(currentPage);
+}
+
+function evaluateVisibilityRule(
+  rule: PdfReportElement['visibilityRule'],
+  sampleValue?: string,
+): boolean {
+  if (!rule?.fieldPath || !rule.operator) return true;
+  const currentValue = sampleValue ?? '';
+  if (rule.operator === 'isEmpty') return currentValue.trim().length === 0;
+  if (rule.operator === 'isNotEmpty') return currentValue.trim().length > 0;
+  if (rule.value == null) return true;
+  if (rule.operator === 'equals') return currentValue === rule.value;
+  if (rule.operator === 'notEquals') return currentValue !== rule.value;
+  return true;
+}
+
+function evaluateVisibilityRules(
+  rules: PdfVisibilityRule[] | undefined,
+  logic: 'all' | 'any',
+  getSampleValue: (fieldPath?: string) => string | undefined,
+): boolean {
+  const normalizedRules = (rules ?? []).filter((rule) => rule.fieldPath || rule.operator || rule.value);
+  if (normalizedRules.length === 0) return true;
+  const results = normalizedRules.map((rule) => evaluateVisibilityRule(rule, getSampleValue(rule.fieldPath)));
+  return logic === 'any' ? results.some(Boolean) : results.every(Boolean);
 }
 
 interface ResolvedCanvasElement {
@@ -973,8 +1001,9 @@ function DroppableSection({
   );
 }
 
-export function PdfA4Canvas({ currentPage, pageCount, templateId, onPageRef, onPageChange }: PdfA4CanvasProps): ReactElement {
+export function PdfA4Canvas({ currentPage, pageCount, templateId, fieldDefinitions = [], onPageRef, onPageChange }: PdfA4CanvasProps): ReactElement {
   const { t } = useTranslation();
+  const [previewVisibilityRules, setPreviewVisibilityRules] = useState(true);
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
   const elements = getOrderedElements();
   const updateElementPosition = usePdfReportDesignerStore((s) => s.updateElementPosition);
@@ -1094,6 +1123,20 @@ export function PdfA4Canvas({ currentPage, pageCount, templateId, onPageRef, onP
               }}
               role="presentation"
             >
+              {isActivePage ? (
+                <button
+                  type="button"
+                  className="absolute right-3 top-3 z-20 rounded-md border bg-white/90 px-2 py-1 text-[11px] font-medium text-slate-600 shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPreviewVisibilityRules((current) => !current);
+                  }}
+                >
+                  {previewVisibilityRules
+                    ? t('pdfReportDesigner.visibilityPreviewOn')
+                    : t('pdfReportDesigner.visibilityPreviewOff')}
+                </button>
+              ) : null}
               {isActivePage && (
                 <>
                   <DroppableSection
@@ -1138,7 +1181,16 @@ export function PdfA4Canvas({ currentPage, pageCount, templateId, onPageRef, onP
               )}
 
               {resolvedForPage
-                .filter(({ element }) => !element.hidden)
+                .filter(({ element }) => {
+                  if (element.hidden) return false;
+                  if (!previewVisibilityRules || isPdfTableElement(element) || element.type === 'container') return true;
+                  const rules = element.visibilityRules ?? (element.visibilityRule ? [element.visibilityRule] : []);
+                  return evaluateVisibilityRules(
+                    rules,
+                    element.visibilityLogic ?? 'all',
+                    (fieldPath) => fieldDefinitions.find((field) => field.path === fieldPath)?.exampleValue,
+                  );
+                })
                 .map(({ element: el, absoluteX, absoluteY }) => {
                   const isFlashing = flashingId === el.id;
                   const isSelected = selectedIds.includes(el.id);

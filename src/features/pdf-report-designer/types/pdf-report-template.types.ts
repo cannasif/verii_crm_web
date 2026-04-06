@@ -14,6 +14,14 @@ export interface PdfElementStyle {
   opacity?: number;
 }
 
+export interface PdfVisibilityRule {
+  fieldPath?: string;
+  operator?: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty';
+  value?: string;
+}
+
+export type PdfVisibilityLogic = 'all' | 'any';
+
 export interface PdfSummaryItem {
   label: string;
   path: string;
@@ -62,6 +70,9 @@ interface PdfReportElementBase {
   parentId?: string;
   summaryItems?: PdfSummaryItem[];
   quotationTotalsOptions?: PdfQuotationTotalsOptions;
+  visibilityRule?: PdfVisibilityRule;
+  visibilityRules?: PdfVisibilityRule[];
+  visibilityLogic?: PdfVisibilityLogic;
 }
 
 export interface PdfReportElement extends PdfReportElementBase {

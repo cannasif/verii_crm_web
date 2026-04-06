@@ -291,6 +291,19 @@ const initialState = {
   ui: { ...defaultUi },
 };
 
+function inferAggregationForField(config: ReportConfig, schema: Field[], fieldName: string): Aggregation {
+  const schemaField =
+    schema.find((field) => field.name === fieldName)
+    ?? ((config.calculatedFields ?? []).some((field) => field.name === fieldName)
+      ? ({ defaultAggregation: 'sum' } as Field)
+      : undefined);
+  const defaultAggregation = schemaField?.defaultAggregation;
+  if (defaultAggregation === 'count' || defaultAggregation === 'avg' || defaultAggregation === 'min' || defaultAggregation === 'max' || defaultAggregation === 'sum') {
+    return defaultAggregation;
+  }
+  return 'sum';
+}
+
 export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
   ...initialState,
 
@@ -560,7 +573,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
       if (slot === 'axis') c.axis = { field };
       if (slot === 'legend') c.legend = { field };
       if (slot === 'values') {
-        const agg = options?.aggregation ?? 'sum';
+        const agg = options?.aggregation ?? inferAggregationForField(c, s.schema, field);
         c.values = [...c.values, { field, aggregation: agg }];
       }
       if (slot === 'filters') c.filters = [...c.filters, { field, operator: 'eq' }];

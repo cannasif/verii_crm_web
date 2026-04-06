@@ -55,6 +55,13 @@ export interface PdfReportElementStyleDto {
   opacity?: number;
 }
 
+export interface PdfVisibilityRuleDto {
+  fieldPath?: string;
+  operator?: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty';
+  value?: string;
+}
+export type PdfVisibilityLogicDto = 'all' | 'any';
+
 export interface PdfSummaryItemDto {
   label: string;
   path: string;
@@ -153,6 +160,9 @@ export interface ReportTemplateElementDto {
   parentId?: string;
   summaryItems?: PdfSummaryItemDto[];
   quotationTotalsOptions?: PdfQuotationTotalsOptionsDto;
+  visibilityRule?: PdfVisibilityRuleDto;
+  visibilityRules?: PdfVisibilityRuleDto[];
+  visibilityLogic?: PdfVisibilityLogicDto;
 }
 
 export interface ReportTemplateDataDto {

@@ -281,6 +281,103 @@
       "recommendedVisualNormal": "Şu anki veri yapısı için bu görünüm daha anlaşılır olur.",
       "recommendedVisualTooManySeries": "Bu önizlemede {{count}} ayrı seri var. Daha sade bir görünüm seçmek kullanıcı için daha anlaşılır olur.",
       "applyRecommendedVisual": "Önerilen görünümü uygula",
+      "qualityTitle": "Kurulum kalitesi",
+      "qualityNeedsAttention": "Yayına almadan önce bunları tamamla",
+      "qualityReady": "Bu rapor temel kurumsal kalite kontrolünden geçti.",
+      "wizardTitle": "Adım adım rapor kur",
+      "wizardDescription": "Ne görmek istediğini seç; sistem uygun ilk kurulumu senin yerine tamamlasın.",
+      "openWizard": "Sihirbazı aç",
+      "wizardStepLabel": "Adım {{step}}",
+      "wizardSteps": {
+        "dataset": "Veri setini kontrol et",
+        "goal": "İhtiyacı seç",
+        "visual": "Görünümü seç"
+      },
+      "wizardDatasetTitle": "Veri seti hazır mı?",
+      "wizardDatasetDescription": "Sihirbaz başlamadan önce bağlı veri setini kullanır. Veri seti doğruysa birkaç seçimle raporunu kurar.",
+      "wizardGoals": {
+        "executive": {
+          "title": "Yönetici özeti",
+          "description": "Karar vericinin ilk bakışta anlayacağı özet bir ekran kur."
+        },
+        "operations": {
+          "title": "Operasyon takibi",
+          "description": "Günlük takipte tablo ve detay ağırlıklı düzen kur."
+        },
+        "performance": {
+          "title": "Performans görünümü",
+          "description": "Sonuç ve hedef odaklı güçlü KPI görünümü kur."
+        }
+      },
+      "wizardVisuals": {
+        "table": {
+          "title": "Özet tablo",
+          "description": "Detayı kaybetmeden rahat okunur bir tablo göster."
+        },
+        "chart": {
+          "title": "Karşılaştırma grafiği",
+          "description": "Kategori ya da kullanıcı bazlı kıyaslama göster."
+        },
+        "trend": {
+          "title": "Trend grafiği",
+          "description": "Tarih bazlı değişimi çizgi görünümünde göster."
+        },
+        "kpi": {
+          "title": "KPI kartı",
+          "description": "Tek ana göstergeyi büyük ve net göster."
+        }
+      },
+      "wizardBreakdowns": {
+        "recommended": "Önerilen kırılımı kullan",
+        "none": "Kırılım olmasın"
+      },
+      "wizardBreakdownsRecommendedDescription": "Sistem uygunsa ikinci kırılımı da ekler ve raporu daha açıklayıcı yapar.",
+      "wizardBreakdownsNoneDescription": "Raporu daha sade bırakır, gereksiz renk ve seri eklemez.",
+      "wizardSummary": "{{goal}} için {{visual}} kurulacak. Kırılım tercihi: {{breakdown}}.",
+      "wizardBack": "Geri",
+      "wizardNext": "İleri",
+      "wizardApply": "Kurulumu uygula",
+      "wizardApplied": "Adım adım kurulum uygulandı.",
+      "saveBlockedTitle": "Bu rapor henüz güvenli değil",
+      "saveBlockedDescription": "Yayına alınmadan önce aşağıdaki temel kurulum sorunları çözülmelidir.",
+      "hardBlockers": {
+        "reportName": "Rapor adı olmadan kayıt yapılamaz.",
+        "dataset": "Veri seti doğrulanmadan kayıt yapılamaz.",
+        "widgets": "En az bir widget olmadan kayıt yapılamaz.",
+        "axis": "Bu görünüm için eksen alanı seçilmelidir.",
+        "value": "En az bir değer alanı seçilmelidir.",
+        "pie": "Pasta grafik bu haliyle geçerli değil.",
+        "kpi": "KPI kartı eksik kuruldu.",
+        "matrix": "Matris görünümü eksik kuruldu.",
+        "tooManySeries": "Bu grafik {{count}} seri üretiyor. Daha sade bir görünüm seçmeden kayıt yapılamaz."
+      },
+      "fieldGlossaryTitles": {
+        "dimension": "Kırılım alanı",
+        "metric": "Ölçüm alanı",
+        "date": "Zaman alanı"
+      },
+      "fieldGlossary": {
+        "dimension": "Bu tip alanlar kullanıcı, müşteri veya durum gibi gruplama ve kırılım için kullanılır.",
+        "metric": "Bu tip alanlar toplanır, sayılır veya ortalama alınır. Raporun ana sayısı bunlardan gelir.",
+        "date": "Bu tip alanlar trend ve dönemsel analiz için uygundur.",
+        "customer": "Müşteri veya cari bazlı karşılaştırmalar için uygundur.",
+        "user": "Kullanıcı, temsilci veya plasiyer bazlı performans analizi için uygundur.",
+        "status": "Durum dağılımı ya da tamamlandı/bekliyor gibi kırılımlar için uygundur.",
+        "amount": "Tutar, toplam veya fiyat gibi finansal ölçümler için uygundur."
+      },
+      "datasetCoachTitle": "Veri seti koçu",
+      "datasetCoachDescription": "Sistem veri setindeki alan isimlerine bakarak ilk kuruluma uygun öneriler sunar.",
+      "datasetCoachAxisHint": "Zaman veya kırılım tarafında iyi bir başlangıç alanı.",
+      "datasetCoachValueHint": "Toplanacak veya ölçülecek ana sayı için uygun alan.",
+      "datasetCoachLegendHint": "Kullanıcı, müşteri ya da kategori bazlı ikinci kırılım için uygun alan.",
+      "qualityIssues": {
+        "reportName": "Rapor adı henüz girilmemiş.",
+        "dataset": "Veri seti henüz doğrulanmamış.",
+        "widgets": "En az bir widget eklenmeli.",
+        "axis": "KPI dışındaki görseller için eksen alanı seçilmeli.",
+        "value": "En az bir değer alanı seçilmeli.",
+        "visual": "Seçili görsel mevcut veriyle tam uyumlu değil."
+      },
       "widgetTemplatesTitle": "Hazır widget şablonları",
       "widgetTemplatesDescription": "Ne seçeceğini bilmiyorsan aşağıdaki hazır başlangıçlardan biriyle ilerleyebilirsin.",
       "widgetTemplateLabels": {
@@ -303,14 +400,19 @@
         "incompletePie": "Pasta grafik eksik kurulmuş",
         "incompleteKpi": "KPI kartı eksik kurulmuş",
         "incompleteMatrix": "Matris görünümü eksik kurulmuş",
-        "tooManySeries": "Bu grafik çok fazla seri üretiyor"
+        "tooManySeries": "Bu grafik çok fazla seri üretiyor",
+        "nonDateLine": "Zaman alanı olmadan çizgi grafik zayıf kalır",
+        "dateBar": "Tarih bazlı veri için trend görünümü daha anlaşılır"
       },
       "repairDescriptions": {
         "tooComplexPie": "Çok fazla seri veya birden fazla değer alanı olduğunda pasta grafik kullanıcı için zor okunur. Daha sade bir bar grafik daha uygun olur.",
-        "tooManySeries": "Bu görünüm şu anda {{count}} ayrı seri üretiyor. Çoğu kullanıcı bu kadar çok çizgiyi aynı anda okuyamaz."
+        "tooManySeries": "Bu görünüm şu anda {{count}} ayrı seri üretiyor. Çoğu kullanıcı bu kadar çok çizgiyi aynı anda okuyamaz.",
+        "nonDateLine": "Çizgi grafikler en çok tarih veya dönem ekseniyle anlam kazanır. Bu veri için bar grafik daha anlaşılır olur.",
+        "dateBar": "Tarih bazlı tek serili verilerde çizgi trend grafiği değişimi daha rahat anlatır."
       },
       "repairActions": {
         "switchBar": "Daha uygun bar grafiğe çevir",
+        "switchLine": "Trend grafiğine çevir",
         "switchTable": "Özet tabloya geç",
         "fixPie": "Pasta grafiği düzelt",
         "fixKpi": "KPI kartını düzelt",
@@ -338,6 +440,20 @@
         "others": "Diğerleri diye birleştir",
         "hide": "Hiç gösterme"
       },
+      "chartTypeDisabledReasons": {
+        "lineNeedsDate": "Çizgi grafik için tarih tipinde bir eksen seçin.",
+        "pieSingleValue": "Pasta ve donut için tek bir değer alanı kullanın.",
+        "matrixNeedsBreakdown": "Matris için hem eksen hem kırılım alanı gerekir."
+      },
+      "aggregationRecommendations": {
+        "countIdentifiers": "Kimlik, kod veya durum gibi alanlarda adet göstermek daha anlamlı olur.",
+        "countRecords": "Bu alan genelde kayıt adedi gibi okunur.",
+        "averageRates": "Oran ve yüzde alanlarında ortalama daha doğru okunur.",
+        "sumTotals": "Tutar, adet ve toplam alanlarında toplama almak daha uygundur."
+      },
+      "recommendedAggregationTitle": "Önerilen hesaplama",
+      "recommendedAggregationBody": "{{field}} alanı için önerilen hesaplama: {{aggregation}}",
+      "useRecommendedAggregation": "Önerileni uygula",
       "basicNoneSelected": "Henüz seçilmedi",
       "basicNoBreakdown": "Ek kırılım yok",
       "basicKpiNoGrouping": "KPI kartında gruplama kullanılmaz",
@@ -1000,6 +1116,91 @@
       "label": "Yerleşim tipi",
       "customTitle": "Özel canvas yerleşimi",
       "customDescription": "Metin, alan, tablo ve görselleri canvas üzerinde elle yerleştirerek özel bir PDF şablonu oluşturun."
+    },
+    "qualityTitle": "Şablon kalitesi",
+    "qualitySubtitle": "Bu şablon ilk kez kullanan biri için yeterince net mi?",
+    "qualityReady": "Şablon temel kurumsal kalite kontrolünü geçti.",
+    "qualityIssues": {
+      "title": "Şablon başlığı eksik.",
+      "elements": "Sayfada henüz yerleştirilmiş bir öğe yok.",
+      "headerFields": "Belgeyle eşleşen en az bir alan görünmeli.",
+      "table": "Satırlı belgeler için ana içerik tablosu eksik.",
+      "tableColumns": "Tablo var ama sütunları henüz tanımlı değil.",
+      "totals": "Toplamları gösteren özet alanı eksik.",
+      "note": "Açıklama veya not alanı yok."
+    },
+    "narrativeEmpty": "{{documentType}} şablonu için henüz yerleşim yapılmadı. Kullanıcı neyi nereye koyacağını anlayamaz.",
+    "narrativeReady": "{{documentType}} şablonu {{pageCount}} sayfada {{elementCount}} öğe ile hazır durumda.",
+    "smartStartTitle": "Akıllı başlangıç",
+    "smartStartDescription": "Teknik sürükle-bırak yapmadan güvenli bir başlangıç iskeleti oluştur.",
+    "presetGalleryTitle": "Hazır şablon galerisi",
+    "presetGalleryDescription": "Belgeyi sıfırdan kurmak yerine güvenli hazır başlangıçlardan biriyle başla.",
+    "presetGallery": {
+      "commercialStarter": "Tam ticari başlangıç",
+      "compactSummary": "Kompakt özet düzeni",
+      "lineFocused": "Kalem odaklı düzen",
+      "signatureReady": "Onay ve imza düzeni"
+    },
+    "smartStartActions": {
+      "applyStarter": "Temel şablon iskeleti uygula",
+      "addTable": "Satır tablosu ekle",
+      "addTotals": "Toplam kutusu ekle",
+      "addNote": "Not alanı ekle"
+    },
+    "smartStarterApplied": "Başlangıç iskeleti yerleştirildi.",
+    "smartTableAdded": "Satır tablosu eklendi.",
+    "smartTotalsAdded": "Toplam kutusu eklendi.",
+    "smartNoteAdded": "Not alanı eklendi.",
+    "reusableBlocksTitle": "Tekrar kullanılabilir bloklar",
+    "reusableBlocksDescription": "Sık kullanılan belge parçalarını tek tuşla ekleyin.",
+    "reusableBlocks": {
+      "customerSummary": "Müşteri özeti kartı",
+      "documentMeta": "Belge bilgi satırları",
+      "signature": "İmza alanı",
+      "noteBox": "Not kutusu",
+      "customerSummaryAdded": "Müşteri özeti eklendi.",
+      "documentMetaAdded": "Belge bilgi alanları eklendi.",
+      "signatureAdded": "İmza alanı eklendi."
+    },
+    "noteTitle": "Belge Açıklaması",
+    "healthTitle": "Şablon sağlığı",
+    "healthMetrics": {
+      "elements": "Öğe",
+      "pages": "Sayfa",
+      "tables": "Tablo",
+      "boundFields": "Bağlı alan"
+    },
+    "visibilityRuleTitle": "Koşullu görünürlük",
+    "visibilityRuleDescription": "Bu öğeyi belirli bir alan değerine göre göster veya gizle. Kural şablona kaydedilir.",
+    "visibilityRuleAdd": "Kural ekle",
+    "visibilityRuleRemove": "Kaldır",
+    "visibilityRuleItemTitle": "Kural {{index}}",
+    "visibilityRuleFieldPlaceholder": "Örn: ApprovalStatus",
+    "visibilityRuleValuePlaceholder": "Örn: Approved",
+    "visibilityRulePreviewTitle": "Örnek sonuç",
+    "visibilityRulePreviewRule": "Kural {{index}}",
+    "visibilityRulePreviewNoField": "Önizleme için önce bir alan seçin.",
+    "visibilityRulePreviewSample": "Örnek değer: {{value}}",
+    "visibilityRulePreviewEmptyValue": "boş",
+    "visibilityRulePreviewIncomplete": "Kural henüz tamamlanmadı.",
+    "visibilityRulePreviewVisible": "Bu örnek veride öğe görünür olur.",
+    "visibilityRulePreviewHidden": "Bu örnek veride öğe gizlenir.",
+    "visibilityLogic": {
+      "all": "Tüm kurallar sağlanırsa göster",
+      "any": "Kurallardan biri sağlanırsa göster"
+    },
+    "visibilityPresets": {
+      "approvedOnly": "Onaylandıysa göster",
+      "hideWhenEmpty": "Boşsa gizle",
+      "showWhenDiscountExists": "İndirim varsa göster"
+    },
+    "visibilityPreviewOn": "Koşullu görünürlük açık",
+    "visibilityPreviewOff": "Koşullu görünürlük kapalı",
+    "visibilityOperators": {
+      "equals": "Eşitse göster",
+      "notEquals": "Eşit değilse göster",
+      "isEmpty": "Boşsa göster",
+      "isNotEmpty": "Doluysa göster"
     }
   },
   "reportDesigner": {

@@ -134,6 +134,35 @@ function getChartIcon(type: ChartType): ReactElement {
   }
 }
 
+function getChartTypeDisabledReason(args: {
+  chartType: ChartType;
+  axisType: string | null;
+  hasAxis: boolean;
+  hasLegend: boolean;
+  valueCount: number;
+}): string | null {
+  const { chartType, axisType, hasAxis, hasLegend, valueCount } = args;
+  if (chartType === 'line' && hasAxis && axisType !== 'date') return 'common.reportBuilder.chartTypeDisabledReasons.lineNeedsDate';
+  if ((chartType === 'pie' || chartType === 'donut') && valueCount > 1) return 'common.reportBuilder.chartTypeDisabledReasons.pieSingleValue';
+  if (chartType === 'matrix' && (!hasAxis || !hasLegend)) return 'common.reportBuilder.chartTypeDisabledReasons.matrixNeedsBreakdown';
+  return null;
+}
+
+function getAggregationRecommendationReason(field?: Field, aggregation?: Aggregation): string | null {
+  if (!field || !aggregation) return null;
+  const semanticType = getFieldSemanticType(field);
+  const haystack = `${field.name} ${field.displayName ?? ''}`.toLowerCase();
+  if (aggregation === 'count') {
+    if (/(^|[\s_.-])(id|code|no|number|key)([\s_.-]|$)|guid|status|type/.test(haystack)) {
+      return 'common.reportBuilder.aggregationRecommendations.countIdentifiers';
+    }
+    return 'common.reportBuilder.aggregationRecommendations.countRecords';
+  }
+  if (aggregation === 'avg') return 'common.reportBuilder.aggregationRecommendations.averageRates';
+  if (aggregation === 'sum' && semanticType === 'number') return 'common.reportBuilder.aggregationRecommendations.sumTotals';
+  return null;
+}
+
 interface SortableColumnRowProps {
   id: string;
   children: React.ReactNode;
@@ -276,12 +305,44 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
   const selectedMetricField = config.values[0]?.field ?? '';
   const selectedMetricLabel = config.values[0]?.label ?? '';
   const selectedAggregation = config.values[0]?.aggregation ?? 'sum';
+  const selectedMetricSchema =
+    schema.find((field) => field.name === selectedMetricField)
+    ?? ((config.calculatedFields ?? []).some((field) => field.name === selectedMetricField)
+      ? {
+          name: selectedMetricField,
+          displayName: selectedMetricLabel || selectedMetricField,
+          semanticType: 'number',
+          defaultAggregation: 'sum',
+          sqlType: 'decimal',
+          dotNetType: 'Decimal',
+          isNullable: true,
+        } as Field
+      : undefined);
+  const selectedMetricOption = metricOptions.find((option) => option.value === selectedMetricField);
+  const recommendedAggregation = selectedMetricOption?.defaultAggregation ?? 'sum';
+  const aggregationRecommendationReason = getAggregationRecommendationReason(selectedMetricSchema, recommendedAggregation);
   const selectedAxisField = config.axis?.field ?? '';
   const selectedAxisLabel = config.axis?.label ?? '';
   const selectedLegendField = config.legend?.field ?? '';
   const selectedLegendLabel = config.legend?.label ?? '';
   const selectedAxisFieldSchema = schema.find((field) => field.name === selectedAxisField);
   const selectedAxisType = selectedAxisFieldSchema ? getFieldSemanticType(selectedAxisFieldSchema) : null;
+  const chartTypeDisabledReasons = useMemo(
+    () =>
+      Object.fromEntries(
+        CHART_TYPES.map((item) => [
+          item.value,
+          getChartTypeDisabledReason({
+            chartType: item.value,
+            axisType: selectedAxisType,
+            hasAxis: Boolean(selectedAxisField),
+            hasLegend: Boolean(selectedLegendField),
+            valueCount: config.values.length,
+          }),
+        ]),
+      ) as Record<ChartType, string | null>,
+    [config.values.length, selectedAxisField, selectedAxisType, selectedLegendField],
+  );
   const fieldLabelMap = useMemo(
     () => new Map([
       ...schema.map((field) => [field.name, field.displayName || field.name] as const),
@@ -398,10 +459,15 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
                 variant={config.chartType === type ? 'default' : 'outline'}
                 className="h-auto justify-start px-3 py-3 text-left"
                 onClick={() => setChartType(type)}
+                disabled={Boolean(chartTypeDisabledReasons[type])}
+                title={chartTypeDisabledReasons[type] ? t(chartTypeDisabledReasons[type]!) : undefined}
               >
                 <div>
                   <div className="font-medium">{chartTypeLabel(type)}</div>
                   <div className="mt-1 text-xs opacity-80">{t(`common.reportBuilder.chartTypeDescriptions.${type}`)}</div>
+                  {chartTypeDisabledReasons[type] ? (
+                    <div className="mt-1 text-[11px] opacity-90">{t(chartTypeDisabledReasons[type]!)}</div>
+                  ) : null}
                 </div>
               </Button>
             ))}
@@ -497,6 +563,29 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
                 ))}
               </SelectContent>
             </Select>
+            <div className="rounded-xl border bg-muted/30 px-3 py-2 text-xs">
+              <div className="font-medium">{t('common.reportBuilder.recommendedAggregationTitle')}</div>
+              <div className="mt-1 text-muted-foreground">
+                {t('common.reportBuilder.recommendedAggregationBody', {
+                  field: selectedMetricLabel || getFieldLabel(selectedMetricField),
+                  aggregation: aggregationLabel(recommendedAggregation),
+                })}
+              </div>
+              {aggregationRecommendationReason ? (
+                <div className="mt-1 text-[11px] text-muted-foreground">{t(aggregationRecommendationReason)}</div>
+              ) : null}
+              {selectedAggregation !== recommendedAggregation ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="mt-2 h-7"
+                  onClick={() => setAggregation(0, recommendedAggregation)}
+                >
+                  {t('common.reportBuilder.useRecommendedAggregation')}
+                </Button>
+              ) : null}
+            </div>
           </div>
         ) : null}
 
@@ -800,7 +889,11 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
               <button
                 key={item.value}
                 type="button"
-                onClick={() => setChartType(item.value)}
+                onClick={() => {
+                  if (chartTypeDisabledReasons[item.value]) return;
+                  setChartType(item.value);
+                }}
+                disabled={Boolean(chartTypeDisabledReasons[item.value])}
                 className={`rounded-xl border px-3 py-3 text-left transition-colors ${
                   active ? 'border-primary bg-primary/5' : 'border-border bg-background hover:bg-muted/40'
                 }`}
@@ -812,6 +905,9 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
                 <p className="text-muted-foreground text-xs">
                   {t(`common.reportBuilder.chartTypeDescriptions.${item.value}`)}
                 </p>
+                {chartTypeDisabledReasons[item.value] ? (
+                  <p className="mt-2 text-[11px] text-destructive">{t(chartTypeDisabledReasons[item.value]!)}</p>
+                ) : null}
               </button>
             );
           })}
@@ -820,18 +916,28 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
 
       <div className="space-y-2">
         <Label>{t('common.reportBuilder.chartType')}</Label>
-        <Select value={config.chartType} onValueChange={(v) => setChartType(v as ChartType)}>
+        <Select
+          value={config.chartType}
+          onValueChange={(v) => {
+            const nextType = v as ChartType;
+            if (chartTypeDisabledReasons[nextType]) return;
+            setChartType(nextType);
+          }}
+        >
           <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {CHART_TYPES.map((t) => (
-              <SelectItem key={t.value} value={t.value}>
-                    {chartTypeLabel(t.value)}
+              <SelectItem key={t.value} value={t.value} disabled={Boolean(chartTypeDisabledReasons[t.value])}>
+                {chartTypeLabel(t.value)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        {chartTypeDisabledReasons[config.chartType] ? (
+          <div className="text-xs text-destructive">{t(chartTypeDisabledReasons[config.chartType]!)}</div>
+        ) : null}
       </div>
 
       <div className="rounded-lg border border-dashed p-3">
@@ -1207,6 +1313,36 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
                   placeholder={getFieldLabel(v.field)}
                   onChange={(e) => setValueLabel(i, e.target.value)}
                 />
+                {(() => {
+                  const valueField = schema.find((field) => field.name === v.field);
+                  const recommended = metricOptions.find((option) => option.value === v.field)?.defaultAggregation;
+                  const recommendationReason = getAggregationRecommendationReason(valueField, recommended);
+                  if (!recommended) return null;
+                  return (
+                    <div className="rounded-md border bg-background/70 px-2 py-2 text-[11px]">
+                      <div className="font-medium">
+                        {t('common.reportBuilder.recommendedAggregationBody', {
+                          field: getFieldLabel(v.field),
+                          aggregation: aggregationLabel(recommended),
+                        })}
+                      </div>
+                      {recommendationReason ? (
+                        <div className="mt-1 text-muted-foreground">{t(recommendationReason)}</div>
+                      ) : null}
+                      {v.aggregation !== recommended ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="mt-2 h-7 px-2"
+                          onClick={() => setAggregation(i, recommended)}
+                        >
+                          {t('common.reportBuilder.useRecommendedAggregation')}
+                        </Button>
+                      ) : null}
+                    </div>
+                  );
+                })()}
               </div>
             ))}
           </div>

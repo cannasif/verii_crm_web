@@ -26,6 +26,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { TopBarSelector } from '../components/TopBarSelector';
 import { FieldsPanel } from '../components/FieldsPanel';
 import { SlotsPanel } from '../components/SlotsPanel';
@@ -92,6 +100,7 @@ function getRecommendedChartType(args: {
 type ChartRepairPlan =
   | { kind: 'switch-table'; title: string; description: string; buttonLabel: string }
   | { kind: 'switch-bar'; title: string; description: string; buttonLabel: string }
+  | { kind: 'switch-line'; title: string; description: string; buttonLabel: string }
   | { kind: 'fix-pie'; title: string; description: string; buttonLabel: string }
   | { kind: 'fix-kpi'; title: string; description: string; buttonLabel: string }
   | { kind: 'fix-matrix'; title: string; description: string; buttonLabel: string };
@@ -152,6 +161,11 @@ export function ReportBuilderPage(): ReactElement {
   const widgetHeightLabel = (height?: 'sm' | 'md' | 'lg'): string => t(`common.reportBuilder.widgetHeights.${height ?? 'md'}`);
   const [deleteWidgetId, setDeleteWidgetId] = useState<string | null>(null);
   const [removeAssignedUserId, setRemoveAssignedUserId] = useState<number | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
+  const [wizardGoal, setWizardGoal] = useState<'executive' | 'operations' | 'performance'>('operations');
+  const [wizardVisual, setWizardVisual] = useState<'table' | 'chart' | 'trend' | 'kpi'>('table');
+  const [wizardBreakdown, setWizardBreakdown] = useState<'recommended' | 'none'>('recommended');
   const { data: usersResponse } = useUserList({
     pageNumber: 1,
     pageSize: 100,
@@ -213,6 +227,33 @@ export function ReportBuilderPage(): ReactElement {
     const fallbackLegendIndex = legendColumnIndex >= 0 ? legendColumnIndex : 1;
     return new Set(preview.rows.map((row) => String((row as unknown[])[fallbackLegendIndex] ?? ''))).size;
   }, [config.legend?.field, config.legend?.label, preview.columns, preview.rows]);
+  const previewSampleMap = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    preview.columns.forEach((column, columnIndex) => {
+      const values = Array.from(
+        new Set(
+          preview.rows
+            .map((row) => row[columnIndex])
+            .filter((value) => value != null && String(value).trim().length > 0)
+            .map((value) => String(value)),
+        ),
+      ).slice(0, 3);
+      map[column] = values;
+    });
+    return map;
+  }, [preview.columns, preview.rows]);
+  const recommendedAxisField = useMemo(
+    () => schema.find((field) => /date|tarih|created|offer|order|demand/i.test(`${field.name} ${field.displayName ?? ''}`)) ?? firstAxisField,
+    [firstAxisField, schema],
+  );
+  const recommendedValueField = useMemo(
+    () => schema.find((field) => /amount|total|count|price|tutar|toplam|adet|quantity/i.test(`${field.name} ${field.displayName ?? ''}`)) ?? firstValueField,
+    [firstValueField, schema],
+  );
+  const recommendedLegendField = useMemo(
+    () => schema.find((field) => /user|sales|rep|customer|plasiyer|musteri|cari/i.test(`${field.name} ${field.displayName ?? ''}`)) ?? firstLegendField,
+    [firstLegendField, schema],
+  );
   const recommendedChartType = useMemo(
     () =>
       getRecommendedChartType({
@@ -231,6 +272,22 @@ export function ReportBuilderPage(): ReactElement {
   const kpiError = config.chartType === 'kpi' ? validateKpiConfig(config) : null;
   const matrixError = config.chartType === 'matrix' ? validateMatrixConfig(config) : null;
   const chartRepairPlan = useMemo<ChartRepairPlan | null>(() => {
+    if (config.chartType === 'line' && selectedAxisSchemaField && getFieldSemanticType(selectedAxisSchemaField) !== 'date') {
+      return {
+        kind: 'switch-bar',
+        title: t('common.reportBuilder.repairTitles.nonDateLine'),
+        description: t('common.reportBuilder.repairDescriptions.nonDateLine'),
+        buttonLabel: t('common.reportBuilder.repairActions.switchBar'),
+      };
+    }
+    if (config.chartType === 'bar' && selectedAxisSchemaField && getFieldSemanticType(selectedAxisSchemaField) === 'date' && !hasLegend) {
+      return {
+        kind: 'switch-line',
+        title: t('common.reportBuilder.repairTitles.dateBar'),
+        description: t('common.reportBuilder.repairDescriptions.dateBar'),
+        buttonLabel: t('common.reportBuilder.repairActions.switchLine'),
+      };
+    }
     if ((config.chartType === 'pie' || config.chartType === 'donut') && pieError) {
       if (config.values.length > 1 || previewSeriesCount > 10) {
         return {
@@ -272,7 +329,37 @@ export function ReportBuilderPage(): ReactElement {
       };
     }
     return null;
-  }, [config.chartType, config.values.length, kpiError, matrixError, pieError, previewSeriesCount, t]);
+  }, [config.chartType, config.values.length, hasLegend, kpiError, matrixError, pieError, previewSeriesCount, selectedAxisSchemaField, t]);
+  const reportQualityIssues = useMemo(() => {
+    const issues: string[] = [];
+    if (!meta.name?.trim()) issues.push(t('common.reportBuilder.qualityIssues.reportName'));
+    if (!datasetReady) issues.push(t('common.reportBuilder.qualityIssues.dataset'));
+    if (widgetsCount === 0) issues.push(t('common.reportBuilder.qualityIssues.widgets'));
+    if (config.chartType !== 'kpi' && !hasAxis) issues.push(t('common.reportBuilder.qualityIssues.axis'));
+    if (!hasValue) issues.push(t('common.reportBuilder.qualityIssues.value'));
+    if (chartRepairPlan) issues.push(t('common.reportBuilder.qualityIssues.visual'));
+    return issues;
+  }, [chartRepairPlan, config.chartType, datasetReady, hasAxis, hasValue, meta.name, t, widgetsCount]);
+  const reportQualityScore = useMemo(() => {
+    const penalty = reportQualityIssues.length * 16;
+    return Math.max(0, 100 - penalty);
+  }, [reportQualityIssues.length]);
+  const reportHardBlockers = useMemo(() => {
+    const blockers: string[] = [];
+    if (!meta.name?.trim()) blockers.push(t('common.reportBuilder.hardBlockers.reportName'));
+    if (!datasetReady) blockers.push(t('common.reportBuilder.hardBlockers.dataset'));
+    if (widgetsCount === 0) blockers.push(t('common.reportBuilder.hardBlockers.widgets'));
+    if (config.chartType !== 'kpi' && !hasAxis) blockers.push(t('common.reportBuilder.hardBlockers.axis'));
+    if (!hasValue) blockers.push(t('common.reportBuilder.hardBlockers.value'));
+    if ((config.chartType === 'pie' || config.chartType === 'donut') && !!pieError) blockers.push(t('common.reportBuilder.hardBlockers.pie'));
+    if (config.chartType === 'kpi' && !!kpiError) blockers.push(t('common.reportBuilder.hardBlockers.kpi'));
+    if (config.chartType === 'matrix' && !!matrixError) blockers.push(t('common.reportBuilder.hardBlockers.matrix'));
+    if ((config.chartType === 'line' || config.chartType === 'bar' || config.chartType === 'stackedBar') && previewSeriesCount > 24) {
+      blockers.push(t('common.reportBuilder.hardBlockers.tooManySeries', { count: previewSeriesCount }));
+    }
+    return blockers;
+  }, [config.chartType, datasetReady, hasAxis, hasValue, kpiError, matrixError, meta.name, pieError, previewSeriesCount, t, widgetsCount]);
+  const saveBlocked = reportHardBlockers.length > 0;
   const reportNarrative = useMemo(() => {
     if (!datasetReady) return t('common.reportBuilder.narrativeNoDataset');
     const visual = t(`common.reportBuilder.chartTypes.${config.chartType}`);
@@ -336,6 +423,18 @@ export function ReportBuilderPage(): ReactElement {
           actionLabel: t('common.reportBuilder.nextStepDesignAction'),
           action: () => setUi({ toast: { message: t('common.reportBuilder.designControlsHint'), variant: 'success' } }),
         };
+  const wizardCanContinue = wizardStep === 1 ? datasetReady : true;
+  const wizardSummary = useMemo(
+    () =>
+      t('common.reportBuilder.wizardSummary', {
+        goal: t(`common.reportBuilder.wizardGoals.${wizardGoal}.title`),
+        visual: t(`common.reportBuilder.wizardVisuals.${wizardVisual}.title`),
+        breakdown: wizardBreakdown === 'recommended'
+          ? t('common.reportBuilder.wizardBreakdowns.recommended')
+          : t('common.reportBuilder.wizardBreakdowns.none'),
+      }),
+    [t, wizardBreakdown, wizardGoal, wizardVisual],
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -418,6 +517,10 @@ export function ReportBuilderPage(): ReactElement {
   }, [config, dataSourceChecked, kpiError, matrixError, meta.connectionKey, meta.dataSourceName, meta.dataSourceType, pieError]);
 
   const handleSave = async (): Promise<void> => {
+    if (saveBlocked) {
+      setUi({ toast: { message: reportHardBlockers[0], variant: 'error' } });
+      return;
+    }
     if (isEdit && reportId != null) {
       const report = await updateReport();
       if (report) navigate(`/reports/${report.id}`);
@@ -499,6 +602,13 @@ export function ReportBuilderPage(): ReactElement {
     if (!chartRepairPlan) return;
     if (chartRepairPlan.kind === 'switch-table') {
       setChartType('table');
+      return;
+    }
+    if (chartRepairPlan.kind === 'switch-line') {
+      setChartType('line');
+      if (!hasAxis && firstAxisField) addToSlot('axis', firstAxisField.name);
+      if (!hasValue && firstValueField) addToSlot('values', firstValueField.name);
+      if (hasLegend && config.legend?.field) removeFromSlot('legend', 0);
       return;
     }
     if (chartRepairPlan.kind === 'switch-bar') {
@@ -637,6 +747,43 @@ export function ReportBuilderPage(): ReactElement {
     [config.activeWidgetId, config.widgets, handleQuickSetup, setWidgetAppearance, t],
   );
 
+  const handleApplyWizard = useCallback(() => {
+    handleStarterKit(wizardGoal);
+
+    if (wizardVisual === 'table') handleQuickSetup('table');
+    else if (wizardVisual === 'chart') handleQuickSetup('chart');
+    else if (wizardVisual === 'trend') handleQuickSetup('trend');
+    else handleQuickSetup('kpi');
+
+    if (wizardBreakdown === 'none' && config.legend?.field) {
+      removeFromSlot('legend', 0);
+    } else if (
+      wizardBreakdown === 'recommended'
+      && !config.legend?.field
+      && firstLegendField
+      && wizardVisual !== 'kpi'
+      && wizardVisual !== 'trend'
+    ) {
+      addToSlot('legend', firstLegendField.name);
+    }
+
+    setWizardOpen(false);
+    setWizardStep(1);
+    setUi({ toast: { message: t('common.reportBuilder.wizardApplied'), variant: 'success' } });
+  }, [
+    addToSlot,
+    config.legend?.field,
+    firstLegendField,
+    handleQuickSetup,
+    handleStarterKit,
+    removeFromSlot,
+    setUi,
+    t,
+    wizardBreakdown,
+    wizardGoal,
+    wizardVisual,
+  ]);
+
   const handleAddAssignedUser = useCallback(
     (userIdRaw: string) => {
       const userId = Number(userIdRaw);
@@ -715,6 +862,31 @@ export function ReportBuilderPage(): ReactElement {
                 <div className="text-2xl font-semibold">{fieldsCount}</div>
                 <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.fieldSummaryDescription')}</div>
               </div>
+              <div className="rounded-xl border bg-background p-3 md:col-span-3">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <CheckCircle2 className="size-4 text-primary" />
+                    {t('common.reportBuilder.qualityTitle')}
+                  </div>
+                  <Badge variant={reportQualityScore >= 84 ? 'default' : reportQualityScore >= 60 ? 'secondary' : 'destructive'}>
+                    {reportQualityScore}/100
+                  </Badge>
+                </div>
+                {reportQualityIssues.length > 0 ? (
+                  <div className="space-y-1.5">
+                    <div className="text-sm font-medium">{t('common.reportBuilder.qualityNeedsAttention')}</div>
+                    <ul className="text-muted-foreground space-y-1 text-xs">
+                      {reportQualityIssues.slice(0, 3).map((issue) => (
+                        <li key={issue}>• {issue}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                    {t('common.reportBuilder.qualityReady')}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="mr-2 flex rounded-xl border bg-background p-1">
@@ -754,6 +926,34 @@ export function ReportBuilderPage(): ReactElement {
             </div>
           </div>
         </div>
+        {saveBlocked ? (
+          <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-[260px] flex-1">
+                <div className="mb-2 flex items-center gap-2 text-destructive">
+                  <TriangleAlert className="size-4" />
+                  <h2 className="text-sm font-semibold">{t('common.reportBuilder.saveBlockedTitle')}</h2>
+                </div>
+                <p className="text-sm text-foreground">{t('common.reportBuilder.saveBlockedDescription')}</p>
+                <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
+                  {reportHardBlockers.slice(0, 5).map((blocker) => (
+                    <li key={blocker}>• {blocker}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={handleSmartComplete}>
+                  {t('common.reportBuilder.smartComplete')}
+                </Button>
+                {chartRepairPlan ? (
+                  <Button type="button" variant="outline" onClick={handleAutoRepairVisualization}>
+                    {chartRepairPlan.buttonLabel}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
         <TopBarSelector
           connections={connections}
           dataSources={dataSources}
@@ -909,6 +1109,70 @@ export function ReportBuilderPage(): ReactElement {
                 <Button type="button" variant="outline" onClick={handleAutoRepairVisualization}>
                   {chartRepairPlan.buttonLabel}
                 </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady ? (
+          <div className="rounded-2xl border bg-card p-4">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-[260px] flex-1">
+                <h2 className="text-sm font-semibold">{t('common.reportBuilder.wizardTitle')}</h2>
+                <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.wizardDescription')}</p>
+                <p className="mt-3 text-sm font-medium">{wizardSummary}</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setWizardStep(1);
+                  setWizardOpen(true);
+                }}
+              >
+                <Sparkles className="mr-2 size-4" />
+                {t('common.reportBuilder.openWizard')}
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        {datasetReady ? (
+          <div className="rounded-2xl border bg-card p-4">
+            <div className="mb-3">
+              <h2 className="text-sm font-semibold">{t('common.reportBuilder.datasetCoachTitle')}</h2>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.datasetCoachDescription')}</p>
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="rounded-xl border bg-background p-3">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t('common.reportBuilder.axis')}</div>
+                <div className="mt-1 text-sm font-medium">{getFieldLabel(recommendedAxisField?.name)}</div>
+                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.datasetCoachAxisHint')}</div>
+                {recommendedAxisField ? (
+                  <Button type="button" variant="outline" className="mt-3" onClick={() => handleQuickUseAxis(recommendedAxisField)}>
+                    {t('common.reportBuilder.use')}
+                  </Button>
+                ) : null}
+              </div>
+              <div className="rounded-xl border bg-background p-3">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t('common.reportBuilder.values')}</div>
+                <div className="mt-1 text-sm font-medium">{getFieldLabel(recommendedValueField?.name)}</div>
+                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.datasetCoachValueHint')}</div>
+                {recommendedValueField ? (
+                  <Button type="button" variant="outline" className="mt-3" onClick={() => handleQuickUseValue(recommendedValueField)}>
+                    {t('common.reportBuilder.use')}
+                  </Button>
+                ) : null}
+              </div>
+              <div className="rounded-xl border bg-background p-3">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t('common.reportBuilder.legend')}</div>
+                <div className="mt-1 text-sm font-medium">{getFieldLabel(recommendedLegendField?.name)}</div>
+                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.datasetCoachLegendHint')}</div>
+                {recommendedLegendField ? (
+                  <Button type="button" variant="outline" className="mt-3" onClick={() => handleQuickUseLegend(recommendedLegendField)}>
+                    {t('common.reportBuilder.use')}
+                  </Button>
+                ) : null}
               </div>
             </div>
           </div>
@@ -1219,6 +1483,7 @@ export function ReportBuilderPage(): ReactElement {
             <FieldsPanel
               schema={schema}
               calculatedFields={config.calculatedFields}
+              sampleValues={previewSampleMap}
               search={fieldsSearch}
               onSearchChange={setFieldsSearch}
               onUseAsAxis={handleQuickUseAxis}
@@ -1356,6 +1621,117 @@ export function ReportBuilderPage(): ReactElement {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        <Dialog open={wizardOpen} onOpenChange={setWizardOpen}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>{t('common.reportBuilder.wizardTitle')}</DialogTitle>
+              <DialogDescription>{t('common.reportBuilder.wizardDescription')}</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid gap-2 sm:grid-cols-3">
+                {[1, 2, 3].map((step) => (
+                  <div
+                    key={step}
+                    className={`rounded-xl border px-3 py-2 text-xs ${wizardStep === step ? 'border-primary bg-primary/5' : 'bg-background text-muted-foreground'}`}
+                  >
+                    <div className="font-semibold">{t('common.reportBuilder.wizardStepLabel', { step })}</div>
+                    <div className="mt-1">
+                      {step === 1
+                        ? t('common.reportBuilder.wizardSteps.dataset')
+                        : step === 2
+                          ? t('common.reportBuilder.wizardSteps.goal')
+                          : t('common.reportBuilder.wizardSteps.visual')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {wizardStep === 1 ? (
+                <div className="rounded-xl border bg-muted/20 p-4">
+                  <div className="text-sm font-semibold">{t('common.reportBuilder.wizardDatasetTitle')}</div>
+                  <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.wizardDatasetDescription')}</p>
+                  <div className="mt-3 rounded-xl border bg-background p-3">
+                    <div className="text-xs uppercase tracking-wide text-muted-foreground">{t('common.reportBuilder.datasetHealth')}</div>
+                    <div className="mt-1 text-sm font-medium">{meta.dataSourceName || t('common.reportBuilder.notConnected')}</div>
+                  </div>
+                </div>
+              ) : null}
+
+              {wizardStep === 2 ? (
+                <div className="grid gap-3 md:grid-cols-3">
+                  {(['executive', 'operations', 'performance'] as const).map((goal) => (
+                    <button
+                      key={goal}
+                      type="button"
+                      onClick={() => setWizardGoal(goal)}
+                      className={`rounded-2xl border p-4 text-left transition-colors ${wizardGoal === goal ? 'border-primary bg-primary/5' : 'bg-background hover:border-primary/40'}`}
+                    >
+                      <div className="text-sm font-semibold">{t(`common.reportBuilder.wizardGoals.${goal}.title`)}</div>
+                      <div className="text-muted-foreground mt-2 text-xs">{t(`common.reportBuilder.wizardGoals.${goal}.description`)}</div>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+
+              {wizardStep === 3 ? (
+                <div className="space-y-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {(['table', 'chart', 'trend', 'kpi'] as const).map((visual) => (
+                      <button
+                        key={visual}
+                        type="button"
+                        onClick={() => setWizardVisual(visual)}
+                        className={`rounded-2xl border p-4 text-left transition-colors ${wizardVisual === visual ? 'border-primary bg-primary/5' : 'bg-background hover:border-primary/40'}`}
+                      >
+                        <div className="text-sm font-semibold">{t(`common.reportBuilder.wizardVisuals.${visual}.title`)}</div>
+                        <div className="text-muted-foreground mt-2 text-xs">{t(`common.reportBuilder.wizardVisuals.${visual}.description`)}</div>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {(['recommended', 'none'] as const).map((breakdown) => (
+                      <button
+                        key={breakdown}
+                        type="button"
+                        onClick={() => setWizardBreakdown(breakdown)}
+                        className={`rounded-2xl border p-4 text-left transition-colors ${wizardBreakdown === breakdown ? 'border-primary bg-primary/5' : 'bg-background hover:border-primary/40'}`}
+                      >
+                        <div className="text-sm font-semibold">{t(`common.reportBuilder.wizardBreakdowns.${breakdown}`)}</div>
+                        <div className="text-muted-foreground mt-2 text-xs">
+                          {breakdown === 'recommended'
+                            ? t('common.reportBuilder.wizardBreakdownsRecommendedDescription')
+                            : t('common.reportBuilder.wizardBreakdownsNoneDescription')}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            <DialogFooter className="gap-2 sm:justify-between">
+              <div className="text-muted-foreground text-xs">{wizardSummary}</div>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={() => setWizardOpen(false)}>
+                  {t('common.cancel')}
+                </Button>
+                {wizardStep > 1 ? (
+                  <Button type="button" variant="outline" onClick={() => setWizardStep((wizardStep - 1) as 1 | 2 | 3)}>
+                    {t('common.reportBuilder.wizardBack')}
+                  </Button>
+                ) : null}
+                {wizardStep < 3 ? (
+                  <Button type="button" onClick={() => wizardCanContinue && setWizardStep((wizardStep + 1) as 1 | 2 | 3)} disabled={!wizardCanContinue}>
+                    {t('common.reportBuilder.wizardNext')}
+                  </Button>
+                ) : (
+                  <Button type="button" onClick={handleApplyWizard}>
+                    {t('common.reportBuilder.wizardApply')}
+                  </Button>
+                )}
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DndContext>
   );

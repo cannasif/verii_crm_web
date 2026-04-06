@@ -276,6 +276,103 @@
       "recommendedVisualNormal": "This visual will usually be easier to understand for the current data shape.",
       "recommendedVisualTooManySeries": "This preview already has {{count}} separate series. A simpler visual will be easier for users to read.",
       "applyRecommendedVisual": "Apply recommended visual",
+      "qualityTitle": "Build quality",
+      "qualityNeedsAttention": "Complete these before publishing",
+      "qualityReady": "This report passed the basic enterprise quality check.",
+      "wizardTitle": "Build the report step by step",
+      "wizardDescription": "Choose what you want to see and let the system prepare a safe first setup for you.",
+      "openWizard": "Open wizard",
+      "wizardStepLabel": "Step {{step}}",
+      "wizardSteps": {
+        "dataset": "Check the dataset",
+        "goal": "Choose the goal",
+        "visual": "Choose the visual"
+      },
+      "wizardDatasetTitle": "Is the dataset ready?",
+      "wizardDatasetDescription": "The wizard uses the connected dataset. If it is correct, it can prepare your first report with a few simple choices.",
+      "wizardGoals": {
+        "executive": {
+          "title": "Executive summary",
+          "description": "Build a concise screen that decision makers can understand at first glance."
+        },
+        "operations": {
+          "title": "Operations follow-up",
+          "description": "Build a layout focused on tables and detail for daily tracking."
+        },
+        "performance": {
+          "title": "Performance view",
+          "description": "Build a KPI-led layout focused on results and targets."
+        }
+      },
+      "wizardVisuals": {
+        "table": {
+          "title": "Summary table",
+          "description": "Show a readable table without losing the detail."
+        },
+        "chart": {
+          "title": "Comparison chart",
+          "description": "Compare categories or users in a simple chart."
+        },
+        "trend": {
+          "title": "Trend chart",
+          "description": "Show change over time in a line view."
+        },
+        "kpi": {
+          "title": "KPI card",
+          "description": "Show one main indicator in a large and clear card."
+        }
+      },
+      "wizardBreakdowns": {
+        "recommended": "Use the recommended breakdown",
+        "none": "No breakdown"
+      },
+      "wizardBreakdownsRecommendedDescription": "If the data fits, the system adds a second breakdown and makes the report more descriptive.",
+      "wizardBreakdownsNoneDescription": "Keeps the report simpler and avoids extra color and series noise.",
+      "wizardSummary": "A {{visual}} will be prepared for {{goal}}. Breakdown choice: {{breakdown}}.",
+      "wizardBack": "Back",
+      "wizardNext": "Next",
+      "wizardApply": "Apply setup",
+      "wizardApplied": "Step-by-step setup applied.",
+      "saveBlockedTitle": "This report is not safe yet",
+      "saveBlockedDescription": "The following setup issues must be resolved before this report should be published.",
+      "hardBlockers": {
+        "reportName": "The report cannot be saved without a name.",
+        "dataset": "The report cannot be saved before the dataset is validated.",
+        "widgets": "At least one widget is required before saving.",
+        "axis": "This visual requires an axis field.",
+        "value": "At least one metric value must be selected.",
+        "pie": "This pie chart setup is not valid yet.",
+        "kpi": "This KPI card is incomplete.",
+        "matrix": "This matrix view is incomplete.",
+        "tooManySeries": "This chart is producing {{count}} series. Choose a simpler view before saving."
+      },
+      "fieldGlossaryTitles": {
+        "dimension": "Breakdown field",
+        "metric": "Metric field",
+        "date": "Time field"
+      },
+      "fieldGlossary": {
+        "dimension": "These fields are used for grouping and breakdowns such as user, customer, or status.",
+        "metric": "These fields are summed, counted, or averaged. The main number in the report comes from them.",
+        "date": "These fields are best for trend and period-based analysis.",
+        "customer": "Useful for customer-based comparisons and commercial analysis.",
+        "user": "Useful for user, sales rep, or owner performance analysis.",
+        "status": "Useful for distributions such as waiting, completed, or cancelled.",
+        "amount": "Useful for financial measures such as amount, total, or price."
+      },
+      "datasetCoachTitle": "Dataset coach",
+      "datasetCoachDescription": "The system suggests strong starting fields by looking at the dataset field names.",
+      "datasetCoachAxisHint": "A strong starting field for time or grouping.",
+      "datasetCoachValueHint": "A suitable field for the main number you want to measure.",
+      "datasetCoachLegendHint": "A suitable second breakdown for user, customer, or category based comparisons.",
+      "qualityIssues": {
+        "reportName": "The report name is still empty.",
+        "dataset": "The dataset has not been validated yet.",
+        "widgets": "At least one widget should be added.",
+        "axis": "Non-KPI visuals should have an axis field.",
+        "value": "At least one metric value should be selected.",
+        "visual": "The selected visual does not fully match the current data."
+      },
       "widgetTemplatesTitle": "Ready widget templates",
       "widgetTemplatesDescription": "If you do not know what to choose, start with one of these safe widget patterns.",
       "widgetTemplateLabels": {
@@ -298,14 +395,19 @@
         "incompletePie": "The pie chart setup is incomplete",
         "incompleteKpi": "The KPI card setup is incomplete",
         "incompleteMatrix": "The matrix setup is incomplete",
-        "tooManySeries": "This chart is generating too many series"
+        "tooManySeries": "This chart is generating too many series",
+        "nonDateLine": "Line charts are weak without a time axis",
+        "dateBar": "A trend view is clearer for date-based data"
       },
       "repairDescriptions": {
         "tooComplexPie": "When there are too many series or more than one value field, a pie chart becomes hard to read. A simple bar chart is usually a better fit.",
-        "tooManySeries": "This view is currently producing {{count}} separate series. Most users will struggle to read that many lines at once."
+        "tooManySeries": "This view is currently producing {{count}} separate series. Most users will struggle to read that many lines at once.",
+        "nonDateLine": "Line charts make the most sense with a date or period axis. A bar chart will be easier to read here.",
+        "dateBar": "For single-series date-based data, a line trend usually tells the story more clearly."
       },
       "repairActions": {
         "switchBar": "Switch to a better bar chart",
+        "switchLine": "Switch to trend chart",
         "switchTable": "Switch to summary table",
         "fixPie": "Fix the pie chart",
         "fixKpi": "Fix the KPI card",
@@ -333,6 +435,20 @@
         "others": "Combine as Others",
         "hide": "Do not show"
       },
+      "chartTypeDisabledReasons": {
+        "lineNeedsDate": "Pick a date axis for line charts.",
+        "pieSingleValue": "Use a single value field for pie and donut charts.",
+        "matrixNeedsBreakdown": "Matrix views need both an axis and a breakdown field."
+      },
+      "aggregationRecommendations": {
+        "countIdentifiers": "Identifier, code, and status fields usually read better as counts.",
+        "countRecords": "This field is usually easier to understand as a record count.",
+        "averageRates": "Rate and percentage fields are usually clearer as averages.",
+        "sumTotals": "Amount, quantity, and total fields are usually best summed."
+      },
+      "recommendedAggregationTitle": "Recommended calculation",
+      "recommendedAggregationBody": "Recommended calculation for {{field}}: {{aggregation}}",
+      "useRecommendedAggregation": "Use recommended",
       "basicNoneSelected": "Not selected yet",
       "basicNoBreakdown": "No extra breakdown",
       "basicKpiNoGrouping": "KPI cards do not use grouping",
@@ -996,6 +1112,91 @@
       "label": "Layout type",
       "customTitle": "Custom canvas layout",
       "customDescription": "Build a custom PDF template by placing text, fields, tables and images on the canvas."
+    },
+    "qualityTitle": "Template quality",
+    "qualitySubtitle": "Is this template clear enough for a first-time user?",
+    "qualityReady": "The template passed the basic enterprise quality check.",
+    "qualityIssues": {
+      "title": "Template title is missing.",
+      "elements": "No element has been placed on the page yet.",
+      "headerFields": "At least one bound field should match the document.",
+      "table": "The main content table is missing for line-based documents.",
+      "tableColumns": "A table exists, but its columns are not defined yet.",
+      "totals": "A totals summary block is missing.",
+      "note": "There is no note or description area."
+    },
+    "narrativeEmpty": "No layout has been prepared yet for the {{documentType}} template. A user would not know what goes where.",
+    "narrativeReady": "The {{documentType}} template is currently prepared with {{elementCount}} elements across {{pageCount}} page(s).",
+    "smartStartTitle": "Smart start",
+    "smartStartDescription": "Build a safe starting layout without relying on technical drag and drop.",
+    "presetGalleryTitle": "Ready template gallery",
+    "presetGalleryDescription": "Instead of building from scratch, start from one of these safe template patterns.",
+    "presetGallery": {
+      "commercialStarter": "Full commercial starter",
+      "compactSummary": "Compact summary layout",
+      "lineFocused": "Line-focused layout",
+      "signatureReady": "Approval and signature layout"
+    },
+    "smartStartActions": {
+      "applyStarter": "Apply starter layout",
+      "addTable": "Add line table",
+      "addTotals": "Add totals block",
+      "addNote": "Add note area"
+    },
+    "smartStarterApplied": "Starter layout applied.",
+    "smartTableAdded": "Line table added.",
+    "smartTotalsAdded": "Totals block added.",
+    "smartNoteAdded": "Note area added.",
+    "reusableBlocksTitle": "Reusable blocks",
+    "reusableBlocksDescription": "Add frequently used document sections with one click.",
+    "reusableBlocks": {
+      "customerSummary": "Customer summary card",
+      "documentMeta": "Document info rows",
+      "signature": "Signature area",
+      "noteBox": "Note box",
+      "customerSummaryAdded": "Customer summary added.",
+      "documentMetaAdded": "Document information fields added.",
+      "signatureAdded": "Signature area added."
+    },
+    "noteTitle": "Document Description",
+    "healthTitle": "Template health",
+    "healthMetrics": {
+      "elements": "Elements",
+      "pages": "Pages",
+      "tables": "Tables",
+      "boundFields": "Bound fields"
+    },
+    "visibilityRuleTitle": "Conditional visibility",
+    "visibilityRuleDescription": "Show or hide this element based on a field value. The rule is saved with the template.",
+    "visibilityRuleAdd": "Add rule",
+    "visibilityRuleRemove": "Remove",
+    "visibilityRuleItemTitle": "Rule {{index}}",
+    "visibilityRuleFieldPlaceholder": "Ex: ApprovalStatus",
+    "visibilityRuleValuePlaceholder": "Ex: Approved",
+    "visibilityRulePreviewTitle": "Sample result",
+    "visibilityRulePreviewRule": "Rule {{index}}",
+    "visibilityRulePreviewNoField": "Pick a field first to see a sample result.",
+    "visibilityRulePreviewSample": "Sample value: {{value}}",
+    "visibilityRulePreviewEmptyValue": "empty",
+    "visibilityRulePreviewIncomplete": "The rule is not complete yet.",
+    "visibilityRulePreviewVisible": "This element would be visible with the sample value.",
+    "visibilityRulePreviewHidden": "This element would be hidden with the sample value.",
+    "visibilityLogic": {
+      "all": "Show when all rules match",
+      "any": "Show when any rule matches"
+    },
+    "visibilityPresets": {
+      "approvedOnly": "Show when approved",
+      "hideWhenEmpty": "Hide when empty",
+      "showWhenDiscountExists": "Show when discount exists"
+    },
+    "visibilityPreviewOn": "Conditional visibility on",
+    "visibilityPreviewOff": "Conditional visibility off",
+    "visibilityOperators": {
+      "equals": "Show when equal",
+      "notEquals": "Show when not equal",
+      "isEmpty": "Show when empty",
+      "isNotEmpty": "Show when not empty"
     }
   },
   "dashboard": {

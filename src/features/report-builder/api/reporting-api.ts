@@ -30,18 +30,29 @@ function normalizeField(raw: Record<string, unknown>): Field {
     raw.displayName != null || raw.DisplayName != null
       ? String(raw.displayName ?? raw.DisplayName ?? '')
       : undefined;
+  const semanticType =
+    raw.semanticType != null || raw.SemanticType != null
+      ? String(raw.semanticType ?? raw.SemanticType ?? '')
+      : undefined;
+  const rawDefaultAggregation =
+    raw.defaultAggregation != null || raw.DefaultAggregation != null
+      ? String(raw.defaultAggregation ?? raw.DefaultAggregation ?? '') as Field['defaultAggregation']
+      : undefined;
+
+  const inferDefaultAggregation = (): Field['defaultAggregation'] | undefined => {
+    if (rawDefaultAggregation) return rawDefaultAggregation;
+    if (semanticType !== 'number') return undefined;
+    const haystack = `${name} ${providedDisplayName ?? ''}`.toLowerCase();
+    if (/(^|[\s_.-])(id|code|no|number|key)([\s_.-]|$)|guid|status|type/.test(haystack)) return 'count';
+    if (/oran|rate|percent|percentage|average|avg/.test(haystack)) return 'avg';
+    return 'sum';
+  };
 
   return {
     name,
     displayName: providedDisplayName && providedDisplayName.trim() ? providedDisplayName : humanizeIdentifier(name),
-    semanticType:
-      raw.semanticType != null || raw.SemanticType != null
-        ? String(raw.semanticType ?? raw.SemanticType ?? '')
-        : undefined,
-    defaultAggregation:
-      raw.defaultAggregation != null || raw.DefaultAggregation != null
-        ? String(raw.defaultAggregation ?? raw.DefaultAggregation ?? '') as Field['defaultAggregation']
-        : undefined,
+    semanticType,
+    defaultAggregation: inferDefaultAggregation(),
     sqlType: String(raw.sqlType ?? raw.SqlType ?? ''),
     dotNetType: String(raw.dotNetType ?? raw.DotNetType ?? ''),
     isNullable: Boolean(raw.isNullable ?? raw.IsNullable ?? false),

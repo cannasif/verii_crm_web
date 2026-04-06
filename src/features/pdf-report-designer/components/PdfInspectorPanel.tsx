@@ -22,9 +22,12 @@ import {
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
 import { PDF_TABLE_PRESETS, getPdfTablePreset } from '../constants/table-presets';
 import { usePdfTablePresetList } from '../hooks/usePdfTablePresetList';
+import type { FieldDefinitionDto } from '@/features/pdf-report';
+import type { PdfVisibilityRule } from '../types/pdf-report-template.types';
 
 interface PdfInspectorPanelProps {
   pageCount: number;
+  fieldDefinitions?: FieldDefinitionDto[];
 }
 
 function normalizePageNumbers(rawValue: string, pageCount: number): number[] | undefined {
@@ -43,7 +46,37 @@ function normalizePageNumbers(rawValue: string, pageCount: number): number[] | u
   return normalized.length > 0 ? normalized : undefined;
 }
 
-export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactElement {
+function evaluateVisibilityRule(
+  rule: {
+    fieldPath?: string;
+    operator?: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty';
+    value?: string;
+  } | undefined,
+  sampleValue?: string,
+): boolean | null {
+  if (!rule?.fieldPath || !rule.operator) return null;
+  const currentValue = sampleValue ?? '';
+  if (rule.operator === 'isEmpty') return currentValue.trim().length === 0;
+  if (rule.operator === 'isNotEmpty') return currentValue.trim().length > 0;
+  if (rule.value == null) return null;
+  if (rule.operator === 'equals') return currentValue === rule.value;
+  if (rule.operator === 'notEquals') return currentValue !== rule.value;
+  return null;
+}
+
+function evaluateVisibilityRules(
+  rules: PdfVisibilityRule[] | undefined,
+  logic: 'all' | 'any',
+  getSampleValue: (fieldPath?: string) => string | undefined,
+): boolean | null {
+  const normalizedRules = (rules ?? []).filter((rule) => rule.fieldPath || rule.operator || rule.value);
+  if (normalizedRules.length === 0) return null;
+  const results = normalizedRules.map((rule) => evaluateVisibilityRule(rule, getSampleValue(rule.fieldPath)));
+  if (results.some((result) => result == null)) return null;
+  return logic === 'any' ? results.some(Boolean) : results.every(Boolean);
+}
+
+export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspectorPanelProps): ReactElement {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
@@ -66,6 +99,18 @@ export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactE
   const availableContainers = elements.filter(
     (element) => element.type === 'container' && element.id !== selectedElement?.id
   );
+  const visibilityRules =
+    selectedElement && !isPdfTableElement(selectedElement)
+      ? selectedElement.visibilityRules ?? (selectedElement.visibilityRule ? [selectedElement.visibilityRule] : [])
+      : [];
+  const visibilityPreviewResult =
+    selectedElement && !isPdfTableElement(selectedElement)
+      ? evaluateVisibilityRules(
+          visibilityRules,
+          selectedElement.visibilityLogic ?? 'all',
+          (fieldPath) => fieldDefinitions.find((field) => field.path === fieldPath)?.exampleValue,
+        )
+      : null;
 
   if (collapsed) {
     return (
@@ -133,6 +178,39 @@ export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactE
           tableOptions: preset.tableOptions,
         }))
       : PDF_TABLE_PRESETS;
+
+  const updateVisibilityRules = (rules: PdfVisibilityRule[], nextLogic?: 'all' | 'any'): void => {
+    if (!selectedElement || isPdfTableElement(selectedElement)) return;
+    const normalizedRules = rules.filter((rule) => rule.fieldPath || rule.operator || rule.value);
+    updateReportElement(selectedElement.id, {
+      visibilityRule: normalizedRules[0],
+      visibilityRules: normalizedRules.length > 0 ? normalizedRules : undefined,
+      visibilityLogic: nextLogic ?? selectedElement.visibilityLogic ?? 'all',
+    });
+  };
+  const visibilityRulePresets = [
+    {
+      key: 'approvedOnly',
+      label: t('pdfReportDesigner.visibilityPresets.approvedOnly'),
+      rules: [{ fieldPath: 'ApprovalStatus', operator: 'equals' as const, value: 'Approved' }],
+      logic: 'all' as const,
+    },
+    {
+      key: 'hideWhenEmpty',
+      label: t('pdfReportDesigner.visibilityPresets.hideWhenEmpty'),
+      rules: [{ fieldPath: 'Note1', operator: 'isNotEmpty' as const }],
+      logic: 'all' as const,
+    },
+    {
+      key: 'showWhenDiscountExists',
+      label: t('pdfReportDesigner.visibilityPresets.showWhenDiscountExists'),
+      rules: [
+        { fieldPath: 'GeneralDiscountRate', operator: 'notEquals' as const, value: '0' },
+        { fieldPath: 'GeneralDiscountAmount', operator: 'notEquals' as const, value: '0' },
+      ],
+      logic: 'any' as const,
+    },
+  ];
 
   return (
     <div className="flex min-h-0 w-64 shrink-0 flex-col overflow-y-auto border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
@@ -240,6 +318,133 @@ export function PdfInspectorPanel({ pageCount }: PdfInspectorPanelProps): ReactE
           placeholder={t('pdfReportDesigner.visiblePagesPlaceholder')}
         />
       </div>
+      {!isPdfTableElement(selectedElement) ? (
+        <div className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900/50">
+          <Label className="text-xs">{t('pdfReportDesigner.visibilityRuleTitle')}</Label>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">{t('pdfReportDesigner.visibilityRuleDescription')}</p>
+          <div className="grid gap-2">
+            {visibilityRulePresets.map((preset) => (
+              <button
+                key={preset.key}
+                type="button"
+                className="rounded-md border px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
+                onClick={() => updateVisibilityRules(preset.rules, preset.logic)}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          <Select
+            value={selectedElement.visibilityLogic ?? 'all'}
+            onValueChange={(value: 'all' | 'any') => updateVisibilityRules(visibilityRules, value)}
+          >
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('pdfReportDesigner.visibilityLogic.all')}</SelectItem>
+              <SelectItem value="any">{t('pdfReportDesigner.visibilityLogic.any')}</SelectItem>
+            </SelectContent>
+          </Select>
+          {visibilityRules.map((rule, ruleIndex) => {
+            const fieldDefinition = fieldDefinitions.find((field) => field.path === rule.fieldPath);
+            return (
+              <div key={`${selectedElement.id}-rule-${ruleIndex}`} className="rounded-md border border-slate-200 p-2 dark:border-slate-700">
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    {t('pdfReportDesigner.visibilityRuleItemTitle', { index: ruleIndex + 1 })}
+                  </div>
+                  <button
+                    type="button"
+                    className="text-[11px] font-medium text-rose-500"
+                    onClick={() => updateVisibilityRules(visibilityRules.filter((_, index) => index !== ruleIndex))}
+                  >
+                    {t('pdfReportDesigner.visibilityRuleRemove')}
+                  </button>
+                </div>
+                <Input
+                  value={rule.fieldPath ?? ''}
+                  onChange={(e) =>
+                    updateVisibilityRules(
+                      visibilityRules.map((item, index) =>
+                        index === ruleIndex ? { ...item, fieldPath: e.target.value || undefined } : item,
+                      ),
+                    )
+                  }
+                  className="h-8 text-xs"
+                  placeholder={t('pdfReportDesigner.visibilityRuleFieldPlaceholder')}
+                />
+                <Select
+                  value={rule.operator ?? 'equals'}
+                  onValueChange={(value: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty') =>
+                    updateVisibilityRules(
+                      visibilityRules.map((item, index) =>
+                        index === ruleIndex ? { ...item, operator: value } : item,
+                      ),
+                    )
+                  }
+                >
+                  <SelectTrigger className="mt-2 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="equals">{t('pdfReportDesigner.visibilityOperators.equals')}</SelectItem>
+                    <SelectItem value="notEquals">{t('pdfReportDesigner.visibilityOperators.notEquals')}</SelectItem>
+                    <SelectItem value="isEmpty">{t('pdfReportDesigner.visibilityOperators.isEmpty')}</SelectItem>
+                    <SelectItem value="isNotEmpty">{t('pdfReportDesigner.visibilityOperators.isNotEmpty')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  value={rule.value ?? ''}
+                  onChange={(e) =>
+                    updateVisibilityRules(
+                      visibilityRules.map((item, index) =>
+                        index === ruleIndex ? { ...item, value: e.target.value || undefined } : item,
+                      ),
+                    )
+                  }
+                  className="mt-2 h-8 text-xs"
+                  placeholder={t('pdfReportDesigner.visibilityRuleValuePlaceholder')}
+                />
+                <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                  {fieldDefinition?.description ?? t('pdfReportDesigner.visibilityRulePreviewNoField')}
+                </div>
+              </div>
+            );
+          })}
+          <button
+            type="button"
+            className="h-8 rounded-md border px-3 text-xs font-medium"
+            onClick={() => updateVisibilityRules([...visibilityRules, { operator: 'equals' }])}
+          >
+            {t('pdfReportDesigner.visibilityRuleAdd')}
+          </button>
+          <div className="rounded-md bg-slate-50 px-2 py-2 text-[11px] text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+            <div className="font-medium">{t('pdfReportDesigner.visibilityRulePreviewTitle')}</div>
+            {visibilityRules.length > 0 ? visibilityRules.map((rule, ruleIndex) => {
+              const fieldDefinition = fieldDefinitions.find((field) => field.path === rule.fieldPath);
+              return (
+                <div key={`${selectedElement.id}-preview-${ruleIndex}`} className="mt-1">
+                  <div>{t('pdfReportDesigner.visibilityRulePreviewRule', { index: ruleIndex + 1 })}</div>
+                  <div>{fieldDefinition?.description ?? t('pdfReportDesigner.visibilityRulePreviewNoField')}</div>
+                  <div>
+                    {t('pdfReportDesigner.visibilityRulePreviewSample', {
+                      value: fieldDefinition?.exampleValue ?? t('pdfReportDesigner.visibilityRulePreviewEmptyValue'),
+                    })}
+                  </div>
+                </div>
+              );
+            }) : null}
+            <div className="mt-1 font-medium">
+              {visibilityPreviewResult == null
+                ? t('pdfReportDesigner.visibilityRulePreviewIncomplete')
+                : visibilityPreviewResult
+                  ? t('pdfReportDesigner.visibilityRulePreviewVisible')
+                  : t('pdfReportDesigner.visibilityRulePreviewHidden')}
+            </div>
+          </div>
+        </div>
+      ) : null}
       {isPdfTableElement(selectedElement) ? (
         <>
           <div className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-2">
