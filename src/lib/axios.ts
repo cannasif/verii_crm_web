@@ -91,14 +91,6 @@ function normalizeApiEnvelope(payload: unknown): unknown {
   return normalized;
 }
 
-function getCurrentTimeZone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  } catch {
-    return 'UTC';
-  }
-}
-
 function isIsoDateTimeWithoutOffset(value: string): boolean {
   return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$/.test(value);
 }
@@ -310,7 +302,6 @@ api.interceptors.request.use((config) => {
   }
 
   config.headers['X-Language'] = i18n.language || 'tr';
-  config.headers['X-Time-Zone'] = getCurrentTimeZone();
 
   const branch = useAuthStore.getState().branch;
   const branchCode = branch?.code || resolveBranchCodeFromPersistedState();
