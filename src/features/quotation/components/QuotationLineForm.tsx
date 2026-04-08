@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
+import { type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,7 @@ import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { quotationApi } from '../api/quotation-api';
 import { quotationLineRequiredSchema, type QuotationLineFormState, type QuotationExchangeRateFormState, type PricingRuleLineGetDto, type UserDiscountLimitDto, type ApprovalStatus } from '../types/quotation-types';
-import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info } from 'lucide-react';
+import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface TemporaryStockData {
@@ -123,6 +123,8 @@ export function QuotationLineForm({
 
   const [formData, setFormData] = useState<QuotationLineFormState>(line);
   const [relatedLines, setRelatedLines] = useState<QuotationLineFormState[]>([]);
+  const [bulkDraftLines, setBulkDraftLines] = useState<QuotationLineFormState[]>([]);
+  const [activeBulkIndex, setActiveBulkIndex] = useState(0);
   const [temporaryStockData, setTemporaryStockData] = useState<TemporaryStockData[]>([]);
   const [lastLoadedProductCode, setLastLoadedProductCode] = useState<string | null>(null);
   const [quantityInputValue, setQuantityInputValue] = useState<string>(String(line.quantity || ''));
@@ -594,6 +596,130 @@ export function QuotationLineForm({
     }
   };
 
+  const handleMultiProductSelect = async (products: ProductSelectionResult[]): Promise<void> => {
+    if (!products.length) return;
+
+    const collectedLines: QuotationLineFormState[] = [];
+
+    for (let productIndex = 0; productIndex < products.length; productIndex++) {
+      const product = products[productIndex];
+      const hasRelatedStocks = product.relatedStockIds && product.relatedStockIds.length > 0;
+
+      if (hasRelatedStocks && handleProductSelectWithRelatedStocks && product.relatedStockIds) {
+        const allLines = await handleProductSelectWithRelatedStocks(product, product.relatedStockIds);
+        const mainLine = allLines[0];
+        if (mainLine) {
+          collectedLines.push({
+            ...mainLine,
+            id: `${mainLine.id}-m${productIndex}-0`,
+            groupCode: mainLine.groupCode || product.groupCode || null,
+            relatedLines: allLines.slice(1).map((line, lineIndex) => ({
+              ...line,
+              id: `${line.id}-m${productIndex}-${lineIndex + 1}`,
+              groupCode: line.groupCode || product.groupCode || null,
+            })),
+          });
+        }
+      } else {
+        const line = await handleProductSelectHook(product);
+        collectedLines.push({
+          ...line,
+          id: `${line.id}-m${productIndex}`,
+          groupCode: line.groupCode || product.groupCode || null,
+        });
+      }
+    }
+
+    if (!collectedLines.length) return;
+    if (bulkDraftLines.length === 0) {
+      const firstLine = collectedLines[0];
+      if (firstLine) {
+        setFormData(firstLine);
+        setQuantityInputValue(String(firstLine.quantity || ''));
+        setVatRateInputValue(String(firstLine.vatRate || ''));
+        setDiscountRate1InputValue(String(firstLine.discountRate1 || ''));
+        setDiscountRate2InputValue(String(firstLine.discountRate2 || ''));
+        setDiscountRate3InputValue(String(firstLine.discountRate3 || ''));
+      }
+    }
+    setBulkDraftLines((prev) => [...prev, ...collectedLines]);
+  };
+
+  const handleBulkDraftConfirm = (): void => {
+    if (!bulkDraftLines.length) return;
+
+    const flattenedLines = bulkDraftLines.flatMap((lineItem) => {
+      const nested = (lineItem as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines ?? [];
+      return [lineItem, ...nested];
+    });
+
+    if (onSaveMultiple) {
+      onSaveMultiple(flattenedLines);
+    } else {
+      const firstLine = bulkDraftLines[0];
+      if (firstLine) {
+        setFormData({ ...firstLine, id: formData.id });
+        const nested = (firstLine as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines ?? [];
+        setRelatedLines(nested);
+      }
+    }
+
+    setBulkDraftLines([]);
+  };
+
+  const handleSelectBulkLine = (index: number): void => {
+    const selected = bulkDraftLines[index];
+    if (!selected) return;
+    setActiveBulkIndex(index);
+    setFormData(selected);
+    setQuantityInputValue(String(selected.quantity || ''));
+    setVatRateInputValue(String(selected.vatRate || ''));
+    setDiscountRate1InputValue(String(selected.discountRate1 || ''));
+    setDiscountRate2InputValue(String(selected.discountRate2 || ''));
+    setDiscountRate3InputValue(String(selected.discountRate3 || ''));
+    const nested = (selected as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines ?? [];
+    setRelatedLines(nested);
+  };
+
+  const handleRemoveBulkDraftLine = (removeIdx: number) => (e: MouseEvent<HTMLButtonElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = bulkDraftLines.filter((_, i) => i !== removeIdx);
+    setBulkDraftLines(next);
+    if (next.length === 0) {
+      setActiveBulkIndex(0);
+      setFormData(line);
+      setQuantityInputValue(String(line.quantity || ''));
+      setVatRateInputValue(String(line.vatRate || ''));
+      setDiscountRate1InputValue(String(line.discountRate1 || ''));
+      setDiscountRate2InputValue(String(line.discountRate2 || ''));
+      setDiscountRate3InputValue(String(line.discountRate3 || ''));
+      const lineRelatedLines =
+        (line as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines || [];
+      setRelatedLines(lineRelatedLines.length > 0 ? lineRelatedLines : []);
+      return;
+    }
+    let newActive = activeBulkIndex;
+    if (removeIdx < activeBulkIndex) {
+      newActive = activeBulkIndex - 1;
+    } else if (removeIdx === activeBulkIndex) {
+      newActive = Math.min(removeIdx, next.length - 1);
+    }
+    setActiveBulkIndex(newActive);
+    const selected = next[newActive];
+    if (selected) {
+      setFormData(selected);
+      setQuantityInputValue(String(selected.quantity || ''));
+      setVatRateInputValue(String(selected.vatRate || ''));
+      setDiscountRate1InputValue(String(selected.discountRate1 || ''));
+      setDiscountRate2InputValue(String(selected.discountRate2 || ''));
+      setDiscountRate3InputValue(String(selected.discountRate3 || ''));
+      const nested =
+        (selected as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines ?? [];
+      setRelatedLines(nested);
+    }
+  };
+
   const handleFieldChange = (field: keyof QuotationLineFormState, value: unknown): void => {
     const updated = { ...formData, [field]: value };
     let calculated = calculateLineTotals(updated);
@@ -688,6 +814,13 @@ export function QuotationLineForm({
     }
 
     setFormData(calculated);
+    if (bulkDraftLines.length > 0) {
+      setBulkDraftLines((prev) =>
+        prev.map((lineItem, index) => (
+          index === activeBulkIndex ? { ...calculated, id: lineItem.id } : lineItem
+        ))
+      );
+    }
 
     if (field === 'quantity' && formData.productCode) {
       setDiscountRate1InputValue(String(calculated.discountRate1 || ''));
@@ -731,6 +864,13 @@ export function QuotationLineForm({
   const totalDiscount = (formData.discountAmount1 || 0) + (formData.discountAmount2 || 0) + (formData.discountAmount3 || 0);
   const hasDiscount = totalDiscount > 0;
   const hasApprovalWarning = discountValidation.exceedsLimit || formData.approvalStatus === 1;
+  const bulkDraftGrandTotal = bulkDraftLines.reduce((sum, item) => sum + (item.lineGrandTotal || 0), 0);
+  const pinkFocusClass = 'focus-visible:border-pink-500 focus-visible:ring-2 focus-visible:ring-pink-500/20';
+  const normalizedUnit = (formData.unit ?? '').trim().toUpperCase();
+  const isQuantityIntegerOnly = normalizedUnit === 'AD' || normalizedUnit === 'ADET';
+  const quantityStep = isQuantityIntegerOnly ? '1' : '0.1';
+  const quantityMin = isQuantityIntegerOnly ? '1' : '0.1';
+  const percentageStep = '0.1';
 
   return (
     <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
@@ -748,14 +888,15 @@ export function QuotationLineForm({
                 value={formData.productCode || ''}
                 placeholder={t('quotation.lines.productCode')}
                 readOnly
-                className="bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-mono text-sm h-11 rounded-xl"
+                onClick={() => setProductDialogOpen(true)}
+                className={`cursor-pointer bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-mono text-sm h-11 rounded-xl ${pinkFocusClass}`}
               />
             </div>
             <Button
               type="button"
               variant="outline"
               onClick={() => setProductDialogOpen(true)}
-              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex-none items-center justify-center"
+              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center justify-center"
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -783,7 +924,7 @@ export function QuotationLineForm({
               value={formData.productName || ''}
               placeholder={t('quotation.lines.productName')}
               readOnly
-              className="bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full"
+                className={`bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full ${pinkFocusClass}`}
             />
           </div>
 
@@ -802,6 +943,56 @@ export function QuotationLineForm({
               searchPlaceholder={t('common.search')}
             />
           </div>
+
+          {bulkDraftLines.length > 0 && (
+            <div className="rounded-xl border border-pink-200/70 dark:border-pink-800/40 bg-pink-50/50 dark:bg-pink-950/10 p-3 space-y-2">
+              <div className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-300">
+                <span className="font-semibold">{t('quotation.lines.stock')} ({bulkDraftLines.length})</span>
+                <span className="inline-flex items-center rounded-full border border-pink-300/70 dark:border-pink-700/50 bg-white/90 dark:bg-pink-900/30 px-2.5 py-1 text-[11px] font-bold text-pink-700 dark:text-pink-300">
+                  {t('quotation.lines.grandTotal')}: {formatCurrency(bulkDraftGrandTotal, currencyCode)}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {bulkDraftLines.map((item, index) => (
+                  <div
+                    key={`${item.id}-${index}`}
+                    className={`inline-flex items-stretch overflow-hidden rounded-full border transition-all ${
+                      index === activeBulkIndex
+                        ? 'border-pink-500 bg-pink-600 shadow-md shadow-pink-500/30 dark:border-pink-400 dark:bg-pink-500'
+                        : 'border-pink-200/80 bg-white/80 dark:border-pink-700/40 dark:bg-pink-900/20'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleSelectBulkLine(index)}
+                      title={item.productName || item.productCode || '-'}
+                      className={`flex h-8 max-w-[180px] items-center gap-1.5 px-3 text-left text-sm transition-colors ${
+                        index === activeBulkIndex
+                          ? 'text-white hover:bg-pink-700/35 dark:hover:bg-white/10'
+                          : 'text-pink-700 hover:bg-pink-50 dark:text-pink-300 dark:hover:bg-pink-900/35'
+                      }`}
+                    >
+                      {(item.relatedLines?.length ?? 0) > 0 ? <Layers className="h-3.5 w-3.5 shrink-0" /> : null}
+                      <span className="truncate font-mono">{item.productCode || '-'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={t('common.remove')}
+                      title={t('common.remove')}
+                      onClick={handleRemoveBulkDraftLine(index)}
+                      className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${
+                        index === activeBulkIndex
+                          ? 'border-pink-400/50 text-white/90 hover:bg-white/15 hover:text-white'
+                          : 'border-pink-200/70 text-pink-600 hover:bg-pink-100 dark:border-pink-700/50 dark:text-pink-300 dark:hover:bg-pink-900/40'
+                      }`}
+                    >
+                      <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -813,8 +1004,8 @@ export function QuotationLineForm({
           </label>
           <Input
             type="number"
-            step="0.000001"
-            min="1"
+            step={quantityStep}
+            min={quantityMin}
             value={quantityInputValue}
             onChange={(e) => {
               const inputValue = e.target.value;
@@ -824,7 +1015,8 @@ export function QuotationLineForm({
               } else {
                 const numValue = parseFloat(inputValue);
                 if (!isNaN(numValue)) {
-                  handleFieldChange('quantity', numValue);
+                  const normalizedQuantity = isQuantityIntegerOnly ? Math.round(numValue) : numValue;
+                  handleFieldChange('quantity', normalizedQuantity);
                 }
               }
             }}
@@ -835,11 +1027,13 @@ export function QuotationLineForm({
               } else {
                 const numValue = parseFloat(quantityInputValue);
                 if (!isNaN(numValue)) {
-                  setQuantityInputValue(String(numValue));
+                  const normalizedQuantity = isQuantityIntegerOnly ? Math.round(numValue) : numValue;
+                  setQuantityInputValue(String(normalizedQuantity));
+                  handleFieldChange('quantity', normalizedQuantity);
                 }
               }
             }}
-            className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-bold text-center focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-extrabold text-center shadow-sm ${pinkFocusClass}`}
           />
         </div>
 
@@ -866,7 +1060,7 @@ export function QuotationLineForm({
                   handleFieldChange('unitPrice', numValue);
                 }
               }}
-              className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-mono font-bold text-center pr-10"
+              className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-mono font-extrabold text-center pr-10 shadow-sm ${pinkFocusClass}`}
             />
             <div className="absolute right-3 top-3 text-xs font-bold text-slate-400 dark:text-slate-500">{t('quotation.lines.currencyTry')}</div>
           </div>
@@ -880,7 +1074,7 @@ export function QuotationLineForm({
           <Input
             value={formData.unit || '-'}
             readOnly
-            className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-medium text-center"
+              className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-semibold text-center shadow-sm ${pinkFocusClass}`}
           />
         </div>
 
@@ -892,7 +1086,7 @@ export function QuotationLineForm({
           <div className="relative">
             <Input
               type="number"
-              step="0.000001"
+              step={percentageStep}
               min="0"
               max="100"
               value={vatRateInputValue}
@@ -919,7 +1113,7 @@ export function QuotationLineForm({
                   }
                 }
               }}
-              className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-bold text-center pr-8 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+              className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-bold text-center pr-8 transition-all ${pinkFocusClass}`}
             />
             <div className="absolute right-3 top-3 text-slate-400 dark:text-slate-500 font-bold">%</div>
           </div>
@@ -946,7 +1140,7 @@ export function QuotationLineForm({
                   </div>
 	                <Input
                   type="number"
-                  step="0.000001"
+                  step={percentageStep}
                   min="0"
                   max="100"
 	                  value={item.val}
@@ -974,7 +1168,7 @@ export function QuotationLineForm({
                     }
                   }}
                   placeholder="0"
-                  className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white focus:ring-purple-500/20 focus:border-purple-500 transition-all text-center"
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white transition-all text-center ${pinkFocusClass}`}
                 />
               </div>
             ))}
@@ -1006,7 +1200,7 @@ export function QuotationLineForm({
                   onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                   maxLength={200}
                   placeholder={t('quotation.lines.max200Chars')}
-                  className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
 
@@ -1019,7 +1213,7 @@ export function QuotationLineForm({
                   onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                   maxLength={200}
                   placeholder={t('quotation.lines.max200Chars')}
-                  className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
 
@@ -1032,7 +1226,7 @@ export function QuotationLineForm({
                   onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                   maxLength={200}
                   placeholder={t('quotation.lines.max200Chars')}
-                  className="h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white"
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
             </div>
@@ -1146,8 +1340,8 @@ export function QuotationLineForm({
             </Button>
             <Button
               type="button"
-              onClick={handleSave}
-              disabled={!formData.productCode || !formData.productName || isSaving}
+              onClick={bulkDraftLines.length > 0 ? handleBulkDraftConfirm : handleSave}
+              disabled={(bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : (!formData.productCode || !formData.productName)) || isSaving}
               className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95"
             >
               {isSaving ? (
@@ -1158,7 +1352,7 @@ export function QuotationLineForm({
               ) : (
                 <>
                   <Check className="h-4 w-4 mr-2" />
-                  {t('quotation.save')}
+                  {t('quotation.save')}{bulkDraftLines.length > 0 ? ` (${bulkDraftLines.length})` : ''}
                 </>
               )}
             </Button>
@@ -1186,6 +1380,14 @@ export function QuotationLineForm({
         open={productDialogOpen}
         onOpenChange={setProductDialogOpen}
         onSelect={handleProductSelect}
+        multiSelect
+        onMultiSelect={handleMultiProductSelect}
+        initialSelectedResults={bulkDraftLines.map((lineItem) => ({
+          code: lineItem.productCode || '',
+          name: lineItem.productName || '',
+          unit: lineItem.unit ?? undefined,
+          groupCode: lineItem.groupCode || undefined,
+        }))}
       />
     </div>
   );

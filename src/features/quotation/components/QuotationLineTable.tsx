@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -27,9 +28,30 @@ import { useDeleteQuotationLine } from '../hooks/useDeleteQuotationLine';
 import { quotationApi } from '../api/quotation-api';
 import { formatCurrency } from '../utils/format-currency';
 import { exportQuotationLinesPdf } from '../utils/export-quotation-lines-pdf';
-import { Trash2, Edit, Plus, ShoppingCart, Box, AlertTriangle, Layers, Loader2, Menu, FileSpreadsheet, FileText, Presentation, X } from 'lucide-react';
+import {
+  Trash2,
+  Edit,
+  Plus,
+  ShoppingCart,
+  Box,
+  AlertTriangle,
+  Layers,
+  Loader2,
+  Menu,
+  FileSpreadsheet,
+  FileText,
+  Presentation,
+  X,
+  Check,
+} from 'lucide-react';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, CreateQuotationLineDto, QuotationLineGetDto } from '../types/quotation-types';
 import { cn } from '@/lib/utils';
+import { mergeLinesAfterMainLineUpdate } from '@/lib/merge-lines-after-main-update';
+import {
+  applyQuotationLineQuickFieldPatch,
+  type QuotationQuickEditField,
+} from '../utils/apply-quotation-line-quick-field-patch';
+import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 
 function toCreateDto(line: QuotationLineFormState, quotationId: number): CreateQuotationLineDto {
   const { id, isEditing, relatedLines, unit, ...rest } = line;
@@ -175,7 +197,13 @@ export function QuotationLineTable({
   const [newLine, setNewLine] = useState<QuotationLineFormState | null>(null);
   const [editLineDialogOpen, setEditLineDialogOpen] = useState(false);
   const [lineToEdit, setLineToEdit] = useState<QuotationLineFormState | null>(null);
+  const [quickEdit, setQuickEdit] = useState<{
+    lineId: string;
+    field: QuotationQuickEditField;
+    draft: string;
+  } | null>(null);
   const { currencyOptions } = useCurrencyOptions();
+  const { data: erpRates = [] } = useExchangeRate();
   const { calculateLineTotals } = useQuotationCalculations();
   const createMutation = useCreateQuotationLines(quotationId ?? 0);
   const updateMutation = useUpdateQuotationLines(quotationId ?? 0);
@@ -293,6 +321,7 @@ export function QuotationLineTable({
   };
 
   const handleAddLine = (): void => {
+    setQuickEdit(null);
     if (!linesEditable) return;
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
       toast.error(t('quotation.error'), {
@@ -329,6 +358,126 @@ export function QuotationLineTable({
   };
 
   const canAddLine = linesEditable && Boolean((customerId || erpCustomerCode) && representativeId && isCurrencySelected);
+
+  const quickPatchDeps = useMemo(
+    () => ({
+      currency,
+      currencyOptions,
+      exchangeRates,
+      erpRates,
+      pricingRules,
+      userDiscountLimits,
+      calculateLineTotals,
+    }),
+    [currency, currencyOptions, exchangeRates, erpRates, pricingRules, userDiscountLimits, calculateLineTotals]
+  );
+
+  const lineAllowsQuickEdit = useCallback(
+    (line: QuotationLineFormState): boolean => {
+      if (!linesEditable || !line.productCode) return false;
+      const isRelatedProduct = line.relatedProductKey != null;
+      const isMainStock = line.isMainRelatedProduct === true;
+      if (isRelatedProduct && !isMainStock) return false;
+      return true;
+    },
+    [linesEditable]
+  );
+
+  const beginQuickEdit = useCallback(
+    (line: QuotationLineFormState, field: QuotationQuickEditField) => {
+      if (!lineAllowsQuickEdit(line) || updateMutation.isPending) return;
+      if (quickEdit && quickEdit.lineId !== line.id) return;
+      const cur = line[field];
+      setQuickEdit({ lineId: line.id, field, draft: String(cur ?? '') });
+    },
+    [lineAllowsQuickEdit, quickEdit, updateMutation.isPending]
+  );
+
+  const cancelQuickEdit = useCallback(() => {
+    setQuickEdit(null);
+  }, []);
+
+  const commitQuickEdit = useCallback(async () => {
+    if (!quickEdit || !linesEditable) return;
+    const originalLine = lines.find((l) => l.id === quickEdit.lineId);
+    if (!originalLine || !lineAllowsQuickEdit(originalLine)) {
+      setQuickEdit(null);
+      return;
+    }
+
+    const raw = quickEdit.draft.replace(',', '.').trim();
+    const parsedFloat = parseFloat(raw);
+    if (raw === '' || Number.isNaN(parsedFloat)) return;
+
+    let value: number;
+    if (quickEdit.field === 'quantity') {
+      const u = (originalLine.unit ?? '').trim().toUpperCase();
+      const intOnly = u === 'AD' || u === 'ADET';
+      if (parsedFloat < 0) return;
+      value = intOnly ? Math.max(1, Math.round(parsedFloat)) : parsedFloat;
+    } else if (quickEdit.field === 'unitPrice') {
+      if (parsedFloat < 0) return;
+      value = parsedFloat;
+    } else {
+      value = Math.min(100, Math.max(0, parsedFloat));
+    }
+
+    const patched = applyQuotationLineQuickFieldPatch(originalLine, quickEdit.field, value, quickPatchDeps);
+    const nextLines = mergeLinesAfterMainLineUpdate(
+      lines,
+      originalLine,
+      patched,
+      undefined,
+      calculateLineTotals
+    );
+
+    const patchedFromNext = nextLines.find((l) => l.id === patched.id);
+    if (!patchedFromNext) {
+      setQuickEdit(null);
+      return;
+    }
+
+    if (isExistingQuotation && quotationId) {
+      const apiTargets =
+        patchedFromNext.relatedProductKey &&
+        patchedFromNext.isMainRelatedProduct &&
+        originalLine.quantity !== patchedFromNext.quantity
+          ? nextLines.filter(
+              (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && parseLineId(l.id) != null
+            )
+          : parseLineId(patchedFromNext.id) != null
+            ? [patchedFromNext]
+            : [];
+
+      if (apiTargets.length > 0) {
+        try {
+          const dtos = apiTargets.map((l) => toUpdateDto(l, quotationId));
+          await updateMutation.mutateAsync(dtos);
+          const fresh = await quotationApi.getQuotationLinesByQuotationId(quotationId);
+          const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
+          setLines(mapped);
+        } catch {
+          void 0;
+        }
+        setQuickEdit(null);
+        return;
+      }
+    }
+
+    setLines(nextLines);
+    setQuickEdit(null);
+  }, [
+    quickEdit,
+    linesEditable,
+    lines,
+    lineAllowsQuickEdit,
+    quickPatchDeps,
+    calculateLineTotals,
+    isExistingQuotation,
+    quotationId,
+    updateMutation,
+    setLines,
+  ]);
 
   const handleSaveNewLine = useCallback(
     async (line: QuotationLineFormState): Promise<void> => {
@@ -408,6 +557,7 @@ export function QuotationLineTable({
   };
 
   const handleEditLine = (id: string): void => {
+    setQuickEdit(null);
     if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
     if (!line) return;
@@ -432,32 +582,15 @@ export function QuotationLineTable({
     relatedLinesToUpdate: QuotationLineFormState[] | undefined,
     originalLine: QuotationLineFormState
   ): void => {
-    const isQuantityChanged = originalLine.quantity !== updatedLine.quantity;
-    const isMainLine = updatedLine.isMainRelatedProduct === true;
-
-    if (relatedLinesToUpdate && relatedLinesToUpdate.length > 0) {
-      const allUpdatedLines = [updatedLine, ...relatedLinesToUpdate].map((line) => ({ ...line, isEditing: false }));
-      setLines(lines.map((line) => {
-        const updated = allUpdatedLines.find((ul) => ul.id === line.id);
-        if (updated) return updated;
-        if (isQuantityChanged && isMainLine && updatedLine.relatedProductKey && line.relatedProductKey === updatedLine.relatedProductKey) {
-          const quantityRatio = updatedLine.quantity / originalLine.quantity;
-          return calculateLineTotals({ ...line, quantity: line.quantity * quantityRatio });
-        }
-        return line;
-      }));
-    } else if (isQuantityChanged && isMainLine && updatedLine.relatedProductKey) {
-      const quantityRatio = updatedLine.quantity / originalLine.quantity;
-      setLines(lines.map((line) => {
-        if (line.id === updatedLine.id) return { ...updatedLine, isEditing: false };
-        if (line.relatedProductKey === updatedLine.relatedProductKey) {
-          return calculateLineTotals({ ...line, quantity: line.quantity * quantityRatio });
-        }
-        return line;
-      }));
-    } else {
-      setLines(lines.map((line) => line.id === updatedLine.id ? { ...updatedLine, isEditing: false } : line));
-    }
+    setLines(
+      mergeLinesAfterMainLineUpdate(
+        lines,
+        originalLine,
+        updatedLine,
+        relatedLinesToUpdate,
+        calculateLineTotals
+      )
+    );
   };
 
   const handleSaveLine = async (
@@ -740,27 +873,198 @@ export function QuotationLineTable({
                         </td>
 
                         <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-4")}>
-                          <span className="font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm">
-                            {formatCurrency(line.unitPrice, currencyCode)}
-                          </span>
+                          {quickEdit?.lineId === line.id && quickEdit.field === 'unitPrice' ? (
+                            <div
+                              className="flex items-center justify-end gap-1"
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Input
+                                type="number"
+                                step="0.000001"
+                                min={0}
+                                value={quickEdit.draft}
+                                onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                className="h-8 w-[104px] rounded-lg border-pink-500/50 text-sm font-mono px-2"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') void commitQuickEdit();
+                                  if (e.key === 'Escape') cancelQuickEdit();
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                onClick={() => void commitQuickEdit()}
+                                disabled={updateMutation.isPending}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 text-zinc-500"
+                                onClick={cancelQuickEdit}
+                                disabled={updateMutation.isPending}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <span
+                              className={cn(
+                                'font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm',
+                                lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:ring-2 hover:ring-pink-500/25 rounded-lg'
+                              )}
+                              title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                beginQuickEdit(line, 'unitPrice');
+                              }}
+                            >
+                              {formatCurrency(line.unitPrice, currencyCode)}
+                            </span>
+                          )}
                         </td>
 
                         <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}>
-                          <span className="inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
-                            {line.quantity}
-                          </span>
+                          {quickEdit?.lineId === line.id && quickEdit.field === 'quantity' ? (
+                            <div
+                              className="flex items-center justify-center gap-1"
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Input
+                                type="number"
+                                step={
+                                  (line.unit ?? '').trim().toUpperCase() === 'AD' ||
+                                  (line.unit ?? '').trim().toUpperCase() === 'ADET'
+                                    ? '1'
+                                    : '0.1'
+                                }
+                                min={0.1}
+                                value={quickEdit.draft}
+                                onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                className="h-8 w-16 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') void commitQuickEdit();
+                                  if (e.key === 'Escape') cancelQuickEdit();
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                onClick={() => void commitQuickEdit()}
+                                disabled={updateMutation.isPending}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 text-zinc-500"
+                                onClick={cancelQuickEdit}
+                                disabled={updateMutation.isPending}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <span
+                              className={cn(
+                                'inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums',
+                                lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:border-pink-400/60'
+                              )}
+                              title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                beginQuickEdit(line, 'quantity');
+                              }}
+                            >
+                              {line.quantity}
+                            </span>
+                          )}
                         </td>
 
-                        {[
-                          { rate: line.discountRate1, amount: line.discountAmount1 },
-                          { rate: line.discountRate2, amount: line.discountAmount2 },
-                          { rate: line.discountRate3, amount: line.discountAmount3 },
-                        ].map((discount, i) => {
+                        {(
+                          [
+                            { rate: line.discountRate1, amount: line.discountAmount1, field: 'discountRate1' as const },
+                            { rate: line.discountRate2, amount: line.discountAmount2, field: 'discountRate2' as const },
+                            { rate: line.discountRate3, amount: line.discountAmount3, field: 'discountRate3' as const },
+                          ] as const
+                        ).map((discount) => {
                           const hasDiscount = discount.rate > 0 || discount.amount > 0;
+                          const isEditingDiscount =
+                            quickEdit?.lineId === line.id && quickEdit.field === discount.field;
                           return (
-                            <td key={i} className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}>
-                              {hasDiscount ? (
-                                <div className="inline-flex min-w-[96px] flex-col items-center gap-1 rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-2 py-1.5 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                            <td
+                              key={discount.field}
+                              className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}
+                            >
+                              {isEditingDiscount ? (
+                                <div
+                                  className="flex flex-col items-center gap-1"
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Input
+                                      type="number"
+                                      step="0.1"
+                                      min={0}
+                                      max={100}
+                                      value={quickEdit.draft}
+                                      onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                      className="h-8 w-14 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
+                                      autoFocus
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') void commitQuickEdit();
+                                        if (e.key === 'Escape') cancelQuickEdit();
+                                      }}
+                                    />
+                                    <span className="text-xs font-bold text-zinc-500">%</span>
+                                    <Button
+                                      type="button"
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-8 w-8 shrink-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                      onClick={() => void commitQuickEdit()}
+                                      disabled={updateMutation.isPending}
+                                    >
+                                      <Check className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-8 w-8 shrink-0 text-zinc-500"
+                                      onClick={cancelQuickEdit}
+                                      disabled={updateMutation.isPending}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : hasDiscount ? (
+                                <div
+                                  className={cn(
+                                    'inline-flex min-w-[96px] flex-col items-center gap-1 rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-2 py-1.5 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20',
+                                    lineAllowsQuickEdit(line) &&
+                                      'cursor-pointer hover:ring-2 hover:ring-pink-500/20'
+                                  )}
+                                  title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    beginQuickEdit(line, discount.field);
+                                  }}
+                                >
                                   <span className="text-[11px] font-black leading-none text-emerald-700 dark:text-emerald-300">
                                     %{discount.rate}
                                   </span>
@@ -769,7 +1073,18 @@ export function QuotationLineTable({
                                   </span>
                                 </div>
                               ) : (
-                                <span className="inline-flex min-w-[96px] justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-2 py-2 text-[11px] font-semibold text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600">
+                                <span
+                                  className={cn(
+                                    'inline-flex min-w-[96px] justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-2 py-2 text-[11px] font-semibold text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600',
+                                    lineAllowsQuickEdit(line) &&
+                                      'cursor-pointer hover:border-pink-400/50 hover:text-zinc-600 dark:hover:text-zinc-400'
+                                  )}
+                                  title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    beginQuickEdit(line, discount.field);
+                                  }}
+                                >
                                   İndirim yok
                                 </span>
                               )}

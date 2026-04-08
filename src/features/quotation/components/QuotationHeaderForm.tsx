@@ -54,7 +54,7 @@ import type { QuotationNotesDto } from '../types/quotation-types';
 import { 
   User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
-  Layers, SearchX,  BookUser, Building2, Phone, Mail, Folder,
+  Layers, SearchX,  BookUser, Building2, Folder,
   ListPlus, X, MapPin, Banknote, Search
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
@@ -337,25 +337,17 @@ export function QuotationHeaderForm({
     setPendingPreviousCurrency(null);
   };
 
-  const currencyConfig = useMemo(() => {
-    const val = String(watchedCurrency);
-    switch (val) {
-      case '1': return { color: "text-red-500", bg: "bg-red-50/50 dark:bg-red-950/20", border: "border-red-200 dark:border-red-800/50" };
-      case '2': return { color: "text-blue-500", bg: "bg-blue-50/50 dark:bg-blue-950/20", border: "border-blue-200 dark:border-blue-800/50" };
-      case '3': return { color: "text-amber-500", bg: "bg-amber-50/50 dark:bg-amber-950/20", border: "border-amber-200 dark:border-amber-800/50" };
-      default: return { color: "text-emerald-500", bg: "bg-emerald-50/50 dark:bg-emerald-950/20", border: "border-emerald-200 dark:border-emerald-800/50" };
-    }
-  }, [watchedCurrency]);
-
   const styles = {
-    glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl shadow-sm transition-all duration-300 hover:shadow-md",
-    inputBase: "h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none w-full",
-    label: "text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-2",
+    glassCard: "relative overflow-hidden rounded-2xl border border-slate-400/80 dark:border-zinc-700/85 bg-white/88 dark:bg-zinc-900/48 backdrop-blur-xl shadow-[0_1px_0_rgba(15,23,42,0.05),0_14px_30px_-24px_rgba(15,23,42,0.4)] ring-1 ring-slate-300/60 dark:ring-white/10 transition-all duration-300 hover:shadow-md",
+    inputBase: "h-11 bg-white dark:bg-zinc-950 border-slate-400/75 dark:border-zinc-700 rounded-xl shadow-sm transition-all duration-300 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none w-full",
+    label: "text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider mb-2 flex items-center gap-2",
     iconWrapper: "absolute left-3 top-1/2 -translate-y-1/2 transition-colors z-20 flex items-center justify-center pointer-events-none",
-    selectTrigger: "w-full h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 hover:border-pink-400 dark:hover:border-zinc-700 transition-all shadow-sm rounded-xl focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none",
-    selectContent: "rounded-xl border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl",
+    selectTrigger: "w-full h-11 bg-white dark:bg-zinc-950 border-slate-500/80 dark:border-zinc-600 hover:border-pink-400 dark:hover:border-zinc-500 transition-all shadow-[0_1px_0_rgba(15,23,42,0.05),0_6px_14px_-10px_rgba(15,23,42,0.35)] rounded-xl focus:ring-4 focus:ring-pink-500/12 focus:border-pink-500 outline-none text-slate-800 dark:text-zinc-100",
+    selectContent: "rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 shadow-2xl backdrop-blur-xl",
     selectItem: "focus:bg-pink-50 dark:focus:bg-pink-900/10 focus:text-pink-600 cursor-pointer rounded-lg m-1"
   };
+  const getIconTone = (hasValue: boolean): string =>
+    hasValue ? 'text-pink-500' : 'text-zinc-400 group-focus-within:text-pink-500';
 
   const forcePaddingStyle = { paddingLeft: '3rem' };
 
@@ -377,7 +369,7 @@ export function QuotationHeaderForm({
                   </div>
                   <div className="flex gap-2">
                     <div className="relative flex-1 group min-w-0">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 z-20 pointer-events-none group-focus-within:text-pink-500 transition-colors">
+                      <div className={cn("absolute left-3 top-1/2 -translate-y-1/2 z-20 pointer-events-none transition-colors", customerSearchQuery?.trim() ? "text-pink-500" : "text-zinc-400 group-focus-within:text-pink-500")}>
                         <Search className="h-4 w-4" />
                       </div>
                       <FormControl>
@@ -390,18 +382,6 @@ export function QuotationHeaderForm({
                             if (!customerComboboxOpen) setCustomerComboboxOpen(true);
                           }}
                           onFocus={() => setCustomerComboboxOpen(true)}
-                          onBlur={() => {
-                            setTimeout(() => {
-                              if (customerSearchQuery !== customerDisplayValue) {
-                                if (!customerSearchQuery.trim()) {
-                                  form.setValue('quotation.potentialCustomerId', null);
-                                  form.setValue('quotation.erpCustomerCode', null);
-                                } else {
-                                  setCustomerSearchQuery(customerDisplayValue);
-                                }
-                              }
-                            }, 200);
-                          }}
                           placeholder={t('quotation.header.selectCustomer')}
                           disabled={readOnly}
                           autoComplete="off"
@@ -448,10 +428,6 @@ export function QuotationHeaderForm({
                                           )}
                                         </div>
                                         {option.code && <span className="text-[11px] text-zinc-500 font-mono">{option.code}</span>}
-                                      </div>
-                                      <div className="hidden sm:flex flex-col items-end gap-0.5 text-[10px] text-zinc-400">
-                                        {option.phone && <div className="flex items-center gap-1"><Phone size={10} />{option.phone}</div>}
-                                        {option.email && <div className="flex items-center gap-1"><Mail size={10} />{option.email}</div>}
                                       </div>
                                     </div>
                                   </CommandItem>
@@ -574,7 +550,7 @@ export function QuotationHeaderForm({
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.currency')}>Para Birimi</FormLabel>
                     <div className="relative">
-                      <div className={cn(styles.iconWrapper, currencyConfig.color)}>
+                      <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
                         <Banknote className="h-4 w-4" />
                       </div>
                       <FormControl>
@@ -589,9 +565,6 @@ export function QuotationHeaderForm({
                           className={cn(
                             styles.selectTrigger,
                             "pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
-                            currencyConfig.color,
-                            currencyConfig.bg,
-                            currencyConfig.border,
                             "hover:brightness-95 dark:hover:brightness-110"
                           )}
                           disabled={readOnly}
@@ -609,7 +582,7 @@ export function QuotationHeaderForm({
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>{t('quotation.header.paymentType')}</FormLabel>
                     <div className="relative">
-                      <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}>
+                      <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
                         <CreditCard className="h-4 w-4" />
                       </div>
                       <FormControl>
@@ -654,7 +627,7 @@ export function QuotationHeaderForm({
                         {t('common.offerType.label')}
                       </FormLabel>
                       <div className="relative">
-                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Layers className="h-4 w-4" /></div>
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
                             options={[
@@ -681,7 +654,7 @@ export function QuotationHeaderForm({
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>{t('quotation.header.deliveryMethod', { defaultValue: 'Teslim Şekli' })}</FormLabel>
                         <div className="relative">
-                          <div className={styles.iconWrapper}><Truck className="h-4 w-4 text-zinc-400 group-focus-within:text-pink-500" /></div>
+                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={deliveryMethodDropdown.options}
@@ -712,7 +685,7 @@ export function QuotationHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>Teklif T.</FormLabel>
                       <div className="relative">
-                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Calendar className="h-4 w-4" /></div>
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Calendar className="h-4 w-4" /></div>
                         <FormControl>
                           <Input 
                             type="date" 
@@ -734,7 +707,7 @@ export function QuotationHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>Teslim T.</FormLabel>
                       <div className="relative">
-                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Truck className="h-4 w-4" /></div>
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                         <FormControl>
                           <Input 
                             type="date" 
@@ -772,7 +745,7 @@ export function QuotationHeaderForm({
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.documentSerialTypeId')}>Seri No</FormLabel>
                         <div className="relative">
-                          <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Hash className="h-4 w-4" /></div>
+                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Hash className="h-4 w-4" /></div>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={availableDocumentSerialTypes
@@ -802,7 +775,7 @@ export function QuotationHeaderForm({
                           {t('quotation.header.projectCode')}
                         </FormLabel>
                         <div className="relative">
-                          <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Folder className="h-4 w-4" /></div>
+                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
                           <VoiceSearchCombobox
                             className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 **:pl-8")}
                             value={field.value || ''}

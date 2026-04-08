@@ -33,6 +33,13 @@ import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 
+const CREATE_SECTION_CARD_CLASSNAME =
+  'rounded-2xl overflow-hidden border border-slate-400 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_28px_-22px_rgba(15,23,42,0.40)] ring-1 ring-slate-300/70 dark:border-white/16 dark:bg-[#120b1d]/82 dark:ring-white/12';
+const CREATE_SECTION_HEADER_CLASSNAME =
+  'px-5 py-4 flex items-center gap-3 border-b border-slate-400/75 bg-slate-100/85 dark:border-white/12 dark:bg-white/[0.07]';
+const CREATE_HEADER_FORM_SURFACE_CLASSNAME =
+  '[&_label]:text-slate-800 dark:[&_label]:text-slate-200 [&_input]:border-slate-500/70 [&_input]:bg-white [&_input]:shadow-sm [&_input]:placeholder:text-slate-400 [&_input]:focus-visible:border-pink-500/85 [&_input]:focus-visible:ring-pink-200/70 dark:[&_input]:border-white/20 dark:[&_input]:bg-[#120d1d] dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus-visible:border-pink-400/60 dark:[&_input]:focus-visible:ring-pink-400/20 [&_textarea]:border-slate-500/70 [&_textarea]:bg-white [&_textarea]:shadow-sm [&_textarea]:placeholder:text-slate-400 [&_textarea]:focus-visible:border-pink-500/85 [&_textarea]:focus-visible:ring-pink-200/70 dark:[&_textarea]:border-white/20 dark:[&_textarea]:bg-[#120d1d] dark:[&_textarea]:placeholder:text-slate-500 dark:[&_textarea]:focus-visible:border-pink-400/60 dark:[&_textarea]:focus-visible:ring-pink-400/20 [&_[data-slot=select-trigger]]:border-slate-500/70 [&_[data-slot=select-trigger]]:bg-white [&_[data-slot=select-trigger]]:shadow-sm dark:[&_[data-slot=select-trigger]]:border-white/20 dark:[&_[data-slot=select-trigger]]:bg-[#120d1d]';
+
 function addDaysToDateOnly(dateValue: string, days: number): string {
   const date = new Date(`${dateValue}T12:00:00`);
   if (Number.isNaN(date.getTime())) return dateValue;
@@ -443,9 +450,9 @@ export function QuotationCreateForm(): ReactElement {
               
               {/* --- 1. Bölüm: Teklif Bilgileri --- */}
               <section aria-label={t('quotation.sections.header')}>
-                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
+                <div className={CREATE_SECTION_CARD_CLASSNAME}>
                   {/* Başlık Alanı */}
-                  <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+                  <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
                       1
                     </div>
@@ -458,7 +465,7 @@ export function QuotationCreateForm(): ReactElement {
                   </div>
 
                   {/* Form İçeriği */}
-                  <div className="p-5">
+                  <div className={`border-t border-slate-300/75 bg-white/88 p-5 dark:border-white/8 dark:bg-[#130d21]/52 ${CREATE_HEADER_FORM_SURFACE_CLASSNAME}`}>
                     <QuotationHeaderForm
                       exchangeRates={exchangeRates}
                       onExchangeRatesChange={setExchangeRates}
@@ -479,8 +486,8 @@ export function QuotationCreateForm(): ReactElement {
 
               {/* --- 2. Bölüm: Teklif Satırları --- */}
               <section aria-label={t('quotation.sections.lines')}>
-                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
-                   <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+                <div className={CREATE_SECTION_CARD_CLASSNAME}>
+                   <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
                       2
                     </div>
@@ -513,8 +520,8 @@ export function QuotationCreateForm(): ReactElement {
 
             {/* SAĞ KISIM: Özet */}
             <aside className="xl:sticky xl:top-6 w-full">
-              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
-                <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+              <div className={CREATE_SECTION_CARD_CLASSNAME}>
+                <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
                       3
                     </div>
