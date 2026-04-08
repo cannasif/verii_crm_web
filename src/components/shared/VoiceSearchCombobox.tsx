@@ -213,13 +213,13 @@ export function VoiceSearchCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl rounded-2xl" align="start">
+      <PopoverContent className="w-[--radix-popover-trigger-width] overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10" align="start">
         <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
           <CommandInput 
             placeholder={searchPlaceholder || t('common.search')} 
             value={searchQuery}
             onValueChange={setSearchQuery}
-            className="border-b border-slate-100 dark:border-white/5 bg-transparent"
+            className="border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-transparent"
           >
              {isThresholdMode ? (
                <Tooltip>
@@ -255,7 +255,7 @@ export function VoiceSearchCombobox({
           </CommandInput>
           <CommandList
             onScroll={handleListScroll}
-            className="p-2 custom-scrollbar space-y-1"
+            className="custom-scrollbar space-y-1 p-2"
             style={{ minHeight: DROPDOWN_MAX_HEIGHT_PX, maxHeight: DROPDOWN_MAX_HEIGHT_PX, overflowY: 'auto', overscrollBehavior: 'contain' }}
           >
             <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
@@ -276,7 +276,7 @@ export function VoiceSearchCombobox({
                       onSelect(option.value === value ? null : option.value)
                       setOpen(false)
                     }}
-                    className="cursor-pointer rounded-xl px-3 py-2.5 data-[selected=true]:bg-slate-100 dark:data-[selected=true]:bg-white/10 data-[selected=true]:text-slate-900 dark:data-[selected=true]:text-white transition-colors"
+                    className="cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all hover:border-slate-200 hover:bg-slate-50 data-[selected=true]:border-pink-200 data-[selected=true]:bg-pink-50 data-[selected=true]:text-slate-900 dark:hover:border-white/12 dark:hover:bg-white/8 dark:data-[selected=true]:border-pink-400/35 dark:data-[selected=true]:bg-pink-900/25 dark:data-[selected=true]:text-white"
                   >
                     <Check
                       className={cn(

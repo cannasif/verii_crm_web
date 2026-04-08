@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import type { CustomerDto } from '@/features/customer-management/types/customer-types';
 import { cn } from '@/lib/utils';
 import {
-  Phone, Mail, ChevronRight, Search, Mic, Building2, User, X,
+  Phone, Mail, ChevronRight, Search, Mic, Building2, UserRound, X, MapPin,
   Users, LayoutGrid, List, AlertCircle, SlidersHorizontal,
 } from 'lucide-react';
 import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
@@ -46,31 +46,43 @@ interface CustomerSelectDialogProps {
   className?: string;
 }
 
+/** ERP: entegre veya ERP müşteri kodu dolu; aksi halde potansiyel. */
+export function resolveCustomerSelectKind(c: CustomerDto): 'erp' | 'crm' {
+  if (c.isIntegrated === true) return 'erp';
+  const code = c.customerCode != null ? String(c.customerCode).trim() : '';
+  if (code.length > 0) return 'erp';
+  return 'crm';
+}
+
 interface CustomerCardProps {
   type: 'erp' | 'crm';
   name: string;
   customerCode?: string;
   phone?: string;
   email?: string;
+  address?: string;
   city?: string;
   district?: string;
   onClick: () => void;
   viewMode: 'list' | 'grid';
+  /** Sadece "Tümü" sekmesinde: kart üzerinde ERP / Potansiyel etiketi */
+  showKindBadge?: boolean;
 }
 
 const INPUT_STYLE = `
   h-12 rounded-xl
-  bg-slate-50 dark:bg-[#0f0a18] 
-  border border-slate-200 dark:border-white/10 
+  bg-white dark:bg-[#0f0a18]
+  border border-slate-300 dark:border-white/10
+  shadow-sm
   text-slate-900 dark:text-white text-sm
-  placeholder:text-slate-400 dark:placeholder:text-slate-600 
-  
+  placeholder:text-slate-500 dark:placeholder:text-slate-600
+
   focus-visible:bg-white dark:focus-visible:bg-[#1a1025]
-  focus-visible:border-pink-500 dark:focus-visible:border-pink-500/70
-  focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
-  
-  focus:ring-2 focus:ring-pink-500/10 focus:ring-offset-0 focus:border-pink-500
-  
+  focus-visible:border-pink-300 dark:focus-visible:border-pink-400/50
+  focus-visible:ring-2 focus-visible:ring-pink-200/60 dark:focus-visible:ring-pink-400/15 focus-visible:ring-offset-0
+
+  focus:ring-2 focus:ring-pink-200/50 dark:focus:ring-pink-400/15 focus:ring-offset-0 focus:border-pink-300
+
   transition-all duration-200
 `;
 
@@ -80,45 +92,81 @@ function CustomerCard({
   customerCode,
   phone,
   email,
+  address,
+  city,
+  district,
   onClick,
   viewMode,
+  showKindBadge = false,
 }: CustomerCardProps): ReactElement {
+  const { t } = useTranslation('customer-select-dialog');
+  const locationLabel = [city, district].filter((v): v is string => Boolean(v && v.trim())).join(', ');
+  const shortAddress = (address ?? '').trim();
+  const trimmedAddress = shortAddress.length > 52 ? `${shortAddress.slice(0, 52)}...` : shortAddress;
+  const kindBadge =
+    showKindBadge ? (
+      <span
+        className={cn(
+          'inline-flex shrink-0 items-center rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide sm:text-[10px]',
+          type === 'erp'
+            ? 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200'
+            : 'bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-200'
+        )}
+      >
+        {type === 'erp' ? t('erp') : t('crm')}
+      </span>
+    ) : null;
+
   if (viewMode === 'grid') {
     return (
       <div
         onClick={onClick}
         className={cn(
-          "group flex flex-col gap-3 p-4 rounded-xl border transition-all duration-200 cursor-pointer h-full",
-          "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:-translate-y-1 hover:shadow-lg"
+          'group flex h-full cursor-pointer flex-col gap-2 rounded-lg border p-2.5 transition-all duration-200 sm:p-3',
+          'border-slate-400/80 bg-white shadow-sm dark:border-white/5 dark:bg-white/5',
+          'hover:border-pink-300/80 hover:bg-pink-50/40 hover:shadow-sm dark:hover:border-pink-400/20 dark:hover:bg-white/10'
         )}
       >
-        <div className="flex items-start justify-between w-full">
-          <div className={cn(
-            "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-            type === 'erp'
-              ? "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
-              : "bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400"
-          )}>
-            {type === 'erp' ? <Building2 size={24} /> : <User size={24} />}
+        <div className="flex w-full items-start justify-between gap-2">
+          <div
+            className={cn(
+              'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg shadow-sm sm:h-10 sm:w-10',
+              type === 'erp'
+                ? 'bg-purple-100 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400'
+                : 'bg-rose-50 text-rose-600 dark:bg-pink-950/40 dark:text-pink-300'
+            )}
+          >
+            {type === 'erp' ? <Building2 size={18} className="sm:h-5 sm:w-5" /> : <UserRound size={18} className="sm:h-5 sm:w-5" />}
           </div>
-          {customerCode && (
-            <span className="text-[10px] font-mono font-medium px-2 py-1 rounded-md bg-slate-200/50 dark:bg-white/5 text-slate-600 dark:text-slate-400">
+          {customerCode ? (
+            <span className="max-w-[45%] truncate rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-600 dark:bg-white/5 dark:text-slate-400 sm:text-[10px]">
               {customerCode}
             </span>
-          )}
+          ) : null}
         </div>
 
-        <div className="flex flex-col gap-1 mt-1">
-          <span className="font-semibold text-base text-slate-900 dark:text-zinc-100 line-clamp-2 leading-tight min-h-10">{name}</span>
+        <div className="min-h-[2.25rem] space-y-1">
+          <div className="flex flex-wrap items-start gap-1.5 gap-y-1">
+            <span className="line-clamp-3 min-w-0 flex-1 break-words text-xs font-semibold leading-snug text-slate-900 dark:text-zinc-100 sm:text-sm">
+              {name}
+            </span>
+            {kindBadge}
+          </div>
         </div>
 
-        <div className="mt-auto pt-3 space-y-2 border-t border-slate-200/50 dark:border-white/5">
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
-            <Phone size={14} className="shrink-0 opacity-70" />
+        <div className="mt-auto space-y-1 border-t border-slate-200 pt-2 dark:border-white/5">
+          {(locationLabel || trimmedAddress) ? (
+            <div className="flex min-w-0 items-center gap-1.5 text-[10px] text-slate-600 dark:text-zinc-400 sm:text-[11px]">
+              <MapPin size={11} className="shrink-0 opacity-70 sm:h-3.5 sm:w-3.5" />
+              <span className="truncate">{locationLabel || trimmedAddress}</span>
+            </div>
+          ) : null}
+          <div className="flex min-w-0 items-center gap-1.5 text-[10px] text-slate-500 dark:text-zinc-400 sm:text-[11px]">
+            <Phone size={11} className="shrink-0 opacity-70 sm:h-3.5 sm:w-3.5" />
             <span className="truncate">{phone || '-'}</span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
-            <Mail size={14} className="shrink-0 opacity-70" />
+          <div className="flex min-w-0 items-center gap-1.5 text-[10px] text-slate-500 dark:text-zinc-400 sm:text-[11px]">
+            <Mail size={11} className="shrink-0 opacity-70 sm:h-3.5 sm:w-3.5" />
             <span className="truncate">{email || '-'}</span>
           </div>
         </div>
@@ -130,39 +178,51 @@ function CustomerCard({
     <div
       onClick={onClick}
       className={cn(
-        "group flex items-center gap-4 p-3 rounded-xl border transition-all duration-200 cursor-pointer",
-        "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10"
+        'group flex cursor-pointer items-center gap-2 rounded-lg border p-2 transition-all duration-200 sm:gap-2.5 sm:p-2.5',
+        'border-slate-400/80 bg-white shadow-sm dark:border-white/5 dark:bg-white/5',
+        'hover:border-pink-300/80 hover:bg-pink-50/35 dark:hover:border-pink-400/20 dark:hover:bg-white/10'
       )}
     >
-      <div className="flex items-center gap-3 min-w-[88px] sm:min-w-[30%] max-w-full sm:max-w-[40%]">
-        <div className={cn(
-          "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
+      <div
+        className={cn(
+          'flex h-8 w-8 shrink-0 items-center justify-center rounded-full sm:h-9 sm:w-9',
           type === 'erp'
-            ? "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
-            : "bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400"
-        )}>
-          {type === 'erp' ? <Building2 size={18} /> : <User size={18} />}
+            ? 'bg-purple-100 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400'
+            : 'bg-rose-50 text-rose-600 dark:bg-pink-950/40 dark:text-pink-300'
+        )}
+      >
+        {type === 'erp' ? <Building2 size={15} className="sm:h-4 sm:w-4" /> : <UserRound size={15} className="sm:h-4 sm:w-4" />}
+      </div>
+      <div className="min-w-0 flex-1 sm:max-w-[min(100%,38%)] sm:shrink-0 lg:max-w-[min(100%,34%)]">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="line-clamp-2 min-w-0 flex-1 break-words text-[11px] font-medium leading-snug text-slate-900 dark:text-zinc-200 sm:text-xs">
+            {name}
+          </span>
+          {kindBadge}
         </div>
-        <div className="flex flex-col min-w-0">
-          <span className="font-medium text-sm text-slate-900 dark:text-zinc-200 truncate">{name}</span>
-          {customerCode && (
-            <span className="text-xs text-slate-500 dark:text-zinc-500 font-mono truncate">{customerCode}</span>
-          )}
-        </div>
+        {customerCode ? (
+          <span className="mt-0.5 block truncate font-mono text-[10px] text-slate-500 dark:text-zinc-500 sm:text-[11px]">{customerCode}</span>
+        ) : null}
       </div>
 
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400 min-w-0">
-          <Phone size={14} className="shrink-0 opacity-50" />
+      <div className="grid min-w-0 flex-1 grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-x-3 sm:gap-y-0">
+        {(locationLabel || trimmedAddress) ? (
+          <div className="flex min-w-0 items-center gap-1 text-[10px] text-slate-600 dark:text-zinc-400 sm:text-[11px]">
+            <MapPin size={11} className="shrink-0 opacity-60 sm:h-3.5 sm:w-3.5" />
+            <span className="truncate">{locationLabel || trimmedAddress}</span>
+          </div>
+        ) : null}
+        <div className="flex min-w-0 items-center gap-1 text-[10px] text-slate-500 dark:text-zinc-400 sm:text-[11px]">
+          <Phone size={11} className="shrink-0 opacity-60 sm:h-3.5 sm:w-3.5" />
           <span className="truncate">{phone || '-'}</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400 min-w-0">
-          <Mail size={14} className="shrink-0 opacity-50" />
+        <div className="flex min-w-0 items-center gap-1 text-[10px] text-slate-500 dark:text-zinc-400 sm:text-[11px]">
+          <Mail size={11} className="shrink-0 opacity-60 sm:h-3.5 sm:w-3.5" />
           <span className="truncate">{email || '-'}</span>
         </div>
       </div>
 
-      <ChevronRight className="w-5 h-5 text-slate-400 dark:text-zinc-600 group-hover:text-slate-600 dark:group-hover:text-zinc-400 transition-colors shrink-0" />
+      <ChevronRight className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-pink-400/90 dark:text-zinc-600 dark:group-hover:text-pink-300 sm:h-4 sm:w-4" />
     </div>
   );
 }
@@ -174,7 +234,7 @@ export function CustomerSelectDialog({
   className,
 }: CustomerSelectDialogProps): ReactElement {
   const { t, i18n } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'erp' | 'potential' | 'all'>('erp');
+  const [activeTab, setActiveTab] = useState<'potential' | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
@@ -282,17 +342,12 @@ export function CustomerSelectDialog({
   });
 
   const displayCustomers = useMemo(() => {
-    const isErp = (c: CustomerDto): boolean => c.isIntegrated === true;
     return customers.map((c) => ({
       ...c,
-      type: (isErp(c) ? 'erp' : 'crm') as 'erp' | 'crm',
+      type: resolveCustomerSelectKind(c),
     }));
   }, [customers]);
 
-  const erpCustomers = useMemo(
-    () => displayCustomers.filter((c) => c.type === 'erp'),
-    [displayCustomers]
-  );
   const potentialCustomers = useMemo(
     () => displayCustomers.filter((c) => c.type === 'crm'),
     [displayCustomers]
@@ -336,12 +391,13 @@ export function CustomerSelectDialog({
 
   const renderCustomerList = (
     list: Array<CustomerDto & { type: 'erp' | 'crm' }>,
-    emptyKey: string
+    emptyKey: string,
+    showKindBadge = false
   ): ReactElement => {
     if (isCustomersLoading) {
       return (
         <div className="flex items-center justify-center py-12">
-          <div className="text-zinc-500">
+          <div className="text-slate-600 dark:text-zinc-500">
             {t('customerSelectDialog.loading')}
           </div>
         </div>
@@ -351,7 +407,7 @@ export function CustomerSelectDialog({
     if (list.length === 0) {
       return (
         <div className="flex items-center justify-center py-12">
-          <div className="text-zinc-500">
+          <div className="text-slate-600 dark:text-zinc-500">
             {searchQuery.trim() || hasAdvancedFilters
               ? t('customerSelectDialog.noResults')
               : t(emptyKey, { ns: 'customer-select-dialog', defaultValue: 'Müşteri bulunamadı' })}
@@ -362,10 +418,12 @@ export function CustomerSelectDialog({
 
     return (
       <div>
-        <div className={cn(
-          "grid gap-3",
-          viewMode === 'list' ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-        )}>
+        <div
+          className={cn(
+            'grid gap-2 sm:gap-3',
+            viewMode === 'list' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+          )}
+        >
           {list.map((customer) => (
             <CustomerCard
               key={`customer-${customer.id}`}
@@ -374,15 +432,17 @@ export function CustomerSelectDialog({
               customerCode={customer.customerCode ?? undefined}
               phone={customer.phone}
               email={customer.email}
+              address={customer.address}
               city={customer.cityName}
               district={customer.districtName}
               onClick={() => handleCustomerSelect(customer)}
               viewMode={viewMode}
+              showKindBadge={showKindBadge}
             />
           ))}
         </div>
         {isFetchingNextPage ? (
-          <div className="flex items-center justify-center py-4 text-sm text-zinc-500">
+          <div className="flex items-center justify-center py-4 text-sm text-slate-600 dark:text-zinc-500">
             {t('customerSelectDialog.loading')}
           </div>
         ) : null}
@@ -392,33 +452,52 @@ export function CustomerSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn("bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[800px] shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]", className)}>
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'erp' | 'potential' | 'all')} className="flex flex-col h-full">
-          <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm shrink-0">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                  <Users size={24} className="text-pink-600 dark:text-pink-500" />
+      <DialogContent
+        showCloseButton={false}
+        className={cn(
+          // dialog.tsx içindeki lg:max-w-lg (~512px) tüm lg+ ekranlarda genişliği kilitliyor; aşağıda lg/xl/2xl ile açıkça eziyoruz
+          'flex max-h-[min(92dvh,920px)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] flex-col overflow-hidden border-slate-300 bg-white p-0 text-slate-900 shadow-xl ring-1 ring-slate-200/90 sm:rounded-2xl dark:border-white/10 dark:bg-[#130822] dark:text-white dark:ring-white/10',
+          'sm:w-[min(1152px,calc(100vw-2rem))] sm:max-w-[min(1152px,calc(100vw-2rem))]',
+          'md:w-[min(1200px,calc(100vw-2.5rem))] md:max-w-[min(1200px,calc(100vw-2.5rem))]',
+          'lg:w-[min(1280px,calc(100vw-3rem))] lg:max-w-[min(1280px,calc(100vw-3rem))]',
+          'xl:w-[min(1440px,calc(100vw-4rem))] xl:max-w-[min(1440px,calc(100vw-4rem))]',
+          '2xl:w-[min(1600px,calc(100vw-5rem))] 2xl:max-w-[min(1600px,calc(100vw-5rem))]',
+          className
+        )}
+      >
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'potential' | 'all')} className="flex h-full flex-col">
+          <DialogHeader className="sticky top-0 z-10 flex shrink-0 flex-row items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 py-4 backdrop-blur-sm sm:items-center sm:px-6 sm:py-5 dark:border-white/10 dark:bg-[#1a1025]/80">
+            <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+              <div className="h-11 w-11 shrink-0 rounded-2xl bg-linear-to-br from-pink-300 to-orange-300 p-0.5 shadow-md shadow-pink-200/40 dark:from-pink-500/40 dark:to-orange-500/30 dark:shadow-pink-900/20 sm:h-12 sm:w-12">
+                <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-white dark:bg-[#130822]">
+                  <Users size={22} className="text-pink-400 dark:text-pink-300 sm:h-6 sm:w-6" />
                 </div>
               </div>
-              <div className="space-y-1 text-left">
-                <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <div className="min-w-0 space-y-1 text-left">
+                <DialogTitle className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
                   {t('customerSelectDialog.title')}
                 </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
+                <DialogDescription className="text-sm text-slate-600 dark:text-slate-400">
                   {t('customerSelectDialog.description')}
                 </DialogDescription>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => onOpenChange(false)}
+              className="h-10 w-10 shrink-0 rounded-xl border-slate-300 bg-white text-slate-700 shadow-sm transition-colors hover:border-red-400 hover:bg-red-50 hover:text-red-600 dark:border-white/15 dark:bg-[#1a1025] dark:text-slate-200 dark:hover:border-red-500/50 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+              aria-label={t('close', { ns: 'common' })}
+            >
               <X size={20} />
             </Button>
           </DialogHeader>
 
-          <div className="p-6 pb-0 space-y-3 bg-white dark:bg-[#130822] shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="relative flex-1 group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-pink-500 transition-colors" />
+          <div className="shrink-0 space-y-3 bg-white px-4 pb-0 pt-4 dark:bg-[#130822] sm:px-6 sm:pt-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="group relative min-w-0 flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 transition-colors group-focus-within:text-pink-400" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -447,7 +526,7 @@ export function CustomerSelectDialog({
                     onClick={handleVoiceSearch}
                     className={cn(
                       "absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg",
-                      isListening ? "text-pink-500" : "text-zinc-500"
+                      isListening ? 'text-pink-400' : 'text-zinc-500'
                     )}
                   >
                     <Mic size={16} />
@@ -455,53 +534,55 @@ export function CustomerSelectDialog({
                 )}
               </div>
 
+              <div className="flex shrink-0 items-center justify-end gap-2 sm:justify-start">
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
                 onClick={() => setIsFilterPanelOpen((prev) => !prev)}
                 className={cn(
-                  "relative h-12 w-12 shrink-0 rounded-xl border-slate-200 dark:border-white/10 transition-all",
+                  'relative h-11 w-11 rounded-xl border-slate-300 bg-white shadow-sm transition-all dark:border-white/10 dark:bg-transparent sm:h-12 sm:w-12',
                   isFilterPanelOpen || hasAdvancedFilters
-                    ? "bg-pink-50 dark:bg-pink-500/10 border-pink-300 dark:border-pink-500/40 text-pink-600 dark:text-pink-400"
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? 'border-pink-200 bg-pink-50/90 text-pink-700 dark:border-pink-400/25 dark:bg-pink-950/35 dark:text-pink-200'
+                    : 'text-slate-600 hover:bg-pink-50/50 hover:text-pink-600 dark:text-slate-400 dark:hover:bg-pink-950/25 dark:hover:text-pink-200'
                 )}
               >
                 <SlidersHorizontal size={18} />
                 {appliedFilterCount > 0 && (
-                  <Badge className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 text-[10px] bg-pink-500 text-white border-0 flex items-center justify-center">
+                  <Badge className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center border border-pink-200/80 bg-pink-100 px-1 text-[10px] font-medium text-pink-800 dark:border-pink-400/30 dark:bg-pink-950/50 dark:text-pink-100">
                     {appliedFilterCount}
                   </Badge>
                 )}
               </Button>
 
-              <div className="flex bg-slate-100 dark:bg-[#1a1025] p-1 rounded-xl border border-slate-200 dark:border-white/5 shrink-0 h-12 items-center">
+              <div className="flex h-11 shrink-0 items-center rounded-xl border border-slate-300 bg-slate-100 p-1 shadow-sm dark:border-white/10 dark:bg-[#1a1025] sm:h-12">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setViewMode('list')}
                   className={cn(
-                    "w-10 h-10 rounded-lg transition-all",
+                    'h-9 w-9 rounded-lg transition-all sm:h-10 sm:w-10',
                     viewMode === 'list'
-                      ? "bg-white dark:bg-pink-500 text-slate-900 dark:text-white shadow-sm"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      ? 'border border-pink-200/90 bg-pink-100/90 text-pink-800 shadow-sm dark:border-pink-400/25 dark:bg-pink-950/40 dark:text-pink-100'
+                      : 'text-slate-600 hover:bg-pink-50/80 hover:text-pink-700 dark:text-slate-400 dark:hover:bg-pink-950/30 dark:hover:text-pink-200'
                   )}
                 >
-                  <List size={20} />
+                  <List size={18} className="sm:h-5 sm:w-5" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setViewMode('grid')}
                   className={cn(
-                    "w-10 h-10 rounded-lg transition-all",
+                    'h-9 w-9 rounded-lg transition-all sm:h-10 sm:w-10',
                     viewMode === 'grid'
-                      ? "bg-white dark:bg-pink-500 text-slate-900 dark:text-white shadow-sm"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      ? 'border border-pink-200/90 bg-pink-100/90 text-pink-800 shadow-sm dark:border-pink-400/25 dark:bg-pink-950/40 dark:text-pink-100'
+                      : 'text-slate-600 hover:bg-pink-50/80 hover:text-pink-700 dark:text-slate-400 dark:hover:bg-pink-950/30 dark:hover:text-pink-200'
                   )}
                 >
-                  <LayoutGrid size={20} />
+                  <LayoutGrid size={18} className="sm:h-5 sm:w-5" />
                 </Button>
+              </div>
               </div>
             </div>
 
@@ -520,40 +601,31 @@ export function CustomerSelectDialog({
               />
             )}
 
-            <TabsList className="bg-slate-100 dark:bg-[#1a1025] p-1 h-auto w-full grid grid-cols-3 rounded-xl border border-slate-200 dark:border-white/5">
+            <TabsList className="grid h-auto w-full grid-cols-2 rounded-xl border border-slate-300 bg-slate-100 p-1 shadow-sm dark:border-white/10 dark:bg-[#1a1025]">
               <TabsTrigger
-                value="erp"
-                className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
+                value="all"
+                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-pink-50/70 hover:text-pink-700 data-[state=active]:border data-[state=active]:border-pink-200/90 data-[state=active]:bg-pink-100/80 data-[state=active]:text-pink-900 data-[state=active]:shadow-sm data-[state=active]:hover:bg-pink-200/50 dark:text-slate-400 dark:hover:bg-pink-950/30 dark:hover:text-pink-200 dark:data-[state=active]:border-pink-400/20 dark:data-[state=active]:bg-pink-950/45 dark:data-[state=active]:text-pink-100 dark:data-[state=active]:hover:bg-pink-950/55 sm:text-sm"
               >
-                {t('customerSelectDialog.erpCustomers')}
+                {t('customerSelectDialog.allCustomers')}
               </TabsTrigger>
               <TabsTrigger
                 value="potential"
-                className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
+                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-pink-50/70 hover:text-pink-700 data-[state=active]:border data-[state=active]:border-pink-200/90 data-[state=active]:bg-pink-100/80 data-[state=active]:text-pink-900 data-[state=active]:shadow-sm data-[state=active]:hover:bg-pink-200/50 dark:text-slate-400 dark:hover:bg-pink-950/30 dark:hover:text-pink-200 dark:data-[state=active]:border-pink-400/20 dark:data-[state=active]:bg-pink-950/45 dark:data-[state=active]:text-pink-100 dark:data-[state=active]:hover:bg-pink-950/55 sm:text-sm"
               >
                 {t('customerSelectDialog.potentialCustomers')}
-              </TabsTrigger>
-              <TabsTrigger
-                value="all"
-                className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-pink-500 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all py-2"
-              >
-                {t('customerSelectDialog.allCustomers')}
               </TabsTrigger>
             </TabsList>
           </div>
 
           <div
             onScroll={handleListScroll}
-            className="flex-1 overflow-y-auto min-h-0 max-h-[420px] p-6 pt-4 bg-white dark:bg-[#130822] custom-scrollbar"
+            className="custom-scrollbar min-h-0 flex-1 overflow-y-auto bg-slate-50/80 p-4 pt-3 dark:bg-[#130822] sm:p-6 sm:pt-4 max-h-[min(50vh,420px)] sm:max-h-[min(55vh,480px)]"
           >
-            <TabsContent value="erp" className="mt-0 space-y-2 h-full">
-              {renderCustomerList(erpCustomers, 'noErpCustomers')}
+            <TabsContent value="all" className="mt-0 h-full space-y-2">
+              {renderCustomerList(displayCustomers, 'noCustomers', true)}
             </TabsContent>
-            <TabsContent value="potential" className="mt-0 space-y-2 h-full">
-              {renderCustomerList(potentialCustomers, 'noPotentialCustomers')}
-            </TabsContent>
-            <TabsContent value="all" className="mt-0 space-y-2 h-full">
-              {renderCustomerList(displayCustomers, 'noCustomers')}
+            <TabsContent value="potential" className="mt-0 h-full space-y-2">
+              {renderCustomerList(potentialCustomers, 'noPotentialCustomers', false)}
             </TabsContent>
           </div>
         </Tabs>

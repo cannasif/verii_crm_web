@@ -1,6 +1,8 @@
 {
   "title": "Select Customer",
-  "description": "Select a tab and choose a customer from the list",
+  "description": "In “All”, customers are labeled as ERP or potential. Use the other tab for potential customers only.",
+  "badgeKindErp": "ERP",
+  "badgeKindPotential": "Potential",
   "erpCustomers": "ERP",
   "crmCustomers": "CRM Customers",
   "potentialCustomers": "Potential",

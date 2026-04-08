@@ -228,9 +228,14 @@ export function ReportTemplateTab({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-4">
-        <div className="grid w-full max-w-md gap-2">
-          <Label htmlFor="report-template">{t('reportDesigner.preview.label')}</Label>
+      <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-5 dark:border-zinc-800/90 dark:bg-zinc-950 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04)]">
+        <div className="grid w-full max-w-md gap-2.5">
+          <Label
+            htmlFor="report-template"
+            className="text-sm font-medium text-zinc-800 dark:text-zinc-200 dark:tracking-wide"
+          >
+            {t('reportDesigner.preview.label')}
+          </Label>
           <Select
             value={selectedTemplateId}
             onValueChange={(value) => {
@@ -239,10 +244,13 @@ export function ReportTemplateTab({
             }}
             disabled={isLoadingTemplates}
           >
-            <SelectTrigger id="report-template" className="w-full">
+            <SelectTrigger
+              id="report-template"
+              className="h-10 w-full border-zinc-300 bg-white text-zinc-900 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-black dark:text-zinc-100 dark:shadow-[0_0_0_1px_rgba(168,85,247,0.12),inset_0_1px_0_0_rgba(255,255,255,0.04)] dark:hover:border-fuchsia-500/35 dark:hover:bg-zinc-950 dark:hover:shadow-[0_0_0_1px_rgba(236,72,153,0.2),0_0_24px_-12px_rgba(236,72,153,0.25)] focus-visible:dark:ring-fuchsia-500/25"
+            >
               <SelectValue placeholder={t('reportDesigner.preview.selectPlaceholder')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_16px_48px_-12px_rgba(0,0,0,0.75)]">
               {!hasSelectableTemplates ? (
                 <SelectItem value="__none__" disabled>
                   {isLoadingTemplates ? t('reportDesigner.preview.loading') : emptyLabel}
@@ -269,16 +277,16 @@ export function ReportTemplateTab({
       </div>
 
       {selectedTemplateId && selectedTemplateId !== '__none__' && (
-        <div className="rounded-xl border border-slate-200 bg-slate-50/50 dark:border-slate-700 dark:bg-slate-900/30 overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-black">
           {isGenerating ? (
             <div className="flex flex-col items-center justify-center py-24 gap-4">
-                <Loader2 className="size-10 animate-spin text-slate-500" />
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+                <Loader2 className="size-10 animate-spin text-slate-500 dark:text-fuchsia-400/80" />
+              <p className="text-sm text-slate-600 dark:text-zinc-400">
                 {t('reportDesigner.preview.generating')}
               </p>
             </div>
           ) : pdfBlobUrl ? (
-            <div className="min-h-[480px] bg-slate-200 dark:bg-slate-800">
+            <div className="min-h-[480px] bg-slate-200 dark:bg-zinc-950">
               <iframe
                 title={t('reportDesigner.preview.iframeTitle')}
                 src={pdfBlobUrl}

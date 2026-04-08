@@ -82,6 +82,8 @@
     "deleting": "Eliminando...",
     "uploading": "Cargando...",
     "clear": "Pulisci",
+    "selected": "Selección",
+    "addSelected": "Añadir selección",
     "all": "Todas",
     "editColumns": "Modifica Colonne",
     "visibleColumns": "Colonne Visibili",

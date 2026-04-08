@@ -82,6 +82,8 @@
     "deleting": "Löschen...",
     "uploading": "Laden...",
     "clear": "klar",
+    "selected": "Ausgewählt",
+    "addSelected": "Ausgewählte hinzufügen",
     "all": "Alle",
     "editColumns": "Spalten bearbeiten",
     "visibleColumns": "Sichtbare Spalten",

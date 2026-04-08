@@ -1,6 +1,8 @@
 {
   "title": "Kunden auswählen",
-  "description": "Wählen Sie einen Tab und dann einen Kunden aus der Liste",
+  "description": "Unter „Alle“ sind Kunden als ERP oder Potenzial gekennzeichnet. Der andere Tab zeigt nur Potenzialkunden.",
+  "badgeKindErp": "ERP",
+  "badgeKindPotential": "Potenzial",
   "erpCustomers": "ERP-Kunden",
   "crmCustomers": "CRM-Kunden",
   "allCustomers": "Alle",

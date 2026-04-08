@@ -1,6 +1,8 @@
 {
   "title": "Seleziona Cliente",
-  "description": "Seleziona una scheda e scegli un cliente dall'elenco",
+  "description": "In «Tutti» i clienti sono contrassegnati come ERP o potenziale. L’altra scheda mostra solo i potenziali.",
+  "badgeKindErp": "ERP",
+  "badgeKindPotential": "Potenziale",
   "erpCustomers": "Clienti ERP",
   "crmCustomers": "Clienti CRM",
   "allCustomers": "Tutti",

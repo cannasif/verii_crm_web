@@ -1,6 +1,8 @@
 {
   "title": "Sélectionner un Client",
-  "description": "Sélectionnez un onglet et choisissez un client dans la liste",
+  "description": "Dans « Tous », les clients sont étiquetés ERP ou potentiel. L’autre onglet liste uniquement les potentiels.",
+  "badgeKindErp": "ERP",
+  "badgeKindPotential": "Potentiel",
   "erpCustomers": "Clients ERP",
   "crmCustomers": "Clients CRM",
   "allCustomers": "Tous",

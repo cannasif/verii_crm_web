@@ -1,10 +1,24 @@
 {
   "title": "Produkt auswählen",
-  "description": "Select a product to Hinzufügen to the quotation line",
-  "product": "Produkt",
-  "noProducts": "Keine Produkte",
+  "description": "Produkt für die Angebotszeile auswählen",
+  "product": "PRODUKT",
+  "stock": "Bestand",
+  "stocks": "Bestände",
+  "stocksWithImages": "Bestände (mit Bildern)",
+  "noProducts": "Keine Produkte gefunden",
   "noResults": "Keine Ergebnisse gefunden",
   "searchPlaceholder": "Nach Produktcode oder Namen suchen...",
   "voiceSearch": "Sprachsuche",
-  "loading": "Wird geladen"
+  "loading": "Wird geladen",
+  "cardView": "Kartenansicht",
+  "listView": "Listenansicht",
+  "group": "Gruppe",
+  "code1": "Code 1",
+  "code2": "Code 2",
+  "unit": "Einheit",
+  "balance": "Bestand",
+  "relatedStocks": "Verknüpfte Bestände",
+  "unknownStock": "Unbekannter Bestand",
+  "quantity": "Menge",
+  "mandatory": "Pflicht"
 }

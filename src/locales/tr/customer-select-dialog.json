@@ -1,6 +1,8 @@
 {
   "title": "Müşteri Seç",
-  "description": "Müşteri seçmek için bir sekme seçin ve listeden müşteriyi seçin",
+  "description": "Tüm müşterilerde ERP ve potansiyel etiketleriyle ayırt edebilirsiniz; yalnızca potansiyel listesi için diğer sekmeyi kullanın.",
+  "badgeKindErp": "ERP",
+  "badgeKindPotential": "Potansiyel",
   "erpCustomers": "ERP",
   "crmCustomers": "CRM Müşterileri",
   "potentialCustomers": "Potansiyel",

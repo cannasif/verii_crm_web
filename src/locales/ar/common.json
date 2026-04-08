@@ -82,6 +82,8 @@
     "deleting": "جاري الحذف...",
     "uploading": "جاري التحميل...",
     "clear": "مسح",
+    "selected": "المحدد",
+    "addSelected": "إضافة المحدد",
     "all": "الكل",
     "editColumns": "تعديل الأعمدة",
     "visibleColumns": "الأعمدة المرئية",

@@ -82,6 +82,8 @@
     "deleting": "Suppression...",
     "uploading": "Chargement...",
     "clear": "Effacer",
+    "selected": "Sélection",
+    "addSelected": "Ajouter la sélection",
     "all": "Toutes",
     "editColumns": "Modifier les colonnes",
     "visibleColumns": "Colonnes visibles",

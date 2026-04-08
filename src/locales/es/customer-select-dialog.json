@@ -1,6 +1,8 @@
 {
   "title": "Seleccionar cliente",
-  "description": "Seleccione una pestaña y elija un cliente de la lista",
+  "description": "En «Todos», los clientes se muestran como ERP o potencial. La otra pestaña es solo potenciales.",
+  "badgeKindErp": "ERP",
+  "badgeKindPotential": "Potencial",
   "erpCustomers": "Clientes ERP",
   "crmCustomers": "Clientes CRM",
   "allCustomers": "Todos",

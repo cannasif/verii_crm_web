@@ -1,10 +1,24 @@
 {
-  "title": "Sélectionner Produit",
+  "title": "Sélectionner un produit",
   "description": "Sélectionnez le produit à ajouter à la ligne de devis",
   "product": "PRODUIT",
+  "stock": "Stock",
+  "stocks": "Stocks",
+  "stocksWithImages": "Stocks (avec images)",
   "noProducts": "Aucun produit trouvé",
   "noResults": "Aucun résultat de recherche trouvé",
   "searchPlaceholder": "Rechercher par code produit ou nom...",
   "voiceSearch": "Recherche vocale",
-  "loading": "Chargement"
+  "loading": "Chargement",
+  "cardView": "Vue carte",
+  "listView": "Vue liste",
+  "group": "Groupe",
+  "code1": "Code 1",
+  "code2": "Code 2",
+  "unit": "Unité",
+  "balance": "Solde",
+  "relatedStocks": "Stocks liés",
+  "unknownStock": "Stock inconnu",
+  "quantity": "Quantité",
+  "mandatory": "Obligatoire"
 }

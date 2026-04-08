@@ -90,6 +90,8 @@
     "deleting": "Siliniyor...",
     "uploading": "Yükleniyor...",
     "clear": "Temizle",
+    "selected": "Seçilen",
+    "addSelected": "Seçilenleri ekle",
     "all": "Tümü",
     "editColumns": "Sütunları Düzenle",
     "visibleColumns": "Görünür Sütunlar",

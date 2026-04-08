@@ -94,6 +94,8 @@
     "deleting": "Deleting...",
     "uploading": "Loading...",
     "clear": "clear",
+    "selected": "Selected",
+    "addSelected": "Add selected",
     "all": "All",
     "editColumns": "Edit Columns",
     "visibleColumns": "Visible Columns",

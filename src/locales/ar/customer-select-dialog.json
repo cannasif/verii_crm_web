@@ -1,6 +1,8 @@
 {
   "title": "اختر العميل",
-  "description": "اختر علامة تبويب واختر عميلاً من القائمة",
+  "description": "في «الكل» يُعرض نوع العميل: ERP أو محتمل. علامة التبويب الأخرى للعملاء المحتملين فقط.",
+  "badgeKindErp": "ERP",
+  "badgeKindPotential": "محتمل",
   "erpCustomers": "عملاء ERP",
   "crmCustomers": "عملاء CRM",
   "allCustomers": "الكل",
