@@ -61,7 +61,8 @@
     "deliveryDateRequired": "Delivery date is required.",
     "paymentTypeRequired": "Payment type is required.",
     "invalidCurrency": "Invalid currency.",
-    "validationError": "Please check required fields."
+    "validationError": "Please check required fields.",
+    "notesMaxLengthError": "يمكن أن تحتوي كل ملاحظة على 400 حرف كحد أقصى."
   },
   "header": {
     "title": "معلومات الطلب",

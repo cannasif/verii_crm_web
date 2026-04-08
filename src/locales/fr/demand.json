@@ -61,7 +61,8 @@
     "deliveryDateRequired": "Delivery date is required.",
     "paymentTypeRequired": "Payment type is required.",
     "invalidCurrency": "Invalid currency.",
-    "validationError": "Please check required fields."
+    "validationError": "Please check required fields.",
+    "notesMaxLengthError": "Chaque note peut contenir au plus 400 caractères."
   },
   "header": {
     "title": "Informations de la Demande",

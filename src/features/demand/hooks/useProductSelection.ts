@@ -184,7 +184,14 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
             const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
             const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
 
-            if (sourceRate && sourceRate > 0 && targetRate && targetRate > 0 && sourceDovizTipi !== currency) {
+            if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
+              toast.error(t('demand.update.error', 'Hata'), {
+                description: t('demand.exchangeRates.zeroRateError', 'Lutfen devam edebilmek icin kur degeri girin.'),
+              });
+              throw new Error('ZERO_RATE');
+            }
+
+            if (sourceDovizTipi !== currency) {
               convertedPrice = (priceData.listPrice ?? 0) * sourceRate / targetRate;
             }
           }
@@ -223,7 +230,10 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         }
 
         return lines;
-      } catch {
+      } catch (error) {
+        if (error instanceof Error && error.message === 'ZERO_RATE') {
+          throw error;
+        }
         const baseLine = createEmptyLine(product);
         return [calculateLineTotals(baseLine)];
       }

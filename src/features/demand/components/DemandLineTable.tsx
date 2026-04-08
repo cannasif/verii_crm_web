@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -11,6 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { DemandLineForm } from './DemandLineForm';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -21,9 +27,30 @@ import { useUpdateDemandLines } from '../hooks/useUpdateDemandLines';
 import { useDeleteDemandLine } from '../hooks/useDeleteDemandLine';
 import { demandApi } from '../api/demand-api';
 import { formatCurrency } from '../utils/format-currency';
-import { Trash2, Edit, Plus, ShoppingCart, Box, AlertTriangle, Layers, Loader2, X } from 'lucide-react';
+import {
+  Trash2,
+  Edit,
+  Plus,
+  ShoppingCart,
+  Box,
+  AlertTriangle,
+  Layers,
+  Loader2,
+  X,
+  Menu,
+  FileSpreadsheet,
+  FileText,
+  Presentation,
+  Check,
+} from 'lucide-react';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, CreateDemandLineDto, DemandLineGetDto } from '../types/demand-types';
 import { cn } from '@/lib/utils';
+import { mergeLinesAfterMainLineUpdate } from '@/lib/merge-lines-after-main-update';
+import {
+  applyDemandLineQuickFieldPatch,
+  type DemandQuickEditField,
+} from '../utils/apply-demand-line-quick-field-patch';
+import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 
 function toCreateDto(line: DemandLineFormState, demandId: number): CreateDemandLineDto {
   const { id, isEditing, relatedLines, unit, ...rest } = line;
@@ -165,7 +192,13 @@ export function DemandLineTable({
   const [newLine, setNewLine] = useState<DemandLineFormState | null>(null);
   const [editLineDialogOpen, setEditLineDialogOpen] = useState(false);
   const [lineToEdit, setLineToEdit] = useState<DemandLineFormState | null>(null);
+  const [quickEdit, setQuickEdit] = useState<{
+    lineId: string;
+    field: DemandQuickEditField;
+    draft: string;
+  } | null>(null);
   const { currencyOptions } = useCurrencyOptions();
+  const { data: erpRates = [] } = useExchangeRate();
   const { calculateLineTotals } = useDemandCalculations();
   const createMutation = useCreateDemandLines(demandId ?? 0);
   const updateMutation = useUpdateDemandLines(demandId ?? 0);
@@ -178,12 +211,16 @@ export function DemandLineTable({
   });
 
   const styles = {
-    glassCard: "relative overflow-hidden rounded-none border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/50 backdrop-blur-xl shadow-lg shadow-zinc-200/50 dark:shadow-none",
-    tableHeadRow: "bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800",
-    tableHead: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider",
-    tableCell: "p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800",
-    tableRow: "group transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/40",
-    actionButton: "h-8 w-8 p-0 rounded-lg hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm hover:scale-105 transition-all duration-200",
+    glassCard:
+      'relative overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm',
+    tableHeadRow: 'bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800',
+    tableHead: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider',
+    tableHeadRight: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right',
+    tableCell: 'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800',
+    tableCellRight:
+      'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800 text-right font-mono tabular-nums',
+    tableRow: 'group transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/40',
+    actionButton: 'h-8 w-8 p-0 rounded-lg hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm hover:scale-105 transition-all duration-200',
   };
 
   const currencyCode = useMemo(() => {
@@ -216,6 +253,7 @@ export function DemandLineTable({
   };
 
   const handleAddLine = (): void => {
+    setQuickEdit(null);
     if (!linesEditable) return;
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
       toast.error(t('demand.error'), {
@@ -329,6 +367,7 @@ export function DemandLineTable({
   };
 
   const handleEditLine = (id: string): void => {
+    setQuickEdit(null);
     if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
     if (!line) return;
@@ -353,32 +392,15 @@ export function DemandLineTable({
     relatedLinesToUpdate: DemandLineFormState[] | undefined,
     originalLine: DemandLineFormState
   ): void => {
-    const isQuantityChanged = originalLine.quantity !== updatedLine.quantity;
-    const isMainLine = updatedLine.isMainRelatedProduct === true;
-
-    if (relatedLinesToUpdate && relatedLinesToUpdate.length > 0) {
-      const allUpdatedLines = [updatedLine, ...relatedLinesToUpdate].map((line) => ({ ...line, isEditing: false }));
-      setLines(lines.map((line) => {
-        const updated = allUpdatedLines.find((ul) => ul.id === line.id);
-        if (updated) return updated;
-        if (isQuantityChanged && isMainLine && updatedLine.relatedProductKey && line.relatedProductKey === updatedLine.relatedProductKey) {
-          const quantityRatio = updatedLine.quantity / originalLine.quantity;
-          return calculateLineTotals({ ...line, quantity: line.quantity * quantityRatio });
-        }
-        return line;
-      }));
-    } else if (isQuantityChanged && isMainLine && updatedLine.relatedProductKey) {
-      const quantityRatio = updatedLine.quantity / originalLine.quantity;
-      setLines(lines.map((line) => {
-        if (line.id === updatedLine.id) return { ...updatedLine, isEditing: false };
-        if (line.relatedProductKey === updatedLine.relatedProductKey) {
-          return calculateLineTotals({ ...line, quantity: line.quantity * quantityRatio });
-        }
-        return line;
-      }));
-    } else {
-      setLines(lines.map((line) => line.id === updatedLine.id ? { ...updatedLine, isEditing: false } : line));
-    }
+    setLines(
+      mergeLinesAfterMainLineUpdate(
+        lines,
+        originalLine,
+        updatedLine,
+        relatedLinesToUpdate,
+        calculateLineTotals
+      )
+    );
   };
 
   const handleSaveLine = async (
@@ -483,6 +505,214 @@ export function DemandLineTable({
     setDeleteDialogOpen(false);
   };
 
+  const handleExportExcel = async (): Promise<void> => {
+    const dataToExport = lines.map((line) => ({
+      [t('demand.lines.productCode')]: line.productCode,
+      [t('demand.lines.productName')]: line.productName,
+      [t('demand.lines.quantity')]: line.quantity,
+      [t('demand.lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
+      [t('demand.lines.vatRate')]: `%${line.vatRate}`,
+      [t('demand.lines.lineTotal')]: formatCurrency(line.lineTotal, currencyCode),
+    }));
+
+    const XLSX = await import('xlsx');
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Talep Kalemleri');
+    XLSX.writeFile(wb, 'talep-kalemleri.xlsx');
+  };
+
+  const handleExportPDF = async (): Promise<void> => {
+    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable'),
+    ]);
+    const doc = new JsPDF();
+    doc.setFontSize(16);
+    doc.text(t('demand.lines.title'), 14, 18);
+    const headers = [
+      [
+        t('demand.lines.productCode'),
+        t('demand.lines.productName'),
+        t('demand.lines.quantity'),
+        t('demand.lines.unitPrice'),
+        t('demand.lines.vatRate'),
+        t('demand.lines.lineTotal'),
+      ],
+    ];
+    const data = lines.map((line) => [
+      line.productCode ?? '',
+      line.productName ?? '',
+      String(line.quantity),
+      formatCurrency(line.unitPrice, currencyCode),
+      `%${line.vatRate}`,
+      formatCurrency(line.lineTotal, currencyCode),
+    ]);
+    autoTable(doc, {
+      startY: 24,
+      head: headers,
+      body: data,
+      styles: { font: 'helvetica', fontStyle: 'normal' },
+      theme: 'grid',
+    });
+    doc.save('talep-kalemleri.pdf');
+  };
+
+  const handleExportPowerPoint = async (): Promise<void> => {
+    const { default: PptxGenJS } = await import('pptxgenjs');
+    const pptx = new PptxGenJS();
+    const slide = pptx.addSlide();
+
+    slide.addText(t('demand.lines.title'), { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
+
+    const headers = [
+      t('demand.lines.productCode'),
+      t('demand.lines.productName'),
+      t('demand.lines.quantity'),
+      t('demand.lines.unitPrice'),
+      t('demand.lines.vatRate'),
+      t('demand.lines.lineTotal'),
+    ];
+
+    const rows = lines.map((line) => [
+      line.productCode,
+      line.productName,
+      String(line.quantity),
+      formatCurrency(line.unitPrice, currencyCode),
+      `%${line.vatRate}`,
+      formatCurrency(line.lineTotal, currencyCode),
+    ]);
+
+    const tableData = [
+      headers.map((text) => ({ text, options: { bold: true, fill: 'F0F0F0' } })),
+      ...rows.map((row) => row.map((text) => ({ text }))),
+    ];
+
+    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
+
+    pptx.writeFile({ fileName: 'talep-kalemleri.pptx' });
+  };
+
+  const quickPatchDeps = useMemo(
+    () => ({
+      currency,
+      currencyOptions,
+      exchangeRates,
+      erpRates,
+      pricingRules,
+      userDiscountLimits,
+      calculateLineTotals,
+    }),
+    [currency, currencyOptions, exchangeRates, erpRates, pricingRules, userDiscountLimits, calculateLineTotals]
+  );
+
+  const lineAllowsQuickEdit = useCallback(
+    (line: DemandLineFormState): boolean => {
+      if (!linesEditable || !line.productCode) return false;
+      const isRelatedProduct = line.relatedProductKey != null;
+      const isMainStock = line.isMainRelatedProduct === true;
+      if (isRelatedProduct && !isMainStock) return false;
+      return true;
+    },
+    [linesEditable]
+  );
+
+  const beginQuickEdit = useCallback(
+    (line: DemandLineFormState, field: DemandQuickEditField) => {
+      if (!lineAllowsQuickEdit(line) || updateMutation.isPending) return;
+      if (quickEdit && quickEdit.lineId !== line.id) return;
+      const cur = line[field];
+      setQuickEdit({ lineId: line.id, field, draft: String(cur ?? '') });
+    },
+    [lineAllowsQuickEdit, quickEdit, updateMutation.isPending]
+  );
+
+  const cancelQuickEdit = useCallback(() => {
+    setQuickEdit(null);
+  }, []);
+
+  const commitQuickEdit = useCallback(async () => {
+    if (!quickEdit || !linesEditable) return;
+    const originalLine = lines.find((l) => l.id === quickEdit.lineId);
+    if (!originalLine || !lineAllowsQuickEdit(originalLine)) {
+      setQuickEdit(null);
+      return;
+    }
+
+    const raw = quickEdit.draft.replace(',', '.').trim();
+    const parsedFloat = parseFloat(raw);
+    if (raw === '' || Number.isNaN(parsedFloat)) return;
+
+    let value: number;
+    if (quickEdit.field === 'quantity') {
+      const u = (originalLine.unit ?? '').trim().toUpperCase();
+      const intOnly = u === 'AD' || u === 'ADET';
+      if (parsedFloat < 0) return;
+      value = intOnly ? Math.max(1, Math.round(parsedFloat)) : parsedFloat;
+    } else if (quickEdit.field === 'unitPrice') {
+      if (parsedFloat < 0) return;
+      value = parsedFloat;
+    } else {
+      value = Math.min(100, Math.max(0, parsedFloat));
+    }
+
+    const patched = applyDemandLineQuickFieldPatch(originalLine, quickEdit.field, value, quickPatchDeps);
+    const nextLines = mergeLinesAfterMainLineUpdate(
+      lines,
+      originalLine,
+      patched,
+      undefined,
+      calculateLineTotals
+    );
+
+    const patchedFromNext = nextLines.find((l) => l.id === patched.id);
+    if (!patchedFromNext) {
+      setQuickEdit(null);
+      return;
+    }
+
+    if (isExistingDemand && demandId) {
+      const apiTargets =
+        patchedFromNext.relatedProductKey &&
+        patchedFromNext.isMainRelatedProduct &&
+        originalLine.quantity !== patchedFromNext.quantity
+          ? nextLines.filter(
+              (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && parseLineId(l.id) != null
+            )
+          : parseLineId(patchedFromNext.id) != null
+            ? [patchedFromNext]
+            : [];
+
+      if (apiTargets.length > 0) {
+        try {
+          const dtos = apiTargets.map((l) => toUpdateDto(l, demandId));
+          await updateMutation.mutateAsync(dtos);
+          const fresh = await demandApi.getDemandLinesByDemandId(demandId);
+          const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
+          setLines(mapped);
+        } catch {
+          void 0;
+        }
+        setQuickEdit(null);
+        return;
+      }
+    }
+
+    setLines(nextLines);
+    setQuickEdit(null);
+  }, [
+    quickEdit,
+    linesEditable,
+    lines,
+    lineAllowsQuickEdit,
+    quickPatchDeps,
+    calculateLineTotals,
+    isExistingDemand,
+    demandId,
+    updateMutation,
+    setLines,
+  ]);
+
   const canAddLine = linesEditable && Boolean((customerId || erpCustomerCode) && representativeId && isCurrencySelected);
 
   return (
@@ -505,24 +735,79 @@ export function DemandLineTable({
               </p>
             </div>
           </div>
-          
-         {linesEditable && (
-          <Button 
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleAddLine();
-            }}
-            disabled={!canAddLine}
-            size="sm"
-            className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            {t('demand.lines.add')}
-          </Button>
-          )}
-          
+
+          <div className="flex items-center gap-3">
+            {linesEditable && (
+              <Button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAddLine();
+                }}
+                disabled={!canAddLine}
+                size="sm"
+                className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t('demand.lines.add')}
+              </Button>
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30"
+                >
+                  <Menu size={18} className="text-slate-500 dark:text-slate-400" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0"
+              >
+                <div className="p-2">
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    {t('common.actions')}
+                  </div>
+                </div>
+
+                <div className="h-px bg-white/5 my-1" />
+
+                <div className="p-2">
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    {t('common.export')}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void handleExportExcel()}
+                    className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left"
+                  >
+                    <FileSpreadsheet size={16} className="text-emerald-500" />
+                    <span>{t('common.exportExcel')}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleExportPDF()}
+                    className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left"
+                  >
+                    <FileText size={16} className="text-red-400" />
+                    <span>{t('common.exportPDF')}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleExportPowerPoint()}
+                    className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left"
+                  >
+                    <Presentation size={16} className="text-orange-400" />
+                    <span>{t('common.exportPPT')}</span>
+                  </button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <div className="p-0">
@@ -554,12 +839,12 @@ export function DemandLineTable({
                 <thead className="[&_tr]:border-b">
                   <tr className={cn("hover:bg-transparent border-b", styles.tableHeadRow)}>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('demand.lines.stock')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-right min-w-[120px] md:min-w-[140px]")}>{t('demand.lines.unitPrice')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[90px] md:min-w-[100px]")}>{t('demand.lines.quantity')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount1')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount2')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[70px] md:min-w-[80px]")}>{t('demand.lines.discount3')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-right min-w-[110px] md:min-w-[120px]")}>{t('demand.lines.netPrice')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('demand.lines.unitPrice')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('demand.lines.quantity')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('demand.lines.discount1')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('demand.lines.discount2')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('demand.lines.discount3')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('demand.lines.netPrice')}</th>
                     {linesEditable && (
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('demand.actions')}</th>
                     )}
@@ -599,9 +884,9 @@ export function DemandLineTable({
 
                             {(line.description1 || line.description2 || line.description3) && (
                               <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                                {line.description1 && <div className="line-clamp-1">Açıklama 1: {line.description1}</div>}
-                                {line.description2 && <div className="line-clamp-1">Açıklama 2: {line.description2}</div>}
-                                {line.description3 && <div className="line-clamp-1">Açıklama 3: {line.description3}</div>}
+                                {line.description1 && <div className="line-clamp-1">Profile: {line.description1}</div>}
+                                {line.description2 && <div className="line-clamp-1">Demir: {line.description2}</div>}
+                                {line.description3 && <div className="line-clamp-1">Vida: {line.description3}</div>}
                               </div>
                             )}
                             
@@ -630,29 +915,200 @@ export function DemandLineTable({
                           </div>
                         </td>
 
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-right")}>
-                          <div className="font-mono font-semibold text-zinc-700 dark:text-zinc-300 bg-zinc-100/50 dark:bg-zinc-800/50 px-2 py-1 rounded inline-block">
-                            {formatCurrency(line.unitPrice, currencyCode)}
-                          </div>
+                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-4")}>
+                          {quickEdit?.lineId === line.id && quickEdit.field === 'unitPrice' ? (
+                            <div
+                              className="flex items-center justify-end gap-1"
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Input
+                                type="number"
+                                step="0.000001"
+                                min={0}
+                                value={quickEdit.draft}
+                                onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                className="h-8 w-[104px] rounded-lg border-pink-500/50 text-sm font-mono px-2"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') void commitQuickEdit();
+                                  if (e.key === 'Escape') cancelQuickEdit();
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                onClick={() => void commitQuickEdit()}
+                                disabled={updateMutation.isPending}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 text-zinc-500"
+                                onClick={cancelQuickEdit}
+                                disabled={updateMutation.isPending}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <span
+                              className={cn(
+                                'font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm',
+                                lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:ring-2 hover:ring-pink-500/25 rounded-lg'
+                              )}
+                              title={t('demand.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                beginQuickEdit(line, 'unitPrice');
+                              }}
+                            >
+                              {formatCurrency(line.unitPrice, currencyCode)}
+                            </span>
+                          )}
                         </td>
 
                         {/* MİKTAR */}
                         <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}>
-                          <span className="inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 shadow-sm">
-                            {line.quantity}
-                          </span>
+                          {quickEdit?.lineId === line.id && quickEdit.field === 'quantity' ? (
+                            <div
+                              className="flex items-center justify-center gap-1"
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Input
+                                type="number"
+                                step={
+                                  (line.unit ?? '').trim().toUpperCase() === 'AD' ||
+                                  (line.unit ?? '').trim().toUpperCase() === 'ADET'
+                                    ? '1'
+                                    : '0.1'
+                                }
+                                min={0.1}
+                                value={quickEdit.draft}
+                                onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                className="h-8 w-16 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') void commitQuickEdit();
+                                  if (e.key === 'Escape') cancelQuickEdit();
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                onClick={() => void commitQuickEdit()}
+                                disabled={updateMutation.isPending}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 text-zinc-500"
+                                onClick={cancelQuickEdit}
+                                disabled={updateMutation.isPending}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <span
+                              className={cn(
+                                'inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums',
+                                lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:border-pink-400/60'
+                              )}
+                              title={t('demand.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                beginQuickEdit(line, 'quantity');
+                              }}
+                            >
+                              {line.quantity}
+                            </span>
+                          )}
                         </td>
 
-                        {[
-                          { rate: line.discountRate1, amount: line.discountAmount1 },
-                          { rate: line.discountRate2, amount: line.discountAmount2 },
-                          { rate: line.discountRate3, amount: line.discountAmount3 },
-                        ].map((discount, i) => {
+                        {(
+                          [
+                            { rate: line.discountRate1, amount: line.discountAmount1, field: 'discountRate1' as const },
+                            { rate: line.discountRate2, amount: line.discountAmount2, field: 'discountRate2' as const },
+                            { rate: line.discountRate3, amount: line.discountAmount3, field: 'discountRate3' as const },
+                          ] as const
+                        ).map((discount) => {
                           const hasDiscount = discount.rate > 0 || discount.amount > 0;
+                          const isEditingDiscount =
+                            quickEdit?.lineId === line.id && quickEdit.field === discount.field;
                           return (
-                            <td key={i} className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}>
-                              {hasDiscount ? (
-                                <div className="inline-flex min-w-[96px] flex-col items-center gap-1 rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-2 py-1.5 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                            <td
+                              key={discount.field}
+                              className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}
+                            >
+                              {isEditingDiscount ? (
+                                <div
+                                  className="flex flex-col items-center gap-1"
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Input
+                                      type="number"
+                                      step="0.1"
+                                      min={0}
+                                      max={100}
+                                      value={quickEdit.draft}
+                                      onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                      className="h-8 w-14 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
+                                      autoFocus
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') void commitQuickEdit();
+                                        if (e.key === 'Escape') cancelQuickEdit();
+                                      }}
+                                    />
+                                    <span className="text-xs font-bold text-zinc-500">%</span>
+                                    <Button
+                                      type="button"
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-8 w-8 shrink-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                      onClick={() => void commitQuickEdit()}
+                                      disabled={updateMutation.isPending}
+                                    >
+                                      <Check className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-8 w-8 shrink-0 text-zinc-500"
+                                      onClick={cancelQuickEdit}
+                                      disabled={updateMutation.isPending}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : hasDiscount ? (
+                                <div
+                                  className={cn(
+                                    'inline-flex min-w-[96px] flex-col items-center gap-1 rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-2 py-1.5 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20',
+                                    lineAllowsQuickEdit(line) &&
+                                      'cursor-pointer hover:ring-2 hover:ring-pink-500/20'
+                                  )}
+                                  title={t('demand.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    beginQuickEdit(line, discount.field);
+                                  }}
+                                >
                                   <span className="text-[11px] font-black leading-none text-emerald-700 dark:text-emerald-300">
                                     %{discount.rate}
                                   </span>
@@ -661,7 +1117,18 @@ export function DemandLineTable({
                                   </span>
                                 </div>
                               ) : (
-                                <span className="inline-flex min-w-[96px] justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-2 py-2 text-[11px] font-semibold text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600">
+                                <span
+                                  className={cn(
+                                    'inline-flex min-w-[96px] justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-2 py-2 text-[11px] font-semibold text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600',
+                                    lineAllowsQuickEdit(line) &&
+                                      'cursor-pointer hover:border-pink-400/50 hover:text-zinc-600 dark:hover:text-zinc-400'
+                                  )}
+                                  title={t('demand.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    beginQuickEdit(line, discount.field);
+                                  }}
+                                >
                                   İndirim yok
                                 </span>
                               )}
@@ -670,16 +1137,17 @@ export function DemandLineTable({
                         })}
 
                         {/* TUTAR */}
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-right")}>
-                          <div className="font-bold text-zinc-900 dark:text-white text-base">
+                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-6")}>
+                          <span className="font-bold text-zinc-900 dark:text-white text-sm tabular-nums">
                             {formatCurrency(line.lineTotal, currencyCode)}
-                          </div>
+                          </span>
                         </td>
 
                         {linesEditable && (
                         <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center pr-4")}>
                           <div className="flex items-center justify-center gap-2">
                             <Button
+                              type="button"
                               variant="ghost"
                               size="icon"
                               className={styles.actionButton}
@@ -693,6 +1161,7 @@ export function DemandLineTable({
                               )} />
                             </Button>
                             <Button
+                              type="button"
                               variant="ghost"
                               size="icon"
                               className={cn(styles.actionButton, "text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30")}
@@ -751,6 +1220,7 @@ export function DemandLineTable({
                 exchangeRates={exchangeRates}
                 pricingRules={pricingRules}
                 userDiscountLimits={userDiscountLimits}
+                isSaving={createMutation.isPending}
               />
             )}
           </div>
@@ -792,32 +1262,70 @@ export function DemandLineTable({
                 exchangeRates={exchangeRates}
                 pricingRules={pricingRules}
                 userDiscountLimits={userDiscountLimits}
+                isSaving={updateMutation.isPending}
               />
             )}
           </div>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-rose-600">
-              <Trash2 className="h-5 w-5" />
+      <Dialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!open && isDeleting) return;
+          setDeleteDialogOpen(open);
+          if (!open) {
+            setLineToDelete(null);
+            setRelatedLinesCount(0);
+          }
+        }}
+      >
+        <DialogContent className="bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+            <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
+              <div className="bg-linear-to-br from-red-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-red-500/20 text-white">
+                <Trash2 className="h-5 w-5" />
+              </div>
               {relatedLinesCount > 1
                 ? t('demand.lines.delete.confirmTitleMultiple')
                 : t('demand.lines.delete.confirmTitle')}
             </DialogTitle>
-            <DialogDescription className="pt-2">
-              {relatedLinesCount > 1 
+            <DialogDescription className="pt-2 text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+              {relatedLinesCount > 1
                 ? t('demand.lines.delete.confirmMessageMultiple', { count: relatedLinesCount })
                 : t('demand.lines.delete.confirmMessage')
               }
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={handleDeleteCancel} disabled={isDeleting}>{t('demand.cancel')}</Button>
-            <Button variant="destructive" onClick={() => void handleDeleteConfirm()} disabled={isDeleting}>
-              {isDeleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('demand.saving')}</> : t('demand.delete')}
+          <DialogFooter className="gap-3 p-6 bg-slate-50/30 dark:bg-black/20">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleDeleteCancel}
+              disabled={isDeleting}
+              className="h-11 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 font-medium transition-all"
+            >
+              {t('demand.cancel')}
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                void handleDeleteConfirm();
+              }}
+              disabled={isDeleting}
+              className="h-11 px-6 rounded-xl bg-linear-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40 border-0 font-medium transition-all"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  {t('demand.saving')}
+                </>
+              ) : (
+                t('demand.delete')
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

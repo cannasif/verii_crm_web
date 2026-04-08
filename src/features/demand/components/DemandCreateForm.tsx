@@ -26,6 +26,13 @@ import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 
+const CREATE_SECTION_CARD_CLASSNAME =
+  'rounded-2xl overflow-hidden border border-slate-400 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_28px_-22px_rgba(15,23,42,0.40)] ring-1 ring-slate-300/70 dark:border-white/16 dark:bg-[#120b1d]/82 dark:ring-white/12';
+const CREATE_SECTION_HEADER_CLASSNAME =
+  'px-5 py-4 flex items-center gap-3 border-b border-slate-400/75 bg-slate-100/85 dark:border-white/12 dark:bg-white/[0.07]';
+const CREATE_HEADER_FORM_SURFACE_CLASSNAME =
+  '[&_label]:text-slate-800 dark:[&_label]:text-slate-200 [&_input]:border-slate-500/70 [&_input]:bg-white [&_input]:shadow-sm [&_input]:placeholder:text-slate-400 [&_input]:focus-visible:border-pink-500/85 [&_input]:focus-visible:ring-pink-200/70 dark:[&_input]:border-white/20 dark:[&_input]:bg-[#120d1d] dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus-visible:border-pink-400/60 dark:[&_input]:focus-visible:ring-pink-400/20 [&_textarea]:border-slate-500/70 [&_textarea]:bg-white [&_textarea]:shadow-sm [&_textarea]:placeholder:text-slate-400 [&_textarea]:focus-visible:border-pink-500/85 [&_textarea]:focus-visible:ring-pink-200/70 dark:[&_textarea]:border-white/20 dark:[&_textarea]:bg-[#120d1d] dark:[&_textarea]:placeholder:text-slate-500 dark:[&_textarea]:focus-visible:border-pink-400/60 dark:[&_textarea]:focus-visible:ring-pink-400/20 [&_[data-slot=select-trigger]]:border-slate-500/70 [&_[data-slot=select-trigger]]:bg-white [&_[data-slot=select-trigger]]:shadow-sm dark:[&_[data-slot=select-trigger]]:border-white/20 dark:[&_[data-slot=select-trigger]]:bg-[#120d1d]';
+
 export function DemandCreateForm(): ReactElement {
   const { t } = useTranslation('demand'); 
   
@@ -114,8 +121,8 @@ export function DemandCreateForm(): ReactElement {
 
   const onSubmit = async (data: CreateDemandSchema): Promise<void> => {
     if (lines.length === 0) {
-      toast.error(t('demand.create.error', 'Hata'), {
-        description: t('demand.lines.required', 'En az 1 satır eklenmelidir'),
+      toast.error(t('create.error'), {
+        description: t('lines.required'),
       });
       return;
     }
@@ -123,8 +130,8 @@ export function DemandCreateForm(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 400);
     if (overLimitNote) {
-      toast.error(t('demand.create.error', 'Hata'), {
-        description: t('quotation.notes.maxLengthError', 'Not uzunluğu 400 karakter sınırını aştı'),
+      toast.error(t('create.error'), {
+        description: t('create.notesMaxLengthError'),
       });
       return;
     }
@@ -137,7 +144,10 @@ export function DemandCreateForm(): ReactElement {
         return {
           ...cleanLineData,
           demandId: 0,
-          productId: 0,
+          productId:
+            cleanLineData.productId != null && cleanLineData.productId > 0
+              ? cleanLineData.productId
+              : null,
           description: cleanLineData.description || null,
           description1: cleanLineData.description1 || null,
           description2: cleanLineData.description2 || null,
@@ -166,7 +176,7 @@ export function DemandCreateForm(): ReactElement {
         : String(data.demand.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('demand.create.invalidCurrency', 'Geçersiz para birimi'));
+        throw new Error(t('create.invalidCurrency'));
       }
 
       const demandData: CreateDemandDto = {
@@ -205,19 +215,19 @@ export function DemandCreateForm(): ReactElement {
         if (notesList.length > 0) {
           await demandApi.updateNotesListByDemandId(result.data.id, { notes: notesList });
         }
-        toast.success(t('demand.create.success', 'Talep Başarıyla Oluşturuldu'), {
-          description: t('demand.create.successMessage', 'Talep onay sürecine gönderildi.'),
+        toast.success(t('create.success'), {
+          description: t('create.successMessage'),
         });
         navigate(`/demands/${result.data.id}`);
       } else {
-        throw new Error(result.message || t('demand.create.errorMessage', 'Talep oluşturulurken bir hata oluştu.'));
+        throw new Error(result.message || t('create.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('demand.create.errorMessage', 'Talep oluşturulurken bir hata oluştu.');
+      let errorMessage = t('create.errorMessage');
       if (error instanceof Error) {
         errorMessage = error.message; 
       }
-      toast.error(t('demand.create.error', 'Hata'), {
+      toast.error(t('create.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -232,22 +242,33 @@ export function DemandCreateForm(): ReactElement {
 
     if (oldCurrency === newCurrencyNum) return;
 
+    const sampleOldRate = findExchangeRateByDovizTipi(oldCurrency, exchangeRates, erpRates);
+    const sampleNewRate = findExchangeRateByDovizTipi(newCurrencyNum, exchangeRates, erpRates);
+
+    if (!sampleOldRate || sampleOldRate <= 0 || !sampleNewRate || sampleNewRate <= 0) {
+      toast.error(t('update.error'), {
+        description: t('exchangeRates.zeroRateError'),
+      });
+      throw new Error('ZERO_RATE');
+    }
+
     const updatedLines = await Promise.all(
       lines.map(async (line) => {
         const oldRate = findExchangeRateByDovizTipi(oldCurrency, exchangeRates, erpRates);
         const newRate = findExchangeRateByDovizTipi(newCurrencyNum, exchangeRates, erpRates);
 
-        if (oldRate && oldRate > 0 && newRate && newRate > 0) {
-          const conversionRatio = oldRate / newRate;
-          const newUnitPrice = line.unitPrice * conversionRatio;
-          
-          const updatedLine = {
-            ...line,
-            unitPrice: newUnitPrice,
-          };
-          return calculateLineTotals(updatedLine);
+        if (!oldRate || oldRate <= 0 || !newRate || newRate <= 0) {
+          return line;
         }
-        return line;
+
+        const conversionRatio = oldRate / newRate;
+        const newUnitPrice = line.unitPrice * conversionRatio;
+        
+        const updatedLine = {
+          ...line,
+          unitPrice: newUnitPrice,
+        };
+        return calculateLineTotals(updatedLine);
       })
     );
     setLines(updatedLines);
@@ -255,31 +276,16 @@ export function DemandCreateForm(): ReactElement {
 
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    const formData = form.getValues();
 
-    if (!formData.demand.paymentTypeId) {
-      toast.error(t('demand.create.error', 'Hata'), {
-        description: t('demand.create.paymentTypeRequired', 'Lütfen ödeme tipini seçiniz.'),
-      });
-      return;
-    }
-
-    if (!formData.demand.deliveryDate) {
-      toast.error(t('demand.create.error', 'Hata'), {
-        description: t('demand.create.deliveryDateRequired', 'Lütfen teslimat tarihini seçiniz.'),
-      });
-      return;
-    }
-    
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('demand.create.error', 'Hata'), {
-        description: 'Zorunlu alanlar doldurulmadı.',
+      toast.error(t('create.error'), {
+        description: t('create.validationError'),
       });
       return;
     }
 
-    await onSubmit(formData);
+    await onSubmit(form.getValues());
   };
 
   return (
@@ -311,16 +317,16 @@ export function DemandCreateForm(): ReactElement {
                   className="rounded-lg border-zinc-200 dark:border-zinc-800"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  {t('demand.back', 'Geri')}
+                  {t('back')}
                 </Button>
               </div>
 
               <h1 className="text-3xl md:text-4xl font-black tracking-tight text-zinc-900 dark:text-white">
-                {t('demand.create.title', 'Yeni Talep Oluştur')}
+                {t('create.title')}
               </h1>
               
               <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-3 max-w-2xl mx-auto leading-relaxed">
-                {t('demand.create.subtitle', 'Yeni bir satış talebi oluşturun.')}
+                {t('create.subtitle')}
               </p>
 
               <div className="h-1.5 w-24 bg-linear-to-r from-pink-500 to-purple-600 rounded-full mt-6 shadow-lg shadow-pink-500/20" />
@@ -332,23 +338,23 @@ export function DemandCreateForm(): ReactElement {
             <div className="flex flex-col gap-6 min-w-0 h-fit">
               
               {/* --- 1. Bölüm: Talep Bilgileri --- */}
-              <section aria-label={t('demand.sections.header', 'Talep Detayları')}>
-                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
+              <section aria-label={t('sections.header')}>
+                <div className={CREATE_SECTION_CARD_CLASSNAME}>
                   {/* Başlık Alanı */}
-                  <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+                  <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
                       1
                     </div>
                     <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('demand.sections.header', 'Talep Bilgileri')}
+                            {t('sections.header')}
                         </h3>
                     </div>
                   </div>
 
                   {/* Form İçeriği */}
-                  <div className="p-5">
+                  <div className={`border-t border-slate-300/75 bg-white/88 p-5 dark:border-white/8 dark:bg-[#130d21]/52 ${CREATE_HEADER_FORM_SURFACE_CLASSNAME}`}>
                     <DemandHeaderForm
                       exchangeRates={exchangeRates}
                       onExchangeRatesChange={setExchangeRates}
@@ -370,16 +376,16 @@ export function DemandCreateForm(): ReactElement {
               </section>
 
               {/* --- 2. Bölüm: Talep Satırları --- */}
-              <section aria-label={t('demand.sections.lines', 'Talep Kalemleri')}>
-                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
-                   <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+              <section aria-label={t('lines.title')}>
+                <div className={CREATE_SECTION_CARD_CLASSNAME}>
+                   <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
                       2
                     </div>
                     <div className="flex items-center gap-2">
                         <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('demand.sections.lines', 'Talep Satırları')}
+                            {t('sections.lines')}
                         </h3>
                     </div>
                   </div>
@@ -404,15 +410,15 @@ export function DemandCreateForm(): ReactElement {
 
             <aside className="xl:sticky xl:top-6 w-full">
               {/* --- 3. Bölüm: Özet & Toplamlar --- */}
-              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 overflow-hidden shadow-sm">
-                <div className="px-5 py-4 border-b border-zinc-100 dark:border-white/5 flex items-center gap-3 bg-zinc-50/50 dark:bg-white/5">
+              <div className={CREATE_SECTION_CARD_CLASSNAME}>
+                <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
                       3
                     </div>
                     <div className="flex items-center gap-2">
                         <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('demand.sections.summary', 'Özet & Toplamlar')}
+                            {t('sections.summary')}
                         </h3>
                     </div>
                   </div>
@@ -432,7 +438,7 @@ export function DemandCreateForm(): ReactElement {
                   className="group w-full sm:w-auto h-11 px-6 rounded-xl border-zinc-200 dark:border-zinc-800 font-bold text-zinc-600 dark:text-zinc-300 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 dark:hover:border-rose-800/50 transition-all duration-300"
                 >
                   <X className="mr-2 h-4 w-4 transition-colors" />
-                  {t('demand.cancel', 'İptal')}
+                  {t('cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -441,8 +447,8 @@ export function DemandCreateForm(): ReactElement {
                 >
                   <Save className="mr-2 h-4 w-4" />
                   {createMutation.isPending
-                    ? t('demand.saving', 'Kaydediliyor...')
-                    : t('demand.save', 'Kaydet')
+                    ? t('saving')
+                    : t('save')
                   }
                 </Button>
             </div>

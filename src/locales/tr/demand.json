@@ -61,7 +61,8 @@
     "deliveryDateRequired": "Teslim tarihi zorunludur.",
     "paymentTypeRequired": "Ödeme tipi zorunludur.",
     "invalidCurrency": "Geçersiz para birimi.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "notesMaxLengthError": "Her not en fazla 400 karakter olabilir."
   },
   "header": {
     "title": "Talep Bilgileri",

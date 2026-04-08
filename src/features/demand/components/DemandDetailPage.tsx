@@ -475,12 +475,15 @@ export function DemandDetailPage(): ReactElement {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-muted/50 h-auto p-1 rounded-xl gap-1 w-full overflow-x-auto scrollbar-hide justify-start">
+        <TabsList className="h-auto gap-1 overflow-x-auto rounded-xl border border-zinc-300/95 bg-zinc-100 p-1 shadow-none scrollbar-hide justify-start dark:border-zinc-800 dark:bg-black/90 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] w-full">
           <TabsTrigger
             value="detail"
             className={cn(
-              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
-              activeTab === 'detail' && 'text-pink-600 dark:text-pink-500 font-medium'
+              'rounded-lg border border-transparent px-4 py-2 shrink-0 transition-colors',
+              'text-zinc-600 dark:text-zinc-500',
+              'data-[state=active]:bg-white data-[state=active]:shadow-none data-[state=active]:border-zinc-300',
+              'dark:data-[state=active]:border-zinc-600 dark:data-[state=active]:bg-zinc-950 dark:data-[state=active]:shadow-[0_0_0_1px_rgba(236,72,153,0.2),0_0_28px_-8px_rgba(236,72,153,0.28)]',
+              activeTab === 'detail' && 'data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:font-medium'
             )}
           >
             <Layers className="h-4 w-4 mr-2" />
@@ -489,8 +492,11 @@ export function DemandDetailPage(): ReactElement {
           <TabsTrigger
             value="approval-flow"
             className={cn(
-              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
-              activeTab === 'approval-flow' && 'text-pink-600 dark:text-pink-500 font-medium'
+              'rounded-lg border border-transparent px-4 py-2 shrink-0 transition-colors',
+              'text-zinc-600 dark:text-zinc-500',
+              'data-[state=active]:bg-white data-[state=active]:shadow-none data-[state=active]:border-zinc-300',
+              'dark:data-[state=active]:border-zinc-600 dark:data-[state=active]:bg-zinc-950 dark:data-[state=active]:shadow-[0_0_0_1px_rgba(236,72,153,0.2),0_0_28px_-8px_rgba(236,72,153,0.28)]',
+              activeTab === 'approval-flow' && 'data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:font-medium'
             )}
           >
             <FileCheck className="h-4 w-4 mr-2" />
@@ -499,8 +505,11 @@ export function DemandDetailPage(): ReactElement {
           <TabsTrigger
             value="report"
             className={cn(
-              'rounded-lg px-4 py-2 shrink-0 data-[state=active]:bg-background data-[state=active]:shadow-sm',
-              activeTab === 'report' && 'text-pink-600 dark:text-pink-500 font-medium'
+              'rounded-lg border border-transparent px-4 py-2 shrink-0 transition-colors',
+              'text-zinc-600 dark:text-zinc-500',
+              'data-[state=active]:bg-white data-[state=active]:shadow-none data-[state=active]:border-zinc-300',
+              'dark:data-[state=active]:border-zinc-600 dark:data-[state=active]:bg-zinc-950 dark:data-[state=active]:shadow-[0_0_0_1px_rgba(236,72,153,0.2),0_0_28px_-8px_rgba(236,72,153,0.28)]',
+              activeTab === 'report' && 'data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:font-medium'
             )}
           >
             <FileText className="h-4 w-4 mr-2" />
@@ -518,15 +527,16 @@ export function DemandDetailPage(): ReactElement {
             <form onSubmit={handleFormSubmit} className="space-y-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
                 <div className="flex flex-col gap-6 min-w-0">
-                  <section className="space-y-1" aria-label={t('demand.sections.header')}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
-                        1
-                      </span>
-                      <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('demand.sections.header')}
-                      </h3>
-                    </div>
+                  <section aria-label={t('demand.sections.header')}>
+                    <div className="rounded-xl border border-zinc-300 dark:border-zinc-600/90 bg-white dark:bg-zinc-950/40 p-4 sm:p-5 space-y-4 shadow-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200 dark:bg-zinc-700/70 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-300/80 dark:border-zinc-600">
+                          1
+                        </span>
+                        <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
+                          {t('demand.sections.header')}
+                        </h3>
+                      </div>
                     <DemandHeaderForm
                       exchangeRates={exchangeRates}
                       onExchangeRatesChange={setExchangeRates}
@@ -575,17 +585,19 @@ export function DemandDetailPage(): ReactElement {
                       readOnly={isReadOnly}
                       showDocumentSerialType={false}
                     />
+                    </div>
                   </section>
 
-                  <section className="space-y-1 pt-2" aria-label={t('demand.sections.lines')}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700/50 text-xs font-bold text-zinc-600 dark:text-zinc-300">
-                        2
-                      </span>
-                      <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                        {t('demand.sections.lines')}
-                      </h3>
-                    </div>
+                  <section aria-label={t('demand.sections.lines')}>
+                    <div className="rounded-xl border border-zinc-300 dark:border-zinc-600/90 bg-white dark:bg-zinc-950/40 p-4 sm:p-5 space-y-4 shadow-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200 dark:bg-zinc-700/70 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-300/80 dark:border-zinc-600">
+                          2
+                        </span>
+                        <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
+                          {t('demand.sections.lines')}
+                        </h3>
+                      </div>
                     <DemandLineTable
                       lines={lines}
                       setLines={setLines}
@@ -599,20 +611,23 @@ export function DemandDetailPage(): ReactElement {
                       demandId={demandId}
                       enabled={linesEnabled}
                     />
+                    </div>
                   </section>
                 </div>
 
                 <aside className="xl:sticky xl:top-6">
-                  <div className="flex items-center gap-2 mb-3 xl:mb-4">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                      3
-                    </span>
-                    <h3 className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                      {t('demand.sections.summary')}
-                    </h3>
-                  </div>
-                  <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
-                    <DemandSummaryCard lines={lines} currency={watchedCurrency} />
+                  <div className="rounded-xl border border-zinc-300 dark:border-zinc-600/90 bg-white dark:bg-zinc-950/40 p-4 sm:p-5 space-y-4 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-xs font-bold text-emerald-800 dark:text-emerald-300 border border-emerald-200/90 dark:border-emerald-800/80">
+                        3
+                      </span>
+                      <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
+                        {t('demand.sections.summary')}
+                      </h3>
+                    </div>
+                    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-900/60 overflow-hidden">
+                      <DemandSummaryCard lines={lines} currency={watchedCurrency} />
+                    </div>
                   </div>
                 </aside>
               </div>
