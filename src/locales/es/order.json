@@ -60,7 +60,8 @@
     "deliveryDateRequired": "Teslimat tarihi zorunludur.",
     "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "notesMaxLengthError": "Cada nota puede tener como máximo 400 caracteres."
   },
   "header": {
     "title": "Información de Cotización",

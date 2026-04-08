@@ -60,7 +60,8 @@
     "deliveryDateRequired": "Teslimat tarihi zorunludur.",
     "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "notesMaxLengthError": "Ogni nota può contenere al massimo 400 caratteri."
   },
   "header": {
     "title": "Informazioni Preventivo",

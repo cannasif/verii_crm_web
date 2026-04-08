@@ -8,6 +8,18 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -29,6 +41,7 @@ import {
 } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
+import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
@@ -37,9 +50,9 @@ import { ExchangeRateDialog } from './ExchangeRateDialog';
 import { QuotationNotesDialog } from '@/features/quotation/components/QuotationNotesDialog';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { 
-  Search, User, Truck, Briefcase, Globe, 
+  Search, SearchX, User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
-  Layers, Folder, ListPlus, X, MapPin, BookUser,
+  Layers, Folder, ListPlus, X, MapPin, BookUser, Check, Building2,
   Banknote
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -93,6 +106,8 @@ export function OrderHeaderForm({
   const [exchangeRateDialogOpen, setExchangeRateDialogOpen] = useState(false);
   const [currencyChangeDialogOpen, setCurrencyChangeDialogOpen] = useState(false);
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
+  const [customerComboboxOpen, setCustomerComboboxOpen] = useState(false);
+  const [customerSearchQuery, setCustomerSearchQuery] = useState('');
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
   const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
@@ -132,6 +147,7 @@ export function OrderHeaderForm({
 
   const { data: shippingAddresses = [] } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useOrderRelatedUsers(user?.id);
+  const { data: customerOptions = [] } = useCustomerOptions();
   const shouldFetchCustomer = Boolean(watchedCustomerId && !watchedErpCustomerCode);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
@@ -154,11 +170,62 @@ export function OrderHeaderForm({
         ? `ERP: ${customer.customerCode} - ${customer.name}`
         : `CRM: ${customer.name}`;
     }
+    const matchedOption = customerOptions.find(
+      (option) =>
+        (watchedCustomerId != null && option.id === watchedCustomerId) ||
+        (!!watchedErpCustomerCode && option.customerCode === watchedErpCustomerCode)
+    );
+    if (matchedOption) {
+      return matchedOption.customerCode?.trim()
+        ? `ERP: ${matchedOption.customerCode} - ${matchedOption.name}`
+        : `CRM: ${matchedOption.name}`;
+    }
     if (watchedErpCustomerCode) {
       return `ERP: ${watchedErpCustomerCode}`;
     }
     return `ID: ${watchedCustomerId}`;
-  }, [watchedCustomerId, watchedErpCustomerCode, customer]);
+  }, [watchedCustomerId, watchedErpCustomerCode, customer, customerOptions]);
+
+  useEffect(() => {
+    setCustomerSearchQuery(customerDisplayValue);
+  }, [customerDisplayValue]);
+
+  const allCustomerOptions = useMemo(() => {
+    return customerOptions.map((c) => ({
+      value: `customer-${c.id}`,
+      label: c.customerCode?.trim()
+        ? `ERP: ${c.customerCode} - ${c.name}`
+        : `CRM: ${c.name}`,
+      type: (c.customerCode?.trim() ? 'erp' : 'crm') as 'erp' | 'crm',
+      id: c.id,
+      code: c.customerCode ?? undefined,
+      customerTypeId: c.customerTypeId,
+      name: c.name,
+    }));
+  }, [customerOptions]);
+
+  const filteredCustomerOptions = useMemo(() => {
+    let options = allCustomerOptions;
+
+    if (customerTypeId && !watchedCustomerId && !watchedErpCustomerCode) {
+      options = options.filter((o) => o.customerTypeId === customerTypeId);
+    }
+
+    if (!customerSearchQuery) return options.slice(0, 50);
+    const lowerQuery = customerSearchQuery.toLowerCase();
+    return options
+      .filter((option) =>
+        option.label.toLowerCase().includes(lowerQuery) ||
+        (option.code && option.code.toLowerCase().includes(lowerQuery))
+      )
+      .slice(0, 50);
+  }, [allCustomerOptions, customerSearchQuery, customerTypeId, watchedCustomerId, watchedErpCustomerCode]);
+
+  const handleComboboxSelect = (option: (typeof allCustomerOptions)[0]): void => {
+    form.setValue('order.potentialCustomerId', option.id);
+    form.setValue('order.erpCustomerCode', option.code ?? null);
+    setCustomerComboboxOpen(false);
+  };
 
   useEffect(() => {
     if (!watchedRepresentativeId && user?.id) {
@@ -243,25 +310,17 @@ export function OrderHeaderForm({
     setPendingCurrency(null);
   };
 
-  const currencyConfig = useMemo(() => {
-    const val = String(watchedCurrency);
-    switch (val) {
-      case '1': return { color: "text-red-500", bg: "bg-red-50/50 dark:bg-red-950/20", border: "border-red-200 dark:border-red-800/50" };
-      case '2': return { color: "text-blue-500", bg: "bg-blue-50/50 dark:bg-blue-950/20", border: "border-blue-200 dark:border-blue-800/50" };
-      case '3': return { color: "text-amber-500", bg: "bg-amber-50/50 dark:bg-amber-950/20", border: "border-amber-200 dark:border-amber-800/50" };
-      default: return { color: "text-emerald-500", bg: "bg-emerald-50/50 dark:bg-emerald-950/20", border: "border-emerald-200 dark:border-emerald-800/50" };
-    }
-  }, [watchedCurrency]);
-
   const styles = {
-    glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl shadow-sm transition-all duration-300 hover:shadow-md",
-    inputBase: "h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none w-full",
-    label: "text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-2",
+    glassCard: "relative overflow-hidden rounded-2xl border border-slate-400/80 dark:border-zinc-700/85 bg-white/88 dark:bg-zinc-900/48 backdrop-blur-xl shadow-[0_1px_0_rgba(15,23,42,0.05),0_14px_30px_-24px_rgba(15,23,42,0.4)] ring-1 ring-slate-300/60 dark:ring-white/10 transition-all duration-300 hover:shadow-md",
+    inputBase: "h-11 bg-white dark:bg-zinc-950 border-slate-400/75 dark:border-zinc-700 rounded-xl shadow-sm transition-all duration-300 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none w-full",
+    label: "text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider mb-2 flex items-center gap-2",
     iconWrapper: "absolute left-3 top-1/2 -translate-y-1/2 transition-colors z-20 flex items-center justify-center pointer-events-none",
-    selectTrigger: "w-full h-11 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 hover:border-pink-400 dark:hover:border-zinc-700 transition-all shadow-sm rounded-xl focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none",
-    selectContent: "rounded-xl border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl",
+    selectTrigger: "w-full h-11 bg-white dark:bg-zinc-950 border-slate-500/80 dark:border-zinc-600 hover:border-pink-400 dark:hover:border-zinc-500 transition-all shadow-[0_1px_0_rgba(15,23,42,0.05),0_6px_14px_-10px_rgba(15,23,42,0.35)] rounded-xl focus:ring-4 focus:ring-pink-500/12 focus:border-pink-500 outline-none text-slate-800 dark:text-zinc-100",
+    selectContent: "rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 shadow-2xl backdrop-blur-xl",
     selectItem: "focus:bg-pink-50 dark:focus:bg-pink-900/10 focus:text-pink-600 cursor-pointer rounded-lg m-1"
   };
+  const getIconTone = (hasValue: boolean): string =>
+    hasValue ? 'text-pink-500' : 'text-zinc-400 group-focus-within:text-pink-500';
 
   return (
     <div className="relative space-y-6 pt-2 pb-8 animate-in fade-in slide-in-from-bottom-3 duration-700">
@@ -282,17 +341,73 @@ export function OrderHeaderForm({
                   </div>
                   <div className="flex gap-2">
                     <div className="relative flex-1 group min-w-0">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 z-10 pointer-events-none group-focus-within:text-pink-500 transition-colors">
+                      <div className={cn("absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors", customerSearchQuery?.trim() ? "text-pink-500" : "text-zinc-400 group-focus-within:text-pink-500")}>
                         <Search className="h-4 w-4" />
                       </div>
-                      <Input
-                        className={cn(styles.inputBase, "pl-10 font-medium truncate cursor-pointer focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
-                        value={customerDisplayValue}
-                        placeholder={t('order.header.selectCustomer')}
-                        readOnly
-                        onClick={() => !readOnly && setCustomerSelectDialogOpen(true)}
-                        disabled={readOnly}
-                      />
+                      <FormControl>
+                        <Input
+                          className={cn(styles.inputBase, "pl-10 font-medium truncate caret-pink-500")}
+                          value={customerSearchQuery}
+                          onChange={(e) => {
+                            setCustomerSearchQuery(e.target.value);
+                            if (!customerComboboxOpen) setCustomerComboboxOpen(true);
+                          }}
+                          onFocus={() => setCustomerComboboxOpen(true)}
+                          placeholder={t('order.header.selectCustomer')}
+                          disabled={readOnly}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <Popover open={customerComboboxOpen} onOpenChange={setCustomerComboboxOpen}>
+                        <PopoverTrigger asChild>
+                          <div className="absolute top-full left-0 w-full h-0" />
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="p-0 w-[90vw] sm:w-[550px] max-h-[350px] overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl"
+                          align="start"
+                          sideOffset={8}
+                          onOpenAutoFocus={(e) => e.preventDefault()}
+                        >
+                          <Command shouldFilter={false}>
+                            <CommandList className="max-h-[350px] overflow-y-auto p-2 space-y-1">
+                              {filteredCustomerOptions.length === 0 && (
+                                <CommandEmpty className="py-8 text-center flex flex-col items-center gap-2">
+                                  <SearchX className="w-5 h-5 text-zinc-400" />
+                                  <span className="text-sm font-medium text-zinc-500">{t('common.noResults')}</span>
+                                </CommandEmpty>
+                              )}
+                              <CommandGroup>
+                                {filteredCustomerOptions.map((option) => (
+                                  <CommandItem
+                                    key={option.value}
+                                    value={option.value}
+                                    onSelect={() => handleComboboxSelect(option)}
+                                    className="cursor-pointer mb-1 rounded-xl px-3 py-2 data-[selected=true]:bg-pink-50 dark:data-[selected=true]:bg-pink-900/20 transition-colors"
+                                  >
+                                    <div className="flex items-center gap-3 w-full min-w-0">
+                                      <div className={cn(
+                                        "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                                        option.type === 'erp' ? "bg-purple-100 dark:bg-purple-900/40 text-purple-600" : "bg-pink-100 dark:bg-pink-900/40 text-pink-600"
+                                      )}>
+                                        {option.type === 'erp' ? <Building2 size={14} /> : <User size={14} />}
+                                      </div>
+                                      <div className="flex flex-col flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                          <span className="font-medium text-sm truncate">{option.name || option.label}</span>
+                                          {((option.type === 'crm' && watchedCustomerId === option.id) || (option.type === 'erp' && watchedErpCustomerCode === option.code)) && (
+                                            <Check className="w-3.5 h-3.5 text-pink-500" />
+                                          )}
+                                        </div>
+                                        {option.code && <span className="text-[11px] text-zinc-500 font-mono">{option.code}</span>}
+                                      </div>
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     <Button
                       type="button"
@@ -408,7 +523,7 @@ export function OrderHeaderForm({
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.currency')}>Para Birimi</FormLabel>
                     <div className="relative">
-                      <div className={cn(styles.iconWrapper, currencyConfig.color)}>
+                      <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
                         <Banknote className="h-4 w-4" />
                       </div>
                       <FormControl>
@@ -423,9 +538,6 @@ export function OrderHeaderForm({
                           className={cn(
                             styles.selectTrigger,
                             "pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
-                            currencyConfig.color,
-                            currencyConfig.bg,
-                            currencyConfig.border,
                             "hover:brightness-95 dark:hover:brightness-110"
                           )}
                           disabled={readOnly}
@@ -443,7 +555,7 @@ export function OrderHeaderForm({
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label}>{t('order.header.paymentType')}</FormLabel>
                     <div className="relative">
-                      <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}>
+                      <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
                         <CreditCard className="h-4 w-4" />
                       </div>
                       <FormControl>
@@ -490,7 +602,7 @@ export function OrderHeaderForm({
                         {t('common.offerType.label')}
                       </FormLabel>
                       <div className="relative">
-                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Layers className="h-4 w-4" /></div>
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
                             options={[
@@ -517,7 +629,7 @@ export function OrderHeaderForm({
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>{t('order.header.deliveryMethod', { defaultValue: 'Teslim Şekli' })}</FormLabel>
                         <div className="relative">
-                          <div className={styles.iconWrapper}><Truck className="h-4 w-4 text-zinc-400 group-focus-within:text-pink-500" /></div>
+                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={deliveryMethodDropdown.options}
@@ -549,7 +661,7 @@ export function OrderHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>{t('order.header.offerDate')}</FormLabel>
                       <div className="relative">
-                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Calendar className="h-4 w-4" /></div>
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Calendar className="h-4 w-4" /></div>
                         <FormControl>
                           <Input 
                             type="date" 
@@ -571,7 +683,7 @@ export function OrderHeaderForm({
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label}>Teslim T.</FormLabel>
                       <div className="relative">
-                        <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Truck className="h-4 w-4" /></div>
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                         <FormControl>
                           <Input 
                             type="date" 
@@ -610,7 +722,7 @@ export function OrderHeaderForm({
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.documentSerialTypeId')}>Seri No</FormLabel>
                         <div className="relative">
-                          <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Hash className="h-4 w-4" /></div>
+                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Hash className="h-4 w-4" /></div>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={availableDocumentSerialTypes
@@ -640,7 +752,7 @@ export function OrderHeaderForm({
                           {t('quotation.header.projectCode')}
                         </FormLabel>
                         <div className="relative">
-                          <div className={cn(styles.iconWrapper, "text-zinc-400 group-focus-within:text-pink-500")}><Folder className="h-4 w-4" /></div>
+                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
                           <VoiceSearchCombobox
                             className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 [&_*]:pl-8")}
                             value={field.value || ''}

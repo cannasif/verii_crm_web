@@ -60,7 +60,8 @@
     "deliveryDateRequired": "Teslimat tarihi zorunludur.",
     "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "notesMaxLengthError": "يمكن أن تحتوي كل ملاحظة على 400 حرف كحد أقصى."
   },
   "header": {
     "title": "معلومات عرض السعر",
