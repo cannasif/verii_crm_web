@@ -91,6 +91,83 @@ function normalizeApiEnvelope(payload: unknown): unknown {
   return normalized;
 }
 
+function getCurrentTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+}
+
+function isIsoDateTimeWithoutOffset(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$/.test(value);
+}
+
+function convertLocalDateTimeStringToUtc(value: string): string {
+  if (!isIsoDateTimeWithoutOffset(value)) {
+    return value;
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toISOString();
+}
+
+function normalizeUtcDateStrings(payload: unknown): unknown {
+  if (
+    payload == null ||
+    typeof payload !== 'object' ||
+    payload instanceof Date ||
+    (typeof Blob !== 'undefined' && payload instanceof Blob) ||
+    payload instanceof ArrayBuffer
+  ) {
+    if (typeof payload === 'string' && isIsoDateTimeWithoutOffset(payload)) {
+      return `${payload}Z`;
+    }
+    return payload;
+  }
+
+  if (Array.isArray(payload)) {
+    return payload.map((item) => normalizeUtcDateStrings(item));
+  }
+
+  const source = payload as Record<string, unknown>;
+  const normalized: Record<string, unknown> = {};
+  Object.entries(source).forEach(([key, value]) => {
+    normalized[key] = normalizeUtcDateStrings(value);
+  });
+  return normalized;
+}
+
+function normalizeOutgoingUtcDateStrings(payload: unknown): unknown {
+  if (
+    payload == null ||
+    typeof payload !== 'object' ||
+    payload instanceof Date ||
+    (typeof Blob !== 'undefined' && payload instanceof Blob) ||
+    payload instanceof ArrayBuffer
+  ) {
+    if (typeof payload === 'string') {
+      return convertLocalDateTimeStringToUtc(payload);
+    }
+    return payload;
+  }
+
+  if (Array.isArray(payload)) {
+    return payload.map((item) => normalizeOutgoingUtcDateStrings(item));
+  }
+
+  const source = payload as Record<string, unknown>;
+  const normalized: Record<string, unknown> = {};
+  Object.entries(source).forEach(([key, value]) => {
+    normalized[key] = normalizeOutgoingUtcDateStrings(value);
+  });
+  return normalized;
+}
+
 function extractApiErrorMessage(payload: unknown): string | null {
   if (payload == null || typeof payload !== 'object') return null;
 
@@ -223,12 +300,17 @@ async function refreshAccessToken(): Promise<string | null> {
 api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
 
+  if (config.data !== undefined) {
+    config.data = normalizeOutgoingUtcDateStrings(config.data);
+  }
+
   const token = getStoredAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
   config.headers['X-Language'] = i18n.language || 'tr';
+  config.headers['X-Time-Zone'] = getCurrentTimeZone();
 
   const branch = useAuthStore.getState().branch;
   const branchCode = branch?.code || resolveBranchCodeFromPersistedState();
@@ -241,7 +323,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => {
-    response.data = normalizeApiEnvelope(response.data);
+    response.data = normalizeUtcDateStrings(normalizeApiEnvelope(response.data));
     return response.data;
   },
   async (error) => {
