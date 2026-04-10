@@ -20,6 +20,16 @@ import type {
 const BASE = '/api/pdf-report-templates';
 const PRESET_BASE = '/api/pdf-table-presets';
 
+export interface UploadPdfAssetOptions {
+  templateId?: number;
+  assetScope?: 'quick-quotation' | 'pdf-designer' | 'report-builder' | 'template';
+  elementId?: string;
+  pageNumber?: number;
+  tempQuotattionId?: number;
+  tempQuotattionLineId?: number;
+  productCode?: string;
+}
+
 function normalizeTemplateItem(item: unknown): ReportTemplateGetDto {
   const r = item != null && typeof item === 'object' ? (item as Record<string, unknown>) : {};
   const id = r.id ?? r.Id ?? 0;
@@ -223,23 +233,33 @@ export const pdfReportTemplateApi = {
 
   uploadAsset: async (
     file: File,
-    templateId?: number,
-    assetScope?: 'quick-quotation' | 'pdf-designer' | 'report-builder' | 'template'
+    options?: UploadPdfAssetOptions
   ): Promise<PdfTemplateAssetDto> => {
     const formData = new FormData();
     formData.append('file', file);
-    if (typeof templateId === 'number' && Number.isFinite(templateId) && templateId > 0) {
-      formData.append('templateId', String(templateId));
+    if (typeof options?.templateId === 'number' && Number.isFinite(options.templateId) && options.templateId > 0) {
+      formData.append('templateId', String(options.templateId));
     }
-    if (assetScope) {
-      formData.append('assetScope', assetScope);
+    if (options?.assetScope) {
+      formData.append('assetScope', options.assetScope);
+    }
+    if (options?.elementId) {
+      formData.append('elementId', options.elementId);
+    }
+    if (typeof options?.pageNumber === 'number' && Number.isFinite(options.pageNumber) && options.pageNumber > 0) {
+      formData.append('pageNumber', String(options.pageNumber));
+    }
+    if (typeof options?.tempQuotattionId === 'number' && Number.isFinite(options.tempQuotattionId) && options.tempQuotattionId > 0) {
+      formData.append('tempQuotattionId', String(options.tempQuotattionId));
+    }
+    if (typeof options?.tempQuotattionLineId === 'number' && Number.isFinite(options.tempQuotattionLineId) && options.tempQuotattionLineId > 0) {
+      formData.append('tempQuotattionLineId', String(options.tempQuotattionLineId));
+    }
+    if (options?.productCode) {
+      formData.append('productCode', options.productCode);
     }
 
-    const response = await api.post<unknown>(`${BASE}/assets/upload`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post<unknown>(`${BASE}/assets/upload`, formData);
     return unwrapApiResponse<PdfTemplateAssetDto>(response);
   },
 

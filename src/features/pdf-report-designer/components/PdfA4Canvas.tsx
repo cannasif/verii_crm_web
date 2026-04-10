@@ -425,7 +425,13 @@ function ImageElementBlock({
       e.target.value = '';
       return;
     }
-    void uploadPdfTemplateImage(file, templateId ?? undefined, ruleType)
+    void uploadPdfTemplateImage(
+      file,
+      templateId ?? undefined,
+      ruleType,
+      element.id,
+      element.pageNumbers?.[0] ?? 1
+    )
       .then((relativeUrl) => {
         updateReportElement(element.id, { value: relativeUrl });
       })
@@ -906,7 +912,13 @@ function ElementSettingsPopover({
         e.target.value = '';
         return;
       }
-      void uploadPdfTemplateImage(file, templateId ?? undefined, ruleType)
+      void uploadPdfTemplateImage(
+        file,
+        templateId ?? undefined,
+        ruleType,
+        el.id,
+        el.pageNumbers?.[0] ?? 1
+      )
         .then((relativeUrl) => {
           updateReportElement(el.id, { value: relativeUrl });
         })

@@ -118,7 +118,13 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
         return;
       }
 
-      void uploadPdfTemplateImage(file, templateId ?? undefined, ruleType)
+      void uploadPdfTemplateImage(
+        file,
+        templateId ?? undefined,
+        ruleType,
+        selectedElement.id,
+        selectedElement.pageNumbers?.[0] ?? 1
+      )
         .then((relativeUrl) => {
           updateReportElement(selectedElement.id, { value: relativeUrl });
         })

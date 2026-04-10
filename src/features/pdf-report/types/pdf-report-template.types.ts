@@ -227,6 +227,12 @@ export interface PdfTemplateAssetDto {
   relativeUrl: string;
   contentType: string;
   sizeBytes: number;
+  reportTemplateId?: number | null;
+  elementId?: string | null;
+  pageNumber?: number | null;
+  tempQuotattionId?: number | null;
+  tempQuotattionLineId?: number | null;
+  productCode?: string | null;
 }
 
 export interface PdfTablePresetListParams {

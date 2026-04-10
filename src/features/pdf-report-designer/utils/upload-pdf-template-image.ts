@@ -7,8 +7,15 @@ function resolveAssetScope(ruleType?: number): 'quick-quotation' | 'pdf-designer
 export async function uploadPdfTemplateImage(
   file: File,
   templateId?: number,
-  ruleType?: number
+  ruleType?: number,
+  elementId?: string,
+  pageNumber?: number
 ): Promise<string> {
-  const asset = await pdfReportTemplateApi.uploadAsset(file, templateId, resolveAssetScope(ruleType));
+  const asset = await pdfReportTemplateApi.uploadAsset(file, {
+    templateId,
+    assetScope: resolveAssetScope(ruleType),
+    elementId,
+    pageNumber,
+  });
   return asset.relativeUrl;
 }
