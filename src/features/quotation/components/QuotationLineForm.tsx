@@ -11,6 +11,7 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
+import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
 import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
 import { useProductSelection } from '../hooks/useProductSelection';
@@ -18,7 +19,7 @@ import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { quotationApi } from '../api/quotation-api';
 import { quotationLineRequiredSchema, type QuotationLineFormState, type QuotationExchangeRateFormState, type PricingRuleLineGetDto, type UserDiscountLimitDto, type ApprovalStatus } from '../types/quotation-types';
-import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X } from 'lucide-react';
+import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X, LayoutGrid } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface TemporaryStockData {
@@ -94,9 +95,10 @@ export function QuotationLineForm({
   onSaveMultiple,
   isSaving = false,
 }: QuotationLineFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const { calculateLineTotals } = useQuotationCalculations();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
   const [pricingInfoOpen, setPricingInfoOpen] = useState(false);
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
@@ -631,18 +633,19 @@ export function QuotationLineForm({
     }
 
     if (!collectedLines.length) return;
-    if (bulkDraftLines.length === 0) {
-      const firstLine = collectedLines[0];
-      if (firstLine) {
-        setFormData(firstLine);
-        setQuantityInputValue(String(firstLine.quantity || ''));
-        setVatRateInputValue(String(firstLine.vatRate || ''));
-        setDiscountRate1InputValue(String(firstLine.discountRate1 || ''));
-        setDiscountRate2InputValue(String(firstLine.discountRate2 || ''));
-        setDiscountRate3InputValue(String(firstLine.discountRate3 || ''));
-      }
+
+    const firstLine = collectedLines[0];
+    if (firstLine) {
+      setFormData(firstLine);
+      setQuantityInputValue(String(firstLine.quantity || ''));
+      setVatRateInputValue(String(firstLine.vatRate || ''));
+      setDiscountRate1InputValue(String(firstLine.discountRate1 || ''));
+      setDiscountRate2InputValue(String(firstLine.discountRate2 || ''));
+      setDiscountRate3InputValue(String(firstLine.discountRate3 || ''));
+      setActiveBulkIndex(0);
     }
-    setBulkDraftLines((prev) => [...prev, ...collectedLines]);
+
+    setBulkDraftLines(collectedLines);
   };
 
   const handleBulkDraftConfirm = (): void => {
@@ -899,6 +902,15 @@ export function QuotationLineForm({
               className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center justify-center"
             >
               <Search className="h-5 w-5" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCatalogDialogOpen(true)}
+              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center gap-2"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              <span className="text-xs font-medium">{t('catalogStockPicker.openButton')}</span>
             </Button>
             <Button
               type="button"
@@ -1379,6 +1391,20 @@ export function QuotationLineForm({
       <ProductSelectDialog
         open={productDialogOpen}
         onOpenChange={setProductDialogOpen}
+        onSelect={handleProductSelect}
+        multiSelect
+        onMultiSelect={handleMultiProductSelect}
+        initialSelectedResults={bulkDraftLines.map((lineItem) => ({
+          code: lineItem.productCode || '',
+          name: lineItem.productName || '',
+          unit: lineItem.unit ?? undefined,
+          groupCode: lineItem.groupCode || undefined,
+        }))}
+      />
+
+      <CatalogStockSelectDialog
+        open={catalogDialogOpen}
+        onOpenChange={setCatalogDialogOpen}
         onSelect={handleProductSelect}
         multiSelect
         onMultiSelect={handleMultiProductSelect}

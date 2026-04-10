@@ -8,7 +8,7 @@ import type { RejectActionDto } from '../types/demand-types';
 
 export const useRejectAction = (): UseMutationResult<ApiResponse<boolean>, Error, RejectActionDto, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
 
   return useMutation({
     mutationFn: (data: RejectActionDto) => demandApi.reject(data),

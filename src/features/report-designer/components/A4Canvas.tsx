@@ -70,7 +70,7 @@ export interface A4CanvasProps {
 }
 
 function TableElementBlock({ table }: { table: TableElement }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const { setNodeRef, isOver } = useDroppable({
     id: getTableDroppableId(table.id),
   });
@@ -104,7 +104,7 @@ const DEFAULT_FONT_SIZE = 14;
 const DEFAULT_FONT_FAMILY = 'Arial';
 
 function TextElementBlock({ element }: { element: ReportElement }): ReactElement | null {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const updateElementText = useReportStore((s) => s.updateElementText);
   const setSelectedElement = useReportStore((s) => s.setSelectedElement);
   if (element.type !== 'text') return null;
@@ -131,7 +131,7 @@ function TextElementBlock({ element }: { element: ReportElement }): ReactElement
 }
 
 function ImageElementBlock({ element }: { element: ReportElement }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const updateReportElement = useReportStore((s) => s.updateReportElement);
   const setSelectedElement = useReportStore((s) => s.setSelectedElement);
   const isUrl =
@@ -219,7 +219,7 @@ function FieldElementBlock({ element }: { element: ReportElement }): ReactElemen
 }
 
 function ElementSettingsPopover({ element }: { element: CanvasElement }): ReactElement | null {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const updateReportElement = useReportStore((s) => s.updateReportElement);
 
   if (isTableElement(element)) {
@@ -469,7 +469,7 @@ function DroppableSection({
 }
 
 export function A4Canvas({ canvasRef }: A4CanvasProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const elements = useReportStore((s) => s.elements);
   const updateElementPosition = useReportStore((s) => s.updateElementPosition);
   const updateElementSize = useReportStore((s) => s.updateElementSize);

@@ -550,7 +550,7 @@ function applyTemplateToFormAndStore(
 }
 
 export function PdfReportDesignerCreatePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const navigate = useNavigate();
   const { id: idParam } = useParams<{ id: string }>();
   const location = useLocation();
@@ -563,11 +563,16 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     if (el) pageCanvasRefs.current.set(page, el);
     else pageCanvasRefs.current.delete(page);
   }, []);
+  const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
+  const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const setElements = usePdfReportDesignerStore((s) => s.setElements);
   const addElement = usePdfReportDesignerStore((s) => s.addElement);
   const addColumnToTable = usePdfReportDesignerStore((s) => s.addColumnToTable);
   const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
-  const orderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements());
+  const orderedElements = useMemo(
+    () => elementOrder.map((id) => elementsById[id]).filter(Boolean),
+    [elementOrder, elementsById]
+  );
   const undo = usePdfReportDesignerStore((s) => s.undo);
   const redo = usePdfReportDesignerStore((s) => s.redo);
   const historyIndex = usePdfReportDesignerStore((s) => s.historyIndex);
@@ -1107,7 +1112,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       } catch {
         // ignore
       }
-      navigate('/report-designer');
+      navigate('/pdf-report-designer');
     } catch (err) {
       const detail = getApiErrorMessage(err);
       toast.error(
@@ -1380,11 +1385,11 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     }
 
     if (activityStarterAppliedRef.current) return;
-    if (getOrderedElements().length > 0) return;
+    if (orderedElements.length > 0) return;
 
     setElements(createActivityStarterElements());
     activityStarterAppliedRef.current = true;
-  }, [ruleType, isEdit, copyFrom, getOrderedElements, setElements]);
+  }, [ruleType, isEdit, copyFrom, orderedElements.length, setElements]);
 
   useEffect(() => {
     if (currentPage > pageCount) {
@@ -1429,7 +1434,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 variant="ghost"
                 size="sm"
                 className="-ml-1 gap-1.5 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-                onClick={() => navigate('/report-designer')}
+                onClick={() => navigate('/pdf-report-designer')}
               >
                 <ArrowLeft className="size-4" />
               </Button>
@@ -1775,11 +1780,13 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 exchangeRateFields={exchangeRateFields}
                 imageFields={imageFields}
                 templateId={editId}
+                ruleType={ruleType}
               />
               <PdfA4Canvas
                 currentPage={currentPage}
                 pageCount={pageCount}
                 templateId={editId}
+                ruleType={ruleType}
                 fieldDefinitions={[
                   ...(fieldsData?.headerFields ?? []),
                   ...(fieldsData?.lineFields ?? []),
@@ -1796,7 +1803,8 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                   ...(fieldsData?.exchangeRateFields ?? []),
                 ]}
               />
-              <PdfLayersPanel onNavigateToPage={handleNavigateToPage} templateId={editId} />
+              <PdfLayersPanel onNavigateToPage={handleNavigateToPage} templateId={editId} ruleType={ruleType} />
+              
             </div>
           </DndContext>
         ) : null}

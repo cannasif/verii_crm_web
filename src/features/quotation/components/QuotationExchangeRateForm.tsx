@@ -29,7 +29,7 @@ export function QuotationExchangeRateForm({
   exchangeRates,
   setExchangeRates,
 }: QuotationExchangeRateFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const { currencyOptions, isLoading: isCurrencyLoading } = useCurrencyOptions();
   const [newDovizTipi, setNewDovizTipi] = useState<number | ''>('');
   const [newExchangeRate, setNewExchangeRate] = useState('');

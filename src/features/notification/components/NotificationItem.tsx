@@ -12,7 +12,7 @@ interface NotificationItemProps {
 }
 
 export function NotificationItem({ notification, onNavigate }: NotificationItemProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['notification', 'common']);
   const queryClient = useQueryClient();
 
   const markAsReadMutation = useMutation({

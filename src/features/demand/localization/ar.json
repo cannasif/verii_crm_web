@@ -1,0 +1,298 @@
+{
+  "loading": "جارٍ التحميل...",
+  "saving": "جارٍ الحفظ...",
+  "error": "خطأ",
+  "noData": "لا توجد بيانات",
+  "previous": "السابق",
+  "next": "التالي",
+  "actions": "إجراءات",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "back": "رجوع",
+  "refresh": "تحديث",
+  "select": "اختيار",
+  "yes": "نعم",
+  "add": "إضافة",
+  "backToQuotations": "العودة إلى الطلبات",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "confirm": "تأكيد",
+  "saveAndApply": "حفظ وتطبيق",
+  "list": {
+    "revise": "مراجعة",
+    "showing": "{{from}}-{{to}} / {{total}}",
+    "title": "قائمة الطلبات",
+    "description": "عرض وإدارة الطلبات",
+    "detail": "التفاصيل",
+    "createNew": "طلب جديد",
+    "searchPlaceholder": "بحث برقم الطلب أو اسم العميل...",
+    "cardTitle": "قائمة الطلبات",
+    "refresh": "تحديث",
+    "actions": "إجراءات",
+    "id": "المعرف",
+    "offerNo": "رقم الطلب",
+    "revisionNo": "رقم المراجعة",
+    "customer": "العميل",
+    "customerCode": "رمز العميل",
+    "representative": "مندوب المبيعات",
+    "offerDate": "التاريخ",
+    "validUntil": "صالح حتى",
+    "currency": "العملة",
+    "grandTotal": "الإجمالي",
+    "status": "الحالة"
+  },
+  "detail": {
+    "title": "تفاصيل الطلب",
+    "subtitle": "عرض وإدارة التفاصيل.",
+    "notFound": "الطلب غير موجود.",
+    "revisionNo": "رقم المراجعة",
+    "tabDetail": "تفاصيل",
+    "tabApprovalFlow": "مسار الموافقة",
+    "tabReport": "تقرير"
+  },
+  "create": {
+    "title": "طلب جديد",
+    "submit": "حفظ وإرسال للموافقة",
+    "success": "تم إنشاء الطلب",
+    "successMessage": "أُرسل إلى مسار الموافقة.",
+    "error": "تعذر إنشاء الطلب",
+    "errorMessage": "حدث خطأ أثناء الإنشاء.",
+    "subtitle": "أكمل الحقول واحفظ.",
+    "deliveryDateRequired": "تاريخ التسليم مطلوب.",
+    "paymentTypeRequired": "نوع الدفع مطلوب.",
+    "invalidCurrency": "عملة غير صالحة.",
+    "validationError": "تحقق من الحقول المطلوبة.",
+    "notesMaxLengthError": "كل ملاحظة بحد أقصى 400 حرف."
+  },
+  "header": {
+    "title": "بيانات الرأس",
+    "customer": "العميل",
+    "selectCustomer": "اختر العميل",
+    "shippingAddress": "عنوان التسليم",
+    "selectShippingAddress": "اختر العنوان",
+    "representative": "مندوب المبيعات",
+    "selectRepresentative": "اختر المندوب",
+    "offerType": "نوع الطلب",
+    "selectOfferType": "اختر النوع",
+    "currency": "العملة",
+    "selectCurrency": "اختر العملة",
+    "showExchangeRates": "عرض أسعار الصرف",
+    "offerDate": "تاريخ الطلب",
+    "deliveryDate": "تاريخ التسليم",
+    "paymentType": "نوع الدفع",
+    "selectPaymentType": "اختر نوع الدفع",
+    "description": "الوصف",
+    "descriptionPlaceholder": "أدخل الوصف",
+    "offerNo": "رقم الطلب",
+    "offerNoPlaceholder": "الرقم",
+    "currencyChange": {
+      "title": "تغيير العملة",
+      "message": "سُيعاد حساب جميع الأسطر. هل تتابع؟"
+    },
+    "deliveryMethod": "طريقة التسليم",
+    "documentDetail": "وصف المستند"
+  },
+  "lines": {
+    "title": "الأسطر",
+    "add": "إضافة سطر",
+    "empty": "لا توجد أسطر بعد",
+    "emptyDescription": "استخدم «اختيار المخزون» أو «إضافة سطر»",
+    "itemCount": "{{count}} أسطر",
+    "editLine": "تعديل السطر",
+    "selectStock": "اختيار المخزون",
+    "selectProduct": "اختيار المنتج",
+    "selectStockFirst": "لم يُختر مخزون",
+    "stock": "المخزون",
+    "productCode": "الرمز",
+    "enterProductCode": "رمز أو بحث",
+    "productName": "الاسم",
+    "enterProductName": "اسم المنتج",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "discount1": "خصم 1 %",
+    "discount2": "خصم 2 %",
+    "discount3": "خصم 3 %",
+    "discounts": "الخصومات",
+    "discountAmount": "مبلغ الخصم",
+    "netPrice": "السعر الصافي",
+    "vatRate": "ضريبة القيمة %",
+    "lineTotal": "إجمالي السطر (شامل الضريبة)",
+    "calculations": "الحسابات",
+    "required": "يلزم سطر واحد على الأقل",
+    "noProductsFound": "لا منتجات",
+    "delete": {
+      "confirmTitle": "حذف السطر",
+      "confirmMessage": "حذف هذا السطر؟",
+      "confirmTitleMultiple": "حذف الأسطر",
+      "confirmMessageMultiple": "حذف الأسطر المحددة؟"
+    },
+    "noItems": "لا أسطر بعد.",
+    "addLine": "إضافة سطر",
+    "relatedStocks": "مخزون مرتبط",
+    "groupCode": "رمز المجموعة",
+    "approvalRequired": "موافقة مطلوبة",
+    "requiredFieldsMissing": "حقول سطر إلزامية ناقصة.",
+    "createSuccess": "أُضيف السطر.",
+    "createError": "تعذر إضافة السطر.",
+    "updateSuccess": "حُدّث السطر.",
+    "updateError": "تعذر التحديث.",
+    "deleteSuccess": "حُذف السطر.",
+    "deleteError": "تعذر الحذف.",
+    "editStockItemDetails": "تعديل تفاصيل بند المخزون",
+    "description1": "وصف 1",
+    "description2": "وصف 2",
+    "description3": "وصف 3",
+    "descriptionPlaceholder": "وصف..."
+  },
+  "exchangeRates": {
+    "title": "أسعار الصرف",
+    "currency": "العملة",
+    "rate": "السعر",
+    "date": "تاريخ السعر",
+    "isOfficial": "سعر رسمي",
+    "official": "رسمي",
+    "custom": "مخصص",
+    "empty": "لا أسعار",
+    "status": "الحالة",
+    "dialog": {
+      "title": "أسعار الصرف",
+      "description": "اعرض أو عدّل الأسعار. التغييرات ليست رسمية.",
+      "subtitle": "حرّر واحفظ الأسعار.",
+      "info": "تحديث يدوي خارج السعر الرسمي ممكن."
+    },
+    "updateSuccess": "حُدّثت الأسعار.",
+    "updateError": "تعذر التحديث.",
+    "cannotEditUsedCurrency": "لا يمكن تعديل العملة المستخدمة.",
+    "zeroRateError": "أدخل سعر صرف للمتابعة."
+  },
+  "summary": {
+    "title": "الملخص",
+    "grandTotalAnalysis": "تحليل الإجمالي",
+    "subtotal": "المجموع الفرعي",
+    "totalVat": "إجمالي الضريبة",
+    "grandTotal": "الإجمالي العام",
+    "generalDiscount": "خصم عام",
+    "generalDiscountRate": "% الخصم العام",
+    "generalDiscountAmount": "مبلغ الخصم",
+    "generalDiscountHelp": "يُطبَّق على الإجمالي."
+  },
+  "offerType": {
+    "domestic": "محلي",
+    "export": "تصدير"
+  },
+  "wizard": {
+    "title": "طلب جديد",
+    "step1": {
+      "title": "الخطوة 1: الرأس",
+      "description": "الرأس وأسعار الصرف",
+      "validation": {
+        "offerType": "النوع",
+        "currency": "العملة",
+        "exchangeRate": "سعر الصرف"
+      },
+      "exchangeRate": {
+        "required": "لغير TRY أضف سعراً واحداً على الأقل"
+      },
+      "currency": {
+        "try": {
+          "info": "مع TRY لا يلزم سعر إضافي"
+        }
+      }
+    },
+    "step2": {
+      "title": "الخطوة 2: الأسطر",
+      "description": "المنتجات والأسعار",
+      "info": "أضف سطراً واحداً على الأقل",
+      "validation": {
+        "noLines": "سطر واحد على الأقل",
+        "invalidLines": "جميع الأسطر يجب أن تكون صالحة",
+        "allValid": "أُضيفت {{count}} أسطر"
+      }
+    },
+    "step3": {
+      "title": "الخطوة 3: الملخص",
+      "description": "راجع واحفظ",
+      "header": {
+        "title": "الرأس"
+      },
+      "lines": {
+        "title": "الأسطر"
+      },
+      "summary": {
+        "title": "الملخص النهائي"
+      },
+      "approval": {
+        "info": "بعد الحفظ تبدأ الموافقة"
+      }
+    }
+  },
+  "loadError": "خطأ في تحميل البيانات.",
+  "backToDemands": "العودة للقائمة",
+  "untitled": "بدون عنوان",
+  "sections": {
+    "header": "الرأس",
+    "lines": "الأسطر",
+    "summary": "الملخص"
+  },
+  "approval": {
+    "approve": "موافقة",
+    "reject": "رفض",
+    "sending": "جارٍ الإرسال...",
+    "sendForApproval": "إرسال للموافقة",
+    "approveSuccess": "تمت الموافقة.",
+    "approveError": "فشلت الموافقة.",
+    "rejectSuccess": "سُجّل الرفض.",
+    "rejectError": "فشل الرفض.",
+    "startSuccess": "بدأ مسار الموافقة.",
+    "startError": "تعذر بدء المسار.",
+    "rejectTitle": "رفض الطلب",
+    "rejectDescription": "اذكر السبب.",
+    "rejectReasonPlaceholder": "السبب",
+    "statusFilterLabel": "حالة الموافقة",
+    "status": {
+      "notRequired": "غير مطلوب",
+      "waiting": "قيد الانتظار",
+      "approved": "موافق",
+      "rejected": "مرفوض",
+      "closed": "مغلق"
+    }
+  },
+  "approvalFlow": {
+    "noData": "لا خطوات موافقة.",
+    "notStarted": "لم يبدأ",
+    "stepCompleted": "اكتملت الخطوة",
+    "stepInProgress": "الخطوة جارية",
+    "stepNotStarted": "الخطوة منتظرة",
+    "stepRejected": "الخطوة مرفوضة",
+    "errorTitle": "خطأ"
+  },
+  "update": {
+    "success": "حُدّث الطلب.",
+    "successMessage": "حُفظت التغييرات.",
+    "error": "تعذر التحديث.",
+    "errorMessage": "خطأ أثناء التحديث.",
+    "invalidCurrency": "عملة غير صالحة.",
+    "validationError": "خطأ تحقق."
+  },
+  "revision": {
+    "success": "أُنشئت المراجعة.",
+    "error": "تعذر إنشاء المراجعة."
+  },
+  "waitingApprovals": {
+    "title": "موافقات معلّقة",
+    "list": "قائمة الانتظار",
+    "noApprovals": "لا شيء معلّق.",
+    "requestId": "رقم الطلب",
+    "description": "الوصف",
+    "stepOrder": "الخطوة",
+    "approvedBy": "وافق",
+    "actionDate": "التاريخ",
+    "status": "الحالة",
+    "waiting": "منتظر"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "كل ملاحظة بحد أقصى 100 حرف."
+    }
+  }
+}

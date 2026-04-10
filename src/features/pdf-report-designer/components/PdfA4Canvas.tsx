@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useMemo, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import quotationTotalsLayoutSpecJson from '../specs/quotation-totals-layout-spec.json';
 import { type RndDragCallback, type RndResizeCallback, Rnd } from 'react-rnd';
@@ -130,6 +130,7 @@ export interface PdfA4CanvasProps {
   currentPage: number;
   pageCount: number;
   templateId?: number | null;
+  ruleType?: number;
   fieldDefinitions?: FieldDefinitionDto[];
   onPageRef?: (page: number, el: HTMLDivElement | null) => void;
   onPageChange?: (page: number) => void;
@@ -276,7 +277,7 @@ const DEFAULT_FONT_SIZE = 14;
 const DEFAULT_FONT_FAMILY = 'Arial';
 
 function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const { setNodeRef, isOver } = useDroppable({
     id: getTableDroppableId(table.id),
   });
@@ -382,7 +383,7 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
 }
 
 function TextElementBlock({ element }: { element: PdfReportElement }): ReactElement | null {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const updateElementText = usePdfReportDesignerStore((s) => s.updateElementText);
   const setSelectedIds = usePdfReportDesignerStore((s) => s.setSelectedIds);
   if (element.type !== 'text') return null;
@@ -404,11 +405,13 @@ function TextElementBlock({ element }: { element: PdfReportElement }): ReactElem
 function ImageElementBlock({
   element,
   templateId,
+  ruleType,
 }: {
   element: PdfReportElement;
   templateId?: number | null;
+  ruleType?: number;
 }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
   const setSelectedIds = usePdfReportDesignerStore((s) => s.setSelectedIds);
   const imageValue = typeof element.value === 'string' ? element.value : '';
@@ -422,7 +425,7 @@ function ImageElementBlock({
       e.target.value = '';
       return;
     }
-    void uploadPdfTemplateImage(file, templateId ?? undefined)
+    void uploadPdfTemplateImage(file, templateId ?? undefined, ruleType)
       .then((relativeUrl) => {
         updateReportElement(element.id, { value: relativeUrl });
       })
@@ -481,9 +484,11 @@ function ImageElementBlock({
 function FieldElementBlock({
   element,
   templateId,
+  ruleType,
 }: {
   element: PdfReportElement;
   templateId?: number | null;
+  ruleType?: number;
 }): ReactElement {
   if (element.type === 'shape') {
     const style = element.style ?? {};
@@ -505,7 +510,7 @@ function FieldElementBlock({
     return <TextElementBlock element={element} />;
   }
   if (element.type === 'image') {
-    return <ImageElementBlock element={element} templateId={templateId} />;
+    return <ImageElementBlock element={element} templateId={templateId} ruleType={ruleType} />;
   }
   if (element.type === 'note') {
     return (
@@ -685,7 +690,7 @@ function TextSettingsPopover({
   element: PdfReportElement;
   commonFields: React.ReactNode;
 }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
   const [open, setOpen] = useState(false);
   const [localText, setLocalText] = useState(element.text ?? '');
@@ -753,11 +758,13 @@ function TextSettingsPopover({
 function ElementSettingsPopover({
   element,
   templateId,
+  ruleType,
 }: {
   element: PdfCanvasElement;
   templateId?: number | null;
+  ruleType?: number;
 }): ReactElement | null {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
 
   if (isPdfTableElement(element)) {
@@ -899,7 +906,7 @@ function ElementSettingsPopover({
         e.target.value = '';
         return;
       }
-      void uploadPdfTemplateImage(file, templateId ?? undefined)
+      void uploadPdfTemplateImage(file, templateId ?? undefined, ruleType)
         .then((relativeUrl) => {
           updateReportElement(el.id, { value: relativeUrl });
         })
@@ -1001,11 +1008,23 @@ function DroppableSection({
   );
 }
 
-export function PdfA4Canvas({ currentPage, pageCount, templateId, fieldDefinitions = [], onPageRef, onPageChange }: PdfA4CanvasProps): ReactElement {
-  const { t } = useTranslation();
+export function PdfA4Canvas({
+  currentPage,
+  pageCount,
+  templateId,
+  ruleType,
+  fieldDefinitions = [],
+  onPageRef,
+  onPageChange,
+}: PdfA4CanvasProps): ReactElement {
+  const { t } = useTranslation(['report-designer', 'common']);
   const [previewVisibilityRules, setPreviewVisibilityRules] = useState(true);
-  const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
-  const elements = getOrderedElements();
+  const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
+  const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
+  const elements = useMemo(
+    () => elementOrder.map((id) => elementsById[id]).filter(Boolean),
+    [elementOrder, elementsById]
+  );
   const updateElementPosition = usePdfReportDesignerStore((s) => s.updateElementPosition);
   const updateElementSize = usePdfReportDesignerStore((s) => s.updateElementSize);
   const updateElementsPosition = usePdfReportDesignerStore((s) => s.updateElementsPosition);
@@ -1223,7 +1242,7 @@ export function PdfA4Canvas({ currentPage, pageCount, templateId, fieldDefinitio
                           ) : el.type === 'container' ? (
                             <ContainerElementBlock element={el} />
                           ) : (
-                            <FieldElementBlock element={el as PdfReportElement} templateId={templateId} />
+                            <FieldElementBlock element={el as PdfReportElement} templateId={templateId} ruleType={ruleType} />
                           )}
                         </div>
                       </div>
@@ -1274,7 +1293,7 @@ export function PdfA4Canvas({ currentPage, pageCount, templateId, fieldDefinitio
                       >
                         <GripVertical className="size-3.5 text-slate-500" />
                       </div>
-                      <ElementSettingsPopover element={el} templateId={templateId} />
+                      <ElementSettingsPopover element={el} templateId={templateId} ruleType={ruleType} />
                       <button
                         type="button"
                         data-delete-element
@@ -1293,7 +1312,7 @@ export function PdfA4Canvas({ currentPage, pageCount, templateId, fieldDefinitio
                         ) : el.type === 'container' ? (
                           <ContainerElementBlock element={el} />
                         ) : (
-                          <FieldElementBlock element={el} templateId={templateId} />
+                          <FieldElementBlock element={el} templateId={templateId} ruleType={ruleType} />
                         )}
                       </div>
                     </Rnd>

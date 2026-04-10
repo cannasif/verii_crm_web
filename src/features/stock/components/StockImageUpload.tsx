@@ -12,7 +12,7 @@ interface StockImageUploadProps {
 }
 
 export function StockImageUpload({ stockId }: StockImageUploadProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [altTexts, setAltTexts] = useState<string[]>([]);

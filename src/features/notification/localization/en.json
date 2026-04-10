@@ -1,0 +1,10 @@
+{
+  "title": "Notifications",
+  "notifications": "Notifications",
+  "new": "new",
+  "loading": "Loading...",
+  "noNotifications": "No notifications found",
+  "markAllAsRead": "Mark all as read",
+  "close": "Close",
+  "unread": "Unread"
+}

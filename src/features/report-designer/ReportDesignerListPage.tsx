@@ -46,7 +46,7 @@ function downloadBlobAsPdf(blob: Blob, filename: string): void {
 }
 
 export function ReportDesignerListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const navigate = useNavigate();
   const { data: templates = [], isLoading } = useReportTemplateList();
   const deleteMutation = useDeleteReportTemplate();

@@ -1,0 +1,423 @@
+{
+  "categoryDefinitions": {
+    "title": "Category Definitions",
+    "description": "Start managing the category tree and category-linked stocks for B2B and B2C catalogs from here.",
+    "guidedTitle": "Manage the category structure in 3 clear steps",
+    "easyModeTitle": "You do not need to guess what to do here",
+    "summaryGuideTitle": "I will show you the next correct step",
+    "createCatalogTitle": "Create new catalog",
+    "createCatalogDescription": "Add a new catalog definition for B2B, B2C, or custom flows.",
+    "editCatalogTitle": "Edit catalog",
+    "editCatalogDescription": "Update the selected catalog's name, type, and ordering.",
+    "createCategoryTitle": "Add category",
+    "createCategoryDescription": "Create a new category under {{target}}.",
+    "editCategoryTitle": "Edit category",
+    "editCategoryDescription": "Update the category details for {{target}}.",
+    "createCategoryTarget": "Target level",
+    "deleteCatalogConfirm": "Are you sure you want to delete the {{name}} catalog?",
+    "deleteCategoryConfirm": "Are you sure you want to delete the {{name}} category?",
+    "deleteStockConfirm": "Are you sure you want to remove this stock assignment?",
+    "createRuleTitle": "Add rule",
+    "createRuleDescription": "Create an automatic matching rule for the {{category}} category.",
+    "editRuleTitle": "Edit rule",
+    "editRuleDescription": "Update the rule details for the {{category}} category.",
+    "deleteRuleConfirm": "Are you sure you want to delete the {{name}} rule?",
+    "noRules": "No rules have been defined for this category yet.",
+    "rulePriority": "Priority {{priority}}",
+    "catalogsTitle": "Catalogs",
+    "catalogsDescription": "Select the catalog you want to work with first.",
+    "catalogDescriptionFallback": "No description has been entered for this catalog yet.",
+    "catalogHelperText": "In short: choose a catalog on the left, move down the tree in the middle, manage stocks and rules on the right.",
+    "treeTitle": "Category Tree",
+    "treeDescription": "Navigate from category to subcategory in a Trendyol or Hepsiburada style flow.",
+    "treeReorderHint": "You can reorder categories on the same level by dragging and dropping them.",
+    "chooseCatalogFirst": "First choose a catalog on the left. Category management does not start before that.",
+    "stocksTitle": "Category Stocks",
+    "stocksDescription": "Stocks linked to the selected leaf category will be listed here.",
+    "stocksDescriptionSelected": "Stocks linked to {{category}}",
+    "stocksGuideTitle": "What is this area for?",
+    "stocksGuideDescription": "Here you decide which products belong to the selected category. You can assign stocks one by one if needed.",
+    "stocksHelperText": "Simple flow: first pick a category, then click 'Add Stock', then choose the product from the list.",
+    "rulesGuideTitle": "What does the rule screen do?",
+    "rulesGuideDescription": "If you do not want to assign similar products one by one, define a rule here. For example, if Code1 = GLASS, put it into this category.",
+    "rulesHelperText": "First create the rule. Then use 'Preview Rules' to see what will happen. If it looks correct, use 'Apply Rules' to assign automatically.",
+    "selectionTitle": "Selection status",
+    "selectionDescription": "Use the right panel to see the selected catalog, category, and linked stocks at a glance.",
+    "selectionCatalog": "Catalog",
+    "selectionCategory": "Selected category",
+    "selectionCurrentLevel": "Current level",
+    "selectionPath": "Path",
+    "selectionTotalStocks": "Linked stocks",
+    "selectionValueEmpty": "Not selected yet",
+    "nextStepTitle": "Recommended next step",
+    "nextStepChooseCatalog": "First, choose a catalog from the left panel.",
+    "nextStepBrowseTree": "Use the center panel to move from main categories down to deeper levels.",
+    "nextStepSelectLeaf": "Select a leaf category to view the stock list.",
+    "nextStepReviewStocks": "Review the stocks linked to the selected category and confirm the match.",
+    "stepCatalogTitle": "Choose catalog",
+    "stepCatalogDescription": "Decide whether you are working in a B2B, B2C, or custom catalog.",
+    "stepTreeTitle": "Move through the tree",
+    "stepTreeDescription": "Progress by clicking through main categories, subcategories, and lower levels.",
+    "stepStocksTitle": "Review stocks",
+    "stepStocksDescription": "Once a leaf category is selected, see linked stocks and ERP code breakdowns in the right panel.",
+    "ready": "Ready",
+    "pending": "Pending",
+    "openBranchAction": "Open subcategories",
+    "selectLeafAction": "Select this category",
+    "root": "Root",
+    "leaf": "Leaf",
+    "branch": "Branch",
+    "noCatalogs": "No catalogs have been defined yet.",
+    "noCategories": "No categories were found at this level.",
+    "noStocks": "No stocks are linked to this category.",
+    "selectLeafHint": "Select a leaf category to view linked stocks.",
+    "stockSearchPlaceholder": "Search by stock code or stock name...",
+    "primaryBadge": "Primary category",
+    "tabs": {
+      "summary": "What Should I Do?",
+      "stocks": "Add Stock",
+      "rules": "Add Rule",
+      "tips": "Guide"
+    },
+    "catalogTypes": {
+      "b2b": "B2B",
+      "b2c": "B2C",
+      "dealer": "Dealer",
+      "custom": "Custom"
+    },
+    "tips": {
+      "catalogTitle": "1. Pick the correct catalog first",
+      "catalogDescription": "Even if category names look similar, B2B and B2C can require different catalog structures.",
+      "branchTitle": "2. Branch categories are for navigation",
+      "branchDescription": "Branch categories are not the final selection point. Use them to move users toward the correct lower level.",
+      "leafTitle": "3. Validate stocks on the leaf category",
+      "leafDescription": "The linked stock list becomes meaningful at the leaf level, so the final review should happen there."
+    },
+    "actions": {
+      "newCatalog": "New Catalog",
+      "createCatalog": "Create Catalog",
+      "addRootCategory": "Add Root Category",
+      "addSubCategory": "Add Subcategory",
+      "createCategory": "Create Category",
+      "uploadCategoryImage": "Upload Image",
+      "uploadingCategoryImage": "Uploading Image",
+      "removeCategoryImage": "Remove Image",
+      "addStock": "Assign Stock",
+      "removeStock": "Remove Link",
+      "addRule": "Add Rule",
+      "createRule": "Create Rule",
+      "previewRules": "Preview Rules",
+      "previewingRules": "Building Preview",
+      "applyRules": "Apply Rules",
+      "applyingRules": "Applying Rules"
+    },
+    "messages": {
+      "catalogCreateSuccess": "Catalog created successfully.",
+      "catalogCreateError": "Catalog could not be created.",
+      "catalogUpdateSuccess": "Catalog updated successfully.",
+      "catalogUpdateError": "Catalog could not be updated.",
+      "catalogDeleteSuccess": "Catalog deleted successfully.",
+      "catalogDeleteError": "Catalog could not be deleted.",
+      "rootCategoryCreateSuccess": "Root category created successfully.",
+      "subCategoryCreateSuccess": "Subcategory created successfully.",
+      "categoryCreateError": "Category could not be created.",
+      "categoryUpdateSuccess": "Category updated successfully.",
+      "categoryUpdateError": "Category could not be updated.",
+      "categoryReorderSuccess": "Category order updated successfully.",
+      "categoryReorderError": "Category order could not be updated.",
+      "categoryDeleteSuccess": "Category deleted successfully.",
+      "categoryDeleteError": "Category could not be deleted.",
+      "stockAssignSuccess": "Stock assigned to category successfully.",
+      "stockAssignError": "Stock could not be assigned to category.",
+      "stockUnassignSuccess": "Stock assignment removed successfully.",
+      "stockUnassignError": "Stock assignment could not be removed.",
+      "ruleCreateSuccess": "Rule created successfully.",
+      "ruleCreateError": "Rule could not be created.",
+      "ruleUpdateSuccess": "Rule updated successfully.",
+      "ruleUpdateError": "Rule could not be updated.",
+      "ruleDeleteSuccess": "Rule deleted successfully.",
+      "ruleDeleteError": "Rule could not be deleted.",
+      "rulePreviewError": "Rule preview could not be loaded.",
+      "ruleApplySuccess": "Rules applied successfully.",
+      "ruleApplyError": "Rules could not be applied."
+    },
+    "rulePreviewSummaryTitle": "Rule preview summary",
+    "rulePreviewSummary": {
+      "matched": "Stocks that will match: {{count}}",
+      "created": "Assignments to create: {{count}}",
+      "updated": "Assignments to update: {{count}}",
+      "skipped": "Manual assignments preserved: {{count}}"
+    },
+    "rulePreviewListTitle": "Preview samples",
+    "rulePreviewListEmpty": "No sample matches were found for preview.",
+    "rulePreviewMatchedRule": "Matched rule: {{rule}} · Priority {{priority}}",
+    "rulePreviewActions": {
+      "create": "New Assignment",
+      "update": "Assignment Updated",
+      "skip": "Manual Preserved"
+    },
+    "ruleApplySummaryTitle": "Rule application summary",
+    "ruleApplySummary": {
+      "matched": "Matched stocks: {{count}}",
+      "created": "New assignments: {{count}}",
+      "updated": "Updated assignments: {{count}}",
+      "skipped": "Manual assignments preserved: {{count}}"
+    },
+    "form": {
+      "catalogName": "Catalog name",
+      "catalogNamePlaceholder": "E.g. B2B Main Catalog",
+      "catalogCode": "Catalog code",
+      "catalogCodePlaceholder": "E.g. B2B_MAIN",
+      "catalogType": "Catalog type",
+      "branchCode": "Branch code",
+      "branchCodePlaceholder": "Optional",
+      "sortOrder": "Sort order",
+      "description": "Description",
+      "descriptionPlaceholder": "Explain this definition briefly so other managers can understand it.",
+      "categoryName": "Category name",
+      "categoryNamePlaceholder": "E.g. Glass Systems",
+      "categoryCode": "Category code",
+      "categoryCodePlaceholder": "E.g. GLASS_SYSTEMS",
+      "nodeType": "Category type",
+      "visualPreset": "Visual theme",
+      "visualPresetPlaceholder": "Search and choose a theme",
+      "visualPresetSearchPlaceholder": "Search theme...",
+      "visualPresetEmpty": "No matching theme found.",
+      "visualPresetHelp": "You do not upload an external image here. The system creates the category look based on this choice.",
+      "categoryImage": "Category image",
+      "categoryImageHelp": "You can optionally upload a system-owned image. If you do, the category card uses this image instead of the preset icon.",
+      "ruleName": "Rule name",
+      "ruleCode": "Rule code",
+      "stockAttribute": "Stock attribute",
+      "operator": "Operator",
+      "ruleValue": "Rule value",
+      "ruleValuePlaceholder": "E.g. GLASS or PROFILE,ACCESSORY",
+      "ruleValueDropdownPlaceholder": "Choose from existing stock values",
+      "ruleValueSearchPlaceholder": "Search ERP breakdown...",
+      "ruleValueLoading": "Loading values...",
+      "ruleValueEmpty": "No matching values were found for this field.",
+      "ruleValueDropdownHelp": "The system lists real ERP values from the selected stock field. Choosing from here is safer than typing manually.",
+      "ruleValueInListHelp": "With the In list operator, you can select multiple values. Pick from above, click a badge to remove it.",
+      "ruleValueInListEmpty": "No values added yet.",
+      "ruleValueManualHelp": "This operator works with free text. Type the text to match for contains, starts with, or ends with.",
+      "ruleValueTopMatchesTitle": "Most common values in the system",
+      "ruleValueTopMatchesSubtitle": "Click to select quickly",
+      "ruleValueTopMatchesEmpty": "No highlighted values were found for this field.",
+      "priority": "Priority"
+    },
+    "visualPreviewTitle": "Category preview",
+    "visualPreviewFallback": "Category preview",
+    "visualPresets": {
+      "general": {
+        "label": "General"
+      },
+      "glass": {
+        "label": "Glass"
+      },
+      "profile": {
+        "label": "Profile"
+      },
+      "accessory": {
+        "label": "Accessory"
+      },
+      "service": {
+        "label": "Service"
+      },
+      "logistics": {
+        "label": "Logistics"
+      },
+      "machinery": {
+        "label": "Machinery"
+      },
+      "electronics": {
+        "label": "Electronics"
+      },
+      "security": {
+        "label": "Security"
+      },
+      "lighting": {
+        "label": "Lighting"
+      },
+      "construction": {
+        "label": "Construction"
+      },
+      "furniture": {
+        "label": "Furniture"
+      },
+      "hardware": {
+        "label": "Hardware"
+      },
+      "automation": {
+        "label": "Automation"
+      },
+      "energy": {
+        "label": "Energy"
+      },
+      "office": {
+        "label": "Office"
+      },
+      "textile": {
+        "label": "Textile"
+      },
+      "chemical": {
+        "label": "Chemical"
+      },
+      "outdoor": {
+        "label": "Outdoor"
+      },
+      "cooling": {
+        "label": "Cooling"
+      },
+      "heating": {
+        "label": "Heating"
+      },
+      "plumbing": {
+        "label": "Plumbing"
+      },
+      "decoration": {
+        "label": "Decoration"
+      },
+      "packaging": {
+        "label": "Packaging"
+      },
+      "automotive": {
+        "label": "Automotive"
+      },
+      "agriculture": {
+        "label": "Agriculture"
+      },
+      "medical": {
+        "label": "Medical"
+      },
+      "pharmacy": {
+        "label": "Pharmacy"
+      },
+      "cosmetics": {
+        "label": "Cosmetics"
+      },
+      "food": {
+        "label": "Food"
+      },
+      "beverage": {
+        "label": "Beverage"
+      },
+      "cleaning": {
+        "label": "Cleaning"
+      },
+      "education": {
+        "label": "Education"
+      },
+      "finance": {
+        "label": "Finance"
+      },
+      "insurance": {
+        "label": "Insurance"
+      },
+      "real-estate": {
+        "label": "Real Estate"
+      },
+      "tourism": {
+        "label": "Tourism"
+      },
+      "hospitality": {
+        "label": "Hospitality"
+      },
+      "restaurant": {
+        "label": "Restaurant"
+      },
+      "ecommerce": {
+        "label": "E-Commerce"
+      },
+      "retail": {
+        "label": "Retail"
+      },
+      "wholesale": {
+        "label": "Wholesale"
+      },
+      "manufacturing": {
+        "label": "Manufacturing"
+      },
+      "mining": {
+        "label": "Mining"
+      },
+      "marine": {
+        "label": "Marine"
+      },
+      "aviation": {
+        "label": "Aviation"
+      },
+      "telecom": {
+        "label": "Telecom"
+      },
+      "software": {
+        "label": "Software"
+      },
+      "data-center": {
+        "label": "Data Center"
+      },
+      "media": {
+        "label": "Media"
+      },
+      "printing": {
+        "label": "Printing"
+      },
+      "sports": {
+        "label": "Sports"
+      },
+      "baby-kids": {
+        "label": "Baby & Kids"
+      },
+      "pet": {
+        "label": "Pet"
+      },
+      "jewelry": {
+        "label": "Jewelry"
+      },
+      "luxury": {
+        "label": "Luxury"
+      },
+      "stationery": {
+        "label": "Stationery"
+      },
+      "laboratory": {
+        "label": "Laboratory"
+      },
+      "recycling": {
+        "label": "Recycling"
+      },
+      "defense": {
+        "label": "Defense"
+      }
+    },
+    "ruleAttributes": {
+      "groupCode": "Group Code",
+      "groupName": "Group Name",
+      "code1": "Code 1",
+      "code1Name": "Code 1 Name",
+      "code2": "Code 2",
+      "code2Name": "Code 2 Name",
+      "code3": "Code 3",
+      "code3Name": "Code 3 Name",
+      "code4": "Code 4",
+      "code4Name": "Code 4 Name",
+      "code5": "Code 5",
+      "code5Name": "Code 5 Name",
+      "manufacturerCode": "Manufacturer Code",
+      "erpStockCode": "ERP Stock Code",
+      "stockName": "Stock Name"
+    },
+    "ruleOperators": {
+      "equals": "Equals",
+      "contains": "Contains",
+      "startsWith": "Starts with",
+      "endsWith": "Ends with",
+      "inList": "In list"
+    },
+    "meta": {
+      "group": "Group",
+      "code1": "Code 1",
+      "code2": "Code 2",
+      "code3": "Code 3"
+    }
+  }
+}

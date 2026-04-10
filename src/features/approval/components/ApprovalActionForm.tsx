@@ -25,7 +25,7 @@ interface ApprovalActionFormProps {
 }
 
 export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['approval', 'common']);
   const approveMutation = useApproveQuotation();
   const rejectMutation = useRejectQuotation();
 

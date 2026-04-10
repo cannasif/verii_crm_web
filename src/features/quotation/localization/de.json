@@ -1,0 +1,323 @@
+{
+  "loading": "Wird geladen...",
+  "saving": "Wird gespeichert...",
+  "error": "Fehler",
+  "noData": "Keine Daten",
+  "previous": "Zurück",
+  "next": "Weiter",
+  "actions": "Aktionen",
+  "edit": "Bearbeiten",
+  "delete": "Löschen",
+  "back": "Zurück",
+  "refresh": "Aktualisieren",
+  "select": "Auswählen",
+  "guide": "Leitfaden",
+  "yes": "Ja",
+  "add": "Hinzufügen",
+  "backToQuotations": "Zurück zur Angebotsliste",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "confirm": "Bestätigen",
+  "saveAndApply": "Speichern und Anwenden",
+  "loadError": "Beim Laden der Daten ist ein Fehler aufgetreten.",
+  "list": {
+    "title": "Angebotsliste",
+    "description": "Angebote anzeigen und verwalten",
+    "detail": "Detail",
+    "createNew": "Neues Angebot erstellen",
+    "cardTitle": "Angebotsliste",
+    "refresh": "Aktualisieren",
+    "actions": "Aktionen",
+    "sendGmail": "Per Gmail senden",
+    "sendOutlook": "Per Outlook senden",
+    "id": "ID",
+    "offerNo": "Angebotsnr.",
+    "customer": "Kunde",
+    "representative": "Vertreter",
+    "offerDate": "Angebotsdatum",
+    "currency": "Währung",
+    "grandTotal": "Gesamtsumme",
+    "status": "Status",
+    "revise": "Überarbeiten",
+    "showing": "Zeige {{from}}-{{to}} / {{total}}",
+    "customerCode": "Kundencode",
+    "validUntil": "Gültig bis",
+    "revisionNo": "Revisionsnr."
+  },
+  "date": "Datum",
+  "offerNo": "Angebotsnr.",
+  "customerAccount": "Kundenkonto",
+  "export": "Exportieren",
+  "exportPdf": "Als PDF exportieren",
+  "shareMail": "Per E-Mail teilen",
+  "shareWhatsapp": "Per WhatsApp teilen",
+  "detail": {
+    "title": "Angebotsdetails",
+    "subtitle": "Angebotsdetails, Freigabefluss und Berichte anzeigen",
+    "notFound": "Angebot nicht gefunden",
+    "revisionNo": "Revisionsnr.",
+    "tabDetail": "Detail",
+    "tabApprovalFlow": "Freigabefluss",
+    "tabReport": "Bericht"
+  },
+  "create": {
+    "title": "Neues Angebot erstellen",
+    "submit": "Angebot speichern und zur Genehmigung senden",
+    "success": "Angebot erfolgreich erstellt",
+    "successMessage": "Das Angebot wurde an den Genehmigungsprozess gesendet.",
+    "error": "Angebot konnte nicht erstellt werden",
+    "errorMessage": "Beim Erstellen des Angebots ist ein Fehler aufgetreten.",
+    "subtitle": "Kopfzeile, Positionen und Wechselkurse verwalten",
+    "invalidCurrency": "Bitte wählen Sie eine gültige Währung.",
+    "validationError": "Bitte prüfen Sie die Pflichtfelder."
+  },
+  "header": {
+    "title": "Angebotsinformationen",
+    "customer": "Kunde",
+    "selectCustomer": "Kunde auswählen",
+    "shippingAddress": "Lieferadresse",
+    "selectShippingAddress": "Lieferadresse auswählen",
+    "representative": "Vertriebsmitarbeiter",
+    "selectRepresentative": "Vertreter auswählen",
+    "offerType": "Angebotstyp",
+    "selectOfferType": "Angebotstyp auswählen",
+    "currency": "Währung",
+    "selectCurrency": "Bitte Währung auswählen",
+    "showExchangeRates": "Wechselkurse anzeigen",
+    "offerDate": "Angebotsdatum",
+    "deliveryDate": "Lieferdatum",
+    "paymentType": "Zahlungsart",
+    "selectPaymentType": "Zahlungsart auswählen",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Beschreibung eingeben",
+    "projectCode": "Projektcode",
+    "projectCodePlaceholder": "Projektcode eingeben",
+    "offerNo": "Angebotsnr.",
+    "offerNoPlaceholder": "Angebotsnummer",
+    "currencyChange": {
+      "title": "Währungswechsel",
+      "message": "Bei einer Währungsänderung werden alle vorhandenen Positionen entsprechend der neuen Währung neu berechnet. Stimmen Sie dieser Aktion zu?"
+    },
+    "deliveryMethod": "Lieferart",
+    "documentDetail": "Belegdetails"
+  },
+  "lines": {
+    "title": "Angebotspositionen",
+    "addTitle": "Position hinzufügen",
+    "add": "Position hinzufügen",
+    "editTitle": "Position bearbeiten",
+    "empty": "Noch keine Positionen",
+    "noItems": "Noch keine Positionen",
+    "emptyDescription": "Verwenden Sie „Bestand auswählen“ oder „Position hinzufügen“, um Angebotspositionen zu ergänzen",
+    "itemCount": "{{count}} Positionen",
+    "editLine": "Position bearbeiten",
+    "selectStock": "Bestand auswählen",
+    "selectProduct": "Produkt auswählen",
+    "selectStockFirst": "Kein Bestand ausgewählt",
+    "stock": "Bestand",
+    "productCode": "Artikelcode",
+    "enterProductCode": "Produktcode eingeben oder suchen",
+    "productName": "Bezeichnung",
+    "enterProductName": "Produktname eingeben",
+    "quantity": "Menge",
+    "unit": "Einheit",
+    "unitPrice": "Stückpreis",
+    "description": "Beschreibung",
+    "discount1": "Rabatt 1 %",
+    "discount2": "Rabatt 2 %",
+    "discount3": "Rabatt 3 %",
+    "discounts": "Rabatte",
+    "discountAmount": "Rabattbetrag",
+    "netPrice": "Nettopreis",
+    "vatRate": "MwSt.-Satz %",
+    "lineTotal": "Zeilensumme (inkl. MwSt.)",
+    "total": "Gesamt",
+    "calculations": "Berechnungen",
+    "required": "Mindestens eine Position ist erforderlich",
+    "requiredFieldsMissing": "Bitte füllen Sie die Pflichtfelder aus.",
+    "relatedStocks": "Verknüpfte Bestände",
+    "noProductsFound": "Keine Produkte gefunden",
+    "createSuccess": "Angebotspositionen wurden hinzugefügt.",
+    "createError": "Angebotspositionen konnten nicht hinzugefügt werden.",
+    "updateSuccess": "Angebotspositionen wurden aktualisiert.",
+    "updateError": "Angebotspositionen konnten nicht aktualisiert werden.",
+    "deleteSuccess": "Angebotsposition gelöscht.",
+    "deleteError": "Angebotsposition konnte nicht gelöscht werden.",
+    "delete": {
+      "confirmTitle": "Position löschen",
+      "confirmMessage": "Möchten Sie diese Position wirklich löschen?",
+      "confirmTitleMultiple": "Positionen löschen",
+      "confirmMessageMultiple": "Möchten Sie die ausgewählten Positionen wirklich löschen?"
+    },
+    "discountLimitExceeded": "Die Rabattsätze überschreiten Ihre Berechtigungsgrenzen.",
+    "max200Chars": "Maximal 200 Zeichen",
+    "approvalRequired": "Genehmigung erforderlich",
+    "approvalNeeded": "Genehmigung nötig",
+    "subtotal": "Zwischensumme",
+    "grandTotal": "Gesamtsumme",
+    "currencyTry": "TL",
+    "totalDiscount": "Gesamtrabatt",
+    "vatAmount": "MwSt.-Betrag"
+  },
+  "exchangeRates": {
+    "title": "Wechselkurse",
+    "currency": "Währung",
+    "rate": "Kurs",
+    "date": "Kursdatum",
+    "isOfficial": "Amtlicher Kurs",
+    "official": "Amtlich",
+    "custom": "Benutzerdefiniert",
+    "empty": "Keine Wechselkurse gefunden",
+    "status": "Status",
+    "updateSuccess": "Wechselkurse aktualisiert.",
+    "updateError": "Wechselkurse konnten nicht aktualisiert werden.",
+    "cannotEditUsedCurrency": "Der Kurs kann für eine bereits verwendete Währung nicht geändert werden.",
+    "zeroRateError": "Bitte geben Sie einen Wechselkurs ein, um fortzufahren.",
+    "dialog": {
+      "title": "Wechselkurse",
+      "description": "Wechselkurswerte bei Bedarf anzeigen und bearbeiten. Geänderte Kurse werden nicht als amtliche Kurse markiert.",
+      "subtitle": "Für das Angebot zu verwendende Wechselkurse prüfen",
+      "info": "Kursänderungen wirken sich auf die Positionsberechnungen aus."
+    }
+  },
+  "approval": {
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "sending": "Wird gesendet...",
+    "sendForApproval": "Zur Genehmigung senden",
+    "approveSuccess": "Angebot erfolgreich genehmigt.",
+    "approveError": "Angebot konnte nicht genehmigt werden.",
+    "rejectSuccess": "Angebot abgelehnt.",
+    "rejectError": "Angebot konnte nicht abgelehnt werden.",
+    "startSuccess": "Genehmigungsfluss gestartet.",
+    "startError": "Genehmigungsfluss konnte nicht gestartet werden.",
+    "rejectTitle": "Angebot ablehnen",
+    "rejectDescription": "Geben Sie den Ablehnungsgrund an.",
+    "rejectReasonPlaceholder": "Ablehnungsgrund",
+    "statusFilterLabel": "Genehmigungsstatus",
+    "status": {
+      "notRequired": "Nicht erforderlich",
+      "waiting": "Wartend",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "closed": "Abgeschlossen"
+    }
+  },
+  "approvalFlow": {
+    "loading": "Genehmigungsfluss wird geladen...",
+    "noData": "Kein Eintrag zum Genehmigungsfluss",
+    "notStarted": "Der Genehmigungsfluss wurde noch nicht gestartet",
+    "stepCompleted": "Abgeschlossen",
+    "stepInProgress": "In Bearbeitung",
+    "stepNotStarted": "Nicht gestartet",
+    "stepRejected": "Abgelehnt"
+  },
+  "notes": {
+    "title": "Angebotsnotizen",
+    "description": "Interne Notizen zum Angebot hinzufügen und aktualisieren.",
+    "placeholder": "Angebotsnotiz eingeben",
+    "saving": "Notizen werden gespeichert...",
+    "noteLabel": "Angebotsnotiz",
+    "saved": "Angebotsnotizen gespeichert.",
+    "saveError": "Angebotsnotizen konnten nicht gespeichert werden.",
+    "maxLengthError": "Das Notizfeld darf höchstens 1000 Zeichen enthalten.",
+    "maxCountError": "Sie können höchstens 10 Notizen hinzufügen."
+  },
+  "summary": {
+    "title": "Zusammenfassung",
+    "grandTotalAnalysis": "Analyse Gesamtsumme",
+    "subtotal": "Zwischensumme",
+    "totalVat": "MwSt. gesamt",
+    "grandTotal": "Gesamtsumme",
+    "generalDiscount": "Gesamtrabatt",
+    "generalDiscountRate": "Gesamtrabatt %",
+    "generalDiscountAmount": "Gesamtrabattbetrag",
+    "generalDiscountHelp": "Dieses Feld steht für den auf die gesamte Angebotssumme angewendeten Gesamtrabatt."
+  },
+  "sections": {
+    "header": "Kopfinformationen",
+    "lines": "Positionen",
+    "summary": "Zusammenfassung"
+  },
+  "share": {
+    "downloaded": "Datei heruntergeladen.",
+    "mailSubject": "Angebotsfreigabe",
+    "mailBody": "Möchten Sie die Angebotsdetails prüfen?",
+    "whatsappMessage": "Ich teile die Angebotsdetails mit Ihnen."
+  },
+  "revision": {
+    "success": "Revisionsdatensatz erstellt.",
+    "error": "Revisionsdatensatz konnte nicht erstellt werden."
+  },
+  "update": {
+    "saveButton": "Änderungen speichern",
+    "success": "Angebot aktualisiert.",
+    "successMessage": "Angebot erfolgreich aktualisiert.",
+    "error": "Angebot konnte nicht aktualisiert werden.",
+    "errorMessage": "Beim Aktualisieren des Angebots ist ein Fehler aufgetreten.",
+    "invalidCurrency": "Bitte wählen Sie eine gültige Währung.",
+    "validationError": "Bitte prüfen Sie die Pflichtfelder."
+  },
+  "waitingApprovals": {
+    "title": "Ausstehende Angebotsgenehmigungen",
+    "description": "Angebote anzeigen, die auf Genehmigung warten.",
+    "list": "Liste ausstehender Genehmigungen",
+    "waiting": "Wartend",
+    "noApprovals": "Keine ausstehenden Genehmigungen gefunden.",
+    "requestId": "Angebotsnr.",
+    "status": "Status",
+    "stepOrder": "Schrittfolge",
+    "approvedBy": "Genehmigt von",
+    "actionDate": "Aktionsdatum"
+  },
+  "offerType": {
+    "domestic": "Inland",
+    "export": "Export"
+  },
+  "wizard": {
+    "title": "Neues Angebot erstellen",
+    "step1": {
+      "title": "Schritt 1: Angebotsinformationen",
+      "description": "Kopfdaten und Wechselkurse eingeben",
+      "validation": {
+        "offerType": "Angebotstyp",
+        "currency": "Währung",
+        "exchangeRate": "Wechselkurs"
+      },
+      "exchangeRate": {
+        "required": "Für Nicht-TRY-Währungen muss mindestens ein Wechselkurs hinterlegt sein"
+      },
+      "currency": {
+        "try": {
+          "info": "Bei Auswahl von TRY ist kein Wechselkurs erforderlich"
+        }
+      }
+    },
+    "step2": {
+      "title": "Schritt 2: Angebotspositionen",
+      "description": "Produkt- und Preisinformationen hinzufügen",
+      "info": "Sie müssen mindestens eine Position hinzufügen",
+      "validation": {
+        "noLines": "Mindestens eine Position ist erforderlich",
+        "invalidLines": "Alle Positionen müssen gültige Angaben enthalten",
+        "allValid": "{{count}} Positionen erfolgreich hinzugefügt"
+      }
+    },
+    "step3": {
+      "title": "Schritt 3: Zusammenfassung und Genehmigung",
+      "description": "Informationen prüfen und Angebot speichern",
+      "header": {
+        "title": "Angebotsinformationen"
+      },
+      "lines": {
+        "title": "Angebotspositionen"
+      },
+      "summary": {
+        "title": "Abschlussübersicht"
+      },
+      "approval": {
+        "info": "Nach dem Speichern wird das Angebot automatisch an den Genehmigungsprozess gesendet"
+      }
+    }
+  }
+}

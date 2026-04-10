@@ -8,7 +8,7 @@ import type { RejectActionDto } from '../types/quotation-types';
 
 export const useRejectAction = (): UseMutationResult<ApiResponse<boolean>, Error, RejectActionDto, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
 
   return useMutation({
     mutationFn: (data: RejectActionDto) => quotationApi.reject(data),

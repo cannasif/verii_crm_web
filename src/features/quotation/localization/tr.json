@@ -1,0 +1,323 @@
+{
+  "loading": "Yükleniyor...",
+  "saving": "Kaydediliyor...",
+  "error": "Hata",
+  "noData": "Veri yok",
+  "previous": "Önceki",
+  "next": "Sonraki",
+  "actions": "İşlemler",
+  "edit": "Düzenle",
+  "delete": "Sil",
+  "back": "Geri",
+  "refresh": "Yenile",
+  "select": "Seç",
+  "guide": "Rehber",
+  "yes": "Evet",
+  "add": "Ekle",
+  "backToQuotations": "Tekliflere Dön",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "confirm": "Onayla",
+  "saveAndApply": "Kaydet ve Uygula",
+  "loadError": "Veriler yüklenirken hata oluştu.",
+  "list": {
+    "title": "Teklif Listesi",
+    "description": "Teklif kayıtlarını görüntüleyin ve yönetin",
+    "detail": "Detay",
+    "createNew": "Yeni Teklif Oluştur",
+    "cardTitle": "Teklif listesi",
+    "refresh": "Yenile",
+    "actions": "İşlemler",
+    "sendGmail": "Gmail Gönder",
+    "sendOutlook": "Outlook Gönder",
+    "id": "ID",
+    "offerNo": "Teklif No",
+    "customer": "Müşteri",
+    "representative": "Temsilci",
+    "offerDate": "Teklif Tarihi",
+    "currency": "Para Birimi",
+    "grandTotal": "Genel Toplam",
+    "status": "Durum",
+    "revise": "Revize et",
+    "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+    "customerCode": "Cari Kodu",
+    "validUntil": "Geçerlilik",
+    "revisionNo": "Revizyon No"
+  },
+  "date": "Tarih",
+  "offerNo": "Teklif No",
+  "customerAccount": "Müşteri Hesabı",
+  "export": "Dışa Aktar",
+  "exportPdf": "PDF Dışa Aktar",
+  "shareMail": "E-posta ile Paylaş",
+  "shareWhatsapp": "WhatsApp ile Paylaş",
+  "detail": {
+    "title": "Teklif Detayı",
+    "subtitle": "Teklif bilgilerini, onay akışını ve raporları görüntüleyin",
+    "notFound": "Teklif bulunamadı",
+    "revisionNo": "Revizyon No",
+    "tabDetail": "Detay",
+    "tabApprovalFlow": "Onay Akışı",
+    "tabReport": "Rapor"
+  },
+  "create": {
+    "title": "Yeni Teklif Oluştur",
+    "submit": "Teklifi Kaydet ve Onaya Gönder",
+    "success": "Teklif Başarıyla Oluşturuldu",
+    "successMessage": "Teklif onay sürecine gönderildi.",
+    "error": "Teklif Oluşturulamadı",
+    "errorMessage": "Teklif oluşturulurken bir hata oluştu.",
+    "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
+    "invalidCurrency": "Geçerli bir para birimi seçin.",
+    "validationError": "Lütfen zorunlu alanları kontrol edin."
+  },
+  "header": {
+    "title": "Teklif Bilgileri",
+    "customer": "Müşteri",
+    "selectCustomer": "Müşteri Seçin",
+    "shippingAddress": "Sevk Adresi",
+    "selectShippingAddress": "Sevk Adresi Seçin",
+    "representative": "Satış Temsilcisi",
+    "selectRepresentative": "Temsilci seçin",
+    "offerType": "Teklif Tipi",
+    "selectOfferType": "Teklif tipi seçin",
+    "currency": "Para Birimi",
+    "selectCurrency": "Lütfen para birimi seçin",
+    "showExchangeRates": "Kurları Göster",
+    "offerDate": "Teklif Tarihi",
+    "deliveryDate": "Teslimat Tarihi",
+    "paymentType": "Ödeme Tipi",
+    "selectPaymentType": "Ödeme tipi seçin",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Açıklama giriniz",
+    "projectCode": "Proje Kodu",
+    "projectCodePlaceholder": "Proje kodunu girin",
+    "offerNo": "Teklif No",
+    "offerNoPlaceholder": "Teklif numarası",
+    "currencyChange": {
+      "title": "Para Birimi Değişikliği",
+      "message": "Para birimi değiştiğinde mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
+    },
+    "deliveryMethod": "Teslimat Yöntemi",
+    "documentDetail": "Belge Açıklaması"
+  },
+  "lines": {
+    "title": "Teklif Satırları",
+    "addTitle": "Satır Ekle",
+    "add": "Satır Ekle",
+    "editTitle": "Satır Düzenle",
+    "empty": "Henüz satır eklenmedi",
+    "noItems": "Henüz satır bulunmuyor",
+    "emptyDescription": "Teklif satırları eklemek için \"Stok Seç\" veya \"Satır Ekle\" butonunu kullanın",
+    "itemCount": "{{count}} satır",
+    "editLine": "Satır Düzenle",
+    "selectStock": "Stok Seç",
+    "selectProduct": "Ürün Seç",
+    "selectStockFirst": "Stok seçilmedi",
+    "stock": "Stok",
+    "productCode": "Stok Kodu",
+    "enterProductCode": "Ürün kodu girin veya ara",
+    "productName": "Stok Adı",
+    "enterProductName": "Ürün adı girin",
+    "quantity": "Miktar",
+    "unit": "Birim",
+    "unitPrice": "Birim Fiyat",
+    "description": "Açıklama",
+    "discount1": "İndirim 1 %",
+    "discount2": "İndirim 2 %",
+    "discount3": "İndirim 3 %",
+    "discounts": "İndirimler",
+    "discountAmount": "İndirim Tutarı",
+    "netPrice": "Net Fiyat",
+    "vatRate": "KDV Oranı %",
+    "lineTotal": "Satır Toplamı (KDV Dahil)",
+    "total": "Toplam",
+    "calculations": "Hesaplamalar",
+    "required": "En az 1 satır eklenmelidir",
+    "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
+    "relatedStocks": "Bağlı Stoklar",
+    "noProductsFound": "Ürün bulunamadı",
+    "createSuccess": "Teklif satırları eklendi.",
+    "createError": "Teklif satırları eklenemedi.",
+    "updateSuccess": "Teklif satırları güncellendi.",
+    "updateError": "Teklif satırları güncellenemedi.",
+    "deleteSuccess": "Teklif satırı silindi.",
+    "deleteError": "Teklif satırı silinemedi.",
+    "delete": {
+      "confirmTitle": "Satırı Sil",
+      "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?",
+      "confirmTitleMultiple": "Satırları Sil",
+      "confirmMessageMultiple": "Seçili satırları silmek istediğinizden emin misiniz?"
+    },
+    "discountLimitExceeded": "İndirim oranları yetki limitlerinizi aşıyor.",
+    "max200Chars": "Maksimum 200 karakter",
+    "approvalRequired": "Onay Gerekli",
+    "approvalNeeded": "Onay Gerekiyor",
+    "subtotal": "Ara Toplam",
+    "grandTotal": "Genel Toplam",
+    "currencyTry": "TL",
+    "totalDiscount": "Toplam İndirim",
+    "vatAmount": "KDV Tutarı"
+  },
+  "exchangeRates": {
+    "title": "Döviz Kurları",
+    "currency": "Para Birimi",
+    "rate": "Kur",
+    "date": "Kur Tarihi",
+    "isOfficial": "Resmi Kur",
+    "official": "Resmi",
+    "custom": "Özel",
+    "empty": "Kur bulunamadı",
+    "status": "Durum",
+    "updateSuccess": "Döviz kurları güncellendi.",
+    "updateError": "Döviz kurları güncellenemedi.",
+    "cannotEditUsedCurrency": "Kullanılan para birimi için kur değiştirilemez.",
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin.",
+    "dialog": {
+      "title": "Döviz Kurları",
+      "description": "Kur değerlerini görüntüleyin ve gerekirse düzenleyin. Değiştirilen kurlar resmi kur olarak işaretlenmeyecektir.",
+      "subtitle": "Teklifte kullanılacak döviz kurlarını kontrol edin",
+      "info": "Kur değişiklikleri satır hesaplamalarını etkiler."
+    }
+  },
+  "approval": {
+    "approve": "Onayla",
+    "reject": "Reddet",
+    "sending": "Gönderiliyor...",
+    "sendForApproval": "Onaya Gönder",
+    "approveSuccess": "Teklif başarıyla onaylandı.",
+    "approveError": "Teklif onaylanamadı.",
+    "rejectSuccess": "Teklif reddedildi.",
+    "rejectError": "Teklif reddedilemedi.",
+    "startSuccess": "Onay süreci başlatıldı.",
+    "startError": "Onay süreci başlatılamadı.",
+    "rejectTitle": "Teklifi Reddet",
+    "rejectDescription": "Teklifi reddetme nedeninizi girin.",
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Onay durumu",
+    "status": {
+      "notRequired": "Gerekli Değil",
+      "waiting": "Bekliyor",
+      "approved": "Onaylandı",
+      "rejected": "Reddedildi",
+      "closed": "Kapandı"
+    }
+  },
+  "approvalFlow": {
+    "loading": "Onay akışı yükleniyor...",
+    "noData": "Onay akışı kaydı bulunamadı",
+    "notStarted": "Onay akışı henüz başlatılmadı",
+    "stepCompleted": "Tamamlandı",
+    "stepInProgress": "Devam Ediyor",
+    "stepNotStarted": "Başlamadı",
+    "stepRejected": "Reddedildi"
+  },
+  "notes": {
+    "title": "Teklif Notları",
+    "description": "Teklif için iç notlar ekleyin ve güncelleyin.",
+    "placeholder": "Teklif notunu girin",
+    "saving": "Notlar kaydediliyor...",
+    "noteLabel": "Teklif Notu",
+    "saved": "Teklif notları kaydedildi.",
+    "saveError": "Teklif notları kaydedilemedi.",
+    "maxLengthError": "Not alanı en fazla 1000 karakter olabilir.",
+    "maxCountError": "En fazla 10 not ekleyebilirsiniz."
+  },
+  "summary": {
+    "title": "Özet",
+    "grandTotalAnalysis": "Genel Toplam Analizi",
+    "subtotal": "Ara Toplam",
+    "totalVat": "Toplam KDV",
+    "grandTotal": "Genel Toplam",
+    "generalDiscount": "Genel İskonto",
+    "generalDiscountRate": "Genel İskonto Oranı",
+    "generalDiscountAmount": "Genel İskonto Tutarı",
+    "generalDiscountHelp": "Bu alan tüm teklif toplamına uygulanacak genel iskontoyu ifade eder."
+  },
+  "sections": {
+    "header": "Başlık Bilgileri",
+    "lines": "Satırlar",
+    "summary": "Özet"
+  },
+  "share": {
+    "downloaded": "Dosya indirildi.",
+    "mailSubject": "Teklif paylaşımı",
+    "mailBody": "Teklif detaylarını inceler misiniz?",
+    "whatsappMessage": "Teklif detaylarını sizinle paylaşıyorum."
+  },
+  "revision": {
+    "success": "Revizyon kaydı oluşturuldu.",
+    "error": "Revizyon kaydı oluşturulamadı."
+  },
+  "update": {
+    "saveButton": "Güncellemeyi Kaydet",
+    "success": "Teklif güncellendi.",
+    "successMessage": "Teklif bilgileri başarıyla güncellendi.",
+    "error": "Teklif güncellenemedi.",
+    "errorMessage": "Teklif güncellenirken bir hata oluştu.",
+    "invalidCurrency": "Geçerli bir para birimi seçin.",
+    "validationError": "Lütfen zorunlu alanları kontrol edin."
+  },
+  "waitingApprovals": {
+    "title": "Bekleyen Teklif Onayları",
+    "description": "Onay bekleyen teklif kayıtlarını görüntüleyin.",
+    "list": "Bekleyen Onay Listesi",
+    "waiting": "Bekliyor",
+    "noApprovals": "Bekleyen onay kaydı bulunamadı.",
+    "requestId": "Talep No",
+    "status": "Durum",
+    "stepOrder": "Adım Sırası",
+    "approvedBy": "Onaylayan",
+    "actionDate": "İşlem Tarihi"
+  },
+  "offerType": {
+    "domestic": "Yurtiçi",
+    "export": "Yurtdışı"
+  },
+  "wizard": {
+    "title": "Yeni Teklif Oluştur",
+    "step1": {
+      "title": "Adım 1: Teklif Bilgileri",
+      "description": "Teklif header bilgilerini ve döviz kurlarını girin",
+      "validation": {
+        "offerType": "Teklif Tipi",
+        "currency": "Para Birimi",
+        "exchangeRate": "Döviz Kuru"
+      },
+      "exchangeRate": {
+        "required": "TRY dışı para birimleri için en az bir döviz kuru eklenmelidir"
+      },
+      "currency": {
+        "try": {
+          "info": "TRY seçildiğinde döviz kuru gerekmez"
+        }
+      }
+    },
+    "step2": {
+      "title": "Adım 2: Teklif Satırları",
+      "description": "Ürün ve fiyat bilgilerini ekleyin",
+      "info": "En az bir satır eklemeniz gerekmektedir",
+      "validation": {
+        "noLines": "En az bir satır eklenmelidir",
+        "invalidLines": "Tüm satırların geçerli bilgileri olmalıdır",
+        "allValid": "{{count}} satır başarıyla eklendi"
+      }
+    },
+    "step3": {
+      "title": "Adım 3: Özet ve Onay",
+      "description": "Bilgileri kontrol edin ve teklifi kaydedin",
+      "header": {
+        "title": "Teklif Bilgileri"
+      },
+      "lines": {
+        "title": "Teklif Satırları"
+      },
+      "summary": {
+        "title": "Final Özet"
+      },
+      "approval": {
+        "info": "Teklif kaydedildikten sonra otomatik olarak onay sürecine gönderilecektir"
+      }
+    }
+  }
+}

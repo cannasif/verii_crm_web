@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "Approbations en attente",
+    "description": "Consultez et approuvez ou refusez les devis qui vous sont assignés",
+    "empty": "Aucune approbation en attente",
+    "error": "Une erreur s'est produite lors du chargement des approbations"
+  },
+  "yes": "Oui",
+  "no": "Non",
+  "processing": "Traitement...",
+  "detail": {
+    "title": "Détail du devis",
+    "subtitle": "Consultez le détail du devis et agissez",
+    "tabs": {
+      "detail": "Détail",
+      "history": "Historique",
+      "action": "Action"
+    },
+    "notFound": "Devis introuvable",
+    "quotationInfo": "Informations sur le devis",
+    "offerNo": "N° de devis",
+    "customer": "Client",
+    "representative": "Représentant",
+    "currency": "Devise",
+    "offerDate": "Date du devis",
+    "deliveryDate": "Date de livraison",
+    "total": "Total",
+    "grandTotal": "Total général",
+    "description": "Description",
+    "lines": "Lignes du devis",
+    "productCode": "Code produit",
+    "productName": "Nom du produit",
+    "quantity": "Quantité",
+    "unitPrice": "Prix unitaire",
+    "lineTotal": "Total ligne",
+    "lineGrandTotal": "Total général ligne",
+    "exchangeRates": "Taux de change",
+    "exchangeRate": "Taux",
+    "exchangeRateDate": "Date du taux",
+    "isOfficial": "Taux officiel"
+  },
+  "actions": {
+    "view": "Voir",
+    "approve": "Approuver",
+    "reject": "Refuser"
+  },
+  "status": {
+    "notRequired": "Non requis",
+    "waiting": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Refusé",
+    "closed": "Fermé"
+  },
+  "closedReason": "Cet enregistrement a été fermé parce qu'un autre enregistrement avec le même numéro de devis a été approuvé.",
+  "statusFilterLabel": "Statut d'approbation",
+  "level": {
+    "salesManager": "Responsable commercial",
+    "regionalManager": "Responsable régional",
+    "finance": "Finance",
+    "generalManager": "Directeur général",
+    "unknown": "Inconnu"
+  },
+  "note": {
+    "label": "Note",
+    "placeholder": "Vous pouvez ajouter une note d'approbation/refus (facultatif)",
+    "maxLength": "La note peut comporter au plus 500 caractères"
+  },
+  "approve": {
+    "success": "Approuvé",
+    "successMessage": "Devis approuvé avec succès",
+    "error": "Erreur d'approbation",
+    "errorMessage": "Une erreur s'est produite lors de l'approbation du devis"
+  },
+  "reject": {
+    "success": "Refusé",
+    "successMessage": "Devis refusé",
+    "error": "Erreur de refus",
+    "errorMessage": "Une erreur s'est produite lors du refus du devis"
+  },
+  "history": {
+    "empty": "Aucun historique d'approbation",
+    "approvedBy": "Approuvé par"
+  },
+  "assignedTo": "Utilisateur assigné"
+}

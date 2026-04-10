@@ -48,7 +48,7 @@ import {
 } from 'hugeicons-react';
 
 export function LoginPage(): React.JSX.Element {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: branches } = useBranches();

@@ -8,7 +8,7 @@ import type { ApproveActionDto } from '../types/demand-types';
 
 export const useApproveAction = (): UseMutationResult<ApiResponse<boolean>, Error, ApproveActionDto, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
 
   return useMutation({
     mutationFn: (data: ApproveActionDto) => demandApi.approve(data),

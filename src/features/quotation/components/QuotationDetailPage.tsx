@@ -77,7 +77,7 @@ function parsePersistedId(formId: string | number | undefined, prefix: string): 
 }
 
 export function QuotationDetailPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const { id: paramId } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();

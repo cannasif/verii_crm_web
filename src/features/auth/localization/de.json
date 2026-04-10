@@ -1,0 +1,61 @@
+{
+  "auth": {
+    "login": {
+      "title": "Vertriebs- & Kundenmanagement",
+      "slogan": "\"Führen Sie Ihr Geschäft mit <1>v3rii</1>, nicht mit Vermutungen.\"",
+      "branchPlaceholder": "Niederlassung wählen",
+      "emailPlaceholder": "Geschäftliche E-Mail",
+      "passwordPlaceholder": "Passwort",
+      "rememberMe": "Angemeldet bleiben",
+      "forgotPassword": "Passwort vergessen?",
+      "submitButton": "Anmelden",
+      "processing": "Wird verarbeitet...",
+      "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+      "comingSoon": "Demnächst",
+      "loginError": "Beim Anmelden ist ein Fehler aufgetreten.",
+      "capsLockOn": "Feststelltaste ist aktiv",
+      "animationOn": "Animation einschalten",
+      "animationOff": "Animation ausschalten"
+    },
+    "forgotPassword": {
+      "title": "Passwort vergessen",
+      "description": "Geben Sie Ihre E-Mail-Adresse ein, um Ihr Passwort zurückzusetzen. Wir senden Ihnen einen Link zum Zurücksetzen.",
+      "emailPlaceholder": "E-Mail-Adresse",
+      "submitButton": "Link zum Zurücksetzen senden",
+      "backToLogin": "Zurück zur Anmeldung",
+      "processing": "Wird verarbeitet...",
+      "logoAlt": "Anwendungslogo"
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "newPasswordPlaceholder": "Neues Passwort",
+      "confirmPasswordPlaceholder": "Passwort bestätigen",
+      "submitButton": "Passwort zurücksetzen",
+      "processing": "Wird verarbeitet...",
+      "invalidToken": "Ungültiges oder fehlendes Token. Bitte prüfen Sie den Link zum Zurücksetzen des Passworts.",
+      "tokenNotFound": "Token nicht gefunden",
+      "successRedirect": "Ihr Passwort wurde zurückgesetzt. Sie werden zur Anmeldung weitergeleitet...",
+      "failed": "Zurücksetzen des Passworts fehlgeschlagen.",
+      "error": "Beim Zurücksetzen des Passworts ist ein Fehler aufgetreten."
+    },
+    "changePassword": {
+      "success": "Passwort wurde erfolgreich geändert.",
+      "error": "Passwort konnte nicht geändert werden."
+    },
+    "validation": {
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "passwordRequired": "Passwort ist erforderlich",
+      "branchRequired": "Niederlassung auswählen ist erforderlich",
+      "passwordMinLength": "Das Passwort muss mindestens 8 Zeichen haben",
+      "tokenRequired": "Token ist erforderlich",
+      "newPasswordMinLength": "Das Passwort muss mindestens 6 Zeichen haben",
+      "confirmPasswordRequired": "Passwortbestätigung ist erforderlich",
+      "passwordsMismatch": "Passwörter stimmen nicht überein",
+      "currentPasswordRequired": "Aktuelles Passwort ist erforderlich",
+      "newPasswordMaxLength": "Das neue Passwort darf höchstens 100 Zeichen haben",
+      "newPasswordSameAsCurrent": "Das neue Passwort darf nicht mit dem aktuellen identisch sein",
+      "requiredFieldsNotFilled": "Pflichtfelder sind nicht ausgefüllt."
+    }
+  }
+}

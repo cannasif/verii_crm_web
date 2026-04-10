@@ -24,7 +24,7 @@ export function DemandSummaryCard({
   lines,
   currency,
 }: DemandSummaryCardProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   const { calculateTotals } = useDemandCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const form = useFormContext<CreateDemandSchema>();

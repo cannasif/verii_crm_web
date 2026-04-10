@@ -24,7 +24,7 @@ export function QuotationSummaryCard({
   lines,
   currency,
 }: QuotationSummaryCardProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const { calculateTotals } = useQuotationCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const form = useFormContext<CreateQuotationSchema>();

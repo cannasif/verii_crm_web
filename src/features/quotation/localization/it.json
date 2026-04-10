@@ -1,0 +1,323 @@
+{
+  "loading": "Caricamento...",
+  "saving": "Salvataggio...",
+  "error": "Errore",
+  "noData": "Nessun dato",
+  "previous": "Indietro",
+  "next": "Avanti",
+  "actions": "Azioni",
+  "edit": "Modifica",
+  "delete": "Elimina",
+  "back": "Indietro",
+  "refresh": "Aggiorna",
+  "select": "Seleziona",
+  "guide": "Guida",
+  "yes": "Sì",
+  "add": "Aggiungi",
+  "backToQuotations": "Torna all'elenco preventivi",
+  "cancel": "Annulla",
+  "save": "Salva",
+  "confirm": "Conferma",
+  "saveAndApply": "Salva e applica",
+  "loadError": "Si è verificato un errore durante il caricamento dei dati.",
+  "list": {
+    "title": "Elenco preventivi",
+    "description": "Visualizza e gestisci i preventivi",
+    "detail": "Dettaglio",
+    "createNew": "Crea nuovo preventivo",
+    "cardTitle": "Elenco preventivi",
+    "refresh": "Aggiorna",
+    "actions": "Azioni",
+    "sendGmail": "Invia con Gmail",
+    "sendOutlook": "Invia con Outlook",
+    "id": "ID",
+    "offerNo": "N. offerta",
+    "customer": "Cliente",
+    "representative": "Rappresentante",
+    "offerDate": "Data offerta",
+    "currency": "Valuta",
+    "grandTotal": "Totale generale",
+    "status": "Stato",
+    "revise": "Rivedi",
+    "showing": "Visualizzati {{from}}-{{to}} / {{total}}",
+    "customerCode": "Codice cliente",
+    "validUntil": "Valido fino al",
+    "revisionNo": "N. revisione"
+  },
+  "date": "Data",
+  "offerNo": "N. offerta",
+  "customerAccount": "Conto cliente",
+  "export": "Esporta",
+  "exportPdf": "Esporta PDF",
+  "shareMail": "Condividi via e-mail",
+  "shareWhatsapp": "Condividi via WhatsApp",
+  "detail": {
+    "title": "Dettaglio preventivo",
+    "subtitle": "Visualizza dettagli, flusso di approvazione e report",
+    "notFound": "Preventivo non trovato",
+    "revisionNo": "N. revisione",
+    "tabDetail": "Dettaglio",
+    "tabApprovalFlow": "Flusso di approvazione",
+    "tabReport": "Report"
+  },
+  "create": {
+    "title": "Crea nuovo preventivo",
+    "submit": "Salva preventivo e invia in approvazione",
+    "success": "Preventivo creato correttamente",
+    "successMessage": "Il preventivo è stato inviato al processo di approvazione.",
+    "error": "Impossibile creare il preventivo",
+    "errorMessage": "Si è verificato un errore durante la creazione del preventivo.",
+    "subtitle": "Gestisci testata, righe e tassi di cambio",
+    "invalidCurrency": "Selezionare una valuta valida.",
+    "validationError": "Verificare i campi obbligatori."
+  },
+  "header": {
+    "title": "Informazioni preventivo",
+    "customer": "Cliente",
+    "selectCustomer": "Seleziona cliente",
+    "shippingAddress": "Indirizzo di spedizione",
+    "selectShippingAddress": "Seleziona indirizzo di spedizione",
+    "representative": "Addetto commerciale",
+    "selectRepresentative": "Seleziona rappresentante",
+    "offerType": "Tipo offerta",
+    "selectOfferType": "Seleziona tipo offerta",
+    "currency": "Valuta",
+    "selectCurrency": "Selezionare la valuta",
+    "showExchangeRates": "Mostra tassi di cambio",
+    "offerDate": "Data offerta",
+    "deliveryDate": "Data di consegna",
+    "paymentType": "Modalità di pagamento",
+    "selectPaymentType": "Seleziona modalità di pagamento",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "Inserire la descrizione",
+    "projectCode": "Codice progetto",
+    "projectCodePlaceholder": "Inserire il codice progetto",
+    "offerNo": "N. offerta",
+    "offerNoPlaceholder": "Numero offerta",
+    "currencyChange": {
+      "title": "Cambio valuta",
+      "message": "In caso di modifica della valuta, tutte le righe esistenti saranno ricalcolate in base alla nuova valuta. Approvare questa operazione?"
+    },
+    "deliveryMethod": "Modalità di consegna",
+    "documentDetail": "Dettaglio documento"
+  },
+  "lines": {
+    "title": "Righe preventivo",
+    "addTitle": "Aggiungi riga",
+    "add": "Aggiungi riga",
+    "editTitle": "Modifica riga",
+    "empty": "Nessuna riga ancora",
+    "noItems": "Nessuna riga ancora",
+    "emptyDescription": "Usa «Seleziona stock» o «Aggiungi riga» per inserire le righe",
+    "itemCount": "{{count}} righe",
+    "editLine": "Modifica riga",
+    "selectStock": "Seleziona stock",
+    "selectProduct": "Seleziona prodotto",
+    "selectStockFirst": "Stock non selezionato",
+    "stock": "Stock",
+    "productCode": "Codice articolo",
+    "enterProductCode": "Inserire codice o cercare",
+    "productName": "Descrizione",
+    "enterProductName": "Inserire nome prodotto",
+    "quantity": "Quantità",
+    "unit": "Unità",
+    "unitPrice": "Prezzo unitario",
+    "description": "Descrizione",
+    "discount1": "Sconto 1 %",
+    "discount2": "Sconto 2 %",
+    "discount3": "Sconto 3 %",
+    "discounts": "Sconti",
+    "discountAmount": "Importo sconto",
+    "netPrice": "Prezzo netto",
+    "vatRate": "Aliquota IVA %",
+    "lineTotal": "Totale riga (IVA inclusa)",
+    "total": "Totale",
+    "calculations": "Calcoli",
+    "required": "È necessaria almeno 1 riga",
+    "requiredFieldsMissing": "Compilare i campi obbligatori.",
+    "relatedStocks": "Stock collegati",
+    "noProductsFound": "Nessun prodotto trovato",
+    "createSuccess": "Righe preventivo aggiunte.",
+    "createError": "Impossibile aggiungere le righe preventivo.",
+    "updateSuccess": "Righe preventivo aggiornate.",
+    "updateError": "Impossibile aggiornare le righe preventivo.",
+    "deleteSuccess": "Riga preventivo eliminata.",
+    "deleteError": "Impossibile eliminare la riga preventivo.",
+    "delete": {
+      "confirmTitle": "Elimina riga",
+      "confirmMessage": "Eliminare questa riga?",
+      "confirmTitleMultiple": "Elimina righe",
+      "confirmMessageMultiple": "Eliminare le righe selezionate?"
+    },
+    "discountLimitExceeded": "Gli sconti superano i limiti di autorizzazione.",
+    "max200Chars": "Massimo 200 caratteri",
+    "approvalRequired": "Approvazione richiesta",
+    "approvalNeeded": "Approvazione necessaria",
+    "subtotal": "Subtotale",
+    "grandTotal": "Totale generale",
+    "currencyTry": "TL",
+    "totalDiscount": "Sconto totale",
+    "vatAmount": "Importo IVA"
+  },
+  "exchangeRates": {
+    "title": "Tassi di cambio",
+    "currency": "Valuta",
+    "rate": "Tasso",
+    "date": "Data tasso",
+    "isOfficial": "Tasso ufficiale",
+    "official": "Ufficiale",
+    "custom": "Personalizzato",
+    "empty": "Nessun tasso di cambio",
+    "status": "Stato",
+    "updateSuccess": "Tassi di cambio aggiornati.",
+    "updateError": "Impossibile aggiornare i tassi di cambio.",
+    "cannotEditUsedCurrency": "Il tasso non può essere modificato per una valuta già in uso.",
+    "zeroRateError": "Inserire un tasso di cambio per continuare.",
+    "dialog": {
+      "title": "Tassi di cambio",
+      "description": "Consultare e, se necessario, modificare i tassi. I tassi modificati non saranno marcati come ufficiali.",
+      "subtitle": "Verificare i tassi applicati al preventivo",
+      "info": "Le variazioni di tasso influiscono sui calcoli delle righe."
+    }
+  },
+  "approval": {
+    "approve": "Approva",
+    "reject": "Rifiuta",
+    "sending": "Invio in corso...",
+    "sendForApproval": "Invia in approvazione",
+    "approveSuccess": "Preventivo approvato correttamente.",
+    "approveError": "Impossibile approvare il preventivo.",
+    "rejectSuccess": "Preventivo rifiutato.",
+    "rejectError": "Impossibile rifiutare il preventivo.",
+    "startSuccess": "Flusso di approvazione avviato.",
+    "startError": "Impossibile avviare il flusso di approvazione.",
+    "rejectTitle": "Rifiuta preventivo",
+    "rejectDescription": "Indicare il motivo del rifiuto.",
+    "rejectReasonPlaceholder": "Motivo del rifiuto",
+    "statusFilterLabel": "Stato approvazione",
+    "status": {
+      "notRequired": "Non richiesto",
+      "waiting": "In attesa",
+      "approved": "Approvato",
+      "rejected": "Rifiutato",
+      "closed": "Chiuso"
+    }
+  },
+  "approvalFlow": {
+    "loading": "Caricamento flusso di approvazione...",
+    "noData": "Nessun record del flusso di approvazione",
+    "notStarted": "Il flusso di approvazione non è ancora iniziato",
+    "stepCompleted": "Completato",
+    "stepInProgress": "In corso",
+    "stepNotStarted": "Non avviato",
+    "stepRejected": "Rifiutato"
+  },
+  "notes": {
+    "title": "Note preventivo",
+    "description": "Aggiungere e aggiornare le note interne del preventivo.",
+    "placeholder": "Inserire una nota",
+    "saving": "Salvataggio note...",
+    "noteLabel": "Nota preventivo",
+    "saved": "Note preventivo salvate.",
+    "saveError": "Impossibile salvare le note preventivo.",
+    "maxLengthError": "La nota può contenere al massimo 1000 caratteri.",
+    "maxCountError": "È possibile aggiungere al massimo 10 note."
+  },
+  "summary": {
+    "title": "Riepilogo",
+    "grandTotalAnalysis": "Analisi totale generale",
+    "subtotal": "Subtotale",
+    "totalVat": "IVA totale",
+    "grandTotal": "Totale generale",
+    "generalDiscount": "Sconto generale",
+    "generalDiscountRate": "Aliquota sconto generale",
+    "generalDiscountAmount": "Importo sconto generale",
+    "generalDiscountHelp": "Questo campo rappresenta lo sconto generale applicato al totale del preventivo."
+  },
+  "sections": {
+    "header": "Testata",
+    "lines": "Righe",
+    "summary": "Riepilogo"
+  },
+  "share": {
+    "downloaded": "File scaricato.",
+    "mailSubject": "Condivisione preventivo",
+    "mailBody": "Desidera consultare i dettagli del preventivo?",
+    "whatsappMessage": "Condivido con lei i dettagli del preventivo."
+  },
+  "revision": {
+    "success": "Record di revisione creato.",
+    "error": "Impossibile creare il record di revisione."
+  },
+  "update": {
+    "saveButton": "Salva modifiche",
+    "success": "Preventivo aggiornato.",
+    "successMessage": "Preventivo aggiornato correttamente.",
+    "error": "Impossibile aggiornare il preventivo.",
+    "errorMessage": "Si è verificato un errore durante l'aggiornamento del preventivo.",
+    "invalidCurrency": "Selezionare una valuta valida.",
+    "validationError": "Verificare i campi obbligatori."
+  },
+  "waitingApprovals": {
+    "title": "Approvazioni preventivo in sospeso",
+    "description": "Visualizza i preventivi in attesa di approvazione.",
+    "list": "Elenco approvazioni in sospeso",
+    "waiting": "In attesa",
+    "noApprovals": "Nessuna approvazione in sospeso.",
+    "requestId": "N. offerta",
+    "status": "Stato",
+    "stepOrder": "Ordine fase",
+    "approvedBy": "Approvato da",
+    "actionDate": "Data azione"
+  },
+  "offerType": {
+    "domestic": "Domestico",
+    "export": "Export"
+  },
+  "wizard": {
+    "title": "Crea nuovo preventivo",
+    "step1": {
+      "title": "Passo 1: Informazioni preventivo",
+      "description": "Inserire testata e tassi di cambio",
+      "validation": {
+        "offerType": "Tipo offerta",
+        "currency": "Valuta",
+        "exchangeRate": "Tasso di cambio"
+      },
+      "exchangeRate": {
+        "required": "Per valute diverse da TRY è necessario almeno un tasso di cambio"
+      },
+      "currency": {
+        "try": {
+          "info": "Con TRY selezionato non è richiesto alcun tasso di cambio"
+        }
+      }
+    },
+    "step2": {
+      "title": "Passo 2: Righe preventivo",
+      "description": "Aggiungere prodotto e informazioni sui prezzi",
+      "info": "È necessario aggiungere almeno una riga",
+      "validation": {
+        "noLines": "È richiesta almeno una riga",
+        "invalidLines": "Tutte le righe devono avere dati validi",
+        "allValid": "{{count}} righe aggiunte correttamente"
+      }
+    },
+    "step3": {
+      "title": "Passo 3: Riepilogo e approvazione",
+      "description": "Verificare i dati e salvare il preventivo",
+      "header": {
+        "title": "Informazioni preventivo"
+      },
+      "lines": {
+        "title": "Righe preventivo"
+      },
+      "summary": {
+        "title": "Riepilogo finale"
+      },
+      "approval": {
+        "info": "Dopo il salvataggio il preventivo sarà inviato automaticamente in approvazione"
+      }
+    }
+  }
+}

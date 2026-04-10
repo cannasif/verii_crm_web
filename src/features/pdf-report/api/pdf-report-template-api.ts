@@ -221,11 +221,18 @@ export const pdfReportTemplateApi = {
     return unwrapApiResponse<PdfTablePresetDto>(response);
   },
 
-  uploadAsset: async (file: File, templateId?: number): Promise<PdfTemplateAssetDto> => {
+  uploadAsset: async (
+    file: File,
+    templateId?: number,
+    assetScope?: 'quick-quotation' | 'pdf-designer' | 'report-builder' | 'template'
+  ): Promise<PdfTemplateAssetDto> => {
     const formData = new FormData();
     formData.append('file', file);
     if (typeof templateId === 'number' && Number.isFinite(templateId) && templateId > 0) {
       formData.append('templateId', String(templateId));
+    }
+    if (assetScope) {
+      formData.append('assetScope', assetScope);
     }
 
     const response = await api.post<unknown>(`${BASE}/assets/upload`, formData, {

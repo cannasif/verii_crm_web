@@ -6,7 +6,7 @@ import { queryKeys } from '../utils/query-keys';
 import type { StockRelationCreateDto, StockRelationDto } from '../types';
 
 export const useStockRelationCreate = (): UseMutationResult<StockRelationDto, Error, StockRelationCreateDto> => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

@@ -54,7 +54,7 @@ function downloadBlobAsPdf(blob: Blob, filename: string): void {
 }
 
 export function PdfReportDesignerListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const navigate = useNavigate();
   const { data, isLoading } = usePdfReportTemplateList();
   const templates = data?.items ?? [];
@@ -86,7 +86,7 @@ export function PdfReportDesignerListPage(): ReactElement {
   };
 
   const handleCopyClick = (template: ReportTemplateGetDto): void => {
-    navigate('/report-designer/create', { state: { copyFrom: template } });
+    navigate('/pdf-report-designer/create', { state: { copyFrom: template } });
   };
 
   const handlePdfClick = (template: ReportTemplateGetDto): void => {
@@ -127,13 +127,13 @@ export function PdfReportDesignerListPage(): ReactElement {
         </h1>
         <div className="flex items-center gap-3">
           <Button variant="outline" asChild>
-            <Link to="/report-designer/table-presets" className="inline-flex items-center gap-2">
+            <Link to="/pdf-report-designer/table-presets" className="inline-flex items-center gap-2">
               <TableProperties className="size-4" />
               Table Presets
             </Link>
           </Button>
           <Button asChild>
-            <Link to="/report-designer/create" className="inline-flex items-center gap-2">
+            <Link to="/pdf-report-designer/create" className="inline-flex items-center gap-2">
               <Plus className="size-4" />
               {t('pdfReportDesigner.createNew')}
             </Link>
@@ -188,7 +188,7 @@ export function PdfReportDesignerListPage(): ReactElement {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link to={`/report-designer/edit/${template.id}`} className="flex items-center gap-2">
+                          <Link to={`/pdf-report-designer/edit/${template.id}`} className="flex items-center gap-2">
                             <Pencil className="size-4" />
                             {t('common.edit')}
                           </Link>

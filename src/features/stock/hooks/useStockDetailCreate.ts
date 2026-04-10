@@ -6,7 +6,7 @@ import { queryKeys } from '../utils/query-keys';
 import type { StockDetailCreateDto, StockDetailGetDto } from '../types';
 
 export const useStockDetailCreate = (): UseMutationResult<StockDetailGetDto, Error, StockDetailCreateDto> => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

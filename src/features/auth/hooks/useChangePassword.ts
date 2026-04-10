@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { getUserFromToken } from '@/utils/jwt';
 
 export const useChangePassword = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['auth', 'common']);
 
   return useMutation({
     mutationFn: async (data: ChangePasswordRequest): Promise<void> => {

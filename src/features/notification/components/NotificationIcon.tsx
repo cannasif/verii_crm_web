@@ -6,7 +6,7 @@ import { NotificationDropdown } from './NotificationDropdown';
 import { cn } from '@/lib/utils';
 
 export function NotificationIcon(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['notification', 'common']);
   const { data: unreadCount = 0 } = useUnreadCount();
   const hasUnread = unreadCount > 0;
 

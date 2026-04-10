@@ -1,0 +1,423 @@
+{
+  "categoryDefinitions": {
+    "title": "Kategori Tanımlamaları",
+    "description": "B2B ve B2C katalogları için kategori ağacını ve kategoriye bağlı stokları buradan yönetmeye başlayabilirsiniz.",
+    "guidedTitle": "Kategori yapısını 3 adımda yönetin",
+    "easyModeTitle": "Burada ne yapacağınızı düşünmenize gerek yok",
+    "summaryGuideTitle": "Sana sıradaki doğru adımı gösteriyorum",
+    "createCatalogTitle": "Yeni katalog oluştur",
+    "createCatalogDescription": "B2B, B2C veya özel akışlar için yeni katalog tanımı ekleyin.",
+    "editCatalogTitle": "Kataloğu düzenle",
+    "editCatalogDescription": "Seçili kataloğun adını, tipini ve sıralamasını güncelleyin.",
+    "createCategoryTitle": "Kategori ekle",
+    "createCategoryDescription": "{{target}} altında yeni kategori oluşturun.",
+    "editCategoryTitle": "Kategoriyi düzenle",
+    "editCategoryDescription": "{{target}} için kategori bilgilerini güncelleyin.",
+    "createCategoryTarget": "Bağlanacağı seviye",
+    "deleteCatalogConfirm": "{{name}} kataloğunu silmek istediğinize emin misiniz?",
+    "deleteCategoryConfirm": "{{name}} kategorisini silmek istediğinize emin misiniz?",
+    "deleteStockConfirm": "Bu stok bağlantısını kaldırmak istediğinize emin misiniz?",
+    "createRuleTitle": "Kural ekle",
+    "createRuleDescription": "{{category}} kategorisi için otomatik bağlama kuralı oluşturun.",
+    "editRuleTitle": "Kuralı düzenle",
+    "editRuleDescription": "{{category}} kategorisi için kural bilgisini güncelleyin.",
+    "deleteRuleConfirm": "{{name}} kuralını silmek istediğinize emin misiniz?",
+    "noRules": "Bu kategori için henüz tanımlı kural bulunmuyor.",
+    "rulePriority": "Öncelik {{priority}}",
+    "catalogsTitle": "Kataloglar",
+    "catalogsDescription": "Önce çalışmak istediğiniz kataloğu seçin.",
+    "catalogDescriptionFallback": "Bu katalog için henüz açıklama girilmemiş.",
+    "catalogHelperText": "Kısacası: soldan katalog seç, ortadan kategoriye in, sağdan stok ve kural yönet.",
+    "treeTitle": "Kategori Ağacı",
+    "treeDescription": "Trendyol ve Hepsiburada benzeri şekilde kategoriden alt kategoriye ilerleyin.",
+    "treeReorderHint": "Aynı seviyedeki kategorileri tutup bırakarak sıralayabilirsiniz.",
+    "chooseCatalogFirst": "İlk iş soldan bir katalog seç. Katalog seçmeden kategori yönetimi başlamaz.",
+    "stocksTitle": "Kategori Stokları",
+    "stocksDescription": "Bir leaf kategori seçtiğinizde bağlı stoklar burada listelenir.",
+    "stocksDescriptionSelected": "{{category}} kategorisine bağlı stoklar",
+    "stocksGuideTitle": "Bu alan ne işe yarıyor?",
+    "stocksGuideDescription": "Burada seçtiğin kategoriye hangi ürünlerin gireceğini belirliyorsun. İstersen tek tek stok bağlayabilirsin.",
+    "stocksHelperText": "Kolay mantık: önce kategori seç, sonra 'Stok Bağla' butonuna bas, açılan listeden ürünü seç.",
+    "rulesGuideTitle": "Kural ekranı ne yapar?",
+    "rulesGuideDescription": "Aynı tip ürünleri tek tek bağlamak istemiyorsan burada kural tanımlarsın. Örneğin Kod1 = CAM ise bu kategoriye girsin diyebilirsin.",
+    "rulesHelperText": "Önce kuralı ekle. Sonra 'Kuralları Önizle' ile ne olacağını gör. Doğruysa 'Kuralları Uygula' ile otomatik bağla.",
+    "selectionTitle": "Seçim durumu",
+    "selectionDescription": "Sağ panelden seçili katalog, kategori ve bağlı stokları tek bakışta görebilirsiniz.",
+    "selectionCatalog": "Katalog",
+    "selectionCategory": "Seçili kategori",
+    "selectionCurrentLevel": "Bulunduğun seviye",
+    "selectionPath": "Yol",
+    "selectionTotalStocks": "Bağlı stok",
+    "selectionValueEmpty": "Henüz seçilmedi",
+    "nextStepTitle": "Sıradaki önerilen adım",
+    "nextStepChooseCatalog": "İlk olarak sol panelden bir katalog seçin.",
+    "nextStepBrowseTree": "Orta panelden ana kategoriden başlayıp alt kırılımlara doğru ilerleyin.",
+    "nextStepSelectLeaf": "Stok listesini görmek için uç bir kategori seçin.",
+    "nextStepReviewStocks": "Seçtiğiniz kategoriye bağlı stokları kontrol edip doğru eşleşmeyi doğrulayın.",
+    "stepCatalogTitle": "Katalog seç",
+    "stepCatalogDescription": "B2B, B2C veya özel kataloglardan hangisinde çalışacağınızı belirleyin.",
+    "stepTreeTitle": "Ağaçta ilerle",
+    "stepTreeDescription": "Ana kategori, alt kategori ve alt kırılımlar arasında tıklayarak ilerleyin.",
+    "stepStocksTitle": "Stokları kontrol et",
+    "stepStocksDescription": "Uç kategori seçildiğinde bağlı stokları ve ERP kod kırılımlarını sağ panelde görün.",
+    "ready": "Hazır",
+    "pending": "Bekliyor",
+    "openBranchAction": "Alt kategorileri aç",
+    "selectLeafAction": "Bu kategoriyi seç",
+    "root": "Kök",
+    "leaf": "Uç",
+    "branch": "Dal",
+    "noCatalogs": "Henüz tanımlı katalog bulunmuyor.",
+    "noCategories": "Bu seviyede kategori bulunmuyor.",
+    "noStocks": "Bu kategoriye bağlı stok bulunmuyor.",
+    "selectLeafHint": "Stokları görmek için uç bir kategori seçin.",
+    "stockSearchPlaceholder": "Stok kodu veya stok adına göre ara...",
+    "primaryBadge": "Ana kategori",
+    "tabs": {
+      "summary": "Ne Yapacağım?",
+      "stocks": "Stok Ekle",
+      "rules": "Kural Ekle",
+      "tips": "Kullanım"
+    },
+    "catalogTypes": {
+      "b2b": "B2B",
+      "b2c": "B2C",
+      "dealer": "Bayi",
+      "custom": "Özel"
+    },
+    "tips": {
+      "catalogTitle": "1. Önce doğru kataloğu seçin",
+      "catalogDescription": "B2B ve B2C tarafında aynı kategori isimleri olsa bile farklı kataloglarda farklı görünüm kurgulanabilir.",
+      "branchTitle": "2. Dal kategoriler gezinmek içindir",
+      "branchDescription": "Dal kategoriler son seçim noktası değil, kullanıcıyı doğru alt kırılıma taşımak için kullanılır.",
+      "leafTitle": "3. Stok kontrolünü uç kategoride yapın",
+      "leafDescription": "Stok listesi en doğru şekilde uç kategoride anlam kazanır; bu yüzden son seçimi uç kategoride yapmanız önerilir."
+    },
+    "actions": {
+      "newCatalog": "Yeni Katalog",
+      "createCatalog": "Kataloğu Oluştur",
+      "addRootCategory": "Kök Kategori Ekle",
+      "addSubCategory": "Alt Kategori Ekle",
+      "createCategory": "Kategoriyi Oluştur",
+      "uploadCategoryImage": "Görsel Yükle",
+      "uploadingCategoryImage": "Görsel Yükleniyor",
+      "removeCategoryImage": "Görseli Kaldır",
+      "addStock": "Stok Bağla",
+      "removeStock": "Bağlantıyı Kaldır",
+      "addRule": "Kural Ekle",
+      "createRule": "Kuralı Oluştur",
+      "previewRules": "Kuralları Önizle",
+      "previewingRules": "Önizleme Hazırlanıyor",
+      "applyRules": "Kuralları Uygula",
+      "applyingRules": "Kurallar Uygulanıyor"
+    },
+    "messages": {
+      "catalogCreateSuccess": "Katalog başarıyla oluşturuldu.",
+      "catalogCreateError": "Katalog oluşturulamadı.",
+      "catalogUpdateSuccess": "Katalog başarıyla güncellendi.",
+      "catalogUpdateError": "Katalog güncellenemedi.",
+      "catalogDeleteSuccess": "Katalog başarıyla silindi.",
+      "catalogDeleteError": "Katalog silinemedi.",
+      "rootCategoryCreateSuccess": "Kök kategori başarıyla oluşturuldu.",
+      "subCategoryCreateSuccess": "Alt kategori başarıyla oluşturuldu.",
+      "categoryCreateError": "Kategori oluşturulamadı.",
+      "categoryUpdateSuccess": "Kategori başarıyla güncellendi.",
+      "categoryUpdateError": "Kategori güncellenemedi.",
+      "categoryReorderSuccess": "Kategori sırası güncellendi.",
+      "categoryReorderError": "Kategori sırası güncellenemedi.",
+      "categoryDeleteSuccess": "Kategori başarıyla silindi.",
+      "categoryDeleteError": "Kategori silinemedi.",
+      "stockAssignSuccess": "Stok başarıyla kategoriye bağlandı.",
+      "stockAssignError": "Stok kategoriye bağlanamadı.",
+      "stockUnassignSuccess": "Stok bağlantısı kaldırıldı.",
+      "stockUnassignError": "Stok bağlantısı kaldırılamadı.",
+      "ruleCreateSuccess": "Kural başarıyla oluşturuldu.",
+      "ruleCreateError": "Kural oluşturulamadı.",
+      "ruleUpdateSuccess": "Kural başarıyla güncellendi.",
+      "ruleUpdateError": "Kural güncellenemedi.",
+      "ruleDeleteSuccess": "Kural başarıyla silindi.",
+      "ruleDeleteError": "Kural silinemedi.",
+      "rulePreviewError": "Kural önizlemesi alınamadı.",
+      "ruleApplySuccess": "Kurallar başarıyla uygulandı.",
+      "ruleApplyError": "Kurallar uygulanamadı."
+    },
+    "rulePreviewSummaryTitle": "Kural önizleme özeti",
+    "rulePreviewSummary": {
+      "matched": "Eşleşecek stok: {{count}}",
+      "created": "Yeni bağlantı olacak: {{count}}",
+      "updated": "Güncellenecek bağlantı: {{count}}",
+      "skipped": "Elle korunan kayıt: {{count}}"
+    },
+    "rulePreviewListTitle": "Önizleme örnekleri",
+    "rulePreviewListEmpty": "Önizleme için örnek eşleşme bulunamadı.",
+    "rulePreviewMatchedRule": "Eşleşen kural: {{rule}} · Öncelik {{priority}}",
+    "rulePreviewActions": {
+      "create": "Yeni Bağlantı",
+      "update": "Bağlantı Güncellenecek",
+      "skip": "Elle Korundu"
+    },
+    "ruleApplySummaryTitle": "Kural uygulama özeti",
+    "ruleApplySummary": {
+      "matched": "Eşleşen stok: {{count}}",
+      "created": "Yeni bağlantı: {{count}}",
+      "updated": "Güncellenen bağlantı: {{count}}",
+      "skipped": "Elle korunan kayıt: {{count}}"
+    },
+    "form": {
+      "catalogName": "Katalog adı",
+      "catalogNamePlaceholder": "Örn: B2B Ana Katalog",
+      "catalogCode": "Katalog kodu",
+      "catalogCodePlaceholder": "Örn: B2B_MAIN",
+      "catalogType": "Katalog tipi",
+      "branchCode": "Şube kodu",
+      "branchCodePlaceholder": "Opsiyonel",
+      "sortOrder": "Sıralama",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Bu tanımı diğer yöneticiler de anlayacak şekilde kısa açıklayın.",
+      "categoryName": "Kategori adı",
+      "categoryNamePlaceholder": "Örn: Cam Sistemleri",
+      "categoryCode": "Kategori kodu",
+      "categoryCodePlaceholder": "Örn: CAM_SISTEMLERI",
+      "nodeType": "Kategori tipi",
+      "visualPreset": "Görsel teması",
+      "visualPresetPlaceholder": "Temayı arayarak seçin",
+      "visualPresetSearchPlaceholder": "Tema ara...",
+      "visualPresetEmpty": "Uygun tema bulunamadı.",
+      "visualPresetHelp": "Dışarıdan görsel yüklemiyorsun. Sistem bu seçime göre kategori görünümünü kendi üretir.",
+      "categoryImage": "Kategori görseli",
+      "categoryImageHelp": "İstersen sisteme özel görsel yükleyebilirsin. Yüklersen kategori kartında preset ikon yerine bu görsel kullanılır.",
+      "ruleName": "Kural adı",
+      "ruleCode": "Kural kodu",
+      "stockAttribute": "Stok alanı",
+      "operator": "Operatör",
+      "ruleValue": "Kural değeri",
+      "ruleValuePlaceholder": "Örn: CAM veya PROFIL,AKSESUAR",
+      "ruleValueDropdownPlaceholder": "Stoktaki hazır değerlerden seçin",
+      "ruleValueSearchPlaceholder": "ERP kırılımı ara...",
+      "ruleValueLoading": "Değerler yükleniyor...",
+      "ruleValueEmpty": "Bu alan için uygun değer bulunamadı.",
+      "ruleValueDropdownHelp": "Sistem seçtiğiniz stok alanındaki gerçek ERP değerlerini listeler. Yazmak yerine buradan seçmeniz daha güvenlidir.",
+      "ruleValueInListHelp": "Listede var operatöründe birden fazla değer seçebilirsiniz. Eklemek için yukarıdan seçim yapın, kaldırmak için etikete tıklayın.",
+      "ruleValueInListEmpty": "Henüz değer eklenmedi.",
+      "ruleValueManualHelp": "Bu operatör serbest metinle çalışır. Başlangıç, içerme veya bitiş kuralını burada yazın.",
+      "ruleValueTopMatchesTitle": "Sistemde en çok geçen değerler",
+      "ruleValueTopMatchesSubtitle": "Tıklayıp hızlıca seçebilirsiniz",
+      "ruleValueTopMatchesEmpty": "Bu alan için öne çıkan değer bulunamadı.",
+      "priority": "Öncelik"
+    },
+    "visualPreviewTitle": "Kategori görünümü",
+    "visualPreviewFallback": "Kategori önizlemesi",
+    "visualPresets": {
+      "general": {
+        "label": "Genel"
+      },
+      "glass": {
+        "label": "Cam"
+      },
+      "profile": {
+        "label": "Profil"
+      },
+      "accessory": {
+        "label": "Aksesuar"
+      },
+      "service": {
+        "label": "Servis"
+      },
+      "logistics": {
+        "label": "Lojistik"
+      },
+      "machinery": {
+        "label": "Makine"
+      },
+      "electronics": {
+        "label": "Elektronik"
+      },
+      "security": {
+        "label": "Güvenlik"
+      },
+      "lighting": {
+        "label": "Aydınlatma"
+      },
+      "construction": {
+        "label": "İnşaat"
+      },
+      "furniture": {
+        "label": "Mobilya"
+      },
+      "hardware": {
+        "label": "Hırdavat"
+      },
+      "automation": {
+        "label": "Otomasyon"
+      },
+      "energy": {
+        "label": "Enerji"
+      },
+      "office": {
+        "label": "Ofis"
+      },
+      "textile": {
+        "label": "Tekstil"
+      },
+      "chemical": {
+        "label": "Kimyasal"
+      },
+      "outdoor": {
+        "label": "Dış Mekan"
+      },
+      "cooling": {
+        "label": "Soğutma"
+      },
+      "heating": {
+        "label": "Isıtma"
+      },
+      "plumbing": {
+        "label": "Tesisat"
+      },
+      "decoration": {
+        "label": "Dekorasyon"
+      },
+      "packaging": {
+        "label": "Ambalaj"
+      },
+      "automotive": {
+        "label": "Otomotiv"
+      },
+      "agriculture": {
+        "label": "Tarım"
+      },
+      "medical": {
+        "label": "Medikal"
+      },
+      "pharmacy": {
+        "label": "Eczane"
+      },
+      "cosmetics": {
+        "label": "Kozmetik"
+      },
+      "food": {
+        "label": "Gıda"
+      },
+      "beverage": {
+        "label": "İçecek"
+      },
+      "cleaning": {
+        "label": "Temizlik"
+      },
+      "education": {
+        "label": "Eğitim"
+      },
+      "finance": {
+        "label": "Finans"
+      },
+      "insurance": {
+        "label": "Sigorta"
+      },
+      "real-estate": {
+        "label": "Gayrimenkul"
+      },
+      "tourism": {
+        "label": "Turizm"
+      },
+      "hospitality": {
+        "label": "Konaklama"
+      },
+      "restaurant": {
+        "label": "Restoran"
+      },
+      "ecommerce": {
+        "label": "E-Ticaret"
+      },
+      "retail": {
+        "label": "Perakende"
+      },
+      "wholesale": {
+        "label": "Toptan"
+      },
+      "manufacturing": {
+        "label": "Üretim"
+      },
+      "mining": {
+        "label": "Madencilik"
+      },
+      "marine": {
+        "label": "Denizcilik"
+      },
+      "aviation": {
+        "label": "Havacılık"
+      },
+      "telecom": {
+        "label": "Telekom"
+      },
+      "software": {
+        "label": "Yazılım"
+      },
+      "data-center": {
+        "label": "Veri Merkezi"
+      },
+      "media": {
+        "label": "Medya"
+      },
+      "printing": {
+        "label": "Matbaa"
+      },
+      "sports": {
+        "label": "Spor"
+      },
+      "baby-kids": {
+        "label": "Bebek & Çocuk"
+      },
+      "pet": {
+        "label": "Evcil Hayvan"
+      },
+      "jewelry": {
+        "label": "Mücevher"
+      },
+      "luxury": {
+        "label": "Lüks"
+      },
+      "stationery": {
+        "label": "Kırtasiye"
+      },
+      "laboratory": {
+        "label": "Laboratuvar"
+      },
+      "recycling": {
+        "label": "Geri Dönüşüm"
+      },
+      "defense": {
+        "label": "Savunma"
+      }
+    },
+    "ruleAttributes": {
+      "groupCode": "Grup Kodu",
+      "groupName": "Grup Adı",
+      "code1": "Kod 1",
+      "code1Name": "Kod 1 Adı",
+      "code2": "Kod 2",
+      "code2Name": "Kod 2 Adı",
+      "code3": "Kod 3",
+      "code3Name": "Kod 3 Adı",
+      "code4": "Kod 4",
+      "code4Name": "Kod 4 Adı",
+      "code5": "Kod 5",
+      "code5Name": "Kod 5 Adı",
+      "manufacturerCode": "Üretici Kodu",
+      "erpStockCode": "ERP Stok Kodu",
+      "stockName": "Stok Adı"
+    },
+    "ruleOperators": {
+      "equals": "Eşittir",
+      "contains": "İçerir",
+      "startsWith": "İle başlar",
+      "endsWith": "İle biter",
+      "inList": "Listede var"
+    },
+    "meta": {
+      "group": "Grup",
+      "code1": "Kod 1",
+      "code2": "Kod 2",
+      "code3": "Kod 3"
+    }
+  }
+}

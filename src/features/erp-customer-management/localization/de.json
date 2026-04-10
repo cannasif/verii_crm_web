@@ -1,0 +1,85 @@
+{
+  "menu": "ERP-Kunde",
+  "description": "Kundenliste aus dem ERP-System",
+  "loading": "Wird geladen...",
+  "noData": "Keine Kunden gefunden",
+  "table": {
+    "title": "Kundenliste",
+    "branchCode": "Niederlassungscode",
+    "businessUnitCode": "Geschäftsbereichscode",
+    "customerCode": "Kundencode",
+    "customerName": "Kundenname",
+    "phone": "Telefon",
+    "city": "Stadt",
+    "district": "Bezirk",
+    "address": "Adresse",
+    "countryCode": "Ländercode",
+    "email": "E-Mail",
+    "website": "Website",
+    "taxNumber": "Steuernummer",
+    "taxOffice": "Finanzamt",
+    "tcknNumber": "TCKN",
+    "visibleColumns": "Sichtbare Spalten",
+    "editColumns": "Spalten bearbeiten"
+  },
+  "filterLabels": {
+    "branchCode": "Niederlassungscode",
+    "customerCode": "Kundencode",
+    "customerName": "Kundenname",
+    "city": "Stadt",
+    "district": "Bezirk",
+    "taxNumber": "Steuernr."
+  },
+  "placeholders": {
+    "quickSearch": "Schnellsuche...",
+    "all": "Alle",
+    "codeExample": "z. B. 120...",
+    "nameExample": "Kundenname...",
+    "cityExample": "Stadt...",
+    "districtExample": "Bezirk...",
+    "taxExample": "Steuer/TCKN..."
+  },
+  "actions": {
+    "detailedFilter": "Detaillierter Filter",
+    "clear": "Leeren",
+    "filter": "Filtern",
+    "all": "ALLE",
+    "active": "AKTIV",
+    "passive": "PASSIV",
+    "apply": "ERGEBNISSE ANZEIGEN"
+  },
+  "details": {
+    "title": "Kundendetails",
+    "addressInfo": "Adressinformationen"
+  },
+  "common": {
+    "close": "Schließen",
+    "selectAll": "Alle auswählen",
+    "ok": "OK",
+    "totalRecords": "Gesamtdatensätze"
+  },
+  "advancedFilter": {
+    "title": "Erweiterter Filter",
+    "add": "Filter hinzufügen",
+    "column": "Spalte",
+    "operator": "Operator",
+    "value": "Wert",
+    "search": "Suchen",
+    "clear": "Leeren",
+    "remove": "Entfernen",
+    "columnCustomerCode": "Kundencode",
+    "columnCustomerName": "Kundenname",
+    "columnBranchCode": "Niederlassungscode",
+    "columnCity": "Stadt",
+    "columnDistrict": "Bezirk",
+    "columnTaxNumber": "Steuernr.",
+    "operatorContains": "Enthält",
+    "operatorStartsWith": "Beginnt mit",
+    "operatorEndsWith": "Endet mit",
+    "operatorEquals": "Ist gleich",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
+  }
+}

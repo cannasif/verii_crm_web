@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { usePdfReportTemplateList } from '@/features/pdf-report-designer/hooks/usePdfReportTemplateList';
-import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
-import { DocumentRuleType, type ReportTemplateGetDto } from '@/features/pdf-report';
+import { useReportTemplateList } from '../hooks/useReportTemplateList';
+import { reportTemplateApi } from '../api/report-template-api';
+import { DocumentRuleType, type ReportTemplateGetDto } from '../types/report-template-types';
 import {
   Select,
   SelectContent,
@@ -41,7 +41,7 @@ export function ReportTemplateTab({
   ruleType,
   builtInTemplates,
 }: ReportTemplateTabProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -49,12 +49,8 @@ export function ReportTemplateTab({
   const pdfBlobUrlRef = useRef<string | null>(null);
   pdfBlobUrlRef.current = pdfBlobUrl;
 
-  const { data: listData, isLoading: isLoadingTemplates } = usePdfReportTemplateList({
-    ruleType,
-    isActive: true,
-    pageSize: 100,
-  });
-  const templates = listData?.items ?? [];
+  const { data: listData = [], isLoading: isLoadingTemplates } = useReportTemplateList();
+  const templates = listData;
   const stableBuiltInTemplates = builtInTemplates ?? EMPTY_BUILT_IN_TEMPLATES;
   const filteredTemplates: ReportTemplateGetDto[] = templates.filter(
     (template) => Number(template.ruleType) === ruleType
@@ -183,8 +179,8 @@ export function ReportTemplateTab({
     setIsGenerating(true);
     setHasPreviewError(false);
 
-    void pdfReportTemplateApi
-      .generateDocument(templateId, entityId)
+    void reportTemplateApi
+      .generatePdf(templateId, entityId)
       .then((blob) => {
         if (cancelled) return;
 

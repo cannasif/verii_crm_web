@@ -9,7 +9,7 @@ export const useCreateQuotationLines = (
   quotationId: number
 ): UseMutationResult<QuotationLineGetDto[], Error, CreateQuotationLineDto[], unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
 
   return useMutation({
     mutationFn: (dtos: CreateQuotationLineDto[]) => quotationApi.createQuotationLines(dtos),

@@ -9,7 +9,7 @@ import type { LoginRequest, Branch } from '../types/auth';
 import { ACCESS_CONTROL_QUERY_KEYS } from '@/features/access-control/utils/query-keys';
 
 export const useLogin = (branches?: Branch[]) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const setAuth = useAuthStore((state) => state.setAuth);

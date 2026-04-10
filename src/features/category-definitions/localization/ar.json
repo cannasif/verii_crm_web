@@ -1,0 +1,423 @@
+{
+  "categoryDefinitions": {
+    "title": "تعريفات الفئات",
+    "description": "ابدأ من هنا بإدارة شجرة الفئات والمخزونات المرتبطة بالفئات لكتالوجات B2B وB2C.",
+    "guidedTitle": "إدارة هيكل الفئات في ثلاث خطوات واضحة",
+    "easyModeTitle": "لا حاجة للتخمين بشأن ما يجب فعله هنا",
+    "summaryGuideTitle": "سأوضح لك الخطوة الصحيحة التالية",
+    "createCatalogTitle": "إنشاء كتالوج جديد",
+    "createCatalogDescription": "أضف تعريف كتالوج جديد لتدفقات B2B أو B2C أو مخصصة.",
+    "editCatalogTitle": "تعديل الكتالوج",
+    "editCatalogDescription": "حدّث اسم الكتالوج المحدد ونوعه وترتيبه.",
+    "createCategoryTitle": "إضافة فئة",
+    "createCategoryDescription": "أنشئ فئة جديدة ضمن {{target}}.",
+    "editCategoryTitle": "تعديل الفئة",
+    "editCategoryDescription": "حدّث تفاصيل الفئة لـ {{target}}.",
+    "createCategoryTarget": "المستوى المستهدف",
+    "deleteCatalogConfirm": "هل أنت متأكد أنك تريد حذف كتالوج {{name}}؟",
+    "deleteCategoryConfirm": "هل أنت متأكد أنك تريد حذف فئة {{name}}؟",
+    "deleteStockConfirm": "هل أنت متأكد أنك تريد إزالة ربط هذا المخزون؟",
+    "createRuleTitle": "إضافة قاعدة",
+    "createRuleDescription": "أنشئ قاعدة مطابقة تلقائية لفئة {{category}}.",
+    "editRuleTitle": "تعديل القاعدة",
+    "editRuleDescription": "حدّث تفاصيل القاعدة لفئة {{category}}.",
+    "deleteRuleConfirm": "هل أنت متأكد أنك تريد حذف قاعدة {{name}}؟",
+    "noRules": "لم تُعرَّف قواعد لهذه الفئة بعد.",
+    "rulePriority": "الأولوية {{priority}}",
+    "catalogsTitle": "الكتالوجات",
+    "catalogsDescription": "اختر أولاً الكتالوج الذي تريد العمل عليه.",
+    "catalogDescriptionFallback": "لم يُدخل وصف لهذا الكتالوج بعد.",
+    "catalogHelperText": "باختصار: اختر كتالوجاً من اليسار، انتقل لأسفل في الشجرة في الوسط، وأدر المخزونات والقواعد من اليمين.",
+    "treeTitle": "شجرة الفئات",
+    "treeDescription": "تنقّل من فئة إلى فئة فرعية بتدفق على غرار Trendyol أو Hepsiburada.",
+    "treeReorderHint": "يمكنك إعادة ترتيب الفئات على نفس المستوى بالسحب والإفلات.",
+    "chooseCatalogFirst": "اختر أولاً كتالوجاً من اليسار. لا تبدأ إدارة الفئات قبل ذلك.",
+    "stocksTitle": "مخزونات الفئة",
+    "stocksDescription": "تُعرض هنا المخزونات المرتبطة بالفئة الورقية المحددة.",
+    "stocksDescriptionSelected": "المخزونات المرتبطة بـ {{category}}",
+    "stocksGuideTitle": "ما غرض هذه المنطقة؟",
+    "stocksGuideDescription": "هنا تحدد أي المنتجات تنتمي إلى الفئة المحددة. يمكنك ربط المخزونات واحداً تلو الآخر عند الحاجة.",
+    "stocksHelperText": "تدفق بسيط: اختر فئة أولاً، ثم انقر «إضافة مخزون»، ثم اختر المنتج من القائمة.",
+    "rulesGuideTitle": "ماذا تفعل شاشة القواعد؟",
+    "rulesGuideDescription": "إذا لم ترد ربط منتجات متشابهة واحداً تلو الآخر، عرّف قاعدة هنا. مثلاً: إذا كان الرمز1 = GLASS، ضعه في هذه الفئة.",
+    "rulesHelperText": "أنشئ القاعدة أولاً. ثم استخدم «معاينة القواعد» لمعرفة النتيجة. إذا بدا صحيحاً، استخدم «تطبيق القواعد» للربط تلقائياً.",
+    "selectionTitle": "حالة التحديد",
+    "selectionDescription": "استخدم اللوحة اليمنى لرؤية الكتالوج المحدد والفئة والمخزونات المرتبطة في لمحة.",
+    "selectionCatalog": "الكتالوج",
+    "selectionCategory": "الفئة المحددة",
+    "selectionCurrentLevel": "المستوى الحالي",
+    "selectionPath": "المسار",
+    "selectionTotalStocks": "المخزونات المرتبطة",
+    "selectionValueEmpty": "لم يُحدد بعد",
+    "nextStepTitle": "الخطوة التالية الموصى بها",
+    "nextStepChooseCatalog": "أولاً، اختر كتالوجاً من اللوحة اليسرى.",
+    "nextStepBrowseTree": "استخدم اللوحة الوسطى للانتقال من الفئات الرئيسية إلى المستويات الأعمق.",
+    "nextStepSelectLeaf": "حدد فئة ورقية لعرض قائمة المخزون.",
+    "nextStepReviewStocks": "راجع المخزونات المرتبطة بالفئة المحددة وتأكد من التطابق.",
+    "stepCatalogTitle": "اختيار الكتالوج",
+    "stepCatalogDescription": "قرّر ما إذا كنت تعمل في كتالوج B2B أو B2C أو مخصص.",
+    "stepTreeTitle": "التنقل في الشجرة",
+    "stepTreeDescription": "تقدّم بالنقر عبر الفئات الرئيسية والفرعية والمستويات الأدنى.",
+    "stepStocksTitle": "مراجعة المخزون",
+    "stepStocksDescription": "عند تحديد فئة ورقية، اعرض المخزونات المرتبطة وتفاصيل رموز ERP في اللوحة اليمنى.",
+    "ready": "جاهز",
+    "pending": "قيد الانتظار",
+    "openBranchAction": "فتح الفئات الفرعية",
+    "selectLeafAction": "تحديد هذه الفئة",
+    "root": "جذر",
+    "leaf": "ورقة",
+    "branch": "فرع",
+    "noCatalogs": "لم يُعرّف أي كتالوج بعد.",
+    "noCategories": "لم تُعثر على فئات في هذا المستوى.",
+    "noStocks": "لا مخزونات مرتبطة بهذه الفئة.",
+    "selectLeafHint": "حدد فئة ورقية لعرض المخزونات المرتبطة.",
+    "stockSearchPlaceholder": "البحث برمز المخزون أو اسمه...",
+    "primaryBadge": "الفئة الأساسية",
+    "tabs": {
+      "summary": "ماذا أفعل؟",
+      "stocks": "إضافة مخزون",
+      "rules": "إضافة قاعدة",
+      "tips": "دليل"
+    },
+    "catalogTypes": {
+      "b2b": "B2B",
+      "b2c": "B2C",
+      "dealer": "موزّع",
+      "custom": "مخصص"
+    },
+    "tips": {
+      "catalogTitle": "1. اختر الكتالوج الصحيح أولاً",
+      "catalogDescription": "حتى لو بدت أسماء الفئات متشابهة، قد يتطلب B2B وB2C هياكل كتالوج مختلفة.",
+      "branchTitle": "2. فئات الفرع للتنقل",
+      "branchDescription": "فئات الفرع ليست نقطة الاختيار النهائية. استخدمها لتوجيه المستخدمين إلى المستوى الأدنى الصحيح.",
+      "leafTitle": "3. تحقق من المخزون على الفئة الورقية",
+      "leafDescription": "تصبح قائمة المخزون المرتبط ذات معنى عند المستوى الورقي، لذا يجب أن تتم المراجعة النهائية هناك."
+    },
+    "actions": {
+      "newCatalog": "كتالوج جديد",
+      "createCatalog": "إنشاء كتالوج",
+      "addRootCategory": "إضافة فئة جذرية",
+      "addSubCategory": "إضافة فئة فرعية",
+      "createCategory": "إنشاء فئة",
+      "uploadCategoryImage": "رفع صورة",
+      "uploadingCategoryImage": "جاري رفع الصورة",
+      "removeCategoryImage": "إزالة الصورة",
+      "addStock": "ربط مخزون",
+      "removeStock": "إزالة الربط",
+      "addRule": "إضافة قاعدة",
+      "createRule": "إنشاء قاعدة",
+      "previewRules": "معاينة القواعد",
+      "previewingRules": "جاري بناء المعاينة",
+      "applyRules": "تطبيق القواعد",
+      "applyingRules": "جاري تطبيق القواعد"
+    },
+    "messages": {
+      "catalogCreateSuccess": "تم إنشاء الكتالوج بنجاح.",
+      "catalogCreateError": "تعذر إنشاء الكتالوج.",
+      "catalogUpdateSuccess": "تم تحديث الكتالوج بنجاح.",
+      "catalogUpdateError": "تعذر تحديث الكتالوج.",
+      "catalogDeleteSuccess": "تم حذف الكتالوج بنجاح.",
+      "catalogDeleteError": "تعذر حذف الكتالوج.",
+      "rootCategoryCreateSuccess": "تم إنشاء الفئة الجذرية بنجاح.",
+      "subCategoryCreateSuccess": "تم إنشاء الفئة الفرعية بنجاح.",
+      "categoryCreateError": "تعذر إنشاء الفئة.",
+      "categoryUpdateSuccess": "تم تحديث الفئة بنجاح.",
+      "categoryUpdateError": "تعذر تحديث الفئة.",
+      "categoryReorderSuccess": "تم تحديث ترتيب الفئات بنجاح.",
+      "categoryReorderError": "تعذر تحديث ترتيب الفئات.",
+      "categoryDeleteSuccess": "تم حذف الفئة بنجاح.",
+      "categoryDeleteError": "تعذر حذف الفئة.",
+      "stockAssignSuccess": "تم ربط المخزون بالفئة بنجاح.",
+      "stockAssignError": "تعذر ربط المخزون بالفئة.",
+      "stockUnassignSuccess": "تمت إزالة ربط المخزون بنجاح.",
+      "stockUnassignError": "تعذرت إزالة ربط المخزون.",
+      "ruleCreateSuccess": "تم إنشاء القاعدة بنجاح.",
+      "ruleCreateError": "تعذر إنشاء القاعدة.",
+      "ruleUpdateSuccess": "تم تحديث القاعدة بنجاح.",
+      "ruleUpdateError": "تعذر تحديث القاعدة.",
+      "ruleDeleteSuccess": "تم حذف القاعدة بنجاح.",
+      "ruleDeleteError": "تعذر حذف القاعدة.",
+      "rulePreviewError": "تعذر تحميل معاينة القواعد.",
+      "ruleApplySuccess": "تم تطبيق القواعد بنجاح.",
+      "ruleApplyError": "تعذر تطبيق القواعد."
+    },
+    "rulePreviewSummaryTitle": "ملخص معاينة القواعد",
+    "rulePreviewSummary": {
+      "matched": "المخزونات التي ستطابق: {{count}}",
+      "created": "الربوط التي ستُنشأ: {{count}}",
+      "updated": "الربوط التي ستُحدَّث: {{count}}",
+      "skipped": "الربوط اليدوية المحفوظة: {{count}}"
+    },
+    "rulePreviewListTitle": "عينات المعاينة",
+    "rulePreviewListEmpty": "لم تُعثر على عينات مطابقة للمعاينة.",
+    "rulePreviewMatchedRule": "القاعدة المطابقة: {{rule}} · الأولوية {{priority}}",
+    "rulePreviewActions": {
+      "create": "ربط جديد",
+      "update": "تم تحديث الربط",
+      "skip": "محفوظ يدوياً"
+    },
+    "ruleApplySummaryTitle": "ملخص تطبيق القواعد",
+    "ruleApplySummary": {
+      "matched": "المخزونات المطابقة: {{count}}",
+      "created": "ربوط جديدة: {{count}}",
+      "updated": "ربوط محدَّثة: {{count}}",
+      "skipped": "الربوط اليدوية المحفوظة: {{count}}"
+    },
+    "form": {
+      "catalogName": "اسم الكتالوج",
+      "catalogNamePlaceholder": "مثال: الكتالوج الرئيسي لـ B2B",
+      "catalogCode": "رمز الكتالوج",
+      "catalogCodePlaceholder": "مثال: B2B_MAIN",
+      "catalogType": "نوع الكتالوج",
+      "branchCode": "رمز الفرع",
+      "branchCodePlaceholder": "اختياري",
+      "sortOrder": "ترتيب الفرز",
+      "description": "الوصف",
+      "descriptionPlaceholder": "اشرح هذا التعريف بإيجاز ليتمكن المديرون الآخرون من فهمه.",
+      "categoryName": "اسم الفئة",
+      "categoryNamePlaceholder": "مثال: أنظمة زجاجية",
+      "categoryCode": "رمز الفئة",
+      "categoryCodePlaceholder": "مثال: GLASS_SYSTEMS",
+      "nodeType": "نوع الفئة",
+      "visualPreset": "السمة المرئية",
+      "visualPresetPlaceholder": "ابحث واختر سمة",
+      "visualPresetSearchPlaceholder": "بحث عن سمة...",
+      "visualPresetEmpty": "لم تُعثر على سمة مطابقة.",
+      "visualPresetHelp": "لا ترفع صورة خارجية هنا. ينشئ النظام مظهر الفئة بناءً على هذا الاختيار.",
+      "categoryImage": "صورة الفئة",
+      "categoryImageHelp": "يمكنك اختيارياً رفع صورة مملوكة للنظام. إن فعلت، تستخدم بطاقة الفئة هذه الصورة بدلاً من أيقونة السمة.",
+      "ruleName": "اسم القاعدة",
+      "ruleCode": "رمز القاعدة",
+      "stockAttribute": "خاصية المخزون",
+      "operator": "المعامل",
+      "ruleValue": "قيمة القاعدة",
+      "ruleValuePlaceholder": "مثال: GLASS أو PROFILE,ACCESSORY",
+      "ruleValueDropdownPlaceholder": "اختر من قيم المخزون الموجودة",
+      "ruleValueSearchPlaceholder": "بحث في تفاصيل ERP...",
+      "ruleValueLoading": "جاري تحميل القيم...",
+      "ruleValueEmpty": "لم تُعثر على قيم مطابقة لهذا الحقل.",
+      "ruleValueDropdownHelp": "يعرض النظام قيماً حقيقية من ERP لحقل المخزون المحدد. الاختيار من هنا أأمن من الكتابة يدوياً.",
+      "ruleValueInListHelp": "مع معامل «في القائمة» يمكنك اختيار عدة قيم. اختر من الأعلى، وانقر على شارة لإزالتها.",
+      "ruleValueInListEmpty": "لم تُضف قيم بعد.",
+      "ruleValueManualHelp": "يعمل هذا المعامل مع نص حر. اكتب النص المطلوب مطابقته لـ «يحتوي» أو «يبدأ بـ» أو «ينتهي بـ».",
+      "ruleValueTopMatchesTitle": "أكثر القيم شيوعاً في النظام",
+      "ruleValueTopMatchesSubtitle": "انقر للاختيار بسرعة",
+      "ruleValueTopMatchesEmpty": "لم تُعثر على قيم مميزة لهذا الحقل.",
+      "priority": "الأولوية"
+    },
+    "visualPreviewTitle": "معاينة الفئة",
+    "visualPreviewFallback": "معاينة الفئة",
+    "visualPresets": {
+      "general": {
+        "label": "عام"
+      },
+      "glass": {
+        "label": "زجاج"
+      },
+      "profile": {
+        "label": "بروفيل"
+      },
+      "accessory": {
+        "label": "إكسسوار"
+      },
+      "service": {
+        "label": "خدمة"
+      },
+      "logistics": {
+        "label": "لوجستيات"
+      },
+      "machinery": {
+        "label": "آلات"
+      },
+      "electronics": {
+        "label": "إلكترونيات"
+      },
+      "security": {
+        "label": "أمن"
+      },
+      "lighting": {
+        "label": "إضاءة"
+      },
+      "construction": {
+        "label": "إنشاءات"
+      },
+      "furniture": {
+        "label": "أثاث"
+      },
+      "hardware": {
+        "label": "عتاد"
+      },
+      "automation": {
+        "label": "أتمتة"
+      },
+      "energy": {
+        "label": "طاقة"
+      },
+      "office": {
+        "label": "مكتب"
+      },
+      "textile": {
+        "label": "نسيج"
+      },
+      "chemical": {
+        "label": "كيماويات"
+      },
+      "outdoor": {
+        "label": "في الهواء الطلق"
+      },
+      "cooling": {
+        "label": "تبريد"
+      },
+      "heating": {
+        "label": "تدفئة"
+      },
+      "plumbing": {
+        "label": "سباكة"
+      },
+      "decoration": {
+        "label": "ديكور"
+      },
+      "packaging": {
+        "label": "تعبئة وتغليف"
+      },
+      "automotive": {
+        "label": "سيارات"
+      },
+      "agriculture": {
+        "label": "زراعة"
+      },
+      "medical": {
+        "label": "طبي"
+      },
+      "pharmacy": {
+        "label": "صيدلة"
+      },
+      "cosmetics": {
+        "label": "مستحضرات تجميل"
+      },
+      "food": {
+        "label": "أغذية"
+      },
+      "beverage": {
+        "label": "مشروبات"
+      },
+      "cleaning": {
+        "label": "تنظيف"
+      },
+      "education": {
+        "label": "تعليم"
+      },
+      "finance": {
+        "label": "مالية"
+      },
+      "insurance": {
+        "label": "تأمين"
+      },
+      "real-estate": {
+        "label": "عقارات"
+      },
+      "tourism": {
+        "label": "سياحة"
+      },
+      "hospitality": {
+        "label": "ضيافة"
+      },
+      "restaurant": {
+        "label": "مطعم"
+      },
+      "ecommerce": {
+        "label": "تجارة إلكترونية"
+      },
+      "retail": {
+        "label": "تجزئة"
+      },
+      "wholesale": {
+        "label": "جملة"
+      },
+      "manufacturing": {
+        "label": "تصنيع"
+      },
+      "mining": {
+        "label": "تعدين"
+      },
+      "marine": {
+        "label": "بحري"
+      },
+      "aviation": {
+        "label": "طيران"
+      },
+      "telecom": {
+        "label": "اتصالات"
+      },
+      "software": {
+        "label": "برمجيات"
+      },
+      "data-center": {
+        "label": "مركز بيانات"
+      },
+      "media": {
+        "label": "إعلام"
+      },
+      "printing": {
+        "label": "طباعة"
+      },
+      "sports": {
+        "label": "رياضة"
+      },
+      "baby-kids": {
+        "label": "أطفال ورضع"
+      },
+      "pet": {
+        "label": "حيوانات أليفة"
+      },
+      "jewelry": {
+        "label": "مجوهرات"
+      },
+      "luxury": {
+        "label": "فاخر"
+      },
+      "stationery": {
+        "label": "قرطاسية"
+      },
+      "laboratory": {
+        "label": "مختبر"
+      },
+      "recycling": {
+        "label": "إعادة تدوير"
+      },
+      "defense": {
+        "label": "دفاع"
+      }
+    },
+    "ruleAttributes": {
+      "groupCode": "رمز المجموعة",
+      "groupName": "اسم المجموعة",
+      "code1": "الرمز 1",
+      "code1Name": "اسم الرمز 1",
+      "code2": "الرمز 2",
+      "code2Name": "اسم الرمز 2",
+      "code3": "الرمز 3",
+      "code3Name": "اسم الرمز 3",
+      "code4": "الرمز 4",
+      "code4Name": "اسم الرمز 4",
+      "code5": "الرمز 5",
+      "code5Name": "اسم الرمز 5",
+      "manufacturerCode": "رمز المصنّع",
+      "erpStockCode": "رمز مخزون ERP",
+      "stockName": "اسم المخزون"
+    },
+    "ruleOperators": {
+      "equals": "يساوي",
+      "contains": "يحتوي على",
+      "startsWith": "يبدأ بـ",
+      "endsWith": "ينتهي بـ",
+      "inList": "في القائمة"
+    },
+    "meta": {
+      "group": "مجموعة",
+      "code1": "الرمز 1",
+      "code2": "الرمز 2",
+      "code3": "الرمز 3"
+    }
+  }
+}

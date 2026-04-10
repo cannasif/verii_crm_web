@@ -1,0 +1,298 @@
+{
+  "loading": "Caricamento...",
+  "saving": "Salvataggio...",
+  "error": "Errore",
+  "noData": "Nessun dato",
+  "previous": "Precedente",
+  "next": "Successivo",
+  "actions": "Azioni",
+  "edit": "Modifica",
+  "delete": "Elimina",
+  "back": "Indietro",
+  "refresh": "Aggiorna",
+  "select": "Seleziona",
+  "yes": "Sì",
+  "add": "Aggiungi",
+  "backToQuotations": "Torna alle richieste",
+  "cancel": "Annulla",
+  "save": "Salva",
+  "confirm": "Conferma",
+  "saveAndApply": "Salva e applica",
+  "list": {
+    "revise": "Revisiona",
+    "showing": "{{from}}-{{to}} / {{total}}",
+    "title": "Richieste",
+    "description": "Visualizza e gestisci le richieste",
+    "detail": "Dettaglio",
+    "createNew": "Nuova richiesta",
+    "searchPlaceholder": "Cerca per n. o cliente...",
+    "cardTitle": "Elenco richieste",
+    "refresh": "Aggiorna",
+    "actions": "Azioni",
+    "id": "ID",
+    "offerNo": "N. richiesta",
+    "revisionNo": "N. revisione",
+    "customer": "Cliente",
+    "customerCode": "Codice cliente",
+    "representative": "Commerciale",
+    "offerDate": "Data",
+    "validUntil": "Valido fino al",
+    "currency": "Valuta",
+    "grandTotal": "Totale",
+    "status": "Stato"
+  },
+  "detail": {
+    "title": "Dettaglio richiesta",
+    "subtitle": "Visualizza e gestisci il dettaglio.",
+    "notFound": "Richiesta non trovata.",
+    "revisionNo": "N. revisione",
+    "tabDetail": "Dettaglio",
+    "tabApprovalFlow": "Flusso di approvazione",
+    "tabReport": "Report"
+  },
+  "create": {
+    "title": "Nuova richiesta",
+    "submit": "Salva e invia in approvazione",
+    "success": "Richiesta creata",
+    "successMessage": "Inviata al flusso di approvazione.",
+    "error": "Impossibile creare",
+    "errorMessage": "Errore durante la creazione.",
+    "subtitle": "Compila i campi e salva.",
+    "deliveryDateRequired": "La data di consegna è obbligatoria.",
+    "paymentTypeRequired": "Il tipo di pagamento è obbligatorio.",
+    "invalidCurrency": "Valuta non valida.",
+    "validationError": "Controlla i campi obbligatori.",
+    "notesMaxLengthError": "Ogni nota può contenere al massimo 400 caratteri."
+  },
+  "header": {
+    "title": "Testata",
+    "customer": "Cliente",
+    "selectCustomer": "Seleziona cliente",
+    "shippingAddress": "Indirizzo di consegna",
+    "selectShippingAddress": "Seleziona indirizzo",
+    "representative": "Commerciale",
+    "selectRepresentative": "Seleziona commerciale",
+    "offerType": "Tipo richiesta",
+    "selectOfferType": "Seleziona tipo",
+    "currency": "Valuta",
+    "selectCurrency": "Seleziona valuta",
+    "showExchangeRates": "Mostra tassi di cambio",
+    "offerDate": "Data richiesta",
+    "deliveryDate": "Data consegna",
+    "paymentType": "Tipo pagamento",
+    "selectPaymentType": "Seleziona pagamento",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "Inserisci descrizione",
+    "offerNo": "N. richiesta",
+    "offerNoPlaceholder": "Numero",
+    "currencyChange": {
+      "title": "Cambio valuta",
+      "message": "Tutte le righe verranno ricalcolate. Continuare?"
+    },
+    "deliveryMethod": "Modalità di consegna",
+    "documentDetail": "Testo documento"
+  },
+  "lines": {
+    "title": "Righe",
+    "add": "Aggiungi riga",
+    "empty": "Nessuna riga",
+    "emptyDescription": "Usa «Seleziona magazzino» o «Aggiungi riga»",
+    "itemCount": "{{count}} righe",
+    "editLine": "Modifica riga",
+    "selectStock": "Seleziona stock",
+    "selectProduct": "Seleziona prodotto",
+    "selectStockFirst": "Stock non selezionato",
+    "stock": "Stock",
+    "productCode": "Codice",
+    "enterProductCode": "Codice o ricerca",
+    "productName": "Nome",
+    "enterProductName": "Nome prodotto",
+    "quantity": "Quantità",
+    "unitPrice": "Prezzo unitario",
+    "discount1": "Sconto 1 %",
+    "discount2": "Sconto 2 %",
+    "discount3": "Sconto 3 %",
+    "discounts": "Sconti",
+    "discountAmount": "Importo sconto",
+    "netPrice": "Prezzo netto",
+    "vatRate": "IVA %",
+    "lineTotal": "Totale riga (IVA incl.)",
+    "calculations": "Calcoli",
+    "required": "Aggiungi almeno una riga",
+    "noProductsFound": "Nessun prodotto",
+    "delete": {
+      "confirmTitle": "Elimina riga",
+      "confirmMessage": "Eliminare questa riga?",
+      "confirmTitleMultiple": "Elimina righe",
+      "confirmMessageMultiple": "Eliminare le righe selezionate?"
+    },
+    "noItems": "Ancora nessuna riga.",
+    "addLine": "Aggiungi riga",
+    "relatedStocks": "Stock collegati",
+    "groupCode": "Codice gruppo",
+    "approvalRequired": "Approvazione richiesta",
+    "requiredFieldsMissing": "Campi obbligatori mancanti sulla riga.",
+    "createSuccess": "Riga aggiunta.",
+    "createError": "Impossibile aggiungere la riga.",
+    "updateSuccess": "Riga aggiornata.",
+    "updateError": "Aggiornamento non riuscito.",
+    "deleteSuccess": "Riga eliminata.",
+    "deleteError": "Eliminazione non riuscita.",
+    "editStockItemDetails": "Modifica dettaglio riga",
+    "description1": "Descrizione 1",
+    "description2": "Descrizione 2",
+    "description3": "Descrizione 3",
+    "descriptionPlaceholder": "Descrizione..."
+  },
+  "exchangeRates": {
+    "title": "Cambi",
+    "currency": "Valuta",
+    "rate": "Tasso",
+    "date": "Data tasso",
+    "isOfficial": "Tasso ufficiale",
+    "official": "Ufficiale",
+    "custom": "Personalizzato",
+    "empty": "Nessun tasso",
+    "status": "Stato",
+    "dialog": {
+      "title": "Cambi",
+      "description": "Visualizza o modifica i tassi. Le modifiche non sono ufficiali.",
+      "subtitle": "Modifica e salva i tassi.",
+      "info": "Aggiornamento manuale oltre il tasso ufficiale."
+    },
+    "updateSuccess": "Tassi aggiornati.",
+    "updateError": "Aggiornamento non riuscito.",
+    "cannotEditUsedCurrency": "Valuta in uso non modificabile.",
+    "zeroRateError": "Inserisci un tasso per continuare."
+  },
+  "summary": {
+    "title": "Riepilogo",
+    "grandTotalAnalysis": "Analisi totale",
+    "subtotal": "Subtotale",
+    "totalVat": "IVA totale",
+    "grandTotal": "Totale generale",
+    "generalDiscount": "Sconto generale",
+    "generalDiscountRate": "% sconto generale",
+    "generalDiscountAmount": "Importo sconto",
+    "generalDiscountHelp": "Applicato sul totale."
+  },
+  "offerType": {
+    "domestic": "Nazionale",
+    "export": "Export"
+  },
+  "wizard": {
+    "title": "Nuova richiesta",
+    "step1": {
+      "title": "Passo 1: Testata",
+      "description": "Testata e tassi di cambio",
+      "validation": {
+        "offerType": "Tipo",
+        "currency": "Valuta",
+        "exchangeRate": "Tasso"
+      },
+      "exchangeRate": {
+        "required": "Per valute diverse da TRY aggiungi almeno un tasso"
+      },
+      "currency": {
+        "try": {
+          "info": "Con TRY non serve tasso aggiuntivo"
+        }
+      }
+    },
+    "step2": {
+      "title": "Passo 2: Righe",
+      "description": "Prodotti e prezzi",
+      "info": "Aggiungi almeno una riga",
+      "validation": {
+        "noLines": "Almeno una riga",
+        "invalidLines": "Tutte le righe devono essere valide",
+        "allValid": "{{count}} righe aggiunte"
+      }
+    },
+    "step3": {
+      "title": "Passo 3: Riepilogo",
+      "description": "Controlla e salva",
+      "header": {
+        "title": "Testata"
+      },
+      "lines": {
+        "title": "Righe"
+      },
+      "summary": {
+        "title": "Riepilogo finale"
+      },
+      "approval": {
+        "info": "Dopo il salvataggio parte l'approvazione"
+      }
+    }
+  },
+  "loadError": "Errore di caricamento.",
+  "backToDemands": "Torna all'elenco",
+  "untitled": "Senza titolo",
+  "sections": {
+    "header": "Testata",
+    "lines": "Righe",
+    "summary": "Riepilogo"
+  },
+  "approval": {
+    "approve": "Approva",
+    "reject": "Rifiuta",
+    "sending": "Invio...",
+    "sendForApproval": "Invia in approvazione",
+    "approveSuccess": "Approvazione riuscita.",
+    "approveError": "Approvazione non riuscita.",
+    "rejectSuccess": "Rifiuto registrato.",
+    "rejectError": "Rifiuto non riuscito.",
+    "startSuccess": "Flusso di approvazione avviato.",
+    "startError": "Impossibile avviare il flusso.",
+    "rejectTitle": "Rifiuta richiesta",
+    "rejectDescription": "Indica il motivo.",
+    "rejectReasonPlaceholder": "Motivo",
+    "statusFilterLabel": "Stato approvazione",
+    "status": {
+      "notRequired": "Non richiesto",
+      "waiting": "In attesa",
+      "approved": "Approvato",
+      "rejected": "Rifiutato",
+      "closed": "Chiuso"
+    }
+  },
+  "approvalFlow": {
+    "noData": "Nessun passaggio di approvazione.",
+    "notStarted": "Non avviato",
+    "stepCompleted": "Passaggio completato",
+    "stepInProgress": "Passaggio in corso",
+    "stepNotStarted": "Passaggio in attesa",
+    "stepRejected": "Passaggio rifiutato",
+    "errorTitle": "Errore"
+  },
+  "update": {
+    "success": "Richiesta aggiornata.",
+    "successMessage": "Modifiche salvate.",
+    "error": "Aggiornamento non riuscito.",
+    "errorMessage": "Errore durante l'aggiornamento.",
+    "invalidCurrency": "Valuta non valida.",
+    "validationError": "Errore di validazione."
+  },
+  "revision": {
+    "success": "Revisione creata.",
+    "error": "Impossibile creare la revisione."
+  },
+  "waitingApprovals": {
+    "title": "Approvazioni in sospeso",
+    "list": "Coda",
+    "noApprovals": "Nessuna in attesa.",
+    "requestId": "N. richiesta",
+    "description": "Descrizione",
+    "stepOrder": "Passaggio",
+    "approvedBy": "Approvato da",
+    "actionDate": "Data",
+    "status": "Stato",
+    "waiting": "In attesa"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "Ogni nota può contenere al massimo 100 caratteri."
+    }
+  }
+}

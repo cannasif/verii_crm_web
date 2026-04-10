@@ -1,0 +1,61 @@
+{
+  "auth": {
+    "login": {
+      "title": "Vendite e gestione clienti",
+      "slogan": "\"Gestisci l'azienda con <1>v3rii</1>, non a caso.\"",
+      "branchPlaceholder": "Seleziona filiale",
+      "emailPlaceholder": "E-mail aziendale",
+      "passwordPlaceholder": "Password",
+      "rememberMe": "Ricordami",
+      "forgotPassword": "Password dimenticata?",
+      "submitButton": "Accedi",
+      "processing": "Elaborazione...",
+      "sessionExpired": "Sessione scaduta. Accedi di nuovo.",
+      "comingSoon": "In arrivo",
+      "loginError": "Si è verificato un errore durante l'accesso.",
+      "capsLockOn": "Blocco Maiusc attivo",
+      "animationOn": "Attiva animazione",
+      "animationOff": "Disattiva animazione"
+    },
+    "forgotPassword": {
+      "title": "Password dimenticata",
+      "description": "Inserisci l'e-mail per reimpostare la password. Ti invieremo un link di reset.",
+      "emailPlaceholder": "Indirizzo e-mail",
+      "submitButton": "Invia richiesta di reimpostazione",
+      "backToLogin": "Torna al login",
+      "processing": "Elaborazione...",
+      "logoAlt": "Logo applicazione"
+    },
+    "resetPassword": {
+      "title": "Reimposta password",
+      "newPasswordPlaceholder": "Nuova password",
+      "confirmPasswordPlaceholder": "Conferma password",
+      "submitButton": "Reimposta password",
+      "processing": "Elaborazione...",
+      "invalidToken": "Token non valido o mancante. Controlla il link di reimpostazione.",
+      "tokenNotFound": "Token non trovato",
+      "successRedirect": "Password reimpostata. Reindirizzamento al login...",
+      "failed": "Impossibile reimpostare la password.",
+      "error": "Errore durante la reimpostazione della password."
+    },
+    "changePassword": {
+      "success": "Password modificata correttamente.",
+      "error": "Impossibile modificare la password."
+    },
+    "validation": {
+      "emailRequired": "L'e-mail è obbligatoria",
+      "emailInvalid": "Inserisci un indirizzo e-mail valido",
+      "passwordRequired": "La password è obbligatoria",
+      "branchRequired": "È obbligatorio selezionare la filiale",
+      "passwordMinLength": "La password deve avere almeno 8 caratteri",
+      "tokenRequired": "Il token è obbligatorio",
+      "newPasswordMinLength": "La password deve avere almeno 6 caratteri",
+      "confirmPasswordRequired": "La conferma della password è obbligatoria",
+      "passwordsMismatch": "Le password non coincidono",
+      "currentPasswordRequired": "La password attuale è obbligatoria",
+      "newPasswordMaxLength": "La nuova password può avere al massimo 100 caratteri",
+      "newPasswordSameAsCurrent": "La nuova password non può coincidere con quella attuale",
+      "requiredFieldsNotFilled": "I campi obbligatori non sono compilati."
+    }
+  }
+}

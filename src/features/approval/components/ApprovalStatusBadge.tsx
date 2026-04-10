@@ -9,7 +9,7 @@ interface ApprovalStatusBadgeProps {
 }
 
 export function ApprovalStatusBadge({ status }: ApprovalStatusBadgeProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['approval', 'common']);
 
   const statusConfig: Record<ApprovalStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; className?: string }> = {
     [ApprovalStatusEnum.NotRequired]: {

@@ -134,7 +134,7 @@ function applyTemplateToFormAndStore(
 }
 
 export function ReportDesignerCreatePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const navigate = useNavigate();
   const { id: idParam } = useParams<{ id: string }>();
   const location = useLocation();

@@ -35,7 +35,7 @@ export function DemandExchangeRateForm({
   exchangeRates,
   setExchangeRates,
 }: DemandExchangeRateFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   const { currencyOptions, isLoading: isCurrencyLoading } = useCurrencyOptions();
   const [newDovizTipi, setNewDovizTipi] = useState<number | ''>('');
   const [newExchangeRate, setNewExchangeRate] = useState('');

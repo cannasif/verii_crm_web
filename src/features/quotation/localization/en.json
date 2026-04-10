@@ -1,0 +1,323 @@
+{
+  "loading": "Loading...",
+  "saving": "Saving...",
+  "error": "Error",
+  "noData": "No data",
+  "previous": "Previous",
+  "next": "Next",
+  "actions": "Actions",
+  "edit": "Edit",
+  "delete": "Delete",
+  "back": "Back",
+  "refresh": "Refresh",
+  "select": "Select",
+  "guide": "Guide",
+  "yes": "Yes",
+  "add": "Add",
+  "backToQuotations": "Back to quotations",
+  "cancel": "Cancel",
+  "save": "Save",
+  "confirm": "Confirm",
+  "saveAndApply": "Save and apply",
+  "loadError": "Something went wrong while loading data.",
+  "list": {
+    "title": "Quotation list",
+    "description": "View and manage quotation records",
+    "detail": "Details",
+    "createNew": "Create quotation",
+    "cardTitle": "Quotation list",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "sendGmail": "Send with Gmail",
+    "sendOutlook": "Send with Outlook",
+    "id": "ID",
+    "offerNo": "Quotation no.",
+    "customer": "Customer",
+    "representative": "Representative",
+    "offerDate": "Quotation date",
+    "currency": "Currency",
+    "grandTotal": "Grand total",
+    "status": "Status",
+    "revise": "Revise",
+    "showing": "Showing {{from}}–{{to}} of {{total}}",
+    "customerCode": "Account code",
+    "validUntil": "Valid until",
+    "revisionNo": "Revision no."
+  },
+  "date": "Date",
+  "offerNo": "Quotation no.",
+  "customerAccount": "Customer account",
+  "export": "Export",
+  "exportPdf": "Export PDF",
+  "shareMail": "Share by email",
+  "shareWhatsapp": "Share via WhatsApp",
+  "detail": {
+    "title": "Quotation details",
+    "subtitle": "View quotation information, approval flow, and reports",
+    "notFound": "Quotation not found",
+    "revisionNo": "Revision no.",
+    "tabDetail": "Details",
+    "tabApprovalFlow": "Approval flow",
+    "tabReport": "Report"
+  },
+  "create": {
+    "title": "Create quotation",
+    "submit": "Save quotation and send for approval",
+    "success": "Quotation created",
+    "successMessage": "The quotation has been sent for approval.",
+    "error": "Could not create quotation",
+    "errorMessage": "Something went wrong while creating the quotation.",
+    "subtitle": "Manage the header, lines, and exchange rates",
+    "invalidCurrency": "Select a valid currency.",
+    "validationError": "Check the required fields."
+  },
+  "header": {
+    "title": "Quotation details",
+    "customer": "Customer",
+    "selectCustomer": "Select customer",
+    "shippingAddress": "Ship-to address",
+    "selectShippingAddress": "Select ship-to address",
+    "representative": "Sales representative",
+    "selectRepresentative": "Select representative",
+    "offerType": "Quotation type",
+    "selectOfferType": "Select quotation type",
+    "currency": "Currency",
+    "selectCurrency": "Select currency",
+    "showExchangeRates": "Show exchange rates",
+    "offerDate": "Quotation date",
+    "deliveryDate": "Delivery date",
+    "paymentType": "Payment type",
+    "selectPaymentType": "Select payment type",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter a description",
+    "projectCode": "Project code",
+    "projectCodePlaceholder": "Enter project code",
+    "offerNo": "Quotation no.",
+    "offerNoPlaceholder": "Quotation number",
+    "currencyChange": {
+      "title": "Change currency",
+      "message": "If you change the currency, all lines will be recalculated. Do you want to continue?"
+    },
+    "deliveryMethod": "Delivery method",
+    "documentDetail": "Document description"
+  },
+  "lines": {
+    "title": "Quotation lines",
+    "addTitle": "Add line",
+    "add": "Add line",
+    "editTitle": "Edit line",
+    "empty": "No lines yet",
+    "noItems": "No lines yet",
+    "emptyDescription": "Use “Select stock” or “Add line” to add rows to the quotation",
+    "itemCount": "{{count}} lines",
+    "editLine": "Edit line",
+    "selectStock": "Select stock",
+    "selectProduct": "Select product",
+    "selectStockFirst": "No stock selected",
+    "stock": "Stock",
+    "productCode": "Stock code",
+    "enterProductCode": "Enter or search by code",
+    "productName": "Stock name",
+    "enterProductName": "Enter stock name",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "unitPrice": "Unit price",
+    "description": "Description",
+    "discount1": "Discount 1 %",
+    "discount2": "Discount 2 %",
+    "discount3": "Discount 3 %",
+    "discounts": "Discounts",
+    "discountAmount": "Discount amount",
+    "netPrice": "Net price",
+    "vatRate": "VAT rate %",
+    "lineTotal": "Line total (incl. VAT)",
+    "total": "Total",
+    "calculations": "Calculations",
+    "required": "Add at least one line",
+    "requiredFieldsMissing": "Fill in the required fields.",
+    "relatedStocks": "Linked stock",
+    "noProductsFound": "No products found",
+    "createSuccess": "Lines added.",
+    "createError": "Lines could not be added.",
+    "updateSuccess": "Lines updated.",
+    "updateError": "Lines could not be updated.",
+    "deleteSuccess": "Line deleted.",
+    "deleteError": "Line could not be deleted.",
+    "delete": {
+      "confirmTitle": "Delete line",
+      "confirmMessage": "Delete this line?",
+      "confirmTitleMultiple": "Delete lines",
+      "confirmMessageMultiple": "Delete the selected lines?"
+    },
+    "discountLimitExceeded": "Discount rates exceed your permitted limits.",
+    "max200Chars": "Up to 200 characters",
+    "approvalRequired": "Approval required",
+    "approvalNeeded": "Approval required",
+    "subtotal": "Subtotal",
+    "grandTotal": "Grand total",
+    "currencyTry": "TL",
+    "totalDiscount": "Total discount",
+    "vatAmount": "VAT amount"
+  },
+  "exchangeRates": {
+    "title": "Exchange rates",
+    "currency": "Currency",
+    "rate": "Rate",
+    "date": "Rate date",
+    "isOfficial": "Official rate",
+    "official": "Official",
+    "custom": "Custom",
+    "empty": "No rates found",
+    "status": "Status",
+    "updateSuccess": "Exchange rates updated.",
+    "updateError": "Exchange rates could not be updated.",
+    "cannotEditUsedCurrency": "You cannot change the rate for a currency that is already in use.",
+    "zeroRateError": "Enter an exchange rate to continue.",
+    "dialog": {
+      "title": "Exchange rates",
+      "description": "View rates and edit them if needed. Edited rates will not be marked as official.",
+      "subtitle": "Check the rates used on this quotation",
+      "info": "Rate changes affect line calculations."
+    }
+  },
+  "approval": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "sending": "Sending...",
+    "sendForApproval": "Send for approval",
+    "approveSuccess": "Quotation approved.",
+    "approveError": "Quotation could not be approved.",
+    "rejectSuccess": "Quotation rejected.",
+    "rejectError": "Quotation could not be rejected.",
+    "startSuccess": "Approval process started.",
+    "startError": "Approval process could not be started.",
+    "rejectTitle": "Reject quotation",
+    "rejectDescription": "Enter a reason for rejecting this quotation.",
+    "rejectReasonPlaceholder": "Reason",
+    "statusFilterLabel": "Approval status",
+    "status": {
+      "notRequired": "Not required",
+      "waiting": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "closed": "Closed"
+    }
+  },
+  "approvalFlow": {
+    "loading": "Loading approval flow...",
+    "noData": "No approval flow record",
+    "notStarted": "Approval has not started yet",
+    "stepCompleted": "Completed",
+    "stepInProgress": "In progress",
+    "stepNotStarted": "Not started",
+    "stepRejected": "Rejected"
+  },
+  "notes": {
+    "title": "Quotation notes",
+    "description": "Add and edit internal notes for this quotation.",
+    "placeholder": "Enter a note",
+    "saving": "Saving notes...",
+    "noteLabel": "Note",
+    "saved": "Notes saved.",
+    "saveError": "Notes could not be saved.",
+    "maxLengthError": "Each note can be at most 1,000 characters.",
+    "maxCountError": "You can add at most 10 notes."
+  },
+  "summary": {
+    "title": "Summary",
+    "grandTotalAnalysis": "Grand total breakdown",
+    "subtotal": "Subtotal",
+    "totalVat": "Total VAT",
+    "grandTotal": "Grand total",
+    "generalDiscount": "Overall discount",
+    "generalDiscountRate": "Overall discount %",
+    "generalDiscountAmount": "Overall discount amount",
+    "generalDiscountHelp": "Lump-sum discount applied to the quotation total after line totals."
+  },
+  "sections": {
+    "header": "Header",
+    "lines": "Lines",
+    "summary": "Summary"
+  },
+  "share": {
+    "downloaded": "File downloaded.",
+    "mailSubject": "Quotation",
+    "mailBody": "Please review the quotation details.",
+    "whatsappMessage": "Sharing the quotation details with you."
+  },
+  "revision": {
+    "success": "Revision created.",
+    "error": "Revision could not be created."
+  },
+  "update": {
+    "saveButton": "Save changes",
+    "success": "Quotation updated.",
+    "successMessage": "Quotation saved.",
+    "error": "Quotation could not be updated.",
+    "errorMessage": "Something went wrong while updating the quotation.",
+    "invalidCurrency": "Select a valid currency.",
+    "validationError": "Check the required fields."
+  },
+  "waitingApprovals": {
+    "title": "Quotations awaiting approval",
+    "description": "Quotations that are waiting for approval.",
+    "list": "Pending approvals",
+    "waiting": "Pending",
+    "noApprovals": "No pending approvals.",
+    "requestId": "Request no.",
+    "status": "Status",
+    "stepOrder": "Step",
+    "approvedBy": "Approved by",
+    "actionDate": "Action date"
+  },
+  "offerType": {
+    "domestic": "Domestic",
+    "export": "Export"
+  },
+  "wizard": {
+    "title": "Create quotation",
+    "step1": {
+      "title": "Step 1: Quotation details",
+      "description": "Enter the header and exchange rates",
+      "validation": {
+        "offerType": "Quotation type",
+        "currency": "Currency",
+        "exchangeRate": "Exchange rate"
+      },
+      "exchangeRate": {
+        "required": "Add at least one rate for currencies other than TRY"
+      },
+      "currency": {
+        "try": {
+          "info": "No exchange rate is required when TRY is selected"
+        }
+      }
+    },
+    "step2": {
+      "title": "Step 2: Lines",
+      "description": "Add products and prices",
+      "info": "Add at least one line",
+      "validation": {
+        "noLines": "Add at least one line",
+        "invalidLines": "Every line must be complete and valid",
+        "allValid": "{{count}} lines added"
+      }
+    },
+    "step3": {
+      "title": "Step 3: Summary and approval",
+      "description": "Review and save",
+      "header": {
+        "title": "Quotation details"
+      },
+      "lines": {
+        "title": "Quotation lines"
+      },
+      "summary": {
+        "title": "Summary"
+      },
+      "approval": {
+        "info": "After save, the quotation is sent for approval automatically"
+      }
+    }
+  }
+}

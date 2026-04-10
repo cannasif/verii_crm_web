@@ -1,0 +1,132 @@
+{
+  "help": {
+    "permissionDefinition": {
+      "code": "Rota ve sayfa koruyucuları tarafından kullanılan benzersiz anahtar. Kararlı snake_case veya nokta notasyonu tercih edin.",
+      "name": "İzinleri yönetirken yöneticilere gösterilen görünen ad.",
+      "description": "Bu izin için isteğe bağlı dahili açıklama.",
+      "isActive": "Pasif izinler kullanıcı erişimi hesaplanırken dikkate alınmaz.",
+      "save": "Değişiklikler rol ve grup yetkilendirme akışlarını etkiler."
+    },
+    "permissionGroup": {
+      "name": "Kullanıcılara atarken tanımlama için grup adı.",
+      "isSystemAdmin": "Bu grubun üyeleri bireysel izin kontrolleri olmadan tüm sayfalara ve işlemlere erişebilir.",
+      "isActive": "Pasif gruplar yeni erişim kararları için atanmamalıdır.",
+      "permissions": "Seçilen izinler bu grubun üyelerinin neye erişebileceğini belirler.",
+      "save": "Bu gruba atanan tüm kullanıcılar için geçerli erişimi günceller."
+    },
+    "userAssignment": {
+      "user": "Erişim kapsamını yönetmek istediğiniz kullanıcıyı seçin.",
+      "groups": "Kullanıcı seçilen tüm gruplardan birleşik izinleri alır.",
+      "save": "Atamalar bir sonraki yetkilendirme kontrolleri için hemen uygulanır. Kullanıcılar oturumlarını yenileyebilir.",
+      "systemAdminNote": "Kullanıcının sistem yöneticisi grubu varsa, ayrıntılı izinler atlanır."
+    }
+  },
+  "permissionDefinitions": {
+    "title": "İzin Tanımları",
+    "description": "Sistemde kullanılan izin kodlarını yönetin",
+    "add": "Tanım Ekle",
+    "form": {
+      "editTitle": "İzin Tanımını Düzenle",
+      "addTitle": "İzin Tanımı Ekle",
+      "editDescription": "İzin tanımı bilgilerini güncelleyin",
+      "addDescription": "Yeni bir izin tanımı oluşturun",
+      "code": "Kod",
+      "codePlaceholder": "Kod seçin",
+      "affectedRoutes": "Etkilenen sayfalar",
+      "affectedRoutesNone": "Bu kod için eşleşen rota bulunamadı",
+      "name": "Ad",
+      "namePlaceholder": "Görünen ad",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "İsteğe bağlı açıklama",
+      "isActive": "Aktif",
+      "codeSearchPlaceholder": "Ara...",
+      "codeEmpty": "Sonuç bulunamadı"
+    },
+    "table": {
+      "title": "İzin Tanımları",
+      "code": "Kod",
+      "name": "Ad",
+      "isActive": "Aktif",
+      "updatedDate": "Güncellenen",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "delete": {
+      "confirmTitle": "İzin Tanımını Sil",
+      "confirmMessage": "\"{{name}}\" silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+    },
+    "syncFromRoutes": "Rotalardan senkronize et"
+  },
+  "permissionGroups": {
+    "title": "İzin Grupları",
+    "description": "İzin gruplarını ve atamalarını yönetin",
+    "systemAdminLocked": "Sistem Admin grubu değiştirilemez",
+    "add": "Grup Ekle",
+    "selectAll": "Tümünü seç",
+    "noDefinitions": "Kullanılabilir izin tanımı yok",
+    "form": {
+      "editTitle": "İzin Grubunu Düzenle",
+      "addTitle": "İzin Grubu Ekle",
+      "editDescription": "İzin grubu bilgilerini güncelleyin",
+      "addDescription": "Yeni bir izin grubu oluşturun",
+      "name": "Ad",
+      "namePlaceholder": "Grup adı",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "İsteğe bağlı açıklama",
+      "isSystemAdmin": "Sistem Yöneticisi",
+      "isActive": "Aktif",
+      "permissions": "İzinler"
+    },
+    "table": {
+      "title": "İzin Grupları",
+      "name": "Ad",
+      "isSystemAdmin": "Sistem Yöneticisi",
+      "isActive": "Aktif",
+      "permissionCount": "İzinler",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "managePermissions": "İzinleri yönet",
+    "permissionsPanel": {
+      "title": "Grup İzinlerini Düzenle",
+      "description": "Bu grup için izinleri seçin",
+      "currentCodes": "Mevcut izin kodları"
+    },
+    "delete": {
+      "confirmTitle": "İzin Grubunu Sil",
+      "confirmMessage": "\"{{name}}\" silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+    },
+    "search": "Ara..."
+  },
+  "userGroupAssignments": {
+    "title": "Kullanıcı Grup Atamaları",
+    "description": "Kullanıcılara izin grupları atayın",
+    "selectUser": "Kullanıcı Seç",
+    "selectUserPlaceholder": "Ara ve kullanıcı seç...",
+    "selectUserHint": "İzin grubu atamalarını yönetmek için bir kullanıcı seçin",
+    "assignedGroups": "Atanan İzin Grupları",
+    "noUsers": "Kullanıcı bulunamadı",
+    "noGroups": "Kullanılabilir izin grubu yok",
+    "selectAll": "Tümünü seç"
+  },
+  "common": {
+    "cancel": "Vazgeç",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet ve Uygula",
+    "loading": "Yükleniyor...",
+    "search": "Ara...",
+    "noData": "Veri yok",
+    "actions": "İşlemler",
+    "yes": "Evet",
+    "no": "Hayır",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "processing": "İşleniyor..."
+  },
+  "sidebar": {
+    "accessControl": "Erişim Kontrolü",
+    "permissionDefinitions": "İzin Tanımları",
+    "permissionGroups": "İzin Grupları",
+    "userGroupAssignments": "Kullanıcı Grup Atamaları"
+  }
+}

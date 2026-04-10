@@ -114,7 +114,7 @@ function Section({
 }
 
 function TextPropertiesPanel(): ReactElement | null {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const elements = useReportStore((s) => s.elements);
   const selectedElementId = useReportStore((s) => s.selectedElementId);
   const updateReportElement = useReportStore((s) => s.updateReportElement);
@@ -211,7 +211,7 @@ function TextPropertiesPanel(): ReactElement | null {
 }
 
 function FieldPropertiesPanel(): ReactElement | null {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const elements = useReportStore((s) => s.elements);
   const selectedElementId = useReportStore((s) => s.selectedElementId);
   const updateReportElement = useReportStore((s) => s.updateReportElement);
@@ -311,7 +311,7 @@ const REPORT_IMAGE_INPUT_ID = 'report-designer-image-upload';
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 
 function ImagePropertiesPanel(): ReactElement | null {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const elements = useReportStore((s) => s.elements);
   const selectedElementId = useReportStore((s) => s.selectedElementId);
   const updateReportElement = useReportStore((s) => s.updateReportElement);
@@ -395,7 +395,7 @@ function ImagePropertiesPanel(): ReactElement | null {
 }
 
 export function Sidebar({ headerFields, lineFields, exchangeRateFields }: SidebarProps = {}): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const fieldsItems = headerFields ?? FIELDS;
   const tableColumnsItems = lineFields ?? TABLE_COLUMNS;
   const exchangeRateColumnsItems = exchangeRateFields ?? [];

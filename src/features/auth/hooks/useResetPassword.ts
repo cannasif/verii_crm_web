@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 export const useResetPassword = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['auth', 'common']);
 
   return useMutation({
     mutationFn: (data: { token: string; newPassword: string }) =>

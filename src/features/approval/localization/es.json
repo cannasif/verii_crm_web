@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "Aprobaciones pendientes",
+    "description": "Vea y apruebe o rechace las ofertas asignadas a usted",
+    "empty": "No hay aprobaciones pendientes",
+    "error": "Se produjo un error al cargar las aprobaciones"
+  },
+  "yes": "Sí",
+  "no": "No",
+  "processing": "Procesando...",
+  "detail": {
+    "title": "Detalle de la oferta",
+    "subtitle": "Vea el detalle de la oferta y realice acciones",
+    "tabs": {
+      "detail": "Detalle",
+      "history": "Historial",
+      "action": "Acción"
+    },
+    "notFound": "Oferta no encontrada",
+    "quotationInfo": "Información de la oferta",
+    "offerNo": "N.º de oferta",
+    "customer": "Cliente",
+    "representative": "Representante",
+    "currency": "Moneda",
+    "offerDate": "Fecha de oferta",
+    "deliveryDate": "Fecha de entrega",
+    "total": "Total",
+    "grandTotal": "Total general",
+    "description": "Descripción",
+    "lines": "Líneas de la oferta",
+    "productCode": "Código de producto",
+    "productName": "Nombre del producto",
+    "quantity": "Cantidad",
+    "unitPrice": "Precio unitario",
+    "lineTotal": "Total de línea",
+    "lineGrandTotal": "Total general de línea",
+    "exchangeRates": "Tipos de cambio",
+    "exchangeRate": "Tipo",
+    "exchangeRateDate": "Fecha del tipo",
+    "isOfficial": "Tipo oficial"
+  },
+  "actions": {
+    "view": "Ver",
+    "approve": "Aprobar",
+    "reject": "Rechazar"
+  },
+  "status": {
+    "notRequired": "No requerido",
+    "waiting": "En espera",
+    "approved": "Aprobado",
+    "rejected": "Rechazado",
+    "closed": "Cerrado"
+  },
+  "closedReason": "Este registro se cerró porque otro registro con el mismo número de oferta fue aprobado.",
+  "statusFilterLabel": "Estado de aprobación",
+  "level": {
+    "salesManager": "Director comercial",
+    "regionalManager": "Director regional",
+    "finance": "Finanzas",
+    "generalManager": "Director general",
+    "unknown": "Desconocido"
+  },
+  "note": {
+    "label": "Nota",
+    "placeholder": "Puede añadir una nota de aprobación/rechazo (opcional)",
+    "maxLength": "La nota puede tener como máximo 500 caracteres"
+  },
+  "approve": {
+    "success": "Aprobado",
+    "successMessage": "Oferta aprobada correctamente",
+    "error": "Error de aprobación",
+    "errorMessage": "Se produjo un error al aprobar la oferta"
+  },
+  "reject": {
+    "success": "Rechazado",
+    "successMessage": "Oferta rechazada",
+    "error": "Error de rechazo",
+    "errorMessage": "Se produjo un error al rechazar la oferta"
+  },
+  "history": {
+    "empty": "Sin historial de aprobación",
+    "approvedBy": "Aprobado por"
+  },
+  "assignedTo": "Usuario asignado"
+}

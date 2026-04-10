@@ -9,7 +9,7 @@ export const useCreateDemandLines = (
   demandId: number
 ): UseMutationResult<DemandLineGetDto[], Error, CreateDemandLineDto[], unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
 
   return useMutation({
     mutationFn: (dtos: CreateDemandLineDto[]) => demandApi.createDemandLines(dtos),

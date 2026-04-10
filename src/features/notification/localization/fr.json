@@ -1,0 +1,10 @@
+{
+  "title": "Notifications",
+  "notifications": "Notifications",
+  "new": "nouveau",
+  "loading": "Chargement...",
+  "noNotifications": "Aucune notification",
+  "markAllAsRead": "Tout marquer comme lu",
+  "close": "Fermer",
+  "unread": "Non lu"
+}

@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "الموافقات المعلقة",
+    "description": "اعرض ووافق أو ارفض العروض المعينة لك",
+    "empty": "لا توجد موافقات معلقة",
+    "error": "حدث خطأ أثناء تحميل الموافقات"
+  },
+  "yes": "نعم",
+  "no": "لا",
+  "processing": "جاري المعالجة...",
+  "detail": {
+    "title": "تفاصيل العرض",
+    "subtitle": "اعرض تفاصيل العرض واتخذ الإجراء",
+    "tabs": {
+      "detail": "التفاصيل",
+      "history": "السجل",
+      "action": "الإجراء"
+    },
+    "notFound": "العرض غير موجود",
+    "quotationInfo": "معلومات العرض",
+    "offerNo": "رقم العرض",
+    "customer": "العميل",
+    "representative": "المندوب",
+    "currency": "العملة",
+    "offerDate": "تاريخ العرض",
+    "deliveryDate": "تاريخ التسليم",
+    "total": "الإجمالي",
+    "grandTotal": "الإجمالي الكلي",
+    "description": "الوصف",
+    "lines": "بنود العرض",
+    "productCode": "رمز المنتج",
+    "productName": "اسم المنتج",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "lineTotal": "إجمالي السطر",
+    "lineGrandTotal": "الإجمالي الكلي للسطر",
+    "exchangeRates": "أسعار الصرف",
+    "exchangeRate": "السعر",
+    "exchangeRateDate": "تاريخ السعر",
+    "isOfficial": "سعر رسمي"
+  },
+  "actions": {
+    "view": "عرض",
+    "approve": "موافقة",
+    "reject": "رفض"
+  },
+  "status": {
+    "notRequired": "غير مطلوب",
+    "waiting": "قيد الانتظار",
+    "approved": "تمت الموافقة",
+    "rejected": "مرفوض",
+    "closed": "مغلق"
+  },
+  "closedReason": "أُغلق هذا السجل لأنه تمت الموافقة على سجل آخر بنفس رقم العرض.",
+  "statusFilterLabel": "حالة الموافقة",
+  "level": {
+    "salesManager": "مدير المبيعات",
+    "regionalManager": "المدير الإقليمي",
+    "finance": "المالية",
+    "generalManager": "المدير العام",
+    "unknown": "غير معروف"
+  },
+  "note": {
+    "label": "ملاحظة",
+    "placeholder": "يمكنك إضافة ملاحظة موافقة/رفض (اختياري)",
+    "maxLength": "يجب ألا تتجاوز الملاحظة 500 حرف"
+  },
+  "approve": {
+    "success": "تمت الموافقة",
+    "successMessage": "تمت الموافقة على العرض بنجاح",
+    "error": "خطأ في الموافقة",
+    "errorMessage": "حدث خطأ أثناء الموافقة على العرض"
+  },
+  "reject": {
+    "success": "مرفوض",
+    "successMessage": "تم رفض العرض",
+    "error": "خطأ في الرفض",
+    "errorMessage": "حدث خطأ أثناء رفض العرض"
+  },
+  "history": {
+    "empty": "لا يوجد سجل موافقات",
+    "approvedBy": "وافق عليه"
+  },
+  "assignedTo": "المستخدم المعين"
+}

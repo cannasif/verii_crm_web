@@ -24,7 +24,7 @@ interface StockImageListProps {
 }
 
 export function StockImageList({ stockId }: StockImageListProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const { data: images, isLoading, isFetching } = useStockImages(stockId);
   const deleteImage = useStockImageDelete();
   const setPrimary = useStockImageSetPrimary();

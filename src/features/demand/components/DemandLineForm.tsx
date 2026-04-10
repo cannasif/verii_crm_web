@@ -11,6 +11,7 @@ import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
+import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { formatCurrency } from '../utils/format-currency';
@@ -24,6 +25,7 @@ import {
   Info,
   Layers,
   Search,
+  LayoutGrid,
   Coins,
   BadgePercent,
   AlertTriangle,
@@ -104,9 +106,10 @@ export function DemandLineForm({
   onSaveMultiple,
   isSaving = false,
 }: DemandLineFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   const { calculateLineTotals } = useDemandCalculations();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
@@ -630,19 +633,19 @@ export function DemandLineForm({
     }
 
     if (!collectedLines.length) return;
-    if (bulkDraftLines.length === 0) {
-      const firstLine = collectedLines[0];
-      if (firstLine) {
-        setFormData(firstLine);
-        setQuantityInputValue(String(firstLine.quantity || ''));
-        setVatRateInputValue(String(firstLine.vatRate || ''));
-        setDiscountRate1InputValue(String(firstLine.discountRate1 || ''));
-        setDiscountRate2InputValue(String(firstLine.discountRate2 || ''));
-        setDiscountRate3InputValue(String(firstLine.discountRate3 || ''));
-        setActiveBulkIndex(0);
-      }
+
+    const firstLine = collectedLines[0];
+    if (firstLine) {
+      setFormData(firstLine);
+      setQuantityInputValue(String(firstLine.quantity || ''));
+      setVatRateInputValue(String(firstLine.vatRate || ''));
+      setDiscountRate1InputValue(String(firstLine.discountRate1 || ''));
+      setDiscountRate2InputValue(String(firstLine.discountRate2 || ''));
+      setDiscountRate3InputValue(String(firstLine.discountRate3 || ''));
+      setActiveBulkIndex(0);
     }
-    setBulkDraftLines((prev) => [...prev, ...collectedLines]);
+
+    setBulkDraftLines(collectedLines);
   };
 
   const handleBulkDraftConfirm = (): void => {
@@ -903,6 +906,15 @@ export function DemandLineForm({
               className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center justify-center"
             >
               <Search className="h-5 w-5" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCatalogDialogOpen(true)}
+              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center gap-2"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              <span className="text-xs font-medium">{t('catalogStockPicker.openButton')}</span>
             </Button>
             <Button
               type="button"
@@ -1363,6 +1375,20 @@ export function DemandLineForm({
       <ProductSelectDialog
         open={productDialogOpen}
         onOpenChange={setProductDialogOpen}
+        onSelect={handleProductSelect}
+        multiSelect
+        onMultiSelect={handleMultiProductSelect}
+        initialSelectedResults={bulkDraftLines.map((lineItem) => ({
+          code: lineItem.productCode || '',
+          name: lineItem.productName || '',
+          unit: lineItem.unit ?? undefined,
+          groupCode: lineItem.groupCode || undefined,
+        }))}
+      />
+
+      <CatalogStockSelectDialog
+        open={catalogDialogOpen}
+        onOpenChange={setCatalogDialogOpen}
         onSelect={handleProductSelect}
         multiSelect
         onMultiSelect={handleMultiProductSelect}

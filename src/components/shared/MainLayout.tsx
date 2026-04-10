@@ -34,7 +34,7 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'report-designer']);
   const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
   const canManageIntegrationAuth =
     permissions?.isSystemAdmin === true ||
@@ -139,8 +139,8 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           {
             title: t('sidebar.pdfBuilder'),
             children: [
-              { title: t('pdfReportDesigner.list'), href: '/report-designer' },
-              { title: t('pdfReportDesigner.create'), href: '/report-designer/create' },
+              { title: t('pdfReportDesigner.list'), href: '/pdf-report-designer' },
+              { title: t('pdfReportDesigner.create'), href: '/pdf-report-designer/create' },
             ],
           },
         ],
@@ -159,18 +159,39 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         title: t('sidebar.definitions'),
         icon: <SlidersHorizontalIcon size={iconSize} className="text-slate-500" />,
         children: [
-          { title: t('sidebar.countryManagement'), href: '/country-management' },
-          { title: t('sidebar.cityManagement'), href: '/city-management' },
-          { title: t('sidebar.districtManagement'), href: '/district-management' },
-          { title: t('sidebar.shippingAddressManagement'), href: '/shipping-address-management' },
-          { title: t('sidebar.titleManagement'), href: '/title-management' },
-          { title: t('sidebar.paymentTypeManagement'), href: '/payment-type-management' },
-          { title: t('sidebar.activityMeetingTypeManagement'), href: '/definitions/activity-meeting-type-management' },
-          { title: t('sidebar.activityTopicPurposeManagement'), href: '/definitions/activity-topic-purpose-management' },
-          { title: t('sidebar.activityShippingManagement'), href: '/definitions/activity-shipping-management' },
-          { title: t('sidebar.documentSerialTypeManagement'), href: '/document-serial-type-management' },
-          { title: t('sidebar.salesTypeManagement'), href: '/definitions/sales-type-management' },
-          { title: t('sidebar.userDiscountLimitManagement'), href: '/user-discount-limit-management' },
+          {
+            title: t('sidebar.customerDefinitions'),
+            children: [
+              { title: t('sidebar.countryManagement'), href: '/country-management' },
+              { title: t('sidebar.cityManagement'), href: '/city-management' },
+              { title: t('sidebar.districtManagement'), href: '/district-management' },
+              { title: t('sidebar.shippingAddressManagement'), href: '/shipping-address-management' },
+              { title: t('sidebar.titleManagement'), href: '/title-management' },
+            ],
+          },
+          {
+            title: t('sidebar.activityDefinitions'),
+            children: [
+              { title: t('sidebar.activityMeetingTypeManagement'), href: '/definitions/activity-meeting-type-management' },
+              { title: t('sidebar.activityTopicPurposeManagement'), href: '/definitions/activity-topic-purpose-management' },
+              { title: t('sidebar.activityShippingManagement'), href: '/definitions/activity-shipping-management' },
+            ],
+          },
+          {
+            title: t('sidebar.commercialDefinitions'),
+            children: [
+              { title: t('sidebar.paymentTypeManagement'), href: '/payment-type-management' },
+              { title: t('sidebar.documentSerialTypeManagement'), href: '/document-serial-type-management' },
+              { title: t('sidebar.salesTypeManagement'), href: '/definitions/sales-type-management' },
+              { title: t('sidebar.userDiscountLimitManagement'), href: '/user-discount-limit-management' },
+            ],
+          },
+          {
+            title: t('sidebar.productDefinitions'),
+            children: [
+              { title: t('sidebar.categoryDefinitions'), href: '/definitions/category-definitions' },
+            ],
+          },
         ],
       },
       {

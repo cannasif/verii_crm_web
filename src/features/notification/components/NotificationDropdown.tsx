@@ -19,7 +19,7 @@ interface NotificationDropdownProps {
 }
 
 export function NotificationDropdown({ children }: NotificationDropdownProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['notification', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);

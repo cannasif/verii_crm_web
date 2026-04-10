@@ -1,0 +1,61 @@
+{
+  "auth": {
+    "login": {
+      "title": "Ventas y gestión de clientes",
+      "slogan": "\"Gestione su negocio con <1>v3rii</1>, no a ciegas.\"",
+      "branchPlaceholder": "Seleccione sucursal",
+      "emailPlaceholder": "Correo corporativo",
+      "passwordPlaceholder": "Contraseña",
+      "rememberMe": "Recordarme",
+      "forgotPassword": "¿Ha olvidado la contraseña?",
+      "submitButton": "Iniciar sesión",
+      "processing": "Procesando...",
+      "sessionExpired": "Su sesión ha caducado. Vuelva a iniciar sesión.",
+      "comingSoon": "Próximamente",
+      "loginError": "Se produjo un error al iniciar sesión.",
+      "capsLockOn": "Bloq Mayús activado",
+      "animationOn": "Activar animación",
+      "animationOff": "Desactivar animación"
+    },
+    "forgotPassword": {
+      "title": "Contraseña olvidada",
+      "description": "Introduzca su correo electrónico para restablecer la contraseña. Le enviaremos un enlace de restablecimiento.",
+      "emailPlaceholder": "Correo electrónico",
+      "submitButton": "Enviar solicitud de restablecimiento",
+      "backToLogin": "Volver al inicio de sesión",
+      "processing": "Procesando...",
+      "logoAlt": "Logotipo de la aplicación"
+    },
+    "resetPassword": {
+      "title": "Restablecer contraseña",
+      "newPasswordPlaceholder": "Nueva contraseña",
+      "confirmPasswordPlaceholder": "Confirmar contraseña",
+      "submitButton": "Restablecer contraseña",
+      "processing": "Procesando...",
+      "invalidToken": "Token no válido o ausente. Compruebe el enlace de restablecimiento.",
+      "tokenNotFound": "Token no encontrado",
+      "successRedirect": "Su contraseña se ha restablecido. Redirigiendo al inicio de sesión...",
+      "failed": "No se pudo restablecer la contraseña.",
+      "error": "Se produjo un error al restablecer la contraseña."
+    },
+    "changePassword": {
+      "success": "Contraseña cambiada correctamente.",
+      "error": "No se pudo cambiar la contraseña."
+    },
+    "validation": {
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Introduzca una dirección de correo válida",
+      "passwordRequired": "La contraseña es obligatoria",
+      "branchRequired": "Debe seleccionar una sucursal",
+      "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+      "tokenRequired": "El token es obligatorio",
+      "newPasswordMinLength": "La contraseña debe tener al menos 6 caracteres",
+      "confirmPasswordRequired": "La confirmación de contraseña es obligatoria",
+      "passwordsMismatch": "Las contraseñas no coinciden",
+      "currentPasswordRequired": "La contraseña actual es obligatoria",
+      "newPasswordMaxLength": "La nueva contraseña puede tener como máximo 100 caracteres",
+      "newPasswordSameAsCurrent": "La nueva contraseña no puede ser igual a la actual",
+      "requiredFieldsNotFilled": "Faltan campos obligatorios."
+    }
+  }
+}

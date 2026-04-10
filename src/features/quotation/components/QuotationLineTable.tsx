@@ -184,7 +184,7 @@ export function QuotationLineTable({
   customerName,
 }: QuotationLineTableProps): ReactElement {
   const linesEditable = enabled;
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);

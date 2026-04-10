@@ -1,0 +1,14 @@
+{
+  "powerbiViewer": {
+    "invalidId": "Invalid report",
+    "backToList": "Back to list",
+    "loadError": "Report could not be loaded",
+    "loadingReport": "Loading report...",
+    "listTitle": "Power BI reports",
+    "listDescription": "Click a report to view it",
+    "name": "Name",
+    "description": "Description",
+    "isActive": "Status",
+    "view": "View"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "menu": "ERP Müşteri",
+  "description": "ERP sisteminden gelen müşteri listesi",
+  "loading": "Yükleniyor...",
+  "noData": "Müşteri bulunamadı",
+  "table": {
+    "title": "Müşteri Listesi",
+    "branchCode": "Şube Kodu",
+    "businessUnitCode": "İş Birimi Kodu",
+    "customerCode": "Müşteri Kodu",
+    "customerName": "Müşteri Adı",
+    "phone": "Telefon",
+    "city": "Şehir",
+    "district": "İlçe",
+    "address": "Adres",
+    "countryCode": "Ülke Kodu",
+    "email": "E-posta",
+    "website": "Web Sitesi",
+    "taxNumber": "Vergi Numarası",
+    "taxOffice": "Vergi Dairesi",
+    "tcknNumber": "TCKN Numarası",
+    "visibleColumns": "Görünür Sütunlar",
+    "editColumns": "Sütunları Düzenle"
+  },
+  "filterLabels": {
+    "branchCode": "Şube Kodu",
+    "customerCode": "Müşteri Kodu",
+    "customerName": "Müşteri Adı",
+    "city": "Şehir",
+    "district": "İlçe",
+    "taxNumber": "Vergi No"
+  },
+  "placeholders": {
+    "quickSearch": "Hızlı Ara...",
+    "all": "Tümü",
+    "codeExample": "Örn: 120...",
+    "nameExample": "Müşteri ismi...",
+    "cityExample": "İl...",
+    "districtExample": "İlçe...",
+    "taxExample": "Vergi/TCKN..."
+  },
+  "actions": {
+    "detailedFilter": "Detaylı Filtre",
+    "clear": "Temizle",
+    "filter": "Filtrele",
+    "all": "TÜMÜ",
+    "active": "AKTİF",
+    "passive": "PASİF",
+    "apply": "SONUÇLARI LİSTELE"
+  },
+  "details": {
+    "title": "Müşteri Detayları",
+    "addressInfo": "Adres Bilgileri"
+  },
+  "common": {
+    "close": "Kapat",
+    "selectAll": "Tümünü Seç",
+    "ok": "TAMAM",
+    "totalRecords": "Toplam Kayıt"
+  },
+  "advancedFilter": {
+    "title": "Gelişmiş Filtre",
+    "add": "Filtre Ekle",
+    "column": "Sütun",
+    "operator": "Operatör",
+    "value": "Değer",
+    "search": "Ara",
+    "clear": "Temizle",
+    "remove": "Kaldır",
+    "columnCustomerCode": "Müşteri Kodu",
+    "columnCustomerName": "Müşteri Adı",
+    "columnBranchCode": "Şube Kodu",
+    "columnCity": "Şehir",
+    "columnDistrict": "İlçe",
+    "columnTaxNumber": "Vergi No",
+    "operatorContains": "İçerir",
+    "operatorStartsWith": "Şununla başlar",
+    "operatorEndsWith": "Şununla biter",
+    "operatorEquals": "Eşittir",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
+  }
+}

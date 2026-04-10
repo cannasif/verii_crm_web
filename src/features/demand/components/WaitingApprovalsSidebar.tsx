@@ -8,7 +8,7 @@ import { Clock, CheckCircle2, User, CalendarDays, ListOrdered, Hash } from 'luci
 import { cn } from '@/lib/utils';
 
 export function WaitingApprovalsSidebar(): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['demand', 'common']);
   const navigate = useNavigate();
   const { data: approvals, isLoading } = useWaitingApprovals();
 

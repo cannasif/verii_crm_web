@@ -1,0 +1,61 @@
+{
+  "auth": {
+    "login": {
+      "title": "المبيعات وإدارة العملاء",
+      "slogan": "\"أدر عملك باستخدام <1>v3rii</1>، لا بالتخمينات.\"",
+      "branchPlaceholder": "اختر الفرع",
+      "emailPlaceholder": "البريد الإلكترنوني المؤسسي",
+      "passwordPlaceholder": "كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "submitButton": "تسجيل الدخول",
+      "processing": "جاري المعالجة...",
+      "sessionExpired": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
+      "comingSoon": "قريباً",
+      "loginError": "حدث خطأ أثناء تسجيل الدخول.",
+      "capsLockOn": "مفتاح Caps Lock مفعّل",
+      "animationOn": "تشغيل الحركة",
+      "animationOff": "إيقاف الحركة"
+    },
+    "forgotPassword": {
+      "title": "نسيت كلمة المرور",
+      "description": "أدخل بريدك الإلكترنوني لإعادة تعيين كلمة المرور. سنرسل لك رابطاً لإعادة التعيين.",
+      "emailPlaceholder": "عنوان البريد الإلكترنوني",
+      "submitButton": "إرسال طلب إعادة التعيين",
+      "backToLogin": "العودة لتسجيل الدخول",
+      "processing": "جاري المعالجة...",
+      "logoAlt": "شعار التطبيق"
+    },
+    "resetPassword": {
+      "title": "إعادة تعيين كلمة المرور",
+      "newPasswordPlaceholder": "كلمة المرور الجديدة",
+      "confirmPasswordPlaceholder": "تأكيد كلمة المرور",
+      "submitButton": "إعادة تعيين كلمة المرور",
+      "processing": "جاري المعالجة...",
+      "invalidToken": "رمز غير صالح أو مفقود. تحقق من رابط إعادة التعيين.",
+      "tokenNotFound": "لم يُعثر على الرمز",
+      "successRedirect": "تم إعادة تعيين كلمة المرور. جاري التوجيه لشاشة الدخول...",
+      "failed": "فشل إعادة تعيين كلمة المرور.",
+      "error": "حدث خطأ أثناء إعادة تعيين كلمة المرور."
+    },
+    "changePassword": {
+      "success": "تم تغيير كلمة المرور بنجاح.",
+      "error": "تعذر تغيير كلمة المرور."
+    },
+    "validation": {
+      "emailRequired": "البريد الإلكترنوني إلزامي",
+      "emailInvalid": "يرجى إدخال بريد إلكترنوني صالح",
+      "passwordRequired": "كلمة المرور إلزامية",
+      "branchRequired": "اختيار الفرع إلزامي",
+      "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+      "tokenRequired": "الرمز إلزامي",
+      "newPasswordMinLength": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+      "confirmPasswordRequired": "تأكيد كلمة المرور إلزامي",
+      "passwordsMismatch": "كلمتا المرور غير متطابقتين",
+      "currentPasswordRequired": "كلمة المرور الحالية إلزامية",
+      "newPasswordMaxLength": "يجب ألا تتجاوز كلمة المرور الجديدة 100 حرف",
+      "newPasswordSameAsCurrent": "لا يمكن أن تكون كلمة المرور الجديدة مطابقة للحالية",
+      "requiredFieldsNotFilled": "لم يتم ملء الحقول الإلزامية."
+    }
+  }
+}

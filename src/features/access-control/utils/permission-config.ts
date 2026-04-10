@@ -46,6 +46,10 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/report-designer': 'reports.designer.list.view',
   '/report-designer/create': 'reports.designer.editor.view',
   '/report-designer/edit/:id': 'reports.designer.editor.view',
+  '/pdf-report-designer': 'reports.designer.list.view',
+  '/pdf-report-designer/create': 'reports.designer.editor.view',
+  '/pdf-report-designer/edit/:id': 'reports.designer.editor.view',
+  '/pdf-report-designer/table-presets': 'reports.designer.editor.view',
 
   '/powerbi/configuration': 'powerbi.configuration.view',
   '/powerbi/reports': 'powerbi.reports.list.view',
@@ -118,6 +122,8 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
 
   { pattern: /^\/report-designer\/(create|edit)(\/|$)/, permission: 'reports.designer.editor.view' },
   { pattern: /^\/report-designer(\/|$)/, permission: 'reports.designer.list.view' },
+  { pattern: /^\/pdf-report-designer\/(create|edit|table-presets)(\/|$)/, permission: 'reports.designer.editor.view' },
+  { pattern: /^\/pdf-report-designer(\/|$)/, permission: 'reports.designer.list.view' },
 
   { pattern: /^\/powerbi\/reports\/[^/]+(\/|$)/, permission: 'powerbi.reports.viewer.view' },
   { pattern: /^\/powerbi\/reports(\/|$)/, permission: 'powerbi.reports.list.view' },

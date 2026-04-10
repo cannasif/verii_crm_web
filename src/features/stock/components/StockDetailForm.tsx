@@ -26,7 +26,7 @@ interface StockDetailFormProps {
 }
 
 export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const { data: stockDetail, isLoading } = useStockDetailQuery(stockId);
   const createDetail = useStockDetailCreate();
   const updateDetail = useStockDetailUpdate();

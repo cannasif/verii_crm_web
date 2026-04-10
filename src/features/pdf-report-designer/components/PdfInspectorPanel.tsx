@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Settings2, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
@@ -77,9 +77,10 @@ function evaluateVisibilityRules(
 }
 
 export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspectorPanelProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const [collapsed, setCollapsed] = useState(false);
-  const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
+  const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
+  const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
   const updateElement = usePdfReportDesignerStore((s) => s.updateElement);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
@@ -93,7 +94,10 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
     pageSize: 100,
     isActive: true,
   });
-  const elements = getOrderedElements();
+  const elements = useMemo(
+    () => elementOrder.map((id) => elementsById[id]).filter(Boolean),
+    [elementOrder, elementsById]
+  );
   const selectedElement =
     selectedIds.length === 1 ? elements.find((el) => el.id === selectedIds[0]) : null;
   const availableContainers = elements.filter(

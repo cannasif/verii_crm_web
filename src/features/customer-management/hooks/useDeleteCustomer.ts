@@ -5,7 +5,7 @@ import { customerApi } from '../api/customer-api';
 import { queryKeys, CUSTOMER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 
 export const useDeleteCustomer = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['customer-management', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

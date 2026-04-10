@@ -5,7 +5,7 @@ import { stockApi } from '../api/stock-api';
 import { queryKeys } from '../utils/query-keys';
 
 export const useStockImageDelete = (): UseMutationResult<void, Error, { id: number; stockId: number }> => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

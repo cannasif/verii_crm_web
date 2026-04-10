@@ -1,0 +1,298 @@
+{
+  "loading": "Wird geladen...",
+  "saving": "Wird gespeichert...",
+  "error": "Fehler",
+  "noData": "Keine Daten gefunden",
+  "previous": "Zurück",
+  "next": "Weiter",
+  "actions": "Aktionen",
+  "edit": "Bearbeiten",
+  "delete": "Löschen",
+  "back": "Zurück",
+  "refresh": "Aktualisieren",
+  "select": "Auswählen",
+  "yes": "Ja",
+  "add": "Hinzufügen",
+  "backToQuotations": "Zurück zur Anforderungsliste",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "confirm": "Bestätigen",
+  "saveAndApply": "Speichern und anwenden",
+  "list": {
+    "revise": "Überarbeiten",
+    "showing": "{{from}}-{{to}} / {{total}}",
+    "title": "Anforderungsliste",
+    "description": "Alle Anforderungen anzeigen und verwalten",
+    "detail": "Details",
+    "createNew": "Neue Anforderung",
+    "searchPlaceholder": "Suche nach Anforderungs-Nr. oder Kundenname...",
+    "cardTitle": "Anforderungen",
+    "refresh": "Aktualisieren",
+    "actions": "Aktionen",
+    "id": "ID",
+    "offerNo": "Anforderungs-Nr.",
+    "revisionNo": "Revisions-Nr.",
+    "customer": "Kunde",
+    "customerCode": "Kundencode",
+    "representative": "Vertriebsmitarbeiter",
+    "offerDate": "Anforderungsdatum",
+    "validUntil": "Gültig bis",
+    "currency": "Währung",
+    "grandTotal": "Gesamtsumme",
+    "status": "Status"
+  },
+  "detail": {
+    "title": "Anforderungsdetails",
+    "subtitle": "Details der Anforderung anzeigen und bearbeiten.",
+    "notFound": "Anforderung nicht gefunden.",
+    "revisionNo": "Revisions-Nr.",
+    "tabDetail": "Details",
+    "tabApprovalFlow": "Freigabeablauf",
+    "tabReport": "Bericht"
+  },
+  "create": {
+    "title": "Neue Anforderung",
+    "submit": "Speichern und zur Freigabe senden",
+    "success": "Anforderung erstellt",
+    "successMessage": "Die Anforderung wurde an den Freigabeprozess gesendet.",
+    "error": "Anforderung konnte nicht erstellt werden",
+    "errorMessage": "Beim Erstellen ist ein Fehler aufgetreten.",
+    "subtitle": "Pflichtfelder ausfüllen und speichern.",
+    "deliveryDateRequired": "Lieferdatum ist erforderlich.",
+    "paymentTypeRequired": "Zahlungsart ist erforderlich.",
+    "invalidCurrency": "Ungültige Währung.",
+    "validationError": "Bitte Pflichtfelder prüfen.",
+    "notesMaxLengthError": "Jede Notiz darf höchstens 400 Zeichen haben."
+  },
+  "header": {
+    "title": "Kopfdaten",
+    "customer": "Kunde",
+    "selectCustomer": "Kunde auswählen",
+    "shippingAddress": "Lieferadresse",
+    "selectShippingAddress": "Lieferadresse auswählen",
+    "representative": "Vertriebsmitarbeiter",
+    "selectRepresentative": "Vertreter auswählen",
+    "offerType": "Anforderungstyp",
+    "selectOfferType": "Typ auswählen",
+    "currency": "Währung",
+    "selectCurrency": "Bitte Währung wählen",
+    "showExchangeRates": "Wechselkurse anzeigen",
+    "offerDate": "Anforderungsdatum",
+    "deliveryDate": "Lieferdatum",
+    "paymentType": "Zahlungsart",
+    "selectPaymentType": "Zahlungsart wählen",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Beschreibung eingeben",
+    "offerNo": "Anforderungs-Nr.",
+    "offerNoPlaceholder": "Nummer",
+    "currencyChange": {
+      "title": "Währungswechsel",
+      "message": "Alle Zeilen werden bei Währungswechsel neu berechnet. Fortfahren?"
+    },
+    "deliveryMethod": "Lieferart",
+    "documentDetail": "Belegtext"
+  },
+  "lines": {
+    "title": "Positionen",
+    "add": "Zeile hinzufügen",
+    "empty": "Noch keine Zeilen",
+    "emptyDescription": "Über „Lager wählen“ oder „Zeile hinzufügen“ Positionen erfassen",
+    "itemCount": "{{count}} Zeilen",
+    "editLine": "Zeile bearbeiten",
+    "selectStock": "Lager wählen",
+    "selectProduct": "Artikel wählen",
+    "selectStockFirst": "Kein Lager gewählt",
+    "stock": "Lager",
+    "productCode": "Artikelcode",
+    "enterProductCode": "Code eingeben oder suchen",
+    "productName": "Bezeichnung",
+    "enterProductName": "Bezeichnung eingeben",
+    "quantity": "Menge",
+    "unitPrice": "Einzelpreis",
+    "discount1": "Rabatt 1 %",
+    "discount2": "Rabatt 2 %",
+    "discount3": "Rabatt 3 %",
+    "discounts": "Rabatte",
+    "discountAmount": "Rabattbetrag",
+    "netPrice": "Nettopreis",
+    "vatRate": "MwSt. %",
+    "lineTotal": "Zeilensumme (inkl. MwSt.)",
+    "calculations": "Kalkulation",
+    "required": "Mindestens eine Zeile erforderlich",
+    "noProductsFound": "Keine Artikel gefunden",
+    "delete": {
+      "confirmTitle": "Zeile löschen",
+      "confirmMessage": "Diese Zeile löschen?",
+      "confirmTitleMultiple": "Zeilen löschen",
+      "confirmMessageMultiple": "Ausgewählte Zeilen löschen?"
+    },
+    "noItems": "Noch keine Zeilen.",
+    "addLine": "Zeile hinzufügen",
+    "relatedStocks": "Verknüpfte Artikel",
+    "groupCode": "Gruppencode",
+    "approvalRequired": "Freigabe erforderlich",
+    "requiredFieldsMissing": "Pflichtfelder in der Zeile fehlen.",
+    "createSuccess": "Zeile hinzugefügt.",
+    "createError": "Zeile konnte nicht hinzugefügt werden.",
+    "updateSuccess": "Zeile aktualisiert.",
+    "updateError": "Zeile konnte nicht aktualisiert werden.",
+    "deleteSuccess": "Zeile gelöscht.",
+    "deleteError": "Zeile konnte nicht gelöscht werden.",
+    "editStockItemDetails": "Artikelposition bearbeiten",
+    "description1": "Text 1",
+    "description2": "Text 2",
+    "description3": "Text 3",
+    "descriptionPlaceholder": "Beschreibung eingeben..."
+  },
+  "exchangeRates": {
+    "title": "Wechselkurse",
+    "currency": "Währung",
+    "rate": "Kurs",
+    "date": "Kursdatum",
+    "isOfficial": "Offizieller Kurs",
+    "official": "Offiziell",
+    "custom": "Benutzerdefiniert",
+    "empty": "Keine Kurse gefunden",
+    "status": "Status",
+    "dialog": {
+      "title": "Wechselkurse",
+      "description": "Kurse anzeigen und bei Bedarf anpassen. Geänderte Kurse gelten nicht als offiziell.",
+      "subtitle": "Kurse bearbeiten und speichern.",
+      "info": "Manuelle Anpassung außerhalb des amtlichen Kurses möglich."
+    },
+    "updateSuccess": "Wechselkurse aktualisiert.",
+    "updateError": "Wechselkurse konnten nicht aktualisiert werden.",
+    "cannotEditUsedCurrency": "Verwendete Währung ist nicht editierbar.",
+    "zeroRateError": "Bitte einen Kurs eingeben, um fortzufahren."
+  },
+  "summary": {
+    "title": "Summe",
+    "grandTotalAnalysis": "Gesamtanalyse",
+    "subtotal": "Zwischensumme",
+    "totalVat": "MwSt. gesamt",
+    "grandTotal": "Gesamtbetrag",
+    "generalDiscount": "Gesamtrabatt",
+    "generalDiscountRate": "Gesamtrabatt %",
+    "generalDiscountAmount": "Gesamtrabattbetrag",
+    "generalDiscountHelp": "Wird auf den Gesamtbetrag angewendet."
+  },
+  "offerType": {
+    "domestic": "Inland",
+    "export": "Export"
+  },
+  "wizard": {
+    "title": "Neue Anforderung",
+    "step1": {
+      "title": "Schritt 1: Kopfdaten",
+      "description": "Kopfdaten und Wechselkurse erfassen",
+      "validation": {
+        "offerType": "Anforderungstyp",
+        "currency": "Währung",
+        "exchangeRate": "Wechselkurs"
+      },
+      "exchangeRate": {
+        "required": "Bei Währungen außer TRY mindestens einen Kurs erfassen"
+      },
+      "currency": {
+        "try": {
+          "info": "Bei TRY ist kein Zusatzkurs nötig"
+        }
+      }
+    },
+    "step2": {
+      "title": "Schritt 2: Positionen",
+      "description": "Artikel und Preise erfassen",
+      "info": "Mindestens eine Zeile hinzufügen",
+      "validation": {
+        "noLines": "Mindestens eine Zeile erforderlich",
+        "invalidLines": "Alle Zeilen müssen gültig sein",
+        "allValid": "{{count}} Zeilen übernommen"
+      }
+    },
+    "step3": {
+      "title": "Schritt 3: Prüfung und Speichern",
+      "description": "Daten prüfen und Anforderung speichern",
+      "header": {
+        "title": "Kopfdaten"
+      },
+      "lines": {
+        "title": "Positionen"
+      },
+      "summary": {
+        "title": "Abschlusssumme"
+      },
+      "approval": {
+        "info": "Nach dem Speichern wird die Freigabe automatisch gestartet"
+      }
+    }
+  },
+  "loadError": "Fehler beim Laden der Daten.",
+  "backToDemands": "Zurück zur Liste",
+  "untitled": "Ohne Titel",
+  "sections": {
+    "header": "Kopf",
+    "lines": "Zeilen",
+    "summary": "Summe"
+  },
+  "approval": {
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "sending": "Wird gesendet...",
+    "sendForApproval": "Zur Freigabe senden",
+    "approveSuccess": "Freigabe erfolgreich.",
+    "approveError": "Freigabe fehlgeschlagen.",
+    "rejectSuccess": "Ablehnung übermittelt.",
+    "rejectError": "Ablehnung fehlgeschlagen.",
+    "startSuccess": "Freigabeprozess gestartet.",
+    "startError": "Freigabeprozess konnte nicht starten.",
+    "rejectTitle": "Anforderung ablehnen",
+    "rejectDescription": "Begründung eingeben.",
+    "rejectReasonPlaceholder": "Grund der Ablehnung",
+    "statusFilterLabel": "Freigabestatus",
+    "status": {
+      "notRequired": "Nicht erforderlich",
+      "waiting": "Ausstehend",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "closed": "Abgeschlossen"
+    }
+  },
+  "approvalFlow": {
+    "noData": "Kein Freigabeschritt gefunden.",
+    "notStarted": "Nicht gestartet",
+    "stepCompleted": "Schritt abgeschlossen",
+    "stepInProgress": "Schritt läuft",
+    "stepNotStarted": "Schritt ausstehend",
+    "stepRejected": "Schritt abgelehnt",
+    "errorTitle": "Fehler"
+  },
+  "update": {
+    "success": "Anforderung aktualisiert.",
+    "successMessage": "Änderungen gespeichert.",
+    "error": "Aktualisierung fehlgeschlagen.",
+    "errorMessage": "Fehler beim Aktualisieren.",
+    "invalidCurrency": "Ungültige Währung.",
+    "validationError": "Validierungsfehler."
+  },
+  "revision": {
+    "success": "Revision angelegt.",
+    "error": "Revision fehlgeschlagen."
+  },
+  "waitingApprovals": {
+    "title": "Ausstehende Freigaben",
+    "list": "Warteliste Freigabe",
+    "noApprovals": "Keine ausstehenden Freigaben.",
+    "requestId": "Anforderungs-Nr.",
+    "description": "Beschreibung",
+    "stepOrder": "Schritt",
+    "approvedBy": "Freigegeben von",
+    "actionDate": "Datum",
+    "status": "Status",
+    "waiting": "Wartend"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "Jede Notiz max. 100 Zeichen."
+    }
+  }
+}

@@ -6,7 +6,7 @@ import { queryKeys } from '../utils/query-keys';
 import type { StockImageDto } from '../types';
 
 export const useStockImageUpload = (): UseMutationResult<StockImageDto[], Error, { stockId: number; files: File[]; altTexts?: string[] }> => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

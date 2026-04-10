@@ -7,7 +7,7 @@ import { queryKeys } from '../utils/query-keys';
 
 export const useStartApprovalFlow = (): UseMutationResult<ApiResponse<boolean>, Error, { entityId: number; documentType: number; totalAmount: number }, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
 
   return useMutation({
     mutationFn: (data: { entityId: number; documentType: number; totalAmount: number }) => 

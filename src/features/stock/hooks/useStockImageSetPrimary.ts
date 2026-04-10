@@ -6,7 +6,7 @@ import { queryKeys } from '../utils/query-keys';
 import type { StockImageDto } from '../types';
 
 export const useStockImageSetPrimary = (): UseMutationResult<StockImageDto, Error, { id: number; stockId: number }> => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

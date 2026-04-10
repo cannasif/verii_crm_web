@@ -27,7 +27,7 @@ function normalizePriority(priority?: string | number): ActivityPriority | null 
 export function ActivityPriorityBadge({
   priority,
 }: ActivityPriorityBadgeProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['activity-management', 'common']);
 
   if (priority === null || priority === undefined) {
     return (

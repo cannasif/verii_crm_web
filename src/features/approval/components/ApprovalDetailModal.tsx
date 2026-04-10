@@ -28,7 +28,7 @@ export function ApprovalDetailModal({
   isOpen,
   onClose,
 }: ApprovalDetailModalProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['approval', 'common']);
   const { data: quotation, isLoading: isLoadingQuotation } = useQuotationDetail(queue.quotationId);
   const { data: history, isLoading: isLoadingHistory } = useApprovalHistory(queue.quotationId);
 

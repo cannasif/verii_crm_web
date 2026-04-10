@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "Approvazioni in sospeso",
+    "description": "Visualizza e approva o rifiuta i preventivi assegnati a te",
+    "empty": "Nessuna approvazione in sospeso",
+    "error": "Si è verificato un errore durante il caricamento delle approvazioni"
+  },
+  "yes": "Sì",
+  "no": "No",
+  "processing": "Elaborazione...",
+  "detail": {
+    "title": "Dettaglio preventivo",
+    "subtitle": "Visualizza i dettagli del preventivo e intervieni",
+    "tabs": {
+      "detail": "Dettaglio",
+      "history": "Cronologia",
+      "action": "Azione"
+    },
+    "notFound": "Preventivo non trovato",
+    "quotationInfo": "Informazioni sul preventivo",
+    "offerNo": "N. preventivo",
+    "customer": "Cliente",
+    "representative": "Rappresentante",
+    "currency": "Valuta",
+    "offerDate": "Data preventivo",
+    "deliveryDate": "Data di consegna",
+    "total": "Totale",
+    "grandTotal": "Totale generale",
+    "description": "Descrizione",
+    "lines": "Righe del preventivo",
+    "productCode": "Codice prodotto",
+    "productName": "Nome prodotto",
+    "quantity": "Quantità",
+    "unitPrice": "Prezzo unitario",
+    "lineTotal": "Totale riga",
+    "lineGrandTotal": "Totale generale riga",
+    "exchangeRates": "Tassi di cambio",
+    "exchangeRate": "Tasso",
+    "exchangeRateDate": "Data tasso",
+    "isOfficial": "Tasso ufficiale"
+  },
+  "actions": {
+    "view": "Visualizza",
+    "approve": "Approva",
+    "reject": "Rifiuta"
+  },
+  "status": {
+    "notRequired": "Non richiesto",
+    "waiting": "In attesa",
+    "approved": "Approvato",
+    "rejected": "Rifiutato",
+    "closed": "Chiuso"
+  },
+  "closedReason": "Questo record è stato chiuso perché un altro record con lo stesso numero di preventivo è stato approvato.",
+  "statusFilterLabel": "Stato di approvazione",
+  "level": {
+    "salesManager": "Responsabile vendite",
+    "regionalManager": "Responsabile regionale",
+    "finance": "Finanza",
+    "generalManager": "Amministratore delegato",
+    "unknown": "Sconosciuto"
+  },
+  "note": {
+    "label": "Nota",
+    "placeholder": "Puoi aggiungere una nota di approvazione/rifiuto (facoltativo)",
+    "maxLength": "La nota può contenere al massimo 500 caratteri"
+  },
+  "approve": {
+    "success": "Approvato",
+    "successMessage": "Preventivo approvato correttamente",
+    "error": "Errore di approvazione",
+    "errorMessage": "Si è verificato un errore durante l'approvazione del preventivo"
+  },
+  "reject": {
+    "success": "Rifiutato",
+    "successMessage": "Preventivo rifiutato",
+    "error": "Errore di rifiuto",
+    "errorMessage": "Si è verificato un errore durante il rifiuto del preventivo"
+  },
+  "history": {
+    "empty": "Nessuna cronologia approvazioni",
+    "approvedBy": "Approvato da"
+  },
+  "assignedTo": "Utente assegnato"
+}

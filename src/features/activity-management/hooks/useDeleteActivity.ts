@@ -5,7 +5,7 @@ import { activityApi } from '../api/activity-api';
 import { ACTIVITY_QUERY_KEYS } from '../utils/query-keys';
 
 export const useDeleteActivity = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['activity-management', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

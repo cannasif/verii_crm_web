@@ -6,7 +6,7 @@ import { queryKeys, CUSTOMER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import type { CreateCustomerDto } from '../types/customer-types';
 
 export const useCreateCustomer = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['customer-management', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

@@ -10,7 +10,7 @@ interface ApprovalHistoryTimelineProps {
 }
 
 export function ApprovalHistoryTimeline({ history }: ApprovalHistoryTimelineProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['approval', 'common']);
 
   const getStatusIcon = (status: ApprovalStatus): ReactElement => {
     switch (status) {

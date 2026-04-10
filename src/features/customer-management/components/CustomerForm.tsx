@@ -89,7 +89,7 @@ export function CustomerForm({
   conflictState = null,
   onConflictDismiss,
 }: CustomerFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['customer-management', 'common']);
   const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
   const [countrySearchTerm, setCountrySearchTerm] = useState('');
   const [citySearchTerm, setCitySearchTerm] = useState('');

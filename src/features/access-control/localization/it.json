@@ -1,0 +1,132 @@
+{
+  "help": {
+    "permissionDefinition": {
+      "code": "Chiave univoca usata dai guard di route e pagina. Preferire snake_case stabile o notazione con punti.",
+      "name": "Nome visualizzato agli amministratori durante la gestione dei permessi.",
+      "description": "Descrizione interna facoltativa di questo permesso.",
+      "isActive": "I permessi inattivi non vengono considerati nel calcolo dell’accesso.",
+      "save": "Le modifiche influiscono sui flussi di autorizzazione di ruoli e gruppi."
+    },
+    "permissionGroup": {
+      "name": "Nome del gruppo per identificarlo nell’assegnazione agli utenti.",
+      "isSystemAdmin": "I membri di questo gruppo accedono a tutte le pagine e azioni senza controlli individuali sui permessi.",
+      "isActive": "I gruppi inattivi non dovrebbero essere assegnati per nuove decisioni di accesso.",
+      "permissions": "I permessi selezionati definiscono a cosa possono accedere i membri del gruppo.",
+      "save": "Aggiorna l’accesso effettivo per tutti gli utenti assegnati a questo gruppo."
+    },
+    "userAssignment": {
+      "user": "Seleziona l’utente di cui vuoi gestire l’ambito di accesso.",
+      "groups": "L’utente riceve i permessi combinati di tutti i gruppi selezionati.",
+      "save": "Le assegnazioni hanno effetto immediato per i successivi controlli di autorizzazione. Potrebbe essere necessario aggiornare la sessione.",
+      "systemAdminNote": "Se l’utente appartiene a un gruppo amministratore di sistema, i permessi dettagliati vengono ignorati."
+    }
+  },
+  "permissionDefinitions": {
+    "title": "Definizioni permessi",
+    "description": "Gestisci i codici permesso usati nel sistema",
+    "add": "Aggiungi definizione",
+    "form": {
+      "editTitle": "Modifica definizione permesso",
+      "addTitle": "Aggiungi definizione permesso",
+      "editDescription": "Aggiorna i dettagli della definizione",
+      "addDescription": "Crea una nuova definizione permesso",
+      "code": "Codice",
+      "codePlaceholder": "Seleziona un codice",
+      "affectedRoutes": "Pagine interessate",
+      "affectedRoutesNone": "Nessuna route corrispondente per questo codice",
+      "name": "Nome",
+      "namePlaceholder": "Nome visualizzato",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Descrizione facoltativa",
+      "isActive": "Attivo",
+      "codeSearchPlaceholder": "Cerca...",
+      "codeEmpty": "Nessun risultato"
+    },
+    "table": {
+      "title": "Definizioni permessi",
+      "code": "Codice",
+      "name": "Nome",
+      "isActive": "Attivo",
+      "updatedDate": "Aggiornato",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "delete": {
+      "confirmTitle": "Elimina definizione permesso",
+      "confirmMessage": "Eliminare «{{name}}»? Questa azione non può essere annullata."
+    },
+    "syncFromRoutes": "Sincronizza dalle route"
+  },
+  "permissionGroups": {
+    "title": "Gruppi permessi",
+    "description": "Gestisci i gruppi permesso e le assegnazioni",
+    "systemAdminLocked": "Il gruppo amministratore di sistema non può essere modificato",
+    "add": "Aggiungi gruppo",
+    "selectAll": "Seleziona tutto",
+    "noDefinitions": "Nessuna definizione permesso disponibile",
+    "form": {
+      "editTitle": "Modifica gruppo permessi",
+      "addTitle": "Aggiungi gruppo permessi",
+      "editDescription": "Aggiorna i dettagli del gruppo",
+      "addDescription": "Crea un nuovo gruppo permessi",
+      "name": "Nome",
+      "namePlaceholder": "Nome gruppo",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Descrizione facoltativa",
+      "isSystemAdmin": "Amministratore di sistema",
+      "isActive": "Attivo",
+      "permissions": "Permessi"
+    },
+    "table": {
+      "title": "Gruppi permessi",
+      "name": "Nome",
+      "isSystemAdmin": "Amministratore di sistema",
+      "isActive": "Attivo",
+      "permissionCount": "Permessi",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "managePermissions": "Gestisci permessi",
+    "permissionsPanel": {
+      "title": "Modifica permessi del gruppo",
+      "description": "Seleziona i permessi per questo gruppo",
+      "currentCodes": "Codici permesso attuali"
+    },
+    "delete": {
+      "confirmTitle": "Elimina gruppo permessi",
+      "confirmMessage": "Eliminare «{{name}}»? Questa azione non può essere annullata."
+    },
+    "search": "Cerca..."
+  },
+  "userGroupAssignments": {
+    "title": "Assegnazioni utente ai gruppi",
+    "description": "Assegna gruppi permesso agli utenti",
+    "selectUser": "Seleziona utente",
+    "selectUserPlaceholder": "Cerca e seleziona utente...",
+    "selectUserHint": "Seleziona un utente per gestire le assegnazioni ai gruppi",
+    "assignedGroups": "Gruppi permesso assegnati",
+    "noUsers": "Nessun utente trovato",
+    "noGroups": "Nessun gruppo permesso disponibile",
+    "selectAll": "Seleziona tutto"
+  },
+  "common": {
+    "cancel": "Annulla",
+    "saving": "Salvataggio...",
+    "save": "Salva e applica",
+    "loading": "Caricamento...",
+    "search": "Cerca...",
+    "noData": "Nessun dato",
+    "actions": "Azioni",
+    "yes": "Sì",
+    "no": "No",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "previous": "Precedente",
+    "next": "Successivo",
+    "processing": "Elaborazione..."
+  },
+  "sidebar": {
+    "accessControl": "Controllo accessi",
+    "permissionDefinitions": "Definizioni permessi",
+    "permissionGroups": "Gruppi permessi",
+    "userGroupAssignments": "Assegnazioni utente–gruppo"
+  }
+}

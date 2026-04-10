@@ -30,7 +30,7 @@ interface StockRelationListProps {
 }
 
 export function StockRelationList({ stockId }: StockRelationListProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const { data: relations, isLoading } = useStockRelations(stockId);
   const deleteRelation = useStockRelationDelete();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

@@ -17,7 +17,7 @@ import { StockRelationForm } from './StockRelationForm';
 import { StockRelationList } from './StockRelationList';
 
 export function StockDetailPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();

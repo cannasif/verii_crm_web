@@ -1,0 +1,14 @@
+{
+  "powerbiViewer": {
+    "invalidId": "تقرير غير صالح",
+    "backToList": "العودة إلى القائمة",
+    "loadError": "تعذر تحميل التقرير",
+    "loadingReport": "جاري تحميل التقرير...",
+    "listTitle": "تقارير Power BI",
+    "listDescription": "انقر على تقرير لعرضه",
+    "name": "الاسم",
+    "description": "الوصف",
+    "isActive": "الحالة",
+    "view": "عرض"
+  }
+}

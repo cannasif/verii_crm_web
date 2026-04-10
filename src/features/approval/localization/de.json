@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "Ausstehende Freigaben",
+    "description": "Anzeigen und freigeben oder ablehnen von Ihnen zugewiesenen Angeboten",
+    "empty": "Keine ausstehenden Freigaben",
+    "error": "Beim Laden der Freigaben ist ein Fehler aufgetreten"
+  },
+  "yes": "Ja",
+  "no": "Nein",
+  "processing": "Wird verarbeitet...",
+  "detail": {
+    "title": "Angebotsdetail",
+    "subtitle": "Angebotsdetails anzeigen und Aktion ausführen",
+    "tabs": {
+      "detail": "Detail",
+      "history": "Verlauf",
+      "action": "Aktion"
+    },
+    "notFound": "Angebot nicht gefunden",
+    "quotationInfo": "Angebotsinformationen",
+    "offerNo": "Angebots-Nr.",
+    "customer": "Kunde",
+    "representative": "Vertreter",
+    "currency": "Währung",
+    "offerDate": "Angebotsdatum",
+    "deliveryDate": "Lieferdatum",
+    "total": "Summe",
+    "grandTotal": "Gesamtsumme",
+    "description": "Beschreibung",
+    "lines": "Angebotspositionen",
+    "productCode": "Artikelcode",
+    "productName": "Artikelname",
+    "quantity": "Menge",
+    "unitPrice": "Einzelpreis",
+    "lineTotal": "Positionsumme",
+    "lineGrandTotal": "Positions-Gesamtsumme",
+    "exchangeRates": "Wechselkurse",
+    "exchangeRate": "Kurs",
+    "exchangeRateDate": "Kursdatum",
+    "isOfficial": "Offizieller Kurs"
+  },
+  "actions": {
+    "view": "Anzeigen",
+    "approve": "Freigeben",
+    "reject": "Ablehnen"
+  },
+  "status": {
+    "notRequired": "Nicht erforderlich",
+    "waiting": "Wartend",
+    "approved": "Freigegeben",
+    "rejected": "Abgelehnt",
+    "closed": "Geschlossen"
+  },
+  "closedReason": "Dieser Datensatz wurde geschlossen, da ein anderer Datensatz mit derselben Angebotsnummer freigegeben wurde.",
+  "statusFilterLabel": "Freigabestatus",
+  "level": {
+    "salesManager": "Verkaufsleiter",
+    "regionalManager": "Regionalleiter",
+    "finance": "Finanzen",
+    "generalManager": "Geschäftsführer",
+    "unknown": "Unbekannt"
+  },
+  "note": {
+    "label": "Notiz",
+    "placeholder": "Freigabe-/Ablehnungsnotiz (optional)",
+    "maxLength": "Notiz darf höchstens 500 Zeichen haben"
+  },
+  "approve": {
+    "success": "Freigegeben",
+    "successMessage": "Angebot wurde freigegeben",
+    "error": "Freigabefehler",
+    "errorMessage": "Bei der Freigabe des Angebots ist ein Fehler aufgetreten"
+  },
+  "reject": {
+    "success": "Abgelehnt",
+    "successMessage": "Angebot wurde abgelehnt",
+    "error": "Ablehnungsfehler",
+    "errorMessage": "Bei der Ablehnung des Angebots ist ein Fehler aufgetreten"
+  },
+  "history": {
+    "empty": "Kein Freigabeverlauf",
+    "approvedBy": "Freigegeben von"
+  },
+  "assignedTo": "Zugewiesener Benutzer"
+}

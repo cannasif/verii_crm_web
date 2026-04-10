@@ -8,7 +8,7 @@ import type { QuotationBulkCreateDto, QuotationGetDto } from '../types/quotation
 
 export const useUpdateQuotationBulk = (): UseMutationResult<ApiResponse<QuotationGetDto>, Error, { id: number; data: QuotationBulkCreateDto }, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: QuotationBulkCreateDto }) => quotationApi.updateBulk(id, data),

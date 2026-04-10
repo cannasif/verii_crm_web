@@ -179,7 +179,7 @@ export function DemandLineTable({
   enabled = true,
 }: DemandLineTableProps): ReactElement {
   const linesEditable = enabled;
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);

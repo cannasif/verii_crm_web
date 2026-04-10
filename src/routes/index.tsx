@@ -65,8 +65,11 @@ const StockListPage = lazyImport(() => import('@/features/stock'), 'StockListPag
 const StockDetailPage = lazyImport(() => import('@/features/stock'), 'StockDetailPage');
 const DocumentSerialTypeManagementPage = lazyImport(() => import('@/features/document-serial-type-management'), 'DocumentSerialTypeManagementPage');
 const SalesTypeManagementPage = lazyImport(() => import('@/features/sales-type-management'), 'SalesTypeManagementPage');
-const ReportDesignerListPage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerListPage');
-const ReportDesignerCreatePage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerCreatePage');
+const CategoryDefinitionsPage = lazyImport(() => import('@/features/category-definitions'), 'CategoryDefinitionsPage');
+const ReportDesignerListPage = lazyImport(() => import('@/features/report-designer'), 'ReportDesignerListPage');
+const ReportDesignerCreatePage = lazyImport(() => import('@/features/report-designer'), 'ReportDesignerCreatePage');
+const PdfReportDesignerListPage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerListPage');
+const PdfReportDesignerCreatePage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfReportDesignerCreatePage');
 const PdfTablePresetManagementPage = lazyImport(() => import('@/features/pdf-report-designer'), 'PdfTablePresetManagementPage');
 const ReportsListPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportsListPage');
 const ReportBuilderPage = lazyImport(() => import('@/features/report-builder/pages'), 'ReportBuilderPage');
@@ -110,7 +113,10 @@ export function createAppRouter() {
         { path: 'report-designer', element: <ReportDesignerListPage /> },
         { path: 'report-designer/create', element: <ReportDesignerCreatePage /> },
         { path: 'report-designer/edit/:id', element: <ReportDesignerCreatePage /> },
-        { path: 'report-designer/table-presets', element: <PdfTablePresetManagementPage /> },
+        { path: 'pdf-report-designer', element: <PdfReportDesignerListPage /> },
+        { path: 'pdf-report-designer/create', element: <PdfReportDesignerCreatePage /> },
+        { path: 'pdf-report-designer/edit/:id', element: <PdfReportDesignerCreatePage /> },
+        { path: 'pdf-report-designer/table-presets', element: <PdfTablePresetManagementPage /> },
         { path: 'reports', element: <ReportsListPage /> },
         { path: 'reports/my', element: <ReportsListPage /> },
         { path: 'reports/my/:id', element: <ReportViewerPage /> },
@@ -172,6 +178,7 @@ export function createAppRouter() {
         { path: 'stocks/:id', element: <StockDetailPage /> },
         { path: 'document-serial-type-management', element: <DocumentSerialTypeManagementPage /> },
         { path: 'definitions/sales-type-management', element: <SalesTypeManagementPage /> },
+        { path: 'definitions/category-definitions', element: <CategoryDefinitionsPage /> },
         { path: 'access-control/permission-definitions', element: <PermissionDefinitionsPage /> },
         { path: 'access-control/permission-groups', element: <PermissionGroupsPage /> },
         { path: 'access-control/user-group-assignments', element: <UserGroupAssignmentsPage /> },

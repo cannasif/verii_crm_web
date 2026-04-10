@@ -1,0 +1,61 @@
+{
+  "auth": {
+    "login": {
+      "title": "Ventes et gestion client",
+      "slogan": "\"Pilotez votre activité avec <1>v3rii</1>, pas au hasard.\"",
+      "branchPlaceholder": "Sélectionnez l'agence",
+      "emailPlaceholder": "E-mail professionnel",
+      "passwordPlaceholder": "Mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié ?",
+      "submitButton": "Connexion",
+      "processing": "Traitement...",
+      "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+      "comingSoon": "Bientôt disponible",
+      "loginError": "Une erreur s'est produite lors de la connexion.",
+      "capsLockOn": "Verr. Maj. activé",
+      "animationOn": "Activer l'animation",
+      "animationOff": "Désactiver l'animation"
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "description": "Saisissez votre adresse e-mail pour réinitialiser votre mot de passe. Nous vous enverrons un lien de réinitialisation.",
+      "emailPlaceholder": "Adresse e-mail",
+      "submitButton": "Envoyer la demande de réinitialisation",
+      "backToLogin": "Retour à la connexion",
+      "processing": "Traitement...",
+      "logoAlt": "Logo de l'application"
+    },
+    "resetPassword": {
+      "title": "Réinitialiser le mot de passe",
+      "newPasswordPlaceholder": "Nouveau mot de passe",
+      "confirmPasswordPlaceholder": "Confirmer le mot de passe",
+      "submitButton": "Réinitialiser le mot de passe",
+      "processing": "Traitement...",
+      "invalidToken": "Jeton invalide ou manquant. Vérifiez le lien de réinitialisation.",
+      "tokenNotFound": "Jeton introuvable",
+      "successRedirect": "Votre mot de passe a été réinitialisé. Redirection vers la connexion...",
+      "failed": "Échec de la réinitialisation du mot de passe.",
+      "error": "Une erreur s'est produite lors de la réinitialisation."
+    },
+    "changePassword": {
+      "success": "Mot de passe modifié avec succès.",
+      "error": "Impossible de modifier le mot de passe."
+    },
+    "validation": {
+      "emailRequired": "L'e-mail est obligatoire",
+      "emailInvalid": "Veuillez saisir une adresse e-mail valide",
+      "passwordRequired": "Le mot de passe est obligatoire",
+      "branchRequired": "La sélection de l'agence est obligatoire",
+      "passwordMinLength": "Le mot de passe doit comporter au moins 8 caractères",
+      "tokenRequired": "Le jeton est obligatoire",
+      "newPasswordMinLength": "Le mot de passe doit comporter au moins 6 caractères",
+      "confirmPasswordRequired": "La confirmation du mot de passe est obligatoire",
+      "passwordsMismatch": "Les mots de passe ne correspondent pas",
+      "currentPasswordRequired": "Le mot de passe actuel est obligatoire",
+      "newPasswordMaxLength": "Le nouveau mot de passe peut comporter au plus 100 caractères",
+      "newPasswordSameAsCurrent": "Le nouveau mot de passe ne peut pas être identique à l'actuel",
+      "requiredFieldsNotFilled": "Les champs obligatoires ne sont pas remplis."
+    }
+  }
+}

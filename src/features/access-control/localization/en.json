@@ -1,0 +1,132 @@
+{
+  "help": {
+    "permissionDefinition": {
+      "code": "Unique key used by route and page guards. Prefer stable snake_case or dot notation.",
+      "name": "Display name shown to administrators when managing permissions.",
+      "description": "Optional internal description for this permission.",
+      "isActive": "Inactive permissions are ignored when user access is evaluated.",
+      "save": "Changes affect role and group authorization flows."
+    },
+    "permissionGroup": {
+      "name": "Group name used for identification when assigning to users.",
+      "isSystemAdmin": "Members of this group can access all pages and actions without individual permission checks.",
+      "isActive": "Inactive groups should not be assigned for new access decisions.",
+      "permissions": "Selected permissions define what members of this group can access.",
+      "save": "Updates effective access for every user assigned to this group."
+    },
+    "userAssignment": {
+      "user": "Select the user whose access scope you want to manage.",
+      "groups": "The user receives the combined permissions from all selected groups.",
+      "save": "Assignments take effect immediately for the next authorization checks. Users may need to refresh their session.",
+      "systemAdminNote": "If the user belongs to a system administrator group, detailed permissions are skipped."
+    }
+  },
+  "permissionDefinitions": {
+    "title": "Permission definitions",
+    "description": "Manage permission codes used across the system",
+    "add": "Add definition",
+    "form": {
+      "editTitle": "Edit permission definition",
+      "addTitle": "Add permission definition",
+      "editDescription": "Update permission definition details",
+      "addDescription": "Create a new permission definition",
+      "code": "Code",
+      "codePlaceholder": "Select a code",
+      "affectedRoutes": "Affected pages",
+      "affectedRoutesNone": "No matching route found for this code",
+      "name": "Name",
+      "namePlaceholder": "Display name",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional description",
+      "isActive": "Active",
+      "codeSearchPlaceholder": "Search...",
+      "codeEmpty": "No results found"
+    },
+    "table": {
+      "title": "Permission definitions",
+      "code": "Code",
+      "name": "Name",
+      "isActive": "Active",
+      "updatedDate": "Updated",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "delete": {
+      "confirmTitle": "Delete permission definition",
+      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "syncFromRoutes": "Sync from routes"
+  },
+  "permissionGroups": {
+    "title": "Permission groups",
+    "description": "Manage permission groups and assignments",
+    "systemAdminLocked": "The system administrator group cannot be changed",
+    "add": "Add group",
+    "selectAll": "Select all",
+    "noDefinitions": "No permission definitions available",
+    "form": {
+      "editTitle": "Edit permission group",
+      "addTitle": "Add permission group",
+      "editDescription": "Update permission group details",
+      "addDescription": "Create a new permission group",
+      "name": "Name",
+      "namePlaceholder": "Group name",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional description",
+      "isSystemAdmin": "System administrator",
+      "isActive": "Active",
+      "permissions": "Permissions"
+    },
+    "table": {
+      "title": "Permission groups",
+      "name": "Name",
+      "isSystemAdmin": "System administrator",
+      "isActive": "Active",
+      "permissionCount": "Permissions",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "managePermissions": "Manage permissions",
+    "permissionsPanel": {
+      "title": "Edit group permissions",
+      "description": "Select permissions for this group",
+      "currentCodes": "Current permission codes"
+    },
+    "delete": {
+      "confirmTitle": "Delete permission group",
+      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "search": "Search..."
+  },
+  "userGroupAssignments": {
+    "title": "User group assignments",
+    "description": "Assign permission groups to users",
+    "selectUser": "Select user",
+    "selectUserPlaceholder": "Search and select a user...",
+    "selectUserHint": "Select a user to manage their permission group assignments",
+    "assignedGroups": "Assigned permission groups",
+    "noUsers": "No users found",
+    "noGroups": "No permission groups available",
+    "selectAll": "Select all"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "save": "Save and apply",
+    "loading": "Loading...",
+    "search": "Search...",
+    "noData": "No data",
+    "actions": "Actions",
+    "yes": "Yes",
+    "no": "No",
+    "edit": "Edit",
+    "delete": "Delete",
+    "previous": "Previous",
+    "next": "Next",
+    "processing": "Processing..."
+  },
+  "sidebar": {
+    "accessControl": "Access control",
+    "permissionDefinitions": "Permission definitions",
+    "permissionGroups": "Permission groups",
+    "userGroupAssignments": "User group assignments"
+  }
+}

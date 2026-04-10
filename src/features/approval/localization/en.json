@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "Pending approvals",
+    "description": "View and approve or reject quotations assigned to you",
+    "empty": "No pending approvals",
+    "error": "An error occurred while loading approvals"
+  },
+  "yes": "Yes",
+  "no": "No",
+  "processing": "Processing...",
+  "detail": {
+    "title": "Quotation detail",
+    "subtitle": "View quotation details and take action",
+    "tabs": {
+      "detail": "Detail",
+      "history": "History",
+      "action": "Action"
+    },
+    "notFound": "Quotation not found",
+    "quotationInfo": "Quotation information",
+    "offerNo": "Offer no.",
+    "customer": "Customer",
+    "representative": "Representative",
+    "currency": "Currency",
+    "offerDate": "Offer date",
+    "deliveryDate": "Delivery date",
+    "total": "Total",
+    "grandTotal": "Grand total",
+    "description": "Description",
+    "lines": "Quotation lines",
+    "productCode": "Product code",
+    "productName": "Product name",
+    "quantity": "Quantity",
+    "unitPrice": "Unit price",
+    "lineTotal": "Line total",
+    "lineGrandTotal": "Line grand total",
+    "exchangeRates": "Exchange rates",
+    "exchangeRate": "Rate",
+    "exchangeRateDate": "Rate date",
+    "isOfficial": "Official rate"
+  },
+  "actions": {
+    "view": "View",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "status": {
+    "notRequired": "Not required",
+    "waiting": "Waiting",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "closed": "Closed"
+  },
+  "closedReason": "This record was closed because another record with the same offer number was approved.",
+  "statusFilterLabel": "Approval status",
+  "level": {
+    "salesManager": "Sales manager",
+    "regionalManager": "Regional manager",
+    "finance": "Finance",
+    "generalManager": "General manager",
+    "unknown": "Unknown"
+  },
+  "note": {
+    "label": "Note",
+    "placeholder": "You can add an approval/rejection note (optional)",
+    "maxLength": "Note can be at most 500 characters"
+  },
+  "approve": {
+    "success": "Approved",
+    "successMessage": "Quotation approved successfully",
+    "error": "Approval error",
+    "errorMessage": "An error occurred while approving the quotation"
+  },
+  "reject": {
+    "success": "Rejected",
+    "successMessage": "Quotation rejected",
+    "error": "Rejection error",
+    "errorMessage": "An error occurred while rejecting the quotation"
+  },
+  "history": {
+    "empty": "No approval history",
+    "approvedBy": "Approved by"
+  },
+  "assignedTo": "Assigned user"
+}

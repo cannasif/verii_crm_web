@@ -51,7 +51,7 @@ export function ExchangeRateDialog({
   demandOfferNo,
   readOnly = false,
 }: ExchangeRateDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   const { data: erpRates = [], isLoading } = useExchangeRate();
   const updateMutation = useUpdateExchangeRateInDemand(demandId ?? 0);
   const [localRates, setLocalRates] = useState<DemandExchangeRateFormState[]>([]);

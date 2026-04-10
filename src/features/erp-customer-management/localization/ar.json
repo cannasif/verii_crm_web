@@ -1,0 +1,85 @@
+{
+  "menu": "عميل ERP",
+  "description": "قائمة العملاء من نظام ERP",
+  "loading": "جاري التحميل...",
+  "noData": "لم يُعثر على عملاء",
+  "table": {
+    "title": "قائمة العملاء",
+    "branchCode": "رمز الفرع",
+    "businessUnitCode": "رمز وحدة الأعمال",
+    "customerCode": "رمز العميل",
+    "customerName": "اسم العميل",
+    "phone": "الهاتف",
+    "city": "المدينة",
+    "district": "الحي",
+    "address": "العنوان",
+    "countryCode": "رمز الدولة",
+    "email": "البريد الإلكتروني",
+    "website": "الموقع",
+    "taxNumber": "الرقم الضريبي",
+    "taxOffice": "مكتب الضرائب",
+    "tcknNumber": "TCKN",
+    "visibleColumns": "الأعمدة الظاهرة",
+    "editColumns": "تعديل الأعمدة"
+  },
+  "filterLabels": {
+    "branchCode": "رمز الفرع",
+    "customerCode": "رمز العميل",
+    "customerName": "اسم العميل",
+    "city": "المدينة",
+    "district": "الحي",
+    "taxNumber": "الرقم الضريبي"
+  },
+  "placeholders": {
+    "quickSearch": "بحث سريع...",
+    "all": "الكل",
+    "codeExample": "مثال: 120...",
+    "nameExample": "اسم العميل...",
+    "cityExample": "المدينة...",
+    "districtExample": "الحي...",
+    "taxExample": "ضريبي/TCKN..."
+  },
+  "actions": {
+    "detailedFilter": "مرشح تفصيلي",
+    "clear": "مسح",
+    "filter": "تصفية",
+    "all": "الكل",
+    "active": "نشط",
+    "passive": "غير نشط",
+    "apply": "عرض النتائج"
+  },
+  "details": {
+    "title": "تفاصيل العميل",
+    "addressInfo": "معلومات العنوان"
+  },
+  "common": {
+    "close": "إغلاق",
+    "selectAll": "تحديد الكل",
+    "ok": "موافق",
+    "totalRecords": "إجمالي السجلات"
+  },
+  "advancedFilter": {
+    "title": "مرشح متقدم",
+    "add": "إضافة مرشح",
+    "column": "العمود",
+    "operator": "المعامل",
+    "value": "القيمة",
+    "search": "بحث",
+    "clear": "مسح",
+    "remove": "إزالة",
+    "columnCustomerCode": "رمز العميل",
+    "columnCustomerName": "اسم العميل",
+    "columnBranchCode": "رمز الفرع",
+    "columnCity": "المدينة",
+    "columnDistrict": "الحي",
+    "columnTaxNumber": "الرقم الضريبي",
+    "operatorContains": "يحتوي",
+    "operatorStartsWith": "يبدأ بـ",
+    "operatorEndsWith": "ينتهي بـ",
+    "operatorEquals": "يساوي",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
+  }
+}

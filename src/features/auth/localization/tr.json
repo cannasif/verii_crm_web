@@ -1,0 +1,61 @@
+{
+  "auth": {
+    "login": {
+      "title": "Satış & Müşteri Yönetimi",
+      "slogan": "\"İŞİNİZİ TAHMİNLERLE DEĞİL, <1>v3rii</1> 'yle yönetin.\"",
+      "branchPlaceholder": "Şube Seçiniz",
+      "emailPlaceholder": "Kurumsal E-posta",
+      "passwordPlaceholder": "Şifre",
+      "rememberMe": "Beni Hatırla",
+      "forgotPassword": "Şifremi Unuttum?",
+      "submitButton": "Giriş Yap",
+      "processing": "İşleniyor...",
+      "sessionExpired": "Oturum süreniz doldu. Lütfen tekrar giriş yapın.",
+      "comingSoon": "Yakında",
+      "loginError": "Giriş yapılırken bir hata oluştu.",
+      "capsLockOn": "Büyük harf kilidi açık",
+      "animationOn": "Animasyonu Aç",
+      "animationOff": "Animasyonu Kapat"
+    },
+    "forgotPassword": {
+      "title": "Şifremi Unuttum",
+      "description": "Şifrenizi sıfırlamak için e-posta adresinizi girin. Size şifre sıfırlama linki göndereceğiz.",
+      "emailPlaceholder": "E-posta Adresi",
+      "submitButton": "Şifre Sıfırlama İsteği Gönder",
+      "backToLogin": "Giriş Sayfasına Dön",
+      "processing": "İşleniyor...",
+      "logoAlt": "Uygulama Logosu"
+    },
+    "resetPassword": {
+      "title": "Şifre Sıfırlama",
+      "newPasswordPlaceholder": "Yeni Şifre",
+      "confirmPasswordPlaceholder": "Şifre Tekrarı",
+      "submitButton": "Şifreyi Sıfırla",
+      "processing": "İşleniyor...",
+      "invalidToken": "Geçersiz veya eksik token. Lütfen şifre sıfırlama linkini tekrar kontrol edin.",
+      "tokenNotFound": "Token bulunamadı",
+      "successRedirect": "Şifreniz başarıyla sıfırlandı. Giriş ekranına yönlendiriliyorsunuz...",
+      "failed": "Şifre sıfırlama işlemi başarısız oldu.",
+      "error": "Şifre sıfırlama işlemi sırasında bir hata oluştu."
+    },
+    "changePassword": {
+      "success": "Şifre başarıyla değiştirildi.",
+      "error": "Şifre değiştirilemedi."
+    },
+    "validation": {
+      "emailRequired": "E-posta zorunludur",
+      "emailInvalid": "Geçerli bir email adresi giriniz",
+      "passwordRequired": "Şifre zorunludur",
+      "branchRequired": "Şube seçimi zorunludur",
+      "passwordMinLength": "Şifre en az 8 karakter olmalıdır",
+      "tokenRequired": "Token zorunludur",
+      "newPasswordMinLength": "Şifre en az 6 karakter olmalıdır",
+      "confirmPasswordRequired": "Şifre tekrarı zorunludur",
+      "passwordsMismatch": "Şifreler eşleşmiyor",
+      "currentPasswordRequired": "Mevcut şifre zorunludur",
+      "newPasswordMaxLength": "Yeni şifre en fazla 100 karakter olabilir",
+      "newPasswordSameAsCurrent": "Yeni şifre mevcut şifre ile aynı olamaz",
+      "requiredFieldsNotFilled": "Zorunlu alanlar doldurulmadı."
+    }
+  }
+}

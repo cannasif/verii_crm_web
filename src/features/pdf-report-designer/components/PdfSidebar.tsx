@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
@@ -47,6 +47,7 @@ export interface PdfSidebarProps {
   exchangeRateFields?: PdfFieldPaletteItem[];
   imageFields?: PdfFieldPaletteItem[];
   templateId?: number | null;
+  ruleType?: number;
 }
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
@@ -114,11 +115,15 @@ function Section({
 }
 
 function TextPropertiesPanel(): ReactElement | null {
-  const { t } = useTranslation();
-  const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
+  const { t } = useTranslation(['report-designer', 'common']);
+  const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
+  const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
-  const elements = getOrderedElements();
+  const elements = useMemo(
+    () => elementOrder.map((id) => elementsById[id]).filter(Boolean),
+    [elementOrder, elementsById]
+  );
   const selectedElement = elements.find((el) => selectedIds.includes(el.id));
   if (
     !selectedElement ||
@@ -211,11 +216,15 @@ function TextPropertiesPanel(): ReactElement | null {
 }
 
 function FieldPropertiesPanel(): ReactElement | null {
-  const { t } = useTranslation();
-  const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
+  const { t } = useTranslation(['report-designer', 'common']);
+  const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
+  const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
-  const elements = getOrderedElements();
+  const elements = useMemo(
+    () => elementOrder.map((id) => elementsById[id]).filter(Boolean),
+    [elementOrder, elementsById]
+  );
   const selectedElement = elements.find((el) => selectedIds.includes(el.id));
   if (
     !selectedElement ||
@@ -307,12 +316,22 @@ function FieldPropertiesPanel(): ReactElement | null {
   );
 }
 
-function ImagePropertiesPanel({ templateId }: { templateId?: number | null }): ReactElement | null {
-  const { t } = useTranslation();
-  const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
+function ImagePropertiesPanel({
+  templateId,
+  ruleType,
+}: {
+  templateId?: number | null;
+  ruleType?: number;
+}): ReactElement | null {
+  const { t } = useTranslation(['report-designer', 'common']);
+  const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
+  const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
-  const elements = getOrderedElements();
+  const elements = useMemo(
+    () => elementOrder.map((id) => elementsById[id]).filter(Boolean),
+    [elementOrder, elementsById]
+  );
   const selectedElement = elements.find((el) => selectedIds.includes(el.id));
   if (
     !selectedElement ||
@@ -336,7 +355,7 @@ function ImagePropertiesPanel({ templateId }: { templateId?: number | null }): R
       e.target.value = '';
       return;
     }
-    void uploadPdfTemplateImage(file, templateId ?? undefined)
+    void uploadPdfTemplateImage(file, templateId ?? undefined, ruleType)
       .then((relativeUrl) => {
         updateReportElement(selectedElement.id, { value: relativeUrl });
       })
@@ -421,8 +440,9 @@ export function PdfSidebar({
   exchangeRateFields,
   imageFields,
   templateId,
+  ruleType,
 }: PdfSidebarProps = {}): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['report-designer', 'common']);
   const [collapsed, setCollapsed] = useState(false);
   const fieldsItems = headerFields ?? [];
   const tableColumnsItems = lineFields ?? [];
@@ -502,7 +522,7 @@ export function PdfSidebar({
         <div className="flex flex-col gap-3 border-t border-slate-200 p-4 dark:border-slate-700">
           <TextPropertiesPanel />
           <FieldPropertiesPanel />
-            <ImagePropertiesPanel templateId={templateId} />
+      <ImagePropertiesPanel templateId={templateId} ruleType={ruleType} />
         </div>
       </div>
     </div>

@@ -5,16 +5,26 @@ const i18n = i18next.createInstance();
 
 type ResourceModule = { default: Record<string, string> };
 
-const modules = import.meta.glob('../locales/**/*.json');
+const sharedModules = import.meta.glob('../locales/**/*.json');
+const featureModules = import.meta.glob('../features/**/localization/*.json');
 
 type LoaderMap = Record<string, Record<string, () => Promise<ResourceModule>>>;
 const loaders: LoaderMap = {};
 
-for (const [path, loader] of Object.entries(modules)) {
+for (const [path, loader] of Object.entries(sharedModules)) {
   const match = path.match(/\.\.\/locales\/([a-z-]+)\/(.+)\.json$/);
   if (!match) continue;
   const lang = match[1];
   const ns = match[2];
+  if (!loaders[lang]) loaders[lang] = {};
+  loaders[lang][ns] = loader as () => Promise<ResourceModule>;
+}
+
+for (const [path, loader] of Object.entries(featureModules)) {
+  const match = path.match(/\.\.\/features\/([^/]+)\/localization\/([a-z-]+)\.json$/);
+  if (!match) continue;
+  const ns = match[1];
+  const lang = match[2];
   if (!loaders[lang]) loaders[lang] = {};
   loaders[lang][ns] = loader as () => Promise<ResourceModule>;
 }
@@ -30,6 +40,30 @@ const formatMissingKey = (): string => {
   // Eksik çeviri durumunda kullanıcıya hiçbir İngilizce anahtar/kelime göstermemek için
   // sabit Türkçe bir placeholder kullanıyoruz.
   return 'Çeviri eksik';
+};
+
+const hoistFeatureRootsIntoBundle = (
+  target: Record<string, unknown>,
+  sourceFeatureNs: string,
+  scoped: Record<string, unknown>
+): void => {
+  if (sourceFeatureNs === 'report-designer') {
+    const innerReport = scoped.reportDesigner;
+    const innerPdf = scoped.pdfReportDesigner;
+    if (innerReport !== null && typeof innerReport === 'object' && !Array.isArray(innerReport)) {
+      target.reportDesigner = innerReport;
+    }
+    if (innerPdf !== null && typeof innerPdf === 'object' && !Array.isArray(innerPdf)) {
+      target.pdfReportDesigner = innerPdf;
+    }
+    return;
+  }
+  if (sourceFeatureNs === 'category-definitions') {
+    const inner = scoped.categoryDefinitions;
+    if (inner !== null && typeof inner === 'object' && !Array.isArray(inner)) {
+      target.categoryDefinitions = inner;
+    }
+  }
 };
 
 const withNamespaceCompatibility = (
@@ -95,6 +129,7 @@ export async function loadLanguage(lang: string): Promise<void> {
       // Ensures `t('quotation.*')` works even when the active namespace is `common`.
       (baseCompatibility as Record<string, unknown>)[otherNs] = scopedBundle;
       (baseCompatibility as Record<string, unknown>)[toCamelCase(otherNs)] = scopedBundle;
+      hoistFeatureRootsIntoBundle(baseCompatibility as Record<string, unknown>, otherNs, scopedBundle);
     }
 
     i18n.addResourceBundle(target, ns, baseCompatibility, true, true);

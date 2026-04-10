@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Clock, FileText } from 'lucide-react';
 
 export function WaitingApprovalsSidebar(): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['quotation', 'common']);
   const navigate = useNavigate();
   const { data: approvalsResponse, isLoading } = useWaitingApprovals({
     pageNumber: 1,

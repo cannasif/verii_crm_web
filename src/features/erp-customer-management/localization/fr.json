@@ -1,0 +1,85 @@
+{
+  "menu": "Client ERP",
+  "description": "Liste des clients issue du système ERP",
+  "loading": "Chargement...",
+  "noData": "Aucun client trouvé",
+  "table": {
+    "title": "Liste des clients",
+    "branchCode": "Code agence",
+    "businessUnitCode": "Code unité opérationnelle",
+    "customerCode": "Code client",
+    "customerName": "Nom du client",
+    "phone": "Téléphone",
+    "city": "Ville",
+    "district": "District",
+    "address": "Adresse",
+    "countryCode": "Code pays",
+    "email": "E-mail",
+    "website": "Site web",
+    "taxNumber": "Numéro fiscal",
+    "taxOffice": "Service des impôts",
+    "tcknNumber": "TCKN",
+    "visibleColumns": "Colonnes visibles",
+    "editColumns": "Modifier les colonnes"
+  },
+  "filterLabels": {
+    "branchCode": "Code agence",
+    "customerCode": "Code client",
+    "customerName": "Nom du client",
+    "city": "Ville",
+    "district": "District",
+    "taxNumber": "N° fiscal"
+  },
+  "placeholders": {
+    "quickSearch": "Recherche rapide...",
+    "all": "Tout",
+    "codeExample": "Ex. : 120...",
+    "nameExample": "Nom du client...",
+    "cityExample": "Ville...",
+    "districtExample": "District...",
+    "taxExample": "Fiscal/TCKN..."
+  },
+  "actions": {
+    "detailedFilter": "Filtre détaillé",
+    "clear": "Effacer",
+    "filter": "Filtrer",
+    "all": "TOUS",
+    "active": "ACTIF",
+    "passive": "PASSIF",
+    "apply": "AFFICHER LES RÉSULTATS"
+  },
+  "details": {
+    "title": "Détails client",
+    "addressInfo": "Informations d'adresse"
+  },
+  "common": {
+    "close": "Fermer",
+    "selectAll": "Tout sélectionner",
+    "ok": "OK",
+    "totalRecords": "Nombre total d'enregistrements"
+  },
+  "advancedFilter": {
+    "title": "Filtre avancé",
+    "add": "Ajouter un filtre",
+    "column": "Colonne",
+    "operator": "Opérateur",
+    "value": "Valeur",
+    "search": "Rechercher",
+    "clear": "Effacer",
+    "remove": "Retirer",
+    "columnCustomerCode": "Code client",
+    "columnCustomerName": "Nom du client",
+    "columnBranchCode": "Code agence",
+    "columnCity": "Ville",
+    "columnDistrict": "District",
+    "columnTaxNumber": "N° fiscal",
+    "operatorContains": "Contient",
+    "operatorStartsWith": "Commence par",
+    "operatorEndsWith": "Se termine par",
+    "operatorEquals": "Égal à",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
+  }
+}

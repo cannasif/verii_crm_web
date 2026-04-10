@@ -51,7 +51,7 @@ import {
 import { ManagementDataTableChrome } from '@/components/shared';
 
 export function WaitingApprovalsPage(): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['demand', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const { data: approvals, isLoading } = useWaitingApprovals();

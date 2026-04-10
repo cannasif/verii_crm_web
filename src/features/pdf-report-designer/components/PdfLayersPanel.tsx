@@ -1,5 +1,5 @@
 import type { ChangeEvent, ReactElement } from 'react';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { Eye, EyeOff, Lock, Unlock, ChevronUp, ChevronDown, Layers, ChevronRight, Trash2, Settings, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -35,6 +35,7 @@ import {
 interface PdfLayersPanelProps {
   onNavigateToPage: (page: number) => void;
   templateId?: number | null;
+  ruleType?: number;
 }
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
@@ -44,9 +45,8 @@ function normalizeImageSrc(value: string): string {
   return `/${value}`;
 }
 
-export function PdfLayersPanel({ onNavigateToPage, templateId }: PdfLayersPanelProps): ReactElement {
-  const { t } = useTranslation();
-  const getOrderedElements = usePdfReportDesignerStore((s) => s.getOrderedElements);
+export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLayersPanelProps): ReactElement {
+  const { t } = useTranslation(['report-designer', 'common']);
   const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
@@ -61,7 +61,10 @@ export function PdfLayersPanel({ onNavigateToPage, templateId }: PdfLayersPanelP
   const [deleteDialogElementId, setDeleteDialogElementId] = useState<string | null>(null);
   const settingsPanelRef = useRef<HTMLDivElement | null>(null);
 
-  const elements = getOrderedElements();
+  const elements = useMemo(
+    () => elementOrder.map((id) => elementsById[id]).filter(Boolean),
+    [elementOrder, elementsById]
+  );
   const [collapsed, setCollapsed] = useState(false);
   const selectedElement =
     selectedIds.length === 1 ? elementsById[selectedIds[0]] : null;
@@ -115,7 +118,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId }: PdfLayersPanelP
         return;
       }
 
-      void uploadPdfTemplateImage(file, templateId ?? undefined)
+      void uploadPdfTemplateImage(file, templateId ?? undefined, ruleType)
         .then((relativeUrl) => {
           updateReportElement(selectedElement.id, { value: relativeUrl });
         })
@@ -126,7 +129,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId }: PdfLayersPanelP
         });
       e.target.value = '';
     },
-    [selectedElement, t, updateReportElement]
+    [selectedElement, t, updateReportElement, templateId, ruleType]
   );
 
   if (collapsed) {

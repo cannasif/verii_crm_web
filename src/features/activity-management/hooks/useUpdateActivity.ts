@@ -6,7 +6,7 @@ import { queryKeys, ACTIVITY_QUERY_KEYS } from '../utils/query-keys';
 import type { UpdateActivityDto, ActivityDto } from '../types/activity-types';
 
 export const useUpdateActivity = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['activity-management', 'common']);
   const queryClient = useQueryClient();
 
   return useMutation({

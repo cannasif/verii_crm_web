@@ -8,7 +8,7 @@ export const useDeleteDemandLine = (
   demandId: number
 ): UseMutationResult<void, Error, number, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
 
   return useMutation({
     mutationFn: (id: number) => demandApi.deleteDemandLine(id),

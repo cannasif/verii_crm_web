@@ -1,0 +1,132 @@
+{
+  "help": {
+    "permissionDefinition": {
+      "code": "Clé unique utilisée par les garde-routes et garde-pages. Privilégiez une notation snake_case ou par points stable.",
+      "name": "Libellé affiché aux administrateurs lors de la gestion des autorisations.",
+      "description": "Description interne facultative de cette autorisation.",
+      "isActive": "Les autorisations inactives sont ignorées lors du calcul des accès.",
+      "save": "Les modifications influencent les flux d’autorisation des rôles et des groupes."
+    },
+    "permissionGroup": {
+      "name": "Nom du groupe pour l’identifier lors de l’attribution aux utilisateurs.",
+      "isSystemAdmin": "Les membres de ce groupe accèdent à toutes les pages et actions sans vérification individuelle.",
+      "isActive": "Les groupes inactifs ne doivent plus être attribués pour de nouvelles décisions d’accès.",
+      "permissions": "Les autorisations sélectionnées définissent ce à quoi les membres du groupe peuvent accéder.",
+      "save": "Met à jour l’accès effectif de tous les utilisateurs affectés à ce groupe."
+    },
+    "userAssignment": {
+      "user": "Sélectionnez l’utilisateur dont vous voulez gérer le périmètre d’accès.",
+      "groups": "L’utilisateur reçoit l’ensemble des autorisations fusionnées de tous les groupes sélectionnés.",
+      "save": "Les attributions s’appliquent immédiatement aux prochains contrôles d’autorisation. Une actualisation de session peut être nécessaire.",
+      "systemAdminNote": "Si l’utilisateur appartient à un groupe administrateur système, les autorisations détaillées sont ignorées."
+    }
+  },
+  "permissionDefinitions": {
+    "title": "Définitions d’autorisations",
+    "description": "Gérer les codes d’autorisation utilisés dans le système",
+    "add": "Ajouter une définition",
+    "form": {
+      "editTitle": "Modifier la définition d’autorisation",
+      "addTitle": "Ajouter une définition d’autorisation",
+      "editDescription": "Mettre à jour les informations de la définition",
+      "addDescription": "Créer une nouvelle définition d’autorisation",
+      "code": "Code",
+      "codePlaceholder": "Choisir un code",
+      "affectedRoutes": "Pages concernées",
+      "affectedRoutesNone": "Aucune route correspondante pour ce code",
+      "name": "Nom",
+      "namePlaceholder": "Libellé",
+      "description": "Description",
+      "descriptionPlaceholder": "Description facultative",
+      "isActive": "Actif",
+      "codeSearchPlaceholder": "Rechercher...",
+      "codeEmpty": "Aucun résultat"
+    },
+    "table": {
+      "title": "Définitions d’autorisations",
+      "code": "Code",
+      "name": "Nom",
+      "isActive": "Actif",
+      "updatedDate": "Mis à jour",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "delete": {
+      "confirmTitle": "Supprimer la définition d’autorisation",
+      "confirmMessage": "Voulez-vous vraiment supprimer « {{name}} » ? Cette action est irréversible."
+    },
+    "syncFromRoutes": "Synchroniser depuis les routes"
+  },
+  "permissionGroups": {
+    "title": "Groupes d’autorisations",
+    "description": "Gérer les groupes d’autorisations et leurs attributions",
+    "systemAdminLocked": "Le groupe administrateur système ne peut pas être modifié",
+    "add": "Ajouter un groupe",
+    "selectAll": "Tout sélectionner",
+    "noDefinitions": "Aucune définition d’autorisation disponible",
+    "form": {
+      "editTitle": "Modifier le groupe d’autorisations",
+      "addTitle": "Ajouter un groupe d’autorisations",
+      "editDescription": "Mettre à jour les informations du groupe",
+      "addDescription": "Créer un nouveau groupe d’autorisations",
+      "name": "Nom",
+      "namePlaceholder": "Nom du groupe",
+      "description": "Description",
+      "descriptionPlaceholder": "Description facultative",
+      "isSystemAdmin": "Administrateur système",
+      "isActive": "Actif",
+      "permissions": "Autorisations"
+    },
+    "table": {
+      "title": "Groupes d’autorisations",
+      "name": "Nom",
+      "isSystemAdmin": "Administrateur système",
+      "isActive": "Actif",
+      "permissionCount": "Autorisations",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "managePermissions": "Gérer les autorisations",
+    "permissionsPanel": {
+      "title": "Modifier les autorisations du groupe",
+      "description": "Sélectionnez les autorisations pour ce groupe",
+      "currentCodes": "Codes d’autorisation actuels"
+    },
+    "delete": {
+      "confirmTitle": "Supprimer le groupe d’autorisations",
+      "confirmMessage": "Voulez-vous vraiment supprimer « {{name}} » ? Cette action est irréversible."
+    },
+    "search": "Rechercher..."
+  },
+  "userGroupAssignments": {
+    "title": "Attributions utilisateur ↔ groupes",
+    "description": "Attribuer des groupes d’autorisations aux utilisateurs",
+    "selectUser": "Sélectionner un utilisateur",
+    "selectUserPlaceholder": "Rechercher et sélectionner un utilisateur...",
+    "selectUserHint": "Sélectionnez un utilisateur pour gérer ses attributions de groupes",
+    "assignedGroups": "Groupes d’autorisations attribués",
+    "noUsers": "Aucun utilisateur trouvé",
+    "noGroups": "Aucun groupe d’autorisations disponible",
+    "selectAll": "Tout sélectionner"
+  },
+  "common": {
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "save": "Enregistrer et appliquer",
+    "loading": "Chargement...",
+    "search": "Rechercher...",
+    "noData": "Aucune donnée",
+    "actions": "Actions",
+    "yes": "Oui",
+    "no": "Non",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "processing": "Traitement..."
+  },
+  "sidebar": {
+    "accessControl": "Contrôle d’accès",
+    "permissionDefinitions": "Définitions d’autorisations",
+    "permissionGroups": "Groupes d’autorisations",
+    "userGroupAssignments": "Attributions utilisateurs et groupes"
+  }
+}

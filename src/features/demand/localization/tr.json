@@ -1,0 +1,298 @@
+{
+  "loading": "Yükleniyor...",
+  "saving": "Kaydediliyor...",
+  "error": "Hata",
+  "noData": "Veri bulunamadı",
+  "previous": "Önceki",
+  "next": "Sonraki",
+  "actions": "İşlemler",
+  "edit": "Düzenle",
+  "delete": "Sil",
+  "back": "Geri",
+  "refresh": "Yenile",
+  "select": "Seç",
+  "yes": "Evet",
+  "add": "Ekle",
+  "backToQuotations": "Taleplere Dön",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "confirm": "Onayla",
+  "saveAndApply": "Kaydet ve Uygula",
+  "list": {
+    "revise": "Revize Et",
+    "showing": "{{total}} kayıttan {{from}}-{{to}} arası gösteriliyor",
+    "title": "Talep Listesi",
+    "description": "Tüm talepleri görüntüle ve yönet",
+    "detail": "Detay",
+    "createNew": "Yeni Talep Oluştur",
+    "searchPlaceholder": "Talep no veya müşteri adı ile ara...",
+    "cardTitle": "Talep listesi",
+    "refresh": "Yenile",
+    "actions": "İşlemler",
+    "id": "ID",
+    "offerNo": "Talep No",
+    "revisionNo": "Revizyon No",
+    "customer": "Müşteri",
+    "customerCode": "Cari Kodu",
+    "representative": "Satış Temsilcisi",
+    "offerDate": "Talep Tarihi",
+    "validUntil": "Geçerlilik",
+    "currency": "Para Birimi",
+    "grandTotal": "Genel Toplam",
+    "status": "Durum"
+  },
+  "detail": {
+    "title": "Talep Detayı",
+    "subtitle": "Talep detaylarını görüntüleyin ve yönetin.",
+    "notFound": "Talep bulunamadı.",
+    "revisionNo": "Revizyon No",
+    "tabDetail": "Detay",
+    "tabApprovalFlow": "Onay Akışı",
+    "tabReport": "Rapor"
+  },
+  "create": {
+    "title": "Yeni Talep Oluştur",
+    "submit": "Talebi Kaydet ve Onaya Gönder",
+    "success": "Talep Başarıyla Oluşturuldu",
+    "successMessage": "Talep onay sürecine gönderildi.",
+    "error": "Talep Oluşturulamadı",
+    "errorMessage": "Talep oluşturulurken bir hata meydana geldi.",
+    "subtitle": "Talep bilgilerini doldurun ve kaydedin.",
+    "deliveryDateRequired": "Teslim tarihi zorunludur.",
+    "paymentTypeRequired": "Ödeme tipi zorunludur.",
+    "invalidCurrency": "Geçersiz para birimi.",
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "notesMaxLengthError": "Her not en fazla 400 karakter olabilir."
+  },
+  "header": {
+    "title": "Talep Bilgileri",
+    "customer": "Müşteri",
+    "selectCustomer": "Müşteri seçin",
+    "shippingAddress": "Teslimat Adresi",
+    "selectShippingAddress": "Teslimat adresi seçin",
+    "representative": "Satış Temsilcisi",
+    "selectRepresentative": "Temsilci seçin",
+    "offerType": "Talep Tipi",
+    "selectOfferType": "Talep tipi seçin",
+    "currency": "Para Birimi",
+    "selectCurrency": "Lütfen para birimi seçin",
+    "showExchangeRates": "Döviz Kurlarını Göster",
+    "offerDate": "Talep Tarihi",
+    "deliveryDate": "Teslim Tarihi",
+    "paymentType": "Ödeme Tipi",
+    "selectPaymentType": "Ödeme tipi seçin",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Açıklama girin",
+    "offerNo": "Talep No",
+    "offerNoPlaceholder": "Talep numarası",
+    "currencyChange": {
+      "title": "Para Birimi Değişikliği",
+      "message": "Para birimi değiştiğinde, mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
+    },
+    "deliveryMethod": "Teslimat Yöntemi",
+    "documentDetail": "Belge Açıklaması"
+  },
+  "lines": {
+    "title": "Talep Satırları",
+    "add": "Satır Ekle",
+    "empty": "Henüz satır eklenmedi",
+    "emptyDescription": "Talep satırları eklemek için \"Stok Seç\" veya \"Satır Ekle\" butonunu kullanın",
+    "itemCount": "{{count}} satır",
+    "editLine": "Satırı Düzenle",
+    "selectStock": "Stok Seç",
+    "selectProduct": "Ürün Seç",
+    "selectStockFirst": "Stok seçilmedi",
+    "stock": "Stok",
+    "productCode": "Stok Kodu",
+    "enterProductCode": "Ürün kodu girin veya arayın",
+    "productName": "Stok Adı",
+    "enterProductName": "Ürün adı girin",
+    "quantity": "Miktar",
+    "unitPrice": "Birim Fiyat",
+    "discount1": "İndirim 1 %",
+    "discount2": "İndirim 2 %",
+    "discount3": "İndirim 3 %",
+    "discounts": "İndirimler",
+    "discountAmount": "İndirim Tutarı",
+    "netPrice": "Net Fiyat",
+    "vatRate": "KDV Oranı %",
+    "lineTotal": "Satır Toplamı (KDV Dahil)",
+    "calculations": "Hesaplamalar",
+    "required": "En az 1 satır eklenmelidir",
+    "noProductsFound": "Ürün bulunamadı",
+    "delete": {
+      "confirmTitle": "Satırı Sil",
+      "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?",
+      "confirmTitleMultiple": "Satırları Sil",
+      "confirmMessageMultiple": "Seçilen satırları silmek istediğinize emin misiniz?"
+    },
+    "noItems": "Henüz satır yok.",
+    "addLine": "Satır Ekle",
+    "relatedStocks": "Bağlı Stoklar",
+    "groupCode": "Grup Kodu",
+    "approvalRequired": "Onay Gerekli",
+    "requiredFieldsMissing": "Zorunlu satır alanları eksik.",
+    "createSuccess": "Satır eklendi.",
+    "createError": "Satır eklenemedi.",
+    "updateSuccess": "Satır güncellendi.",
+    "updateError": "Satır güncellenemedi.",
+    "deleteSuccess": "Satır silindi.",
+    "deleteError": "Satır silinemedi.",
+    "editStockItemDetails": "Stok kalemi detaylarını düzenleyin",
+    "description1": "Açıklama 1",
+    "description2": "Açıklama 2",
+    "description3": "Açıklama 3",
+    "descriptionPlaceholder": "Açıklama giriniz..."
+  },
+  "exchangeRates": {
+    "title": "Döviz Kurları",
+    "currency": "Para Birimi",
+    "rate": "Kur",
+    "date": "Kur Tarihi",
+    "isOfficial": "Resmi Kur",
+    "official": "Resmi",
+    "custom": "Özel",
+    "empty": "Döviz kuru bulunamadı",
+    "status": "Durum",
+    "dialog": {
+      "title": "Döviz Kurları",
+      "description": "Gerekirse döviz kurlarını görüntüleyin ve düzenleyin. Değiştirilen kurlar resmi kur olarak işaretlenmeyecektir.",
+      "subtitle": "Kurları düzenleyip kaydedebilirsiniz.",
+      "info": "Resmi kur dışında manuel güncelleme yapılabilir."
+    },
+    "updateSuccess": "Döviz kurları güncellendi.",
+    "updateError": "Döviz kurları güncellenemedi.",
+    "cannotEditUsedCurrency": "Kullanılan para birimi düzenlenemez.",
+    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
+  },
+  "summary": {
+    "title": "Özet",
+    "grandTotalAnalysis": "Genel Toplam Analizi",
+    "subtotal": "Ara Toplam",
+    "totalVat": "Toplam KDV",
+    "grandTotal": "Genel Toplam",
+    "generalDiscount": "Genel İndirim",
+    "generalDiscountRate": "Genel İndirim Oranı",
+    "generalDiscountAmount": "Genel İndirim Tutarı",
+    "generalDiscountHelp": "Toplam üzerinden uygulanır."
+  },
+  "offerType": {
+    "domestic": "Yurtiçi",
+    "export": "İhracat"
+  },
+  "wizard": {
+    "title": "Yeni Talep Oluştur",
+    "step1": {
+      "title": "Adım 1: Talep Bilgileri",
+      "description": "Talep başlık bilgilerini ve döviz kurlarını girin",
+      "validation": {
+        "offerType": "Talep Tipi",
+        "currency": "Para Birimi",
+        "exchangeRate": "Döviz Kuru"
+      },
+      "exchangeRate": {
+        "required": "TRY olmayan para birimleri için en az bir döviz kuru eklenmelidir"
+      },
+      "currency": {
+        "try": {
+          "info": "TRY seçildiğinde döviz kuru gerekli değildir"
+        }
+      }
+    },
+    "step2": {
+      "title": "Adım 2: Talep Satırları",
+      "description": "Ürün ve fiyat bilgilerini ekleyin",
+      "info": "En az bir satır eklemelisiniz",
+      "validation": {
+        "noLines": "En az bir satır eklenmelidir",
+        "invalidLines": "Tüm satırlar geçerli bilgiye sahip olmalıdır",
+        "allValid": "{{count}} satır başarıyla eklendi"
+      }
+    },
+    "step3": {
+      "title": "Adım 3: Özet ve Onay",
+      "description": "Bilgileri gözden geçirin ve talebi kaydedin",
+      "header": {
+        "title": "Talep Bilgileri"
+      },
+      "lines": {
+        "title": "Talep Satırları"
+      },
+      "summary": {
+        "title": "Nihai Özet"
+      },
+      "approval": {
+        "info": "Talep kaydedildikten sonra otomatik olarak onay sürecine gönderilecektir"
+      }
+    }
+  },
+  "loadError": "Veriler yüklenirken hata oluştu.",
+  "backToDemands": "Taleplere Dön",
+  "untitled": "Başlıksız",
+  "sections": {
+    "header": "Başlık Bilgileri",
+    "lines": "Satırlar",
+    "summary": "Özet"
+  },
+  "approval": {
+    "approve": "Onayla",
+    "reject": "Reddet",
+    "sending": "Gönderiliyor...",
+    "sendForApproval": "Onaya Gönder",
+    "approveSuccess": "Onay işlemi başarılı.",
+    "approveError": "Onay işlemi başarısız.",
+    "rejectSuccess": "Red işlemi başarılı.",
+    "rejectError": "Red işlemi başarısız.",
+    "startSuccess": "Onay süreci başlatıldı.",
+    "startError": "Onay süreci başlatılamadı.",
+    "rejectTitle": "Talebi Reddet",
+    "rejectDescription": "Reddetme gerekçesini girin.",
+    "rejectReasonPlaceholder": "Reddetme nedeni",
+    "statusFilterLabel": "Onay durumu",
+    "status": {
+      "notRequired": "Gerekli Değil",
+      "waiting": "Bekliyor",
+      "approved": "Onaylandı",
+      "rejected": "Reddedildi",
+      "closed": "Kapandı"
+    }
+  },
+  "approvalFlow": {
+    "noData": "Onay adımı bulunamadı.",
+    "notStarted": "Başlatılmadı",
+    "stepCompleted": "Adım tamamlandı",
+    "stepInProgress": "Adım devam ediyor",
+    "stepNotStarted": "Adım bekliyor",
+    "stepRejected": "Adım reddedildi",
+    "errorTitle": "Hata Oluştu"
+  },
+  "update": {
+    "success": "Talep güncellendi.",
+    "successMessage": "Talep başarıyla güncellendi.",
+    "error": "Talep güncellenemedi.",
+    "errorMessage": "Talep güncelleme sırasında hata oluştu.",
+    "invalidCurrency": "Geçersiz para birimi.",
+    "validationError": "Form doğrulama hatası oluştu."
+  },
+  "revision": {
+    "success": "Revizyon oluşturuldu.",
+    "error": "Revizyon oluşturulamadı."
+  },
+  "waitingApprovals": {
+    "title": "Bekleyen Onay Talepleri",
+    "list": "Bekleyen Onay Listesi",
+    "noApprovals": "Bekleyen onay bulunamadı.",
+    "requestId": "Talep No",
+    "description": "Açıklama",
+    "stepOrder": "Adım",
+    "approvedBy": "Onaylayan",
+    "actionDate": "İşlem Tarihi",
+    "status": "Durum",
+    "waiting": "Bekliyor"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "Her not en fazla 100 karakter olabilir. Lütfen kontrol edin."
+    }
+  }
+}

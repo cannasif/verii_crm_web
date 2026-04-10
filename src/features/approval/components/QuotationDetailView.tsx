@@ -16,7 +16,7 @@ interface QuotationDetailViewProps {
 }
 
 export function QuotationDetailView({ quotation }: QuotationDetailViewProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['approval', 'common']);
 
   const formatCurrency = (amount: number, currency: string): string => {
     return new Intl.NumberFormat(i18n.language, {

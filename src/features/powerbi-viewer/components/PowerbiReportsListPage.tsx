@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, ExternalLink } from 'lucide-react';
 
 export function PowerbiReportsListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['powerbi-viewer', 'common']);
   const { setPageTitle } = useUIStore();
   const { data: items = [], isLoading } = usePowerbiReportsList();
 

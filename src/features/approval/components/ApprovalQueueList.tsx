@@ -10,7 +10,7 @@ import { ApprovalDetailModal } from './ApprovalDetailModal';
 import type { ApprovalQueueGetDto } from '../types/approval-types';
 
 export function ApprovalQueueList(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['approval', 'common']);
   const { setPageTitle } = useUIStore();
   const { data: pendingApprovals, isLoading, error } = usePendingApprovals();
   const [selectedQueue, setSelectedQueue] = useState<ApprovalQueueGetDto | null>(null);

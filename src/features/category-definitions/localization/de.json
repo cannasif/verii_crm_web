@@ -1,0 +1,423 @@
+{
+  "categoryDefinitions": {
+    "title": "Kategoriedefinitionen",
+    "description": "Hier können Sie den Kategoriebaum und die verknüpften Lagerartikel für B2B- und B2C-Kataloge verwalten.",
+    "guidedTitle": "Verwalten Sie die Kategoriestruktur in 3 klaren Schritten",
+    "easyModeTitle": "Sie müssen hier nicht raten, was als Nächstes zu tun ist",
+    "summaryGuideTitle": "Ich zeige Ihnen direkt den richtigen nächsten Schritt",
+    "createCatalogTitle": "Neuen Katalog erstellen",
+    "createCatalogDescription": "Fügen Sie eine neue Katalogdefinition für B2B-, B2C- oder benutzerdefinierte Abläufe hinzu.",
+    "editCatalogTitle": "Katalog bearbeiten",
+    "editCatalogDescription": "Aktualisieren Sie Name, Typ und Reihenfolge des ausgewählten Katalogs.",
+    "createCategoryTitle": "Kategorie hinzufügen",
+    "createCategoryDescription": "Erstellen Sie eine neue Kategorie unter {{target}}.",
+    "editCategoryTitle": "Kategorie bearbeiten",
+    "editCategoryDescription": "Aktualisieren Sie die Kategoriedaten für {{target}}.",
+    "createCategoryTarget": "Zielstufe",
+    "deleteCatalogConfirm": "Möchten Sie den Katalog {{name}} wirklich löschen?",
+    "deleteCategoryConfirm": "Möchten Sie die Kategorie {{name}} wirklich löschen?",
+    "deleteStockConfirm": "Möchten Sie diese Artikelzuordnung wirklich entfernen?",
+    "createRuleTitle": "Regel hinzufügen",
+    "createRuleDescription": "Erstellen Sie eine automatische Zuordnungsregel für die Kategorie {{category}}.",
+    "editRuleTitle": "Regel bearbeiten",
+    "editRuleDescription": "Aktualisieren Sie die Regel für die Kategorie {{category}}.",
+    "deleteRuleConfirm": "Möchten Sie die Regel {{name}} wirklich löschen?",
+    "noRules": "Für diese Kategorie wurden noch keine Regeln definiert.",
+    "rulePriority": "Priorität {{priority}}",
+    "catalogsTitle": "Kataloge",
+    "catalogsDescription": "Wählen Sie zuerst den Katalog aus, mit dem Sie arbeiten möchten.",
+    "catalogDescriptionFallback": "Für diesen Katalog wurde noch keine Beschreibung hinterlegt.",
+    "catalogHelperText": "Kurz gesagt: Links Katalog wählen, in der Mitte im Baum nach unten gehen, rechts Artikel und Regeln verwalten.",
+    "treeTitle": "Kategoriebaum",
+    "treeDescription": "Navigieren Sie ähnlich wie bei Trendyol oder Hepsiburada von Kategorie zu Unterkategorie.",
+    "treeReorderHint": "Sie können Kategorien derselben Ebene per Drag-and-drop neu sortieren.",
+    "chooseCatalogFirst": "Wählen Sie zuerst links einen Katalog. Ohne Katalog startet die Kategorienverwaltung nicht.",
+    "stocksTitle": "Kategorieartikel",
+    "stocksDescription": "Die dem ausgewählten Blattknoten zugeordneten Artikel werden hier angezeigt.",
+    "stocksDescriptionSelected": "Artikel in der Kategorie {{category}}",
+    "stocksGuideTitle": "Wofür ist dieser Bereich da?",
+    "stocksGuideDescription": "Hier legen Sie fest, welche Produkte zur ausgewählten Kategorie gehören. Bei Bedarf können Sie Artikel einzeln zuordnen.",
+    "stocksHelperText": "Einfacher Ablauf: zuerst eine Kategorie wählen, dann auf 'Artikel zuordnen' klicken und anschließend das Produkt aus der Liste auswählen.",
+    "rulesGuideTitle": "Was macht der Regelbereich?",
+    "rulesGuideDescription": "Wenn Sie ähnliche Produkte nicht einzeln zuordnen möchten, definieren Sie hier eine Regel. Zum Beispiel: Wenn Code1 = GLAS, dann gehört der Artikel in diese Kategorie.",
+    "rulesHelperText": "Zuerst die Regel anlegen. Dann mit 'Regeln vorschauen' prüfen, was passieren wird. Wenn alles passt, mit 'Regeln anwenden' automatisch zuordnen.",
+    "selectionTitle": "Auswahlstatus",
+    "selectionDescription": "Im rechten Bereich sehen Sie den gewählten Katalog, die Kategorie und die verknüpften Artikel auf einen Blick.",
+    "selectionCatalog": "Katalog",
+    "selectionCategory": "Gewählte Kategorie",
+    "selectionCurrentLevel": "Aktuelle Ebene",
+    "selectionPath": "Pfad",
+    "selectionTotalStocks": "Verknüpfte Artikel",
+    "selectionValueEmpty": "Noch nicht ausgewählt",
+    "nextStepTitle": "Empfohlener nächster Schritt",
+    "nextStepChooseCatalog": "Wählen Sie zuerst links einen Katalog aus.",
+    "nextStepBrowseTree": "Gehen Sie im mittleren Bereich von Hauptkategorien in tiefere Ebenen.",
+    "nextStepSelectLeaf": "Wählen Sie eine Blattkategorie aus, um die Artikelliste zu sehen.",
+    "nextStepReviewStocks": "Prüfen Sie die mit der gewählten Kategorie verknüpften Artikel und bestätigen Sie die Zuordnung.",
+    "stepCatalogTitle": "Katalog wählen",
+    "stepCatalogDescription": "Legen Sie fest, ob Sie in einem B2B-, B2C- oder benutzerdefinierten Katalog arbeiten.",
+    "stepTreeTitle": "Im Baum navigieren",
+    "stepTreeDescription": "Bewegen Sie sich per Klick durch Hauptkategorien, Unterkategorien und tiefere Ebenen.",
+    "stepStocksTitle": "Artikel prüfen",
+    "stepStocksDescription": "Sobald eine Blattkategorie gewählt ist, sehen Sie rechts die verknüpften Artikel und ERP-Code-Aufteilungen.",
+    "ready": "Bereit",
+    "pending": "Ausstehend",
+    "openBranchAction": "Unterkategorien öffnen",
+    "selectLeafAction": "Diese Kategorie wählen",
+    "root": "Wurzel",
+    "leaf": "Blatt",
+    "branch": "Zweig",
+    "noCatalogs": "Es wurden noch keine Kataloge definiert.",
+    "noCategories": "Auf dieser Ebene wurden keine Kategorien gefunden.",
+    "noStocks": "Mit dieser Kategorie sind keine Artikel verknüpft.",
+    "selectLeafHint": "Wählen Sie eine Blattkategorie aus, um verknüpfte Artikel zu sehen.",
+    "stockSearchPlaceholder": "Nach Lagercode oder Lagername suchen...",
+    "primaryBadge": "Hauptkategorie",
+    "tabs": {
+      "summary": "Was soll ich tun?",
+      "stocks": "Artikel zuordnen",
+      "rules": "Regel anlegen",
+      "tips": "Hinweise"
+    },
+    "catalogTypes": {
+      "b2b": "B2B",
+      "b2c": "B2C",
+      "dealer": "Händler",
+      "custom": "Benutzerdefiniert"
+    },
+    "tips": {
+      "catalogTitle": "1. Wählen Sie zuerst den richtigen Katalog",
+      "catalogDescription": "Auch bei ähnlichen Kategorienamen können B2B und B2C unterschiedliche Katalogstrukturen benötigen.",
+      "branchTitle": "2. Zweigkategorien dienen der Navigation",
+      "branchDescription": "Zweigkategorien sind nicht der letzte Auswahlpunkt. Sie führen den Benutzer zur richtigen Unterebene.",
+      "leafTitle": "3. Prüfen Sie Artikel auf der Blattkategorie",
+      "leafDescription": "Die verknüpfte Artikelliste wird auf der Blattkategorie am aussagekräftigsten. Dort sollte die finale Prüfung erfolgen."
+    },
+    "actions": {
+      "newCatalog": "Neuer Katalog",
+      "createCatalog": "Katalog erstellen",
+      "addRootCategory": "Wurzelkategorie hinzufügen",
+      "addSubCategory": "Unterkategorie hinzufügen",
+      "createCategory": "Kategorie erstellen",
+      "uploadCategoryImage": "Bild hochladen",
+      "uploadingCategoryImage": "Bild wird hochgeladen",
+      "removeCategoryImage": "Bild entfernen",
+      "addStock": "Artikel zuordnen",
+      "removeStock": "Verknüpfung entfernen",
+      "addRule": "Regel hinzufügen",
+      "createRule": "Regel erstellen",
+      "previewRules": "Regeln vorschauen",
+      "previewingRules": "Vorschau wird erstellt",
+      "applyRules": "Regeln anwenden",
+      "applyingRules": "Regeln werden angewendet"
+    },
+    "messages": {
+      "catalogCreateSuccess": "Katalog erfolgreich erstellt.",
+      "catalogCreateError": "Katalog konnte nicht erstellt werden.",
+      "catalogUpdateSuccess": "Katalog erfolgreich aktualisiert.",
+      "catalogUpdateError": "Katalog konnte nicht aktualisiert werden.",
+      "catalogDeleteSuccess": "Katalog erfolgreich gelöscht.",
+      "catalogDeleteError": "Katalog konnte nicht gelöscht werden.",
+      "rootCategoryCreateSuccess": "Wurzelkategorie erfolgreich erstellt.",
+      "subCategoryCreateSuccess": "Unterkategorie erfolgreich erstellt.",
+      "categoryCreateError": "Kategorie konnte nicht erstellt werden.",
+      "categoryUpdateSuccess": "Kategorie erfolgreich aktualisiert.",
+      "categoryUpdateError": "Kategorie konnte nicht aktualisiert werden.",
+      "categoryReorderSuccess": "Reihenfolge der Kategorien wurde aktualisiert.",
+      "categoryReorderError": "Reihenfolge der Kategorien konnte nicht aktualisiert werden.",
+      "categoryDeleteSuccess": "Kategorie erfolgreich gelöscht.",
+      "categoryDeleteError": "Kategorie konnte nicht gelöscht werden.",
+      "stockAssignSuccess": "Artikel erfolgreich der Kategorie zugeordnet.",
+      "stockAssignError": "Artikel konnte der Kategorie nicht zugeordnet werden.",
+      "stockUnassignSuccess": "Artikelzuordnung erfolgreich entfernt.",
+      "stockUnassignError": "Artikelzuordnung konnte nicht entfernt werden.",
+      "ruleCreateSuccess": "Regel erfolgreich erstellt.",
+      "ruleCreateError": "Regel konnte nicht erstellt werden.",
+      "ruleUpdateSuccess": "Regel erfolgreich aktualisiert.",
+      "ruleUpdateError": "Regel konnte nicht aktualisiert werden.",
+      "ruleDeleteSuccess": "Regel erfolgreich gelöscht.",
+      "ruleDeleteError": "Regel konnte nicht gelöscht werden.",
+      "rulePreviewError": "Regelvorschau konnte nicht geladen werden.",
+      "ruleApplySuccess": "Regeln wurden erfolgreich angewendet.",
+      "ruleApplyError": "Regeln konnten nicht angewendet werden."
+    },
+    "rulePreviewSummaryTitle": "Zusammenfassung der Regelvorschau",
+    "rulePreviewSummary": {
+      "matched": "Passende Artikel: {{count}}",
+      "created": "Neue Zuordnungen: {{count}}",
+      "updated": "Zu aktualisierende Zuordnungen: {{count}}",
+      "skipped": "Manuelle Zuordnungen bleiben erhalten: {{count}}"
+    },
+    "rulePreviewListTitle": "Vorschau-Beispiele",
+    "rulePreviewListEmpty": "Für die Vorschau wurden keine Beispieltreffer gefunden.",
+    "rulePreviewMatchedRule": "Zugeordnete Regel: {{rule}} · Priorität {{priority}}",
+    "rulePreviewActions": {
+      "create": "Neue Zuordnung",
+      "update": "Zuordnung wird aktualisiert",
+      "skip": "Manuell geschützt"
+    },
+    "ruleApplySummaryTitle": "Zusammenfassung der Regelanwendung",
+    "ruleApplySummary": {
+      "matched": "Zugeordnete Artikel: {{count}}",
+      "created": "Neue Zuordnungen: {{count}}",
+      "updated": "Aktualisierte Zuordnungen: {{count}}",
+      "skipped": "Manuelle Zuordnungen beibehalten: {{count}}"
+    },
+    "form": {
+      "catalogName": "Katalogname",
+      "catalogNamePlaceholder": "Z. B. B2B Hauptkatalog",
+      "catalogCode": "Katalogcode",
+      "catalogCodePlaceholder": "Z. B. B2B_MAIN",
+      "catalogType": "Katalogtyp",
+      "branchCode": "Filialcode",
+      "branchCodePlaceholder": "Optional",
+      "sortOrder": "Sortierung",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie diese Definition kurz, damit andere Verantwortliche sie verstehen.",
+      "categoryName": "Kategoriename",
+      "categoryNamePlaceholder": "Z. B. Glassysteme",
+      "categoryCode": "Kategoricode",
+      "categoryCodePlaceholder": "Z. B. GLASS_SYSTEMS",
+      "nodeType": "Kategorietyp",
+      "visualPreset": "Visuelles Thema",
+      "visualPresetPlaceholder": "Thema suchen und auswählen",
+      "visualPresetSearchPlaceholder": "Thema suchen...",
+      "visualPresetEmpty": "Kein passendes Thema gefunden.",
+      "visualPresetHelp": "Hier laden Sie kein externes Bild hoch. Das System erzeugt das Erscheinungsbild der Kategorie anhand dieser Auswahl.",
+      "categoryImage": "Kategoriebild",
+      "categoryImageHelp": "Optional können Sie ein systemeigenes Bild hochladen. Dann wird auf der Kategoriekarte dieses Bild statt des Preset-Symbols verwendet.",
+      "ruleName": "Regelname",
+      "ruleCode": "Regelcode",
+      "stockAttribute": "Artikelattribut",
+      "operator": "Operator",
+      "ruleValue": "Regelwert",
+      "ruleValuePlaceholder": "Z. B. GLAS oder PROFIL,ZUBEHÖR",
+      "ruleValueDropdownPlaceholder": "Aus vorhandenen Artikelwerten wählen",
+      "ruleValueSearchPlaceholder": "ERP-Ausprägung suchen...",
+      "ruleValueLoading": "Werte werden geladen...",
+      "ruleValueEmpty": "Für dieses Feld wurden keine passenden Werte gefunden.",
+      "ruleValueDropdownHelp": "Das System listet echte ERP-Werte des gewählten Artikelattributs. Die Auswahl hier ist sicherer als manuelle Eingabe.",
+      "ruleValueInListHelp": "Beim Operator 'In Liste' können Sie mehrere Werte auswählen. Oben hinzufügen, per Klick auf das Badge wieder entfernen.",
+      "ruleValueInListEmpty": "Noch keine Werte hinzugefügt.",
+      "ruleValueManualHelp": "Dieser Operator arbeitet mit Freitext. Geben Sie hier den Text für enthält, beginnt mit oder endet mit ein.",
+      "ruleValueTopMatchesTitle": "Am häufigsten verwendete Werte im System",
+      "ruleValueTopMatchesSubtitle": "Per Klick schnell auswählen",
+      "ruleValueTopMatchesEmpty": "Für dieses Feld wurden keine hervorgehobenen Werte gefunden.",
+      "priority": "Priorität"
+    },
+    "visualPreviewTitle": "Kategorievorschau",
+    "visualPreviewFallback": "Kategorievorschau",
+    "visualPresets": {
+      "general": {
+        "label": "Allgemein"
+      },
+      "glass": {
+        "label": "Glas"
+      },
+      "profile": {
+        "label": "Profile"
+      },
+      "accessory": {
+        "label": "Zubehör"
+      },
+      "service": {
+        "label": "Service"
+      },
+      "logistics": {
+        "label": "Logistik"
+      },
+      "machinery": {
+        "label": "Maschine"
+      },
+      "electronics": {
+        "label": "Electronics"
+      },
+      "security": {
+        "label": "Sicherheit"
+      },
+      "lighting": {
+        "label": "Beleuchtung"
+      },
+      "construction": {
+        "label": "Bauwesen"
+      },
+      "furniture": {
+        "label": "Möbel"
+      },
+      "hardware": {
+        "label": "Eisenwaren"
+      },
+      "automation": {
+        "label": "Automation"
+      },
+      "energy": {
+        "label": "Energie"
+      },
+      "office": {
+        "label": "Büro"
+      },
+      "textile": {
+        "label": "Textilien"
+      },
+      "chemical": {
+        "label": "Chemie"
+      },
+      "outdoor": {
+        "label": "Außenbereich"
+      },
+      "cooling": {
+        "label": "Kühlung"
+      },
+      "heating": {
+        "label": "Heizung"
+      },
+      "plumbing": {
+        "label": "Sanitär"
+      },
+      "decoration": {
+        "label": "Dekoration"
+      },
+      "packaging": {
+        "label": "Verpackung"
+      },
+      "automotive": {
+        "label": "Automobil"
+      },
+      "agriculture": {
+        "label": "Landwirtschaft"
+      },
+      "medical": {
+        "label": "Medizinisch"
+      },
+      "pharmacy": {
+        "label": "Apotheke"
+      },
+      "cosmetics": {
+        "label": "Kosmetik"
+      },
+      "food": {
+        "label": "Lebensmittel"
+      },
+      "beverage": {
+        "label": "Getränke"
+      },
+      "cleaning": {
+        "label": "Reinigung"
+      },
+      "education": {
+        "label": "Bildung"
+      },
+      "finance": {
+        "label": "Finanzen"
+      },
+      "insurance": {
+        "label": "Versicherung"
+      },
+      "real-estate": {
+        "label": "Immobilien"
+      },
+      "tourism": {
+        "label": "Tourismus"
+      },
+      "hospitality": {
+        "label": "Unterkunft"
+      },
+      "restaurant": {
+        "label": "Restaurant"
+      },
+      "ecommerce": {
+        "label": "E-Commerce"
+      },
+      "retail": {
+        "label": "Einzelhandel"
+      },
+      "wholesale": {
+        "label": "Großhandel"
+      },
+      "manufacturing": {
+        "label": "Produktion"
+      },
+      "mining": {
+        "label": "Bergbau"
+      },
+      "marine": {
+        "label": "Schifffahrt"
+      },
+      "aviation": {
+        "label": "Luftfahrt"
+      },
+      "telecom": {
+        "label": "Telekommunikation"
+      },
+      "software": {
+        "label": "Software"
+      },
+      "data-center": {
+        "label": "Rechenzentrum"
+      },
+      "media": {
+        "label": "Medien"
+      },
+      "printing": {
+        "label": "Druck"
+      },
+      "sports": {
+        "label": "Sport"
+      },
+      "baby-kids": {
+        "label": "Baby & Kinder"
+      },
+      "pet": {
+        "label": "Haustier"
+      },
+      "jewelry": {
+        "label": "Schmuck"
+      },
+      "luxury": {
+        "label": "Luxus"
+      },
+      "stationery": {
+        "label": "Schreibwaren"
+      },
+      "laboratory": {
+        "label": "Labor"
+      },
+      "recycling": {
+        "label": "Recycling"
+      },
+      "defense": {
+        "label": "Verteidigung"
+      }
+    },
+    "ruleAttributes": {
+      "groupCode": "Gruppencode",
+      "groupName": "Gruppenname",
+      "code1": "Code 1",
+      "code1Name": "Code 1 Name",
+      "code2": "Code 2",
+      "code2Name": "Code 2 Name",
+      "code3": "Code 3",
+      "code3Name": "Code 3 Name",
+      "code4": "Code 4",
+      "code4Name": "Code 4 Name",
+      "code5": "Code 5",
+      "code5Name": "Code 5 Name",
+      "manufacturerCode": "Herstellercode",
+      "erpStockCode": "ERP-Artikelcode",
+      "stockName": "Artikelname"
+    },
+    "ruleOperators": {
+      "equals": "Gleich",
+      "contains": "Enthält",
+      "startsWith": "Beginnt mit",
+      "endsWith": "Endet mit",
+      "inList": "In Liste"
+    },
+    "meta": {
+      "group": "Gruppe",
+      "code1": "Code 1",
+      "code2": "Code 2",
+      "code3": "Code 3"
+    }
+  }
+}

@@ -48,7 +48,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
   const { calculateLineTotals } = useQuotationCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
 
   const createEmptyLine = useCallback(
     (product: ProductSelectionResult): QuotationLineFormState => {

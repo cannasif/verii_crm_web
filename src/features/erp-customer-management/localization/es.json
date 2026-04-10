@@ -1,0 +1,85 @@
+{
+  "menu": "Cliente ERP",
+  "description": "Lista de clientes del sistema ERP",
+  "loading": "Cargando...",
+  "noData": "No se encontraron clientes",
+  "table": {
+    "title": "Lista de clientes",
+    "branchCode": "Código de sucursal",
+    "businessUnitCode": "Código de unidad de negocio",
+    "customerCode": "Código de cliente",
+    "customerName": "Nombre del cliente",
+    "phone": "Teléfono",
+    "city": "Ciudad",
+    "district": "Distrito",
+    "address": "Dirección",
+    "countryCode": "Código de país",
+    "email": "Correo electrónico",
+    "website": "Sitio web",
+    "taxNumber": "NIF/CIF",
+    "taxOffice": "Delegación fiscal",
+    "tcknNumber": "TCKN",
+    "visibleColumns": "Columnas visibles",
+    "editColumns": "Editar columnas"
+  },
+  "filterLabels": {
+    "branchCode": "Código de sucursal",
+    "customerCode": "Código de cliente",
+    "customerName": "Nombre del cliente",
+    "city": "Ciudad",
+    "district": "Distrito",
+    "taxNumber": "NIF"
+  },
+  "placeholders": {
+    "quickSearch": "Búsqueda rápida...",
+    "all": "Todo",
+    "codeExample": "Ej.: 120...",
+    "nameExample": "Nombre del cliente...",
+    "cityExample": "Ciudad...",
+    "districtExample": "Distrito...",
+    "taxExample": "NIF/TCKN..."
+  },
+  "actions": {
+    "detailedFilter": "Filtro detallado",
+    "clear": "Limpiar",
+    "filter": "Filtrar",
+    "all": "TODOS",
+    "active": "ACTIVO",
+    "passive": "PASIVO",
+    "apply": "LISTAR RESULTADOS"
+  },
+  "details": {
+    "title": "Detalles del cliente",
+    "addressInfo": "Información de dirección"
+  },
+  "common": {
+    "close": "Cerrar",
+    "selectAll": "Seleccionar todo",
+    "ok": "ACEPTAR",
+    "totalRecords": "Total de registros"
+  },
+  "advancedFilter": {
+    "title": "Filtro avanzado",
+    "add": "Añadir filtro",
+    "column": "Columna",
+    "operator": "Operador",
+    "value": "Valor",
+    "search": "Buscar",
+    "clear": "Limpiar",
+    "remove": "Quitar",
+    "columnCustomerCode": "Código de cliente",
+    "columnCustomerName": "Nombre del cliente",
+    "columnBranchCode": "Código de sucursal",
+    "columnCity": "Ciudad",
+    "columnDistrict": "Distrito",
+    "columnTaxNumber": "NIF",
+    "operatorContains": "Contiene",
+    "operatorStartsWith": "Empieza por",
+    "operatorEndsWith": "Termina en",
+    "operatorEquals": "Igual a",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
+  }
+}

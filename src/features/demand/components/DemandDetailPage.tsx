@@ -38,7 +38,7 @@ import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 
 export function DemandDetailPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();

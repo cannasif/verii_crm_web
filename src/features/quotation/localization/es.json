@@ -1,0 +1,323 @@
+{
+  "loading": "Cargando...",
+  "saving": "Guardando...",
+  "error": "Error",
+  "noData": "No hay datos",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "actions": "Acciones",
+  "edit": "Editar",
+  "delete": "Eliminar",
+  "back": "Volver",
+  "refresh": "Actualizar",
+  "select": "Seleccionar",
+  "guide": "Guía",
+  "yes": "Sí",
+  "add": "Añadir",
+  "backToQuotations": "Volver a la lista de presupuestos",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "confirm": "Confirmar",
+  "saveAndApply": "Guardar y aplicar",
+  "loadError": "Se produjo un error al cargar los datos.",
+  "list": {
+    "title": "Lista de presupuestos",
+    "description": "Ver y gestionar los registros de presupuestos",
+    "detail": "Detalle",
+    "createNew": "Crear presupuesto nuevo",
+    "cardTitle": "Lista de presupuestos",
+    "refresh": "Actualizar",
+    "actions": "Acciones",
+    "sendGmail": "Enviar por Gmail",
+    "sendOutlook": "Enviar por Outlook",
+    "id": "ID",
+    "offerNo": "N.º de oferta",
+    "customer": "Cliente",
+    "representative": "Representante",
+    "offerDate": "Fecha de oferta",
+    "currency": "Moneda",
+    "grandTotal": "Total general",
+    "status": "Estado",
+    "revise": "Revisar",
+    "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+    "customerCode": "Código de cliente",
+    "validUntil": "Válido hasta",
+    "revisionNo": "N.º de revisión"
+  },
+  "date": "Fecha",
+  "offerNo": "N.º de oferta",
+  "customerAccount": "Cuenta de cliente",
+  "export": "Exportar",
+  "exportPdf": "Exportar PDF",
+  "shareMail": "Compartir por correo",
+  "shareWhatsapp": "Compartir por WhatsApp",
+  "detail": {
+    "title": "Detalle del presupuesto",
+    "subtitle": "Ver detalles del presupuesto, flujo de aprobación e informes",
+    "notFound": "Presupuesto no encontrado",
+    "revisionNo": "N.º de revisión",
+    "tabDetail": "Detalle",
+    "tabApprovalFlow": "Flujo de aprobación",
+    "tabReport": "Informe"
+  },
+  "create": {
+    "title": "Crear presupuesto nuevo",
+    "submit": "Guardar presupuesto y enviar a aprobación",
+    "success": "Presupuesto creado correctamente",
+    "successMessage": "El presupuesto se ha enviado al proceso de aprobación.",
+    "error": "No se pudo crear el presupuesto",
+    "errorMessage": "Se produjo un error al crear el presupuesto.",
+    "subtitle": "Gestionar cabecera, líneas y tipos de cambio",
+    "invalidCurrency": "Seleccione una moneda válida.",
+    "validationError": "Revise los campos obligatorios."
+  },
+  "header": {
+    "title": "Información del presupuesto",
+    "customer": "Cliente",
+    "selectCustomer": "Seleccionar cliente",
+    "shippingAddress": "Dirección de envío",
+    "selectShippingAddress": "Seleccionar dirección de envío",
+    "representative": "Delegado comercial",
+    "selectRepresentative": "Seleccionar representante",
+    "offerType": "Tipo de oferta",
+    "selectOfferType": "Seleccionar tipo de oferta",
+    "currency": "Moneda",
+    "selectCurrency": "Seleccione una moneda",
+    "showExchangeRates": "Mostrar tipos de cambio",
+    "offerDate": "Fecha de oferta",
+    "deliveryDate": "Fecha de entrega",
+    "paymentType": "Forma de pago",
+    "selectPaymentType": "Seleccionar forma de pago",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Introduzca la descripción",
+    "projectCode": "Código de proyecto",
+    "projectCodePlaceholder": "Introduzca el código de proyecto",
+    "offerNo": "N.º de oferta",
+    "offerNoPlaceholder": "Número de oferta",
+    "currencyChange": {
+      "title": "Cambio de moneda",
+      "message": "Al cambiar la moneda se recalcularán todas las líneas existentes según la nueva moneda. ¿Aprueba esta operación?"
+    },
+    "deliveryMethod": "Método de entrega",
+    "documentDetail": "Detalle del documento"
+  },
+  "lines": {
+    "title": "Líneas del presupuesto",
+    "addTitle": "Añadir línea",
+    "add": "Añadir línea",
+    "editTitle": "Editar línea",
+    "empty": "Aún no hay líneas",
+    "noItems": "Aún no hay líneas",
+    "emptyDescription": "Use «Seleccionar stock» o «Añadir línea» para agregar líneas al presupuesto",
+    "itemCount": "{{count}} líneas",
+    "editLine": "Editar línea",
+    "selectStock": "Seleccionar stock",
+    "selectProduct": "Seleccionar producto",
+    "selectStockFirst": "Stock no seleccionado",
+    "stock": "Stock",
+    "productCode": "Código de artículo",
+    "enterProductCode": "Introduzca el código o busque",
+    "productName": "Nombre",
+    "enterProductName": "Introduzca el nombre del producto",
+    "quantity": "Cantidad",
+    "unit": "Unidad",
+    "unitPrice": "Precio unitario",
+    "description": "Descripción",
+    "discount1": "Descuento 1 %",
+    "discount2": "Descuento 2 %",
+    "discount3": "Descuento 3 %",
+    "discounts": "Descuentos",
+    "discountAmount": "Importe de descuento",
+    "netPrice": "Precio neto",
+    "vatRate": "Tipo de IVA %",
+    "lineTotal": "Total de línea (IVA incl.)",
+    "total": "Total",
+    "calculations": "Cálculos",
+    "required": "Debe añadir al menos 1 línea",
+    "requiredFieldsMissing": "Rellene los campos obligatorios.",
+    "relatedStocks": "Stocks vinculados",
+    "noProductsFound": "No se encontraron productos",
+    "createSuccess": "Líneas del presupuesto añadidas.",
+    "createError": "No se pudieron añadir las líneas del presupuesto.",
+    "updateSuccess": "Líneas del presupuesto actualizadas.",
+    "updateError": "No se pudieron actualizar las líneas del presupuesto.",
+    "deleteSuccess": "Línea del presupuesto eliminada.",
+    "deleteError": "No se pudo eliminar la línea del presupuesto.",
+    "delete": {
+      "confirmTitle": "Eliminar línea",
+      "confirmMessage": "¿Está seguro de que desea eliminar esta línea?",
+      "confirmTitleMultiple": "Eliminar líneas",
+      "confirmMessageMultiple": "¿Está seguro de que desea eliminar las líneas seleccionadas?"
+    },
+    "discountLimitExceeded": "Los tipos de descuento superan sus límites de autorización.",
+    "max200Chars": "Máximo 200 caracteres",
+    "approvalRequired": "Aprobación requerida",
+    "approvalNeeded": "Aprobación necesaria",
+    "subtotal": "Subtotal",
+    "grandTotal": "Total general",
+    "currencyTry": "TL",
+    "totalDiscount": "Descuento total",
+    "vatAmount": "Importe de IVA"
+  },
+  "exchangeRates": {
+    "title": "Tipos de cambio",
+    "currency": "Moneda",
+    "rate": "Tipo",
+    "date": "Fecha del tipo",
+    "isOfficial": "Tipo oficial",
+    "official": "Oficial",
+    "custom": "Personalizado",
+    "empty": "No se encontraron tipos de cambio",
+    "status": "Estado",
+    "updateSuccess": "Tipos de cambio actualizados.",
+    "updateError": "No se pudieron actualizar los tipos de cambio.",
+    "cannotEditUsedCurrency": "No puede modificarse el tipo de una moneda ya en uso.",
+    "zeroRateError": "Introduzca un tipo de cambio para continuar.",
+    "dialog": {
+      "title": "Tipos de cambio",
+      "description": "Consulte y, si es necesario, edite los tipos de cambio. Los tipos modificados no se marcarán como oficiales.",
+      "subtitle": "Revisar los tipos que se aplicarán al presupuesto",
+      "info": "Los cambios de tipo afectan los cálculos de las líneas."
+    }
+  },
+  "approval": {
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "sending": "Enviando...",
+    "sendForApproval": "Enviar a aprobación",
+    "approveSuccess": "Presupuesto aprobado correctamente.",
+    "approveError": "No se pudo aprobar el presupuesto.",
+    "rejectSuccess": "Presupuesto rechazado.",
+    "rejectError": "No se pudo rechazar el presupuesto.",
+    "startSuccess": "Flujo de aprobación iniciado.",
+    "startError": "No se pudo iniciar el flujo de aprobación.",
+    "rejectTitle": "Rechazar presupuesto",
+    "rejectDescription": "Indique el motivo del rechazo.",
+    "rejectReasonPlaceholder": "Motivo del rechazo",
+    "statusFilterLabel": "Estado de aprobación",
+    "status": {
+      "notRequired": "No requerido",
+      "waiting": "En espera",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "closed": "Cerrado"
+    }
+  },
+  "approvalFlow": {
+    "loading": "Cargando flujo de aprobación...",
+    "noData": "No hay registro de flujo de aprobación",
+    "notStarted": "El flujo de aprobación aún no ha comenzado",
+    "stepCompleted": "Completado",
+    "stepInProgress": "En curso",
+    "stepNotStarted": "No iniciado",
+    "stepRejected": "Rechazado"
+  },
+  "notes": {
+    "title": "Notas del presupuesto",
+    "description": "Añadir y actualizar notas internas del presupuesto.",
+    "placeholder": "Introduzca una nota",
+    "saving": "Guardando notas...",
+    "noteLabel": "Nota del presupuesto",
+    "saved": "Notas del presupuesto guardadas.",
+    "saveError": "No se pudieron guardar las notas del presupuesto.",
+    "maxLengthError": "La nota puede tener como máximo 1000 caracteres.",
+    "maxCountError": "Puede añadir como máximo 10 notas."
+  },
+  "summary": {
+    "title": "Resumen",
+    "grandTotalAnalysis": "Análisis del total general",
+    "subtotal": "Subtotal",
+    "totalVat": "IVA total",
+    "grandTotal": "Total general",
+    "generalDiscount": "Descuento general",
+    "generalDiscountRate": "Tipo de descuento general",
+    "generalDiscountAmount": "Importe de descuento general",
+    "generalDiscountHelp": "Este campo representa el descuento general aplicado al total del presupuesto."
+  },
+  "sections": {
+    "header": "Información de cabecera",
+    "lines": "Líneas",
+    "summary": "Resumen"
+  },
+  "share": {
+    "downloaded": "Archivo descargado.",
+    "mailSubject": "Compartir presupuesto",
+    "mailBody": "¿Desea revisar los detalles del presupuesto?",
+    "whatsappMessage": "Le comparto los detalles del presupuesto."
+  },
+  "revision": {
+    "success": "Registro de revisión creado.",
+    "error": "No se pudo crear el registro de revisión."
+  },
+  "update": {
+    "saveButton": "Guardar cambios",
+    "success": "Presupuesto actualizado.",
+    "successMessage": "Presupuesto actualizado correctamente.",
+    "error": "No se pudo actualizar el presupuesto.",
+    "errorMessage": "Se produjo un error al actualizar el presupuesto.",
+    "invalidCurrency": "Seleccione una moneda válida.",
+    "validationError": "Revise los campos obligatorios."
+  },
+  "waitingApprovals": {
+    "title": "Aprobaciones de presupuesto pendientes",
+    "description": "Ver presupuestos pendientes de aprobación.",
+    "list": "Lista de aprobaciones pendientes",
+    "waiting": "En espera",
+    "noApprovals": "No hay registros de aprobación pendientes.",
+    "requestId": "N.º de oferta",
+    "status": "Estado",
+    "stepOrder": "Orden del paso",
+    "approvedBy": "Aprobado por",
+    "actionDate": "Fecha de acción"
+  },
+  "offerType": {
+    "domestic": "Nacional",
+    "export": "Exportación"
+  },
+  "wizard": {
+    "title": "Crear presupuesto nuevo",
+    "step1": {
+      "title": "Paso 1: Información del presupuesto",
+      "description": "Introduzca cabecera y tipos de cambio",
+      "validation": {
+        "offerType": "Tipo de oferta",
+        "currency": "Moneda",
+        "exchangeRate": "Tipo de cambio"
+      },
+      "exchangeRate": {
+        "required": "Para monedas distintas de TRY debe añadirse al menos un tipo de cambio"
+      },
+      "currency": {
+        "try": {
+          "info": "No se requiere tipo de cambio cuando la moneda es TRY"
+        }
+      }
+    },
+    "step2": {
+      "title": "Paso 2: Líneas del presupuesto",
+      "description": "Añadir producto e información de precios",
+      "info": "Debe añadir al menos una línea",
+      "validation": {
+        "noLines": "Debe añadir al menos una línea",
+        "invalidLines": "Todas las líneas deben tener información válida",
+        "allValid": "{{count}} líneas añadidas correctamente"
+      }
+    },
+    "step3": {
+      "title": "Paso 3: Resumen y aprobación",
+      "description": "Revise la información y guarde el presupuesto",
+      "header": {
+        "title": "Información del presupuesto"
+      },
+      "lines": {
+        "title": "Líneas del presupuesto"
+      },
+      "summary": {
+        "title": "Resumen final"
+      },
+      "approval": {
+        "info": "Tras guardar, el presupuesto se enviará automáticamente al proceso de aprobación"
+      }
+    }
+  }
+}

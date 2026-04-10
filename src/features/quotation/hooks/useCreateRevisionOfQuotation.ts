@@ -8,7 +8,7 @@ import type { QuotationGetDto } from '../types/quotation-types';
 
 export const useCreateRevisionOfQuotation = (): UseMutationResult<ApiResponse<QuotationGetDto>, Error, number, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
 
   return useMutation({
     mutationFn: (quotationId: number) => quotationApi.createRevisionOfQuotation(quotationId),

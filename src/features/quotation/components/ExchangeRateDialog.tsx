@@ -51,7 +51,7 @@ export function ExchangeRateDialog({
   quotationOfferNo,
   readOnly = false,
 }: ExchangeRateDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const { data: erpRates = [], isLoading } = useExchangeRate();
   const updateMutation = useUpdateExchangeRateInQuotation(quotationId ?? 0);
   const [localRates, setLocalRates] = useState<QuotationExchangeRateFormState[]>([]);

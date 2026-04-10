@@ -53,7 +53,7 @@ export function QuotationNotesDialog({
   onSaveAsync,
   isSaving = false,
 }: QuotationNotesDialogProps): React.ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const [localValue, setLocalValue] = useState<QuotationNotesDto>(value);
 
   useEffect(() => {

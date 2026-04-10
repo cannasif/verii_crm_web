@@ -10,7 +10,7 @@ export const useUpdateExchangeRateInDemand = (
   demandId: number
 ): UseMutationResult<ApiResponse<boolean>, Error, DemandExchangeRateGetDto[], unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
 
   return useMutation({
     mutationFn: (dtos: DemandExchangeRateGetDto[]) =>

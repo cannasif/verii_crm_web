@@ -14,7 +14,7 @@ export function ApprovalQueueCard({
   onApprove,
   onReject,
 }: ApprovalQueueCardProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['approval', 'common']);
 
   const getApprovalLevelLabel = (level: ApprovalLevel): string => {
     const labels: Record<ApprovalLevel, string> = {

@@ -84,7 +84,11 @@ export function Combobox({
                 className="h-7 w-7 mr-1" 
              />
           </CommandInput>
-          <CommandList className="overflow-y-auto" style={{ minHeight: DROPDOWN_MAX_HEIGHT_PX, maxHeight: DROPDOWN_MAX_HEIGHT_PX }}>
+          <CommandList
+            className="overflow-y-auto overscroll-contain"
+            style={{ maxHeight: DROPDOWN_MAX_HEIGHT_PX }}
+            onWheelCapture={(event) => event.stopPropagation()}
+          >
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (

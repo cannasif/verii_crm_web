@@ -722,7 +722,7 @@ export function ActivityForm({
               <FormSection title={t('activityManagement.details')}>
                 <FormField control={form.control} name="description" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.description')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.descriptionLabel')}</FormLabel>
                     <FormControl><Textarea {...field} maxLength={2000} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('activityManagement.enterDescription')} /></FormControl>
                     <FormMessage className="text-xs text-red-500" />
                   </FormItem>

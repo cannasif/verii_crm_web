@@ -1,0 +1,323 @@
+{
+  "loading": "جاري التحميل...",
+  "saving": "جاري الحفظ...",
+  "error": "خطأ",
+  "noData": "لا توجد بيانات",
+  "previous": "السابق",
+  "next": "التالي",
+  "actions": "إجراءات",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "back": "رجوع",
+  "refresh": "تحديث",
+  "select": "اختيار",
+  "guide": "دليل",
+  "yes": "نعم",
+  "add": "إضافة",
+  "backToQuotations": "العودة إلى قائمة العروض",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "confirm": "تأكيد",
+  "saveAndApply": "حفظ وتطبيق",
+  "loadError": "حدث خطأ أثناء تحميل البيانات.",
+  "list": {
+    "title": "قائمة عروض الأسعار",
+    "description": "عرض سجلات العروض وإدارتها",
+    "detail": "التفاصيل",
+    "createNew": "إنشاء عرض سعر جديد",
+    "cardTitle": "قائمة العروض",
+    "refresh": "تحديث",
+    "actions": "إجراءات",
+    "sendGmail": "إرسال عبر Gmail",
+    "sendOutlook": "إرسال عبر Outlook",
+    "id": "المعرّف",
+    "offerNo": "رقم العرض",
+    "customer": "العميل",
+    "representative": "المندوب",
+    "offerDate": "تاريخ العرض",
+    "currency": "العملة",
+    "grandTotal": "الإجمالي",
+    "status": "الحالة",
+    "revise": "مراجعة",
+    "showing": "عرض {{from}}-{{to}} / {{total}}",
+    "customerCode": "رمز العميل",
+    "validUntil": "صالح حتى",
+    "revisionNo": "رقم المراجعة"
+  },
+  "date": "التاريخ",
+  "offerNo": "رقم العرض",
+  "customerAccount": "حساب العميل",
+  "export": "تصدير",
+  "exportPdf": "تصدير PDF",
+  "shareMail": "مشاركة عبر البريد",
+  "shareWhatsapp": "مشاركة عبر واتساب",
+  "detail": {
+    "title": "تفاصيل عرض السعر",
+    "subtitle": "عرض تفاصيل العرض ومسار الموافقة والتقارير",
+    "notFound": "عرض السعر غير موجود",
+    "revisionNo": "رقم المراجعة",
+    "tabDetail": "التفاصيل",
+    "tabApprovalFlow": "مسار الموافقة",
+    "tabReport": "التقرير"
+  },
+  "create": {
+    "title": "إنشاء عرض سعر جديد",
+    "submit": "حفظ العرض وإرساله للموافقة",
+    "success": "تم إنشاء العرض بنجاح",
+    "successMessage": "تم إرسال العرض إلى مسار الموافقة.",
+    "error": "تعذر إنشاء العرض",
+    "errorMessage": "حدث خطأ أثناء إنشاء العرض.",
+    "subtitle": "إدارة رأس العرض والأسطر وأسعار الصرف",
+    "invalidCurrency": "يرجى اختيار عملة صالحة.",
+    "validationError": "يرجى التحقق من الحقول المطلوبة."
+  },
+  "header": {
+    "title": "معلومات عرض السعر",
+    "customer": "العميل",
+    "selectCustomer": "اختيار العميل",
+    "shippingAddress": "عنوان الشحن",
+    "selectShippingAddress": "اختيار عنوان الشحن",
+    "representative": "مندوب المبيعات",
+    "selectRepresentative": "اختيار المندوب",
+    "offerType": "نوع العرض",
+    "selectOfferType": "اختيار نوع العرض",
+    "currency": "العملة",
+    "selectCurrency": "يرجى اختيار العملة",
+    "showExchangeRates": "عرض أسعار الصرف",
+    "offerDate": "تاريخ العرض",
+    "deliveryDate": "تاريخ التسليم",
+    "paymentType": "نوع الدفع",
+    "selectPaymentType": "اختيار نوع الدفع",
+    "description": "الوصف",
+    "descriptionPlaceholder": "أدخل الوصف",
+    "projectCode": "رمز المشروع",
+    "projectCodePlaceholder": "أدخل رمز المشروع",
+    "offerNo": "رقم العرض",
+    "offerNoPlaceholder": "رقم العرض",
+    "currencyChange": {
+      "title": "تغيير العملة",
+      "message": "عند تغيير العملة سُيعاد حساب جميع الأسطر وفق العملة الجديدة. هل توافق على هذه العملية؟"
+    },
+    "deliveryMethod": "طريقة التسليم",
+    "documentDetail": "تفاصيل المستند"
+  },
+  "lines": {
+    "title": "أسطر عرض السعر",
+    "addTitle": "إضافة سطر",
+    "add": "إضافة سطر",
+    "editTitle": "تعديل السطر",
+    "empty": "لم تُضف أسطر بعد",
+    "noItems": "لا توجد أسطر بعد",
+    "emptyDescription": "استخدم «اختيار المخزون» أو «إضافة سطر» لإضافة أسطر",
+    "itemCount": "{{count}} سطر",
+    "editLine": "تعديل السطر",
+    "selectStock": "اختيار المخزون",
+    "selectProduct": "اختيار المنتج",
+    "selectStockFirst": "لم يُختر مخزون",
+    "stock": "المخزون",
+    "productCode": "رمز الصنف",
+    "enterProductCode": "أدخل الرمز أو ابحث",
+    "productName": "الاسم",
+    "enterProductName": "أدخل اسم المنتج",
+    "quantity": "الكمية",
+    "unit": "الوحدة",
+    "unitPrice": "سعر الوحدة",
+    "description": "الوصف",
+    "discount1": "خصم 1 %",
+    "discount2": "خصم 2 %",
+    "discount3": "خصم 3 %",
+    "discounts": "الخصومات",
+    "discountAmount": "مبلغ الخصم",
+    "netPrice": "السعر الصافي",
+    "vatRate": "نسبة ضريبة القيمة المضافة %",
+    "lineTotal": "إجمالي السطر (شامل الضريبة)",
+    "total": "الإجمالي",
+    "calculations": "الحسابات",
+    "required": "يجب إضافة سطر واحد على الأقل",
+    "requiredFieldsMissing": "يرجى تعبئة الحقول المطلوبة.",
+    "relatedStocks": "أصناف مرتبطة",
+    "noProductsFound": "لم يُعثر على منتجات",
+    "createSuccess": "تمت إضافة أسطر العرض.",
+    "createError": "تعذرت إضافة أسطر العرض.",
+    "updateSuccess": "تم تحديث أسطر العرض.",
+    "updateError": "تعذر تحديث أسطر العرض.",
+    "deleteSuccess": "تم حذف سطر العرض.",
+    "deleteError": "تعذر حذف سطر العرض.",
+    "delete": {
+      "confirmTitle": "حذف السطر",
+      "confirmMessage": "هل أنت متأكد من حذف هذا السطر؟",
+      "confirmTitleMultiple": "حذف الأسطر",
+      "confirmMessageMultiple": "هل أنت متأكد من حذف الأسطر المحددة؟"
+    },
+    "discountLimitExceeded": "تجاوزت نسب الخصم حدود صلاحياتك.",
+    "max200Chars": "بحد أقصى 200 حرف",
+    "approvalRequired": "موافقة مطلوبة",
+    "approvalNeeded": "حاجة للموافقة",
+    "subtotal": "المجموع الفرعي",
+    "grandTotal": "الإجمالي",
+    "currencyTry": "ل.ت",
+    "totalDiscount": "إجمالي الخصم",
+    "vatAmount": "مبلغ الضريبة"
+  },
+  "exchangeRates": {
+    "title": "أسعار الصرف",
+    "currency": "العملة",
+    "rate": "السعر",
+    "date": "تاريخ السعر",
+    "isOfficial": "سعر رسمي",
+    "official": "رسمي",
+    "custom": "مخصّص",
+    "empty": "لا توجد أسعار صرف",
+    "status": "الحالة",
+    "updateSuccess": "تم تحديث أسعار الصرف.",
+    "updateError": "تعذر تحديث أسعار الصرف.",
+    "cannotEditUsedCurrency": "لا يمكن تغيير السعر لعملة مستخدمة بالفعل.",
+    "zeroRateError": "يرجى إدخال سعر صرف للمتابعة.",
+    "dialog": {
+      "title": "أسعار الصرف",
+      "description": "عرض قيم أسعار الصرف وتعديلها عند الحاجة. الأسعار المعدّلة لا تُعلَّم كرسمية.",
+      "subtitle": "مراجعة أسعار الصرف المستخدمة في العرض",
+      "info": "تغييرات السعر تؤثر على حسابات الأسطر."
+    }
+  },
+  "approval": {
+    "approve": "موافقة",
+    "reject": "رفض",
+    "sending": "جاري الإرسال...",
+    "sendForApproval": "إرسال للموافقة",
+    "approveSuccess": "تمت الموافقة على العرض بنجاح.",
+    "approveError": "تعذرت الموافقة على العرض.",
+    "rejectSuccess": "تم رفض العرض.",
+    "rejectError": "تعذر رفض العرض.",
+    "startSuccess": "بدأ مسار الموافقة.",
+    "startError": "تعذر بدء مسار الموافقة.",
+    "rejectTitle": "رفض العرض",
+    "rejectDescription": "أدخل سبب رفض العرض.",
+    "rejectReasonPlaceholder": "سبب الرفض",
+    "statusFilterLabel": "حالة الموافقة",
+    "status": {
+      "notRequired": "غير مطلوب",
+      "waiting": "قيد الانتظار",
+      "approved": "موافق عليه",
+      "rejected": "مرفوض",
+      "closed": "مغلق"
+    }
+  },
+  "approvalFlow": {
+    "loading": "جاري تحميل مسار الموافقة...",
+    "noData": "لا يوجد سجل لمسار الموافقة",
+    "notStarted": "لم يبدأ مسار الموافقة بعد",
+    "stepCompleted": "مكتمل",
+    "stepInProgress": "قيد التنفيذ",
+    "stepNotStarted": "لم يبدأ",
+    "stepRejected": "مرفوض"
+  },
+  "notes": {
+    "title": "ملاحظات العرض",
+    "description": "إضافة وتحديث الملاحظات الداخلية لعرض السعر.",
+    "placeholder": "أدخل ملاحظة العرض",
+    "saving": "جاري حفظ الملاحظات...",
+    "noteLabel": "ملاحظة العرض",
+    "saved": "تم حفظ ملاحظات العرض.",
+    "saveError": "تعذر حفظ ملاحظات العرض.",
+    "maxLengthError": "يمكن أن تحتوي الملاحظة على 1000 حرف كحد أقصى.",
+    "maxCountError": "يمكنك إضافة 10 ملاحظات كحد أقصى."
+  },
+  "summary": {
+    "title": "الملخص",
+    "grandTotalAnalysis": "تحليل الإجمالي",
+    "subtotal": "المجموع الفرعي",
+    "totalVat": "إجمالي الضريبة",
+    "grandTotal": "الإجمالي",
+    "generalDiscount": "خصم عام",
+    "generalDiscountRate": "نسبة الخصم العام",
+    "generalDiscountAmount": "مبلغ الخصم العام",
+    "generalDiscountHelp": "يمثل هذا الحقل الخصم العام المطبّق على إجمالي العرض."
+  },
+  "sections": {
+    "header": "معلومات الرأس",
+    "lines": "الأسطر",
+    "summary": "الملخص"
+  },
+  "share": {
+    "downloaded": "تم تنزيل الملف.",
+    "mailSubject": "مشاركة عرض السعر",
+    "mailBody": "هل ترغب في مراجعة تفاصيل العرض؟",
+    "whatsappMessage": "أشارك معك تفاصيل عرض السعر."
+  },
+  "revision": {
+    "success": "تم إنشاء سجل المراجعة.",
+    "error": "تعذر إنشاء سجل المراجعة."
+  },
+  "update": {
+    "saveButton": "حفظ التغييرات",
+    "success": "تم تحديث العرض.",
+    "successMessage": "تم تحديث العرض بنجاح.",
+    "error": "تعذر تحديث العرض.",
+    "errorMessage": "حدث خطأ أثناء تحديث العرض.",
+    "invalidCurrency": "يرجى اختيار عملة صالحة.",
+    "validationError": "يرجى التحقق من الحقول المطلوبة."
+  },
+  "waitingApprovals": {
+    "title": "موافقات عروض الأسعار المعلّقة",
+    "description": "عرض العروض التي في انتظار الموافقة.",
+    "list": "قائمة الموافقات المعلّقة",
+    "waiting": "قيد الانتظار",
+    "noApprovals": "لا توجد موافقات معلّقة.",
+    "requestId": "رقم العرض",
+    "status": "الحالة",
+    "stepOrder": "ترتيب الخطوة",
+    "approvedBy": "وافق عليه",
+    "actionDate": "تاريخ الإجراء"
+  },
+  "offerType": {
+    "domestic": "محلي",
+    "export": "تصدير"
+  },
+  "wizard": {
+    "title": "إنشاء عرض سعر جديد",
+    "step1": {
+      "title": "الخطوة 1: معلومات العرض",
+      "description": "أدخل رأس العرض وأسعار الصرف",
+      "validation": {
+        "offerType": "نوع العرض",
+        "currency": "العملة",
+        "exchangeRate": "سعر الصرف"
+      },
+      "exchangeRate": {
+        "required": "يجب إضافة سعر صرف واحد على الأقل للعملات غير الليرة التركية"
+      },
+      "currency": {
+        "try": {
+          "info": "لا حاجة لسعر صرف عند اختيار الليرة التركية"
+        }
+      }
+    },
+    "step2": {
+      "title": "الخطوة 2: أسطر العرض",
+      "description": "إضافة معلومات المنتج والسعر",
+      "info": "يجب إضافة سطر واحد على الأقل",
+      "validation": {
+        "noLines": "يجب إضافة سطر واحد على الأقل",
+        "invalidLines": "يجب أن تحتوي كل الأسطر على بيانات صالحة",
+        "allValid": "تمت إضافة {{count}} سطرًا بنجاح"
+      }
+    },
+    "step3": {
+      "title": "الخطوة 3: الملخص والموافقة",
+      "description": "راجع المعلومات واحفظ العرض",
+      "header": {
+        "title": "معلومات عرض السعر"
+      },
+      "lines": {
+        "title": "أسطر عرض السعر"
+      },
+      "summary": {
+        "title": "الملخص النهائي"
+      },
+      "approval": {
+        "info": "بعد الحفظ يُرسل العرض تلقائيًا إلى مسار الموافقة"
+      }
+    }
+  }
+}

@@ -97,7 +97,7 @@ export function DemandHeaderForm({
   readOnly = false,
   showDocumentSerialType = true,
 }: DemandHeaderFormProps = {}): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   const form = useFormContext<CreateDemandSchema>();
   const { data: erpRates = [] } = useExchangeRate();
   const user = useAuthStore((state) => state.user);

@@ -1,0 +1,298 @@
+{
+  "loading": "Loading...",
+  "saving": "Saving...",
+  "error": "Error",
+  "noData": "No data found",
+  "previous": "Previous",
+  "next": "Next",
+  "actions": "Actions",
+  "edit": "Edit",
+  "delete": "Delete",
+  "back": "Back",
+  "refresh": "Refresh",
+  "select": "Select",
+  "yes": "Yes",
+  "add": "Add",
+  "backToQuotations": "Back to Demands",
+  "cancel": "Cancel",
+  "save": "Save",
+  "confirm": "Confirm",
+  "saveAndApply": "Save and Apply",
+  "list": {
+    "revise": "Revise",
+    "showing": "Showing {{from}}-{{to}} / {{total}}",
+    "title": "Demand List",
+    "description": "View and manage all demands",
+    "detail": "Detail",
+    "createNew": "Create New Demand",
+    "searchPlaceholder": "Search by demand no or customer name...",
+    "cardTitle": "Demand list",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "id": "ID",
+    "offerNo": "Demand No",
+    "revisionNo": "Revision No",
+    "customer": "Customer",
+    "customerCode": "Customer Code",
+    "representative": "Sales Representative",
+    "offerDate": "Demand Date",
+    "validUntil": "Valid Until",
+    "currency": "Currency",
+    "grandTotal": "Grand Total",
+    "status": "Status"
+  },
+  "detail": {
+    "title": "Demand Detail",
+    "subtitle": "View and manage demand details.",
+    "notFound": "Demand not found.",
+    "revisionNo": "Revision No",
+    "tabDetail": "Detail",
+    "tabApprovalFlow": "Approval Flow",
+    "tabReport": "Report"
+  },
+  "create": {
+    "title": "Create New Demand",
+    "submit": "Save Demand and Send for Approval",
+    "success": "Demand Created Successfully",
+    "successMessage": "Demand has been sent to the approval process.",
+    "error": "Demand Could Not Be Created",
+    "errorMessage": "An error occurred while creating the demand.",
+    "subtitle": "Fill in demand details and save.",
+    "deliveryDateRequired": "Delivery date is required.",
+    "paymentTypeRequired": "Payment type is required.",
+    "invalidCurrency": "Invalid currency.",
+    "validationError": "Please check required fields.",
+    "notesMaxLengthError": "Each note can be at most 400 characters."
+  },
+  "header": {
+    "title": "Demand Information",
+    "customer": "Customer",
+    "selectCustomer": "Select customer",
+    "shippingAddress": "Shipping Address",
+    "selectShippingAddress": "Select shipping address",
+    "representative": "Sales Representative",
+    "selectRepresentative": "Select representative",
+    "offerType": "Demand Type",
+    "selectOfferType": "Select demand type",
+    "currency": "Currency",
+    "selectCurrency": "Please select currency",
+    "showExchangeRates": "Show Exchange Rates",
+    "offerDate": "Demand Date",
+    "deliveryDate": "Delivery Date",
+    "paymentType": "Payment Type",
+    "selectPaymentType": "Select payment type",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description",
+    "offerNo": "Demand No",
+    "offerNoPlaceholder": "Demand number",
+    "currencyChange": {
+      "title": "Currency Change",
+      "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
+    },
+    "deliveryMethod": "Delivery Method",
+    "documentDetail": "Document Details"
+  },
+  "lines": {
+    "title": "Demand Lines",
+    "add": "Add Line",
+    "empty": "No lines added yet",
+    "emptyDescription": "Use \"Select Stock\" or \"Add Line\" button to add demand lines",
+    "itemCount": "{{count}} lines",
+    "editLine": "Edit Line",
+    "selectStock": "Select Stock",
+    "selectProduct": "Select Product",
+    "selectStockFirst": "Stock not selected",
+    "stock": "Stock",
+    "productCode": "Stock Code",
+    "enterProductCode": "Enter product code or search",
+    "productName": "Stock Name",
+    "enterProductName": "Enter product name",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "discount1": "Discount 1 %",
+    "discount2": "Discount 2 %",
+    "discount3": "Discount 3 %",
+    "discounts": "Discounts",
+    "discountAmount": "Discount Amount",
+    "netPrice": "Net Price",
+    "vatRate": "VAT Rate %",
+    "lineTotal": "Line Total (VAT Included)",
+    "calculations": "Calculations",
+    "required": "At least 1 line must be added",
+    "noProductsFound": "No products found",
+    "delete": {
+      "confirmTitle": "Delete Line",
+      "confirmMessage": "Are you sure you want to delete this line?",
+      "confirmTitleMultiple": "Delete Lines",
+      "confirmMessageMultiple": "Are you sure you want to delete selected lines?"
+    },
+    "noItems": "No lines yet.",
+    "addLine": "Add Line",
+    "relatedStocks": "Related Stocks",
+    "groupCode": "Group Code",
+    "approvalRequired": "Approval required",
+    "requiredFieldsMissing": "Required line fields are missing.",
+    "createSuccess": "Line created.",
+    "createError": "Line could not be created.",
+    "updateSuccess": "Line updated.",
+    "updateError": "Line could not be updated.",
+    "deleteSuccess": "Line deleted.",
+    "deleteError": "Line could not be deleted.",
+    "editStockItemDetails": "Edit stock item details",
+    "description1": "Description 1",
+    "description2": "Description 2",
+    "description3": "Description 3",
+    "descriptionPlaceholder": "Enter description..."
+  },
+  "exchangeRates": {
+    "title": "Exchange Rates",
+    "currency": "Currency",
+    "rate": "Rate",
+    "date": "Rate Date",
+    "isOfficial": "Official Rate",
+    "official": "Official",
+    "custom": "Custom",
+    "empty": "No exchange rates found",
+    "status": "Status",
+    "dialog": {
+      "title": "Exchange Rates",
+      "description": "View and edit exchange rate values if needed. Modified rates will not be marked as official rates.",
+      "subtitle": "You can edit and save exchange rates.",
+      "info": "Manual update is possible for non-official rates."
+    },
+    "updateSuccess": "Exchange rates updated.",
+    "updateError": "Exchange rates could not be updated.",
+    "cannotEditUsedCurrency": "Used currency cannot be edited.",
+    "zeroRateError": "Please enter an exchange rate to continue."
+  },
+  "summary": {
+    "title": "Summary",
+    "grandTotalAnalysis": "Grand Total Analysis",
+    "subtotal": "Subtotal",
+    "totalVat": "Total VAT",
+    "grandTotal": "Grand Total",
+    "generalDiscount": "General Discount",
+    "generalDiscountRate": "General Discount Rate",
+    "generalDiscountAmount": "General Discount Amount",
+    "generalDiscountHelp": "Applied on total amount."
+  },
+  "offerType": {
+    "domestic": "Domestic",
+    "export": "Export"
+  },
+  "wizard": {
+    "title": "Create New Demand",
+    "step1": {
+      "title": "Step 1: Demand Information",
+      "description": "Enter demand header information and exchange rates",
+      "validation": {
+        "offerType": "Demand Type",
+        "currency": "Currency",
+        "exchangeRate": "Exchange Rate"
+      },
+      "exchangeRate": {
+        "required": "At least one exchange rate must be added for non-TRY currencies"
+      },
+      "currency": {
+        "try": {
+          "info": "Exchange rate is not required when TRY is selected"
+        }
+      }
+    },
+    "step2": {
+      "title": "Step 2: Demand Lines",
+      "description": "Add product and price information",
+      "info": "You must add at least one line",
+      "validation": {
+        "noLines": "At least one line must be added",
+        "invalidLines": "All lines must have valid information",
+        "allValid": "{{count}} lines successfully added"
+      }
+    },
+    "step3": {
+      "title": "Step 3: Summary and Approval",
+      "description": "Review information and save demand",
+      "header": {
+        "title": "Demand Information"
+      },
+      "lines": {
+        "title": "Demand Lines"
+      },
+      "summary": {
+        "title": "Final Summary"
+      },
+      "approval": {
+        "info": "The demand will be automatically sent to the approval process after saving"
+      }
+    }
+  },
+  "loadError": "An error occurred while loading data.",
+  "backToDemands": "Back to Demands",
+  "untitled": "Untitled",
+  "sections": {
+    "header": "Header Information",
+    "lines": "Lines",
+    "summary": "Summary"
+  },
+  "approval": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "sending": "Sending...",
+    "sendForApproval": "Send for Approval",
+    "approveSuccess": "Approval succeeded.",
+    "approveError": "Approval failed.",
+    "rejectSuccess": "Rejection succeeded.",
+    "rejectError": "Rejection failed.",
+    "startSuccess": "Approval flow started.",
+    "startError": "Approval flow could not be started.",
+    "rejectTitle": "Reject Demand",
+    "rejectDescription": "Enter the rejection reason.",
+    "rejectReasonPlaceholder": "Rejection reason",
+    "statusFilterLabel": "Approval status",
+    "status": {
+      "notRequired": "Not Required",
+      "waiting": "Waiting",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "closed": "Closed"
+    }
+  },
+  "approvalFlow": {
+    "noData": "No approval step found.",
+    "notStarted": "Not started",
+    "stepCompleted": "Step completed",
+    "stepInProgress": "Step in progress",
+    "stepNotStarted": "Step pending",
+    "stepRejected": "Step rejected",
+    "errorTitle": "An error occurred"
+  },
+  "update": {
+    "success": "Demand updated.",
+    "successMessage": "Demand updated successfully.",
+    "error": "Demand could not be updated.",
+    "errorMessage": "An error occurred while updating demand.",
+    "invalidCurrency": "Invalid currency.",
+    "validationError": "Form validation error."
+  },
+  "revision": {
+    "success": "Revision created.",
+    "error": "Revision could not be created."
+  },
+  "waitingApprovals": {
+    "title": "Pending Demand Approvals",
+    "list": "Pending Approval List",
+    "noApprovals": "No pending approvals found.",
+    "requestId": "Demand No",
+    "description": "Description",
+    "stepOrder": "Step",
+    "approvedBy": "Approved By",
+    "actionDate": "Action Date",
+    "status": "Status",
+    "waiting": "Waiting"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "Each note can be at most 100 characters. Please check."
+    }
+  }
+}

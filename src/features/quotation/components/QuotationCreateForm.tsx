@@ -48,7 +48,7 @@ function addDaysToDateOnly(dateValue: string, days: number): string {
 }
 
 export function QuotationCreateForm(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);

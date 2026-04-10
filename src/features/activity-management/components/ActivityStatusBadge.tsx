@@ -25,7 +25,7 @@ function normalizeStatus(status: string | number): ActivityStatus | null {
 export function ActivityStatusBadge({
   status,
 }: ActivityStatusBadgeProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['activity-management', 'common']);
   const normalized = normalizeStatus(status);
 
   const config: Record<string, { icon: typeof CalendarClock; className: string; label: string }> = {

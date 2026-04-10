@@ -10,7 +10,7 @@ export const useUpdateExchangeRateInQuotation = (
   quotationId: number
 ): UseMutationResult<ApiResponse<boolean>, Error, QuotationExchangeRateGetDto[], unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
 
   return useMutation({
     mutationFn: (dtos: QuotationExchangeRateGetDto[]) =>

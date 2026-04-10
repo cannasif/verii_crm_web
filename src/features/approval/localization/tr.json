@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "Bekleyen Onaylar",
+    "description": "Size atanan teklifleri görüntüleyip onaylayabilir veya reddedebilirsiniz",
+    "empty": "Bekleyen onay bulunmuyor",
+    "error": "Onaylar yüklenirken bir hata oluştu"
+  },
+  "yes": "Evet",
+  "no": "Hayır",
+  "processing": "İşleniyor...",
+  "detail": {
+    "title": "Teklif Detayı",
+    "subtitle": "Teklif detaylarını görüntüleyin ve işlem yapın",
+    "tabs": {
+      "detail": "Detay",
+      "history": "Geçmiş",
+      "action": "İşlem"
+    },
+    "notFound": "Teklif bulunamadı",
+    "quotationInfo": "Teklif Bilgileri",
+    "offerNo": "Teklif No",
+    "customer": "Müşteri",
+    "representative": "Temsilci",
+    "currency": "Para Birimi",
+    "offerDate": "Teklif Tarihi",
+    "deliveryDate": "Teslimat Tarihi",
+    "total": "Toplam",
+    "grandTotal": "Genel Toplam",
+    "description": "Açıklama",
+    "lines": "Teklif Satırları",
+    "productCode": "Ürün Kodu",
+    "productName": "Ürün Adı",
+    "quantity": "Miktar",
+    "unitPrice": "Birim Fiyat",
+    "lineTotal": "Satır Toplamı",
+    "lineGrandTotal": "Satır Genel Toplamı",
+    "exchangeRates": "Döviz Kurları",
+    "exchangeRate": "Kur",
+    "exchangeRateDate": "Kur Tarihi",
+    "isOfficial": "Resmi Kur"
+  },
+  "actions": {
+    "view": "Görüntüle",
+    "approve": "Onayla",
+    "reject": "Reddet"
+  },
+  "status": {
+    "notRequired": "Gerekli Değil",
+    "waiting": "Bekliyor",
+    "approved": "Onaylandı",
+    "rejected": "Reddedildi",
+    "closed": "Kapandı"
+  },
+  "closedReason": "Bu kayıt aynı teklif numarasında başka bir kayıt onaylandığı için kapatıldı.",
+  "statusFilterLabel": "Onay durumu",
+  "level": {
+    "salesManager": "Satış Müdürü",
+    "regionalManager": "Bölge Müdürü",
+    "finance": "Finans",
+    "generalManager": "Genel Müdür",
+    "unknown": "Bilinmiyor"
+  },
+  "note": {
+    "label": "Not",
+    "placeholder": "Onay/red notu ekleyebilirsiniz (opsiyonel)",
+    "maxLength": "Not en fazla 500 karakter olabilir"
+  },
+  "approve": {
+    "success": "Onaylandı",
+    "successMessage": "Teklif başarıyla onaylandı",
+    "error": "Onay Hatası",
+    "errorMessage": "Teklif onaylanırken bir hata oluştu"
+  },
+  "reject": {
+    "success": "Reddedildi",
+    "successMessage": "Teklif reddedildi",
+    "error": "Red Hatası",
+    "errorMessage": "Teklif reddedilirken bir hata oluştu"
+  },
+  "history": {
+    "empty": "Onay geçmişi bulunmuyor",
+    "approvedBy": "Onaylayan"
+  },
+  "assignedTo": "Atanan Kullanıcı"
+}

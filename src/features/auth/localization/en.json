@@ -1,0 +1,61 @@
+{
+  "auth": {
+    "login": {
+      "title": "Sales & Customer Management",
+      "slogan": "\"Manage your business with <1>v3rii</1>, not with guesses.\"",
+      "branchPlaceholder": "Select branch",
+      "emailPlaceholder": "Corporate email",
+      "passwordPlaceholder": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "submitButton": "Log in",
+      "processing": "Processing...",
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "comingSoon": "Coming soon",
+      "loginError": "An error occurred while signing in.",
+      "capsLockOn": "Caps Lock is on",
+      "animationOn": "Enable animation",
+      "animationOff": "Disable animation"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "Enter your email address to reset your password. We will send you a reset link.",
+      "emailPlaceholder": "Email address",
+      "submitButton": "Send reset request",
+      "backToLogin": "Back to sign in",
+      "processing": "Processing...",
+      "logoAlt": "Application logo"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "newPasswordPlaceholder": "New password",
+      "confirmPasswordPlaceholder": "Confirm password",
+      "submitButton": "Reset password",
+      "processing": "Processing...",
+      "invalidToken": "Invalid or missing token. Please check the reset link.",
+      "tokenNotFound": "Token not found",
+      "successRedirect": "Your password has been reset. Redirecting to sign in...",
+      "failed": "Password reset failed.",
+      "error": "An error occurred during password reset."
+    },
+    "changePassword": {
+      "success": "Password changed successfully.",
+      "error": "Password could not be changed."
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "branchRequired": "Branch selection is required",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "tokenRequired": "Token is required",
+      "newPasswordMinLength": "Password must be at least 6 characters",
+      "confirmPasswordRequired": "Confirm password is required",
+      "passwordsMismatch": "Passwords do not match",
+      "currentPasswordRequired": "Current password is required",
+      "newPasswordMaxLength": "New password must be at most 100 characters",
+      "newPasswordSameAsCurrent": "New password cannot be the same as the current password",
+      "requiredFieldsNotFilled": "Required fields are not filled in."
+    }
+  }
+}

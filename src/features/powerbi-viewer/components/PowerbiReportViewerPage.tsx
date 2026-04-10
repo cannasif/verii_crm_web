@@ -7,7 +7,7 @@ import { Loader2, ArrowLeft } from 'lucide-react';
 
 export function PowerbiReportViewerPage(): ReactElement {
   const { id } = useParams<{ id: string }>();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['powerbi-viewer', 'common']);
   const reportId = id != null ? parseInt(id, 10) : null;
   const { data: embedConfig, isLoading, isError, error, refetch } = usePowerbiEmbedConfig(reportId ?? null);
   const embedUrl = embedConfig?.embedUrl ?? null;

@@ -8,7 +8,7 @@ export const useDeleteQuotationLine = (
   quotationId: number
 ): UseMutationResult<void, Error, number, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
 
   return useMutation({
     mutationFn: (id: number) => quotationApi.deleteQuotationLine(id),

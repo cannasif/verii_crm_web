@@ -8,7 +8,7 @@ import type { DemandBulkCreateDto, DemandGetDto } from '../types/demand-types';
 
 export const useUpdateDemandBulk = (): UseMutationResult<ApiResponse<DemandGetDto>, Error, { id: number; data: DemandBulkCreateDto }, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: DemandBulkCreateDto }) => demandApi.updateBulk(id, data),

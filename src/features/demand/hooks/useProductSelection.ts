@@ -42,7 +42,7 @@ interface UseProductSelectionReturn {
 }
 
 export function useProductSelection({ currency, exchangeRates }: UseProductSelectionParams): UseProductSelectionReturn {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   const { calculateLineTotals } = useDemandCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();

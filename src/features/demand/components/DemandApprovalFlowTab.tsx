@@ -108,7 +108,7 @@ function ActionStatusBadge({ status, statusName }: { status: number; statusName:
 }
 
 function StepCard({ step, locale }: { step: ApprovalFlowStepReportDto; locale: string }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
   
   const stepStatusLabel =
     step.stepStatus === 'Completed'
@@ -205,7 +205,7 @@ function StepCard({ step, locale }: { step: ApprovalFlowStepReportDto; locale: s
 }
 
 export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['demand', 'common']);
   const { data: report, isLoading, error } = useDemandApprovalFlowReport(demandId);
 
   // Skeleton Loading Durumu

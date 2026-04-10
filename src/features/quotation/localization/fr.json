@@ -1,0 +1,323 @@
+{
+  "loading": "Chargement...",
+  "saving": "Enregistrement...",
+  "error": "Erreur",
+  "noData": "Aucune donnée",
+  "previous": "Précédent",
+  "next": "Suivant",
+  "actions": "Actions",
+  "edit": "Modifier",
+  "delete": "Supprimer",
+  "back": "Retour",
+  "refresh": "Actualiser",
+  "select": "Sélectionner",
+  "guide": "Guide",
+  "yes": "Oui",
+  "add": "Ajouter",
+  "backToQuotations": "Retour à la liste des devis",
+  "cancel": "Annuler",
+  "save": "Enregistrer",
+  "confirm": "Confirmer",
+  "saveAndApply": "Enregistrer et appliquer",
+  "loadError": "Une erreur s'est produite lors du chargement des données.",
+  "list": {
+    "title": "Liste des devis",
+    "description": "Consulter et gérer les devis",
+    "detail": "Détail",
+    "createNew": "Créer un nouveau devis",
+    "cardTitle": "Liste des devis",
+    "refresh": "Actualiser",
+    "actions": "Actions",
+    "sendGmail": "Envoyer par Gmail",
+    "sendOutlook": "Envoyer par Outlook",
+    "id": "ID",
+    "offerNo": "N° d'offre",
+    "customer": "Client",
+    "representative": "Représentant",
+    "offerDate": "Date d'offre",
+    "currency": "Devise",
+    "grandTotal": "Total général",
+    "status": "Statut",
+    "revise": "Réviser",
+    "showing": "Affichage {{from}}-{{to}} / {{total}}",
+    "customerCode": "Code client",
+    "validUntil": "Valable jusqu'au",
+    "revisionNo": "N° de révision"
+  },
+  "date": "Date",
+  "offerNo": "N° d'offre",
+  "customerAccount": "Compte client",
+  "export": "Exporter",
+  "exportPdf": "Exporter en PDF",
+  "shareMail": "Partager par e-mail",
+  "shareWhatsapp": "Partager par WhatsApp",
+  "detail": {
+    "title": "Détail du devis",
+    "subtitle": "Consulter le détail, le flux d'approbation et les rapports",
+    "notFound": "Devis introuvable",
+    "revisionNo": "N° de révision",
+    "tabDetail": "Détail",
+    "tabApprovalFlow": "Flux d'approbation",
+    "tabReport": "Rapport"
+  },
+  "create": {
+    "title": "Créer un nouveau devis",
+    "submit": "Enregistrer le devis et envoyer en approbation",
+    "success": "Devis créé avec succès",
+    "successMessage": "Le devis a été envoyé au processus d'approbation.",
+    "error": "Impossible de créer le devis",
+    "errorMessage": "Une erreur s'est produite lors de la création du devis.",
+    "subtitle": "Gérer l'en-tête, les lignes et les taux de change",
+    "invalidCurrency": "Veuillez sélectionner une devise valide.",
+    "validationError": "Veuillez vérifier les champs obligatoires."
+  },
+  "header": {
+    "title": "Informations devis",
+    "customer": "Client",
+    "selectCustomer": "Sélectionner un client",
+    "shippingAddress": "Adresse de livraison",
+    "selectShippingAddress": "Sélectionner l'adresse de livraison",
+    "representative": "Commercial",
+    "selectRepresentative": "Sélectionner un représentant",
+    "offerType": "Type d'offre",
+    "selectOfferType": "Sélectionner le type d'offre",
+    "currency": "Devise",
+    "selectCurrency": "Veuillez sélectionner une devise",
+    "showExchangeRates": "Afficher les taux de change",
+    "offerDate": "Date d'offre",
+    "deliveryDate": "Date de livraison",
+    "paymentType": "Mode de paiement",
+    "selectPaymentType": "Sélectionner le mode de paiement",
+    "description": "Description",
+    "descriptionPlaceholder": "Saisir la description",
+    "projectCode": "Code projet",
+    "projectCodePlaceholder": "Saisir le code projet",
+    "offerNo": "N° d'offre",
+    "offerNoPlaceholder": "Numéro d'offre",
+    "currencyChange": {
+      "title": "Changement de devise",
+      "message": "Lors d'un changement de devise, toutes les lignes existantes seront recalculées selon la nouvelle devise. Approuvez-vous cette opération ?"
+    },
+    "deliveryMethod": "Mode de livraison",
+    "documentDetail": "Détail du document"
+  },
+  "lines": {
+    "title": "Lignes de devis",
+    "addTitle": "Ajouter une ligne",
+    "add": "Ajouter une ligne",
+    "editTitle": "Modifier la ligne",
+    "empty": "Aucune ligne pour l'instant",
+    "noItems": "Aucune ligne pour l'instant",
+    "emptyDescription": "Utilisez « Sélectionner le stock » ou « Ajouter une ligne » pour ajouter des lignes",
+    "itemCount": "{{count}} lignes",
+    "editLine": "Modifier la ligne",
+    "selectStock": "Sélectionner le stock",
+    "selectProduct": "Sélectionner un produit",
+    "selectStockFirst": "Stock non sélectionné",
+    "stock": "Stock",
+    "productCode": "Code article",
+    "enterProductCode": "Saisir le code ou rechercher",
+    "productName": "Libellé",
+    "enterProductName": "Saisir le nom du produit",
+    "quantity": "Quantité",
+    "unit": "Unité",
+    "unitPrice": "Prix unitaire",
+    "description": "Description",
+    "discount1": "Remise 1 %",
+    "discount2": "Remise 2 %",
+    "discount3": "Remise 3 %",
+    "discounts": "Remises",
+    "discountAmount": "Montant de remise",
+    "netPrice": "Prix net",
+    "vatRate": "Taux de TVA %",
+    "lineTotal": "Total ligne (TVA incluse)",
+    "total": "Total",
+    "calculations": "Calculs",
+    "required": "Au moins 1 ligne est requise",
+    "requiredFieldsMissing": "Veuillez remplir les champs obligatoires.",
+    "relatedStocks": "Stocks liés",
+    "noProductsFound": "Aucun produit trouvé",
+    "createSuccess": "Lignes de devis ajoutées.",
+    "createError": "Impossible d'ajouter les lignes de devis.",
+    "updateSuccess": "Lignes de devis mises à jour.",
+    "updateError": "Impossible de mettre à jour les lignes de devis.",
+    "deleteSuccess": "Ligne de devis supprimée.",
+    "deleteError": "Impossible de supprimer la ligne de devis.",
+    "delete": {
+      "confirmTitle": "Supprimer la ligne",
+      "confirmMessage": "Voulez-vous vraiment supprimer cette ligne ?",
+      "confirmTitleMultiple": "Supprimer les lignes",
+      "confirmMessageMultiple": "Voulez-vous vraiment supprimer les lignes sélectionnées ?"
+    },
+    "discountLimitExceeded": "Les taux de remise dépassent vos plafonds d'autorisation.",
+    "max200Chars": "200 caractères maximum",
+    "approvalRequired": "Approbation requise",
+    "approvalNeeded": "Approbation nécessaire",
+    "subtotal": "Sous-total",
+    "grandTotal": "Total général",
+    "currencyTry": "TL",
+    "totalDiscount": "Remise totale",
+    "vatAmount": "Montant TVA"
+  },
+  "exchangeRates": {
+    "title": "Taux de change",
+    "currency": "Devise",
+    "rate": "Taux",
+    "date": "Date du taux",
+    "isOfficial": "Taux officiel",
+    "official": "Officiel",
+    "custom": "Personnalisé",
+    "empty": "Aucun taux de change",
+    "status": "Statut",
+    "updateSuccess": "Taux de change mis à jour.",
+    "updateError": "Impossible de mettre à jour les taux de change.",
+    "cannotEditUsedCurrency": "Le taux ne peut pas être modifié pour une devise déjà utilisée.",
+    "zeroRateError": "Veuillez saisir un taux de change pour continuer.",
+    "dialog": {
+      "title": "Taux de change",
+      "description": "Consultez et modifiez si besoin les taux. Les taux modifiés ne seront pas marqués comme officiels.",
+      "subtitle": "Vérifier les taux appliqués au devis",
+      "info": "Les changements de taux impactent le calcul des lignes."
+    }
+  },
+  "approval": {
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "sending": "Envoi...",
+    "sendForApproval": "Envoyer en approbation",
+    "approveSuccess": "Devis approuvé avec succès.",
+    "approveError": "Impossible d'approuver le devis.",
+    "rejectSuccess": "Devis rejeté.",
+    "rejectError": "Impossible de rejeter le devis.",
+    "startSuccess": "Flux d'approbation démarré.",
+    "startError": "Impossible de démarrer le flux d'approbation.",
+    "rejectTitle": "Rejeter le devis",
+    "rejectDescription": "Indiquez le motif du rejet.",
+    "rejectReasonPlaceholder": "Motif du rejet",
+    "statusFilterLabel": "Statut d'approbation",
+    "status": {
+      "notRequired": "Non requis",
+      "waiting": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "closed": "Clôturé"
+    }
+  },
+  "approvalFlow": {
+    "loading": "Chargement du flux d'approbation...",
+    "noData": "Aucun enregistrement de flux d'approbation",
+    "notStarted": "Le flux d'approbation n'a pas encore démarré",
+    "stepCompleted": "Terminé",
+    "stepInProgress": "En cours",
+    "stepNotStarted": "Non démarré",
+    "stepRejected": "Rejeté"
+  },
+  "notes": {
+    "title": "Notes de devis",
+    "description": "Ajouter et mettre à jour les notes internes du devis.",
+    "placeholder": "Saisir une note",
+    "saving": "Enregistrement des notes...",
+    "noteLabel": "Note de devis",
+    "saved": "Notes de devis enregistrées.",
+    "saveError": "Impossible d'enregistrer les notes de devis.",
+    "maxLengthError": "La note peut comporter au plus 1000 caractères.",
+    "maxCountError": "Vous pouvez ajouter au plus 10 notes."
+  },
+  "summary": {
+    "title": "Récapitulatif",
+    "grandTotalAnalysis": "Analyse du total général",
+    "subtotal": "Sous-total",
+    "totalVat": "TVA totale",
+    "grandTotal": "Total général",
+    "generalDiscount": "Remise générale",
+    "generalDiscountRate": "Taux de remise générale",
+    "generalDiscountAmount": "Montant de la remise générale",
+    "generalDiscountHelp": "Ce champ représente la remise générale appliquée au total du devis."
+  },
+  "sections": {
+    "header": "En-tête",
+    "lines": "Lignes",
+    "summary": "Récapitulatif"
+  },
+  "share": {
+    "downloaded": "Fichier téléchargé.",
+    "mailSubject": "Partage de devis",
+    "mailBody": "Souhaitez-vous consulter le détail du devis ?",
+    "whatsappMessage": "Je partage avec vous le détail du devis."
+  },
+  "revision": {
+    "success": "Enregistrement de révision créé.",
+    "error": "Impossible de créer l'enregistrement de révision."
+  },
+  "update": {
+    "saveButton": "Enregistrer les modifications",
+    "success": "Devis mis à jour.",
+    "successMessage": "Devis mis à jour avec succès.",
+    "error": "Impossible de mettre à jour le devis.",
+    "errorMessage": "Une erreur s'est produite lors de la mise à jour du devis.",
+    "invalidCurrency": "Veuillez sélectionner une devise valide.",
+    "validationError": "Veuillez vérifier les champs obligatoires."
+  },
+  "waitingApprovals": {
+    "title": "Approbations devis en attente",
+    "description": "Consulter les devis en attente d'approbation.",
+    "list": "Liste des approbations en attente",
+    "waiting": "En attente",
+    "noApprovals": "Aucune approbation en attente.",
+    "requestId": "N° d'offre",
+    "status": "Statut",
+    "stepOrder": "Ordre d'étape",
+    "approvedBy": "Approuvé par",
+    "actionDate": "Date d'action"
+  },
+  "offerType": {
+    "domestic": "Domestique",
+    "export": "Export"
+  },
+  "wizard": {
+    "title": "Créer un nouveau devis",
+    "step1": {
+      "title": "Étape 1 : Informations devis",
+      "description": "Saisir l'en-tête et les taux de change",
+      "validation": {
+        "offerType": "Type d'offre",
+        "currency": "Devise",
+        "exchangeRate": "Taux de change"
+      },
+      "exchangeRate": {
+        "required": "Au moins un taux de change est requis pour les devises autres que TRY"
+      },
+      "currency": {
+        "try": {
+          "info": "Aucun taux de change n'est requis lorsque TRY est sélectionné"
+        }
+      }
+    },
+    "step2": {
+      "title": "Étape 2 : Lignes de devis",
+      "description": "Ajouter produit et informations de prix",
+      "info": "Vous devez ajouter au moins une ligne",
+      "validation": {
+        "noLines": "Au moins une ligne est requise",
+        "invalidLines": "Toutes les lignes doivent contenir des informations valides",
+        "allValid": "{{count}} lignes ajoutées avec succès"
+      }
+    },
+    "step3": {
+      "title": "Étape 3 : Récapitulatif et approbation",
+      "description": "Vérifier les informations et enregistrer le devis",
+      "header": {
+        "title": "Informations devis"
+      },
+      "lines": {
+        "title": "Lignes de devis"
+      },
+      "summary": {
+        "title": "Récapitulatif final"
+      },
+      "approval": {
+        "info": "Après enregistrement, le devis sera automatiquement envoyé en approbation"
+      }
+    }
+  }
+}

@@ -25,7 +25,7 @@ interface StockBasicInfoProps {
 }
 
 export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['stock', 'common']);
 
   const specialCodes = [
     { id: 1, code: stock.kod1, name: stock.kod1Adi },
@@ -189,7 +189,7 @@ function InfoItem({
     className?: string,
     multiline?: boolean
 }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['stock', 'common']);
     
     const handleCopy = () => {
         if (value) {

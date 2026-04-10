@@ -1,0 +1,85 @@
+{
+  "menu": "Cliente ERP",
+  "description": "Elenco clienti dal sistema ERP",
+  "loading": "Caricamento...",
+  "noData": "Nessun cliente trovato",
+  "table": {
+    "title": "Elenco clienti",
+    "branchCode": "Codice filiale",
+    "businessUnitCode": "Codice business unit",
+    "customerCode": "Codice cliente",
+    "customerName": "Nome cliente",
+    "phone": "Telefono",
+    "city": "Città",
+    "district": "Provincia/Comune",
+    "address": "Indirizzo",
+    "countryCode": "Codice paese",
+    "email": "E-mail",
+    "website": "Sito web",
+    "taxNumber": "Partita IVA / Codice fiscale",
+    "taxOffice": "Ufficio imposte",
+    "tcknNumber": "TCKN",
+    "visibleColumns": "Colonne visibili",
+    "editColumns": "Modifica colonne"
+  },
+  "filterLabels": {
+    "branchCode": "Codice filiale",
+    "customerCode": "Codice cliente",
+    "customerName": "Nome cliente",
+    "city": "Città",
+    "district": "Provincia/Comune",
+    "taxNumber": "P. IVA"
+  },
+  "placeholders": {
+    "quickSearch": "Ricerca rapida...",
+    "all": "Tutti",
+    "codeExample": "Es.: 120...",
+    "nameExample": "Nome cliente...",
+    "cityExample": "Città...",
+    "districtExample": "Comune...",
+    "taxExample": "IVA/TCKN..."
+  },
+  "actions": {
+    "detailedFilter": "Filtro dettagliato",
+    "clear": "Pulisci",
+    "filter": "Filtra",
+    "all": "TUTTI",
+    "active": "ATTIVO",
+    "passive": "PASSIVO",
+    "apply": "ELENCA RISULTATI"
+  },
+  "details": {
+    "title": "Dettagli cliente",
+    "addressInfo": "Informazioni indirizzo"
+  },
+  "common": {
+    "close": "Chiudi",
+    "selectAll": "Seleziona tutto",
+    "ok": "OK",
+    "totalRecords": "Record totali"
+  },
+  "advancedFilter": {
+    "title": "Filtro avanzato",
+    "add": "Aggiungi filtro",
+    "column": "Colonna",
+    "operator": "Operatore",
+    "value": "Valore",
+    "search": "Cerca",
+    "clear": "Pulisci",
+    "remove": "Rimuovi",
+    "columnCustomerCode": "Codice cliente",
+    "columnCustomerName": "Nome cliente",
+    "columnBranchCode": "Codice filiale",
+    "columnCity": "Città",
+    "columnDistrict": "Comune",
+    "columnTaxNumber": "P. IVA",
+    "operatorContains": "Contiene",
+    "operatorStartsWith": "Inizia con",
+    "operatorEndsWith": "Finisce con",
+    "operatorEquals": "Uguale a",
+    "operator>": ">",
+    "operator>=": ">=",
+    "operator<": "<",
+    "operator<=": "<="
+  }
+}

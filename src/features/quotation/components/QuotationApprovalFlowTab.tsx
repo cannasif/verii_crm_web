@@ -45,7 +45,7 @@ function ActionStatusBadge({ status, statusName }: { status: number; statusName:
 }
 
 function StepCard({ step, locale }: { step: ApprovalFlowStepReportDto; locale: string }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const stepStatusLabel =
     step.stepStatus === 'Completed'
       ? t('quotation.approvalFlow.stepCompleted')
@@ -95,7 +95,7 @@ function StepCard({ step, locale }: { step: ApprovalFlowStepReportDto; locale: s
 }
 
 export function QuotationApprovalFlowTab({ quotationId }: QuotationApprovalFlowTabProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['quotation', 'common']);
   const { data: report, isLoading, error } = useQuotationApprovalFlowReport(quotationId);
 
   if (isLoading) {

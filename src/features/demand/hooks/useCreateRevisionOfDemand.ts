@@ -8,7 +8,7 @@ import type { DemandGetDto } from '../types/demand-types';
 
 export const useCreateRevisionOfDemand = (): UseMutationResult<ApiResponse<DemandGetDto>, Error, number, unknown> => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['demand', 'common']);
 
   return useMutation({
     mutationFn: (demandId: number) => demandApi.createRevisionOfDemand(demandId),

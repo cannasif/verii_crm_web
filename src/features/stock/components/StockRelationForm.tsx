@@ -40,7 +40,7 @@ interface StockRelationFormProps {
 }
 
 export function StockRelationForm({ stockId }: StockRelationFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['stock', 'common']);
   const createRelation = useStockRelationCreate();
   const [openCombobox, setOpenCombobox] = useState(false);
   

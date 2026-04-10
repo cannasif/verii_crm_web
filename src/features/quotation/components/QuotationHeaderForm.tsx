@@ -98,7 +98,7 @@ export function QuotationHeaderForm({
   readOnly = false,
   showDocumentSerialType = true,
 }: QuotationHeaderFormProps = {}): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotation', 'common']);
   const form = useFormContext<CreateQuotationSchema>();
   const { data: erpRates = [] } = useExchangeRate();
   const user = useAuthStore((state) => state.user);
