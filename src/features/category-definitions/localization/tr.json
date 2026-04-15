@@ -3,6 +3,10 @@
     "title": "Kategori Tanımlamaları",
     "description": "B2B ve B2C katalogları için kategori ağacını ve kategoriye bağlı stokları buradan yönetmeye başlayabilirsiniz.",
     "guidedTitle": "Kategori yapısını 3 adımda yönetin",
+    "hierarchyBlueprintTitle": "Önerilen kurumsal kategori kurgusu",
+    "hierarchyBlueprintDescription": "Kategori ağacını sabit bir mantıkla kurarsanız hem kullanıcı tarafı daha anlaşılır olur hem de ürün eşleşmesi daha sağlıklı ilerler.",
+    "hierarchyExampleLabel": "Örnek akış",
+    "hierarchyExampleValue": "Telefonlar > Tuşlu Telefonlar > iPhone > 17 Serisi > Ürün Listesi",
     "easyModeTitle": "Burada ne yapacağınızı düşünmenize gerek yok",
     "summaryGuideTitle": "Sana sıradaki doğru adımı gösteriyorum",
     "createCatalogTitle": "Yeni katalog oluştur",
@@ -67,6 +71,7 @@
     "root": "Kök",
     "leaf": "Uç",
     "branch": "Dal",
+    "treeLevelLabel": "Seviye {{level}}",
     "noCatalogs": "Henüz tanımlı katalog bulunmuyor.",
     "noCategories": "Bu seviyede kategori bulunmuyor.",
     "noStocks": "Bu kategoriye bağlı stok bulunmuyor.",
@@ -91,7 +96,31 @@
       "branchTitle": "2. Dal kategoriler gezinmek içindir",
       "branchDescription": "Dal kategoriler son seçim noktası değil, kullanıcıyı doğru alt kırılıma taşımak için kullanılır.",
       "leafTitle": "3. Stok kontrolünü uç kategoride yapın",
-      "leafDescription": "Stok listesi en doğru şekilde uç kategoride anlam kazanır; bu yüzden son seçimi uç kategoride yapmanız önerilir."
+      "leafDescription": "Stok listesi en doğru şekilde uç kategoride anlam kazanır; bu yüzden son seçimi uç kategoride yapmanız önerilir.",
+      "exampleTitle": "4. Kurumsal hiyerarşiyi sabit tutun",
+      "exampleDescription": "Önerilen yapı: Ana Kategori > Alt Kategori > Marka > Seri > Ürünler. Böylece ekip yeni kayıt açarken aynı dili kullanır ve arama sonuçları daha tahmin edilebilir olur."
+    },
+    "hierarchyStages": {
+      "root": {
+        "title": "Ana Kategori",
+        "description": "En üst seviye iş alanını temsil eder. Örnek: Telefonlar"
+      },
+      "subcategory": {
+        "title": "Alt Kategori",
+        "description": "Ürün grubunu ayrıştırır. Örnek: Tuşlu Telefonlar"
+      },
+      "brand": {
+        "title": "Marka",
+        "description": "Marka veya üretici kırılımı için kullanılır. Örnek: iPhone"
+      },
+      "series": {
+        "title": "Seri",
+        "description": "Model ailesi veya seri bazlı ayrım burada tutulur. Örnek: 17 Serisi"
+      },
+      "products": {
+        "title": "Ürünler",
+        "description": "Son seviye leaf kategori olmalı; stok bağlama burada yapılmalı."
+      }
     },
     "actions": {
       "newCatalog": "Yeni Katalog",
@@ -179,6 +208,8 @@
       "categoryCode": "Kategori kodu",
       "categoryCodePlaceholder": "Örn: CAM_SISTEMLERI",
       "nodeType": "Kategori tipi",
+      "nodeTypeBranchHelp": "Dal kategori gezinme ve alt kırılım açmak içindir. Bu seviyede doğrudan ürün bağlamayın.",
+      "nodeTypeLeafHelp": "Uç kategori son seçim noktasıdır. Stok eşlemesi ve ürün listesi bu seviyede tutulmalıdır.",
       "visualPreset": "Görsel teması",
       "visualPresetPlaceholder": "Temayı arayarak seçin",
       "visualPresetSearchPlaceholder": "Tema ara...",

@@ -435,6 +435,43 @@ export function CategoryDefinitionsPage(): ReactElement {
         </AlertDescription>
       </Alert>
 
+      <Card className="border-slate-200/70 bg-white dark:border-white/10 dark:bg-white/5">
+        <CardHeader className="space-y-2">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <GitBranchPlus className="h-4 w-4" />
+            {t('categoryDefinitions.hierarchyBlueprintTitle')}
+          </CardTitle>
+          <CardDescription>{t('categoryDefinitions.hierarchyBlueprintDescription')}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 xl:grid-cols-5">
+            {(['root', 'subcategory', 'brand', 'series', 'products'] as const).map((stage, index) => (
+              <div
+                key={stage}
+                className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white dark:bg-white dark:text-slate-900">
+                    {index + 1}
+                  </div>
+                  <div className="text-sm font-semibold text-foreground">
+                    {t(`categoryDefinitions.hierarchyStages.${stage}.title`)}
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {t(`categoryDefinitions.hierarchyStages.${stage}.description`)}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl border border-dashed border-slate-200/80 bg-slate-50/50 p-4 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5">
+            <span className="font-medium text-foreground">{t('categoryDefinitions.hierarchyExampleLabel')}:</span>{' '}
+            {t('categoryDefinitions.hierarchyExampleValue')}
+          </div>
+        </CardContent>
+      </Card>
+
       <Card className="border-pink-200/70 bg-pink-50/50 dark:border-pink-500/20 dark:bg-pink-500/5">
         <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
@@ -641,6 +678,14 @@ export function CategoryDefinitionsPage(): ReactElement {
                       <div>
                         <div className="font-medium">{node.name}</div>
                         <div className="mt-1 text-xs text-muted-foreground">{node.code}</div>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                          <span className="rounded-full border px-2 py-0.5">
+                            {t('categoryDefinitions.treeLevelLabel', { level: node.level })}
+                          </span>
+                          {node.fullPath ? (
+                            <span className="line-clamp-1">{node.fullPath}</span>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
                     <Badge variant={node.isLeaf ? 'secondary' : 'outline'}>
@@ -1038,6 +1083,10 @@ export function CategoryDefinitionsPage(): ReactElement {
                 <div className="rounded-2xl border p-4">
                   <div className="font-medium">{t('categoryDefinitions.tips.leafTitle')}</div>
                   <p className="mt-2 text-sm text-muted-foreground">{t('categoryDefinitions.tips.leafDescription')}</p>
+                </div>
+                <div className="rounded-2xl border p-4">
+                  <div className="font-medium">{t('categoryDefinitions.tips.exampleTitle')}</div>
+                  <p className="mt-2 text-sm text-muted-foreground">{t('categoryDefinitions.tips.exampleDescription')}</p>
                 </div>
               </TabsContent>
             </Tabs>

@@ -3,6 +3,10 @@
     "title": "Category Definitions",
     "description": "Start managing the category tree and category-linked stocks for B2B and B2C catalogs from here.",
     "guidedTitle": "Manage the category structure in 3 clear steps",
+    "hierarchyBlueprintTitle": "Recommended corporate category blueprint",
+    "hierarchyBlueprintDescription": "If you keep the category tree in a fixed structure, the experience becomes clearer for users and product matching stays more reliable.",
+    "hierarchyExampleLabel": "Example flow",
+    "hierarchyExampleValue": "Phones > Feature Phones > iPhone > 17 Series > Product List",
     "easyModeTitle": "You do not need to guess what to do here",
     "summaryGuideTitle": "I will show you the next correct step",
     "createCatalogTitle": "Create new catalog",
@@ -67,6 +71,7 @@
     "root": "Root",
     "leaf": "Leaf",
     "branch": "Branch",
+    "treeLevelLabel": "Level {{level}}",
     "noCatalogs": "No catalogs have been defined yet.",
     "noCategories": "No categories were found at this level.",
     "noStocks": "No stocks are linked to this category.",
@@ -91,7 +96,31 @@
       "branchTitle": "2. Branch categories are for navigation",
       "branchDescription": "Branch categories are not the final selection point. Use them to move users toward the correct lower level.",
       "leafTitle": "3. Validate stocks on the leaf category",
-      "leafDescription": "The linked stock list becomes meaningful at the leaf level, so the final review should happen there."
+      "leafDescription": "The linked stock list becomes meaningful at the leaf level, so the final review should happen there.",
+      "exampleTitle": "4. Keep the corporate hierarchy consistent",
+      "exampleDescription": "Recommended structure: Main Category > Subcategory > Brand > Series > Products. This helps the team use the same naming logic and makes search results more predictable."
+    },
+    "hierarchyStages": {
+      "root": {
+        "title": "Main Category",
+        "description": "Represents the top business area. Example: Phones"
+      },
+      "subcategory": {
+        "title": "Subcategory",
+        "description": "Splits the product family into a clearer group. Example: Feature Phones"
+      },
+      "brand": {
+        "title": "Brand",
+        "description": "Use this level for brand or manufacturer breakdowns. Example: iPhone"
+      },
+      "series": {
+        "title": "Series",
+        "description": "Keep model family or series-based distinctions here. Example: 17 Series"
+      },
+      "products": {
+        "title": "Products",
+        "description": "This should be the final leaf level; stock assignments should be done here."
+      }
     },
     "actions": {
       "newCatalog": "New Catalog",
@@ -179,6 +208,8 @@
       "categoryCode": "Category code",
       "categoryCodePlaceholder": "E.g. GLASS_SYSTEMS",
       "nodeType": "Category type",
+      "nodeTypeBranchHelp": "A branch category is for navigation and deeper breakdowns. Do not attach products directly at this level.",
+      "nodeTypeLeafHelp": "A leaf category is the final selection point. Stock matching and product listing should live at this level.",
       "visualPreset": "Visual theme",
       "visualPresetPlaceholder": "Search and choose a theme",
       "visualPresetSearchPlaceholder": "Search theme...",

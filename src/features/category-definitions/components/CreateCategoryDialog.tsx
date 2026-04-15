@@ -201,6 +201,11 @@ export function CreateCategoryDialog({
                   <SelectItem value="branch">{t('categoryDefinitions.branch')}</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                {form.isLeaf
+                  ? t('categoryDefinitions.form.nodeTypeLeafHelp')
+                  : t('categoryDefinitions.form.nodeTypeBranchHelp')}
+              </p>
             </div>
 
             <div className="space-y-2">
