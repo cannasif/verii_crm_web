@@ -1,0 +1,44 @@
+{
+  "menu": "Sales Representative Match Management",
+  "description": "View, add, and delete user mappings for sales representative codes.",
+  "addButton": "New Match",
+  "searchPlaceholder": "Search by sales representative code, user, or email",
+  "empty": "No sales representative matches found.",
+  "error": "Sales representative matches could not be loaded.",
+  "deleteConfirmMessage": "Delete the match between {{salesRep}} and {{user}}?",
+  "table": {
+    "title": "Sales representative match list",
+    "salesRepCode": "SalesRepCode",
+    "salesRepName": "Sales Representative Name",
+    "userFullName": "User",
+    "username": "Username",
+    "userEmail": "Email",
+    "createdDate": "Created Date"
+  },
+  "form": {
+    "addTitle": "Add Sales Representative Match",
+    "addDescription": "Match a sales representative record with a user.",
+    "salesRep": "Sales Representative",
+    "salesRepPlaceholder": "Select sales representative",
+    "salesRepSearchPlaceholder": "Search sales representative",
+    "user": "User",
+    "userPlaceholder": "Select user",
+    "userSearchPlaceholder": "Search user",
+    "validation": {
+      "salesRepRequired": "Sales representative selection is required.",
+      "userRequired": "User selection is required."
+    }
+  },
+  "messages": {
+    "createSuccess": "Sales representative match created.",
+    "createError": "Sales representative match could not be created.",
+    "deleteSuccess": "Sales representative match deleted.",
+    "deleteError": "Sales representative match could not be deleted."
+  },
+  "advancedFilter": {
+    "columnSalesRepCode": "Sales Representative Code",
+    "columnSalesRepName": "Sales Representative Name",
+    "columnUsername": "Username",
+    "columnEmail": "Email"
+  }
+}

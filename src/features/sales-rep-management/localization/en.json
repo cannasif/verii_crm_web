@@ -1,0 +1,48 @@
+{
+  "menu": "Sales Representative Code Management",
+  "description": "View, add, and delete sales representative codes mirrored from ERP.",
+  "addButton": "New Sales Representative",
+  "searchPlaceholder": "Search by sales representative code, description, or name",
+  "empty": "No sales representative records found.",
+  "error": "Sales representative records could not be loaded.",
+  "deleteConfirmMessage": "Delete the sales representative record with code {{code}}?",
+  "table": {
+    "title": "Sales representative list",
+    "branchCode": "Branch Code",
+    "salesRepCode": "SalesRepCode",
+    "salesRepDescription": "Description",
+    "name": "Name",
+    "createdDate": "Created Date"
+  },
+  "form": {
+    "addTitle": "Add Sales Representative",
+    "addDescription": "Create a sales representative code record manually.",
+    "branchCode": "Branch Code",
+    "branchCodePlaceholder": "Enter branch code",
+    "salesRepCode": "SalesRepCode",
+    "salesRepCodePlaceholder": "Enter code",
+    "salesRepDescription": "Description",
+    "salesRepDescriptionPlaceholder": "Enter description",
+    "name": "Name",
+    "namePlaceholder": "Enter name",
+    "validation": {
+      "branchCodeRequired": "Branch code is required.",
+      "codeRequired": "Sales representative code is required.",
+      "codeMaxLength": "Sales representative code can be at most 8 characters.",
+      "descriptionMaxLength": "Description can be at most 30 characters.",
+      "nameMaxLength": "Name can be at most 35 characters."
+    }
+  },
+  "messages": {
+    "createSuccess": "Sales representative record created.",
+    "createError": "Sales representative record could not be created.",
+    "deleteSuccess": "Sales representative record deleted.",
+    "deleteError": "Sales representative record could not be deleted."
+  },
+  "advancedFilter": {
+    "columnBranchCode": "Branch Code",
+    "columnSalesRepCode": "Sales Representative Code",
+    "columnDescription": "Description",
+    "columnName": "Name"
+  }
+}

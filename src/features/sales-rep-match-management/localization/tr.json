@@ -1,0 +1,44 @@
+{
+  "menu": "Satış Temsilcisi Eşleşme Yönetimi",
+  "description": "Satış temsilcisi kodları ile kullanıcı eşleşmelerini görüntüleyin, ekleyin ve silin.",
+  "addButton": "Yeni Eşleşme",
+  "searchPlaceholder": "Satış temsilcisi kodu, kullanıcı veya e-posta ara",
+  "empty": "Satış temsilcisi eşleşmesi bulunamadı.",
+  "error": "Satış temsilcisi eşleşmeleri yüklenemedi.",
+  "deleteConfirmMessage": "{{salesRep}} ve {{user}} eşleşmesi silinsin mi?",
+  "table": {
+    "title": "Satış temsilcisi eşleşme listesi",
+    "salesRepCode": "SalesRepCode",
+    "salesRepName": "Satış Temsilcisi Adı",
+    "userFullName": "Kullanıcı",
+    "username": "Kullanıcı Adı",
+    "userEmail": "E-posta",
+    "createdDate": "Oluşturulma Tarihi"
+  },
+  "form": {
+    "addTitle": "Yeni Satış Temsilcisi Eşleşmesi",
+    "addDescription": "Bir satış temsilcisi kaydını kullanıcıyla eşleştirin.",
+    "salesRep": "Satış Temsilcisi",
+    "salesRepPlaceholder": "Satış temsilcisi seçin",
+    "salesRepSearchPlaceholder": "Satış temsilcisi ara",
+    "user": "Kullanıcı",
+    "userPlaceholder": "Kullanıcı seçin",
+    "userSearchPlaceholder": "Kullanıcı ara",
+    "validation": {
+      "salesRepRequired": "Satış temsilcisi seçimi zorunludur.",
+      "userRequired": "Kullanıcı seçimi zorunludur."
+    }
+  },
+  "messages": {
+    "createSuccess": "Satış temsilcisi eşleşmesi oluşturuldu.",
+    "createError": "Satış temsilcisi eşleşmesi oluşturulamadı.",
+    "deleteSuccess": "Satış temsilcisi eşleşmesi silindi.",
+    "deleteError": "Satış temsilcisi eşleşmesi silinemedi."
+  },
+  "advancedFilter": {
+    "columnSalesRepCode": "Satış Temsilcisi Kodu",
+    "columnSalesRepName": "Satış Temsilcisi Adı",
+    "columnUsername": "Kullanıcı Adı",
+    "columnEmail": "E-posta"
+  }
+}

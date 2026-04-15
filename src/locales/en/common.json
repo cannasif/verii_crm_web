@@ -1044,6 +1044,8 @@
     "pricingRuleManagement": "Pricing Rule Management",
     "documentSerialTypeManagement": "Document Serial Type Management",
     "salesTypeManagement": "Sales Type Management",
+    "salesRepManagement": "Sales Representative Code Management",
+    "salesRepMatchManagement": "Sales Representative Match Management",
     "stockManagement": "Stock Management",
     "settings": "Settings",
     "logout": "Log Out",

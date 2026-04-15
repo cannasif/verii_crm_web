@@ -1048,6 +1048,8 @@
     "pricingRuleManagement": "Fiyat Kuralı Yönetimi",
     "documentSerialTypeManagement": "Dosya Tip Yönetimi",
     "salesTypeManagement": "Satış Tipi Yönetimi",
+    "salesRepManagement": "Satış Temsilcisi Kod Yönetimi",
+    "salesRepMatchManagement": "Satış Temsilcisi Eşleşme Yönetimi",
     "stockManagement": "Stok Yönetimi",
     "settings": "Ayarlar",
     "logout": "Çıkış Yap",

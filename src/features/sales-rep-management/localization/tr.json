@@ -1,0 +1,48 @@
+{
+  "menu": "Satış Temsilcisi Kod Yönetimi",
+  "description": "ERP'den gelen satış temsilcisi kodlarını görüntüleyin, ekleyin ve silin.",
+  "addButton": "Yeni Satış Temsilcisi",
+  "searchPlaceholder": "Satış temsilcisi kodu, açıklama veya isim ara",
+  "empty": "Satış temsilcisi kaydı bulunamadı.",
+  "error": "Satış temsilcisi kayıtları yüklenemedi.",
+  "deleteConfirmMessage": "{{code}} kodlu satış temsilcisi kaydı silinsin mi?",
+  "table": {
+    "title": "Satış temsilcisi listesi",
+    "branchCode": "Şube Kodu",
+    "salesRepCode": "SalesRepCode",
+    "salesRepDescription": "Açıklama",
+    "name": "İsim",
+    "createdDate": "Oluşturulma Tarihi"
+  },
+  "form": {
+    "addTitle": "Yeni Satış Temsilcisi Ekle",
+    "addDescription": "Satış temsilcisi kod kaydını manuel olarak ekleyin.",
+    "branchCode": "Şube Kodu",
+    "branchCodePlaceholder": "Şube kodu girin",
+    "salesRepCode": "SalesRepCode",
+    "salesRepCodePlaceholder": "Kod girin",
+    "salesRepDescription": "Açıklama",
+    "salesRepDescriptionPlaceholder": "Açıklama girin",
+    "name": "İsim",
+    "namePlaceholder": "İsim girin",
+    "validation": {
+      "branchCodeRequired": "Şube kodu zorunludur.",
+      "codeRequired": "Satış temsilcisi kodu zorunludur.",
+      "codeMaxLength": "Satış temsilcisi kodu en fazla 8 karakter olabilir.",
+      "descriptionMaxLength": "Açıklama en fazla 30 karakter olabilir.",
+      "nameMaxLength": "İsim en fazla 35 karakter olabilir."
+    }
+  },
+  "messages": {
+    "createSuccess": "Satış temsilcisi kaydı oluşturuldu.",
+    "createError": "Satış temsilcisi kaydı oluşturulamadı.",
+    "deleteSuccess": "Satış temsilcisi kaydı silindi.",
+    "deleteError": "Satış temsilcisi kaydı silinemedi."
+  },
+  "advancedFilter": {
+    "columnBranchCode": "Şube Kodu",
+    "columnSalesRepCode": "Satış Temsilcisi Kodu",
+    "columnDescription": "Açıklama",
+    "columnName": "İsim"
+  }
+}
