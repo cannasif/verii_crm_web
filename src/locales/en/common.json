@@ -3137,6 +3137,10 @@
   "catalogStockPicker": {
     "title": "Select Stock From Catalog",
     "description": "Browse down through the catalog like Trendyol or Amazon, then pick the stock from the linked product list.",
+    "hierarchyBlueprintTitle": "Recommended category flow",
+    "hierarchyBlueprintDescription": "Keep the same structure in the catalog: main category, subcategory, brand, series, and finally products.",
+    "hierarchyExampleLabel": "Example",
+    "hierarchyExampleValue": "Phones > Feature Phones > iPhone > 17 Series > Products",
     "openButton": "Select From Catalog",
     "step1Label": "Step 1",
     "step1Title": "Pick Catalog",
@@ -3159,6 +3163,9 @@
     "selectLeafTitle": "Select a leaf category first",
     "selectLeafHint": "Select a leaf category to see the linked stock list.",
     "selectedLeaf": "Selected category",
+    "selectedPathLabel": "Selected path",
+    "currentPathLabel": "Current path",
+    "levelBadge": "Level {{level}}",
     "rightPanelTitle": "Stocks will appear here",
     "rightPanelLeafHint": "Pick the stock from the cards below. After selection it is applied exactly like the current magnifier flow.",
     "stocksFoundTitle": "{{count}} stocks found",
@@ -3181,7 +3188,29 @@
     "back": "Back",
     "selectionPanelTitle": "Selected Stocks",
     "selectionPanelHint": "Your picks stay here even if you switch categories. Remove any stock from this list if needed.",
-    "removeSelection": "Remove selection"
+    "removeSelection": "Remove selection",
+    "hierarchyStages": {
+      "root": {
+        "title": "Main Category",
+        "description": "Top product space. Example: Phones"
+      },
+      "subcategory": {
+        "title": "Subcategory",
+        "description": "Clarifies the product group. Example: Feature Phones"
+      },
+      "brand": {
+        "title": "Brand",
+        "description": "Brand or manufacturer breakdown. Example: iPhone"
+      },
+      "series": {
+        "title": "Series",
+        "description": "Model family or series level. Example: 17 Series"
+      },
+      "products": {
+        "title": "Products",
+        "description": "This should be the final leaf level and stock selection should happen here."
+      }
+    }
   },
   "relatedStocksSelectionDialog": {
     "title": "Select Affiliated Stocks",

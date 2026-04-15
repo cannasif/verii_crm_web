@@ -3156,6 +3156,10 @@
   "catalogStockPicker": {
     "title": "Katalogtan Stok Seç",
     "description": "Trendyol veya Hepsiburada benzeri şekilde katalogdan kategoriye in, sonra bağlı stokları seç.",
+    "hierarchyBlueprintTitle": "Önerilen kategori akışı",
+    "hierarchyBlueprintDescription": "Katalog içinde aynı mantığı koru: ana kategori, alt kategori, marka, seri ve en sonda ürünler.",
+    "hierarchyExampleLabel": "Örnek",
+    "hierarchyExampleValue": "Telefonlar > Tuşlu Telefonlar > iPhone > 17 Serisi > Ürünler",
     "openButton": "Katalogtan Seç",
     "step1Label": "Adım 1",
     "step1Title": "Katalog Seç",
@@ -3178,6 +3182,9 @@
     "selectLeafTitle": "Önce uç kategori seç",
     "selectLeafHint": "Sağda stok listesini görmek için uç kategori seç.",
     "selectedLeaf": "Seçili kategori",
+    "selectedPathLabel": "Seçili yol",
+    "currentPathLabel": "Geçerli yol",
+    "levelBadge": "Seviye {{level}}",
     "rightPanelTitle": "Stoklar burada görünecek",
     "rightPanelLeafHint": "Aşağıdaki kartlardan stoğu seç. Seçim sonrası satıra mevcut büyüteç akışıyla aynı şekilde işlenecek.",
     "stocksFoundTitle": "{{count}} stok bulundu",
@@ -3200,7 +3207,29 @@
     "back": "Geri",
     "selectionPanelTitle": "Seçtiklerin",
     "selectionPanelHint": "Kategori değiştirsen bile seçtiklerin burada kalır. İstersen buradan çıkarabilirsin.",
-    "removeSelection": "Seçimi kaldır"
+    "removeSelection": "Seçimi kaldır",
+    "hierarchyStages": {
+      "root": {
+        "title": "Ana Kategori",
+        "description": "En üst ürün alanı. Örnek: Telefonlar"
+      },
+      "subcategory": {
+        "title": "Alt Kategori",
+        "description": "Ürün grubunu netleştirir. Örnek: Tuşlu Telefonlar"
+      },
+      "brand": {
+        "title": "Marka",
+        "description": "Marka veya üretici kırılımı. Örnek: iPhone"
+      },
+      "series": {
+        "title": "Seri",
+        "description": "Model ailesi veya seri seviyesi. Örnek: 17 Serisi"
+      },
+      "products": {
+        "title": "Ürünler",
+        "description": "Son seviye leaf olmalı ve stok seçimi burada yapılmalı."
+      }
+    }
   },
   "relatedStocksSelectionDialog": {
     "title": "Bağlı Stokları Seçin",

@@ -265,6 +265,16 @@ export function CatalogStockSelectDialog({
   };
 
   const selectedLeafLabel = selectedLeafCategory?.name ?? t('catalogStockPicker.noLeafSelected');
+  const selectedLeafPathLabel = selectedLeafCategory?.fullPath ?? selectedLeafCategory?.name ?? t('catalogStockPicker.noLeafSelected');
+  const currentHierarchyPath = useMemo(() => {
+    const parts = [
+      selectedCatalog?.name,
+      ...navigationPath.map((item) => item.name),
+      selectedLeafCategory?.name,
+    ].filter(Boolean);
+
+    return parts.length > 0 ? parts.join(' / ') : t('catalogStockPicker.noCatalogSelected');
+  }, [navigationPath, selectedCatalog?.name, selectedLeafCategory?.name, t]);
   const helperTitle = !selectedLeafCategory
     ? t('catalogStockPicker.rightPanelTitle')
     : selectedResults.length > 0
@@ -346,6 +356,44 @@ export function CatalogStockSelectDialog({
               ))
             )}
           </div>
+
+          <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/5">
+            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                  {t('catalogStockPicker.hierarchyBlueprintTitle')}
+                </div>
+                <div className="mt-1 text-sm text-slate-700 dark:text-slate-200">
+                  {t('catalogStockPicker.hierarchyBlueprintDescription')}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-xs text-slate-600 dark:border-white/10 dark:bg-zinc-950/60 dark:text-slate-300">
+                <span className="font-semibold text-slate-900 dark:text-white">{t('catalogStockPicker.hierarchyExampleLabel')}:</span>{' '}
+                {t('catalogStockPicker.hierarchyExampleValue')}
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+              {(['root', 'subcategory', 'brand', 'series', 'products'] as const).map((stage, index) => (
+                <div
+                  key={stage}
+                  className="rounded-2xl border border-slate-200 bg-white px-3 py-3 dark:border-white/10 dark:bg-zinc-950/60"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white dark:bg-white dark:text-slate-900">
+                      {index + 1}
+                    </div>
+                    <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {t(`catalogStockPicker.hierarchyStages.${stage}.title`)}
+                    </div>
+                  </div>
+                  <div className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
+                    {t(`catalogStockPicker.hierarchyStages.${stage}.description`)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-0 xl:grid-cols-[360px_minmax(0,1fr)]">
@@ -403,6 +451,14 @@ export function CatalogStockSelectDialog({
                         <div className="min-w-0">
                           <div className="truncate text-base font-semibold">{category.name}</div>
                           <div className="mt-1 text-xs text-muted-foreground">{category.code}</div>
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 dark:border-white/10 dark:bg-white/5">
+                              {t('catalogStockPicker.levelBadge', { level: category.level })}
+                            </span>
+                            {category.fullPath ? (
+                              <span className="line-clamp-1">{category.fullPath}</span>
+                            ) : null}
+                          </div>
                           {category.description ? (
                             <div className="mt-2 line-clamp-2 text-xs text-muted-foreground">{category.description}</div>
                           ) : null}
@@ -438,6 +494,14 @@ export function CatalogStockSelectDialog({
                     <Badge className="bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200">
                       {t('catalogStockPicker.selectedLeaf')}: {selectedLeafLabel}
                     </Badge>
+                    <Badge variant="outline">
+                      {t('catalogStockPicker.currentPathLabel')}: {currentHierarchyPath}
+                    </Badge>
+                    {selectedLeafCategory ? (
+                      <Badge variant="outline">
+                        {t('catalogStockPicker.levelBadge', { level: selectedLeafCategory.level })}
+                      </Badge>
+                    ) : null}
                     {multiSelect && selectedResults.length > 0 ? (
                       <Badge className="bg-pink-500">
                         {t('catalogStockPicker.selectedCount', { count: selectedResults.length })}
@@ -470,6 +534,12 @@ export function CatalogStockSelectDialog({
                     <div className="mt-1 text-sm text-muted-foreground">
                       {helperDescription}
                     </div>
+                    {selectedLeafCategory ? (
+                      <div className="mt-3 rounded-2xl border border-dashed border-slate-200 bg-white/80 px-3 py-2 text-xs text-slate-600 dark:border-white/10 dark:bg-zinc-950/50 dark:text-slate-300">
+                        <span className="font-semibold text-slate-900 dark:text-white">{t('catalogStockPicker.selectedPathLabel')}:</span>{' '}
+                        {selectedLeafPathLabel}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
