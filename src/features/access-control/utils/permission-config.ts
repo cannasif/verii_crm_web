@@ -77,6 +77,8 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/definitions/activity-shipping-management': 'definitions.activity-shipping-management.view',
   '/document-serial-type-management': 'definitions.document-serial-type-management.view',
   '/definitions/sales-type-management': 'definitions.sales-type-management.view',
+  '/definitions/sales-rep-management': 'definitions.sales-rep-management.view',
+  '/definitions/sales-rep-match-management': 'definitions.sales-rep-match-management.view',
 
   '/user-management': 'admin-only',
   '/user-discount-limit-management': 'users.discount-limits.view',
@@ -151,6 +153,8 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/definitions\/activity-shipping-management(\/|$)/, permission: 'definitions.activity-shipping-management.view' },
   { pattern: /^\/document-serial-type-management(\/|$)/, permission: 'definitions.document-serial-type-management.view' },
   { pattern: /^\/definitions\/sales-type-management(\/|$)/, permission: 'definitions.sales-type-management.view' },
+  { pattern: /^\/definitions\/sales-rep-management(\/|$)/, permission: 'definitions.sales-rep-management.view' },
+  { pattern: /^\/definitions\/sales-rep-match-management(\/|$)/, permission: 'definitions.sales-rep-match-management.view' },
 
   { pattern: /^\/user-discount-limit-management(\/|$)/, permission: 'users.discount-limits.view' },
 ];
@@ -237,6 +241,8 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key: string; fallback: st
   'definitions.activity-shipping-management.view': { key: 'sidebar.activityShippingManagement', fallback: 'Aktivite Teslim Bilgisi' },
   'definitions.document-serial-type-management.view': { key: 'sidebar.documentSerialTypeManagement', fallback: 'Dosya Tip Yonetimi' },
   'definitions.sales-type-management.view': { key: 'sidebar.salesTypeManagement', fallback: 'Satis Tipi Yonetimi' },
+  'definitions.sales-rep-management.view': { key: 'sidebar.salesRepManagement', fallback: 'Sales Rep Kod Yonetimi' },
+  'definitions.sales-rep-match-management.view': { key: 'sidebar.salesRepMatchManagement', fallback: 'Sales Rep Eslesme Yonetimi' },
 
   'users.discount-limits.view': { key: 'sidebar.userDiscountLimitManagement', fallback: 'Kullanici Iskonto Limit Yonetimi' },
 };

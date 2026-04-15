@@ -183,6 +183,8 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
               { title: t('sidebar.paymentTypeManagement'), href: '/payment-type-management' },
               { title: t('sidebar.documentSerialTypeManagement'), href: '/document-serial-type-management' },
               { title: t('sidebar.salesTypeManagement'), href: '/definitions/sales-type-management' },
+              { title: t('sidebar.salesRepManagement'), href: '/definitions/sales-rep-management' },
+              { title: t('sidebar.salesRepMatchManagement'), href: '/definitions/sales-rep-match-management' },
               { title: t('sidebar.userDiscountLimitManagement'), href: '/user-discount-limit-management' },
             ],
           },

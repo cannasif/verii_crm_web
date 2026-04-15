@@ -65,6 +65,8 @@ const StockListPage = lazyImport(() => import('@/features/stock'), 'StockListPag
 const StockDetailPage = lazyImport(() => import('@/features/stock'), 'StockDetailPage');
 const DocumentSerialTypeManagementPage = lazyImport(() => import('@/features/document-serial-type-management'), 'DocumentSerialTypeManagementPage');
 const SalesTypeManagementPage = lazyImport(() => import('@/features/sales-type-management'), 'SalesTypeManagementPage');
+const SalesRepManagementPage = lazyImport(() => import('@/features/sales-rep-management'), 'SalesRepManagementPage');
+const SalesRepMatchManagementPage = lazyImport(() => import('@/features/sales-rep-match-management'), 'SalesRepMatchManagementPage');
 const CategoryDefinitionsPage = lazyImport(() => import('@/features/category-definitions'), 'CategoryDefinitionsPage');
 const ReportDesignerListPage = lazyImport(() => import('@/features/report-designer'), 'ReportDesignerListPage');
 const ReportDesignerCreatePage = lazyImport(() => import('@/features/report-designer'), 'ReportDesignerCreatePage');
@@ -178,6 +180,8 @@ export function createAppRouter() {
         { path: 'stocks/:id', element: <StockDetailPage /> },
         { path: 'document-serial-type-management', element: <DocumentSerialTypeManagementPage /> },
         { path: 'definitions/sales-type-management', element: <SalesTypeManagementPage /> },
+        { path: 'definitions/sales-rep-management', element: <SalesRepManagementPage /> },
+        { path: 'definitions/sales-rep-match-management', element: <SalesRepMatchManagementPage /> },
         { path: 'definitions/category-definitions', element: <CategoryDefinitionsPage /> },
         { path: 'access-control/permission-definitions', element: <PermissionDefinitionsPage /> },
         { path: 'access-control/permission-groups', element: <PermissionGroupsPage /> },

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, RefreshCw, Settings } from 'lucide-react';
+import { KeyRound, Loader2, Plus, RefreshCw, Settings, ShieldCheck, Sparkles, Users2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DataTableActionBar,
@@ -81,6 +81,8 @@ export function PermissionGroupsPage(): ReactElement {
   const items = data?.data ?? EMPTY_ITEMS;
   const totalCount = data?.totalCount ?? 0;
   const totalPages = data?.totalPages ?? 1;
+  const activeCount = useMemo(() => items.filter((item) => item.isActive).length, [items]);
+  const systemAdminCount = useMemo(() => items.filter((item) => item.isSystemAdmin).length, [items]);
 
   const filteredItems = useMemo(() => {
     if (!searchTerm.trim()) return items;
@@ -185,6 +187,7 @@ export function PermissionGroupsPage(): ReactElement {
       <Button
         variant="ghost"
         size="sm"
+        className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 disabled:opacity-50 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
         onClick={() => handlePermissionsClick(item)}
         title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
         disabled={item.isSystemAdmin}
@@ -194,6 +197,7 @@ export function PermissionGroupsPage(): ReactElement {
       <Button
         variant="ghost"
         size="sm"
+        className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 disabled:opacity-50 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
         onClick={() => handleEditClick(item)}
         disabled={item.isSystemAdmin}
         title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
@@ -203,7 +207,7 @@ export function PermissionGroupsPage(): ReactElement {
       <Button
         variant="ghost"
         size="sm"
-        className="text-red-600"
+        className="rounded-xl text-red-600 hover:bg-red-50 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-950/30"
         onClick={() => handleDeleteClick(item)}
         disabled={item.isSystemAdmin}
         title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
@@ -215,22 +219,72 @@ export function PermissionGroupsPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('permissionGroups.title')}
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('permissionGroups.description')}
-          </p>
+      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
+              <Sparkles className="size-4" />
+              {t('sidebar.permissionGroups')}
+            </div>
+            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white transition-colors">
+              {t('permissionGroups.title')}
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors">
+              {t('permissionGroups.description')}
+            </p>
+          </div>
+          <div className="flex shrink-0">
+            <Button
+              onClick={handleAddClick}
+              className="h-11 rounded-2xl border-0 bg-linear-to-r from-pink-600 to-orange-600 px-6 text-sm font-bold text-white shadow-lg shadow-pink-500/20 transition-transform hover:scale-[1.02] hover:text-white"
+            >
+              <Plus size={18} className="mr-2" />
+              {t('permissionGroups.add')}
+            </Button>
+          </div>
         </div>
-        <Button
-          onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
-        >
-          <Plus size={18} className="mr-2" />
-          {t('permissionGroups.add')}
-        </Button>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-cyan-100 p-2.5 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
+                <Users2 className="size-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                  {t('permissionGroups.title')}
+                </p>
+                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{totalCount}</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                <ShieldCheck className="size-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                  {t('permissionGroups.table.isActive')}
+                </p>
+                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{activeCount}</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-pink-100 p-2.5 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300">
+                <KeyRound className="size-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                  {t('permissionGroups.table.isSystemAdmin')}
+                </p>
+                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{systemAdminCount}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
@@ -355,16 +409,16 @@ export function PermissionGroupsPage(): ReactElement {
       <GroupPermissionsPanel groupId={permissionsPanelGroupId} open={permissionsPanelOpen} onOpenChange={setPermissionsPanelOpen} />
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('permissionGroups.delete.confirmTitle')}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="overflow-hidden border-slate-200 bg-white p-0 shadow-2xl dark:border-cyan-800/30 dark:bg-blue-950">
+          <DialogHeader className="border-b border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
+            <DialogTitle className="text-xl font-black text-slate-900 dark:text-white">{t('permissionGroups.delete.confirmTitle')}</DialogTitle>
+            <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
               {t('permissionGroups.delete.confirmMessage', {
                 name: itemToDelete?.name ?? '',
               })}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="border-t border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
               {t('common.cancel')}
             </Button>

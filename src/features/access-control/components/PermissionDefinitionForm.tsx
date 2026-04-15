@@ -31,6 +31,7 @@ import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayMeta } from '../utils/permission-config';
 import { Badge } from '@/components/ui/badge';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { KeyRound, Sparkles } from 'lucide-react';
 
 interface PermissionDefinitionFormProps {
   open: boolean;
@@ -107,9 +108,13 @@ export function PermissionDefinitionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-visible flex flex-col max-h-[90vh]">
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
-          <div className="space-y-1">
+      <DialogContent className="max-h-[90vh] w-[95%] max-w-2xl overflow-visible border border-slate-100 bg-white p-0 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#130822] dark:text-white sm:w-full sm:rounded-2xl">
+        <DialogHeader className="sticky top-0 z-10 border-b border-slate-100 bg-linear-to-r from-slate-50 via-white to-cyan-50/50 px-6 py-5 backdrop-blur-sm dark:border-white/5 dark:from-[#1a1025] dark:via-[#130822] dark:to-cyan-950/30">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
+              <Sparkles className="size-4" />
+              {item ? t('permissionDefinitions.form.editTitle') : t('permissionDefinitions.form.addTitle')}
+            </div>
             <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
               {item
                 ? t('permissionDefinitions.form.editTitle')
@@ -126,6 +131,7 @@ export function PermissionDefinitionForm({
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
             <form id="permission-definition-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
               <FormField
                 control={form.control}
                 name="code"
@@ -155,7 +161,7 @@ export function PermissionDefinitionForm({
                     </FormControl>
                     <FormMessage />
                     {field.value ? (
-                      <div className="pt-2">
+                      <div className="pt-3">
                         <div className="text-xs text-slate-500 dark:text-slate-400">
                           {t('permissionDefinitions.form.affectedRoutes'
                           )}
@@ -179,6 +185,8 @@ export function PermissionDefinitionForm({
                   </FormItem>
                 )}
               />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="name"
@@ -211,6 +219,7 @@ export function PermissionDefinitionForm({
                   </FormItem>
                 )}
               />
+              </div>
             </form>
           </Form>
         </div>
@@ -221,7 +230,8 @@ export function PermissionDefinitionForm({
           </Button>
           <span className="inline-flex items-center gap-1">
             <FieldHelpTooltip text={t('help.permissionDefinition.save')} side="top" />
-            <Button type="submit" form="permission-definition-form" disabled={isLoading || !isFormValid}>
+            <Button type="submit" form="permission-definition-form" disabled={isLoading || !isFormValid} className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white">
+              <KeyRound className="mr-2 size-4" />
               {isLoading ? t('common.saving') : t('common.save')}
             </Button>
           </span>
