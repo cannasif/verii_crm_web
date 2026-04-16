@@ -16,6 +16,7 @@ import { Database, Layers3, Loader2, Search, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TopBarSelectorProps {
+  mode?: 'basic' | 'advanced';
   connections: ConnectionDto[];
   dataSources: DataSourceCatalogItem[];
   dataSourceParameters: DataSourceParameter[];
@@ -46,6 +47,7 @@ const TYPE_OPTIONS = [
 ];
 
 export function TopBarSelector({
+  mode = 'advanced',
   connections,
   dataSources,
   dataSourceParameters,
@@ -90,22 +92,29 @@ export function TopBarSelector({
     <div className={cn('rounded-2xl border bg-card p-4 shadow-xs')}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">{t('common.reportBuilder.datasetSetupTitle')}</h2>
+          <h2 className="text-base font-semibold">
+            {mode === 'basic' ? t('common.reportBuilder.simpleTopbarTitle') : t('common.reportBuilder.datasetSetupTitle')}
+          </h2>
           <p className="text-muted-foreground mt-1 text-sm">
-            {t('common.reportBuilder.datasetSetupDescription')}
+            {mode === 'basic' ? t('common.reportBuilder.simpleTopbarDescription') : t('common.reportBuilder.datasetSetupDescription')}
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
-          <Sparkles className="size-3.5" />
-          {t('common.reportBuilder.datasetSetupTip')}
-        </div>
+        {mode === 'advanced' ? (
+          <div className="flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
+            <Sparkles className="size-3.5" />
+            {t('common.reportBuilder.datasetSetupTip')}
+          </div>
+        ) : null}
       </div>
 
-      <div className="grid gap-3 xl:grid-cols-[1.1fr_0.8fr_1fr_1.4fr_auto]">
+      <div className={cn(
+        'grid gap-3',
+        mode === 'basic' ? 'md:grid-cols-2' : 'xl:grid-cols-[1.1fr_0.8fr_1fr_1.4fr_auto]',
+      )}>
         <div className="rounded-xl border bg-background p-3">
           <Label className="mb-2 flex items-center gap-2">
             <Database className="size-4 text-primary" />
-            {t('common.reportBuilder.connection')}
+            {mode === 'basic' ? t('common.reportBuilder.simpleConnectionLabel') : t('common.reportBuilder.connection')}
             {connectionsLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
           </Label>
           <Select value={connectionKey || undefined} onValueChange={onConnectionChange}>
@@ -125,7 +134,7 @@ export function TopBarSelector({
         <div className="rounded-xl border bg-background p-3">
           <Label className="mb-2 flex items-center gap-2">
             <Layers3 className="size-4 text-primary" />
-            {t('common.reportBuilder.datasetType')}
+            {mode === 'basic' ? t('common.reportBuilder.simpleDatasetTypeLabel') : t('common.reportBuilder.datasetType')}
           </Label>
           <Select value={dataSourceType} onValueChange={onTypeChange}>
             <SelectTrigger className="w-full">
@@ -144,7 +153,7 @@ export function TopBarSelector({
         <div className="rounded-xl border bg-background p-3">
           <Label className="mb-2 flex items-center gap-2">
             <Search className="size-4 text-primary" />
-            {t('common.reportBuilder.datasetSearch')}
+            {mode === 'basic' ? t('common.reportBuilder.simpleDatasetSearchLabel') : t('common.reportBuilder.datasetSearch')}
           </Label>
           <Input
             placeholder={t('common.reportBuilder.datasetSearchPlaceholder')}
@@ -157,7 +166,7 @@ export function TopBarSelector({
 
         <div className="rounded-xl border bg-background p-3">
           <Label className="mb-2 flex items-center gap-2">
-            {t('common.reportBuilder.dataset')}
+            {mode === 'basic' ? t('common.reportBuilder.simpleDatasetLabel') : t('common.reportBuilder.dataset')}
             {dataSourcesLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
           </Label>
           <Select value={dataSourceName || undefined} onValueChange={onNameChange} disabled={!connectionKey || !dataSourceType}>
@@ -174,10 +183,10 @@ export function TopBarSelector({
           </Select>
         </div>
 
-        <div className="flex items-end">
+        <div className={cn('flex items-end', mode === 'basic' ? 'md:col-span-2' : '')}>
           <Button className="w-full xl:w-auto" onClick={onCheck} disabled={checkLoading || connectionsLoading}>
             {checkLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-            {t('common.reportBuilder.check')}
+            {mode === 'basic' ? t('common.reportBuilder.simpleCheckAction') : t('common.reportBuilder.check')}
           </Button>
         </div>
       </div>

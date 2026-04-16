@@ -145,6 +145,7 @@ export function ReportBuilderPage(): ReactElement {
     setWidgetAppearance,
     setLifecycleStatus,
     setUi,
+    setConfig,
     saveNewReport,
     updateReport,
     loadReportById,
@@ -192,9 +193,23 @@ export function ReportBuilderPage(): ReactElement {
       }),
     [assignedUserIds, userOptions],
   );
+  const allSelectableFields = useMemo(
+    () => [
+      ...schema.map((field) => ({
+        name: field.name,
+        label: field.displayName || field.name,
+      })),
+      ...(config.calculatedFields ?? []).map((field) => ({
+        name: field.name,
+        label: field.label || field.name,
+      })),
+    ],
+    [config.calculatedFields, schema],
+  );
   const fieldsCount = schema.length + (config.calculatedFields?.length ?? 0);
   const widgetsCount = config.widgets?.length ?? 0;
   const datasetReady = Boolean(dataSourceChecked && meta.dataSourceName);
+  const requiresAxis = config.chartType !== 'kpi' && config.chartType !== 'table';
   const hasAxis = Boolean(config.axis?.field);
   const hasValue = config.values.length > 0;
   const hasLegend = Boolean(config.legend?.field);
@@ -335,11 +350,11 @@ export function ReportBuilderPage(): ReactElement {
     if (!meta.name?.trim()) issues.push(t('common.reportBuilder.qualityIssues.reportName'));
     if (!datasetReady) issues.push(t('common.reportBuilder.qualityIssues.dataset'));
     if (widgetsCount === 0) issues.push(t('common.reportBuilder.qualityIssues.widgets'));
-    if (config.chartType !== 'kpi' && !hasAxis) issues.push(t('common.reportBuilder.qualityIssues.axis'));
+    if (requiresAxis && !hasAxis) issues.push(t('common.reportBuilder.qualityIssues.axis'));
     if (!hasValue) issues.push(t('common.reportBuilder.qualityIssues.value'));
     if (chartRepairPlan) issues.push(t('common.reportBuilder.qualityIssues.visual'));
     return issues;
-  }, [chartRepairPlan, config.chartType, datasetReady, hasAxis, hasValue, meta.name, t, widgetsCount]);
+  }, [chartRepairPlan, datasetReady, hasAxis, hasValue, meta.name, requiresAxis, t, widgetsCount]);
   const reportQualityScore = useMemo(() => {
     const penalty = reportQualityIssues.length * 16;
     return Math.max(0, 100 - penalty);
@@ -349,7 +364,7 @@ export function ReportBuilderPage(): ReactElement {
     if (!meta.name?.trim()) blockers.push(t('common.reportBuilder.hardBlockers.reportName'));
     if (!datasetReady) blockers.push(t('common.reportBuilder.hardBlockers.dataset'));
     if (widgetsCount === 0) blockers.push(t('common.reportBuilder.hardBlockers.widgets'));
-    if (config.chartType !== 'kpi' && !hasAxis) blockers.push(t('common.reportBuilder.hardBlockers.axis'));
+    if (requiresAxis && !hasAxis) blockers.push(t('common.reportBuilder.hardBlockers.axis'));
     if (!hasValue) blockers.push(t('common.reportBuilder.hardBlockers.value'));
     if ((config.chartType === 'pie' || config.chartType === 'donut') && !!pieError) blockers.push(t('common.reportBuilder.hardBlockers.pie'));
     if (config.chartType === 'kpi' && !!kpiError) blockers.push(t('common.reportBuilder.hardBlockers.kpi'));
@@ -358,7 +373,7 @@ export function ReportBuilderPage(): ReactElement {
       blockers.push(t('common.reportBuilder.hardBlockers.tooManySeries', { count: previewSeriesCount }));
     }
     return blockers;
-  }, [config.chartType, datasetReady, hasAxis, hasValue, kpiError, matrixError, meta.name, pieError, previewSeriesCount, t, widgetsCount]);
+  }, [config.chartType, datasetReady, hasAxis, hasValue, kpiError, matrixError, meta.name, pieError, previewSeriesCount, requiresAxis, t, widgetsCount]);
   const saveBlocked = reportHardBlockers.length > 0;
   const reportNarrative = useMemo(() => {
     if (!datasetReady) return t('common.reportBuilder.narrativeNoDataset');
@@ -390,9 +405,9 @@ export function ReportBuilderPage(): ReactElement {
     },
     {
       key: 'axis',
-      done: hasAxis,
-      title: t('common.reportBuilder.readiness.axisTitle'),
-      description: t('common.reportBuilder.readiness.axisDescription'),
+      done: !requiresAxis || hasAxis,
+      title: !requiresAxis ? t('common.reportBuilder.readiness.columnsTitle') : t('common.reportBuilder.readiness.axisTitle'),
+      description: !requiresAxis ? t('common.reportBuilder.readiness.columnsDescription') : t('common.reportBuilder.readiness.axisDescription'),
     },
     {
       key: 'value',
@@ -410,7 +425,7 @@ export function ReportBuilderPage(): ReactElement {
         actionLabel: t('common.reportBuilder.nextStepDatasetAction'),
         action: () => checkDataSource(),
       }
-    : !hasAxis || !hasValue
+    : (requiresAxis && !hasAxis) || !hasValue
       ? {
           title: t('common.reportBuilder.nextStepMappingTitle'),
           description: t('common.reportBuilder.nextStepMappingDescription'),
@@ -435,6 +450,92 @@ export function ReportBuilderPage(): ReactElement {
       }),
     [t, wizardBreakdown, wizardGoal, wizardVisual],
   );
+  const simpleTableFields = useMemo(
+    () =>
+      config.values.map((value, index) => ({
+        index,
+        field: value.field,
+        label: value.label?.trim() || getFieldLabel(value.field),
+      })),
+    [config.values, getFieldLabel],
+  );
+  const simpleFieldSearchTerm = fieldsSearch.trim().toLowerCase();
+  const simpleAvailableFields = useMemo(
+    () =>
+      allSelectableFields.filter((field) =>
+        !simpleFieldSearchTerm || `${field.label} ${field.name}`.toLowerCase().includes(simpleFieldSearchTerm),
+      ),
+    [allSelectableFields, simpleFieldSearchTerm],
+  );
+  const applySimpleTableValues = useCallback(
+    (nextValues: typeof config.values) => {
+      const currentWidgets = config.widgets ?? [];
+      const nextActiveWidgetId = config.activeWidgetId ?? currentWidgets[0]?.id;
+      const nextWidgets = currentWidgets.map((widget) =>
+        widget.id === nextActiveWidgetId
+          ? {
+              ...widget,
+              chartType: 'table' as const,
+              axis: undefined,
+              legend: undefined,
+              values: nextValues,
+            }
+          : widget,
+      );
+
+      setConfig({
+        chartType: 'table',
+        axis: undefined,
+        legend: undefined,
+        values: nextValues,
+        widgets: nextWidgets,
+        activeWidgetId: nextActiveWidgetId,
+      });
+      setUi({ slotError: null });
+    },
+    [config.activeWidgetId, config.widgets, setConfig, setUi],
+  );
+  const handleSimpleToggleField = useCallback(
+    (fieldName: string) => {
+      const existing = config.values.find((item) => item.field === fieldName);
+      if (existing) {
+        applySimpleTableValues(config.values.filter((item) => item.field !== fieldName));
+        return;
+      }
+
+      const schemaField = schema.find((field) => field.name === fieldName);
+      applySimpleTableValues([
+        ...config.values,
+        {
+          field: fieldName,
+          aggregation: schemaField?.defaultAggregation ?? 'sum',
+        },
+      ]);
+    },
+    [applySimpleTableValues, config.values, schema],
+  );
+  const handleSimpleMoveField = useCallback(
+    (index: number, direction: -1 | 1) => {
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= config.values.length) return;
+      const nextValues = [...config.values];
+      const [moved] = nextValues.splice(index, 1);
+      nextValues.splice(nextIndex, 0, moved);
+      applySimpleTableValues(nextValues);
+    },
+    [applySimpleTableValues, config.values],
+  );
+  const handleSimpleSelectFirstFields = useCallback(() => {
+    if (config.values.length > 0) return;
+    const nextValues = allSelectableFields.slice(0, 5).map((field) => {
+      const schemaField = schema.find((item) => item.name === field.name);
+      return {
+        field: field.name,
+        aggregation: schemaField?.defaultAggregation ?? 'sum',
+      };
+    });
+    applySimpleTableValues(nextValues);
+  }, [allSelectableFields, applySimpleTableValues, config.values.length, schema]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -523,10 +624,10 @@ export function ReportBuilderPage(): ReactElement {
     }
     if (isEdit && reportId != null) {
       const report = await updateReport();
-      if (report) navigate(`/reports/${report.id}`);
+      if (report) navigate(`/reports/${report.id}`, { state: { justSaved: true, fromBuilder: true, isEdit: true } });
     } else {
       const report = await saveNewReport();
-      if (report) navigate(`/reports/${report.id}`);
+      if (report) navigate(`/reports/${report.id}`, { state: { justSaved: true, fromBuilder: true, isEdit: false } });
     }
   };
 
@@ -815,24 +916,54 @@ export function ReportBuilderPage(): ReactElement {
                   <ArrowLeft className="mr-1 size-4" />
                   {t('common.back')}
                 </Button>
-                <Badge variant="outline" className="font-mono">{lifecycleStatusLabel}</Badge>
-                <Badge variant="secondary" className="font-mono">v{lifecycle.version}</Badge>
+                {builderMode === 'advanced' ? (
+                  <>
+                    <Badge variant="outline" className="font-mono">{lifecycleStatusLabel}</Badge>
+                    <Badge variant="secondary" className="font-mono">v{lifecycle.version}</Badge>
+                  </>
+                ) : null}
               </div>
               <h1 className="text-xl font-semibold">
-                {isEdit ? t('common.reportBuilder.editStudioTitle') : t('common.reportBuilder.newStudioTitle')}
+                {builderMode === 'basic'
+                  ? (isEdit ? t('common.reportBuilder.simpleEditTitle') : t('common.reportBuilder.simpleCreateTitle'))
+                  : (isEdit ? t('common.reportBuilder.editStudioTitle') : t('common.reportBuilder.newStudioTitle'))}
               </h1>
               <p className="text-muted-foreground mt-2 max-w-3xl text-sm">
-                {t('common.reportBuilder.studioDescription')}
+                {builderMode === 'basic' ? t('common.reportBuilder.simpleTableDescription') : t('common.reportBuilder.studioDescription')}
               </p>
-              <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                {builderReadinessSteps.map((step, index) => (
-                  <div key={step.key} className={`rounded-xl border px-3 py-2 text-xs ${step.done ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-background text-muted-foreground'}`}>
-                    <div className="font-semibold">{index + 1}. {step.title}</div>
-                    <div className="mt-1 text-[11px]">{step.description}</div>
+              {builderMode === 'advanced' ? (
+                <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                  {builderReadinessSteps.map((step, index) => (
+                    <div key={step.key} className={`rounded-xl border px-3 py-2 text-xs ${step.done ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-background text-muted-foreground'}`}>
+                      <div className="font-semibold">{index + 1}. {step.title}</div>
+                      <div className="mt-1 text-[11px]">{step.description}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-4 grid gap-2 md:grid-cols-3">
+                  <div className={`rounded-xl border px-3 py-3 text-sm ${datasetReady ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
+                    <div className="font-medium">1. {t('common.reportBuilder.simpleStepChooseView')}</div>
+                    <div className="mt-1 text-xs">{meta.dataSourceName || t('common.reportBuilder.notConnected')}</div>
                   </div>
-                ))}
-              </div>
+                  <div className={`rounded-xl border px-3 py-3 text-sm ${simpleTableFields.length > 0 ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
+                    <div className="font-medium">2. {t('common.reportBuilder.simpleStepChooseFields')}</div>
+                    <div className="mt-1 text-xs">
+                      {simpleTableFields.length > 0
+                        ? t('common.reportBuilder.simpleSelectedFieldsCount', { count: simpleTableFields.length })
+                        : t('common.reportBuilder.simpleChecklistFieldsPending')}
+                    </div>
+                  </div>
+                  <div className={`rounded-xl border px-3 py-3 text-sm ${meta.name?.trim() ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
+                    <div className="font-medium">3. {t('common.reportBuilder.simpleStepSave')}</div>
+                    <div className="mt-1 text-xs">
+                      {meta.name?.trim() || t('common.reportBuilder.simpleChecklistNamePending')}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
+            {builderMode === 'advanced' ? (
             <div className="grid min-w-[300px] gap-3 md:grid-cols-3">
               <div className="rounded-xl border bg-background p-3">
                 <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -888,45 +1019,69 @@ export function ReportBuilderPage(): ReactElement {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="mr-2 flex rounded-xl border bg-background p-1">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={builderMode === 'basic' ? 'default' : 'ghost'}
-                  onClick={() => setBuilderMode('basic')}
-                >
-                  {t('common.reportBuilder.basicMode')}
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={builderMode === 'advanced' ? 'default' : 'ghost'}
-                  onClick={() => setBuilderMode('advanced')}
-                >
-                  {t('common.reportBuilder.advancedMode')}
-                </Button>
+            ) : (
+            <div className="grid min-w-[300px] gap-3">
+              <div className="rounded-xl border bg-background p-3">
+                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <Database className="size-4 text-primary" />
+                  {t('common.reportBuilder.datasetHealth')}
+                </div>
+                <div className="text-sm font-semibold">
+                  {datasetReady ? meta.dataSourceName : t('common.reportBuilder.notConnected')}
+                </div>
+                <div className="text-muted-foreground mt-1 text-xs">
+                  {datasetReady ? t('common.reportBuilder.datasetChecked') : t('common.reportBuilder.datasetPending')}
+                </div>
               </div>
-              {isEdit && (
+            </div>
+            )}
+            <div className="flex items-center gap-2">
+              {builderMode === 'advanced' ? (
+                <div className="mr-2 flex rounded-xl border bg-background p-1">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setBuilderMode('basic')}
+                  >
+                    {t('common.reportBuilder.basicMode')}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="default"
+                    onClick={() => setBuilderMode('advanced')}
+                  >
+                    {t('common.reportBuilder.advancedMode')}
+                  </Button>
+                </div>
+              ) : (
+                <Button type="button" variant="outline" onClick={() => setBuilderMode('advanced')}>
+                  {t('common.reportBuilder.openAdvancedMode')}
+                </Button>
+              )}
+              {builderMode === 'advanced' && isEdit && (
                 <Button variant="outline" asChild>
                   <Link to={`/reports/${reportId}/edit/preview`} target="_blank" rel="noreferrer">
                     {t('common.reportBuilder.preview')}
                   </Link>
                 </Button>
               )}
-              {isEdit && (
+              {builderMode === 'advanced' && isEdit && (
                 <Button variant="outline" onClick={() => navigate(`/reports/${reportId}`)}>
                   {t('common.cancel')}
                 </Button>
               )}
               <Button onClick={handleSave} disabled={ui.saveLoading}>
                 {ui.saveLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-                {isEdit ? t('common.update') : t('common.save')}
+                {builderMode === 'basic'
+                  ? (isEdit ? t('common.reportBuilder.simpleUpdateAction') : t('common.reportBuilder.simpleSaveAction'))
+                  : (isEdit ? t('common.update') : t('common.save'))}
               </Button>
             </div>
           </div>
         </div>
-        {saveBlocked ? (
+        {saveBlocked && builderMode === 'advanced' ? (
           <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-[260px] flex-1">
@@ -954,26 +1109,36 @@ export function ReportBuilderPage(): ReactElement {
             </div>
           </div>
         ) : null}
-        <TopBarSelector
-          connections={connections}
-          dataSources={dataSources}
-          dataSourceParameters={dataSourceParameters}
-          datasetParameterBindings={config.datasetParameters ?? []}
-          connectionKey={meta.connectionKey}
-          dataSourceType={meta.dataSourceType}
-          dataSourceName={meta.dataSourceName}
-          dataSourceSearch={dataSourceSearch}
-          connectionsLoading={ui.connectionsLoading}
-          dataSourcesLoading={ui.dataSourcesLoading}
-          checkLoading={ui.checkLoading}
-          onConnectionChange={setConnectionKey}
-          onTypeChange={setType}
-          onNameChange={setDataSourceName}
-          onParameterBindingChange={setDatasetParameterBinding}
-          onSearchChange={setDataSourceSearch}
-          onCheck={checkDataSource}
-        />
+        <div className="rounded-2xl border bg-card p-4">
+          {builderMode === 'basic' ? (
+            <div className="mb-4 rounded-xl border bg-muted/20 px-4 py-3">
+              <div className="text-sm font-medium">{t('common.reportBuilder.simpleTopbarTitle')}</div>
+              <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleTopbarDescription')}</div>
+            </div>
+          ) : null}
+          <TopBarSelector
+            mode={builderMode}
+            connections={connections}
+            dataSources={dataSources}
+            dataSourceParameters={dataSourceParameters}
+            datasetParameterBindings={config.datasetParameters ?? []}
+            connectionKey={meta.connectionKey}
+            dataSourceType={meta.dataSourceType}
+            dataSourceName={meta.dataSourceName}
+            dataSourceSearch={dataSourceSearch}
+            connectionsLoading={ui.connectionsLoading}
+            dataSourcesLoading={ui.dataSourcesLoading}
+            checkLoading={ui.checkLoading}
+            onConnectionChange={setConnectionKey}
+            onTypeChange={setType}
+            onNameChange={setDataSourceName}
+            onParameterBindingChange={setDatasetParameterBinding}
+            onSearchChange={setDataSourceSearch}
+            onCheck={checkDataSource}
+          />
+        </div>
 
+        {builderMode === 'advanced' ? (
         <div className="rounded-2xl border bg-card p-4">
           <div className="mb-3">
             <h2 className="text-sm font-semibold">{t('common.reportBuilder.sharedWith')}</h2>
@@ -1031,6 +1196,7 @@ export function ReportBuilderPage(): ReactElement {
             </Table>
           </div>
         </div>
+        ) : null}
 
         <div className="flex flex-wrap items-center gap-4 rounded-2xl border bg-card p-4">
           <div className="flex-1 space-y-1 min-w-[200px]">
@@ -1042,29 +1208,37 @@ export function ReportBuilderPage(): ReactElement {
               className="max-w-md"
             />
           </div>
-          <div className="flex items-center gap-2 rounded-xl border bg-muted/30 px-3 py-2 text-sm">
-            <CheckCircle2 className="size-4 text-primary" />
-            <span className="font-medium uppercase">{lifecycleStatusLabel}</span>
-            <span className="text-muted-foreground">v{lifecycle.version}</span>
-          </div>
-          <div className="flex items-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setLifecycleStatus('draft')}>
-              {t('common.reportBuilder.lifecycle.draft')}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => setLifecycleStatus('published')}>
-              {t('common.reportBuilder.lifecycle.publish')}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => setLifecycleStatus('archived')}>
-              {t('common.reportBuilder.lifecycle.archive')}
-            </Button>
-          </div>
-          <div className="flex items-center gap-2 rounded-full border bg-background px-3 py-2 text-xs text-muted-foreground">
-            <Sparkles className="size-3.5" />
-            {t('common.reportBuilder.builderHint')}
-          </div>
+          {builderMode === 'advanced' ? (
+            <>
+              <div className="flex items-center gap-2 rounded-xl border bg-muted/30 px-3 py-2 text-sm">
+                <CheckCircle2 className="size-4 text-primary" />
+                <span className="font-medium uppercase">{lifecycleStatusLabel}</span>
+                <span className="text-muted-foreground">v{lifecycle.version}</span>
+              </div>
+              <div className="flex items-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setLifecycleStatus('draft')}>
+                  {t('common.reportBuilder.lifecycle.draft')}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setLifecycleStatus('published')}>
+                  {t('common.reportBuilder.lifecycle.publish')}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setLifecycleStatus('archived')}>
+                  {t('common.reportBuilder.lifecycle.archive')}
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 rounded-full border bg-background px-3 py-2 text-xs text-muted-foreground">
+                <Sparkles className="size-3.5" />
+                {t('common.reportBuilder.builderHint')}
+              </div>
+            </>
+          ) : (
+            <div className="rounded-xl border bg-muted/20 px-3 py-3 text-sm">
+              <div className="font-medium">{t('common.reportBuilder.simpleTableDescription')}</div>
+            </div>
+          )}
         </div>
 
-        {datasetReady ? (
+        {datasetReady && builderMode === 'advanced' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-[280px] flex-1">
@@ -1095,7 +1269,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady && chartRepairPlan ? (
+        {datasetReady && builderMode === 'advanced' && chartRepairPlan ? (
           <div className="rounded-2xl border border-rose-300 bg-rose-50/80 p-4 dark:border-rose-900 dark:bg-rose-950/20">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-[280px] flex-1">
@@ -1114,7 +1288,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady ? (
+        {datasetReady && builderMode === 'advanced' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-[260px] flex-1">
@@ -1137,7 +1311,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady ? (
+        {datasetReady && builderMode === 'advanced' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="mb-3">
               <h2 className="text-sm font-semibold">{t('common.reportBuilder.datasetCoachTitle')}</h2>
@@ -1178,7 +1352,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady ? (
+        {datasetReady && builderMode === 'advanced' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="mb-3">
               <h2 className="text-sm font-semibold">{t('common.reportBuilder.quickStartTitle')}</h2>
@@ -1203,7 +1377,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady ? (
+        {datasetReady && builderMode === 'advanced' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="mb-3">
               <h2 className="text-sm font-semibold">{t('common.reportBuilder.widgetTemplatesTitle')}</h2>
@@ -1234,13 +1408,13 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady ? (
+        {datasetReady && builderMode === 'advanced' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="mb-3">
               <h2 className="text-sm font-semibold">{t('common.reportBuilder.starterKitTitle')}</h2>
               <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.starterKitDescription')}</p>
             </div>
-            <div className={`grid gap-3 ${builderMode === 'basic' ? 'md:grid-cols-3' : 'md:grid-cols-3'}`}>
+            <div className="grid gap-3 md:grid-cols-3">
               <Button type="button" variant="outline" className="h-auto justify-start px-4 py-3 text-left" onClick={() => handleStarterKit('executive')}>
                 <div>
                   <div className="font-semibold">{t('common.reportBuilder.starterKitLabels.executive')}</div>
@@ -1263,7 +1437,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady && builderMode === 'basic' ? (
+        {datasetReady && builderMode === 'advanced' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="mb-3">
               <h2 className="text-sm font-semibold">{t('common.reportBuilder.basicBigChoiceTitle')}</h2>
@@ -1298,7 +1472,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady ? (
+        {datasetReady && builderMode === 'advanced' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-[260px] flex-1">
@@ -1345,7 +1519,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         ) : null}
 
-        {datasetReady && chartNeedsSimplification ? (
+        {datasetReady && builderMode === 'advanced' && chartNeedsSimplification ? (
           <div className="rounded-2xl border border-amber-300 bg-amber-50/80 p-4 dark:border-amber-900 dark:bg-amber-950/30">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-[280px] flex-1">
@@ -1382,6 +1556,7 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         </div>
 
+        {builderMode === 'advanced' ? (
         <div className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
           <div className="flex items-center gap-2 text-sm font-medium">
             <LayoutGrid className="size-4 text-muted-foreground" />
@@ -1467,6 +1642,123 @@ export function ReportBuilderPage(): ReactElement {
             {t('common.reportBuilder.addWidget')}
           </Button>
         </div>
+        ) : null}
+
+        {datasetReady && builderMode === 'basic' ? (
+          <div className="rounded-2xl border bg-card p-4">
+            <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-[280px] flex-1">
+                <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('common.reportBuilder.simpleStepChooseFieldsBadge')}
+                </div>
+                <h2 className="text-sm font-semibold">{t('common.reportBuilder.simpleTableTitle')}</h2>
+                <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleTableDescription')}</p>
+              </div>
+              <Button type="button" variant="outline" onClick={handleSimpleSelectFirstFields}>
+                {t('common.reportBuilder.simpleTableAutoSelect')}
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div className="rounded-2xl border bg-muted/20 p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleAvailableFieldsTitle')}</h3>
+                    <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleAvailableFieldsDescription')}</p>
+                  </div>
+                  <Badge variant="secondary">{simpleAvailableFields.length}</Badge>
+                </div>
+                <Input
+                  value={fieldsSearch}
+                  onChange={(event) => setFieldsSearch(event.target.value)}
+                  placeholder={t('common.reportBuilder.simpleFieldSearchPlaceholder')}
+                  className="mb-3"
+                />
+                <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
+                  {simpleAvailableFields.map((field) => {
+                    const selected = config.values.some((value) => value.field === field.name);
+                    const samples = previewSampleMap[field.name] ?? [];
+
+                    return (
+                      <button
+                        key={field.name}
+                        type="button"
+                        onClick={() => handleSimpleToggleField(field.name)}
+                        className={`w-full rounded-xl border px-3 py-3 text-left transition-colors ${selected ? 'border-primary bg-primary/5' : 'bg-background hover:border-primary/40'}`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-sm font-medium">{field.label}</div>
+                            <div className="text-muted-foreground mt-1 text-xs">{field.name}</div>
+                            {samples.length > 0 ? (
+                              <div className="text-muted-foreground mt-2 line-clamp-2 text-[11px]">{samples.join(' • ')}</div>
+                            ) : null}
+                          </div>
+                          <Badge variant={selected ? 'default' : 'outline'}>
+                            {selected ? t('common.selected') : t('common.add')}
+                          </Badge>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border bg-muted/20 p-4">
+                <div className="mb-2 inline-flex rounded-full border bg-background px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('common.reportBuilder.simpleStepRenameBadge')}
+                </div>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleSelectedFieldsTitle')}</h3>
+                    <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleSelectedFieldsDescription')}</p>
+                  </div>
+                  <Badge variant="secondary">
+                    {t('common.reportBuilder.simpleSelectedFieldsCount', { count: simpleTableFields.length })}
+                  </Badge>
+                </div>
+                {simpleTableFields.length === 0 ? (
+                  <div className="rounded-xl border border-dashed bg-background px-4 py-8 text-center">
+                    <div className="text-sm font-medium">{t('common.reportBuilder.simpleNoFieldsSelectedTitle')}</div>
+                    <div className="text-muted-foreground mt-2 text-xs">{t('common.reportBuilder.simpleNoFieldsSelectedDescription')}</div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {simpleTableFields.map((item) => (
+                      <div key={item.field} className="rounded-xl border bg-background p-3">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div className="min-w-[220px] flex-1">
+                            <div className="text-sm font-medium">{getFieldLabel(item.field)}</div>
+                            <div className="text-muted-foreground mt-1 text-xs">{item.field}</div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleMoveField(item.index, -1)} disabled={item.index === 0}>
+                              {t('common.previous')}
+                            </Button>
+                            <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleMoveField(item.index, 1)} disabled={item.index === simpleTableFields.length - 1}>
+                              {t('common.next')}
+                            </Button>
+                            <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleToggleField(item.field)}>
+                              {t('common.remove')}
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="mt-3 space-y-2">
+                          <Label htmlFor={`simple-field-label-${item.field}`}>{t('common.reportBuilder.simpleColumnTitleLabel')}</Label>
+                          <Input
+                            id={`simple-field-label-${item.field}`}
+                            value={config.values[item.index]?.label ?? ''}
+                            onChange={(event) => useReportBuilderStore.getState().setValueLabel(item.index, event.target.value)}
+                            placeholder={t('common.reportBuilder.simpleColumnTitlePlaceholder', { defaultTitle: getFieldLabel(item.field) })}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {ui.toast && (
           <div className="fixed right-4 top-4 z-50 max-w-sm">
@@ -1478,95 +1770,60 @@ export function ReportBuilderPage(): ReactElement {
           </div>
         )}
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden xl:grid-cols-[280px_1fr_340px]">
-          <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card p-4">
-            <FieldsPanel
-              schema={schema}
-              calculatedFields={config.calculatedFields}
-              sampleValues={previewSampleMap}
-              search={fieldsSearch}
-              onSearchChange={setFieldsSearch}
-              onUseAsAxis={handleQuickUseAxis}
-              onUseAsValue={handleQuickUseValue}
-              onUseAsLegend={handleQuickUseLegend}
-              onUseAsFilter={handleQuickUseFilter}
-              disabled={!dataSourceChecked}
-              mode={builderMode}
-            />
-          </div>
-
-          <div className="flex min-h-0 flex-col overflow-y-auto pr-1">
-            <div className="shrink-0">
-              <PreviewPanel
-                title={t('common.reportBuilder.activeWidgetPreview')}
-                subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
-                columns={preview.columns}
-                rows={preview.rows}
-                chartType={config.chartType}
-                appearance={activeWidget?.appearance}
-                labelOverrides={buildWidgetLabelOverrides(activeWidget)}
-                loading={ui.previewLoading}
-                error={ui.error}
-                empty={!dataSourceChecked}
+        {builderMode === 'advanced' ? (
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden xl:grid-cols-[280px_1fr_340px]">
+            <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card p-4">
+              <FieldsPanel
+                schema={schema}
+                calculatedFields={config.calculatedFields}
+                sampleValues={previewSampleMap}
+                search={fieldsSearch}
+                onSearchChange={setFieldsSearch}
+                onUseAsAxis={handleQuickUseAxis}
+                onUseAsValue={handleQuickUseValue}
+                onUseAsLegend={handleQuickUseLegend}
+                onUseAsFilter={handleQuickUseFilter}
+                disabled={!dataSourceChecked}
+                mode={builderMode}
               />
             </div>
-            <div className="mt-4 min-h-0 pb-2">
-              <DashboardLayoutPreview
-                widgets={config.widgets ?? []}
-                activeWidgetId={config.activeWidgetId}
-                onSelect={setActiveWidget}
-                onReorder={reorderWidgets}
-              />
-            </div>
-          </div>
 
-          <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card p-4">
-            <h3 className="text-muted-foreground mb-1 text-sm font-medium">{t('common.reportBuilder.properties')}</h3>
-            <p className="text-muted-foreground mb-3 text-xs">
-              {builderMode === 'basic' ? t('common.reportBuilder.propertiesDescriptionBasic') : t('common.reportBuilder.propertiesDescription')}
-            </p>
-            {ui.slotError ? (
-              <div className="mb-3 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm">
-                <div className="font-semibold text-destructive">{t('common.reportBuilder.needAttentionTitle')}</div>
-                <div className="mt-1 text-muted-foreground">{ui.slotError}</div>
+            <div className="flex min-h-0 flex-col overflow-y-auto pr-1">
+              <div className="shrink-0">
+                <PreviewPanel
+                  title={t('common.reportBuilder.activeWidgetPreview')}
+                  subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
+                  columns={preview.columns}
+                  rows={preview.rows}
+                  chartType={config.chartType}
+                  appearance={activeWidget?.appearance}
+                  labelOverrides={buildWidgetLabelOverrides(activeWidget)}
+                  loading={ui.previewLoading}
+                  error={ui.error}
+                  empty={!dataSourceChecked}
+                />
               </div>
-            ) : null}
-            {builderMode === 'basic' ? (
-              <div className="mb-4 rounded-xl border bg-muted/20 p-4">
-                <div className="mb-3">
-                  <h4 className="text-sm font-semibold">{t('common.reportBuilder.basicSummaryTitle')}</h4>
-                  <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.basicSummaryDescription')}</p>
-                </div>
-                <div className="grid gap-2">
-                  <div className="rounded-lg border bg-background p-3">
-                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryVisual')}</div>
-                    <div className="mt-1 text-sm font-medium">{t(`common.reportBuilder.chartTypes.${config.chartType}`)}</div>
-                  </div>
-                  <div className="rounded-lg border bg-background p-3">
-                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryGroupBy')}</div>
-                    <div className="mt-1 text-sm font-medium">
-                      {config.chartType === 'kpi' ? t('common.reportBuilder.basicKpiNoGrouping') : getFieldLabel(config.axis?.field)}
-                    </div>
-                  </div>
-                  <div className="rounded-lg border bg-background p-3">
-                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryMetric')}</div>
-                    <div className="mt-1 text-sm font-medium">{getFieldLabel(config.values[0]?.field)}</div>
-                  </div>
-                  <div className="rounded-lg border bg-background p-3">
-                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryAggregation')}</div>
-                    <div className="mt-1 text-sm font-medium">
-                      {config.values[0]?.aggregation ? t(`common.reportBuilder.aggregations.${config.values[0].aggregation}`) : t('common.reportBuilder.basicNoneSelected')}
-                    </div>
-                  </div>
-                  <div className="rounded-lg border bg-background p-3">
-                    <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.basicSummaryBreakdown')}</div>
-                    <div className="mt-1 text-sm font-medium">
-                      {config.legend?.field ? getFieldLabel(config.legend.field) : t('common.reportBuilder.basicNoBreakdown')}
-                    </div>
-                  </div>
-                </div>
+              <div className="mt-4 min-h-0 pb-2">
+                <DashboardLayoutPreview
+                  widgets={config.widgets ?? []}
+                  activeWidgetId={config.activeWidgetId}
+                  onSelect={setActiveWidget}
+                  onReorder={reorderWidgets}
+                />
               </div>
-            ) : (
+            </div>
+
+            <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card p-4">
+              <h3 className="text-muted-foreground mb-1 text-sm font-medium">{t('common.reportBuilder.properties')}</h3>
+              <p className="text-muted-foreground mb-3 text-xs">
+                {t('common.reportBuilder.propertiesDescription')}
+              </p>
+              {ui.slotError ? (
+                <div className="mb-3 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm">
+                  <div className="font-semibold text-destructive">{t('common.reportBuilder.needAttentionTitle')}</div>
+                  <div className="mt-1 text-muted-foreground">{ui.slotError}</div>
+                </div>
+              ) : null}
               <SlotsPanel
                 axis={config.axis}
                 values={config.values}
@@ -1579,10 +1836,70 @@ export function ReportBuilderPage(): ReactElement {
                 onRemoveFilter={(i) => useReportBuilderStore.getState().removeFilter(i)}
                 disabled={!dataSourceChecked}
               />
-            )}
-            <PropertiesPanel schema={schema} slotError={ui.slotError} disabled={!dataSourceChecked} mode={builderMode} />
+              <PropertiesPanel schema={schema} slotError={ui.slotError} disabled={!dataSourceChecked} mode={builderMode} />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="rounded-2xl border bg-card p-4">
+              <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('common.reportBuilder.simpleStepSaveBadge')}
+              </div>
+              <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleFinalStepTitle')}</h3>
+              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleFinalStepDescription')}</p>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                <div className={`rounded-xl border px-3 py-3 text-sm ${datasetReady ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
+                  <div className="font-medium">{t('common.reportBuilder.simpleChecklistDatasetTitle')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">{meta.dataSourceName || t('common.reportBuilder.notConnected')}</div>
+                </div>
+                <div className={`rounded-xl border px-3 py-3 text-sm ${simpleTableFields.length > 0 ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
+                  <div className="font-medium">{t('common.reportBuilder.simpleChecklistFieldsTitle')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">
+                    {simpleTableFields.length > 0
+                      ? t('common.reportBuilder.simpleSelectedFieldsCount', { count: simpleTableFields.length })
+                      : t('common.reportBuilder.simpleChecklistFieldsPending')}
+                  </div>
+                </div>
+                <div className={`rounded-xl border px-3 py-3 text-sm ${meta.name?.trim() ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
+                  <div className="font-medium">{t('common.reportBuilder.simpleChecklistNameTitle')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">
+                    {meta.name?.trim() || t('common.reportBuilder.simpleChecklistNamePending')}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 rounded-xl border bg-background p-3">
+                <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.simpleSummaryColumns')}</div>
+                <div className="mt-2 text-sm font-medium">
+                  {simpleTableFields.length > 0
+                    ? simpleTableFields.map((item) => item.label).join(', ')
+                    : t('common.reportBuilder.basicNoneSelected')}
+                </div>
+              </div>
+              <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
+                <div className="font-medium">{t('common.reportBuilder.simpleSaveHintTitle')}</div>
+                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleSaveHintDescription')}</div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border bg-card p-4">
+              <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('common.reportBuilder.simplePreviewBadge')}
+              </div>
+              <PreviewPanel
+                title={t('common.reportBuilder.simplePreviewTitle')}
+                subtitle={t('common.reportBuilder.simplePreviewDescription')}
+                columns={preview.columns}
+                rows={preview.rows}
+                chartType={config.chartType}
+                appearance={activeWidget?.appearance}
+                labelOverrides={buildWidgetLabelOverrides(activeWidget)}
+                loading={ui.previewLoading}
+                error={ui.error}
+                empty={!dataSourceChecked}
+              />
+            </div>
+          </div>
+        )}
         <AlertDialog open={deleteWidgetId != null} onOpenChange={(open) => !open && setDeleteWidgetId(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>

@@ -168,6 +168,7 @@ export function ReportViewerPage(): ReactElement {
   const isMyReportsView = location.pathname.startsWith('/reports/my/');
   const listPath = isMyReportsView ? '/reports/my' : '/reports';
   const widgetCount = config.widgets?.length ?? 1;
+  const saveState = (location.state as { justSaved?: boolean; fromBuilder?: boolean; isEdit?: boolean } | null) ?? null;
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
   const accessLevelLabel = meta.accessLevel && meta.accessLevel !== 'none'
     ? t(`common.reportBuilder.accessLevels.${meta.accessLevel}`)
@@ -409,6 +410,25 @@ export function ReportViewerPage(): ReactElement {
 
   return (
     <div className="space-y-6 p-6">
+      {saveState?.justSaved ? (
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4">
+            <div>
+              <h2 className="text-sm font-semibold">{t('common.reportBuilder.saveSuccessTitle')}</h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {saveState.isEdit
+                  ? t('common.reportBuilder.saveSuccessUpdatedDescription')
+                  : t('common.reportBuilder.saveSuccessCreatedDescription')}
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => navigate(`/reports/${reportId}/edit`)}>
+              <Pencil className="mr-2 size-4" />
+              {t('common.reportBuilder.continueEditing')}
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{meta.name}</h1>
