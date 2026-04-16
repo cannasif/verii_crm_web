@@ -54,6 +54,7 @@ export function CatalogStockSelectDialog({
   const [selectedCatalog, setSelectedCatalog] = useState<ProductCatalogDto | null>(null);
   const [navigationPath, setNavigationPath] = useState<CatalogCategoryNodeDto[]>([]);
   const [selectedLeafCategory, setSelectedLeafCategory] = useState<CatalogCategoryNodeDto | null>(null);
+  const [includeDescendants, setIncludeDescendants] = useState(false);
   const [stockSearch, setStockSearch] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [selectedResults, setSelectedResults] = useState<ProductSelectionResult[]>([]);
@@ -68,6 +69,7 @@ export function CatalogStockSelectDialog({
       setSelectedCatalog(null);
       setNavigationPath([]);
       setSelectedLeafCategory(null);
+      setIncludeDescendants(false);
       setStockSearch('');
       setPageNumber(1);
       setSelectedResults([]);
@@ -107,13 +109,14 @@ export function CatalogStockSelectDialog({
 
   useEffect(() => {
     setPageNumber(1);
-  }, [selectedLeafCategory?.catalogCategoryId, debouncedStockSearch]);
+  }, [selectedLeafCategory?.catalogCategoryId, debouncedStockSearch, includeDescendants]);
 
   const stocksQuery = useQuery({
     queryKey: [
       'catalog-stock-picker-stocks',
       selectedCatalog?.id,
       selectedLeafCategory?.catalogCategoryId,
+      includeDescendants,
       pageNumber,
       debouncedStockSearch,
     ],
@@ -122,6 +125,7 @@ export function CatalogStockSelectDialog({
         pageNumber,
         pageSize: PAGE_SIZE,
         search: debouncedStockSearch.trim() || undefined,
+        includeDescendants,
       }),
     enabled: open && selectedCatalog != null && selectedLeafCategory != null,
   });
@@ -178,6 +182,7 @@ export function CatalogStockSelectDialog({
     setSelectedCatalog(catalog);
     setNavigationPath([]);
     setSelectedLeafCategory(null);
+    setIncludeDescendants(false);
     setStockSearch('');
     setPageNumber(1);
   };
@@ -186,20 +191,30 @@ export function CatalogStockSelectDialog({
     if (category.hasChildren) {
       setNavigationPath((prev) => [...prev, category]);
       setSelectedLeafCategory(null);
+      setIncludeDescendants(false);
       return;
     }
 
     setSelectedLeafCategory(category);
+    setIncludeDescendants(false);
+  };
+
+  const handleCategoryList = (category: CatalogCategoryNodeDto): void => {
+    setSelectedLeafCategory(category);
+    setIncludeDescendants(category.hasChildren);
+    setPageNumber(1);
   };
 
   const handleBackLevel = (): void => {
     setNavigationPath((prev) => prev.slice(0, -1));
     setSelectedLeafCategory(null);
+    setIncludeDescendants(false);
   };
 
   const handleBreadcrumbClick = (index: number): void => {
     setNavigationPath((prev) => prev.slice(0, index + 1));
     setSelectedLeafCategory(null);
+    setIncludeDescendants(false);
   };
 
   const toSelectionResult = (stock: CatalogStockItemDto): ProductSelectionResult => ({
@@ -266,6 +281,11 @@ export function CatalogStockSelectDialog({
 
   const selectedLeafLabel = selectedLeafCategory?.name ?? t('catalogStockPicker.noLeafSelected');
   const selectedLeafPathLabel = selectedLeafCategory?.fullPath ?? selectedLeafCategory?.name ?? t('catalogStockPicker.noLeafSelected');
+  const selectionModeLabel = selectedLeafCategory
+    ? includeDescendants
+      ? t('catalogStockPicker.listDescendantsModeBadge')
+      : t('catalogStockPicker.directCategoryModeBadge')
+    : null;
   const currentHierarchyPath = useMemo(() => {
     const parts = [
       selectedCatalog?.name,
@@ -436,10 +456,8 @@ export function CatalogStockSelectDialog({
               ) : categoriesQuery.data?.length ? (
                 <div className="space-y-3">
                   {categoriesQuery.data.map((category) => (
-                    <button
+                    <div
                       key={category.catalogCategoryId}
-                      type="button"
-                      onClick={() => handleCategoryClick(category)}
                       className={cn(
                         'w-full rounded-3xl border px-4 py-4 text-left transition-all',
                         selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId
@@ -447,6 +465,11 @@ export function CatalogStockSelectDialog({
                           : 'border-slate-200 bg-white hover:border-pink-200 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/30 dark:hover:bg-white/10'
                       )}
                     >
+                      <button
+                        type="button"
+                        onClick={() => handleCategoryClick(category)}
+                        className="w-full text-left"
+                      >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <div className="truncate text-base font-semibold">{category.name}</div>
@@ -471,7 +494,31 @@ export function CatalogStockSelectDialog({
                           )}
                         </div>
                       </div>
-                    </button>
+                      </button>
+
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {category.hasChildren ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCategoryClick(category)}
+                            className="rounded-2xl"
+                          >
+                            {t('catalogStockPicker.browseChildrenButton')}
+                          </Button>
+                        ) : null}
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => handleCategoryList(category)}
+                          className="rounded-2xl"
+                          variant={category.hasChildren ? 'secondary' : 'default'}
+                        >
+                          {t('catalogStockPicker.listDescendantsButton')}
+                        </Button>
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -500,6 +547,11 @@ export function CatalogStockSelectDialog({
                     {selectedLeafCategory ? (
                       <Badge variant="outline">
                         {t('catalogStockPicker.levelBadge', { level: selectedLeafCategory.level })}
+                      </Badge>
+                    ) : null}
+                    {selectionModeLabel ? (
+                      <Badge variant="outline">
+                        {selectionModeLabel}
                       </Badge>
                     ) : null}
                     {multiSelect && selectedResults.length > 0 ? (

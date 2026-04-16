@@ -234,12 +234,13 @@ export const categoryDefinitionsApi = {
   getCatalogCategoryStocks: async (
     catalogId: number,
     catalogCategoryId: number,
-    params?: { pageNumber?: number; pageSize?: number; search?: string }
+    params?: { pageNumber?: number; pageSize?: number; search?: string; includeDescendants?: boolean }
   ): Promise<PagedResponse<CatalogStockItemDto>> => {
     const queryParams = new URLSearchParams();
     if (params?.pageNumber) queryParams.append('pageNumber', String(params.pageNumber));
     if (params?.pageSize) queryParams.append('pageSize', String(params.pageSize));
     if (params?.search) queryParams.append('search', params.search);
+    if (params?.includeDescendants) queryParams.append('includeDescendants', 'true');
 
     const suffix = queryParams.toString() ? `?${queryParams.toString()}` : '';
     const response = await api.get<ApiResponse<PagedResponse<CatalogStockItemDto>>>(
