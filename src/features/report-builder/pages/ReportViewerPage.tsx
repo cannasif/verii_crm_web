@@ -33,15 +33,19 @@ function buildConfigFromWidget(
   allWidgets?: ReportWidget[],
   calculatedFields?: CalculatedField[],
   lifecycle?: { status: string; version: number; publishedAt?: string },
-  datasetParameters?: DataSourceParameterBinding[]
+  datasetParameters?: DataSourceParameterBinding[],
+  reportFilters: unknown[] = []
 ): string {
+  const mergedFilters = [...reportFilters, ...(widget.filters ?? [])].filter(
+    (filter, index, all) => index === all.findIndex((item) => JSON.stringify(item) === JSON.stringify(filter)),
+  );
   return JSON.stringify({
     chartType: widget.chartType,
     axis: widget.axis,
     values: widget.values,
     legend: widget.legend,
     sorting: widget.sorting,
-    filters: widget.filters,
+    filters: mergedFilters,
     datasetParameters,
     calculatedFields,
     lifecycle,
@@ -338,7 +342,8 @@ export function ReportViewerPage(): ReactElement {
               widgets,
               config.calculatedFields,
               lifecycle,
-              runtimeDatasetParameters
+              runtimeDatasetParameters,
+              config.filters
             ),
           });
           setWidgetPreviews((current) => ({
