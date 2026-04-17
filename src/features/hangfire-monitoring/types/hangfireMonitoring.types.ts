@@ -31,3 +31,27 @@ export interface HangfireDeadLetterResponseDto {
   items: HangfireJobItemDto[];
   timestamp: string;
 }
+
+export interface HangfireRecurringJobItemDto {
+  id: string;
+  jobName: string;
+  method?: string;
+  cron?: string;
+  queue?: string;
+  nextExecution?: string;
+  lastExecution?: string;
+  lastJobId?: string;
+  error?: string;
+}
+
+export interface HangfireRecurringJobsResponseDto {
+  items: HangfireRecurringJobItemDto[];
+  total: number;
+  timestamp: string;
+}
+
+export interface HangfireTriggerRecurringJobResponseDto {
+  jobId: string;
+  triggeredAt: string;
+  message: string;
+}

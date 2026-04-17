@@ -14,11 +14,23 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Loader2, RefreshCw } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   useHangfireDeadLetterQuery,
   useHangfireFailedJobsQuery,
+  useHangfireRecurringJobsQuery,
   useHangfireStatsQuery,
+  HANGFIRE_QUERY_KEYS,
 } from '../hooks/useHangfireMonitoring';
+import { hangfireMonitoringApi } from '../api/hangfireMonitoring.api';
 
 const PAGE_SIZE = 20;
 
@@ -32,9 +44,11 @@ function formatDate(value?: string): string {
 export function HangfireMonitoringPage(): ReactElement {
   const { t } = useTranslation(['hangfire-monitoring', 'common']);
   const { setPageTitle } = useUIStore();
+  const queryClient = useQueryClient();
 
   const [failedPage, setFailedPage] = useState(1);
   const [deadLetterPage, setDeadLetterPage] = useState(1);
+  const [selectedRecurringJobId, setSelectedRecurringJobId] = useState<string>('');
 
   const failedFrom = (failedPage - 1) * PAGE_SIZE;
   const deadLetterFrom = (deadLetterPage - 1) * PAGE_SIZE;
@@ -42,6 +56,29 @@ export function HangfireMonitoringPage(): ReactElement {
   const statsQuery = useHangfireStatsQuery();
   const failedQuery = useHangfireFailedJobsQuery(failedFrom, PAGE_SIZE);
   const deadLetterQuery = useHangfireDeadLetterQuery(deadLetterFrom, PAGE_SIZE);
+  const recurringJobsQuery = useHangfireRecurringJobsQuery();
+
+  useEffect(() => {
+    const firstJobId = recurringJobsQuery.data?.items?.[0]?.id;
+    if (!selectedRecurringJobId && firstJobId) {
+      setSelectedRecurringJobId(firstJobId);
+    }
+  }, [recurringJobsQuery.data?.items, selectedRecurringJobId]);
+
+  const triggerRecurringJobMutation = useMutation({
+    mutationFn: (jobId: string) => hangfireMonitoringApi.triggerRecurringJob(jobId),
+    onSuccess: async (result) => {
+      toast.success(t('recurring.triggerSuccess', { jobName: result.jobId }));
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: HANGFIRE_QUERY_KEYS.RECURRING }),
+        queryClient.invalidateQueries({ queryKey: HANGFIRE_QUERY_KEYS.STATS }),
+        queryClient.invalidateQueries({ queryKey: ['hangfire'] }),
+      ]);
+    },
+    onError: () => {
+      toast.error(t('recurring.triggerError'));
+    },
+  });
 
   useEffect(() => {
     setPageTitle(t('title'));
@@ -50,13 +87,14 @@ export function HangfireMonitoringPage(): ReactElement {
 
   const isRefreshing = statsQuery.isRefetching || failedQuery.isRefetching || deadLetterQuery.isRefetching;
   const isInitialLoading =
-    statsQuery.isLoading || failedQuery.isLoading || deadLetterQuery.isLoading;
+    statsQuery.isLoading || failedQuery.isLoading || deadLetterQuery.isLoading || recurringJobsQuery.isLoading;
 
   const handleRefresh = async (): Promise<void> => {
     await Promise.all([
       statsQuery.refetch(),
       failedQuery.refetch(),
       deadLetterQuery.refetch(),
+      recurringJobsQuery.refetch(),
     ]);
   };
 
@@ -102,6 +140,88 @@ export function HangfireMonitoringPage(): ReactElement {
         <Card><CardHeader><CardTitle>{t('stats.succeeded')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-emerald-500">{statsQuery.data?.succeeded ?? 0}</CardContent></Card>
         <Card><CardHeader><CardTitle>{t('stats.failed')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-red-500">{statsQuery.data?.failed ?? 0}</CardContent></Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('recurring.title')}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {t('recurring.description')}
+          </p>
+
+          <div className="flex flex-col gap-3 md:flex-row md:items-end">
+            <div className="flex-1 space-y-2">
+              <div className="text-sm font-medium">{t('recurring.selectLabel')}</div>
+              <Select value={selectedRecurringJobId} onValueChange={setSelectedRecurringJobId}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('recurring.selectPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {(recurringJobsQuery.data?.items ?? []).map((job) => (
+                    <SelectItem key={job.id} value={job.id}>
+                      {job.jobName} ({job.id})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              onClick={() => selectedRecurringJobId && triggerRecurringJobMutation.mutate(selectedRecurringJobId)}
+              disabled={!selectedRecurringJobId || triggerRecurringJobMutation.isPending}
+            >
+              {triggerRecurringJobMutation.isPending ? (
+                <Loader2 size={16} className="mr-2 animate-spin" />
+              ) : null}
+              {t('recurring.triggerButton')}
+            </Button>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('recurring.table.id')}</TableHead>
+                  <TableHead>{t('recurring.table.job')}</TableHead>
+                  <TableHead>{t('recurring.table.cron')}</TableHead>
+                  <TableHead>{t('recurring.table.nextExecution')}</TableHead>
+                  <TableHead>{t('recurring.table.lastExecution')}</TableHead>
+                  <TableHead>{t('recurring.table.queue')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(recurringJobsQuery.data?.items ?? []).length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="py-8 text-center text-slate-500">
+                      {t('recurring.empty')}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  (recurringJobsQuery.data?.items ?? []).map((item) => (
+                    <TableRow
+                      key={item.id}
+                      className={selectedRecurringJobId === item.id ? 'bg-pink-50 dark:bg-pink-500/10' : ''}
+                      onClick={() => setSelectedRecurringJobId(item.id)}
+                    >
+                      <TableCell className="font-mono text-xs">{item.id}</TableCell>
+                      <TableCell>
+                        <div className="font-medium">{item.jobName}</div>
+                        {item.method ? <div className="text-xs text-slate-500">{item.method}</div> : null}
+                        {item.error ? <div className="text-xs text-red-500">{item.error}</div> : null}
+                      </TableCell>
+                      <TableCell>{item.cron || '-'}</TableCell>
+                      <TableCell>{formatDate(item.nextExecution)}</TableCell>
+                      <TableCell>{formatDate(item.lastExecution)}</TableCell>
+                      <TableCell>{item.queue || '-'}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

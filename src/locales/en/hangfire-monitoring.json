@@ -25,5 +25,23 @@
     "title": "Dead-Letter Queue",
     "empty": "Dead-letter queue is empty.",
     "enqueued": "Enqueued"
+  },
+  "recurring": {
+    "title": "Recurring Jobs",
+    "description": "View registered Hangfire jobs here and trigger the selected job immediately.",
+    "selectLabel": "Job to run",
+    "selectPlaceholder": "Select a job",
+    "triggerButton": "Run now",
+    "triggerSuccess": "{{jobName}} has been triggered.",
+    "triggerError": "An error occurred while triggering the job.",
+    "empty": "No recurring jobs found yet.",
+    "table": {
+      "id": "Job ID",
+      "job": "Job",
+      "cron": "Schedule",
+      "nextExecution": "Next run",
+      "lastExecution": "Last run",
+      "queue": "Queue"
+    }
   }
 }

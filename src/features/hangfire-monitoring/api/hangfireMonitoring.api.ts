@@ -2,6 +2,8 @@ import { api } from '@/lib/axios';
 import type {
   HangfireDeadLetterResponseDto,
   HangfireFailedResponseDto,
+  HangfireRecurringJobsResponseDto,
+  HangfireTriggerRecurringJobResponseDto,
   HangfireStatsDto,
 } from '../types/hangfireMonitoring.types';
 
@@ -35,6 +37,24 @@ function normalizeJobs(items: unknown): HangfireFailedResponseDto['items'] {
   });
 }
 
+function normalizeRecurringJobs(items: unknown): HangfireRecurringJobsResponseDto['items'] {
+  if (!Array.isArray(items)) return [];
+  return items.map((raw) => {
+    const row = (raw ?? {}) as Record<string, unknown>;
+    return {
+      id: String(row.Id ?? ''),
+      jobName: String(row.JobName ?? row.Id ?? 'unknown'),
+      method: row.Method != null ? String(row.Method) : undefined,
+      cron: row.Cron != null ? String(row.Cron) : undefined,
+      queue: row.Queue != null ? String(row.Queue) : undefined,
+      nextExecution: row.NextExecution != null ? String(row.NextExecution) : undefined,
+      lastExecution: row.LastExecution != null ? String(row.LastExecution) : undefined,
+      lastJobId: row.LastJobId != null ? String(row.LastJobId) : undefined,
+      error: row.Error != null ? String(row.Error) : undefined,
+    };
+  });
+}
+
 export const hangfireMonitoringApi = {
   async getStats(): Promise<HangfireStatsDto> {
     const response = await api.get<Record<string, unknown>>('/api/hangfire/stats');
@@ -57,6 +77,24 @@ export const hangfireMonitoringApi = {
       enqueued: Number(response?.Enqueued ?? 0),
       items: normalizeJobs(response?.Items),
       timestamp: String(response?.Timestamp ?? new Date().toISOString()),
+    };
+  },
+
+  async getRecurringJobs(): Promise<HangfireRecurringJobsResponseDto> {
+    const response = await api.get<Record<string, unknown>>('/api/hangfire/recurring-jobs');
+    return {
+      items: normalizeRecurringJobs(response?.Items),
+      total: Number(response?.Total ?? 0),
+      timestamp: String(response?.Timestamp ?? new Date().toISOString()),
+    };
+  },
+
+  async triggerRecurringJob(jobId: string): Promise<HangfireTriggerRecurringJobResponseDto> {
+    const response = await api.post<Record<string, unknown>>(`/api/hangfire/recurring-jobs/${encodeURIComponent(jobId)}/trigger`);
+    return {
+      jobId: String(response?.JobId ?? jobId),
+      triggeredAt: String(response?.TriggeredAt ?? new Date().toISOString()),
+      message: String(response?.Message ?? 'Recurring job triggered successfully.'),
     };
   },
 };

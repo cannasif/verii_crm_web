@@ -25,5 +25,23 @@
     "title": "Teslim Edilemeyen Kuyruğu",
     "empty": "Teslim edilemeyen kuyruğu boş.",
     "enqueued": "Kuyruktaki"
+  },
+  "recurring": {
+    "title": "Zamanlanmış İşler",
+    "description": "Buradan kayıtlı Hangfire işlerini görebilir ve seçtiğin işi hemen tetikleyebilirsin.",
+    "selectLabel": "Çalıştırılacak iş",
+    "selectPlaceholder": "Bir job seç",
+    "triggerButton": "Şimdi çalıştır",
+    "triggerSuccess": "{{jobName}} işi tetiklendi.",
+    "triggerError": "Job tetiklenirken bir hata oluştu.",
+    "empty": "Henüz kayıtlı recurring job bulunamadı.",
+    "table": {
+      "id": "Job Kimliği",
+      "job": "İş",
+      "cron": "Zamanlama",
+      "nextExecution": "Sonraki çalışma",
+      "lastExecution": "Son çalışma",
+      "queue": "Kuyruk"
+    }
   }
 }

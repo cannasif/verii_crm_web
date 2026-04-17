@@ -7,6 +7,7 @@ export const HANGFIRE_QUERY_KEYS = {
   STATS: ['hangfire', 'stats'] as const,
   FAILED: (from: number, count: number) => ['hangfire', 'failed', from, count] as const,
   DEAD_LETTER: (from: number, count: number) => ['hangfire', 'dead-letter', from, count] as const,
+  RECURRING: ['hangfire', 'recurring-jobs'] as const,
 };
 
 export function useHangfireStatsQuery() {
@@ -32,6 +33,15 @@ export function useHangfireDeadLetterQuery(from: number, count: number) {
     queryKey: HANGFIRE_QUERY_KEYS.DEAD_LETTER(from, count),
     refetchInterval: REFRESH_INTERVAL_MS,
     queryFn: () => hangfireMonitoringApi.getDeadLetter(from, count),
+    refetchIntervalInBackground: false,
+  });
+}
+
+export function useHangfireRecurringJobsQuery() {
+  return useQuery({
+    queryKey: HANGFIRE_QUERY_KEYS.RECURRING,
+    queryFn: () => hangfireMonitoringApi.getRecurringJobs(),
+    refetchInterval: REFRESH_INTERVAL_MS,
     refetchIntervalInBackground: false,
   });
 }
