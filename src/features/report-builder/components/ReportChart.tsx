@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import type { ChartType, ReportWidgetAppearance, ReportWidgetTableColumnSetting } from '../types';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { Button } from '@/components/ui/button';
+import { formatSystemCurrency, formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
 
 type ColumnItem = string | { name: string; sqlType?: string; dotNetType?: string; isNullable?: boolean };
 
@@ -54,12 +55,12 @@ function buildPalette(accentColor?: string): string[] {
 
 function formatKpiValue(value: number, format: NonNullable<ReportWidgetAppearance['kpiFormat']>): string {
   if (format === 'currency') {
-    return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(value);
+    return formatSystemCurrency(value);
   }
   if (format === 'percent') {
-    return `${value.toLocaleString('tr-TR')}%`;
+    return `${formatSystemNumber(value, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}%`;
   }
-  return value.toLocaleString('tr-TR');
+  return formatSystemNumber(value, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
 function formatMetricValue(
@@ -68,23 +69,18 @@ function formatMetricValue(
   decimalPlaces: number
 ): string {
   if (format === 'currency') {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: decimalPlaces,
-      maximumFractionDigits: decimalPlaces,
-    }).format(value);
+    return formatSystemCurrency(value);
   }
   if (format === 'percent') {
-    return `${new Intl.NumberFormat('tr-TR', {
+    return `${formatSystemNumber(value, {
       minimumFractionDigits: decimalPlaces,
       maximumFractionDigits: decimalPlaces,
-    }).format(value)}%`;
+    })}%`;
   }
-  return new Intl.NumberFormat('tr-TR', {
+  return formatSystemNumber(value, {
     minimumFractionDigits: format === 'default' ? 0 : decimalPlaces,
     maximumFractionDigits: format === 'default' ? 2 : decimalPlaces,
-  }).format(value);
+  });
 }
 
 function renderCellValue(cell: unknown, appearance?: ReportWidgetAppearance): string {
@@ -124,7 +120,7 @@ function formatAxisTooltipLabel(value: unknown): string {
   if (typeof value !== 'string') return String(value ?? '');
   const parsed = new Date(value);
   if (!Number.isNaN(parsed.getTime()) && value.includes('T')) {
-    return parsed.toLocaleDateString('tr-TR');
+    return formatSystemDate(parsed);
   }
   return value;
 }

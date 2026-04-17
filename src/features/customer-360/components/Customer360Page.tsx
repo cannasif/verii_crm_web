@@ -36,6 +36,7 @@ import { CustomerAmountComparisonByCurrencyTable } from './CustomerAmountCompari
 import { CustomerMailLogsTab } from './CustomerMailLogsTab';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { getApiBaseUrl } from '@/lib/axios';
+import { formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
 import { useAuthStore } from '@/stores/auth-store';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
@@ -631,13 +632,13 @@ function ErpMovementsTabContent({
   t: (key: string, opts?: Record<string, unknown>) => string;
   tc: (key: string, opts?: Record<string, unknown>) => string;
 }): ReactElement {
-  const formatter = new Intl.NumberFormat('tr-TR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  const formatter = {
+    format: (value: number) =>
+      formatSystemNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  };
 
   const formatDate = (value?: string | null): string =>
-    value ? new Date(value).toLocaleDateString('tr-TR') : '-';
+    value ? formatSystemDate(value) : '-';
 
   const formatNumber = (value?: number | null): string => formatter.format(value ?? 0);
 

@@ -41,13 +41,6 @@ const currencyOptions = [
   { value: 'GBP', label: 'GBP - İngiliz Sterlini' },
 ];
 
-const timeZoneOptions = [
-  { value: 'Europe/Istanbul', label: 'Europe/Istanbul (UTC+03:00)' },
-  { value: 'UTC', label: 'UTC (UTC+00:00)' },
-  { value: 'Europe/Berlin', label: 'Europe/Berlin' },
-  { value: 'America/New_York', label: 'America/New_York' },
-];
-
 const dateFormatOptions = ['dd.MM.yyyy', 'yyyy-MM-dd', 'MM/dd/yyyy'];
 const timeFormatOptions = ['HH:mm', 'HH:mm:ss', 'hh:mm a'];
 const numberFormatOptions = [
@@ -163,33 +156,6 @@ export function SystemSettingsForm({
                     </FormControl>
                     <SelectContent>
                       {currencyOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="defaultTimeZone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={isZodFieldRequired(systemSettingsFormSchema, 'defaultTimeZone')}>
-                    {t('systemSettings.Fields.DefaultTimeZone')}
-                  </FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.DefaultTimeZone')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {timeZoneOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>

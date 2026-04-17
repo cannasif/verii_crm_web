@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { formatSystemCurrency, formatSystemDate } from '@/lib/system-settings';
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -134,16 +135,11 @@ export function DashboardPage(): ReactElement {
 
   const formatCurrency = (amount: number | undefined | null): string => {
     const val = amount || 0;
-    return new Intl.NumberFormat(i18n.language, {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return formatSystemCurrency(val);
   };
 
   const formatDate = (): string => {
-    const now = new Date();
-    return now.toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
+    return formatSystemDate(new Date());
   };
 
   const handleRefresh = async () => {

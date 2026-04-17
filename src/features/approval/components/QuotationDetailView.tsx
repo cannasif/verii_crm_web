@@ -10,28 +10,22 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { QuotationDetailDto } from '../types/approval-types';
+import { formatSystemCurrency, formatSystemDate } from '@/lib/system-settings';
 
 interface QuotationDetailViewProps {
   quotation: QuotationDetailDto;
 }
 
 export function QuotationDetailView({ quotation }: QuotationDetailViewProps): ReactElement {
-  const { t, i18n } = useTranslation(['approval', 'common']);
+  const { t } = useTranslation(['approval', 'common']);
 
   const formatCurrency = (amount: number, currency: string): string => {
-    return new Intl.NumberFormat(i18n.language, {
-      style: 'currency',
-      currency: currency || 'TRY',
-    }).format(amount);
+    return formatSystemCurrency(amount, currency || 'TRY');
   };
 
   const formatDate = (dateString: string | null | undefined): string => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString(i18n.language, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    return formatSystemDate(dateString);
   };
 
   return (

@@ -54,6 +54,7 @@ import {
 } from '../constants';
 import { clampElementToSection } from '../utils/dto-to-canvas';
 import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
+import { formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 
@@ -227,13 +228,13 @@ function formatSummaryValue(rawValue: string, format?: PdfSummaryItem['format'])
   if ((format === 'number' || format === 'currency') && !Number.isNaN(Number(rawValue))) {
     const numericValue = Number(rawValue);
     return format === 'currency'
-      ? new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue)
-      : new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(numericValue);
+      ? formatSystemNumber(numericValue, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : formatSystemNumber(numericValue, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
   if (format === 'date') {
     const date = new Date(rawValue);
     if (!Number.isNaN(date.getTime())) {
-      return new Intl.DateTimeFormat('tr-TR').format(date);
+      return formatSystemDate(date);
     }
   }
   return rawValue;
