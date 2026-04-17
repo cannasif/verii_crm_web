@@ -4318,7 +4318,7 @@
   },
   "systemSettings": {
     "PageTitle": "System Settings",
-    "PageDescription": "Manage currency, number formatting, and customer scope settings.",
+    "PageDescription": "Manage number formatting and customer scope settings.",
     "SavedSuccessfully": "System settings saved successfully.",
     "Fields": {
       "DefaultLanguage": "Default language",

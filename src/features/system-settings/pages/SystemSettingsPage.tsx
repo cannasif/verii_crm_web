@@ -23,7 +23,7 @@ export function SystemSettingsPage(): ReactElement {
       defaultTimeZone: data?.defaultTimeZone ?? 'Europe/Istanbul',
       dateFormat: data?.dateFormat ?? 'dd.MM.yyyy',
       timeFormat: data?.timeFormat ?? 'HH:mm',
-      defaultCurrencyCode: values.defaultCurrencyCode,
+      defaultCurrencyCode: data?.defaultCurrencyCode ?? 'TRY',
       numberFormat: values.numberFormat,
       decimalPlaces: values.decimalPlaces,
       restrictCustomersBySalesRepMatch: values.restrictCustomersBySalesRepMatch,

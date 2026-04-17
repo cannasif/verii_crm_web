@@ -4374,7 +4374,7 @@
   },
   "systemSettings": {
     "PageTitle": "Sistem Ayarları",
-    "PageDescription": "Para birimi, sayı biçimi ve müşteri kapsamı ayarlarını yönetin.",
+    "PageDescription": "Sayı biçimi ve müşteri kapsamı ayarlarını yönetin.",
     "SavedSuccessfully": "Sistem ayarları başarıyla kaydedildi.",
     "Fields": {
       "DefaultLanguage": "Varsayılan dil",

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactElement, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { type Resolver, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -22,20 +22,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import {
   systemSettingsFormSchema,
   type EditableSystemSettingsDto,
   type SystemSettingsDto,
   type SystemSettingsFormSchema,
 } from '../types/systemSettings';
-
-const fallbackCurrencyOptions = [
-  { value: 'TRY', label: 'TRY - Türk Lirası' },
-  { value: 'USD', label: 'USD - Amerikan Doları' },
-  { value: 'EUR', label: 'EUR - Euro' },
-  { value: 'GBP', label: 'GBP - İngiliz Sterlini' },
-];
 
 const numberFormatOptions = [
   { value: 'tr-TR', label: 'Türkçe sayı biçimi (1.234,56)' },
@@ -57,33 +49,12 @@ export function SystemSettingsForm({
   onSubmit,
 }: SystemSettingsFormProps): ReactElement {
   const { t } = useTranslation();
-  const { currencyOptions: erpCurrencyOptions } = useCurrencyOptions();
-
-  const currencyOptions = useMemo(() => {
-    if (erpCurrencyOptions.length === 0) {
-      return fallbackCurrencyOptions;
-    }
-
-    const uniqueOptions = new Map<string, { value: string; label: string }>();
-
-    erpCurrencyOptions.forEach((option) => {
-      if (!uniqueOptions.has(option.code)) {
-        uniqueOptions.set(option.code, {
-          value: option.code,
-          label: option.label,
-        });
-      }
-    });
-
-    return Array.from(uniqueOptions.values());
-  }, [erpCurrencyOptions]);
 
   const form = useForm<SystemSettingsFormSchema>({
     resolver: zodResolver(systemSettingsFormSchema) as Resolver<SystemSettingsFormSchema>,
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      defaultCurrencyCode: 'TRY',
       numberFormat: 'tr-TR',
       decimalPlaces: 2,
       restrictCustomersBySalesRepMatch: false,
@@ -93,7 +64,6 @@ export function SystemSettingsForm({
   useEffect(() => {
     if (!data) return;
     form.reset({
-      defaultCurrencyCode: data.defaultCurrencyCode,
       numberFormat: data.numberFormat,
       decimalPlaces: data.decimalPlaces,
       restrictCustomersBySalesRepMatch: data.restrictCustomersBySalesRepMatch,
@@ -121,33 +91,6 @@ export function SystemSettingsForm({
             <CardDescription>{t('systemSettings.PageDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="defaultCurrencyCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={isZodFieldRequired(systemSettingsFormSchema, 'defaultCurrencyCode')}>
-                    {t('systemSettings.Fields.DefaultCurrencyCode')}
-                  </FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.DefaultCurrencyCode')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {currencyOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="numberFormat"
@@ -179,7 +122,7 @@ export function SystemSettingsForm({
               control={form.control}
               name="decimalPlaces"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
+                <FormItem>
                   <FormLabel required={isZodFieldRequired(systemSettingsFormSchema, 'decimalPlaces')}>
                     {t('systemSettings.Fields.DecimalPlaces')}
                   </FormLabel>
