@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom'; 
 import { Menu08Icon, SearchList01Icon, Cancel01Icon, Mic01Icon } from 'hugeicons-react'
 import { useAuthStore } from '@/stores/auth-store';
+import { useAppShellStore } from '@/stores/app-shell-store';
 import { useUIStore } from '@/stores/ui-store';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
 import { UserProfileModal } from '@/features/user-detail-management/components/UserProfileModal';
-import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/useUserDetailByUserId';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
 import { cn } from '@/lib/utils';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
@@ -22,7 +22,9 @@ export function Navbar(): ReactElement {
   const { user } = useAuthStore();
   const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen } = useUIStore();
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
-  const { data: userDetail } = useUserDetailByUserId(user?.id || 0);
+  const userDetail = useAppShellStore((state) =>
+    user?.id ? state.userSummaries[String(user.id)]?.data ?? null : null
+  );
 
   const { isListening, isSupported, startListening } = useVoiceSearch({
     onResult: (text) => {

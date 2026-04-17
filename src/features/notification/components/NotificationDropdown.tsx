@@ -9,10 +9,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { notificationApi } from '../api/notification-api';
-import { useUnreadCount } from '../hooks/useUnreadCount';
 import { useNotificationStore } from '../stores/notification-store';
 import { NotificationItem } from './NotificationItem';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/auth-store';
+import { useAppShellStore } from '@/stores/app-shell-store';
 
 interface NotificationDropdownProps {
   children: ReactElement;
@@ -22,9 +23,13 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
   const { t } = useTranslation(['notification', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const userId = useAuthStore((state) => state.user?.id ?? null);
   const [isOpen, setIsOpen] = useState(false);
-  
-  const { data: unreadCount = 0 } = useUnreadCount({ enabled: isOpen });
+  const unreadCount = useAppShellStore((state) =>
+    userId ? state.unreadCounts[String(userId)]?.data ?? 0 : 0
+  );
+  const refreshUnreadCount = useAppShellStore((state) => state.refreshUnreadCount);
+  const setUnreadCount = useAppShellStore((state) => state.setUnreadCount);
 
   const {
     data,
@@ -48,7 +53,9 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
     mutationFn: () => notificationApi.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notification', 'list'] });
-      queryClient.invalidateQueries({ queryKey: ['notification', 'unread-count'] });
+      if (userId) {
+        setUnreadCount(userId, 0);
+      }
     },
   });
 
@@ -69,6 +76,11 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
       fetchNextPage();
     }
   }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
+
+  useEffect(() => {
+    if (!isOpen || !userId) return;
+    void refreshUnreadCount(userId, true);
+  }, [isOpen, refreshUnreadCount, userId]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;

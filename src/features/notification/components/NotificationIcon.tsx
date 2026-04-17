@@ -1,20 +1,30 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Notification01Icon } from 'hugeicons-react';
-import { useUnreadCount } from '../hooks/useUnreadCount';
 import { NotificationDropdown } from './NotificationDropdown';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/auth-store';
+import { useAppShellStore } from '@/stores/app-shell-store';
 
 export function NotificationIcon(): ReactElement {
   const { t } = useTranslation(['notification', 'common']);
+  const userId = useAuthStore((state) => state.user?.id ?? null);
   const [shouldFetchUnread, setShouldFetchUnread] = useState(false);
-  const { data: unreadCount = 0 } = useUnreadCount({ enabled: shouldFetchUnread });
+  const unreadCount = useAppShellStore((state) =>
+    userId ? state.unreadCounts[String(userId)]?.data ?? 0 : 0
+  );
+  const refreshUnreadCount = useAppShellStore((state) => state.refreshUnreadCount);
   const hasUnread = unreadCount > 0;
 
   useEffect(() => {
     const timer = window.setTimeout(() => setShouldFetchUnread(true), 1500);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!shouldFetchUnread || !userId) return;
+    void refreshUnreadCount(userId);
+  }, [refreshUnreadCount, shouldFetchUnread, userId]);
 
   return (
     <NotificationDropdown>

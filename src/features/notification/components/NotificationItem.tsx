@@ -5,6 +5,8 @@ import { FileText, Receipt, Package, Headphones, Info } from 'lucide-react';
 import type { NotificationDto } from '../types/notification';
 import { formatNotificationTime } from '../utils/date-utils';
 import { notificationApi } from '../api/notification-api';
+import { useAuthStore } from '@/stores/auth-store';
+import { useAppShellStore } from '@/stores/app-shell-store';
 
 interface NotificationItemProps {
   notification: NotificationDto;
@@ -14,12 +16,16 @@ interface NotificationItemProps {
 export function NotificationItem({ notification, onNavigate }: NotificationItemProps): ReactElement {
   const { t } = useTranslation(['notification', 'common']);
   const queryClient = useQueryClient();
+  const userId = useAuthStore((state) => state.user?.id ?? null);
+  const decrementUnreadCount = useAppShellStore((state) => state.decrementUnreadCount);
 
   const markAsReadMutation = useMutation({
     mutationFn: (id: number) => notificationApi.markAsRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notification', 'list'] });
-      queryClient.invalidateQueries({ queryKey: ['notification', 'unread-count'] });
+      if (userId) {
+        decrementUnreadCount(userId, 1);
+      }
     },
   });
 

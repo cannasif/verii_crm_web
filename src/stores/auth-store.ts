@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getUserFromToken, isTokenValid } from '@/utils/jwt';
+import { usePermissionsStore } from '@/stores/permissions-store';
+import { useAppShellStore } from '@/stores/app-shell-store';
 
 interface User {
   id: number;
@@ -46,10 +48,13 @@ export const useAuthStore = create<AuthState>()(
         set({ user, token, branch });
       },
       logout: () => {
+        const currentUserId = get().user?.id ?? null;
         localStorage.removeItem('access_token');
         sessionStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         sessionStorage.removeItem('refresh_token');
+        usePermissionsStore.getState().clearPermissions(currentUserId);
+        useAppShellStore.getState().clearAppShellData(currentUserId);
         set({ user: null, token: null, branch: null });
       },
       isAuthenticated: () => {

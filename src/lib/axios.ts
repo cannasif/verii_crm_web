@@ -12,6 +12,8 @@ import {
 
 export { loadConfig, getApiUrl, getApiBaseUrl, resolveAppPath };
 
+const MAX_MANAGEMENT_PAGE_SIZE = 200;
+
 export async function ensureApiReady(): Promise<void> {
   const base = await loadConfig();
   api.defaults.baseURL = base;
@@ -190,6 +192,65 @@ function getStoredAccessToken(): string | null {
   return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
 }
 
+function clampPageSizeValue(value: unknown): string | null {
+  const numeric = typeof value === 'string' ? Number(value) : typeof value === 'number' ? value : Number.NaN;
+  if (!Number.isFinite(numeric) || numeric <= 0) return null;
+  return String(Math.min(Math.trunc(numeric), MAX_MANAGEMENT_PAGE_SIZE));
+}
+
+function clampPagedRequestUrl(url?: string): string | undefined {
+  if (!url || !url.includes('?')) return url;
+
+  const [path, query = ''] = url.split('?');
+  if (!query) return url;
+
+  const searchParams = new URLSearchParams(query);
+  let changed = false;
+
+  ['pageSize', 'PageSize'].forEach((key) => {
+    const current = searchParams.get(key);
+    const next = clampPageSizeValue(current);
+    if (current != null && next != null && current !== next) {
+      searchParams.set(key, next);
+      changed = true;
+    }
+  });
+
+  if (!changed) return url;
+  const nextQuery = searchParams.toString();
+  return nextQuery ? `${path}?${nextQuery}` : path;
+}
+
+function clampPagedRequestParams(params: unknown): unknown {
+  if (!params) return params;
+
+  if (params instanceof URLSearchParams) {
+    ['pageSize', 'PageSize'].forEach((key) => {
+      const current = params.get(key);
+      const next = clampPageSizeValue(current);
+      if (current != null && next != null && current !== next) {
+        params.set(key, next);
+      }
+    });
+    return params;
+  }
+
+  if (typeof params !== 'object' || Array.isArray(params)) {
+    return params;
+  }
+
+  const nextParams = { ...(params as Record<string, unknown>) };
+  ['pageSize', 'PageSize'].forEach((key) => {
+    if (!(key in nextParams)) return;
+    const next = clampPageSizeValue(nextParams[key]);
+    if (next != null) {
+      nextParams[key] = next;
+    }
+  });
+
+  return nextParams;
+}
+
 function getStoredRefreshToken(): string | null {
   return localStorage.getItem('refresh_token') || sessionStorage.getItem('refresh_token');
 }
@@ -291,6 +352,10 @@ async function refreshAccessToken(): Promise<string | null> {
 
 api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
+  if ((config.method ?? 'get').toLowerCase() === 'get') {
+    config.url = clampPagedRequestUrl(config.url);
+    config.params = clampPagedRequestParams(config.params);
+  }
 
   if (config.data !== undefined) {
     config.data = normalizeOutgoingUtcDateStrings(config.data);
