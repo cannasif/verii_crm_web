@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Notification01Icon } from 'hugeicons-react';
 import { useUnreadCount } from '../hooks/useUnreadCount';
@@ -7,8 +7,14 @@ import { cn } from '@/lib/utils';
 
 export function NotificationIcon(): ReactElement {
   const { t } = useTranslation(['notification', 'common']);
-  const { data: unreadCount = 0 } = useUnreadCount();
+  const [shouldFetchUnread, setShouldFetchUnread] = useState(false);
+  const { data: unreadCount = 0 } = useUnreadCount({ enabled: shouldFetchUnread });
   const hasUnread = unreadCount > 0;
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShouldFetchUnread(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   return (
     <NotificationDropdown>

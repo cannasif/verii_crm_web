@@ -24,7 +24,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   
-  const { data: unreadCount = 0 } = useUnreadCount();
+  const { data: unreadCount = 0 } = useUnreadCount({ enabled: isOpen });
 
   const {
     data,
