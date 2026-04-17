@@ -110,20 +110,6 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         ],
       },
       {
-        title: t('sidebar.powerbi'),
-        icon: <Analytics01Icon size={iconSize} className="text-amber-500" />,
-        children: [
-          { title: t('sidebar.powerbiConfiguration'), href: '/powerbi/configuration' },
-          { title: t('sidebar.powerbiReportsView'), href: '/powerbi/reports' },
-          { title: t('sidebar.powerbiSync'), href: '/powerbi/sync' },
-          { title: t('sidebar.powerbiReportDefinitions'), href: '/powerbi/report-definitions' },
-          { title: t('sidebar.powerbiGroups'), href: '/powerbi/groups' },
-          { title: t('sidebar.powerbiUserGroups'), href: '/powerbi/user-groups' },
-          { title: t('sidebar.powerbiGroupReportMapping'), href: '/powerbi/group-report-definitions' },
-          { title: t('sidebar.powerbiRls'), href: '/powerbi/rls' },
-        ],
-      },
-      {
         title: t('sidebar.reports'),
         icon: <File01Icon size={iconSize} className="text-cyan-500" />,
         children: [
@@ -141,6 +127,20 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             children: [
               { title: t('pdfReportDesigner.list'), href: '/pdf-report-designer' },
               { title: t('pdfReportDesigner.create'), href: '/pdf-report-designer/create' },
+            ],
+          },
+          {
+            title: t('sidebar.powerbi'),
+            icon: <Analytics01Icon size={iconSize} className="text-amber-500" />,
+            children: [
+              { title: t('sidebar.powerbiConfiguration'), href: '/powerbi/configuration' },
+              { title: t('sidebar.powerbiReportsView'), href: '/powerbi/reports' },
+              { title: t('sidebar.powerbiSync'), href: '/powerbi/sync' },
+              { title: t('sidebar.powerbiReportDefinitions'), href: '/powerbi/report-definitions' },
+              { title: t('sidebar.powerbiGroups'), href: '/powerbi/groups' },
+              { title: t('sidebar.powerbiUserGroups'), href: '/powerbi/user-groups' },
+              { title: t('sidebar.powerbiGroupReportMapping'), href: '/powerbi/group-report-definitions' },
+              { title: t('sidebar.powerbiRls'), href: '/powerbi/rls' },
             ],
           },
         ],

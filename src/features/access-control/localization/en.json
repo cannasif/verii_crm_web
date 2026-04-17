@@ -88,7 +88,17 @@
     "permissionsPanel": {
       "title": "Edit group permissions",
       "description": "Select permissions for this group",
-      "currentCodes": "Current permission codes"
+      "currentCodes": "Current permission codes",
+      "screen": "Screen / Permission Area",
+      "groupedRows": "permission areas",
+      "actionsMapped": "permissions",
+      "actions": {
+        "create": "Create",
+        "read": "Read",
+        "update": "Update",
+        "delete": "Delete",
+        "other": "Other"
+      }
     },
     "delete": {
       "confirmTitle": "Delete permission group",

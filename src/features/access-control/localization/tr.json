@@ -88,7 +88,17 @@
     "permissionsPanel": {
       "title": "Grup İzinlerini Düzenle",
       "description": "Bu grup için izinleri seçin",
-      "currentCodes": "Mevcut izin kodları"
+      "currentCodes": "Mevcut izin kodları",
+      "screen": "Ekran / Yetki Alanı",
+      "groupedRows": "yetki alanı",
+      "actionsMapped": "izin",
+      "actions": {
+        "create": "Oluştur",
+        "read": "Görüntüle",
+        "update": "Düzenle",
+        "delete": "Sil",
+        "other": "Diğer"
+      }
     },
     "delete": {
       "confirmTitle": "İzin Grubunu Sil",
