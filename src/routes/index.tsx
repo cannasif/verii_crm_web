@@ -23,6 +23,7 @@ const DashboardPage = lazyImport(() => import('@/features/dashboard'), 'Dashboar
 const TitleManagementPage = lazyImport(() => import('@/features/title-management'), 'TitleManagementPage');
 const UserManagementPage = lazyImport(() => import('@/features/user-management'), 'UserManagementPage');
 const MailSettingsPage = lazyImport(() => import('@/features/mail-settings'), 'MailSettingsPage');
+const SystemSettingsPage = lazyImport(() => import('@/features/system-settings'), 'SystemSettingsPage');
 const CountryManagementPage = lazyImport(() => import('@/features/country-management'), 'CountryManagementPage');
 const CityManagementPage = lazyImport(() => import('@/features/city-management'), 'CityManagementPage');
 const DistrictManagementPage = lazyImport(() => import('@/features/district-management'), 'DistrictManagementPage');
@@ -149,6 +150,7 @@ export function createAppRouter() {
         { path: 'payment-type-management', element: <PaymentTypeManagementPage /> },
         { path: 'user-discount-limit-management', element: <UserDiscountLimitManagementPage /> },
         { path: 'users/mail-settings', element: <MailSettingsPage /> },
+        { path: 'settings/system-settings', element: <SystemSettingsPage /> },
         { path: 'product-pricing-group-by-management', element: <ProductPricingGroupByManagementPage /> },
         { path: 'product-pricing-management', element: <ProductPricingManagementPage /> },
         { path: 'activity-management', element: <ActivityManagementPage /> },

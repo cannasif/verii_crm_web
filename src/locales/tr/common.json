@@ -1197,6 +1197,7 @@
     "outlookIntegrationLogs": "Loglar",
     "outlookIntegrationAuthInformation": "Outlook Kimlik Bilgileri",
     "mailSettings": "E-posta Ayarları",
+    "systemSettings": "Sistem Ayarları",
     "productPricingGroupByManagement": "Ürün Fiyatlandırma Grubu Yönetimi",
     "quotationLineManagement": "Teklif Satırı Yönetimi",
     "quotationCreateWizard": "Yeni Teklif Oluştur",
@@ -4370,6 +4371,28 @@
     },
     "Save": "Kaydet",
     "SavedSuccessfully": "Ayarlar başarıyla kaydedildi"
+  },
+  "systemSettings": {
+    "PageTitle": "Sistem Ayarları",
+    "PageDescription": "Dil, para birimi, saat dilimi ve format varsayılanlarını yönetin.",
+    "SavedSuccessfully": "Sistem ayarları başarıyla kaydedildi.",
+    "Fields": {
+      "DefaultLanguage": "Varsayılan dil",
+      "DefaultCurrencyCode": "Varsayılan para birimi",
+      "DefaultTimeZone": "Varsayılan saat dilimi",
+      "DateFormat": "Tarih formatı",
+      "TimeFormat": "Saat formatı",
+      "NumberFormat": "Sayı formatı",
+      "DecimalPlaces": "Ondalık basamak sayısı"
+    },
+    "Placeholders": {
+      "DefaultLanguage": "Dil seçin",
+      "DefaultCurrencyCode": "Para birimi seçin",
+      "DefaultTimeZone": "Saat dilimi seçin",
+      "DateFormat": "Tarih formatı seçin",
+      "TimeFormat": "Saat formatı seçin",
+      "NumberFormat": "Sayı formatı seçin"
+    }
   },
   "order": {
     "exchangeRates": {

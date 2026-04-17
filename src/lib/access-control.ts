@@ -76,7 +76,7 @@ const ROUTE_PERMISSION_RULES: Array<{ pattern: RegExp; permission: Permission }>
   { pattern: /^\/approval-(flow|role|role-group|user-role)-management(\/|$)/, permission: 'approval.view' },
   { pattern: /^\/(country-management|city-management|district-management|shipping-address-management|title-management|payment-type-management|document-serial-type-management)(\/|$)/, permission: 'definitions.view' },
   { pattern: /^\/definitions\/(activity-meeting-type-management|activity-topic-purpose-management|activity-shipping-management|sales-type-management|sales-rep-management|sales-rep-match-management)(\/|$)/, permission: 'definitions.view' },
-  { pattern: /^\/(user-management|user-discount-limit-management|users\/mail-settings)(\/|$)/, permission: 'users.manage' },
+  { pattern: /^\/(user-management|user-discount-limit-management|users\/mail-settings|settings\/system-settings)(\/|$)/, permission: 'users.manage' },
 ];
 
 function normalizeRole(role: string): string {

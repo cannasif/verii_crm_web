@@ -83,6 +83,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/user-management': 'admin-only',
   '/user-discount-limit-management': 'users.discount-limits.view',
   '/users/mail-settings': 'admin-only',
+  '/settings/system-settings': 'admin-only',
   '/hangfire-monitoring': 'admin-only',
   '/access-control/permission-definitions': 'admin-only',
   '/access-control/permission-groups': 'admin-only',
@@ -178,6 +179,7 @@ export const ACCESS_CONTROL_ADMIN_ONLY_PATTERNS: RegExp[] = [
   /^\/access-control(\/|$)/,
   /^\/user-management(\/|$)/,
   /^\/users\/mail-settings(\/|$)/,
+  /^\/settings\/system-settings(\/|$)/,
   /^\/hangfire-monitoring(\/|$)/,
 ];
 
@@ -245,6 +247,7 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key: string; fallback: st
   'definitions.sales-rep-match-management.view': { key: 'sidebar.salesRepMatchManagement', fallback: 'Sales Rep Eslesme Yonetimi' },
 
   'users.discount-limits.view': { key: 'sidebar.userDiscountLimitManagement', fallback: 'Kullanici Iskonto Limit Yonetimi' },
+  'admin-only': { key: 'sidebar.systemSettings', fallback: 'Sistem Ayarları' },
 };
 
 export function getPermissionDisplayMeta(code: string): { key: string; fallback: string } | null {

@@ -215,6 +215,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         title: t('sidebar.settings'),
         icon: <Settings02Icon size={iconSize} className="text-gray-500" />,
         children: [
+          { title: t('sidebar.systemSettings'), href: '/settings/system-settings' },
           {
             title: t('sidebar.googleIntegration'),
             children: [

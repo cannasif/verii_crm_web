@@ -1193,6 +1193,7 @@
     "outlookIntegrationLogs": "Logs",
     "outlookIntegrationAuthInformation": "Outlook Auth Information",
     "mailSettings": "Mail Settings",
+    "systemSettings": "System Settings",
     "productPricingGroupByManagement": "Product Pricing Group By Management",
     "quotationLineManagement": "Quotation Line Management",
     "quotationCreateWizard": "Create New Quotation",
@@ -4314,6 +4315,28 @@
     "PageDescription": "Configure SMTP server settings",
     "Save": "Save",
     "SavedSuccessfully": "Settings saved successfully"
+  },
+  "systemSettings": {
+    "PageTitle": "System Settings",
+    "PageDescription": "Manage default language, currency, time zone, and formatting preferences.",
+    "SavedSuccessfully": "System settings saved successfully.",
+    "Fields": {
+      "DefaultLanguage": "Default language",
+      "DefaultCurrencyCode": "Default currency",
+      "DefaultTimeZone": "Default time zone",
+      "DateFormat": "Date format",
+      "TimeFormat": "Time format",
+      "NumberFormat": "Number format",
+      "DecimalPlaces": "Decimal places"
+    },
+    "Placeholders": {
+      "DefaultLanguage": "Select language",
+      "DefaultCurrencyCode": "Select currency",
+      "DefaultTimeZone": "Select time zone",
+      "DateFormat": "Select date format",
+      "TimeFormat": "Select time format",
+      "NumberFormat": "Select number format"
+    }
   },
   "order": {
     "exchangeRates": {

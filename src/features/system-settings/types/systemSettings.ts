@@ -1,0 +1,26 @@
+import { z } from 'zod';
+
+export interface SystemSettingsDto {
+  defaultLanguage: string;
+  defaultCurrencyCode: string;
+  defaultTimeZone: string;
+  dateFormat: string;
+  timeFormat: string;
+  numberFormat: string;
+  decimalPlaces: number;
+  updatedAt?: string;
+}
+
+export interface UpdateSystemSettingsDto extends SystemSettingsDto {}
+
+export const systemSettingsFormSchema = z.object({
+  defaultLanguage: z.string().min(1, 'common.required'),
+  defaultCurrencyCode: z.string().min(1, 'common.required'),
+  defaultTimeZone: z.string().min(1, 'common.required'),
+  dateFormat: z.string().min(1, 'common.required'),
+  timeFormat: z.string().min(1, 'common.required'),
+  numberFormat: z.string().min(1, 'common.required'),
+  decimalPlaces: z.coerce.number().int().min(0).max(6),
+});
+
+export type SystemSettingsFormSchema = z.infer<typeof systemSettingsFormSchema>;
