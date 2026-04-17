@@ -42,6 +42,18 @@ export interface MyPermissionsDto {
   permissionCodes: string[];
 }
 
+export interface AppBootstrapUserDto {
+  id: number;
+  email: string;
+  name: string;
+}
+
+export interface AppBootstrapDto {
+  user: AppBootstrapUserDto;
+  permissions: MyPermissionsDto;
+  systemSettings: import('@/features/system-settings').SystemSettingsDto;
+}
+
 export interface FullUserDto {
   id: number;
   firstName?: string;
