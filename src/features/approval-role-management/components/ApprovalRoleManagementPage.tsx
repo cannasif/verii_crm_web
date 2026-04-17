@@ -28,7 +28,6 @@ import { useUpdateApprovalRole } from '../hooks/useUpdateApprovalRole';
 import { approvalRoleRowsToBackendFilters, APPROVAL_ROLE_FILTER_COLUMNS } from '../types/approval-role-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import type { PagedFilter } from '@/types/api';
-import { approvalRoleApi } from '../api/approval-role-api';
 
 const SORT_MAP: Record<string, string> = {
   id: 'Id',
@@ -174,19 +173,12 @@ export function ApprovalRoleManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await approvalRoleApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-      sortBy,
-      sortDirection,
-      filters: apiFilters.length > 0 ? apiFilters : undefined,
-    });
-    const list = response?.data ?? [];
+    const list = roles;
     return {
       columns: exportColumns,
       rows: list.map(mapApprovalRoleRow),
     };
-  }, [exportColumns, mapApprovalRoleRow, sortBy, sortDirection, apiFilters]);
+  }, [exportColumns, mapApprovalRoleRow, roles]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

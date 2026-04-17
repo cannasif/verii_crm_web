@@ -26,7 +26,6 @@ import { useCustomerTypeList } from '../hooks/useCustomerTypeList';
 import type { CustomerTypeDto, CustomerTypeFormSchema } from '../types/customer-type-types';
 import { applyCustomerTypeFilters, CUSTOMER_TYPE_FILTER_COLUMNS } from '../types/customer-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { customerTypeApi } from '../api/customer-type-api';
 
 const EMPTY_CUSTOMER_TYPES: CustomerTypeDto[] = [];
 const PAGE_KEY = 'customer-type-management';
@@ -88,8 +87,10 @@ export function CustomerTypeManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useCustomerTypeList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const customerTypes = useMemo<CustomerTypeDto[]>(
@@ -123,14 +124,11 @@ export function CustomerTypeManagementPage(): ReactElement {
     return result;
   }, [filteredCustomerTypes, sortBy, sortDirection]);
 
-  const totalCount = sortedCustomerTypes.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedCustomerTypes.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedCustomerTypes.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedCustomerTypes, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedCustomerTypes.length - 1, totalCount);
+  const currentPageRows = sortedCustomerTypes;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as CustomerTypeColumnKey[];
 
@@ -171,8 +169,7 @@ export function CustomerTypeManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await customerTypeApi.getList({ pageNumber: 1, pageSize: 10000 });
-    const list = response?.data ?? [];
+    const list = sortedCustomerTypes;
     return {
       columns: exportColumns,
       rows: list.map((c: CustomerTypeDto) => {
@@ -188,7 +185,7 @@ export function CustomerTypeManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, sortedCustomerTypes]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

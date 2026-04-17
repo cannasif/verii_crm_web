@@ -27,7 +27,6 @@ import { useCreateApprovalUserRole } from '../hooks/useCreateApprovalUserRole';
 import { useUpdateApprovalUserRole } from '../hooks/useUpdateApprovalUserRole';
 import { applyApprovalUserRoleFilters, APPROVAL_USER_ROLE_FILTER_COLUMNS } from '../types/approval-user-role-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { approvalUserRoleApi } from '../api/approval-user-role-api';
 
 const EMPTY_USER_ROLES: ApprovalUserRoleDto[] = [];
 const PAGE_KEY = 'approval-user-role-management';
@@ -85,8 +84,10 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useApprovalUserRoleList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const userRoles = useMemo<ApprovalUserRoleDto[]>(
@@ -120,14 +121,11 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
     return result;
   }, [filteredUserRoles, sortBy, sortDirection]);
 
-  const totalCount = sortedUserRoles.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedUserRoles.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedUserRoles.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedUserRoles, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedUserRoles.length - 1, totalCount);
+  const currentPageRows = sortedUserRoles;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ApprovalUserRoleColumnKey[];
 
@@ -169,16 +167,12 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await approvalUserRoleApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-    });
-    const list = response?.data ?? [];
+    const list = sortedUserRoles;
     return {
       columns: exportColumns,
       rows: list.map(mapApprovalUserRoleRow),
     };
-  }, [exportColumns, mapApprovalUserRoleRow]);
+  }, [exportColumns, mapApprovalUserRoleRow, sortedUserRoles]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

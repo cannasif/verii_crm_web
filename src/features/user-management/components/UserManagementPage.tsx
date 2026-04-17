@@ -23,7 +23,6 @@ import { USER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { UserStats } from './UserStats';
 import { UserTable, getColumnsConfig } from './UserTable';
 import { UserForm } from './UserForm';
-import { userApi } from '../api/user-api';
 import { useUserList } from '../hooks/useUserList';
 import { useUpdateUser } from '../hooks/useUpdateUser';
 import type { UserDto } from '../types/user-types';
@@ -178,14 +177,7 @@ export function UserManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await userApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-      sortBy,
-      sortDirection,
-      filters: filtersParam,
-    });
-    const list: UserDto[] = response?.data ?? [];
+    const list: UserDto[] = users;
     return {
       columns: exportColumns,
       rows: list.map((u) => {
@@ -203,7 +195,7 @@ export function UserManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language, t, sortBy, sortDirection, filtersParam]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, t, users]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

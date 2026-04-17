@@ -27,7 +27,6 @@ import { ActivityForm } from '@/features/activity-management/components/Activity
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
-import { contactApi } from '../api/contact-api';
 import type { ContactDto } from '../types/contact-types';
 import type { ContactFormSchema } from '../types/contact-types';
 import { applyContactFilters, CONTACT_FILTER_COLUMNS } from '../types/contact-filter.types';
@@ -117,8 +116,10 @@ export function ContactManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useContactList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const contacts = useMemo<ContactDto[]>(
@@ -162,14 +163,11 @@ export function ContactManagementPage(): ReactElement {
     return result;
   }, [filteredContacts, sortBy, sortDirection]);
 
-  const totalCount = sortedContacts.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedContacts.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedContacts.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedContacts, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedContacts.length - 1, totalCount);
+  const currentPageRows = sortedContacts;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ContactColumnKey[];
 
@@ -213,8 +211,7 @@ export function ContactManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await contactApi.getList({ pageNumber: 1, pageSize: 10000 });
-    const list: ContactDto[] = response?.data ?? [];
+    const list: ContactDto[] = sortedContacts;
     return {
       columns: exportColumns,
       rows: list.map((c) => {
@@ -233,7 +230,7 @@ export function ContactManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, sortedContacts]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

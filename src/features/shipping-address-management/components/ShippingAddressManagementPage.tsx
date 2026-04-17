@@ -27,7 +27,6 @@ import { useCreateShippingAddress } from '../hooks/useCreateShippingAddress';
 import { useUpdateShippingAddress } from '../hooks/useUpdateShippingAddress';
 import { applyShippingAddressFilters, SHIPPING_ADDRESS_FILTER_COLUMNS } from '../types/shipping-address-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { shippingAddressApi } from '../api/shipping-address-api';
 
 const EMPTY_SHIPPING_ADDRESSES: ShippingAddressDto[] = [];
 const PAGE_KEY = 'shipping-address-management';
@@ -92,8 +91,10 @@ export function ShippingAddressManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useShippingAddresses({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const shippingAddresses = useMemo<ShippingAddressDto[]>(
@@ -143,14 +144,11 @@ export function ShippingAddressManagementPage(): ReactElement {
     return result;
   }, [filteredShippingAddresses, sortBy, sortDirection]);
 
-  const totalCount = sortedShippingAddresses.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedShippingAddresses.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedShippingAddresses.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedShippingAddresses, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedShippingAddresses.length - 1, totalCount);
+  const currentPageRows = sortedShippingAddresses;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ShippingAddressColumnKey[];
 
@@ -198,16 +196,12 @@ export function ShippingAddressManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await shippingAddressApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-    });
-    const list = response?.data ?? [];
+    const list = sortedShippingAddresses;
     return {
       columns: exportColumns,
       rows: list.map(mapShippingAddressRow),
     };
-  }, [exportColumns, mapShippingAddressRow]);
+  }, [exportColumns, mapShippingAddressRow, sortedShippingAddresses]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

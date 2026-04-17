@@ -19,7 +19,6 @@ import {
 
 import { ProductPricingGroupByTable, getColumnsConfig } from './ProductPricingGroupByTable';
 import { ProductPricingGroupByForm } from './ProductPricingGroupByForm';
-import { productPricingGroupByApi } from '../api/product-pricing-group-by-api';
 import { useCreateProductPricingGroupBy } from '../hooks/useCreateProductPricingGroupBy';
 import { useUpdateProductPricingGroupBy } from '../hooks/useUpdateProductPricingGroupBy';
 import { useProductPricingGroupBys } from '../hooks/useProductPricingGroupBys';
@@ -27,7 +26,7 @@ import type { ProductPricingGroupByDto } from '../types/product-pricing-group-by
 import type { ProductPricingGroupByFormSchema } from '../types/product-pricing-group-by-types';
 import { formatPrice } from '../types/product-pricing-group-by-types';
 import { applyProductPricingGroupByFilters, PRODUCT_PRICING_GROUP_BY_FILTER_COLUMNS } from '../types/product-pricing-group-by-filter.types';
-import { queryKeys } from '../utils/query-keys';
+import { PRODUCT_PRICING_GROUP_BY_QUERY_KEYS } from '../utils/query-keys';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 
 const EMPTY_ITEMS: ProductPricingGroupByDto[] = [];
@@ -90,10 +89,10 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useProductPricingGroupBys({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy: 'Id',
-    sortDirection: 'desc',
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const items = useMemo<ProductPricingGroupByDto[]>(
@@ -123,14 +122,11 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
     return result;
   }, [filteredItems, sortBy, sortDirection]);
 
-  const totalCount = sortedItems.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedItems.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedItems.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedItems, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedItems.length - 1, totalCount);
+  const currentPageRows = sortedItems;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ProductPricingGroupByColumnKey[];
 
@@ -171,13 +167,7 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await productPricingGroupByApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-      sortBy: 'Id',
-      sortDirection: 'desc',
-    });
-    const list: ProductPricingGroupByDto[] = response?.data ?? [];
+    const list: ProductPricingGroupByDto[] = sortedItems;
     return {
       columns: exportColumns,
       rows: list.map((item) => {
@@ -193,7 +183,7 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, sortedItems]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -259,7 +249,7 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({
-      queryKey: queryKeys.list({ pageNumber: 1, pageSize: 10000, sortBy: 'Id', sortDirection: 'desc' }),
+      queryKey: [PRODUCT_PRICING_GROUP_BY_QUERY_KEYS.LIST],
     });
   };
 

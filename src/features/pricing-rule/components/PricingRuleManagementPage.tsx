@@ -23,7 +23,6 @@ import { PricingRuleTable, getColumnsConfig } from './PricingRuleTable';
 import { PricingRuleForm } from './PricingRuleForm';
 import type { PricingRuleHeaderGetDto } from '../types/pricing-rule-types';
 import { PricingRuleType } from '../types/pricing-rule-types';
-import { pricingRuleApi } from '../api/pricing-rule-api';
 import { usePricingRuleHeaders } from '../hooks/usePricingRuleHeaders';
 
 const EMPTY_HEADERS: PricingRuleHeaderGetDto[] = [];
@@ -92,8 +91,10 @@ export function PricingRuleManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = usePricingRuleHeaders({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const headers = useMemo<PricingRuleHeaderGetDto[]>(
@@ -146,14 +147,11 @@ export function PricingRuleManagementPage(): ReactElement {
     return result;
   }, [filteredHeaders, sortBy, sortDirection]);
 
-  const totalCount = sortedHeaders.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedHeaders.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedHeaders.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedHeaders, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedHeaders.length - 1, totalCount);
+  const currentPageRows = sortedHeaders;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as PricingRuleColumnKey[];
 
@@ -194,8 +192,7 @@ export function PricingRuleManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await pricingRuleApi.getHeaders({ pageNumber: 1, pageSize: 10000 });
-    const list: PricingRuleHeaderGetDto[] = response?.data ?? [];
+    const list: PricingRuleHeaderGetDto[] = sortedHeaders;
     return {
       columns: exportColumns,
       rows: list.map((h) => {
@@ -218,7 +215,7 @@ export function PricingRuleManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language, t]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, t, sortedHeaders]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -240,7 +237,7 @@ export function PricingRuleManagementPage(): ReactElement {
   };
 
   const handleRefresh = async (): Promise<void> => {
-    await queryClient.invalidateQueries({ queryKey: pricingRuleQueryKeys.headerList({ pageNumber: 1, pageSize: 10000 }) });
+    await queryClient.invalidateQueries({ queryKey: pricingRuleQueryKeys.headers() });
   };
 
   const columns = useMemo<DataTableGridColumn<PricingRuleColumnKey>[]>(

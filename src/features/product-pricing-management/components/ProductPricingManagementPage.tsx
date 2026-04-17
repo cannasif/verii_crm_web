@@ -108,10 +108,10 @@ export function ProductPricingManagementPage(): ReactElement {
   }, [activeFilter, searchTerm]);
 
   const { data: apiResponse, isLoading } = useProductPricings({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy: 'Id',
-    sortDirection: 'desc',
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
     filters: apiFilters,
   });
 
@@ -136,14 +136,11 @@ export function ProductPricingManagementPage(): ReactElement {
     return result;
   }, [filteredItems, sortBy, sortDirection]);
 
-  const totalCount = sortedItems.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedItems.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedItems.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedItems, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedItems.length - 1, totalCount);
+  const currentPageRows = sortedItems;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ProductPricingColumnKey[];
 

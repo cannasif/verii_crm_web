@@ -26,7 +26,6 @@ import { useCreatePaymentType } from '../hooks/useCreatePaymentType';
 import { useUpdatePaymentType } from '../hooks/useUpdatePaymentType';
 import { applyPaymentTypeFilters, PAYMENT_TYPE_FILTER_COLUMNS } from '../types/payment-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { paymentTypeApi } from '../api/payment-type-api';
 
 const EMPTY_PAYMENT_TYPES: PaymentTypeDto[] = [];
 const PAGE_KEY = 'payment-type-management';
@@ -88,8 +87,10 @@ export function PaymentTypeManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = usePaymentTypeList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const paymentTypes = useMemo<PaymentTypeDto[]>(
@@ -125,14 +126,11 @@ export function PaymentTypeManagementPage(): ReactElement {
     return result;
   }, [filteredPaymentTypes, sortBy, sortDirection]);
 
-  const totalCount = sortedPaymentTypes.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedPaymentTypes.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedPaymentTypes.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedPaymentTypes, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedPaymentTypes.length - 1, totalCount);
+  const currentPageRows = sortedPaymentTypes;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as PaymentTypeColumnKey[];
 
@@ -175,8 +173,7 @@ export function PaymentTypeManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await paymentTypeApi.getList({ pageNumber: 1, pageSize: 10000 });
-    const list = response?.data ?? [];
+    const list = sortedPaymentTypes;
     return {
       columns: exportColumns,
       rows: list.map((c: PaymentTypeDto) => {
@@ -194,7 +191,7 @@ export function PaymentTypeManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language, t]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, t, sortedPaymentTypes]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

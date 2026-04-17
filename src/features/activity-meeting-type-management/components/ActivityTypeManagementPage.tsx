@@ -27,7 +27,6 @@ import { useActivityTypeList } from '../hooks/useActivityTypeList';
 import type { ActivityTypeDto, ActivityTypeFormSchema } from '../types/activity-type-types';
 import { applyActivityTypeFilters, ACTIVITY_TYPE_FILTER_COLUMNS } from '../types/activity-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { activityTypeApi } from '../api/activity-type-api';
 
 const EMPTY_ACTIVITY_TYPES: ActivityTypeDto[] = [];
 const PAGE_KEY = 'activity-meeting-type-management';
@@ -98,10 +97,10 @@ export function ActivityTypeManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useActivityTypeList({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy: 'Id',
-    sortDirection: 'desc',
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const allActivityTypes = useMemo<ActivityTypeDto[]>(
@@ -136,14 +135,11 @@ export function ActivityTypeManagementPage(): ReactElement {
     return result;
   }, [filteredActivityTypes, sortBy, sortDirection]);
 
-  const totalCount = sortedActivityTypes.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedActivityTypes.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedActivityTypes.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedActivityTypes, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedActivityTypes.length - 1, totalCount);
+  const currentPageRows = sortedActivityTypes;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ActivityTypeColumnKey[];
 
@@ -184,8 +180,7 @@ export function ActivityTypeManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await activityTypeApi.getList({ pageNumber: 1, pageSize: 10000, sortBy: 'Id', sortDirection: 'desc' });
-    const list = response?.data ?? [];
+    const list = sortedActivityTypes;
     return {
       columns: exportColumns,
       rows: list.map((c: ActivityTypeDto) => {
@@ -201,7 +196,7 @@ export function ActivityTypeManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, sortedActivityTypes]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

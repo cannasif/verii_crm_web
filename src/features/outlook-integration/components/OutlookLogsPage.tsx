@@ -26,7 +26,6 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import type { OutlookIntegrationLogDto } from '../types/outlook-integration.types';
-import { outlookIntegrationApi } from '../api/outlook-integration.api';
 import { useOutlookLogsQuery } from '../hooks/useOutlookLogsQuery';
 
 const PAGE_KEY = 'outlook-integration-logs';
@@ -183,16 +182,7 @@ export function OutlookLogsPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await outlookIntegrationApi.getLogs({
-      pageNumber: 1,
-      pageSize: 10000,
-      sortBy,
-      sortDirection,
-      errorsOnly,
-      filters: appliedFilters.length > 0 ? appliedFilters : undefined,
-      filterLogic: 'and',
-    });
-    const list = response?.data ?? [];
+    const list = currentPageRows;
     return {
       columns: exportColumns,
       rows: list.map((log) => ({
@@ -207,7 +197,7 @@ export function OutlookLogsPage(): ReactElement {
         providerEventId: log.providerEventId ?? '-',
       })),
     };
-  }, [exportColumns, sortBy, sortDirection, errorsOnly, appliedFilters, t]);
+  }, [currentPageRows, exportColumns, t]);
 
   useEffect(() => {
     setPageNumber(1);

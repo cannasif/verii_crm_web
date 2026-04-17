@@ -18,7 +18,6 @@ import {
 } from '@/lib/management-list-layout';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
-import { salesRepApi } from '../api/sales-rep-api';
 import { SalesRepForm } from './SalesRepForm';
 import { SalesRepTable } from './SalesRepTable';
 import { useCreateSalesRep } from '../hooks/useCreateSalesRep';
@@ -161,19 +160,11 @@ export function SalesRepManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await salesRepApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-      search: searchTerm.trim() || undefined,
-      sortBy,
-      sortDirection,
-      filters: apiFilters.length > 0 ? apiFilters : undefined,
-    });
     return {
       columns: exportColumns,
-      rows: (response?.data ?? []).map(mapRow),
+      rows: items.map(mapRow),
     };
-  }, [apiFilters, exportColumns, mapRow, searchTerm, sortBy, sortDirection]);
+  }, [exportColumns, items, mapRow]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((row) => row.value.trim()).length,

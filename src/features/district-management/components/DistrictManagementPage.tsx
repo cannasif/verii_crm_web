@@ -28,7 +28,6 @@ import type { DistrictFormSchema } from '../types/district-types';
 import { useDistrictList } from '../hooks/useDistrictList';
 import { applyDistrictFilters, DISTRICT_FILTER_COLUMNS } from '../types/district-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { districtApi } from '../api/district-api';
 
 const EMPTY_DISTRICTS: DistrictDto[] = [];
 const PAGE_KEY = 'district-management';
@@ -90,8 +89,10 @@ export function DistrictManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useDistrictList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const districts = useMemo<DistrictDto[]>(
@@ -126,14 +127,11 @@ export function DistrictManagementPage(): ReactElement {
     return result;
   }, [filteredDistricts, sortBy, sortDirection]);
 
-  const totalCount = sortedDistricts.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedDistricts.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedDistricts.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedDistricts, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedDistricts.length - 1, totalCount);
+  const currentPageRows = sortedDistricts;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as DistrictColumnKey[];
 
@@ -174,8 +172,7 @@ export function DistrictManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await districtApi.getList({ pageNumber: 1, pageSize: 10000 });
-    const list = response?.data ?? [];
+    const list = sortedDistricts;
     return {
       columns: exportColumns,
       rows: list.map((d: DistrictDto) => {
@@ -191,7 +188,7 @@ export function DistrictManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, t]);
+  }, [exportColumns, orderedVisibleColumns, t, sortedDistricts]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

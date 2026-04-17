@@ -28,7 +28,6 @@ import type { UserDiscountLimitDto } from '../types/user-discount-limit-types';
 import type { UserDiscountLimitFormSchema } from '../types/user-discount-limit-types';
 import { USER_DISCOUNT_LIMIT_FILTER_COLUMNS } from '../types/user-discount-limit-filter.types';
 import { queryKeys } from '../utils/query-keys';
-import { userDiscountLimitApi } from '../api/user-discount-limit-api';
 
 const PAGE_KEY = 'user-discount-limit-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -151,17 +150,11 @@ export function UserDiscountLimitManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await userDiscountLimitApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-      filters: apiFilters.length > 0 ? apiFilters : undefined,
-    });
-    const list = response?.data ?? [];
     return {
       columns: exportColumns,
-      rows: list.map(mapUserDiscountLimitRow),
+      rows: items.map(mapUserDiscountLimitRow),
     };
-  }, [exportColumns, mapUserDiscountLimitRow, apiFilters]);
+  }, [exportColumns, items, mapUserDiscountLimitRow]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

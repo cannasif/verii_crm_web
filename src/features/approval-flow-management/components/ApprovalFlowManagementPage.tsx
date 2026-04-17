@@ -17,7 +17,7 @@ import {
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
 
-import { queryKeys } from '../utils/query-keys';
+import { APPROVAL_FLOW_QUERY_KEYS } from '../utils/query-keys';
 import { ApprovalFlowTable, getColumnsConfig } from './ApprovalFlowTable';
 import { ApprovalFlowForm } from './ApprovalFlowForm';
 import { useApprovalFlowList } from '../hooks/useApprovalFlowList';
@@ -27,7 +27,6 @@ import { useCreateApprovalFlow } from '../hooks/useCreateApprovalFlow';
 import { useUpdateApprovalFlow } from '../hooks/useUpdateApprovalFlow';
 import { applyApprovalFlowFilters, APPROVAL_FLOW_FILTER_COLUMNS } from '../types/approval-flow-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { approvalFlowApi } from '../api/approval-flow-api';
 
 const EMPTY_APPROVAL_FLOWS: ApprovalFlowDto[] = [];
 const PAGE_KEY = 'approval-flow-management';
@@ -99,8 +98,10 @@ export function ApprovalFlowManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useApprovalFlowList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const approvalFlows = useMemo<ApprovalFlowDto[]>(
@@ -137,14 +138,11 @@ export function ApprovalFlowManagementPage(): ReactElement {
     return result;
   }, [filteredApprovalFlows, sortBy, sortDirection]);
 
-  const totalCount = sortedApprovalFlows.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedApprovalFlows.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedApprovalFlows.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedApprovalFlows, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedApprovalFlows.length - 1, totalCount);
+  const currentPageRows = sortedApprovalFlows;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ApprovalFlowColumnKey[];
 
@@ -190,16 +188,12 @@ export function ApprovalFlowManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await approvalFlowApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-    });
-    const list = response?.data ?? [];
+    const list = sortedApprovalFlows;
     return {
       columns: exportColumns,
       rows: list.map(mapApprovalFlowRow),
     };
-  }, [exportColumns, mapApprovalFlowRow]);
+  }, [exportColumns, mapApprovalFlowRow, sortedApprovalFlows]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -242,7 +236,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
   };
 
   const handleRefresh = async (): Promise<void> => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.list({ pageNumber: 1, pageSize: 10000 }) });
+    await queryClient.invalidateQueries({ queryKey: [APPROVAL_FLOW_QUERY_KEYS.LIST] });
   };
 
   const columns = useMemo<DataTableGridColumn<ApprovalFlowColumnKey>[]>(

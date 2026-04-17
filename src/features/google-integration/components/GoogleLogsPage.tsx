@@ -26,7 +26,6 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import type { GoogleIntegrationLogDto } from '../types/google-integration.types';
-import { googleIntegrationApi } from '../api/google-integration.api';
 import { useGoogleLogsQuery } from '../hooks/useGoogleLogsQuery';
 
 const PAGE_KEY = 'google-integration-logs';
@@ -183,16 +182,7 @@ export function GoogleLogsPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await googleIntegrationApi.getLogs({
-      pageNumber: 1,
-      pageSize: 10000,
-      sortBy,
-      sortDirection,
-      errorsOnly,
-      filters: appliedFilters.length > 0 ? appliedFilters : undefined,
-      filterLogic: 'and',
-    });
-    const list = response?.data ?? [];
+    const list = currentPageRows;
     return {
       columns: exportColumns,
       rows: list.map((log) => ({
@@ -207,7 +197,7 @@ export function GoogleLogsPage(): ReactElement {
         googleCalendarEventId: log.googleCalendarEventId ?? '-',
       })),
     };
-  }, [exportColumns, sortBy, sortDirection, errorsOnly, appliedFilters, t]);
+  }, [currentPageRows, exportColumns, t]);
 
   useEffect(() => {
     setPageNumber(1);

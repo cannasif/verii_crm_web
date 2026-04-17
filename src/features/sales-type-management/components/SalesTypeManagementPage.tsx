@@ -17,7 +17,7 @@ import {
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
 
-import { queryKeys } from '../utils/query-keys';
+import { SALES_TYPE_QUERY_KEYS } from '../utils/query-keys';
 import { SalesTypeTable, getColumnsConfig } from './SalesTypeTable';
 import { SalesTypeForm } from './SalesTypeForm';
 import type { SalesTypeGetDto, SalesTypeFormSchema } from '../types/sales-type-types';
@@ -27,7 +27,6 @@ import { useUpdateSalesType } from '../hooks/useUpdateSalesType';
 import { applySalesTypeFilters, SALES_TYPE_FILTER_COLUMNS } from '../types/sales-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { OfferType } from '@/types/offer-type';
-import { salesTypeApi } from '../api/sales-type-api';
 
 const EMPTY_SALES_TYPES: SalesTypeGetDto[] = [];
 const PAGE_KEY = 'sales-type-management';
@@ -95,8 +94,10 @@ export function SalesTypeManagementPage(): ReactElement {
   }, [t]);
 
   const { data: apiResponse, isLoading } = useSalesTypeList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const items = useMemo<SalesTypeGetDto[]>(
@@ -140,14 +141,11 @@ export function SalesTypeManagementPage(): ReactElement {
     return result;
   }, [filteredItems, sortBy, sortDirection, salesTypeLabel]);
 
-  const totalCount = sortedItems.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedItems.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedItems.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedItems, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedItems.length - 1, totalCount);
+  const currentPageRows = sortedItems;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as SalesTypeColumnKey[];
 
@@ -190,8 +188,7 @@ export function SalesTypeManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await salesTypeApi.getList({ pageNumber: 1, pageSize: 10000 });
-    const list = response?.data ?? [];
+    const list = sortedItems;
     return {
       columns: exportColumns,
       rows: list.map((c: SalesTypeGetDto) => {
@@ -209,7 +206,7 @@ export function SalesTypeManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language, salesTypeLabel]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, salesTypeLabel, sortedItems]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -250,7 +247,7 @@ export function SalesTypeManagementPage(): ReactElement {
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({
-      queryKey: queryKeys.list({ pageNumber: 1, pageSize: 10000 }),
+      queryKey: [SALES_TYPE_QUERY_KEYS.LIST],
     });
   };
 

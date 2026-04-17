@@ -27,7 +27,6 @@ import type { ApprovalRoleGroupFormSchema } from '../types/approval-role-group-t
 import { applyApprovalRoleGroupFilters, APPROVAL_ROLE_GROUP_FILTER_COLUMNS } from '../types/approval-role-group-filter.types';
 import { APPROVAL_ROLE_GROUP_QUERY_KEYS } from '../utils/query-keys';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { approvalRoleGroupApi } from '../api/approval-role-group-api';
 
 const EMPTY_ITEMS: ApprovalRoleGroupDto[] = [];
 const PAGE_KEY = 'approval-role-group-management';
@@ -89,10 +88,10 @@ export function ApprovalRoleGroupManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data, isLoading } = useApprovalRoleGroupList({
-    pageNumber: 1,
-    pageSize: 10000,
-    sortBy: 'Id',
-    sortDirection: 'desc',
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const items = useMemo<ApprovalRoleGroupDto[]>(
@@ -122,14 +121,11 @@ export function ApprovalRoleGroupManagementPage(): ReactElement {
     return result;
   }, [filteredItems, sortBy, sortDirection]);
 
-  const totalCount = sortedItems.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = data?.totalCount ?? sortedItems.length;
+  const totalPages = data?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedItems.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedItems, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedItems.length - 1, totalCount);
+  const currentPageRows = sortedItems;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ApprovalRoleGroupColumnKey[];
 
@@ -171,18 +167,12 @@ export function ApprovalRoleGroupManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await approvalRoleGroupApi.getList({
-      pageNumber: 1,
-      pageSize: 10000,
-      sortBy: 'Id',
-      sortDirection: 'desc',
-    });
-    const list = response?.data ?? [];
+    const list = sortedItems;
     return {
       columns: exportColumns,
       rows: list.map(mapApprovalRoleGroupRow),
     };
-  }, [exportColumns, mapApprovalRoleGroupRow]);
+  }, [exportColumns, mapApprovalRoleGroupRow, sortedItems]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
