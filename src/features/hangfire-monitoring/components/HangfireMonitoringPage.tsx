@@ -6,13 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  DataTableGrid,
+  ManagementDataTableChrome,
+  type DataTableGridColumn,
+} from '@/components/shared';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -27,12 +24,23 @@ import {
   useHangfireDeadLetterQuery,
   useHangfireFailedJobsQuery,
   useHangfireRecurringJobsQuery,
+  useHangfireSuccessJobsQuery,
   useHangfireStatsQuery,
   HANGFIRE_QUERY_KEYS,
 } from '../hooks/useHangfireMonitoring';
 import { hangfireMonitoringApi } from '../api/hangfireMonitoring.api';
+import type {
+  HangfireFailedResponseDto,
+  HangfireRecurringJobItemDto,
+  HangfireSuccessJobItemDto,
+} from '../types/hangfireMonitoring.types';
 
-const PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 20;
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+
+type FailedColumnKey = 'jobId' | 'jobName' | 'state' | 'time' | 'reason';
+type SuccessColumnKey = 'jobId' | 'jobName' | 'recurringJobId' | 'queue' | 'duration' | 'retryCount' | 'time';
+type RecurringColumnKey = 'id' | 'job' | 'cron' | 'nextExecution' | 'lastExecution' | 'queue';
 
 function formatDate(value?: string): string {
   if (!value) return '-';
@@ -41,21 +49,35 @@ function formatDate(value?: string): string {
   return date.toLocaleString();
 }
 
+function formatDuration(durationMs: number): string {
+  if (!Number.isFinite(durationMs) || durationMs <= 0) return '-';
+  if (durationMs < 1000) return `${durationMs} ms`;
+  return `${(durationMs / 1000).toFixed(durationMs >= 10_000 ? 0 : 1)} sn`;
+}
+
 export function HangfireMonitoringPage(): ReactElement {
   const { t } = useTranslation(['hangfire-monitoring', 'common']);
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
 
   const [failedPage, setFailedPage] = useState(1);
+  const [failedPageSize, setFailedPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
+  const [successPage, setSuccessPage] = useState(1);
+  const [successPageSize, setSuccessPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [deadLetterPage, setDeadLetterPage] = useState(1);
+  const [deadLetterPageSize, setDeadLetterPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
+  const [recurringPage, setRecurringPage] = useState(1);
+  const [recurringPageSize, setRecurringPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [selectedRecurringJobId, setSelectedRecurringJobId] = useState<string>('');
 
-  const failedFrom = (failedPage - 1) * PAGE_SIZE;
-  const deadLetterFrom = (deadLetterPage - 1) * PAGE_SIZE;
+  const failedFrom = (failedPage - 1) * failedPageSize;
+  const successFrom = (successPage - 1) * successPageSize;
+  const deadLetterFrom = (deadLetterPage - 1) * deadLetterPageSize;
 
   const statsQuery = useHangfireStatsQuery();
-  const failedQuery = useHangfireFailedJobsQuery(failedFrom, PAGE_SIZE);
-  const deadLetterQuery = useHangfireDeadLetterQuery(deadLetterFrom, PAGE_SIZE);
+  const failedQuery = useHangfireFailedJobsQuery(failedFrom, failedPageSize);
+  const successQuery = useHangfireSuccessJobsQuery(successFrom, successPageSize);
+  const deadLetterQuery = useHangfireDeadLetterQuery(deadLetterFrom, deadLetterPageSize);
   const recurringJobsQuery = useHangfireRecurringJobsQuery();
 
   useEffect(() => {
@@ -87,19 +109,89 @@ export function HangfireMonitoringPage(): ReactElement {
 
   const isRefreshing = statsQuery.isRefetching || failedQuery.isRefetching || deadLetterQuery.isRefetching;
   const isInitialLoading =
-    statsQuery.isLoading || failedQuery.isLoading || deadLetterQuery.isLoading || recurringJobsQuery.isLoading;
+    statsQuery.isLoading || failedQuery.isLoading || successQuery.isLoading || deadLetterQuery.isLoading || recurringJobsQuery.isLoading;
 
   const handleRefresh = async (): Promise<void> => {
     await Promise.all([
       statsQuery.refetch(),
       failedQuery.refetch(),
+      successQuery.refetch(),
       deadLetterQuery.refetch(),
       recurringJobsQuery.refetch(),
     ]);
   };
 
-  const failedTotalPages = Math.max(1, Math.ceil((failedQuery.data?.total ?? 0) / PAGE_SIZE));
-  const deadLetterHasNext = (deadLetterQuery.data?.items?.length ?? 0) === PAGE_SIZE;
+  const recurringItems = recurringJobsQuery.data?.items ?? [];
+  const recurringTotalPages = Math.max(1, Math.ceil(recurringItems.length / recurringPageSize));
+  const recurringRows = recurringItems.slice((recurringPage - 1) * recurringPageSize, recurringPage * recurringPageSize);
+  const failedTotalPages = Math.max(1, Math.ceil((failedQuery.data?.total ?? 0) / failedPageSize));
+  const successTotalPages = Math.max(1, Math.ceil((successQuery.data?.total ?? 0) / successPageSize));
+  const deadLetterTotalPages = Math.max(1, Math.ceil((deadLetterQuery.data?.total ?? 0) / deadLetterPageSize));
+
+  const recurringColumns: DataTableGridColumn<RecurringColumnKey>[] = [
+    { key: 'id', label: t('recurring.table.id') },
+    { key: 'job', label: t('recurring.table.job') },
+    { key: 'cron', label: t('recurring.table.cron') },
+    { key: 'nextExecution', label: t('recurring.table.nextExecution') },
+    { key: 'lastExecution', label: t('recurring.table.lastExecution') },
+    { key: 'queue', label: t('recurring.table.queue') },
+  ];
+
+  const failedColumns: DataTableGridColumn<FailedColumnKey>[] = [
+    { key: 'jobId', label: t('table.jobId') },
+    { key: 'jobName', label: t('table.jobName') },
+    { key: 'state', label: t('table.state') },
+    { key: 'time', label: t('table.time') },
+    { key: 'reason', label: t('table.reason') },
+  ];
+
+  const successColumns: DataTableGridColumn<SuccessColumnKey>[] = [
+    { key: 'jobId', label: t('table.jobId') },
+    { key: 'jobName', label: t('table.jobName') },
+    { key: 'recurringJobId', label: t('table.recurringJobId') },
+    { key: 'queue', label: t('table.queue') },
+    { key: 'duration', label: t('table.duration') },
+    { key: 'retryCount', label: t('table.retryCount') },
+    { key: 'time', label: t('table.time') },
+  ];
+
+  const renderRecurringCell = (item: HangfireRecurringJobItemDto, key: RecurringColumnKey): ReactElement | string => {
+    if (key === 'id') return item.id;
+    if (key === 'job') {
+      return (
+        <div>
+          <div className="font-medium">{item.jobName}</div>
+          {item.method ? <div className="text-xs text-slate-500">{item.method}</div> : null}
+          {item.error ? <div className="text-xs text-red-500">{item.error}</div> : null}
+        </div>
+      );
+    }
+    if (key === 'cron') return item.cron || '-';
+    if (key === 'nextExecution') return formatDate(item.nextExecution);
+    if (key === 'lastExecution') return formatDate(item.lastExecution);
+    if (key === 'queue') return item.queue || '-';
+    return '-';
+  };
+
+  const renderFailedCell = (item: HangfireFailedResponseDto['items'][number], key: FailedColumnKey): ReactElement | string => {
+    if (key === 'jobId') return item.jobId || '-';
+    if (key === 'jobName') return item.jobName || '-';
+    if (key === 'state') return <Badge variant="destructive">{item.state || 'Failed'}</Badge>;
+    if (key === 'time') return formatDate(item.failedAt);
+    if (key === 'reason') return item.reason || '-';
+    return '-';
+  };
+
+  const renderSuccessCell = (item: HangfireSuccessJobItemDto, key: SuccessColumnKey): ReactElement | string | number => {
+    if (key === 'jobId') return item.jobId || '-';
+    if (key === 'jobName') return item.jobName || '-';
+    if (key === 'recurringJobId') return item.recurringJobId || '-';
+    if (key === 'queue') return item.queue || '-';
+    if (key === 'duration') return formatDuration(item.durationMs);
+    if (key === 'retryCount') return item.retryCount;
+    if (key === 'time') return formatDate(item.finishedAt);
+    return '-';
+  };
 
   if (isInitialLoading) {
     return (
@@ -178,48 +270,76 @@ export function HangfireMonitoringPage(): ReactElement {
             </Button>
           </div>
 
-          <div className="rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('recurring.table.id')}</TableHead>
-                  <TableHead>{t('recurring.table.job')}</TableHead>
-                  <TableHead>{t('recurring.table.cron')}</TableHead>
-                  <TableHead>{t('recurring.table.nextExecution')}</TableHead>
-                  <TableHead>{t('recurring.table.lastExecution')}</TableHead>
-                  <TableHead>{t('recurring.table.queue')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(recurringJobsQuery.data?.items ?? []).length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="py-8 text-center text-slate-500">
-                      {t('recurring.empty')}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  (recurringJobsQuery.data?.items ?? []).map((item) => (
-                    <TableRow
-                      key={item.id}
-                      className={selectedRecurringJobId === item.id ? 'bg-pink-50 dark:bg-pink-500/10' : ''}
-                      onClick={() => setSelectedRecurringJobId(item.id)}
-                    >
-                      <TableCell className="font-mono text-xs">{item.id}</TableCell>
-                      <TableCell>
-                        <div className="font-medium">{item.jobName}</div>
-                        {item.method ? <div className="text-xs text-slate-500">{item.method}</div> : null}
-                        {item.error ? <div className="text-xs text-red-500">{item.error}</div> : null}
-                      </TableCell>
-                      <TableCell>{item.cron || '-'}</TableCell>
-                      <TableCell>{formatDate(item.nextExecution)}</TableCell>
-                      <TableCell>{formatDate(item.lastExecution)}</TableCell>
-                      <TableCell>{item.queue || '-'}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <ManagementDataTableChrome>
+            <DataTableGrid<HangfireRecurringJobItemDto, RecurringColumnKey>
+              columns={recurringColumns}
+              visibleColumnKeys={['id', 'job', 'cron', 'nextExecution', 'lastExecution', 'queue']}
+              rows={recurringRows}
+              rowKey={(row: HangfireRecurringJobItemDto) => row.id}
+              renderCell={renderRecurringCell}
+              isLoading={recurringJobsQuery.isLoading}
+              isError={recurringJobsQuery.isError}
+              loadingText={t('common:loading')}
+              errorText={t('common:error')}
+              emptyText={t('recurring.empty')}
+              minTableWidthClassName="min-w-[900px]"
+              pageSize={recurringPageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(size) => {
+                setRecurringPageSize(size);
+                setRecurringPage(1);
+              }}
+              pageNumber={recurringPage}
+              totalPages={recurringTotalPages}
+              hasPreviousPage={recurringPage > 1}
+              hasNextPage={recurringPage < recurringTotalPages}
+              onPreviousPage={() => setRecurringPage((p) => Math.max(1, p - 1))}
+              onNextPage={() => setRecurringPage((p) => Math.min(recurringTotalPages, p + 1))}
+              previousLabel={t('common:previous')}
+              nextLabel={t('common:next')}
+              paginationInfoText={t('failed.total') + `: ${recurringJobsQuery.data?.total ?? 0}`}
+              rowClassName={(row: HangfireRecurringJobItemDto) => (selectedRecurringJobId === row.id ? 'bg-pink-50 dark:bg-pink-500/10' : undefined)}
+              onRowClick={(row: HangfireRecurringJobItemDto) => setSelectedRecurringJobId(row.id)}
+            />
+          </ManagementDataTableChrome>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('succeeded.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ManagementDataTableChrome>
+            <DataTableGrid<HangfireSuccessJobItemDto, SuccessColumnKey>
+              columns={successColumns}
+              visibleColumnKeys={['jobId', 'jobName', 'recurringJobId', 'queue', 'duration', 'retryCount', 'time']}
+              rows={successQuery.data?.items ?? []}
+              rowKey={(row: HangfireSuccessJobItemDto) => `${row.jobId}-${row.finishedAt ?? ''}`}
+              renderCell={renderSuccessCell}
+              isLoading={successQuery.isLoading}
+              isError={successQuery.isError}
+              loadingText={t('common:loading')}
+              errorText={t('common:error')}
+              emptyText={t('succeeded.empty')}
+              minTableWidthClassName="min-w-[1100px]"
+              pageSize={successPageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(size) => {
+                setSuccessPageSize(size);
+                setSuccessPage(1);
+              }}
+              pageNumber={successPage}
+              totalPages={successTotalPages}
+              hasPreviousPage={successPage > 1}
+              hasNextPage={successPage < successTotalPages}
+              onPreviousPage={() => setSuccessPage((p) => Math.max(1, p - 1))}
+              onNextPage={() => setSuccessPage((p) => Math.min(successTotalPages, p + 1))}
+              previousLabel={t('common:previous')}
+              nextLabel={t('common:next')}
+              paginationInfoText={t('failed.total') + `: ${successQuery.data?.total ?? 0}`}
+            />
+          </ManagementDataTableChrome>
         </CardContent>
       </Card>
 
@@ -228,52 +348,36 @@ export function HangfireMonitoringPage(): ReactElement {
           <CardTitle>{t('failed.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('table.jobId')}</TableHead>
-                  <TableHead>{t('table.jobName')}</TableHead>
-                  <TableHead>{t('table.state')}</TableHead>
-                  <TableHead>{t('table.time')}</TableHead>
-                  <TableHead>{t('table.reason')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(failedQuery.data?.items ?? []).length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-slate-500 py-8">
-                      {t('failed.empty')}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  (failedQuery.data?.items ?? []).map((item) => (
-                    <TableRow key={`failed-${item.jobId}`}>
-                      <TableCell className="font-mono text-xs">{item.jobId}</TableCell>
-                      <TableCell>{item.jobName}</TableCell>
-                      <TableCell><Badge variant="destructive">{item.state || 'Failed'}</Badge></TableCell>
-                      <TableCell>{formatDate(item.failedAt)}</TableCell>
-                      <TableCell className="max-w-[360px] truncate" title={item.reason}>{item.reason || '-'}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-sm text-slate-500">
-              {t('failed.total')}: {failedQuery.data?.total ?? 0}
-            </span>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled={failedPage <= 1} onClick={() => setFailedPage((p) => Math.max(1, p - 1))}>
-                {t('common:previous')}
-              </Button>
-              <Button variant="outline" size="sm" disabled={failedPage >= failedTotalPages} onClick={() => setFailedPage((p) => Math.min(failedTotalPages, p + 1))}>
-                {t('common:next')}
-              </Button>
-            </div>
-          </div>
+          <ManagementDataTableChrome>
+            <DataTableGrid<HangfireFailedResponseDto['items'][number], FailedColumnKey>
+              columns={failedColumns}
+              visibleColumnKeys={['jobId', 'jobName', 'state', 'time', 'reason']}
+              rows={failedQuery.data?.items ?? []}
+              rowKey={(row: HangfireFailedResponseDto['items'][number]) => `failed-${row.jobId}-${row.failedAt ?? ''}`}
+              renderCell={renderFailedCell}
+              isLoading={failedQuery.isLoading}
+              isError={failedQuery.isError}
+              loadingText={t('common:loading')}
+              errorText={t('common:error')}
+              emptyText={t('failed.empty')}
+              minTableWidthClassName="min-w-[980px]"
+              pageSize={failedPageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(size) => {
+                setFailedPageSize(size);
+                setFailedPage(1);
+              }}
+              pageNumber={failedPage}
+              totalPages={failedTotalPages}
+              hasPreviousPage={failedPage > 1}
+              hasNextPage={failedPage < failedTotalPages}
+              onPreviousPage={() => setFailedPage((p) => Math.max(1, p - 1))}
+              onNextPage={() => setFailedPage((p) => Math.min(failedTotalPages, p + 1))}
+              previousLabel={t('common:previous')}
+              nextLabel={t('common:next')}
+              paginationInfoText={t('failed.total') + `: ${failedQuery.data?.total ?? 0}`}
+            />
+          </ManagementDataTableChrome>
         </CardContent>
       </Card>
 
@@ -286,47 +390,40 @@ export function HangfireMonitoringPage(): ReactElement {
             {t('deadLetter.enqueued')}: {deadLetterQuery.data?.enqueued ?? 0}
           </div>
 
-          <div className="rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('table.jobId')}</TableHead>
-                  <TableHead>{t('table.jobName')}</TableHead>
-                  <TableHead>{t('table.state')}</TableHead>
-                  <TableHead>{t('table.time')}</TableHead>
-                  <TableHead>{t('table.reason')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(deadLetterQuery.data?.items ?? []).length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-slate-500 py-8">
-                      {t('deadLetter.empty')}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  (deadLetterQuery.data?.items ?? []).map((item) => (
-                    <TableRow key={`dead-${item.jobId}`}>
-                      <TableCell className="font-mono text-xs">{item.jobId}</TableCell>
-                      <TableCell>{item.jobName}</TableCell>
-                      <TableCell><Badge variant="secondary">{item.state || 'Enqueued'}</Badge></TableCell>
-                      <TableCell>{formatDate(item.enqueuedAt)}</TableCell>
-                      <TableCell className="max-w-[360px] truncate" title={item.reason}>{item.reason || '-'}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="outline" size="sm" disabled={deadLetterPage <= 1} onClick={() => setDeadLetterPage((p) => Math.max(1, p - 1))}>
-              {t('common:previous')}
-            </Button>
-            <Button variant="outline" size="sm" disabled={!deadLetterHasNext} onClick={() => setDeadLetterPage((p) => p + 1)}>
-              {t('common:next')}
-            </Button>
-          </div>
+          <ManagementDataTableChrome>
+            <DataTableGrid<HangfireFailedResponseDto['items'][number], FailedColumnKey>
+              columns={failedColumns}
+              visibleColumnKeys={['jobId', 'jobName', 'state', 'time', 'reason']}
+              rows={deadLetterQuery.data?.items ?? []}
+              rowKey={(row: HangfireFailedResponseDto['items'][number]) => `dead-${row.jobId}-${row.enqueuedAt ?? ''}`}
+              renderCell={(row: HangfireFailedResponseDto['items'][number], key: FailedColumnKey) => {
+                if (key === 'state') return <Badge variant="secondary">{row.state || 'Enqueued'}</Badge>;
+                if (key === 'time') return formatDate(row.enqueuedAt);
+                return renderFailedCell(row, key);
+              }}
+              isLoading={deadLetterQuery.isLoading}
+              isError={deadLetterQuery.isError}
+              loadingText={t('common:loading')}
+              errorText={t('common:error')}
+              emptyText={t('deadLetter.empty')}
+              minTableWidthClassName="min-w-[980px]"
+              pageSize={deadLetterPageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(size) => {
+                setDeadLetterPageSize(size);
+                setDeadLetterPage(1);
+              }}
+              pageNumber={deadLetterPage}
+              totalPages={deadLetterTotalPages}
+              hasPreviousPage={deadLetterPage > 1}
+              hasNextPage={deadLetterPage < deadLetterTotalPages}
+              onPreviousPage={() => setDeadLetterPage((p) => Math.max(1, p - 1))}
+              onNextPage={() => setDeadLetterPage((p) => Math.min(deadLetterTotalPages, p + 1))}
+              previousLabel={t('common:previous')}
+              nextLabel={t('common:next')}
+              paginationInfoText={t('failed.total') + `: ${deadLetterQuery.data?.total ?? 0}`}
+            />
+          </ManagementDataTableChrome>
         </CardContent>
       </Card>
     </div>

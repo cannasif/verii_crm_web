@@ -3,21 +3,27 @@ import type {
   HangfireDeadLetterResponseDto,
   HangfireFailedResponseDto,
   HangfireRecurringJobsResponseDto,
+  HangfireSuccessResponseDto,
   HangfireTriggerRecurringJobResponseDto,
   HangfireStatsDto,
 } from '../types/hangfireMonitoring.types';
 
+function pick<T>(data: Record<string, unknown> | null | undefined, pascalKey: string, camelKey: string): T | undefined {
+  if (!data) return undefined;
+  return (data[pascalKey] ?? data[camelKey]) as T | undefined;
+}
+
 function normalizeStats(data: Record<string, unknown>): HangfireStatsDto {
   return {
-    enqueued: Number(data.Enqueued ?? 0),
-    processing: Number(data.Processing ?? 0),
-    scheduled: Number(data.Scheduled ?? 0),
-    succeeded: Number(data.Succeeded ?? 0),
-    failed: Number(data.Failed ?? 0),
-    deleted: Number(data.Deleted ?? 0),
-    servers: Number(data.Servers ?? 0),
-    queues: Number(data.Queues ?? 0),
-    timestamp: String(data.Timestamp ?? new Date().toISOString()),
+    enqueued: Number(pick<number>(data, 'Enqueued', 'enqueued') ?? 0),
+    processing: Number(pick<number>(data, 'Processing', 'processing') ?? 0),
+    scheduled: Number(pick<number>(data, 'Scheduled', 'scheduled') ?? 0),
+    succeeded: Number(pick<number>(data, 'Succeeded', 'succeeded') ?? 0),
+    failed: Number(pick<number>(data, 'Failed', 'failed') ?? 0),
+    deleted: Number(pick<number>(data, 'Deleted', 'deleted') ?? 0),
+    servers: Number(pick<number>(data, 'Servers', 'servers') ?? 0),
+    queues: Number(pick<number>(data, 'Queues', 'queues') ?? 0),
+    timestamp: String(pick<string>(data, 'Timestamp', 'timestamp') ?? new Date().toISOString()),
   };
 }
 
@@ -27,12 +33,35 @@ function normalizeJobs(items: unknown): HangfireFailedResponseDto['items'] {
     const row = (raw ?? {}) as Record<string, unknown>;
 
     return {
-      jobId: String(row.JobId ?? ''),
-      jobName: String(row.JobName ?? 'unknown'),
-      failedAt: row.FailedAt != null ? String(row.FailedAt) : undefined,
-      enqueuedAt: row.EnqueuedAt != null ? String(row.EnqueuedAt) : undefined,
-      state: String(row.State ?? ''),
-      reason: row.Reason != null ? String(row.Reason) : undefined,
+      jobId: String(pick<string>(row, 'JobId', 'jobId') ?? ''),
+      jobName: String(pick<string>(row, 'JobName', 'jobName') ?? 'unknown'),
+      failedAt: pick<string>(row, 'FailedAt', 'failedAt') != null ? String(pick<string>(row, 'FailedAt', 'failedAt')) : undefined,
+      enqueuedAt: pick<string>(row, 'EnqueuedAt', 'enqueuedAt') != null ? String(pick<string>(row, 'EnqueuedAt', 'enqueuedAt')) : undefined,
+      state: String(pick<string>(row, 'State', 'state') ?? ''),
+      reason: pick<string>(row, 'Reason', 'reason') != null ? String(pick<string>(row, 'Reason', 'reason')) : undefined,
+    };
+  });
+}
+
+function normalizeSuccessJobs(items: unknown): HangfireSuccessResponseDto['items'] {
+  if (!Array.isArray(items)) return [];
+  return items.map((raw) => {
+    const row = (raw ?? {}) as Record<string, unknown>;
+
+    return {
+      jobId: String(pick<string>(row, 'JobId', 'jobId') ?? ''),
+      recurringJobId: pick<string>(row, 'RecurringJobId', 'recurringJobId') != null
+        ? String(pick<string>(row, 'RecurringJobId', 'recurringJobId'))
+        : undefined,
+      jobName: String(pick<string>(row, 'JobName', 'jobName') ?? 'unknown'),
+      finishedAt: pick<string>(row, 'FinishedAt', 'finishedAt') != null
+        ? String(pick<string>(row, 'FinishedAt', 'finishedAt'))
+        : undefined,
+      durationMs: Number(pick<number>(row, 'DurationMs', 'durationMs') ?? 0),
+      queue: pick<string>(row, 'Queue', 'queue') != null
+        ? String(pick<string>(row, 'Queue', 'queue'))
+        : undefined,
+      retryCount: Number(pick<number>(row, 'RetryCount', 'retryCount') ?? 0),
     };
   });
 }
@@ -42,15 +71,15 @@ function normalizeRecurringJobs(items: unknown): HangfireRecurringJobsResponseDt
   return items.map((raw) => {
     const row = (raw ?? {}) as Record<string, unknown>;
     return {
-      id: String(row.Id ?? ''),
-      jobName: String(row.JobName ?? row.Id ?? 'unknown'),
-      method: row.Method != null ? String(row.Method) : undefined,
-      cron: row.Cron != null ? String(row.Cron) : undefined,
-      queue: row.Queue != null ? String(row.Queue) : undefined,
-      nextExecution: row.NextExecution != null ? String(row.NextExecution) : undefined,
-      lastExecution: row.LastExecution != null ? String(row.LastExecution) : undefined,
-      lastJobId: row.LastJobId != null ? String(row.LastJobId) : undefined,
-      error: row.Error != null ? String(row.Error) : undefined,
+      id: String(pick<string>(row, 'Id', 'id') ?? ''),
+      jobName: String(pick<string>(row, 'JobName', 'jobName') ?? pick<string>(row, 'Id', 'id') ?? 'unknown'),
+      method: pick<string>(row, 'Method', 'method') != null ? String(pick<string>(row, 'Method', 'method')) : undefined,
+      cron: pick<string>(row, 'Cron', 'cron') != null ? String(pick<string>(row, 'Cron', 'cron')) : undefined,
+      queue: pick<string>(row, 'Queue', 'queue') != null ? String(pick<string>(row, 'Queue', 'queue')) : undefined,
+      nextExecution: pick<string>(row, 'NextExecution', 'nextExecution') != null ? String(pick<string>(row, 'NextExecution', 'nextExecution')) : undefined,
+      lastExecution: pick<string>(row, 'LastExecution', 'lastExecution') != null ? String(pick<string>(row, 'LastExecution', 'lastExecution')) : undefined,
+      lastJobId: pick<string>(row, 'LastJobId', 'lastJobId') != null ? String(pick<string>(row, 'LastJobId', 'lastJobId')) : undefined,
+      error: pick<string>(row, 'Error', 'error') != null ? String(pick<string>(row, 'Error', 'error')) : undefined,
     };
   });
 }
@@ -64,37 +93,48 @@ export const hangfireMonitoringApi = {
   async getFailed(from = 0, count = 20): Promise<HangfireFailedResponseDto> {
     const response = await api.get<Record<string, unknown>>(`/api/hangfire/failures-from-db?from=${from}&count=${count}`);
     return {
-      items: normalizeJobs(response?.Items),
-      total: Number(response?.Total ?? 0),
-      timestamp: String(response?.Timestamp ?? new Date().toISOString()),
+      items: normalizeJobs(pick<unknown>(response, 'Items', 'items')),
+      total: Number(pick<number>(response, 'Total', 'total') ?? 0),
+      timestamp: String(pick<string>(response, 'Timestamp', 'timestamp') ?? new Date().toISOString()),
     };
   },
 
   async getDeadLetter(from = 0, count = 20): Promise<HangfireDeadLetterResponseDto> {
     const response = await api.get<Record<string, unknown>>(`/api/hangfire/dead-letter?from=${from}&count=${count}`);
+    const total = Number(pick<number>(response, 'Enqueued', 'enqueued') ?? 0);
     return {
-      queue: String(response?.Queue ?? 'dead-letter'),
-      enqueued: Number(response?.Enqueued ?? 0),
-      items: normalizeJobs(response?.Items),
-      timestamp: String(response?.Timestamp ?? new Date().toISOString()),
+      queue: String(pick<string>(response, 'Queue', 'queue') ?? 'dead-letter'),
+      enqueued: total,
+      total,
+      items: normalizeJobs(pick<unknown>(response, 'Items', 'items')),
+      timestamp: String(pick<string>(response, 'Timestamp', 'timestamp') ?? new Date().toISOString()),
+    };
+  },
+
+  async getSuccesses(from = 0, count = 20): Promise<HangfireSuccessResponseDto> {
+    const response = await api.get<Record<string, unknown>>(`/api/hangfire/successes-from-db?from=${from}&count=${count}`);
+    return {
+      items: normalizeSuccessJobs(pick<unknown>(response, 'Items', 'items')),
+      total: Number(pick<number>(response, 'Total', 'total') ?? 0),
+      timestamp: String(pick<string>(response, 'Timestamp', 'timestamp') ?? new Date().toISOString()),
     };
   },
 
   async getRecurringJobs(): Promise<HangfireRecurringJobsResponseDto> {
     const response = await api.get<Record<string, unknown>>('/api/hangfire/recurring-jobs');
     return {
-      items: normalizeRecurringJobs(response?.Items),
-      total: Number(response?.Total ?? 0),
-      timestamp: String(response?.Timestamp ?? new Date().toISOString()),
+      items: normalizeRecurringJobs(pick<unknown>(response, 'Items', 'items')),
+      total: Number(pick<number>(response, 'Total', 'total') ?? 0),
+      timestamp: String(pick<string>(response, 'Timestamp', 'timestamp') ?? new Date().toISOString()),
     };
   },
 
   async triggerRecurringJob(jobId: string): Promise<HangfireTriggerRecurringJobResponseDto> {
     const response = await api.post<Record<string, unknown>>(`/api/hangfire/recurring-jobs/${encodeURIComponent(jobId)}/trigger`);
     return {
-      jobId: String(response?.JobId ?? jobId),
-      triggeredAt: String(response?.TriggeredAt ?? new Date().toISOString()),
-      message: String(response?.Message ?? 'Recurring job triggered successfully.'),
+      jobId: String(pick<string>(response, 'JobId', 'jobId') ?? jobId),
+      triggeredAt: String(pick<string>(response, 'TriggeredAt', 'triggeredAt') ?? new Date().toISOString()),
+      message: String(pick<string>(response, 'Message', 'message') ?? 'Recurring job triggered successfully.'),
     };
   },
 };

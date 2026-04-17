@@ -28,7 +28,24 @@ export interface HangfireFailedResponseDto {
 export interface HangfireDeadLetterResponseDto {
   queue: string;
   enqueued: number;
+  total: number;
   items: HangfireJobItemDto[];
+  timestamp: string;
+}
+
+export interface HangfireSuccessJobItemDto {
+  jobId: string;
+  recurringJobId?: string;
+  jobName: string;
+  finishedAt?: string;
+  durationMs: number;
+  queue?: string;
+  retryCount: number;
+}
+
+export interface HangfireSuccessResponseDto {
+  items: HangfireSuccessJobItemDto[];
+  total: number;
   timestamp: string;
 }
 

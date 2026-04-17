@@ -14,7 +14,15 @@
     "jobName": "job",
     "state": "State",
     "time": "Time",
-    "reason": "Reason"
+    "reason": "Reason",
+    "queue": "Queue",
+    "duration": "Duration",
+    "retryCount": "Retry",
+    "recurringJobId": "Recurring Job"
+  },
+  "succeeded": {
+    "title": "Succeeded Jobs",
+    "empty": "No succeeded jobs found."
   },
   "failed": {
     "title": "Failed Jobs",

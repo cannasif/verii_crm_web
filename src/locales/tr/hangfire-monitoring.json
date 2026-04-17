@@ -14,7 +14,15 @@
     "jobName": "İş",
     "state": "Durum",
     "time": "Zaman",
-    "reason": "Neden"
+    "reason": "Neden",
+    "queue": "Kuyruk",
+    "duration": "Süre",
+    "retryCount": "Tekrar",
+    "recurringJobId": "Zamanlanmış İş"
+  },
+  "succeeded": {
+    "title": "Başarılı İşler",
+    "empty": "Başarılı iş bulunamadı."
   },
   "failed": {
     "title": "Başarısız İşler",
