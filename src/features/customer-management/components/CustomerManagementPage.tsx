@@ -123,20 +123,6 @@ export function CustomerManagementPage(): ReactElement {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortBy, setSortBy] = useState<CustomerColumnKey>(DEFAULT_SORT_BY);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(DEFAULT_SORT_DIRECTION);
-  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
-  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
-
-  const queryClient = useQueryClient();
-  const createCustomer = useCreateCustomer();
-  const updateCustomer = useUpdateCustomer();
-  const triggerCustomerSync = useTriggerCustomerSync();
-  const createActivity = useCreateActivity();
-  const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
-
   const tableColumns = useMemo(
     () => getColumnsConfig(t),
     [t, i18n.language, i18n.resolvedLanguage]
@@ -150,6 +136,29 @@ export function CustomerManagementPage(): ReactElement {
     [tableColumns]
   );
   const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key as string), [tableColumns]);
+  const initialSortPrefs = useMemo(
+    () =>
+      loadTableSortPreference(
+        PAGE_KEY,
+        user?.id,
+        { sortBy: DEFAULT_SORT_BY, sortDirection: DEFAULT_SORT_DIRECTION },
+        defaultColumnKeys
+      ),
+    [user?.id, defaultColumnKeys]
+  );
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortBy, setSortBy] = useState<CustomerColumnKey>(initialSortPrefs.sortBy as CustomerColumnKey);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(initialSortPrefs.sortDirection);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+
+  const queryClient = useQueryClient();
+  const createCustomer = useCreateCustomer();
+  const updateCustomer = useUpdateCustomer();
+  const triggerCustomerSync = useTriggerCustomerSync();
+  const createActivity = useCreateActivity();
+  const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
   const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
@@ -162,17 +171,6 @@ export function CustomerManagementPage(): ReactElement {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
     setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
-  }, [user?.id, defaultColumnKeys]);
-
-  useEffect(() => {
-    const sortPrefs = loadTableSortPreference(
-      PAGE_KEY,
-      user?.id,
-      { sortBy: DEFAULT_SORT_BY, sortDirection: DEFAULT_SORT_DIRECTION },
-      defaultColumnKeys
-    );
-    setSortBy(sortPrefs.sortBy as CustomerColumnKey);
-    setSortDirection(sortPrefs.sortDirection);
   }, [user?.id, defaultColumnKeys]);
 
   const handleCustomerSort = useCallback(
@@ -562,19 +560,21 @@ export function CustomerManagementPage(): ReactElement {
         conflictState={duplicateConflicts}
         onConflictDismiss={() => setDuplicateConflicts(null)}
       />
-      <ActivityForm
-        open={!!quickActivityCustomer}
-        onOpenChange={(open) => {
-          if (!open) setQuickActivityCustomer(null);
-        }}
-        onSubmit={handleQuickActivitySubmit}
-        isLoading={createActivity.isPending}
-        initialStartDateTime={quickActivityWindow.start}
-        initialEndDateTime={quickActivityWindow.end}
-        initialPotentialCustomerId={quickActivityCustomer?.id}
-        initialErpCustomerCode={quickActivityCustomer?.customerCode ?? undefined}
-        initialCustomerDisplayName={quickActivityCustomer?.name ?? undefined}
-      />
+      {quickActivityCustomer ? (
+        <ActivityForm
+          open
+          onOpenChange={(open) => {
+            if (!open) setQuickActivityCustomer(null);
+          }}
+          onSubmit={handleQuickActivitySubmit}
+          isLoading={createActivity.isPending}
+          initialStartDateTime={quickActivityWindow.start}
+          initialEndDateTime={quickActivityWindow.end}
+          initialPotentialCustomerId={quickActivityCustomer.id}
+          initialErpCustomerCode={quickActivityCustomer.customerCode ?? undefined}
+          initialCustomerDisplayName={quickActivityCustomer.name ?? undefined}
+        />
+      ) : null}
     </div>
   );
 }
