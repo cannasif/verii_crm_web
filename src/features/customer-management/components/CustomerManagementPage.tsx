@@ -26,11 +26,11 @@ import { useCreateCustomer } from '../hooks/useCreateCustomer';
 import { useTriggerCustomerSync } from '../hooks/useTriggerCustomerSync';
 import { useUpdateCustomer } from '../hooks/useUpdateCustomer';
 import { useCustomerList } from '../hooks/useCustomerList';
+import type { CustomerStats as CustomerStatsData } from '../hooks/useCustomerStats';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
-import { customerApi } from '../api/customer-api';
 import type { CustomerDto, CustomerFormData } from '../types/customer-types';
 import { applyCustomerFilters, CUSTOMER_FILTER_COLUMNS } from '../types/customer-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
@@ -257,6 +257,18 @@ export function CustomerManagementPage(): ReactElement {
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
   const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const customerStats = useMemo<CustomerStatsData>(() => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    return {
+      totalCustomers: customers.length,
+      approvedCustomers: 0,
+      newThisMonth: customers.filter(
+        (customer) => customer.createdDate && new Date(customer.createdDate) >= startOfMonth
+      ).length,
+    };
+  }, [customers]);
   const currentPageRows = useMemo(
     () => sortedCustomers.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
     [sortedCustomers, pageNumber, pageSize]
@@ -301,8 +313,7 @@ export function CustomerManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await customerApi.getList({ pageNumber: 1, pageSize: 10000 });
-    const list: CustomerDto[] = response?.data ?? [];
+    const list: CustomerDto[] = customers;
     return {
       columns: exportColumns,
       rows: list.map((c) => {
@@ -318,7 +329,7 @@ export function CustomerManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language]);
+  }, [customers, exportColumns, orderedVisibleColumns, i18n.language]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -420,7 +431,7 @@ export function CustomerManagementPage(): ReactElement {
         </Button>
       </div>
 
-      <CustomerStats />
+      <CustomerStats stats={customerStats} isLoading={isLoading} />
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>

@@ -73,7 +73,7 @@ export function UserDetailDialog({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const { data: userDetail, isLoading: isLoadingDetail, refetch: refetchUserDetail } = useUserDetailByUserId(userId);
+  const { data: userDetail, isLoading: isLoadingDetail, refetch: refetchUserDetail } = useUserDetailByUserId(userId, open);
   const createUserDetail = useCreateUserDetail();
   const updateUserDetail = useUpdateUserDetail();
   const uploadProfilePicture = useUploadProfilePicture();

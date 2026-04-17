@@ -55,7 +55,7 @@ export function UserProfileModal({
   const { theme, setTheme } = useTheme();
   const { user, logout, branch } = useAuthStore();
   const navigate = useNavigate();
-  const { data: userDetail } = useUserDetailByUserId(user?.id || 0);
+  const { data: userDetail } = useUserDetailByUserId(user?.id || 0, open);
 
   const normalizedLang = i18n.language?.toLowerCase() === 'sa' ? 'ar' : i18n.language?.toLowerCase().split('-')[0] ?? 'tr';
   const currentLanguage = languages.find((lang) => lang.code === normalizedLang) || languages[0];

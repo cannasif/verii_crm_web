@@ -1,6 +1,5 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCustomerStats } from '../hooks/useCustomerStats';
 import { Users, CheckCircle2, Zap } from 'lucide-react';
 import {
   Card,
@@ -8,12 +7,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import type { CustomerStats as CustomerStatsData } from '../hooks/useCustomerStats';
 
 const CRM_NS = 'customer-management' as const;
 
-export function CustomerStats(): ReactElement {
+interface CustomerStatsProps {
+  stats?: CustomerStatsData;
+  isLoading?: boolean;
+}
+
+export function CustomerStats({ stats, isLoading = false }: CustomerStatsProps): ReactElement {
   const { t } = useTranslation(['customer-management', 'common']);
-  const { data: stats, isLoading } = useCustomerStats();
 
   if (isLoading) {
     return (
