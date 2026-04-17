@@ -49,6 +49,46 @@ function createDefaultWidget(id = 'widget-1', title = tr('common.reportBuilder.w
   };
 }
 
+function createDefaultAppearance() {
+  return {
+    tone: 'neutral' as const,
+    accentColor: '#1d4ed8',
+    showStats: true,
+    tableDensity: 'comfortable' as const,
+    themePreset: 'executive' as const,
+    titleAlign: 'left' as const,
+    kpiFormat: 'number' as const,
+    backgroundStyle: 'card' as const,
+    kpiLayout: 'split' as const,
+    valueFormat: 'default' as const,
+    decimalPlaces: 0,
+    seriesVisibilityMode: 'auto' as const,
+    maxVisibleSeries: 8,
+    seriesOverflowMode: 'others' as const,
+  };
+}
+
+function hydrateWidget(
+  widgetId: string,
+  widget: Partial<ReportWidget> & Pick<ReportWidget, 'title' | 'chartType' | 'values'>,
+): ReportWidget {
+  const defaults = createDefaultWidget(widgetId, widget.title);
+  return {
+    ...defaults,
+    ...widget,
+    id: widgetId,
+    title: widget.title,
+    chartType: widget.chartType,
+    values: widget.values,
+    filters: widget.filters ?? defaults.filters,
+    appearance: {
+      ...createDefaultAppearance(),
+      ...(defaults.appearance ?? {}),
+      ...(widget.appearance ?? {}),
+    },
+  };
+}
+
 function tr(key: string, options?: Record<string, unknown>): string {
   return i18next.t(key, { ns: 'common', ...options });
 }
@@ -221,7 +261,9 @@ interface ReportBuilderState {
   checkDataSource: () => Promise<void>;
   setChartType: (t: ChartType) => void;
   addWidget: () => void;
+  addWidgetWithConfig: (widget: Partial<ReportWidget> & Pick<ReportWidget, 'title' | 'chartType' | 'values'>) => void;
   setActiveWidget: (widgetId: string) => void;
+  replaceActiveWidget: (widget: Partial<ReportWidget> & Pick<ReportWidget, 'title' | 'chartType' | 'values'>) => void;
   renameWidget: (widgetId: string, title: string) => void;
   setWidgetSize: (widgetId: string, size: 'third' | 'half' | 'full') => void;
   setWidgetHeight: (widgetId: string, height: 'sm' | 'md' | 'lg') => void;
@@ -333,10 +375,66 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
       return { config: ensureWidgets({ ...current, widgets, activeWidgetId: widget.id }) };
     }),
 
+  addWidgetWithConfig: (widget) =>
+    set((s) => {
+      const current = ensureWidgets(s.config);
+      const widgetId = `widget-${Date.now()}`;
+      const nextWidget = hydrateWidget(widgetId, widget);
+      const widgets = [...(current.widgets ?? []), nextWidget];
+      return {
+        config: ensureWidgets({
+          ...current,
+          chartType: nextWidget.chartType,
+          axis: nextWidget.axis,
+          values: nextWidget.values,
+          legend: nextWidget.legend,
+          sorting: nextWidget.sorting,
+          filters: nextWidget.filters,
+          widgets,
+          activeWidgetId: widgetId,
+        }),
+      };
+    }),
+
   setActiveWidget: (widgetId) =>
     set((s) => {
       const current = ensureWidgets(s.config);
       return { config: ensureWidgets({ ...current, activeWidgetId: widgetId }) };
+    }),
+
+  replaceActiveWidget: (widget) =>
+    set((s) => {
+      const current = ensureWidgets(s.config);
+      const activeWidgetId = current.activeWidgetId ?? current.widgets?.[0]?.id ?? 'widget-1';
+      const widgets = (current.widgets ?? []).map((item) =>
+        item.id === activeWidgetId
+          ? hydrateWidget(activeWidgetId, {
+              ...item,
+              ...widget,
+              title: widget.title,
+              chartType: widget.chartType,
+              values: widget.values,
+              appearance: {
+                ...(item.appearance ?? {}),
+                ...(widget.appearance ?? {}),
+              },
+            })
+          : item,
+      );
+      const activeWidget = widgets.find((item) => item.id === activeWidgetId) ?? hydrateWidget(activeWidgetId, widget);
+      return {
+        config: ensureWidgets({
+          ...current,
+          chartType: activeWidget.chartType,
+          axis: activeWidget.axis,
+          values: activeWidget.values,
+          legend: activeWidget.legend,
+          sorting: activeWidget.sorting,
+          filters: activeWidget.filters,
+          widgets,
+          activeWidgetId,
+        }),
+      };
     }),
 
   renameWidget: (widgetId, title) =>
@@ -374,20 +472,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
           ? {
               ...widget,
               appearance: {
-                tone: 'neutral' as const,
-                accentColor: '#1d4ed8',
-                showStats: true,
-                tableDensity: 'comfortable' as const,
-                themePreset: 'executive' as const,
-                titleAlign: 'left' as const,
-                kpiFormat: 'number' as const,
-                backgroundStyle: 'card' as const,
-                kpiLayout: 'split' as const,
-                valueFormat: 'default' as const,
-                decimalPlaces: 0,
-                seriesVisibilityMode: 'auto' as const,
-                maxVisibleSeries: 8,
-                seriesOverflowMode: 'others' as const,
+                ...createDefaultAppearance(),
                 ...(widget.appearance ?? {}),
                 ...patch,
               },

@@ -428,6 +428,54 @@
       },
       "widgetTemplatesTitle": "Ready widget templates",
       "widgetTemplatesDescription": "If you do not know what to choose, start with one of these safe widget patterns.",
+      "widgetAssistantTitle": "Widget assistant",
+      "widgetAssistantDescription": "Choose what you want to show to the user. The system will prepare the best-fit widget type and the first field mapping for you.",
+      "widgetAssistantAdded": "A new widget was added with a guided setup.",
+      "widgetAssistantUpdated": "The active widget was updated with a guided setup.",
+      "widgetAssistantConfigureTitle": "Adjust the active widget the easy way",
+      "widgetAssistantConfigureDescription": "Pick the grouping, metric, and optional breakdown here without thinking in slots.",
+      "widgetAssistantCurrentTitle": "Active widget summary",
+      "widgetAssistantCurrentDescription": "This makes it clear what the current widget is going to show to the user.",
+      "widgetAssistantDimension": "What should I group by?",
+      "widgetAssistantMetric": "Which value should I show?",
+      "widgetAssistantBreakdown": "Optional second breakdown",
+      "widgetAssistantDimensionPlaceholder": "Choose a grouping field",
+      "widgetAssistantMetricPlaceholder": "Choose a metric field",
+      "widgetAssistantBreakdownPlaceholder": "Choose a second breakdown or leave it empty",
+      "widgetAssistantNoBreakdown": "No extra breakdown",
+      "advancedWorkspaceTitle": "Workspace",
+      "advancedWorkspaceDescription": "Stay in an easy flow if you want, or open the full slot and style controls when you need them.",
+      "advancedWorkspaceModes": {
+        "guided": "Easy setup",
+        "expert": "All settings"
+      },
+      "advancedWorkspaceOpenExpert": "Open all settings",
+      "guidedWorkspaceTitle": "Easy workspace",
+      "guidedWorkspaceDescription": "This view helps you manage the active widget without overwhelming the screen. Move to all settings when you need the full builder.",
+      "guidedWorkspaceActionsTitle": "Quick actions",
+      "guidedWorkspaceActionsDescription": "Common fixes and suggested mappings stay here.",
+      "widgetTaskCards": {
+        "detailTable": {
+          "badge": "Detail",
+          "title": "Detail table",
+          "description": "Start a readable detail table with the main fields from the view."
+        },
+        "trend": {
+          "badge": "Trend",
+          "title": "Trend chart",
+          "description": "Start a line view that shows change over time."
+        },
+        "compare": {
+          "badge": "Compare",
+          "title": "Comparison chart",
+          "description": "Start a comparison by user, customer, or category."
+        },
+        "summaryKpi": {
+          "badge": "Summary",
+          "title": "Summary number",
+          "description": "Start one large and clear KPI-style value."
+        }
+      },
       "widgetTemplateLabels": {
         "dailyTrend": "Daily trend",
         "categoryCompare": "Category comparison",

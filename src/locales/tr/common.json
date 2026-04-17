@@ -433,6 +433,54 @@
       },
       "widgetTemplatesTitle": "Hazır widget şablonları",
       "widgetTemplatesDescription": "Ne seçeceğini bilmiyorsan aşağıdaki hazır başlangıçlardan biriyle ilerleyebilirsin.",
+      "widgetAssistantTitle": "Widget asistanı",
+      "widgetAssistantDescription": "Kullanıcıya ne göstermek istediğini seç. Sistem uygun widget tipini ve ilk alan eşleşmesini senin yerine kursun.",
+      "widgetAssistantAdded": "Yeni widget hazır kurulumla eklendi.",
+      "widgetAssistantUpdated": "Aktif widget kolay kurulumla güncellendi.",
+      "widgetAssistantConfigureTitle": "Aktif widget'ı kolayca ayarla",
+      "widgetAssistantConfigureDescription": "Teknik alan-slot mantığına girmeden kırılım, ölçüm ve ek kırılımı buradan seçebilirsin.",
+      "widgetAssistantCurrentTitle": "Aktif widget özeti",
+      "widgetAssistantCurrentDescription": "Şu an düzenlediğin widget'ın kullanıcıya ne göstereceğini burada net görürsün.",
+      "widgetAssistantDimension": "Neye göre göstereyim?",
+      "widgetAssistantMetric": "Hangi değeri göstereyim?",
+      "widgetAssistantBreakdown": "İstersen ikinci kırılım",
+      "widgetAssistantDimensionPlaceholder": "Bir kırılım alanı seç",
+      "widgetAssistantMetricPlaceholder": "Bir ölçüm alanı seç",
+      "widgetAssistantBreakdownPlaceholder": "İkinci kırılım seç veya boş bırak",
+      "widgetAssistantNoBreakdown": "Ek kırılım yok",
+      "advancedWorkspaceTitle": "Çalışma alanı",
+      "advancedWorkspaceDescription": "İstersen kolay kurulumla ilerle, istersen tüm slot ve stil ayarlarını aç.",
+      "advancedWorkspaceModes": {
+        "guided": "Kolay kurulum",
+        "expert": "Tüm ayarlar"
+      },
+      "advancedWorkspaceOpenExpert": "Tüm ayarları aç",
+      "guidedWorkspaceTitle": "Kolay çalışma alanı",
+      "guidedWorkspaceDescription": "Bu görünüm aktif widget'ı boğmadan takip etmene yardım eder. İhtiyaç olduğunda tüm ayarlara geçebilirsin.",
+      "guidedWorkspaceActionsTitle": "Hızlı aksiyonlar",
+      "guidedWorkspaceActionsDescription": "Sık kullanılan düzeltmeler ve önerilen eşlemeler burada durur.",
+      "widgetTaskCards": {
+        "detailTable": {
+          "badge": "Detay",
+          "title": "Detay tablo",
+          "description": "View içindeki temel alanlarla okunur bir detay tablosu başlat."
+        },
+        "trend": {
+          "badge": "Trend",
+          "title": "Trend grafiği",
+          "description": "Zaman içinde değişimi gösteren çizgi görünümü başlat."
+        },
+        "compare": {
+          "badge": "Karşılaştırma",
+          "title": "Karşılaştırma grafiği",
+          "description": "Kullanıcı, müşteri veya kategori bazlı karşılaştırma başlat."
+        },
+        "summaryKpi": {
+          "badge": "Özet",
+          "title": "Özet sayı",
+          "description": "Tek bir önemli değeri büyük ve net şekilde başlat."
+        }
+      },
       "widgetTemplateLabels": {
         "dailyTrend": "Günlük trend",
         "categoryCompare": "Kategori karşılaştırma",
