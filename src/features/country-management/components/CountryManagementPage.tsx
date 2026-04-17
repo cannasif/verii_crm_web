@@ -24,7 +24,6 @@ import type { CountryDto } from '../types/country-types';
 import { useCountryList } from '../hooks/useCountryList';
 import { applyCountryFilters, COUNTRY_FILTER_COLUMNS } from '../types/country-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { countryApi } from '../api/country-api';
 
 const EMPTY_COUNTRIES: CountryDto[] = [];
 const PAGE_KEY = 'country-management';
@@ -84,8 +83,10 @@ export function CountryManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useCountryList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const countries = useMemo<CountryDto[]>(
@@ -120,14 +121,11 @@ export function CountryManagementPage(): ReactElement {
     return result;
   }, [filteredCountries, sortBy, sortDirection]);
 
-  const totalCount = sortedCountries.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedCountries.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedCountries.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedCountries, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedCountries.length - 1, totalCount);
+  const currentPageRows = sortedCountries;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as CountryColumnKey[];
 
@@ -168,11 +166,9 @@ export function CountryManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await countryApi.getList({ pageNumber: 1, pageSize: 10000 });
-    const list = response?.data ?? [];
     return {
       columns: exportColumns,
-      rows: list.map((c: CountryDto) => {
+      rows: currentPageRows.map((c: CountryDto) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -185,7 +181,7 @@ export function CountryManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language]);
+  }, [currentPageRows, exportColumns, orderedVisibleColumns, i18n.language]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -341,10 +337,10 @@ export function CountryManagementPage(): ReactElement {
               setPageSize(s);
               setPageNumber(1);
             }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={apiResponse?.hasPreviousPage ?? pageNumber > 1}
+              hasNextPage={apiResponse?.hasNextPage ?? pageNumber < totalPages}
             onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
             onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
             previousLabel={t('common.previous')}

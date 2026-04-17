@@ -204,8 +204,10 @@ export function CustomerManagementPage(): ReactElement {
   }, [searchTerm]);
 
   const { data: apiResponse, isLoading } = useCustomerList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const customers = useMemo<CustomerDto[]>(
@@ -253,26 +255,23 @@ export function CustomerManagementPage(): ReactElement {
     return result;
   }, [filteredCustomers, sortBy, sortDirection]);
 
-  const totalCount = sortedCustomers.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedCustomers.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedCustomers.length - 1, totalCount);
   const customerStats = useMemo<CustomerStatsData>(() => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     return {
-      totalCustomers: customers.length,
+      totalCustomers: apiResponse?.totalCount ?? customers.length,
       approvedCustomers: 0,
       newThisMonth: customers.filter(
         (customer) => customer.createdDate && new Date(customer.createdDate) >= startOfMonth
       ).length,
     };
-  }, [customers]);
-  const currentPageRows = useMemo(
-    () => sortedCustomers.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedCustomers, pageNumber, pageSize]
-  );
+  }, [apiResponse?.totalCount, customers]);
+  const currentPageRows = sortedCustomers;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as CustomerColumnKey[];
 
@@ -536,8 +535,8 @@ export function CustomerManagementPage(): ReactElement {
               }}
               pageNumber={pageNumber}
               totalPages={totalPages}
-              hasPreviousPage={pageNumber > 1}
-              hasNextPage={pageNumber < totalPages}
+              hasPreviousPage={apiResponse?.hasPreviousPage ?? pageNumber > 1}
+              hasNextPage={apiResponse?.hasNextPage ?? pageNumber < totalPages}
               onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
               onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
               previousLabel={t('previous', { ns: 'common' })}

@@ -28,8 +28,7 @@ import { useCreateTitle } from '../hooks/useCreateTitle';
 import { useUpdateTitle } from '../hooks/useUpdateTitle';
 import { applyTitleFilters, TITLE_FILTER_COLUMNS } from '../types/title-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { queryKeys } from '../utils/query-keys';
-import { titleApi } from '../api/title-api';
+import { queryKeys, TITLE_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 
 const EMPTY_TITLES: TitleDto[] = [];
 const PAGE_KEY = 'title-management';
@@ -92,8 +91,10 @@ export function TitleManagementPage(): ReactElement {
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useTitleList({
-    pageNumber: 1,
-    pageSize: 10000,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
   });
 
   const titles = useMemo<TitleDto[]>(
@@ -127,14 +128,11 @@ export function TitleManagementPage(): ReactElement {
     return result;
   }, [filteredTitles, sortBy, sortDirection]);
 
-  const totalCount = sortedTitles.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const totalCount = apiResponse?.totalCount ?? sortedTitles.length;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
-  const currentPageRows = useMemo(
-    () => sortedTitles.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [sortedTitles, pageNumber, pageSize]
-  );
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedTitles.length - 1, totalCount);
+  const currentPageRows = sortedTitles;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as TitleColumnKey[];
 
@@ -175,11 +173,9 @@ export function TitleManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const response = await titleApi.getList({ pageNumber: 1, pageSize: 10000 });
-    const list = response?.data ?? [];
     return {
       columns: exportColumns,
-      rows: list.map((c: TitleDto) => {
+      rows: currentPageRows.map((c: TitleDto) => {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           const val = c[key];
@@ -192,7 +188,7 @@ export function TitleManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language]);
+  }, [currentPageRows, exportColumns, orderedVisibleColumns, i18n.language]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -232,7 +228,7 @@ export function TitleManagementPage(): ReactElement {
   };
 
   const handleRefresh = async (): Promise<void> => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.list({ pageNumber: 1, pageSize: 10000 }) });
+    await queryClient.invalidateQueries({ queryKey: [TITLE_MANAGEMENT_QUERY_KEYS.LIST] });
     await queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
   };
 
@@ -415,10 +411,10 @@ export function TitleManagementPage(): ReactElement {
               setPageSize(s);
               setPageNumber(1);
             }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={apiResponse?.hasPreviousPage ?? pageNumber > 1}
+              hasNextPage={apiResponse?.hasNextPage ?? pageNumber < totalPages}
             onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
             onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
             previousLabel={t('common.previous')}
