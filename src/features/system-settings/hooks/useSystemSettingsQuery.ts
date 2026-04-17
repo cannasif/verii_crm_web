@@ -3,6 +3,7 @@ import { systemSettingsApi } from '../api/systemSettingsApi';
 import {
   SYSTEM_SETTINGS_CACHE_TTL_MS,
   getSystemSettingsCacheEntry,
+  normalizeSystemSettings,
   useSystemSettingsStore,
 } from '@/stores/system-settings-store';
 
@@ -16,14 +17,15 @@ export function useSystemSettingsQuery() {
     queryKey: SYSTEM_SETTINGS_QUERY_KEY,
     queryFn: async () => {
       const data = await systemSettingsApi.get();
-      setSettings(data);
-      return data;
+      const normalizedData = normalizeSystemSettings(data);
+      setSettings(normalizedData);
+      return normalizedData;
     },
-    initialData: cacheEntry.hasLoadedFromApi ? cacheEntry.settings : undefined,
+    initialData: cacheEntry.hasLoadedFromApi ? normalizeSystemSettings(cacheEntry.settings) : undefined,
     initialDataUpdatedAt: cacheEntry.lastFetchedAt ?? undefined,
     staleTime: SYSTEM_SETTINGS_CACHE_TTL_MS,
     gcTime: SYSTEM_SETTINGS_CACHE_TTL_MS * 2,
-    refetchOnMount: false,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: false,
   });
 }
