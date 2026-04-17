@@ -4,7 +4,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { SystemSettingsForm } from '../components/SystemSettingsForm';
 import { useSystemSettingsQuery } from '../hooks/useSystemSettingsQuery';
 import { useUpdateSystemSettingsMutation } from '../hooks/useUpdateSystemSettingsMutation';
-import type { SystemSettingsFormSchema } from '../types/systemSettings';
+import type { EditableSystemSettingsDto, UpdateSystemSettingsDto } from '../types/systemSettings';
 
 export function SystemSettingsPage(): ReactElement {
   const { t } = useTranslation();
@@ -17,8 +17,19 @@ export function SystemSettingsPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const handleSubmit = async (values: SystemSettingsFormSchema): Promise<void> => {
-    await updateMutation.mutateAsync(values);
+  const handleSubmit = async (values: EditableSystemSettingsDto): Promise<void> => {
+    const payload: UpdateSystemSettingsDto = {
+      defaultLanguage: data?.defaultLanguage ?? 'tr',
+      defaultTimeZone: data?.defaultTimeZone ?? 'Europe/Istanbul',
+      dateFormat: data?.dateFormat ?? 'dd.MM.yyyy',
+      timeFormat: data?.timeFormat ?? 'HH:mm',
+      defaultCurrencyCode: values.defaultCurrencyCode,
+      numberFormat: values.numberFormat,
+      decimalPlaces: values.decimalPlaces,
+      restrictCustomersBySalesRepMatch: values.restrictCustomersBySalesRepMatch,
+    };
+
+    await updateMutation.mutateAsync(payload);
   };
 
   return (

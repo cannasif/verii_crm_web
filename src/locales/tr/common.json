@@ -4374,7 +4374,7 @@
   },
   "systemSettings": {
     "PageTitle": "Sistem Ayarları",
-    "PageDescription": "Dil, para birimi, saat dilimi ve format varsayılanlarını yönetin.",
+    "PageDescription": "Para birimi, sayı biçimi ve müşteri kapsamı ayarlarını yönetin.",
     "SavedSuccessfully": "Sistem ayarları başarıyla kaydedildi.",
     "Fields": {
       "DefaultLanguage": "Varsayılan dil",

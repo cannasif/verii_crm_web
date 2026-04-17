@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useMemo } from 'react';
 import { type Resolver, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -22,28 +22,21 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import {
   systemSettingsFormSchema,
+  type EditableSystemSettingsDto,
   type SystemSettingsDto,
   type SystemSettingsFormSchema,
 } from '../types/systemSettings';
 
-const languageOptions = [
-  { value: 'tr', label: 'Türkçe' },
-  { value: 'en', label: 'English' },
-  { value: 'de', label: 'Deutsch' },
-  { value: 'fr', label: 'Français' },
-];
-
-const currencyOptions = [
+const fallbackCurrencyOptions = [
   { value: 'TRY', label: 'TRY - Türk Lirası' },
   { value: 'USD', label: 'USD - Amerikan Doları' },
   { value: 'EUR', label: 'EUR - Euro' },
   { value: 'GBP', label: 'GBP - İngiliz Sterlini' },
 ];
 
-const dateFormatOptions = ['dd.MM.yyyy', 'yyyy-MM-dd', 'MM/dd/yyyy'];
-const timeFormatOptions = ['HH:mm', 'HH:mm:ss', 'hh:mm a'];
 const numberFormatOptions = [
   { value: 'tr-TR', label: 'Türkçe sayı biçimi (1.234,56)' },
   { value: 'en-US', label: 'US sayı biçimi (1,234.56)' },
@@ -54,7 +47,7 @@ interface SystemSettingsFormProps {
   data: SystemSettingsDto | undefined;
   isLoading: boolean;
   isSubmitting: boolean;
-  onSubmit: (data: SystemSettingsFormSchema) => void | Promise<void>;
+  onSubmit: (data: EditableSystemSettingsDto) => void | Promise<void>;
 }
 
 export function SystemSettingsForm({
@@ -64,17 +57,33 @@ export function SystemSettingsForm({
   onSubmit,
 }: SystemSettingsFormProps): ReactElement {
   const { t } = useTranslation();
+  const { currencyOptions: erpCurrencyOptions } = useCurrencyOptions();
+
+  const currencyOptions = useMemo(() => {
+    if (erpCurrencyOptions.length === 0) {
+      return fallbackCurrencyOptions;
+    }
+
+    const uniqueOptions = new Map<string, { value: string; label: string }>();
+
+    erpCurrencyOptions.forEach((option) => {
+      if (!uniqueOptions.has(option.code)) {
+        uniqueOptions.set(option.code, {
+          value: option.code,
+          label: option.label,
+        });
+      }
+    });
+
+    return Array.from(uniqueOptions.values());
+  }, [erpCurrencyOptions]);
 
   const form = useForm<SystemSettingsFormSchema>({
     resolver: zodResolver(systemSettingsFormSchema) as Resolver<SystemSettingsFormSchema>,
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      defaultLanguage: 'tr',
       defaultCurrencyCode: 'TRY',
-      defaultTimeZone: 'Europe/Istanbul',
-      dateFormat: 'dd.MM.yyyy',
-      timeFormat: 'HH:mm',
       numberFormat: 'tr-TR',
       decimalPlaces: 2,
       restrictCustomersBySalesRepMatch: false,
@@ -84,11 +93,7 @@ export function SystemSettingsForm({
   useEffect(() => {
     if (!data) return;
     form.reset({
-      defaultLanguage: data.defaultLanguage,
       defaultCurrencyCode: data.defaultCurrencyCode,
-      defaultTimeZone: data.defaultTimeZone,
-      dateFormat: data.dateFormat,
-      timeFormat: data.timeFormat,
       numberFormat: data.numberFormat,
       decimalPlaces: data.decimalPlaces,
       restrictCustomersBySalesRepMatch: data.restrictCustomersBySalesRepMatch,
@@ -118,33 +123,6 @@ export function SystemSettingsForm({
           <CardContent className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
-              name="defaultLanguage"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={isZodFieldRequired(systemSettingsFormSchema, 'defaultLanguage')}>
-                    {t('systemSettings.Fields.DefaultLanguage')}
-                  </FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.DefaultLanguage')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {languageOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="defaultCurrencyCode"
               render={({ field }) => (
                 <FormItem>
@@ -161,60 +139,6 @@ export function SystemSettingsForm({
                       {currencyOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dateFormat"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={isZodFieldRequired(systemSettingsFormSchema, 'dateFormat')}>
-                    {t('systemSettings.Fields.DateFormat')}
-                  </FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.DateFormat')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {dateFormatOptions.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="timeFormat"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={isZodFieldRequired(systemSettingsFormSchema, 'timeFormat')}>
-                    {t('systemSettings.Fields.TimeFormat')}
-                  </FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.TimeFormat')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {timeFormatOptions.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -255,7 +179,7 @@ export function SystemSettingsForm({
               control={form.control}
               name="decimalPlaces"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                   <FormLabel required={isZodFieldRequired(systemSettingsFormSchema, 'decimalPlaces')}>
                     {t('systemSettings.Fields.DecimalPlaces')}
                   </FormLabel>
@@ -264,8 +188,36 @@ export function SystemSettingsForm({
                       type="number"
                       min={0}
                       max={6}
+                      step={1}
                       {...field}
-                      onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
+                      onChange={(e) => {
+                        const rawValue = e.target.value;
+                        if (rawValue === '') {
+                          field.onChange(0);
+                          return;
+                        }
+
+                        const numericValue = Number(rawValue);
+                        const clampedValue = Number.isFinite(numericValue)
+                          ? Math.min(6, Math.max(0, Math.trunc(numericValue)))
+                          : 0;
+
+                        field.onChange(clampedValue);
+                      }}
+                      onBlur={(e) => {
+                        field.onBlur();
+                        const rawValue = e.target.value;
+                        const numericValue = rawValue === '' ? 0 : Number(rawValue);
+                        const clampedValue = Number.isFinite(numericValue)
+                          ? Math.min(6, Math.max(0, Math.trunc(numericValue)))
+                          : 0;
+
+                        form.setValue('decimalPlaces', clampedValue, {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        });
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
