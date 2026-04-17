@@ -40,6 +40,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { customerFormSchema, type CustomerFormData, type CustomerDto } from '../types/customer-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { useShippingAddressesByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesByCustomer';
+import { useAuthStore } from '@/stores/auth-store';
 import type { CustomerDuplicateConflictPayload } from '../utils/customer-conflict';
 import {
   AlertTriangle,
@@ -90,6 +91,7 @@ export function CustomerForm({
   onConflictDismiss,
 }: CustomerFormProps): ReactElement {
   const { t } = useTranslation(['customer-management', 'common']);
+  const branch = useAuthStore((state) => state.branch);
   const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
   const [countrySearchTerm, setCountrySearchTerm] = useState('');
   const [citySearchTerm, setCitySearchTerm] = useState('');
@@ -116,8 +118,8 @@ export function CustomerForm({
       groupCode: '',
       creditLimit: 0,
       defaultShippingAddressId: null,
-      branchCode: 0,
-      businessUnitCode: 0,
+      branchCode: branch?.code ? Number(branch.code) : 1,
+      businessUnitCode: 1,
       countryId: undefined,
       cityId: undefined,
       districtId: undefined,
@@ -205,15 +207,15 @@ export function CustomerForm({
       groupCode: '',
       creditLimit: 0,
       defaultShippingAddressId: null,
-      branchCode: 0,
-      businessUnitCode: 0,
+      branchCode: branch?.code ? Number(branch.code) : 1,
+      businessUnitCode: 1,
       countryId: undefined,
       cityId: undefined,
       districtId: undefined,
       customerTypeId: undefined,
       isCompleted: false,
     });
-  }, [customer, form, onConflictDismiss]);
+  }, [branch?.code, customer, form, onConflictDismiss]);
 
   const getConflictFieldLabel = (field: string): string => {
     switch (field) {
@@ -465,34 +467,10 @@ export function CustomerForm({
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="salesRepCode" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.salesRepCode')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.salesRepCodePlaceholder')} /></FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )} />
-
                 <FormField control={form.control} name="groupCode" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.groupCode')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.groupCodePlaceholder')} /></FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )} />
-
-                <FormField control={form.control} name="branchCode" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'branchCode')}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.branchCode.label')}</FormLabel>
-                    <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(Number(e.target.value || 0))} className={INPUT_STYLE} /></FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )} />
-
-                <FormField control={form.control} name="businessUnitCode" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'businessUnitCode')}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.businessUnitCode.label')}</FormLabel>
-                    <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(Number(e.target.value || 0))} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
