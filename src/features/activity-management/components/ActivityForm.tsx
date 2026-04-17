@@ -184,7 +184,6 @@ export function ActivityForm({
 }: ActivityFormProps): ReactElement {
   const { t } = useTranslation(['activity-management', 'common']);
   const { user } = useAuthStore();
-  const { data: customerOptions = [] } = useCustomerOptions();
   const [activityTypeSearchTerm, setActivityTypeSearchTerm] = useState('');
   const [assignedUserSearchTerm, setAssignedUserSearchTerm] = useState('');
   const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
@@ -232,6 +231,11 @@ export function ActivityForm({
       reminders: [],
     },
   });
+  const watchedAssignedUserId = form.watch('assignedUserId');
+  const {
+    data: customerOptions = [],
+    isFetched: hasCustomerOptionsLoaded,
+  } = useCustomerOptions(watchedAssignedUserId);
 
   const { fields: reminderFields, append: appendReminder, remove: removeReminder } = useFieldArray({
     control: form.control,
@@ -340,6 +344,28 @@ export function ActivityForm({
   useEffect(() => {
     if (!watchedCustomerId) form.setValue('contactId', undefined);
   }, [watchedCustomerId, form]);
+
+  useEffect(() => {
+    if (!hasCustomerOptionsLoaded) return;
+
+    const watchedErpCustomerCode = form.getValues('erpCustomerCode');
+    if (!watchedCustomerId && !watchedErpCustomerCode) return;
+
+    const hasMatchingCustomer = customerOptions.some(
+      (option) =>
+        (watchedCustomerId != null && option.id === watchedCustomerId) ||
+        (!!watchedErpCustomerCode && option.customerCode === watchedErpCustomerCode)
+    );
+
+    if (hasMatchingCustomer) {
+      return;
+    }
+
+    form.setValue('potentialCustomerId', undefined, { shouldDirty: true, shouldValidate: true });
+    form.setValue('erpCustomerCode', '', { shouldDirty: true, shouldValidate: true });
+    form.setValue('contactId', undefined, { shouldDirty: true, shouldValidate: true });
+    setSelectedCustomerDisplayName(null);
+  }, [customerOptions, form, hasCustomerOptionsLoaded, watchedCustomerId]);
 
   useEffect(() => {
     if (!open) return;
@@ -841,6 +867,7 @@ export function ActivityForm({
       <CustomerSelectDialog
         open={customerSelectDialogOpen}
         onOpenChange={setCustomerSelectDialogOpen}
+        contextUserId={watchedAssignedUserId ?? undefined}
         onSelect={(customer: CustomerSelectionResult) => {
           form.setValue('potentialCustomerId', customer.customerId ?? undefined);
           form.setValue('erpCustomerCode', customer.erpCustomerCode ?? '');

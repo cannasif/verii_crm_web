@@ -4383,7 +4383,11 @@
       "DateFormat": "Tarih formatı",
       "TimeFormat": "Saat formatı",
       "NumberFormat": "Sayı formatı",
-      "DecimalPlaces": "Ondalık basamak sayısı"
+      "DecimalPlaces": "Ondalık basamak sayısı",
+      "RestrictCustomersBySalesRepMatch": "Müşterileri satış temsilcisi eşleşmesine göre sınırla"
+    },
+    "Descriptions": {
+      "RestrictCustomersBySalesRepMatch": "Açık olduğunda müşteri listeleri ve seçim ekranları, ilgili kullanıcının satış temsilcisi eşleşmelerine göre daraltılır."
     },
     "Placeholders": {
       "DefaultLanguage": "Dil seçin",

@@ -47,7 +47,6 @@ export function DemandCreateForm(): ReactElement {
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
   
   const createMutation = useCreateDemandBulk();
-  const { data: customerOptions = [] } = useCustomerOptions();
 
   useEffect(() => {
     setPageTitle(null);
@@ -82,6 +81,7 @@ export function DemandCreateForm(): ReactElement {
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedRepresentativeId = form.watch('demand.representativeId');
   const watchedOfferDate = form.watch('demand.offerDate');
+  const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   
   const { calculateLineTotals } = useDemandCalculations();
   const { data: erpRates = [] } = useExchangeRate();

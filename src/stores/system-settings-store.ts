@@ -12,6 +12,7 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettingsDto = {
   timeFormat: 'HH:mm',
   numberFormat: 'tr-TR',
   decimalPlaces: 2,
+  restrictCustomersBySalesRepMatch: false,
 };
 
 interface SystemSettingsState {

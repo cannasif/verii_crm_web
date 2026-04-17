@@ -35,6 +35,7 @@ export const customerApi = {
     const queryParams = new URLSearchParams();
     if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
     if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+    if (params.contextUserId) queryParams.append('contextUserId', params.contextUserId.toString());
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
     if (params.filters) {

@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   systemSettingsFormSchema,
@@ -76,6 +77,7 @@ export function SystemSettingsForm({
       timeFormat: 'HH:mm',
       numberFormat: 'tr-TR',
       decimalPlaces: 2,
+      restrictCustomersBySalesRepMatch: false,
     },
   });
 
@@ -89,6 +91,7 @@ export function SystemSettingsForm({
       timeFormat: data.timeFormat,
       numberFormat: data.numberFormat,
       decimalPlaces: data.decimalPlaces,
+      restrictCustomersBySalesRepMatch: data.restrictCustomersBySalesRepMatch,
     });
   }, [data, form]);
 
@@ -265,6 +268,29 @@ export function SystemSettingsForm({
                       onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="restrictCustomersBySalesRepMatch"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                    </FormControl>
+                    <div className="space-y-1">
+                      <FormLabel required={false}>
+                        {t('systemSettings.Fields.RestrictCustomersBySalesRepMatch')}
+                      </FormLabel>
+                      <p className="text-muted-foreground text-sm">
+                        {t('systemSettings.Descriptions.RestrictCustomersBySalesRepMatch')}
+                      </p>
+                    </div>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

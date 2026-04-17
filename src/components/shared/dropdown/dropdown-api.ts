@@ -22,6 +22,7 @@ interface DropdownPageRequest {
   sortDirection?: string;
   filters?: PagedFilter[] | Record<string, unknown>;
   filterLogic?: 'and' | 'or';
+  contextUserId?: number;
   signal: AbortSignal;
 }
 
@@ -54,6 +55,10 @@ function buildPagedQueryParams(
 
   if (request.sortDirection) {
     queryParams.append('sortDirection', request.sortDirection);
+  }
+
+  if (request.contextUserId) {
+    queryParams.append('contextUserId', request.contextUserId.toString());
   }
 
   if (request.filters) {

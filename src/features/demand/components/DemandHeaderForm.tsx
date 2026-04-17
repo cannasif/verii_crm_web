@@ -146,7 +146,10 @@ export function DemandHeaderForm({
 
   const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useDemandRelatedUsers(user?.id);
-  const { data: customerOptions = [] } = useCustomerOptions();
+  const {
+    data: customerOptions = [],
+    isFetched: hasCustomerOptionsLoaded,
+  } = useCustomerOptions(watchedRepresentativeId);
   const shouldFetchCustomer = Boolean(watchedCustomerId && !watchedErpCustomerCode);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
@@ -188,6 +191,31 @@ export function DemandHeaderForm({
   useEffect(() => {
     setCustomerSearchQuery(customerDisplayValue);
   }, [customerDisplayValue]);
+
+  useEffect(() => {
+    if (!hasCustomerOptionsLoaded) return;
+    if (!watchedCustomerId && !watchedErpCustomerCode) return;
+
+    const hasMatchingCustomer = customerOptions.some(
+      (option) =>
+        (watchedCustomerId != null && option.id === watchedCustomerId) ||
+        (!!watchedErpCustomerCode && option.customerCode === watchedErpCustomerCode)
+    );
+
+    if (hasMatchingCustomer) {
+      return;
+    }
+
+    form.setValue('demand.potentialCustomerId', undefined, { shouldDirty: true, shouldValidate: true });
+    form.setValue('demand.erpCustomerCode', '', { shouldDirty: true, shouldValidate: true });
+    form.setValue('demand.shippingAddressId', null, { shouldDirty: true, shouldValidate: true });
+  }, [
+    customerOptions,
+    form,
+    hasCustomerOptionsLoaded,
+    watchedCustomerId,
+    watchedErpCustomerCode,
+  ]);
 
   const allCustomerOptions = useMemo(() => {
     return customerOptions.map((c) => ({
@@ -856,6 +884,7 @@ export function DemandHeaderForm({
       <CustomerSelectDialog
         open={customerSelectDialogOpen}
         onOpenChange={setCustomerSelectDialogOpen}
+        contextUserId={watchedRepresentativeId ?? undefined}
         onSelect={(result) => {
           form.setValue('demand.potentialCustomerId', result.customerId ?? null);
           form.setValue('demand.erpCustomerCode', result.erpCustomerCode ?? null);

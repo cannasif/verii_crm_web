@@ -46,7 +46,6 @@ export function OrderCreateForm(): ReactElement {
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
   
   const createMutation = useCreateOrderBulk();
-  const { data: customerOptions = [] } = useCustomerOptions();
 
   useEffect(() => {
     setPageTitle(null);
@@ -81,6 +80,7 @@ export function OrderCreateForm(): ReactElement {
   const watchedErpCustomerCode = form.watch('order.erpCustomerCode');
   const watchedRepresentativeId = form.watch('order.representativeId');
   const watchedOfferDate = form.watch('order.offerDate');
+  const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   
   const { calculateLineTotals } = useOrderCalculations();
   const { data: erpRates = [] } = useExchangeRate();

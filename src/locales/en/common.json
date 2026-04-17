@@ -4327,7 +4327,11 @@
       "DateFormat": "Date format",
       "TimeFormat": "Time format",
       "NumberFormat": "Number format",
-      "DecimalPlaces": "Decimal places"
+      "DecimalPlaces": "Decimal places",
+      "RestrictCustomersBySalesRepMatch": "Restrict customers by sales rep match"
+    },
+    "Descriptions": {
+      "RestrictCustomersBySalesRepMatch": "When enabled, customer lists and pickers are limited by the selected user's matched sales representative codes."
     },
     "Placeholders": {
       "DefaultLanguage": "Select language",

@@ -152,7 +152,10 @@ export function QuotationHeaderForm({
   const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useQuotationRelatedUsers(user?.id);
   
-  const { data: customerOptions = [] } = useCustomerOptions();
+  const {
+    data: customerOptions = [],
+    isFetched: hasCustomerOptionsLoaded,
+  } = useCustomerOptions(watchedRepresentativeId);
   
   const shouldFetchCustomer = Boolean(watchedCustomerId && !watchedErpCustomerCode);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
@@ -200,6 +203,31 @@ export function QuotationHeaderForm({
   useEffect(() => {
     setCustomerSearchQuery(customerDisplayValue);
   }, [customerDisplayValue]);
+
+  useEffect(() => {
+    if (!hasCustomerOptionsLoaded) return;
+    if (!watchedCustomerId && !watchedErpCustomerCode) return;
+
+    const hasMatchingCustomer = customerOptions.some(
+      (option) =>
+        (watchedCustomerId != null && option.id === watchedCustomerId) ||
+        (!!watchedErpCustomerCode && option.customerCode === watchedErpCustomerCode)
+    );
+
+    if (hasMatchingCustomer) {
+      return;
+    }
+
+    form.setValue('quotation.potentialCustomerId', undefined, { shouldDirty: true, shouldValidate: true });
+    form.setValue('quotation.erpCustomerCode', '', { shouldDirty: true, shouldValidate: true });
+    form.setValue('quotation.shippingAddressId', null, { shouldDirty: true, shouldValidate: true });
+  }, [
+    customerOptions,
+    form,
+    hasCustomerOptionsLoaded,
+    watchedCustomerId,
+    watchedErpCustomerCode,
+  ]);
 
   const allCustomerOptions = useMemo(() => {
     return customerOptions.map((c) => ({
@@ -865,6 +893,7 @@ export function QuotationHeaderForm({
       <CustomerSelectDialog
         open={customerSelectDialogOpen}
         onOpenChange={setCustomerSelectDialogOpen}
+        contextUserId={watchedRepresentativeId ?? undefined}
         onSelect={(result) => {
           form.setValue('quotation.potentialCustomerId', result.customerId ?? null);
           form.setValue('quotation.erpCustomerCode', result.erpCustomerCode ?? null);

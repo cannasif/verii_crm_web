@@ -60,7 +60,6 @@ export function QuotationCreateForm(): ReactElement {
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
   
   const createMutation = useCreateQuotationBulk();
-  const { data: customerOptions = [] } = useCustomerOptions();
   const { currencyOptions } = useCurrencyOptions();
 
   useEffect(() => {
@@ -97,6 +96,7 @@ export function QuotationCreateForm(): ReactElement {
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
   const watchedOfferDate = form.watch('quotation.offerDate');
+  const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const offerDateSyncInitializedRef = useRef(false);
 
   useEffect(() => {

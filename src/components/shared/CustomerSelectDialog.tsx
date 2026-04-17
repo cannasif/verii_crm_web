@@ -44,6 +44,7 @@ interface CustomerSelectDialogProps {
   onOpenChange: (open: boolean) => void;
   onSelect: (result: CustomerSelectionResult) => void;
   className?: string;
+  contextUserId?: number | null;
 }
 
 /** ERP: entegre veya ERP müşteri kodu dolu; aksi halde potansiyel. */
@@ -232,6 +233,7 @@ export function CustomerSelectDialog({
   onOpenChange,
   onSelect,
   className,
+  contextUserId,
 }: CustomerSelectDialogProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<'potential' | 'all'>('all');
@@ -330,6 +332,7 @@ export function CustomerSelectDialog({
     sortBy: 'Id',
     sortDirection: 'asc',
     extraQueryKey: [advancedFiltersKey, filterLogic],
+    contextUserId: contextUserId ?? undefined,
     filterLogic,
     buildFilters: () => (hasAdvancedFilters ? validAppliedFilters : undefined),
     fetchPage: dropdownApi.getCustomerPage,
