@@ -62,6 +62,12 @@ export interface StockImageDto {
   updatedAt?: string;
 }
 
+export interface StockImageBulkImportQueuedDto {
+  jobId: string;
+  originalFileName: string;
+  queuedAt: string;
+}
+
 export interface StockRelationDto {
   id: number;
   stockId: number;

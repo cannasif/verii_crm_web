@@ -8,6 +8,7 @@ import type {
   StockDetailCreateDto,
   StockDetailUpdateDto,
   StockImageDto,
+  StockImageBulkImportQueuedDto,
   StockRelationDto,
   StockRelationCreateDto,
 } from '../types';
@@ -130,6 +131,31 @@ export const stockApi = {
 
     if (!response.data) {
       throw new Error('Görsel verisi alınamadı');
+    }
+
+    return response.data;
+  },
+
+  queueBulkImageImport: async (archive: File): Promise<StockImageBulkImportQueuedDto> => {
+    const formData = new FormData();
+    formData.append('archive', archive);
+
+    const response = await api.post<ApiResponse<StockImageBulkImportQueuedDto>>(
+      '/api/StockImage/bulk-import',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    if (!response.success) {
+      throw new Error(response.message || 'Toplu stok görsel içe aktarma başlatılamadı');
+    }
+
+    if (!response.data) {
+      throw new Error('Toplu stok görsel içe aktarma cevabı alınamadı');
     }
 
     return response.data;

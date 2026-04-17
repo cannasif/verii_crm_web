@@ -119,5 +119,21 @@
     "setPrimarySuccess": "Ana görsel başarıyla ayarlandı",
     "relationCreateSuccess": "Bağlı stok başarıyla eklendi",
     "error": "Bir hata oluştu"
+  },
+  "bulkImport": {
+    "button": "Toplu görsel yükle",
+    "title": "Toplu stok görsel yükleme",
+    "description": "Tek ZIP yükle. Sistem ZIP içindeki klasör yapısından ERP stok kodunu okuyup görselleri ilgili stoğa, elle yüklenmiş gibi arka planda eklesin.",
+    "structureTitle": "ZIP yapısı",
+    "selectArchive": "ZIP arşivi seç",
+    "notesTitle": "Nasıl çalışır?",
+    "rule1": "ZIP içindeki klasörler ERP stok koduna göre gruplanmalıdır.",
+    "rule2": "Desteklenen örnekler: STK-001/resim1.jpg, STK-001/1/resim2.png, Resimler/STK-001/resim3.jpg",
+    "rule3": "Sistem stok kodunu bulursa görselleri o stoğa, sanki elle yüklenmiş gibi ekler; bulamazsa sadece o dosyayı atlar.",
+    "rule4": "Büyük arşivler arka planda Hangfire job olarak işlenir. Bu alan ZIP arşivi bekler.",
+    "fileRequired": "Önce bir ZIP dosyası seç.",
+    "submitting": "Sıraya alınıyor...",
+    "submit": "ZIP yükle ve kuyruğa al",
+    "queued": "Toplu görsel içe aktarma kuyruğa alındı. Job: {{jobId}}"
   }
 }

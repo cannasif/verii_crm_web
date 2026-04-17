@@ -17,6 +17,7 @@ import { stockApi } from '../api/stock-api';
 import { STOCK_QUERY_KEYS } from '../utils/query-keys';
 import type { StockGetDto } from '../types';
 import type { PagedFilter } from '@/types/api';
+import { StockBulkImageImportDialog } from './StockBulkImageImportDialog';
 
 const PAGE_KEY = 'stock-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -264,10 +265,13 @@ export function StockListPage(): ReactElement {
       </div>
 
       <div className="relative z-10 bg-white/50 dark:bg-card/30 backdrop-blur-xl border border-white/20 dark:border-border/50 rounded-2xl shadow-sm dark:shadow-2xl overflow-hidden">
-        <Card className="border-0 bg-transparent shadow-none">
-          <CardHeader className="space-y-4">
-            <CardTitle>{t('stock.list.cardTitle', { defaultValue: 'Stok listesi' })}</CardTitle>
-          </CardHeader>
+          <Card className="border-0 bg-transparent shadow-none">
+            <CardHeader className="space-y-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <CardTitle>{t('stock.list.cardTitle', { defaultValue: 'Stok listesi' })}</CardTitle>
+                <StockBulkImageImportDialog />
+              </div>
+            </CardHeader>
           <CardContent>
             <DataTableGrid<StockGetDto, StockColumnKey>
               actionBar={{

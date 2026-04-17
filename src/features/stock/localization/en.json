@@ -119,5 +119,21 @@
     "setPrimarySuccess": "Primary image updated",
     "relationCreateSuccess": "Linked stock added",
     "error": "Something went wrong"
+  },
+  "bulkImport": {
+    "button": "Bulk image upload",
+    "title": "Bulk stock image upload",
+    "description": "Upload one ZIP. The system reads the ERP stock code from the ZIP folder structure and adds the images to the matched stock in the background, just like a manual upload.",
+    "structureTitle": "ZIP structure",
+    "selectArchive": "Select ZIP archive",
+    "notesTitle": "How it works",
+    "rule1": "Folders inside the ZIP should be grouped by ERP stock code.",
+    "rule2": "Supported examples: STK-001/image1.jpg, STK-001/1/image2.png, Resimler/STK-001/image3.jpg",
+    "rule3": "If the stock code is found, the images are added to that stock as if they were uploaded manually; if not, only that file is skipped.",
+    "rule4": "Large archives are processed as a Hangfire background job. This field expects a ZIP archive.",
+    "fileRequired": "Select a ZIP file first.",
+    "submitting": "Queueing...",
+    "submit": "Upload ZIP and queue import",
+    "queued": "Bulk image import queued. Job: {{jobId}}"
   }
 }
