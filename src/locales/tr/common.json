@@ -24,6 +24,23 @@
     "back": "Geri",
     "optional": "Opsiyonel",
     "required": "Zorunlu",
+    "disabledActionHints": {
+      "saveTitle": "Kaydetmek için zorunlu alanları doldurun",
+      "saveIssuesIntro": "Şu zorunlu alanlar eksik veya geçersiz:",
+      "savingInProgress": "Kayıt işlemi sürüyor…",
+      "addLineTitle": "Satır eklemek için önce «{{section}}» bölümünde şunları tamamlayın:",
+      "needCustomer": "Müşteri (CRM müşterisi veya ERP cari kodu)",
+      "needRepresentative": "Satış temsilcisi",
+      "needCurrency": "Para birimi",
+      "genericFormInvalid": "Form henüz geçerli değil; üstteki uyarıları kontrol edin.",
+      "requiredFields": {
+        "customer": "Müşteri seçimi (CRM müşterisi veya ERP cari kodu)",
+        "currency": "Para birimi",
+        "paymentType": "Ödeme tipi",
+        "offerType": "Teklif tipi",
+        "documentSerial": "Seri no"
+      }
+    },
     "offerType": {
       "label": "Teklif Tipi",
       "yurtici": "Yurtiçi",

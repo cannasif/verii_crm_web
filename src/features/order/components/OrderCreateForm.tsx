@@ -12,6 +12,8 @@ import { OrderHeaderForm } from './OrderHeaderForm';
 import { OrderLineTable } from './OrderLineTable';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { Button } from '@/components/ui/button';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { ArrowLeft, Save, X, FileText, Layers, Calculator } from 'lucide-react';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
@@ -80,6 +82,16 @@ export function OrderCreateForm(): ReactElement {
   const watchedErpCustomerCode = form.watch('order.erpCustomerCode');
   const watchedRepresentativeId = form.watch('order.representativeId');
   const watchedOfferDate = form.watch('order.offerDate');
+  const orderFormSlice = form.watch('order');
+  const orderSchemaPayload = useMemo(() => ({ order: orderFormSlice }), [orderFormSlice]);
+
+  const saveManualHintLines = useMemo(
+    () =>
+      buildHeaderSaveRequiredHintLines(orderFormSlice, (key) =>
+        t(key, { ns: 'common' }),
+      ),
+    [orderFormSlice, t],
+  );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   
   const { calculateLineTotals } = useOrderCalculations();
@@ -439,17 +451,25 @@ export function OrderCreateForm(): ReactElement {
               <X className="mr-2 h-4 w-4" />
               {t('order.cancel')}
             </Button>
-            <Button
-              type="submit"
-              disabled={createMutation.isPending || !isFormValid}
-              className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
+            <FormSubmitTooltipWrap
+              schema={createOrderSchema}
+              value={orderSchemaPayload}
+              isValid={isFormValid}
+              isPending={createMutation.isPending}
+              manualHintLines={saveManualHintLines}
             >
-              <Save className="mr-2 h-4 w-4" />
-              {createMutation.isPending
-                ? t('order.saving')
-                : t('order.save')
-              }
-            </Button>
+              <Button
+                type="submit"
+                disabled={createMutation.isPending || !isFormValid}
+                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                {createMutation.isPending
+                  ? t('order.saving')
+                  : t('order.save')
+                }
+              </Button>
+            </FormSubmitTooltipWrap>
           </div>
         </form>
       </FormProvider>

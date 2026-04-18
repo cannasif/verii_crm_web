@@ -12,6 +12,8 @@ import { DemandHeaderForm } from './DemandHeaderForm';
 import { DemandLineTable } from './DemandLineTable';
 import { DemandSummaryCard } from './DemandSummaryCard';
 import { Button } from '@/components/ui/button';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { ArrowLeft, Save, X, FileText, Layers, Calculator } from 'lucide-react';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import type { DemandLineFormState, DemandExchangeRateFormState, DemandBulkCreateDto, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/demand-types';
@@ -81,6 +83,16 @@ export function DemandCreateForm(): ReactElement {
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedRepresentativeId = form.watch('demand.representativeId');
   const watchedOfferDate = form.watch('demand.offerDate');
+  const demandFormSlice = form.watch('demand');
+  const demandSchemaPayload = useMemo(() => ({ demand: demandFormSlice }), [demandFormSlice]);
+
+  const saveManualHintLines = useMemo(
+    () =>
+      buildHeaderSaveRequiredHintLines(demandFormSlice, (key) =>
+        t(key, { ns: 'common' }),
+      ),
+    [demandFormSlice, t],
+  );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   
   const { calculateLineTotals } = useDemandCalculations();
@@ -440,17 +452,25 @@ export function DemandCreateForm(): ReactElement {
                   <X className="mr-2 h-4 w-4 transition-colors" />
                   {t('cancel')}
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={createMutation.isPending || !isFormValid}
-                  className="group w-full sm:w-auto sm:min-w-[140px] h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 disabled:opacity-50 disabled:hover:scale-100"
+                <FormSubmitTooltipWrap
+                  schema={createDemandSchema}
+                  value={demandSchemaPayload}
+                  isValid={isFormValid}
+                  isPending={createMutation.isPending}
+                  manualHintLines={saveManualHintLines}
                 >
-                  <Save className="mr-2 h-4 w-4" />
-                  {createMutation.isPending
-                    ? t('saving')
-                    : t('save')
-                  }
-                </Button>
+                  <Button
+                    type="submit"
+                    disabled={createMutation.isPending || !isFormValid}
+                    className="group w-full sm:w-auto sm:min-w-[140px] h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    {createMutation.isPending
+                      ? t('saving')
+                      : t('save')
+                    }
+                  </Button>
+                </FormSubmitTooltipWrap>
             </div>
         </form>
       </FormProvider>

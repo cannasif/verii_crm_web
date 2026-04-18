@@ -12,6 +12,8 @@ import { QuotationHeaderForm } from './QuotationHeaderForm';
 import { QuotationLineTable } from './QuotationLineTable';
 import { QuotationSummaryCard } from './QuotationSummaryCard';
 import { Button } from '@/components/ui/button';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Save, X, FileDown, Mail, MessageCircle, Share2, ArrowLeft, FileText, Layers, Calculator } from 'lucide-react';
 import {
   DropdownMenu,
@@ -96,6 +98,19 @@ export function QuotationCreateForm(): ReactElement {
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
   const watchedOfferDate = form.watch('quotation.offerDate');
+  const quotationFormSlice = form.watch('quotation');
+  const quotationSchemaPayload = useMemo(
+    () => ({ quotation: quotationFormSlice }),
+    [quotationFormSlice],
+  );
+
+  const saveManualHintLines = useMemo(
+    () =>
+      buildHeaderSaveRequiredHintLines(quotationFormSlice, (key) =>
+        t(key, { ns: 'common' }),
+      ),
+    [quotationFormSlice, t],
+  );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const offerDateSyncInitializedRef = useRef(false);
 
@@ -574,17 +589,25 @@ export function QuotationCreateForm(): ReactElement {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
-              type="submit"
-              disabled={createMutation.isPending || !isFormValid}
-              className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
+            <FormSubmitTooltipWrap
+              schema={createQuotationSchema}
+              value={quotationSchemaPayload}
+              isValid={isFormValid}
+              isPending={createMutation.isPending}
+              manualHintLines={saveManualHintLines}
             >
-              <Save className="mr-2 h-4 w-4" />
-              {createMutation.isPending
-                ? t('quotation.saving')
-                : t('quotation.save')
-              }
-            </Button>
+              <Button
+                type="submit"
+                disabled={createMutation.isPending || !isFormValid}
+                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                {createMutation.isPending
+                  ? t('quotation.saving')
+                  : t('quotation.save')
+                }
+              </Button>
+            </FormSubmitTooltipWrap>
           </div>
         </form>
       </FormProvider>

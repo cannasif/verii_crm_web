@@ -17,6 +17,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { OrderLineForm } from './OrderLineForm';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -291,6 +292,22 @@ export function OrderLineTable({
   };
 
   const canAddLine = linesEditable && Boolean((customerId || erpCustomerCode) && representativeId && isCurrencySelected);
+
+  const headerSectionTitle = t('order.sections.header');
+  const addLineDisableHints = useMemo(() => {
+    if (canAddLine || !linesEditable) return [];
+    const items: string[] = [];
+    if (!customerId && !erpCustomerCode) {
+      items.push(t('disabledActionHints.needCustomer', { ns: 'common' }));
+    }
+    if (!representativeId) {
+      items.push(t('disabledActionHints.needRepresentative', { ns: 'common' }));
+    }
+    if (!isCurrencySelected) {
+      items.push(t('disabledActionHints.needCurrency', { ns: 'common' }));
+    }
+    return items;
+  }, [canAddLine, linesEditable, customerId, erpCustomerCode, representativeId, isCurrencySelected, t]);
 
   const quickPatchDeps = useMemo(
     () => ({
@@ -737,22 +754,56 @@ export function OrderLineTable({
           </div>
 
           <div className="flex items-center gap-3">
-            {linesEditable && (
-              <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAddLine();
-                }}
-                disabled={!canAddLine}
-                size="sm"
-                className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                {t('order.lines.add')}
-              </Button>
-            )}
+            {linesEditable &&
+              (canAddLine ? (
+                <Button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddLine();
+                  }}
+                  size="sm"
+                  className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t('order.lines.add')}
+                </Button>
+              ) : (
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex cursor-help rounded-md">
+                      <Button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        disabled
+                        size="sm"
+                        className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        {t('order.lines.add')}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    align="end"
+                    className="max-w-xs border bg-popover px-3 py-2.5 text-left text-popover-foreground shadow-md"
+                  >
+                    <p className="text-sm font-medium leading-snug">
+                      {t('disabledActionHints.addLineTitle', { ns: 'common', section: headerSectionTitle })}
+                    </p>
+                    <ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-relaxed text-foreground/95">
+                      {addLineDisableHints.map((hint) => (
+                        <li key={hint}>{hint}</li>
+                      ))}
+                    </ul>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
