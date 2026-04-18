@@ -581,7 +581,9 @@ export function OrderHeaderForm({
                 name="order.paymentTypeId"
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label}>{t('order.header.paymentType')}</FormLabel>
+                    <FormLabel className={styles.label} required>
+                      {t('order.header.paymentType')}
+                    </FormLabel>
                     <div className="relative">
                       <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
                         <CreditCard className="h-4 w-4" />

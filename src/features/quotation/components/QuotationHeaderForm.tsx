@@ -608,7 +608,9 @@ export function QuotationHeaderForm({
                 name="quotation.paymentTypeId"
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label}>{t('quotation.header.paymentType')}</FormLabel>
+                    <FormLabel className={styles.label} required>
+                      {t('quotation.header.paymentType')}
+                    </FormLabel>
                     <div className="relative">
                       <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
                         <CreditCard className="h-4 w-4" />

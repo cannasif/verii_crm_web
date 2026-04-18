@@ -37,6 +37,7 @@ import { CustomerMailLogsTab } from './CustomerMailLogsTab';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { getApiBaseUrl } from '@/lib/axios';
 import { formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
@@ -617,6 +618,31 @@ function ErpBalanceCard({
   );
 }
 
+const ERP_AMOUNT_EPS = 1e-6;
+
+function erpDebitAmountClass(value: number): string {
+  return Math.abs(value) > ERP_AMOUNT_EPS
+    ? 'font-medium tabular-nums tracking-tight text-rose-600 dark:text-rose-400'
+    : 'tabular-nums tracking-tight text-muted-foreground/60';
+}
+
+function erpCreditAmountClass(value: number): string {
+  return Math.abs(value) > ERP_AMOUNT_EPS
+    ? 'font-medium tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400'
+    : 'tabular-nums tracking-tight text-muted-foreground/60';
+}
+
+/** Klasik borsa: pozitif yeşil, negatif kırmızı, sıfır nötr */
+function erpSignedBalanceClass(value: number): string {
+  if (value > ERP_AMOUNT_EPS) {
+    return 'font-medium tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400';
+  }
+  if (value < -ERP_AMOUNT_EPS) {
+    return 'font-medium tabular-nums tracking-tight text-rose-600 dark:text-rose-400';
+  }
+  return 'tabular-nums tracking-tight text-muted-foreground/60';
+}
+
 function ErpMovementsTabContent({
   balance,
   movements,
@@ -684,49 +710,106 @@ function ErpMovementsTabContent({
         />
       </div>
 
-      <Card className="rounded-xl border border-slate-200 dark:border-white/10">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold">{tc('erpMovements.tableTitle')}</CardTitle>
+      <Card className="rounded-xl border border-slate-200/80 dark:border-white/10 shadow-sm">
+        <CardHeader className="pb-2 pt-5">
+          <CardTitle className="text-sm font-medium tracking-tight text-slate-700 dark:text-slate-200">
+            {tc('erpMovements.tableTitle')}
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-5 pt-0">
           {movements.length === 0 ? (
             <p className="py-6 text-sm text-muted-foreground">{t('common.noData')}</p>
           ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <Table className="min-w-[1500px]">
+            <div className="overflow-x-auto rounded-lg border border-slate-100/90 bg-white/40 dark:border-white/[0.06] dark:bg-white/[0.02]">
+              <Table className="min-w-[1500px] text-[13px] leading-snug">
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>{tc('erpMovements.columns.date')}</TableHead>
-                    <TableHead>{tc('erpMovements.columns.dueDate')}</TableHead>
-                    <TableHead>{tc('erpMovements.columns.documentNo')}</TableHead>
-                    <TableHead>{tc('erpMovements.columns.description')}</TableHead>
-                    <TableHead>{tc('erpMovements.columns.currency')}</TableHead>
-                    <TableHead className="text-right">{tc('erpMovements.columns.debit')}</TableHead>
-                    <TableHead className="text-right">{tc('erpMovements.columns.credit')}</TableHead>
-                    <TableHead className="text-right">{tc('erpMovements.columns.tlBalanceByDate')}</TableHead>
-                    <TableHead className="text-right">{tc('erpMovements.columns.tlBalanceByDueDate')}</TableHead>
-                    <TableHead className="text-right">{tc('erpMovements.columns.fxDebit')}</TableHead>
-                    <TableHead className="text-right">{tc('erpMovements.columns.fxCredit')}</TableHead>
-                    <TableHead className="text-right">{tc('erpMovements.columns.fxBalanceByDate')}</TableHead>
-                    <TableHead className="text-right">{tc('erpMovements.columns.fxBalanceByDueDate')}</TableHead>
+                  <TableRow className="border-b border-slate-100/90 hover:bg-transparent dark:border-white/[0.06]">
+                    <TableHead className="h-9 px-3 py-2 text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.date')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.dueDate')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.documentNo')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.description')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.currency')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-rose-600/90 dark:text-rose-400/95">
+                      {tc('erpMovements.columns.debit')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-emerald-600/90 dark:text-emerald-400/95">
+                      {tc('erpMovements.columns.credit')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.tlBalanceByDate')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.tlBalanceByDueDate')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-rose-600/90 dark:text-rose-400/95">
+                      {tc('erpMovements.columns.fxDebit')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-emerald-600/90 dark:text-emerald-400/95">
+                      {tc('erpMovements.columns.fxCredit')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.fxBalanceByDate')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.fxBalanceByDueDate')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {movements.map((row, index) => (
-                    <TableRow key={`${row.cariKod}-${row.tarih ?? index}-${row.belgeNo ?? index}`}>
-                      <TableCell>{formatDate(row.tarih)}</TableCell>
-                      <TableCell>{formatDate(row.vadeTarihi)}</TableCell>
-                      <TableCell>{row.belgeNo || '-'}</TableCell>
-                      <TableCell>{row.aciklama || '-'}</TableCell>
-                      <TableCell>{row.paraBirimi || '-'}</TableCell>
-                      <TableCell className="text-right">{formatNumber(row.borc)}</TableCell>
-                      <TableCell className="text-right">{formatNumber(row.alacak)}</TableCell>
-                      <TableCell className="text-right">{formatNumber(row.tarihSiraliTlBakiye)}</TableCell>
-                      <TableCell className="text-right">{formatNumber(row.vadeSiraliTlBakiye)}</TableCell>
-                      <TableCell className="text-right">{formatNumber(row.dovizBorc)}</TableCell>
-                      <TableCell className="text-right">{formatNumber(row.dovizAlacak)}</TableCell>
-                      <TableCell className="text-right">{formatNumber(row.tarihSiraliDovizBakiye)}</TableCell>
-                      <TableCell className="text-right">{formatNumber(row.vadeSiraliDovizBakiye)}</TableCell>
+                    <TableRow
+                      key={`${row.cariKod}-${row.tarih ?? index}-${row.belgeNo ?? index}`}
+                      className="border-b border-slate-50/90 transition-colors last:border-0 hover:bg-slate-50/40 dark:border-white/[0.04] dark:hover:bg-white/[0.03]"
+                    >
+                      <TableCell className="px-3 py-2 text-muted-foreground">{formatDate(row.tarih)}</TableCell>
+                      <TableCell className="px-3 py-2 text-muted-foreground">{formatDate(row.vadeTarihi)}</TableCell>
+                      <TableCell className="px-3 py-2">{row.belgeNo || '-'}</TableCell>
+                      <TableCell className="max-w-[220px] truncate px-3 py-2 text-muted-foreground">
+                        {row.aciklama || '-'}
+                      </TableCell>
+                      <TableCell className="px-3 py-2 text-muted-foreground">{row.paraBirimi || '-'}</TableCell>
+                      <TableCell className={cn('px-3 py-2 text-right', erpDebitAmountClass(row.borc))}>
+                        {formatNumber(row.borc)}
+                      </TableCell>
+                      <TableCell className={cn('px-3 py-2 text-right', erpCreditAmountClass(row.alacak))}>
+                        {formatNumber(row.alacak)}
+                      </TableCell>
+                      <TableCell
+                        className={cn('px-3 py-2 text-right', erpSignedBalanceClass(row.tarihSiraliTlBakiye))}
+                      >
+                        {formatNumber(row.tarihSiraliTlBakiye)}
+                      </TableCell>
+                      <TableCell
+                        className={cn('px-3 py-2 text-right', erpSignedBalanceClass(row.vadeSiraliTlBakiye))}
+                      >
+                        {formatNumber(row.vadeSiraliTlBakiye)}
+                      </TableCell>
+                      <TableCell className={cn('px-3 py-2 text-right', erpDebitAmountClass(row.dovizBorc))}>
+                        {formatNumber(row.dovizBorc)}
+                      </TableCell>
+                      <TableCell className={cn('px-3 py-2 text-right', erpCreditAmountClass(row.dovizAlacak))}>
+                        {formatNumber(row.dovizAlacak)}
+                      </TableCell>
+                      <TableCell
+                        className={cn('px-3 py-2 text-right', erpSignedBalanceClass(row.tarihSiraliDovizBakiye))}
+                      >
+                        {formatNumber(row.tarihSiraliDovizBakiye)}
+                      </TableCell>
+                      <TableCell
+                        className={cn('px-3 py-2 text-right', erpSignedBalanceClass(row.vadeSiraliDovizBakiye))}
+                      >
+                        {formatNumber(row.vadeSiraliDovizBakiye)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

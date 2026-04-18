@@ -23,6 +23,23 @@
     "back": "Back",
     "optional": "Optional",
     "required": "Required",
+    "disabledActionHints": {
+      "saveTitle": "Fill required fields before saving",
+      "saveIssuesIntro": "These required fields are missing or invalid:",
+      "savingInProgress": "Saving…",
+      "addLineTitle": "Complete the following in «{{section}}» before adding a line:",
+      "needCustomer": "Customer (CRM selection or ERP account code)",
+      "needRepresentative": "Sales representative",
+      "needCurrency": "Currency",
+      "genericFormInvalid": "The form is not valid yet; check the field messages above.",
+      "requiredFields": {
+        "customer": "Customer (CRM selection or ERP account code)",
+        "currency": "Currency",
+        "paymentType": "Payment type",
+        "offerType": "Offer type",
+        "documentSerial": "Document serial"
+      }
+    },
     "offerType": {
       "label": "Offer Type",
       "yurtici": "Domestic",
