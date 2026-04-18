@@ -1,11 +1,6 @@
 import { z } from 'zod';
 
 export interface SystemSettingsDto {
-  defaultLanguage: string;
-  defaultCurrencyCode: string;
-  defaultTimeZone: string;
-  dateFormat: string;
-  timeFormat: string;
   numberFormat: string;
   decimalPlaces: number;
   restrictCustomersBySalesRepMatch: boolean;

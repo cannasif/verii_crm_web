@@ -19,11 +19,6 @@ export function SystemSettingsPage(): ReactElement {
 
   const handleSubmit = async (values: EditableSystemSettingsDto): Promise<void> => {
     const payload: UpdateSystemSettingsDto = {
-      defaultLanguage: data?.defaultLanguage ?? 'tr',
-      defaultTimeZone: data?.defaultTimeZone ?? 'Europe/Istanbul',
-      dateFormat: data?.dateFormat ?? 'dd.MM.yyyy',
-      timeFormat: data?.timeFormat ?? 'HH:mm',
-      defaultCurrencyCode: data?.defaultCurrencyCode ?? 'TRY',
       numberFormat: values.numberFormat,
       decimalPlaces: values.decimalPlaces,
       restrictCustomersBySalesRepMatch: values.restrictCustomersBySalesRepMatch,

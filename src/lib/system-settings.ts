@@ -23,7 +23,7 @@ export function getSystemTimeZone(): string {
 }
 
 export function getSystemCurrency(): string {
-  return getSettings().defaultCurrencyCode || 'TRY';
+  return 'TRY';
 }
 
 export function getSystemDecimalPlaces(): number {
