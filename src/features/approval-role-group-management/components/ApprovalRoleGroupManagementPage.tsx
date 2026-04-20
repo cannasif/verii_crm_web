@@ -90,6 +90,7 @@ export function ApprovalRoleGroupManagementPage(): ReactElement {
   const { data, isLoading } = useApprovalRoleGroupList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

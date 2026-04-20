@@ -91,6 +91,7 @@ export function DistrictManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useDistrictList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

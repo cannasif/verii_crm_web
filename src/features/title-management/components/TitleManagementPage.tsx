@@ -93,6 +93,7 @@ export function TitleManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useTitleList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

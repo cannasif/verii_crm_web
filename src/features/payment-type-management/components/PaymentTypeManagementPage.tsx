@@ -89,6 +89,7 @@ export function PaymentTypeManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = usePaymentTypeList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

@@ -118,6 +118,7 @@ export function ContactManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useContactList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

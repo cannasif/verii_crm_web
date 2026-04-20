@@ -98,6 +98,7 @@ export function ActivityTypeManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useActivityTypeList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

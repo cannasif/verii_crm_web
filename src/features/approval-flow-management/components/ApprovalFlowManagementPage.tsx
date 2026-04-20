@@ -100,6 +100,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useApprovalFlowList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

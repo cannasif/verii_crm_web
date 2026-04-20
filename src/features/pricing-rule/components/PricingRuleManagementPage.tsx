@@ -93,6 +93,7 @@ export function PricingRuleManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = usePricingRuleHeaders({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

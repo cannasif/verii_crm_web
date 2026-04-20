@@ -93,6 +93,7 @@ export function ShippingAddressManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useShippingAddresses({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

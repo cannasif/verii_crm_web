@@ -86,6 +86,7 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useApprovalUserRoleList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

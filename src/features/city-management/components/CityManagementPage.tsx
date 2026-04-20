@@ -85,6 +85,7 @@ export function CityManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useCityList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

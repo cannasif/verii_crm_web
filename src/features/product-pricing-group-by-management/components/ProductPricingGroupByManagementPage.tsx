@@ -91,6 +91,7 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useProductPricingGroupBys({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

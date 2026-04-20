@@ -85,6 +85,7 @@ export function CountryManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useCountryList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });

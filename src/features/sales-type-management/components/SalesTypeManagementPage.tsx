@@ -96,6 +96,7 @@ export function SalesTypeManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useSalesTypeList({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy,
     sortDirection,
   });
