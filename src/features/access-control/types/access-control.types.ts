@@ -18,6 +18,7 @@ export interface PagedFilter {
 export interface PagedRequest {
   pageNumber?: number;
   pageSize?: number;
+  search?: string;
   sortBy?: string;
   sortDirection?: string;
   filters?: PagedFilter[];

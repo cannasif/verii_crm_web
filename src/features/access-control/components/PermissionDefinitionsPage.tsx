@@ -37,7 +37,7 @@ import { useDeletePermissionDefinitionMutation } from '../hooks/useDeletePermiss
 import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
-import { getPermissionDisplayMeta, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
+import { getPermissionDisplayLabel, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
 
 const EMPTY_PERMISSION_DEFINITIONS: PermissionDefinitionDto[] = [];
 const PAGE_KEY = 'permission-definitions';
@@ -69,6 +69,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const { data, isLoading } = usePermissionDefinitionsQuery({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy: 'updatedDate',
     sortDirection: 'desc',
   });
@@ -92,8 +93,7 @@ export function PermissionDefinitionsPage(): ReactElement {
     if (!searchTerm.trim()) return items;
     const lower = searchTerm.toLowerCase();
     return items.filter((item) => {
-      const meta = getPermissionDisplayMeta(item.code);
-      const displayName = meta ? t(meta.key, meta.fallback) : item.name;
+      const displayName = getPermissionDisplayLabel(item.code, (key, fallback) => t(key, fallback));
       return (
         item.code.toLowerCase().includes(lower) ||
         item.name.toLowerCase().includes(lower) ||
@@ -109,11 +109,14 @@ export function PermissionDefinitionsPage(): ReactElement {
 
   const handleSyncFromRoutes = async (): Promise<void> => {
     const syncItems = PERMISSION_CODE_CATALOG.map((code) => {
-      const meta = getPermissionDisplayMeta(code);
-      const name = meta ? t(meta.key, meta.fallback) : code;
+      const name = getPermissionDisplayLabel(code, (key, fallback) => t(key, fallback));
       return { code, name, isActive: true };
     });
-    await syncMutation.mutateAsync({ items: syncItems });
+    await syncMutation.mutateAsync({
+      items: syncItems,
+      updateExistingNames: true,
+      updateExistingIsActive: true,
+    });
   };
 
   const handleAddClick = (): void => {
@@ -167,10 +170,7 @@ export function PermissionDefinitionsPage(): ReactElement {
     () =>
       filteredItems.map((item) => ({
         code: item.code,
-        name: (() => {
-          const meta = getPermissionDisplayMeta(item.code);
-          return meta ? t(meta.key, meta.fallback) : item.name;
-        })(),
+        name: getPermissionDisplayLabel(item.code, (key, fallback) => t(key, fallback)),
         isActive: item.isActive ? t('common.yes') : t('common.no'),
         updatedDate: item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-',
       })),
@@ -269,7 +269,7 @@ export function PermissionDefinitionsPage(): ReactElement {
               </div>
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-                  Route Sync
+                  {t('permissionDefinitions.syncSummaryTitle', { defaultValue: 'Route Sync' })}
                 </p>
                 <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{PERMISSION_CODE_CATALOG.length}</p>
               </div>
@@ -349,16 +349,11 @@ export function PermissionDefinitionsPage(): ReactElement {
                 return (
                   <div className="flex flex-col">
                     <span>
-                      {(() => {
-                        const meta = getPermissionDisplayMeta(row.code);
-                        return meta ? t(meta.key, meta.fallback) : row.name;
-                      })()}
+                      {getPermissionDisplayLabel(row.code, (key, fallback) => t(key, fallback))}
                     </span>
                     {(() => {
-                      const meta = getPermissionDisplayMeta(row.code);
-                      const displayName = meta ? t(meta.key, meta.fallback) : row.name;
+                      const displayName = getPermissionDisplayLabel(row.code, (key, fallback) => t(key, fallback));
                       const storedName = row.name;
-                      if (!meta) return null;
                       if (storedName.trim().toLowerCase() === displayName.trim().toLowerCase()) return null;
                       return (
                         <span className="text-xs text-slate-500 dark:text-slate-400">{storedName}</span>

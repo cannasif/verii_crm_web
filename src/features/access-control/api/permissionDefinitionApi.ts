@@ -15,6 +15,7 @@ function buildQueryParams(params: PagedRequest): string {
   const queryParams = new URLSearchParams();
   if (params.pageNumber !== undefined) queryParams.append('pageNumber', params.pageNumber.toString());
   if (params.pageSize !== undefined) queryParams.append('pageSize', params.pageSize.toString());
+  if (params.search) queryParams.append('search', params.search);
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);
   if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
   if (params.filters?.length) {

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
-import { getPermissionDisplayMeta, getPermissionModuleDisplayMeta, isLeafPermissionCode } from '../utils/permission-config';
+import { getPermissionDisplayLabel, getPermissionModuleDisplayMeta, isLeafPermissionCode } from '../utils/permission-config';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -45,9 +45,7 @@ export function PermissionDefinitionMultiSelect({
     (code: string, name: string | null | undefined): string => {
       const trimmedName = (name ?? '').trim();
       if (trimmedName) return trimmedName;
-      const meta = getPermissionDisplayMeta(code);
-      if (meta) return t(meta.key, meta.fallback);
-      return code;
+      return getPermissionDisplayLabel(code, (key, fallback) => t(key, fallback));
     },
     [t]
   );

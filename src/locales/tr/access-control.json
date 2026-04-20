@@ -54,7 +54,8 @@
       "confirmTitle": "İzin Tanımını Sil",
       "confirmMessage": "\"{{name}}\" silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
     },
-    "syncFromRoutes": "Rotalardan senkronize et"
+    "syncFromRoutes": "Rotalardan senkronize et",
+    "syncSummaryTitle": "Rota Senkronu"
   },
   "permissionGroups": {
     "title": "İzin Grupları",
@@ -88,7 +89,17 @@
     "permissionsPanel": {
       "title": "Grup İzinlerini Düzenle",
       "description": "Bu grup için izinleri seçin",
-      "currentCodes": "Mevcut izin kodları"
+      "currentCodes": "Mevcut izin kodları",
+      "groupedRows": "ekran",
+      "screen": "Ekran",
+      "actionsMapped": "aksiyon",
+      "actions": {
+        "create": "Oluştur",
+        "read": "Görüntüle",
+        "update": "Güncelle",
+        "delete": "Sil",
+        "other": "Diğer"
+      }
     },
     "delete": {
       "confirmTitle": "İzin Grubunu Sil",

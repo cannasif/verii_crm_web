@@ -48,13 +48,14 @@
       "isActive": "Active",
       "updatedDate": "Updated",
       "showing": "{{from}}-{{to}} of {{total}}",
-      "title": "İzin Tanımları"
+      "title": "Permission Definitions"
     },
     "delete": {
       "confirmTitle": "Delete Permission Definition",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
-    "syncFromRoutes": "Sync from routes"
+    "syncFromRoutes": "Sync from routes",
+    "syncSummaryTitle": "Route Sync"
   },
   "permissionGroups": {
     "title": "Permission Groups",
@@ -87,14 +88,24 @@
     "permissionsPanel": {
       "title": "Edit Group Permissions",
       "description": "Select permissions for this group",
-      "currentCodes": "Current permission codes"
+      "currentCodes": "Current permission codes",
+      "groupedRows": "screens",
+      "screen": "Screen",
+      "actionsMapped": "actions",
+      "actions": {
+        "create": "Create",
+        "read": "Read",
+        "update": "Update",
+        "delete": "Delete",
+        "other": "Other"
+      }
     },
     "delete": {
       "confirmTitle": "Delete Permission Group",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
     "search": "Search...",
-    "systemAdminLocked": "Sistem Admin grubu değiştirilemez"
+    "systemAdminLocked": "System Admin group cannot be changed"
   },
   "userGroupAssignments": {
     "title": "User Group Assignments",

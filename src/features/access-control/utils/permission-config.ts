@@ -165,6 +165,30 @@ export function isLeafPermissionCode(code: string): boolean {
   return code.split('.').filter(Boolean).length >= 3;
 }
 
+const CRUD_ACTIONS = ['view', 'create', 'update', 'delete'] as const;
+
+function isCrudAction(action: string): action is (typeof CRUD_ACTIONS)[number] {
+  return (CRUD_ACTIONS as readonly string[]).includes(action);
+}
+
+function normalizePermissionCodeForDisplay(code: string): string {
+  const parts = code.split('.').filter(Boolean);
+  if (parts.length < 2) return code;
+  const action = parts[parts.length - 1]?.toLowerCase() ?? '';
+  if (!isCrudAction(action)) return code;
+  return [...parts.slice(0, -1), 'view'].join('.');
+}
+
+function buildCrudPermissionCodes(code: string): string[] {
+  if (!isLeafPermissionCode(code)) return [];
+  if (code === 'dashboard.view') return [code];
+
+  const parts = code.split('.').filter(Boolean);
+  if (parts.length < 3) return [code];
+
+  return CRUD_ACTIONS.map((action) => [...parts.slice(0, -1), action].join('.'));
+}
+
 export const ACCESS_CONTROL_ADMIN_PERMISSIONS = [
   'access-control.permission-definitions.view',
   'access-control.permission-groups.view',
@@ -185,7 +209,7 @@ export const ACCESS_CONTROL_ADMIN_ONLY_PATTERNS: RegExp[] = [
 
 
 
-export const PERMISSION_CODE_DISPLAY: Record<string, { key: string; fallback: string }> = {
+export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: string }> = {
   'dashboard.view': { key: 'sidebar.dashboard', fallback: 'Dashboard' },
 
   'sales.demands.view': { key: 'sidebar.demands', fallback: 'Talepler' },
@@ -250,8 +274,68 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key: string; fallback: st
   'admin-only': { key: 'sidebar.systemSettings', fallback: 'Sistem Ayarları' },
 };
 
-export function getPermissionDisplayMeta(code: string): { key: string; fallback: string } | null {
-  return PERMISSION_CODE_DISPLAY[code] ?? null;
+export function getPermissionDisplayMeta(code: string): { key?: string; fallback: string } | null {
+  const direct = PERMISSION_CODE_DISPLAY[code];
+  if (direct) return direct;
+
+  const normalizedCode = normalizePermissionCodeForDisplay(code);
+  const normalizedMeta = PERMISSION_CODE_DISPLAY[normalizedCode];
+  if (!normalizedMeta) return null;
+
+  const parts = code.split('.').filter(Boolean);
+  const action = parts[parts.length - 1]?.toLowerCase() ?? '';
+
+  const actionFallbackMap: Record<string, string> = {
+    view: 'Görüntüleme',
+    create: 'Oluşturma',
+    update: 'Güncelleme',
+    delete: 'Silme',
+  };
+
+  const actionFallback = actionFallbackMap[action];
+  if (!actionFallback || normalizedCode === code) return normalizedMeta;
+
+  return {
+    fallback: `${normalizedMeta.fallback} - ${actionFallback}`,
+  };
+}
+
+export function getPermissionDisplayLabel(
+  code: string,
+  translate: (key: string, fallback: string) => string
+): string {
+  const meta = getPermissionDisplayMeta(code);
+  const normalizedCode = normalizePermissionCodeForDisplay(code);
+  const normalizedMeta = PERMISSION_CODE_DISPLAY[normalizedCode];
+
+  const parts = code.split('.').filter(Boolean);
+  const action = parts[parts.length - 1]?.toLowerCase() ?? '';
+
+  if (normalizedMeta && normalizedCode !== code && isCrudAction(action)) {
+    const baseLabel = normalizedMeta.key
+      ? translate(normalizedMeta.key, normalizedMeta.fallback)
+      : normalizedMeta.fallback;
+
+    const actionKeyMap: Record<string, string> = {
+      view: 'permissionGroups.permissionsPanel.actions.read',
+      create: 'permissionGroups.permissionsPanel.actions.create',
+      update: 'permissionGroups.permissionsPanel.actions.update',
+      delete: 'permissionGroups.permissionsPanel.actions.delete',
+    };
+
+    const actionFallbackMap: Record<string, string> = {
+      view: 'Read',
+      create: 'Create',
+      update: 'Update',
+      delete: 'Delete',
+    };
+
+    return `${baseLabel} - ${translate(actionKeyMap[action] ?? '', actionFallbackMap[action] ?? action)}`;
+  }
+
+  if (meta?.key) return translate(meta.key, meta.fallback);
+  if (meta) return meta.fallback;
+  return code;
 }
 
 export const PERMISSION_MODULE_DISPLAY: Record<string, { key: string; fallback: string }> = {
@@ -279,14 +363,16 @@ export const PERMISSION_CODE_CATALOG: string[] = Array.from(
     Object.values(ROUTE_PERMISSION_MAP)
       .filter((code) => code && code !== 'admin-only')
       .map((code) => code.trim())
+      .flatMap((code) => buildCrudPermissionCodes(code))
   )
 )
   .filter((code) => isLeafPermissionCode(code))
   .sort((a, b) => a.localeCompare(b));
 
 export function getRoutesForPermissionCode(code: string): string[] {
+  const normalizedCode = normalizePermissionCodeForDisplay(code);
   const routes = Object.entries(ROUTE_PERMISSION_MAP)
-    .filter(([, permissionCode]) => permissionCode === code)
+    .filter(([, permissionCode]) => permissionCode === normalizedCode)
     .map(([route]) => route);
   return routes.sort((a, b) => a.localeCompare(b));
 }

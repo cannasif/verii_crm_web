@@ -70,6 +70,7 @@ export function PermissionGroupsPage(): ReactElement {
   const { data, isLoading } = usePermissionGroupsQuery({
     pageNumber,
     pageSize,
+    search: searchTerm || undefined,
     sortBy: 'updatedDate',
     sortDirection: 'desc',
   });

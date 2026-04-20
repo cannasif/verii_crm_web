@@ -28,7 +28,7 @@ import {
 } from '../schemas/permission-definition-schema';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
-import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayMeta } from '../utils/permission-config';
+import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayLabel } from '../utils/permission-config';
 import { Badge } from '@/components/ui/badge';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { KeyRound, Sparkles } from 'lucide-react';
@@ -92,8 +92,7 @@ export function PermissionDefinitionForm({
       if (currentCode && lowerCode === currentCode) return true;
       return !usedSet.has(lowerCode);
     }).map((code) => {
-      const meta = getPermissionDisplayMeta(code);
-      const title = meta ? t(meta.key, meta.fallback) : code;
+      const title = getPermissionDisplayLabel(code, (key, fallback) => t(key, fallback));
       return { value: code, label: `${title} (${code})` };
     });
   }, [t, usedCodes, item?.code]);
@@ -148,8 +147,7 @@ export function PermissionDefinitionForm({
                         modal
                         onValueChange={(value) => {
                           field.onChange(value);
-                          const meta = getPermissionDisplayMeta(value);
-                          const title = meta ? t(meta.key, meta.fallback) : '';
+                          const title = getPermissionDisplayLabel(value, (key, fallback) => t(key, fallback));
                           if (!form.getValues('name') && title) {
                             form.setValue('name', title, { shouldDirty: true });
                           }
