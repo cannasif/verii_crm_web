@@ -8,9 +8,11 @@ export const queryKeys = {
   list: (params?: {
     pageNumber?: number;
     pageSize?: number;
+    search?: string;
     sortBy?: string;
     sortDirection?: string;
-    filters?: Record<string, unknown>;
+    filtersKey?: string;
+    filterLogic?: 'and' | 'or';
     contextUserId?: number;
   }) => [CUSTOMER_MANAGEMENT_QUERY_KEYS.LIST, params] as const,
   detail: (id: number) => [CUSTOMER_MANAGEMENT_QUERY_KEYS.DETAIL, id] as const,

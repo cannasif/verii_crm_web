@@ -17,7 +17,6 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
-import { matchesSearchTerm } from '@/lib/search';
 import { CUSTOMER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { CustomerTable, getColumnsConfig } from './CustomerTable';
 import { CustomerForm } from './CustomerForm';
@@ -32,8 +31,12 @@ import { useCreateActivity } from '@/features/activity-management/hooks/useCreat
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
 import type { CustomerDto, CustomerFormData } from '../types/customer-types';
-import { applyCustomerFilters, CUSTOMER_FILTER_COLUMNS } from '../types/customer-filter.types';
+import { CUSTOMER_FILTER_COLUMNS } from '../types/customer-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import {
+  buildCustomerListSearchParam,
+  customerFilterRowsToPagedFilters,
+} from '../utils/customer-list-api-filters';
 import {
   extractCustomerConflictPayload,
   type CustomerDuplicateConflictPayload,
@@ -48,48 +51,6 @@ type CustomerColumnKey = keyof CustomerDto;
 
 const DEFAULT_SORT_BY: CustomerColumnKey = 'name';
 const DEFAULT_SORT_DIRECTION: 'asc' | 'desc' = 'asc';
-
-const NUMERIC_CUSTOMER_SORT_KEYS = new Set<CustomerColumnKey>([
-  'id',
-  'creditLimit',
-  'branchCode',
-  'businessUnitCode',
-  'defaultShippingAddressId',
-  'countryId',
-  'cityId',
-  'districtId',
-  'customerTypeId',
-]);
-
-const DATE_CUSTOMER_SORT_KEYS = new Set<CustomerColumnKey>(['createdDate', 'updatedDate']);
-
-function compareCustomerRows(
-  a: CustomerDto,
-  b: CustomerDto,
-  sortBy: CustomerColumnKey,
-  direction: 'asc' | 'desc'
-): number {
-  const mul = direction === 'asc' ? 1 : -1;
-  if (NUMERIC_CUSTOMER_SORT_KEYS.has(sortBy)) {
-    const na = Number(a[sortBy]);
-    const nb = Number(b[sortBy]);
-    const va = Number.isFinite(na) ? na : 0;
-    const vb = Number.isFinite(nb) ? nb : 0;
-    return mul * (va - vb);
-  }
-  if (DATE_CUSTOMER_SORT_KEYS.has(sortBy)) {
-    const rawA = a[sortBy];
-    const rawB = b[sortBy];
-    const ta = rawA ? new Date(String(rawA)).getTime() : 0;
-    const tb = rawB ? new Date(String(rawB)).getTime() : 0;
-    const va = Number.isFinite(ta) ? ta : 0;
-    const vb = Number.isFinite(tb) ? tb : 0;
-    return mul * (va - vb);
-  }
-  const aVal = a[sortBy] != null ? String(a[sortBy]).toLowerCase() : '';
-  const bVal = b[sortBy] != null ? String(b[sortBy]).toLowerCase() : '';
-  return mul * aVal.localeCompare(bVal);
-}
 
 function getQuickActivityWindow(): { start: string; end: string } {
   const start = new Date();
@@ -122,7 +83,6 @@ export function CustomerManagementPage(): ReactElement {
   const [quickActivityCustomer, setQuickActivityCustomer] = useState<CustomerDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
   const tableColumns = useMemo(
     () => getColumnsConfig(t),
     [t, i18n.language, i18n.resolvedLanguage]
@@ -194,69 +154,30 @@ export function CustomerManagementPage(): ReactElement {
     [sortBy, sortDirection, user?.id]
   );
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+  const listQueryParams = useMemo(() => {
+    const apiFilters = customerFilterRowsToPagedFilters(appliedFilterRows);
+    const search = buildCustomerListSearchParam(searchTerm);
+    return {
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortDirection,
+      ...(search ? { search } : {}),
+      ...(apiFilters.length > 0 ? { filters: apiFilters, filterLogic: 'and' as const } : {}),
+    };
+  }, [pageNumber, pageSize, sortBy, sortDirection, searchTerm, appliedFilterRows]);
 
-  const { data: apiResponse, isLoading } = useCustomerList({
-    pageNumber,
-    pageSize,
-    sortBy,
-    sortDirection,
-  });
+  const { data: apiResponse, isLoading } = useCustomerList(listQueryParams);
 
   const customers = useMemo<CustomerDto[]>(
     () => apiResponse?.data ?? EMPTY_CUSTOMERS,
     [apiResponse?.data]
   );
 
-  const filteredCustomers = useMemo(() => {
-    if (!customers.length) return [];
-    let result = [...customers];
-    if (debouncedSearch) {
-      result = result.filter(
-        (item) =>
-          matchesSearchTerm(debouncedSearch, [
-            item.id,
-            item.customerCode,
-            item.name,
-            item.customerTypeName,
-            item.email,
-            item.phone,
-            item.phone2,
-            item.cityName,
-            item.districtName,
-            item.countryName,
-            item.address,
-            item.taxNumber,
-            item.taxOffice,
-            item.tcknNumber,
-            item.website,
-            item.salesRepCode,
-            item.groupCode,
-            item.creditLimit,
-            item.defaultShippingAddressId,
-            item.createdDate,
-          ])
-      );
-    }
-    result = applyCustomerFilters(result, appliedFilterRows);
-    return result;
-  }, [customers, debouncedSearch, appliedFilterRows]);
-
-  const sortedCustomers = useMemo(() => {
-    const result = [...filteredCustomers];
-    result.sort((a, b) => compareCustomerRows(a, b, sortBy, sortDirection));
-    return result;
-  }, [filteredCustomers, sortBy, sortDirection]);
-
-  const totalCount = apiResponse?.totalCount ?? sortedCustomers.length;
+  const totalCount = apiResponse?.totalCount ?? 0;
   const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedCustomers.length - 1, totalCount);
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
   const customerStats = useMemo<CustomerStatsData>(() => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -269,7 +190,7 @@ export function CustomerManagementPage(): ReactElement {
       ).length,
     };
   }, [apiResponse?.totalCount, customers]);
-  const currentPageRows = sortedCustomers;
+  const currentPageRows = customers;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as CustomerColumnKey[];
 
@@ -335,7 +256,7 @@ export function CustomerManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, debouncedSearch, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingCustomer(null);

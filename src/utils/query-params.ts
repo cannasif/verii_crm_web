@@ -32,7 +32,7 @@ export const normalizeQueryParams = (
   search?: string;
   sortBy?: string;
   sortDirection?: string;
-  filters?: Record<string, unknown>;
+  filtersKey?: string;
   filterLogic?: 'and' | 'or';
 } => {
   return {
@@ -41,9 +41,7 @@ export const normalizeQueryParams = (
     search: params.search,
     sortBy: params.sortBy,
     sortDirection: params.sortDirection,
-    filters: params.filters && Array.isArray(params.filters)
-      ? {}
-      : (params.filters as Record<string, unknown> | undefined),
     filterLogic: params.filterLogic,
+    ...(params.filters != null ? { filtersKey: JSON.stringify(params.filters) } : {}),
   };
 };
