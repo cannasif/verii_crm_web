@@ -182,6 +182,16 @@ export interface ReportTemplateGetDto {
   default?: boolean;
 }
 
+export interface ReportTemplateListItemDto {
+  id: number;
+  ruleType: DocumentRuleType;
+  title: string;
+  isActive: boolean;
+  default?: boolean;
+  createdDate?: string;
+  updatedDate?: string;
+}
+
 export interface ReportTemplateCreateDto {
   ruleType: DocumentRuleType;
   title: string;
@@ -203,7 +213,7 @@ export interface PdfReportTemplateListParams {
 }
 
 export interface PdfReportTemplateListResult {
-  items: ReportTemplateGetDto[];
+  items: ReportTemplateListItemDto[];
   totalCount: number;
   pageNumber: number;
   pageSize: number;

@@ -5,6 +5,7 @@ import type {
   ReportTemplateDataDto,
   ReportTemplateFieldsDto,
   ReportTemplateGetDto,
+  ReportTemplateListItemDto,
   ReportTemplateCreateDto,
   ReportTemplateUpdateDto,
   PdfReportTemplateListParams,
@@ -100,13 +101,32 @@ function normalizeTemplateItem(item: unknown): ReportTemplateGetDto {
   };
 }
 
-function toTemplateList(raw: unknown): ReportTemplateGetDto[] {
-  if (Array.isArray(raw)) return raw.map(normalizeTemplateItem);
+function normalizeTemplateListItem(item: unknown): ReportTemplateListItemDto {
+  const r = item != null && typeof item === 'object' ? (item as Record<string, unknown>) : {};
+  return {
+    id: Number(r.id ?? r.Id ?? 0),
+    ruleType: Number(r.ruleType ?? r.RuleType ?? 0) as DocumentRuleType,
+    title: String(r.title ?? r.Title ?? ''),
+    isActive: Boolean(r.isActive ?? r.IsActive ?? false),
+    default: Boolean(r.default ?? r.Default ?? false),
+    createdDate:
+      typeof (r.createdDate ?? r.CreatedDate) === 'string'
+        ? String(r.createdDate ?? r.CreatedDate)
+        : undefined,
+    updatedDate:
+      typeof (r.updatedDate ?? r.UpdatedDate) === 'string'
+        ? String(r.updatedDate ?? r.UpdatedDate)
+        : undefined,
+  };
+}
+
+function toTemplateList(raw: unknown): ReportTemplateListItemDto[] {
+  if (Array.isArray(raw)) return raw.map(normalizeTemplateListItem);
   if (raw == null || typeof raw !== 'object') return [];
   const paged = raw as Record<string, unknown>;
   const arr = (paged.items ?? paged.Items ?? paged.data ?? paged.Data) as unknown;
   if (!Array.isArray(arr)) return [];
-  return arr.map(normalizeTemplateItem);
+  return arr.map(normalizeTemplateListItem);
 }
 
 function parseListResult(response: unknown): PdfReportTemplateListResult {
