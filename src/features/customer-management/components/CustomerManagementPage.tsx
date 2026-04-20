@@ -37,10 +37,13 @@ import {
   buildCustomerListSearchParam,
   customerFilterRowsToPagedFilters,
 } from '../utils/customer-list-api-filters';
+import { normalizeQueryParams } from '@/utils/query-params';
 import {
   extractCustomerConflictPayload,
   type CustomerDuplicateConflictPayload,
 } from '../utils/customer-conflict';
+import { customerApi } from '../api/customer-api';
+import { queryKeys } from '../utils/query-keys';
 
 const EMPTY_CUSTOMERS: CustomerDto[] = [];
 const PAGE_KEY = 'customer-management';
@@ -231,7 +234,11 @@ export function CustomerManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const list: CustomerDto[] = customers;
+    const listResponse = await queryClient.fetchQuery({
+      queryKey: queryKeys.list(normalizeQueryParams(listQueryParams)),
+      queryFn: () => customerApi.getList(listQueryParams),
+    });
+    const list: CustomerDto[] = listResponse?.data ?? customers;
     return {
       columns: exportColumns,
       rows: list.map((c) => {
@@ -247,7 +254,7 @@ export function CustomerManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [customers, exportColumns, orderedVisibleColumns, i18n.language]);
+  }, [customers, exportColumns, orderedVisibleColumns, i18n.language, queryClient, listQueryParams]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
