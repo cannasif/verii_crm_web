@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
 import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
+import { resolvePdfImageSrc } from '../utils/resolve-pdf-image-src';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,11 +40,6 @@ interface PdfLayersPanelProps {
 }
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
-
-function normalizeImageSrc(value: string): string {
-  if (value.startsWith('http') || value.startsWith('data:') || value.startsWith('/')) return value;
-  return `/${value}`;
-}
 
 export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLayersPanelProps): ReactElement {
   const { t } = useTranslation(['report-designer', 'common']);
@@ -325,7 +321,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
                     <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/40">
                       <div className="flex h-24 items-center justify-center bg-white dark:bg-slate-900">
                         <img
-                          src={normalizeImageSrc(selectedElement.value)}
+                          src={resolvePdfImageSrc(selectedElement.value)}
                           alt=""
                           className="h-full w-full object-contain"
                         />

@@ -17,6 +17,7 @@ import { Upload, ChevronLeft, ChevronRight, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
+import { resolvePdfImageSrc } from '../utils/resolve-pdf-image-src';
 import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
 import {
   Tooltip,
@@ -408,7 +409,7 @@ function ImagePropertiesPanel({
         <div className="rounded border border-slate-200 bg-slate-50 p-2">
           <span className="text-xs text-slate-500">{t('reportDesigner.properties.preview')}</span>
           <img
-            src={selectedElement.value}
+            src={resolvePdfImageSrc(selectedElement.value ?? '')}
             alt=""
             className="mt-1 max-h-20 w-full object-contain"
           />

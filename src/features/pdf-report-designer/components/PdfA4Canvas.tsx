@@ -53,6 +53,7 @@ import {
   KEYBOARD_MOVE_STEP_SHIFT,
 } from '../constants';
 import { clampElementToSection } from '../utils/dto-to-canvas';
+import { resolvePdfImageSrc } from '../utils/resolve-pdf-image-src';
 import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
 import { formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
 
@@ -267,11 +268,6 @@ function getQuotationTotalsPreviewRows(element: PdfReportElement): Array<{ label
   return rows;
 }
 
-function normalizeImageSrc(value: string): string {
-  if (value.startsWith('http') || value.startsWith('data:') || value.startsWith('/')) return value;
-  return `/${value}`;
-}
-
 const quotationTotalsLayoutSpec = quotationTotalsLayoutSpecJson.quotationTotals;
 
 const DEFAULT_FONT_SIZE = 14;
@@ -448,7 +444,7 @@ function ImageElementBlock({
     return (
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-100">
         <img
-          src={normalizeImageSrc(imageValue)}
+          src={resolvePdfImageSrc(imageValue)}
           alt=""
           className="h-full w-full"
           style={{ objectFit: element.style?.imageFit ?? 'contain' }}
@@ -976,7 +972,7 @@ function ElementSettingsPopover({
               <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50">
                 <div className="flex h-28 items-center justify-center bg-white">
                   <img
-                    src={normalizeImageSrc(el.value)}
+                    src={resolvePdfImageSrc(el.value)}
                     alt=""
                     className="h-full w-full object-contain"
                   />
