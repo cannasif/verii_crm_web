@@ -1,8 +1,8 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -10,7 +10,7 @@ import {
   ManagementDataTableChrome,
   type DataTableGridColumn,
 } from '@/components/shared';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, Activity, Play, ShieldAlert, Clock3, CheckCircle2 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import {
@@ -53,6 +53,11 @@ function formatDuration(durationMs: number): string {
   if (!Number.isFinite(durationMs) || durationMs <= 0) return '-';
   if (durationMs < 1000) return `${durationMs} ms`;
   return `${(durationMs / 1000).toFixed(durationMs >= 10_000 ? 0 : 1)} sn`;
+}
+
+function normalizeCron(cron?: string): string {
+  if (!cron) return '-';
+  return cron.length > 24 ? `${cron.slice(0, 24)}...` : cron;
 }
 
 export function HangfireMonitoringPage(): ReactElement {
@@ -107,9 +112,19 @@ export function HangfireMonitoringPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const isRefreshing = statsQuery.isRefetching || failedQuery.isRefetching || deadLetterQuery.isRefetching;
+  const isRefreshing =
+    statsQuery.isRefetching ||
+    failedQuery.isRefetching ||
+    successQuery.isRefetching ||
+    deadLetterQuery.isRefetching ||
+    recurringJobsQuery.isRefetching;
+
   const isInitialLoading =
-    statsQuery.isLoading || failedQuery.isLoading || successQuery.isLoading || deadLetterQuery.isLoading || recurringJobsQuery.isLoading;
+    statsQuery.isLoading ||
+    failedQuery.isLoading ||
+    successQuery.isLoading ||
+    deadLetterQuery.isLoading ||
+    recurringJobsQuery.isLoading;
 
   const handleRefresh = async (): Promise<void> => {
     await Promise.all([
@@ -127,6 +142,20 @@ export function HangfireMonitoringPage(): ReactElement {
   const failedTotalPages = Math.max(1, Math.ceil((failedQuery.data?.total ?? 0) / failedPageSize));
   const successTotalPages = Math.max(1, Math.ceil((successQuery.data?.total ?? 0) / successPageSize));
   const deadLetterTotalPages = Math.max(1, Math.ceil((deadLetterQuery.data?.total ?? 0) / deadLetterPageSize));
+
+  const selectedRecurringJob = useMemo(
+    () => recurringItems.find((job) => job.id === selectedRecurringJobId) ?? recurringItems[0] ?? null,
+    [recurringItems, selectedRecurringJobId],
+  );
+
+  const recurringHealth = useMemo(() => {
+    const items = recurringItems;
+    return {
+      total: items.length,
+      withErrors: items.filter((item) => Boolean(item.error)).length,
+      withQueue: items.filter((item) => Boolean(item.queue)).length,
+    };
+  }, [recurringItems]);
 
   const recurringColumns: DataTableGridColumn<RecurringColumnKey>[] = [
     { key: 'id', label: t('recurring.table.id') },
@@ -195,7 +224,7 @@ export function HangfireMonitoringPage(): ReactElement {
 
   if (isInitialLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
         <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
         <p className="text-sm text-muted-foreground">{t('common:loading')}</p>
       </div>
@@ -211,65 +240,212 @@ export function HangfireMonitoringPage(): ReactElement {
         ]}
       />
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            {t('title')}
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">
-            {t('description')}
-          </p>
+      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
+              <Activity className="size-4" />
+              {t('hero.badge', { defaultValue: 'Job Kontrol Merkezi' })}
+            </div>
+            <div>
+              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                {t('title')}
+              </h1>
+              <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+                {t('description')}
+              </p>
+            </div>
+          </div>
+          <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing} className="rounded-2xl">
+            <RefreshCw size={18} className={isRefreshing ? 'mr-2 animate-spin' : 'mr-2'} />
+            {t('refresh')}
+          </Button>
         </div>
-        <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing}>
-          <RefreshCw size={18} className={isRefreshing ? 'mr-2 animate-spin' : 'mr-2'} />
-          {t('refresh')}
-        </Button>
+
+        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <Card className="border-slate-200/70 bg-white/85 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-slate-500">{t('stats.enqueued')}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-3xl font-black text-slate-900 dark:text-white">
+              {statsQuery.data?.enqueued ?? 0}
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200/70 bg-white/85 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-slate-500">{t('stats.processing')}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-3xl font-black text-slate-900 dark:text-white">
+              {statsQuery.data?.processing ?? 0}
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200/70 bg-white/85 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-sm text-slate-500">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                {t('stats.succeeded')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-3xl font-black text-emerald-600">
+              {statsQuery.data?.succeeded ?? 0}
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200/70 bg-white/85 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-sm text-slate-500">
+                <ShieldAlert className="h-4 w-4 text-red-500" />
+                {t('stats.failed')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-3xl font-black text-red-600">
+              {statsQuery.data?.failed ?? 0}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <Card><CardHeader><CardTitle>{t('stats.enqueued')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.enqueued ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.processing')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.processing ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.succeeded')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-emerald-500">{statsQuery.data?.succeeded ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.failed')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-red-500">{statsQuery.data?.failed ?? 0}</CardContent></Card>
-      </div>
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.25fr_0.95fr]">
+        <Card className="overflow-hidden border-0 bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_55%,#0ea5e9_100%)] text-white shadow-xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Play className="h-5 w-5" />
+              {t('recurring.title')}
+            </CardTitle>
+            <CardDescription className="text-sky-100">
+              {t('recurring.description')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+              <div className="space-y-2">
+                <div className="text-sm font-semibold text-sky-50">{t('recurring.selectLabel')}</div>
+                <Select value={selectedRecurringJobId} onValueChange={setSelectedRecurringJobId}>
+                  <SelectTrigger className="border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/15">
+                    <SelectValue placeholder={t('recurring.selectPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {recurringItems.map((job) => (
+                      <SelectItem key={job.id} value={job.id}>
+                        {job.jobName} ({job.id})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('recurring.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {t('recurring.description')}
-          </p>
-
-          <div className="flex flex-col gap-3 md:flex-row md:items-end">
-            <div className="flex-1 space-y-2">
-              <div className="text-sm font-medium">{t('recurring.selectLabel')}</div>
-              <Select value={selectedRecurringJobId} onValueChange={setSelectedRecurringJobId}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t('recurring.selectPlaceholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {(recurringJobsQuery.data?.items ?? []).map((job) => (
-                    <SelectItem key={job.id} value={job.id}>
-                      {job.jobName} ({job.id})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Button
+                onClick={() => selectedRecurringJobId && triggerRecurringJobMutation.mutate(selectedRecurringJobId)}
+                disabled={!selectedRecurringJobId || triggerRecurringJobMutation.isPending}
+                className="bg-white text-slate-900 hover:bg-slate-100"
+              >
+                {triggerRecurringJobMutation.isPending ? (
+                  <Loader2 size={16} className="mr-2 animate-spin" />
+                ) : (
+                  <Play size={16} className="mr-2" />
+                )}
+                {t('recurring.triggerButton')}
+              </Button>
             </div>
 
-            <Button
-              onClick={() => selectedRecurringJobId && triggerRecurringJobMutation.mutate(selectedRecurringJobId)}
-              disabled={!selectedRecurringJobId || triggerRecurringJobMutation.isPending}
-            >
-              {triggerRecurringJobMutation.isPending ? (
-                <Loader2 size={16} className="mr-2 animate-spin" />
-              ) : null}
-              {t('recurring.triggerButton')}
-            </Button>
-          </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">
+                  {t('recurring.table.id')}
+                </div>
+                <div className="mt-2 text-sm font-medium text-white">
+                  {selectedRecurringJob?.id ?? '-'}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">
+                  {t('recurring.table.nextExecution')}
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-sm font-medium text-white">
+                  <Clock3 className="h-4 w-4 text-sky-200" />
+                  {formatDate(selectedRecurringJob?.nextExecution)}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">
+                  {t('recurring.table.queue')}
+                </div>
+                <div className="mt-2 text-sm font-medium text-white">
+                  {selectedRecurringJob?.queue ?? '-'}
+                </div>
+              </div>
+            </div>
 
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary" className="border-white/15 bg-white/10 text-white">
+                {t('recurring.labels.schedule', { defaultValue: 'Zamanlama' })}: {normalizeCron(selectedRecurringJob?.cron)}
+              </Badge>
+              <Badge variant="secondary" className="border-white/15 bg-white/10 text-white">
+                {t('recurring.labels.method', { defaultValue: 'Method' })}: {selectedRecurringJob?.method ?? '-'}
+              </Badge>
+              {selectedRecurringJob?.error ? (
+                <Badge variant="destructive">
+                  {t('recurring.labels.error', { defaultValue: 'Hata var' })}
+                </Badge>
+              ) : (
+                <Badge className="bg-emerald-500 text-white hover:bg-emerald-500">
+                  {t('recurring.labels.healthy', { defaultValue: 'Sağlıklı' })}
+                </Badge>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200/80 shadow-sm">
+          <CardHeader>
+            <CardTitle>{t('summary.title', { defaultValue: 'Sistem Özeti' })}</CardTitle>
+            <CardDescription>
+              {t('summary.description', { defaultValue: 'Recurring job sağlığı ve kuyruk davranışını hızlıca gör.' })}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                {t('summary.totalJobs', { defaultValue: 'Toplam recurring job' })}
+              </div>
+              <div className="mt-2 text-2xl font-black text-slate-900 dark:text-white">
+                {recurringHealth.total}
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
+                  {t('summary.withQueue', { defaultValue: 'Queue bilgisi olan' })}
+                </div>
+                <div className="mt-2 text-2xl font-black text-emerald-700 dark:text-emerald-200">
+                  {recurringHealth.withQueue}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-500/30 dark:bg-red-500/10">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-red-700 dark:text-red-300">
+                  {t('summary.withErrors', { defaultValue: 'Hata veren recurring job' })}
+                </div>
+                <div className="mt-2 text-2xl font-black text-red-700 dark:text-red-200">
+                  {recurringHealth.withErrors}
+                </div>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300">
+              {t('summary.help', {
+                defaultValue: 'Bu ekran, zamanlanmış işleri hızla tetiklemek ve başarılı/başarısız job akışını tek noktadan izlemek için ürünleştirilmiştir.',
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="border-slate-200/80 shadow-sm">
+        <CardHeader>
+          <CardTitle>{t('recurring.tableTitle', { defaultValue: 'Recurring Job Listesi' })}</CardTitle>
+          <CardDescription>
+            {t('recurring.tableDescription', { defaultValue: 'Zamanlanmış işleri tablo görünümünde incele, satır seç ve üstteki kontrol alanından tetikle.' })}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <ManagementDataTableChrome>
             <DataTableGrid<HangfireRecurringJobItemDto, RecurringColumnKey>
               columns={recurringColumns}
@@ -305,9 +481,12 @@ export function HangfireMonitoringPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-slate-200/80 shadow-sm">
         <CardHeader>
           <CardTitle>{t('succeeded.title')}</CardTitle>
+          <CardDescription>
+            {t('succeeded.description', { defaultValue: 'Tamamlanan job geçmişini, süre ve retry bilgisiyle izle.' })}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ManagementDataTableChrome>
@@ -343,9 +522,12 @@ export function HangfireMonitoringPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-slate-200/80 shadow-sm">
         <CardHeader>
           <CardTitle>{t('failed.title')}</CardTitle>
+          <CardDescription>
+            {t('failed.description', { defaultValue: 'Hata alan işleri, zaman ve neden bilgisiyle izleyin.' })}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ManagementDataTableChrome>
@@ -381,12 +563,16 @@ export function HangfireMonitoringPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-slate-200/80 shadow-sm">
         <CardHeader>
           <CardTitle>{t('deadLetter.title')}</CardTitle>
+          <CardDescription>
+            {t('deadLetter.description', { defaultValue: 'Dead-letter kuyruğuna düşen kayıtları tek yerde takip et.' })}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-3 text-sm text-slate-500">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300">
+            <ShieldAlert className="h-4 w-4 text-amber-500" />
             {t('deadLetter.enqueued')}: {deadLetterQuery.data?.enqueued ?? 0}
           </div>
 
