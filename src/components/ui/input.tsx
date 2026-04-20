@@ -30,7 +30,28 @@ function clampNumber(value: number, min?: string | number, max?: string | number
   return nextValue
 }
 
-function normalizeArrowStepValue(raw: string, delta: 1 | -1, min?: string | number, max?: string | number): string {
+function normalizeArrowStepValue(
+  raw: string,
+  delta: 1 | -1,
+  min?: string | number,
+  max?: string | number,
+  step?: string | number
+): string {
+  const stepStr = step !== undefined && step !== "" ? String(step).replace(",", ".") : ""
+  const stepNum = stepStr === "" ? Number.NaN : Number(stepStr)
+  /** `step="1"` (adet vb.): oklar her zaman ±1 tam sayı; taslaktaki ondalık gösterimi yok sayılır. */
+  const integerStepArrows = Number.isFinite(stepNum) && stepNum === 1
+
+  if (integerStepArrows) {
+    const normalizedRaw = raw.replace(",", ".").trim()
+    const currentValue =
+      normalizedRaw === "" || normalizedRaw === "." || normalizedRaw === "-" ? 0 : Number(normalizedRaw)
+    const safeCurrentValue = Number.isNaN(currentValue) ? 0 : currentValue
+    const intBase = Math.round(safeCurrentValue)
+    const nextValue = clampNumber(intBase + delta, min, max)
+    return String(Math.trunc(nextValue))
+  }
+
   const normalizedRaw = raw.replace(",", ".").trim()
   const currentValue = normalizedRaw === "" || normalizedRaw === "." || normalizedRaw === "-" ? 0 : Number(normalizedRaw)
   const safeCurrentValue = Number.isNaN(currentValue) ? 0 : currentValue
@@ -64,12 +85,12 @@ function Input({ className, type, step, inputMode, onKeyDown, min, max, ...props
 
     const input = event.currentTarget
     const delta = event.key === "ArrowUp" ? 1 : -1
-    const nextValue = normalizeArrowStepValue(input.value, delta, min, max)
+    const nextValue = normalizeArrowStepValue(input.value, delta, min, max, step)
     const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set
 
     valueSetter?.call(input, nextValue)
     input.dispatchEvent(new Event("input", { bubbles: true }))
-  }, [max, min, onKeyDown, type])
+  }, [max, min, onKeyDown, step, type])
 
   return (
     <input

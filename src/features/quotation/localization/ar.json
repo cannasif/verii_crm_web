@@ -157,7 +157,14 @@
     "grandTotal": "الإجمالي",
     "currencyTry": "ل.ت",
     "totalDiscount": "إجمالي الخصم",
-    "vatAmount": "مبلغ الضريبة"
+    "vatAmount": "مبلغ الضريبة",
+    "discountNumbered1": "1. خصم",
+    "discountNumbered2": "2. خصم",
+    "discountNumbered3": "3. خصم",
+    "descriptionFieldsTitle": "حقول الوصف",
+    "descriptionField1Label": "المواصفات",
+    "descriptionField2Label": "حديد",
+    "descriptionField3Label": "برغي"
   },
   "exchangeRates": {
     "title": "أسعار الصرف",

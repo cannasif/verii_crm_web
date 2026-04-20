@@ -2842,7 +2842,7 @@
     "loading": "Caricamento...",
     "noResults": "Nessun risultato di ricerca trovato",
     "noProducts": "Articolo non trovato",
-    "title": "Select Stock",
+    "title": "Seleziona stock",
     "searchPlaceholder": "Cerca per codice o nome articolo...",
     "voiceSearch": "Ricerca vocale",
     "cardView": "Visualizzazione scheda",
@@ -2851,7 +2851,11 @@
     "stocksWithImages": "Azioni con immagini",
     "balance": "Balance",
     "code1": "Code-1",
-    "code2": "Code-2"
+    "code2": "Code-2",
+    "alreadyInDraftBadge": "In bozza",
+    "alreadyInDraftTooltip": "Questo stock è già nell'elenco di selezione corrente.",
+    "alreadyOnLineBadge": "In riga",
+    "alreadyOnLineTooltip": "Questo prodotto è già presente su una riga di questo documento."
   },
   "relatedStocksSelectionDialog": {
     "title": "Seleziona stock correlati",
@@ -3792,6 +3796,50 @@
     "Save": "Salva",
     "SavedSuccessfully": "Impostazioni salvate con successo"
   },
+  "systemSettings": {
+    "PageTitle": "Impostazioni di sistema",
+    "PageDescription": "Gestisci il formato numerico e l'ambito clienti.",
+    "SavedSuccessfully": "Impostazioni di sistema salvate correttamente.",
+    "Fields": {
+      "DefaultLanguage": "Lingua predefinita",
+      "DefaultCurrencyCode": "Valuta predefinita",
+      "DefaultTimeZone": "Fuso orario predefinito",
+      "DateFormat": "Formato data",
+      "TimeFormat": "Formato ora",
+      "NumberFormat": "Formato numeri",
+      "DecimalPlaces": "Cifre decimali",
+      "RestrictCustomersBySalesRepMatch": "Limita i clienti in base all'abbinamento al rappresentante di vendita"
+    },
+    "Descriptions": {
+      "RestrictCustomersBySalesRepMatch": "Se abilitato, elenchi e selettori clienti sono limitati ai codici rappresentante di vendita associati all'utente selezionato."
+    },
+    "Placeholders": {
+      "DefaultLanguage": "Seleziona lingua",
+      "DefaultCurrencyCode": "Seleziona valuta",
+      "DefaultTimeZone": "Seleziona fuso orario",
+      "DateFormat": "Seleziona formato data",
+      "TimeFormat": "Seleziona formato ora",
+      "NumberFormat": "Seleziona formato numeri"
+    },
+    "NumberFormatOptions": {
+      "trTR": "Formato numerico turco (1.234,56)",
+      "enUS": "Formato numerico USA (1,234.56)",
+      "deDE": "Formato numerico tedesco (1.234,56)"
+    },
+    "LineFormSection": {
+      "Title": "Modulo riga (Profilo / Ferro / Vite)",
+      "Description": "Queste opzioni sono salvate solo in questo browser, non sul server. Fai clic su Salva in basso per applicarle.",
+      "ShowBlock": "Mostra campi profilo / ferro / vite",
+      "ShowBlockHint": "Se disattivato, i tre campi non compaiono nel modulo riga; al salvataggio della riga i valori vengono inviati vuoti.",
+      "CustomLabel1": "Etichetta personalizzata per il profilo (facoltativo)",
+      "CustomLabel2": "Etichetta personalizzata per il ferro (facoltativo)",
+      "CustomLabel3": "Etichetta personalizzata per la vite (facoltativo)",
+      "CustomLabelPlaceholder": "Lascia vuoto per i nomi predefiniti"
+    }
+  },
+  "lineFormPreferences": {
+    "slotToggleHint": "Puoi digitare solo nei campi spuntati; quelli non spuntati vengono svuotati quando salvi la riga."
+  },
   "order": {
     "exchangeRates": {
       "dialog": {
@@ -4443,5 +4491,105 @@
     "updateSuccess": "Limite di sconto aggiornato",
     "updateError": "Impossibile aggiornare il limite di sconto"
   },
-  "exportPreparing": "Hazırlanıyor..."
+  "exportPreparing": "Hazırlanıyor...",
+  "catalogStockPicker": {
+    "title": "Seleziona stock dal catalogo",
+    "description": "Scorri il catalogo come in un marketplace, poi scegli lo stock dall’elenco dei prodotti collegati.",
+    "hierarchyBlueprintTitle": "Flusso di categorie consigliato",
+    "hierarchyBlueprintDescription": "Mantieni la stessa struttura: categoria principale, sottocategoria, marca, serie e infine prodotti.",
+    "hierarchyExampleLabel": "Esempio",
+    "hierarchyExampleValue": "Telefoni > Telefoni a tastiera > iPhone > Serie 17 > Prodotti",
+    "hierarchyInfoButton": "Flusso di categorie consigliato",
+    "scrollBack": "Scorri a sinistra",
+    "scrollForward": "Scorri a destra",
+    "mobileCategoriesAccordion": "Categorie",
+    "mobileStocksAccordion": "Stock della categoria",
+    "openButton": "Scegli dal catalogo",
+    "viewModeGroupLabel": "Layout stock",
+    "viewModeList": "Elenco",
+    "viewModeCards": "Schede",
+    "listColCode": "Codice",
+    "listColName": "Nome",
+    "listColRelated": "Collegati",
+    "listColAction": "Azione",
+    "step1Label": "Passo 1",
+    "step1Title": "Scegli catalogo",
+    "step2Label": "Passo 2",
+    "step2Title": "Scegli categoria",
+    "step3Label": "Passo 3",
+    "step3Title": "Scegli stock",
+    "catalogsTitle": "Cataloghi",
+    "categoriesTitle": "Categorie",
+    "stocksTitle": "Stock della categoria",
+    "loadingCatalogs": "Caricamento cataloghi...",
+    "loadingCategories": "Caricamento categorie...",
+    "loadingStocks": "Caricamento stock...",
+    "noCatalogSelected": "Nessun catalogo selezionato",
+    "noLeafSelected": "Nessuna categoria selezionata ancora",
+    "subCategoryBadge": "Sottocategoria",
+    "leafBadge": "Categoria foglia",
+    "emptyCategories": "Non ci sono categorie da mostrare a questo livello.",
+    "searchPlaceholder": "Cerca tra gli stock di questa categoria...",
+    "selectLeafTitle": "Seleziona prima una categoria",
+    "selectLeafHint": "Scendi nelle sottocategorie oppure usa Elenca per portare i prodotti dell’intero sottoalbero.",
+    "selectedLeaf": "Categoria selezionata",
+    "selectedPathLabel": "Percorso selezionato",
+    "currentPathLabel": "Percorso corrente",
+    "levelBadge": "Livello {{level}}",
+    "browseChildrenButton": "Sotto-livelli",
+    "listDescendantsButton": "Elenca",
+    "directCategoryModeBadge": "Categoria diretta",
+    "listDescendantsModeBadge": "Elenco sottoalbero",
+    "rightPanelTitle": "Gli stock compariranno qui",
+    "rightPanelLeafHint": "Scegli lo stock dalle schede sotto. Dopo la selezione viene applicato come con la lente.",
+    "stocksFoundTitle": "{{count}} stock trovati",
+    "selectionReadyTitle": "Selezione pronta",
+    "selectionReadyHint": "La selezione è pronta. Puoi scegliere altri stock se serve, poi applica con « Applica selezione ».",
+    "emptyStocksTitle": "Nessuno stock in questa categoria",
+    "emptyStocks": "Non ci sono stock collegati a questa categoria.",
+    "selectedCount": "{{count}} stock selezionati",
+    "selectedBadge": "Selezionato",
+    "selectStockButton": "Scegli stock",
+    "relatedStocksBadge": "{{count}} stock collegati",
+    "relatedStocksHint": "Selezionando questo stock puoi anche scegliere quelli collegati.",
+    "groupCode": "Gruppo",
+    "code1": "Codice 1",
+    "code2": "Codice 2",
+    "unit": "Unità",
+    "loadMore": "Carica altro",
+    "footerHint": "Uno stock scelto dal catalogo viene applicato alla riga come con la selezione a lente.",
+    "confirmSelection": "Applica selezione",
+    "back": "Indietro",
+    "selectionPanelTitle": "Stock selezionati",
+    "selectionPanelHint": "Le tue scelte restano qui anche se cambi categoria. Rimuovi uno stock dall’elenco se serve.",
+    "removeSelection": "Rimuovi selezione",
+    "alreadyInDraftBadge": "Bozza",
+    "alreadyInDraftTooltip": "Questo stock è già nella striscia di selezione (aggiunto prima in questa schermata).",
+    "confirmTotalCount": "Totale {{count}} righe",
+    "draftRetainedInConfirm": "{{count}} riga/e della bozza restano nel risultato; non compaiono in rosa in elenco — solo il badge « Bozza » le indica.",
+    "alreadyOnLineBadge": "In riga",
+    "alreadyOnLineTooltip": "Questo prodotto è già presente su una riga di questo documento.",
+    "hierarchyStages": {
+      "root": {
+        "title": "Categoria principale",
+        "description": "Livello più alto. Esempio: Telefoni"
+      },
+      "subcategory": {
+        "title": "Sottocategoria",
+        "description": "Chiarisce il gruppo di prodotti. Esempio: Telefoni a tastiera"
+      },
+      "brand": {
+        "title": "Marca",
+        "description": "Suddivisione per marca o produttore. Esempio: iPhone"
+      },
+      "series": {
+        "title": "Serie",
+        "description": "Famiglia o serie di modelli. Esempio: Serie 17"
+      },
+      "products": {
+        "title": "Prodotti",
+        "description": "Livello foglia finale: qui va fatta la selezione dello stock."
+      }
+    }
+  }
 }

@@ -401,7 +401,6 @@ export function DemandCreateForm(): ReactElement {
                         </h3>
                     </div>
                   </div>
-                  
                   {/* PADDING KALDIRILDI VE TABLE TAM OTURTULDU */}
                   <div className="w-full overflow-x-auto p-0">
                       <DemandLineTable

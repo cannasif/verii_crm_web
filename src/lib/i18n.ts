@@ -3,13 +3,34 @@ import { initReactI18next } from 'react-i18next';
 
 const i18n = i18next.createInstance();
 
-type ResourceModule = { default: Record<string, string> };
+type ResourceModule = { default: Record<string, unknown> };
 
 const sharedModules = import.meta.glob('../locales/**/*.json');
 const featureModules = import.meta.glob('../features/**/localization/*.json');
 
 type LoaderMap = Record<string, Record<string, () => Promise<ResourceModule>>>;
 const loaders: LoaderMap = {};
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  value !== null && typeof value === 'object' && !Array.isArray(value);
+
+/** Özellik `localization/*.json` ile `src/locales` aynı namespace'i paylaştığında üstünü çizmek yerine birleştir. */
+const deepMergeResource = (
+  base: Record<string, unknown>,
+  overlay: Record<string, unknown>
+): Record<string, unknown> => {
+  const out: Record<string, unknown> = { ...base };
+  for (const key of Object.keys(overlay)) {
+    const over = overlay[key];
+    const prev = out[key];
+    if (isPlainObject(over) && isPlainObject(prev)) {
+      out[key] = deepMergeResource(prev, over);
+    } else {
+      out[key] = over;
+    }
+  }
+  return out;
+};
 
 for (const [path, loader] of Object.entries(sharedModules)) {
   const match = path.match(/\.\.\/locales\/([a-z-]+)\/(.+)\.json$/);
@@ -26,7 +47,22 @@ for (const [path, loader] of Object.entries(featureModules)) {
   const ns = match[1];
   const lang = match[2];
   if (!loaders[lang]) loaders[lang] = {};
-  loaders[lang][ns] = loader as () => Promise<ResourceModule>;
+  const featureLoader = loader as () => Promise<ResourceModule>;
+  const existing = loaders[lang][ns];
+  if (existing) {
+    const sharedLoader = existing;
+    loaders[lang][ns] = async () => {
+      const [sharedMod, featureMod] = await Promise.all([sharedLoader(), featureLoader()]);
+      return {
+        default: deepMergeResource(
+          sharedMod.default as Record<string, unknown>,
+          featureMod.default as Record<string, unknown>
+        ),
+      };
+    };
+  } else {
+    loaders[lang][ns] = featureLoader;
+  }
 }
 
 const DEFAULT_LANG = 'tr';

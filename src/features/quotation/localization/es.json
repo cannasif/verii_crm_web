@@ -157,7 +157,14 @@
     "grandTotal": "Total general",
     "currencyTry": "TL",
     "totalDiscount": "Descuento total",
-    "vatAmount": "Importe de IVA"
+    "vatAmount": "Importe de IVA",
+    "discountNumbered1": "1. Descuento",
+    "discountNumbered2": "2. Descuento",
+    "discountNumbered3": "3. Descuento",
+    "descriptionFieldsTitle": "Campos de descripción",
+    "descriptionField1Label": "Perfil",
+    "descriptionField2Label": "Hierro",
+    "descriptionField3Label": "Tornillo"
   },
   "exchangeRates": {
     "title": "Tipos de cambio",

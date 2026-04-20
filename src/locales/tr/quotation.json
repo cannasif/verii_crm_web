@@ -99,7 +99,15 @@
       "message": "Para birimi değiştiğinde mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
     },
     "deliveryMethod": "Teslimat Yöntemi",
-    "documentDetail": "Belge Açıklaması"
+    "documentDetail": "Belge Açıklaması",
+    "currencyNameFallback": "Döviz {{code}}",
+    "financialCardTitle": "Finansal",
+    "exchangeRatesLink": "Kurlar",
+    "typeAndDatesCardTitle": "Tip & Tarihler",
+    "offerDateAbbrev": "Teklif T.",
+    "deliveryDateAbbrev": "Teslim T.",
+    "serialNumber": "Seri No",
+    "notes": "Notlar"
   },
   "lines": {
     "title": "Teklif Satırları",
@@ -157,7 +165,11 @@
     "grandTotal": "Genel Toplam",
     "currencyTry": "TL",
     "totalDiscount": "Toplam İndirim",
-    "vatAmount": "KDV Tutarı"
+    "vatAmount": "KDV Tutarı",
+    "descriptionFieldsTitle": "Profil, demir, vida",
+    "descriptionField1Label": "Profil",
+    "descriptionField2Label": "Demir",
+    "descriptionField3Label": "Vida"
   },
   "exchangeRates": {
     "title": "Döviz Kurları",

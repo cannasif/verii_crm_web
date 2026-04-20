@@ -90,7 +90,17 @@
       "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
     },
     "deliveryMethod": "Delivery Method",
-    "documentDetail": "Document Details"
+    "documentDetail": "Document Details",
+    "projectCode": "Project code",
+    "projectCodePlaceholder": "Enter project code",
+    "currencyNameFallback": "Currency {{code}}",
+    "financialCardTitle": "Financial",
+    "exchangeRatesLink": "Rates",
+    "typeAndDatesCardTitle": "Type & dates",
+    "offerDateAbbrev": "Demand date",
+    "deliveryDateAbbrev": "Delivery date",
+    "serialNumber": "Serial no.",
+    "notes": "Notes"
   },
   "lines": {
     "title": "Demand Lines",
@@ -142,7 +152,15 @@
     "description1": "Description 1",
     "description2": "Description 2",
     "description3": "Description 3",
-    "descriptionPlaceholder": "Enter description..."
+    "descriptionPlaceholder": "Enter description...",
+    "descriptionFieldsTitle": "Profile, rebar, screw",
+    "descriptionField1Label": "Profile",
+    "descriptionField2Label": "Rebar",
+    "descriptionField3Label": "Screw",
+    "max200Chars": "Up to 200 characters",
+    "discountNumbered1": "1. Discount",
+    "discountNumbered2": "2. Discount",
+    "discountNumbered3": "3. Discount"
   },
   "exchangeRates": {
     "title": "Exchange Rates",
@@ -281,36 +299,5 @@
     "actionDate": "Action Date",
     "status": "Status",
     "waiting": "Waiting"
-  },
-  "demand": {
-    "exchangeRates": {
-      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
-    },
-    "list": {
-      "detail": "Detay",
-      "cardTitle": "Talep listesi",
-      "refresh": "Yenile"
-    },
-    "lines": {
-      "descriptionPlaceholder": "Açıklama giriniz...",
-      "editStockItemDetails": "Stok kalemi detaylarını düzenleyin",
-      "description1": "Açıklama 1",
-      "description2": "Açıklama 2",
-      "description3": "Açıklama 3"
-    },
-    "approvalFlow": {
-      "errorTitle": "Hata Oluştu"
-    },
-    "header": {
-      "paymentType": "Ödeme Tipi",
-      "deliveryMethod": "Teslim Şekli",
-      "offerDate": "Talep Tarihi",
-      "documentDetail": "Belge Detayı"
-    },
-    "loadError": "Veriler yüklenirken hata oluştu.",
-    "summary": {
-      "grandTotalAnalysis": "Genel Toplam Analizi"
-    },
-    "untitled": "Başlıksız"
   }
 }

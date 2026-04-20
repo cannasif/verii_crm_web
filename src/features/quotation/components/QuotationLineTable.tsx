@@ -47,6 +47,13 @@ import {
 } from 'lucide-react';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, CreateQuotationLineDto, QuotationLineGetDto } from '../types/quotation-types';
 import { cn } from '@/lib/utils';
+import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
+import {
+  formatLineTableQuickEditDraft,
+  getHtmlNumberInputStepForDecimals,
+  isIntegerQuantityUnit,
+} from '@/lib/system-settings';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { mergeLinesAfterMainLineUpdate } from '@/lib/merge-lines-after-main-update';
 import {
   applyQuotationLineQuickFieldPatch,
@@ -209,12 +216,23 @@ export function QuotationLineTable({
   const createMutation = useCreateQuotationLines(quotationId ?? 0);
   const updateMutation = useUpdateQuotationLines(quotationId ?? 0);
   const deleteMutation = useDeleteQuotationLine(quotationId ?? 0);
+  const systemDecimalPlaces = useSystemSettingsStore((s) => s.settings.decimalPlaces);
+  const numberInputStep = useMemo(
+    () => getHtmlNumberInputStepForDecimals(systemDecimalPlaces),
+    [systemDecimalPlaces]
+  );
   const isExistingQuotation = quotationId != null && quotationId > 0;
   const isDeleting = deleteMutation.isPending;
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
     currency,
     exchangeRates,
   });
+
+  const existingDocumentLineMarkers = useMemo(() => linesToDocumentStockMarkers(lines), [lines]);
+  const existingDocumentLineMarkersForEdit = useMemo(
+    () => (lineToEdit ? linesToDocumentStockMarkersExceptLine(lines, lineToEdit.id) : []),
+    [lines, lineToEdit]
+  );
 
   const styles = {
     glassCard: "relative overflow-hidden  border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm",
@@ -405,7 +423,11 @@ export function QuotationLineTable({
       if (!lineAllowsQuickEdit(line) || updateMutation.isPending) return;
       if (quickEdit && quickEdit.lineId !== line.id) return;
       const cur = line[field];
-      setQuickEdit({ lineId: line.id, field, draft: String(cur ?? '') });
+      const draft =
+        typeof cur === 'number' && Number.isFinite(cur)
+          ? formatLineTableQuickEditDraft(field, cur, { unit: line.unit })
+          : '';
+      setQuickEdit({ lineId: line.id, field, draft });
     },
     [lineAllowsQuickEdit, quickEdit, updateMutation.isPending]
   );
@@ -428,8 +450,7 @@ export function QuotationLineTable({
 
     let value: number;
     if (quickEdit.field === 'quantity') {
-      const u = (originalLine.unit ?? '').trim().toUpperCase();
-      const intOnly = u === 'AD' || u === 'ADET';
+      const intOnly = isIntegerQuantityUnit(originalLine.unit);
       if (parsedFloat < 0) return;
       value = intOnly ? Math.max(1, Math.round(parsedFloat)) : parsedFloat;
     } else if (quickEdit.field === 'unitPrice') {
@@ -929,7 +950,7 @@ export function QuotationLineTable({
                             >
                               <Input
                                 type="number"
-                                step="0.000001"
+                                step={numberInputStep}
                                 min={0}
                                 value={quickEdit.draft}
                                 onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
@@ -987,13 +1008,8 @@ export function QuotationLineTable({
                             >
                               <Input
                                 type="number"
-                                step={
-                                  (line.unit ?? '').trim().toUpperCase() === 'AD' ||
-                                  (line.unit ?? '').trim().toUpperCase() === 'ADET'
-                                    ? '1'
-                                    : '0.1'
-                                }
-                                min={0.1}
+                                step={isIntegerQuantityUnit(line.unit) ? '1' : numberInputStep}
+                                min={isIntegerQuantityUnit(line.unit) ? 1 : 0.1}
                                 value={quickEdit.draft}
                                 onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
                                 className="h-8 w-16 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
@@ -1065,7 +1081,7 @@ export function QuotationLineTable({
                                   <div className="flex items-center justify-center gap-1">
                                     <Input
                                       type="number"
-                                      step="0.1"
+                                      step={numberInputStep}
                                       min={0}
                                       max={100}
                                       value={quickEdit.draft}
@@ -1224,6 +1240,7 @@ export function QuotationLineTable({
                 userDiscountLimits={userDiscountLimits}
                 onSaveMultiple={handleSaveMultipleLines}
                 isSaving={createMutation.isPending}
+                existingLineStockMarkers={existingDocumentLineMarkers}
               />
             )}
           </div>
@@ -1254,13 +1271,27 @@ export function QuotationLineTable({
             {lineToEdit && (
               <QuotationLineForm
                 line={lineToEdit}
-                onSave={(line) => handleSaveLine(line, lineToEdit.relatedLines)}
+                onSave={
+                  lineToEdit.relatedLines && lineToEdit.relatedLines.length > 0
+                    ? undefined
+                    : (line) => handleSaveLine(line)
+                }
+                onSaveMultiple={
+                  lineToEdit.relatedLines && lineToEdit.relatedLines.length > 0
+                    ? (lines) => {
+                        if (lines.length === 0) return;
+                        const [main, ...rest] = lines;
+                        void handleSaveLine(main, rest);
+                      }
+                    : undefined
+                }
                 onCancel={handleCancelEditLine}
                 currency={currency}
                 exchangeRates={exchangeRates}
                 pricingRules={pricingRules}
                 userDiscountLimits={userDiscountLimits}
                 isSaving={updateMutation.isPending}
+                existingLineStockMarkers={existingDocumentLineMarkersForEdit}
               />
             )}
           </div>

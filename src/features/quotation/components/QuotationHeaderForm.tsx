@@ -130,7 +130,8 @@ export function QuotationHeaderForm({
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedCurrency = form.watch('quotation.currency');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
-  
+  const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
+
   const watchedDocumentSerialTypeId = form.watch('quotation.documentSerialTypeId');
   
   const watchedOfferType = form.watch('quotation.offerType');
@@ -206,6 +207,16 @@ export function QuotationHeaderForm({
 
   useEffect(() => {
     if (!hasCustomerOptionsLoaded) return;
+
+    const previousRep = prevRepresentativeIdRef.current ?? null;
+    const currentRep = watchedRepresentativeId ?? null;
+
+    if (previousRep === currentRep) {
+      return;
+    }
+
+    prevRepresentativeIdRef.current = watchedRepresentativeId;
+
     if (!watchedCustomerId && !watchedErpCustomerCode) return;
 
     const hasMatchingCustomer = customerOptions.some(
@@ -227,6 +238,7 @@ export function QuotationHeaderForm({
     hasCustomerOptionsLoaded,
     watchedCustomerId,
     watchedErpCustomerCode,
+    watchedRepresentativeId,
   ]);
 
   const allCustomerOptions = useMemo(() => {
@@ -393,7 +405,7 @@ export function QuotationHeaderForm({
                     <div className="p-1 rounded-md bg-pink-50 dark:bg-pink-900/20 text-pink-600">
                       <User className="w-3.5 h-3.5" />
                     </div>
-                    {t('quotation.header.customer')}
+                    {t('quotation:header.customer')}
                   </div>
                   <div className="flex gap-2">
                     <div className="relative flex-1 group min-w-0">
@@ -410,7 +422,7 @@ export function QuotationHeaderForm({
                             if (!customerComboboxOpen) setCustomerComboboxOpen(true);
                           }}
                           onFocus={() => setCustomerComboboxOpen(true)}
-                          placeholder={t('quotation.header.selectCustomer')}
+                          placeholder={t('quotation:header.selectCustomer')}
                           disabled={readOnly}
                           autoComplete="off"
                         />
@@ -483,7 +495,7 @@ export function QuotationHeaderForm({
                     <div className="p-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600">
                       <Briefcase className="w-3.5 h-3.5" />
                     </div>
-                    {t('quotation.header.representative')}
+                    {t('quotation:header.representative')}
                   </div>
                   <FormField
                     control={form.control}
@@ -517,7 +529,7 @@ export function QuotationHeaderForm({
                     <div className="p-1 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600">
                       <MapPin className="w-3.5 h-3.5" />
                     </div>
-                    {t('quotation.header.shippingAddress')}
+                    {t('quotation:header.shippingAddress')}
                   </div>
                   <FormField
                     control={form.control}
@@ -532,7 +544,7 @@ export function QuotationHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
-                            placeholder={t('quotation.header.selectShippingAddress')}
+                            placeholder={t('quotation:header.selectShippingAddress')}
                             className={cn(styles.selectTrigger, "px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                           />
                         </FormControl>
@@ -555,7 +567,7 @@ export function QuotationHeaderForm({
                 <div className="p-1.5 rounded-md bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">
                   <CreditCard className="h-4 w-4" />
                 </div>
-                Finansal
+                {t('quotation:header.financialCardTitle')}
               </h4>
               {onExchangeRatesChange && (
                  <Button
@@ -566,7 +578,7 @@ export function QuotationHeaderForm({
                    className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
                  >
                    <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
-                   Kurlar
+                   {t('quotation:header.exchangeRatesLink')}
                  </Button>
                )}
             </div>
@@ -576,7 +588,7 @@ export function QuotationHeaderForm({
                 name="quotation.currency"
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.currency')}>Para Birimi</FormLabel>
+                    <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.currency')}>{t('quotation:header.currency')}</FormLabel>
                     <div className="relative">
                       <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
                         <Banknote className="h-4 w-4" />
@@ -585,7 +597,7 @@ export function QuotationHeaderForm({
                         <VoiceSearchCombobox
                           options={erpRates.map((c: KurDto) => ({
                             value: String(c.dovizTipi),
-                            label: c.dovizIsmi || `Döviz ${c.dovizTipi}`,
+                            label: c.dovizIsmi || t('quotation:header.currencyNameFallback', { code: c.dovizTipi }),
                           }))}
                           value={field.value ? String(field.value) : ''}
                           onSelect={(v) => v && handleCurrencyChange(v)}
@@ -609,7 +621,7 @@ export function QuotationHeaderForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label} required>
-                      {t('quotation.header.paymentType')}
+                      {t('quotation:header.paymentType')}
                     </FormLabel>
                     <div className="relative">
                       <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
@@ -644,7 +656,7 @@ export function QuotationHeaderForm({
               <div className="p-1.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-600">
                 <Globe className="h-4 w-4" />
               </div>
-              <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Tip & Tarihler</h4>
+              <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('quotation:header.typeAndDatesCardTitle')}</h4>
             </div>
             <div className="space-y-4 flex-1">
               <div className="grid grid-cols-1 gap-4">
@@ -682,7 +694,7 @@ export function QuotationHeaderForm({
                     name="quotation.deliveryMethod"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>{t('quotation.header.deliveryMethod', { defaultValue: 'Teslim Şekli' })}</FormLabel>
+                        <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>{t('quotation:header.deliveryMethod')}</FormLabel>
                         <div className="relative">
                           <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                           <FormControl>
@@ -713,7 +725,7 @@ export function QuotationHeaderForm({
                   name="quotation.offerDate"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>Teklif T.</FormLabel>
+                      <FormLabel className={styles.label}>{t('quotation:header.offerDateAbbrev')}</FormLabel>
                       <div className="relative">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Calendar className="h-4 w-4" /></div>
                         <FormControl>
@@ -735,7 +747,7 @@ export function QuotationHeaderForm({
                   name="quotation.deliveryDate"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>Teslim T.</FormLabel>
+                      <FormLabel className={styles.label}>{t('quotation:header.deliveryDateAbbrev')}</FormLabel>
                       <div className="relative">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                         <FormControl>
@@ -764,7 +776,7 @@ export function QuotationHeaderForm({
                 <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600">
                   <FileText className="h-4 w-4" />
                 </div>
-                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('quotation.header.documentDetail', { defaultValue: 'Belge Detayı' })}</h4>
+                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('quotation:header.documentDetail')}</h4>
               </div>
               <div className="space-y-4 flex-1">
                  {showDocumentSerialType && (
@@ -773,7 +785,7 @@ export function QuotationHeaderForm({
                     name="quotation.documentSerialTypeId"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.documentSerialTypeId')}>Seri No</FormLabel>
+                        <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.documentSerialTypeId')}>{t('quotation:header.serialNumber')}</FormLabel>
                         <div className="relative">
                           <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Hash className="h-4 w-4" /></div>
                           <FormControl>
@@ -802,7 +814,7 @@ export function QuotationHeaderForm({
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
                           <Folder className="h-3.5 w-3.5" />
-                          {t('quotation.header.projectCode')}
+                          {t('quotation:header.projectCode')}
                         </FormLabel>
                         <div className="relative">
                           <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
@@ -816,7 +828,7 @@ export function QuotationHeaderForm({
                             hasNextPage={projectDropdown.hasNextPage}
                             isLoading={projectDropdown.isLoading}
                             isFetchingNextPage={projectDropdown.isFetchingNextPage}
-                            placeholder={t('quotation.header.projectCodePlaceholder')}
+                            placeholder={t('quotation:header.projectCodePlaceholder')}
                             searchPlaceholder={t('common.search')}
                             disabled={readOnly}
                           />
@@ -832,7 +844,7 @@ export function QuotationHeaderForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group w-full min-w-0">
                       <div className="flex items-center justify-between mb-2">
-                        <FormLabel className={cn(styles.label, "mb-0")}>Notlar</FormLabel>
+                        <FormLabel className={cn(styles.label, "mb-0")}>{t('quotation:header.notes')}</FormLabel>
                         <span className={cn("text-[10px] transition-colors", (field.value?.length || 0) > 350 ? "text-red-500 font-bold" : "text-zinc-400")}>
                           {field.value?.length || 0}/400
                         </span>
@@ -867,7 +879,7 @@ export function QuotationHeaderForm({
                             {...field}
                             value={field.value || ''}
                             maxLength={400}
-                            placeholder={t('quotation.header.descriptionPlaceholder')}
+                            placeholder={t('quotation:header.descriptionPlaceholder')}
                             className="min-h-[100px] max-h-[160px] overflow-y-auto w-full break-all whitespace-pre-wrap rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10 shadow-sm"
                             disabled={readOnly}
                           />
@@ -932,10 +944,10 @@ export function QuotationHeaderForm({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-pink-600">
               <ArrowRightLeft className="h-5 w-5" />
-              {t('quotation.header.currencyChange.title')}
+              {t('quotation:header.currencyChange.title')}
             </DialogTitle>
             <DialogDescription className="pt-2">
-              {t('quotation.header.currencyChange.message')}
+              {t('quotation:header.currencyChange.message')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">

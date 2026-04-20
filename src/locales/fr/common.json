@@ -2768,7 +2768,7 @@
     "loading": "Chargement...",
     "noResults": "Aucun résultat de recherche trouvé",
     "noProducts": "Stock introuvable",
-    "title": "Select Stock",
+    "title": "Sélectionner un stock",
     "searchPlaceholder": "Rechercher par code stock ou nom...",
     "voiceSearch": "Recherche vocale",
     "cardView": "Vue Carte",
@@ -2777,7 +2777,11 @@
     "stocksWithImages": "Actions avec images",
     "balance": "Balance",
     "code1": "Code-1",
-    "code2": "Code-2"
+    "code2": "Code-2",
+    "alreadyInDraftBadge": "Brouillon",
+    "alreadyInDraftTooltip": "Ce stock figure déjà dans votre liste de sélection actuelle.",
+    "alreadyOnLineBadge": "Sur la ligne",
+    "alreadyOnLineTooltip": "Ce produit est déjà sur une ligne de ce document."
   },
   "relatedStocksSelectionDialog": {
     "title": "Sélectionner les Stocks Liés",
@@ -3718,6 +3722,50 @@
     "Save": "Enregistrer",
     "SavedSuccessfully": "Paramètres enregistrés avec succès"
   },
+  "systemSettings": {
+    "PageTitle": "Paramètres système",
+    "PageDescription": "Gérez le format des nombres et la portée des clients.",
+    "SavedSuccessfully": "Les paramètres système ont été enregistrés.",
+    "Fields": {
+      "DefaultLanguage": "Langue par défaut",
+      "DefaultCurrencyCode": "Devise par défaut",
+      "DefaultTimeZone": "Fuseau horaire par défaut",
+      "DateFormat": "Format de date",
+      "TimeFormat": "Format de l'heure",
+      "NumberFormat": "Format des nombres",
+      "DecimalPlaces": "Nombre de décimales",
+      "RestrictCustomersBySalesRepMatch": "Limiter les clients selon l'appariement au représentant commercial"
+    },
+    "Descriptions": {
+      "RestrictCustomersBySalesRepMatch": "Lorsque cette option est activée, les listes et sélecteurs de clients sont limités aux codes de représentant commercial correspondant à l'utilisateur sélectionné."
+    },
+    "Placeholders": {
+      "DefaultLanguage": "Sélectionner la langue",
+      "DefaultCurrencyCode": "Sélectionner la devise",
+      "DefaultTimeZone": "Sélectionner le fuseau horaire",
+      "DateFormat": "Sélectionner le format de date",
+      "TimeFormat": "Sélectionner le format de l'heure",
+      "NumberFormat": "Sélectionner le format des nombres"
+    },
+    "NumberFormatOptions": {
+      "trTR": "Format numérique turc (1.234,56)",
+      "enUS": "Format numérique américain (1,234.56)",
+      "deDE": "Format numérique allemand (1.234,56)"
+    },
+    "LineFormSection": {
+      "Title": "Formulaire de ligne (Profil / Fer / Vis)",
+      "Description": "Ces options sont enregistrées uniquement dans ce navigateur, pas sur le serveur. Cliquez sur Enregistrer ci-dessous pour les appliquer.",
+      "ShowBlock": "Afficher les champs profil / fer / vis",
+      "ShowBlockHint": "Lorsque cette option est désactivée, les trois champs n'apparaissent pas sur le formulaire de ligne ; les valeurs correspondantes sont envoyées vides lors de l'enregistrement de la ligne.",
+      "CustomLabel1": "Libellé personnalisé pour le profil (facultatif)",
+      "CustomLabel2": "Libellé personnalisé pour le fer (facultatif)",
+      "CustomLabel3": "Libellé personnalisé pour la vis (facultatif)",
+      "CustomLabelPlaceholder": "Laisser vide pour les noms par défaut"
+    }
+  },
+  "lineFormPreferences": {
+    "slotToggleHint": "Vous pouvez saisir du texte uniquement dans les cases cochées ; les champs non cochés sont vidés lorsque vous enregistrez la ligne."
+  },
   "order": {
     "exchangeRates": {
       "dialog": {
@@ -4369,5 +4417,105 @@
     "updateSuccess": "Limite de remise mise à jour avec succès",
     "updateError": "Erreur lors de la mise à jour de la limite de remise"
   },
-  "exportPreparing": "Hazırlanıyor..."
+  "exportPreparing": "Hazırlanıyor...",
+  "catalogStockPicker": {
+    "title": "Sélectionner un stock dans le catalogue",
+    "description": "Parcourez le catalogue comme sur une marketplace, puis choisissez le stock dans la liste des produits liés.",
+    "hierarchyBlueprintTitle": "Parcours de catégories recommandé",
+    "hierarchyBlueprintDescription": "Gardez la même logique dans le catalogue : catégorie principale, sous-catégorie, marque, série, puis produits.",
+    "hierarchyExampleLabel": "Exemple",
+    "hierarchyExampleValue": "Téléphones > Téléphones à clavier > iPhone > Série 17 > Produits",
+    "hierarchyInfoButton": "Parcours de catégories recommandé",
+    "scrollBack": "Faire défiler vers la gauche",
+    "scrollForward": "Faire défiler vers la droite",
+    "mobileCategoriesAccordion": "Catégories",
+    "mobileStocksAccordion": "Stocks de la catégorie",
+    "openButton": "Choisir dans le catalogue",
+    "viewModeGroupLabel": "Affichage des stocks",
+    "viewModeList": "Liste",
+    "viewModeCards": "Cartes",
+    "listColCode": "Code",
+    "listColName": "Nom",
+    "listColRelated": "Liés",
+    "listColAction": "Action",
+    "step1Label": "Étape 1",
+    "step1Title": "Choisir le catalogue",
+    "step2Label": "Étape 2",
+    "step2Title": "Choisir la catégorie",
+    "step3Label": "Étape 3",
+    "step3Title": "Choisir le stock",
+    "catalogsTitle": "Catalogues",
+    "categoriesTitle": "Catégories",
+    "stocksTitle": "Stocks de la catégorie",
+    "loadingCatalogs": "Chargement des catalogues...",
+    "loadingCategories": "Chargement des catégories...",
+    "loadingStocks": "Chargement des stocks...",
+    "noCatalogSelected": "Aucun catalogue sélectionné",
+    "noLeafSelected": "Aucune catégorie sélectionnée pour le moment",
+    "subCategoryBadge": "Sous-catégorie",
+    "leafBadge": "Catégorie feuille",
+    "emptyCategories": "Il n’y a aucune catégorie à afficher à ce niveau.",
+    "searchPlaceholder": "Rechercher parmi les stocks de cette catégorie...",
+    "selectLeafTitle": "Sélectionnez d’abord une catégorie",
+    "selectLeafHint": "Descendez dans les sous-catégories ou utilisez Liste pour afficher les produits de tout le sous-arbre.",
+    "selectedLeaf": "Catégorie sélectionnée",
+    "selectedPathLabel": "Chemin sélectionné",
+    "currentPathLabel": "Chemin actuel",
+    "levelBadge": "Niveau {{level}}",
+    "browseChildrenButton": "Sous-niveaux",
+    "listDescendantsButton": "Lister",
+    "directCategoryModeBadge": "Catégorie directe",
+    "listDescendantsModeBadge": "Liste sous-arbre",
+    "rightPanelTitle": "Les stocks s’affichent ici",
+    "rightPanelLeafHint": "Choisissez le stock dans les cartes ci-dessous. Après sélection, il est appliqué comme avec la loupe.",
+    "stocksFoundTitle": "{{count}} stocks trouvés",
+    "selectionReadyTitle": "Sélection prête",
+    "selectionReadyHint": "Votre sélection est prête. Vous pouvez ajouter d’autres stocks si besoin, puis appliquer avec « Appliquer la sélection ».",
+    "emptyStocksTitle": "Aucun stock dans cette catégorie",
+    "emptyStocks": "Aucun stock n’est lié à cette catégorie.",
+    "selectedCount": "{{count}} stocks sélectionnés",
+    "selectedBadge": "Sélectionné",
+    "selectStockButton": "Choisir le stock",
+    "relatedStocksBadge": "{{count}} stocks liés",
+    "relatedStocksHint": "En choisissant ce stock, vous pouvez aussi sélectionner ses stocks liés.",
+    "groupCode": "Groupe",
+    "code1": "Code 1",
+    "code2": "Code 2",
+    "unit": "Unité",
+    "loadMore": "Charger plus",
+    "footerHint": "Un stock choisi dans le catalogue est appliqué à la ligne exactement comme avec la sélection par loupe.",
+    "confirmSelection": "Appliquer la sélection",
+    "back": "Retour",
+    "selectionPanelTitle": "Stocks sélectionnés",
+    "selectionPanelHint": "Vos choix restent ici même si vous changez de catégorie. Retirez un stock de cette liste si besoin.",
+    "removeSelection": "Retirer la sélection",
+    "alreadyInDraftBadge": "Brouillon",
+    "alreadyInDraftTooltip": "Ce stock figure déjà dans votre bandeau de sélection (ajouté plus tôt sur cet écran).",
+    "confirmTotalCount": "Total {{count}} lignes",
+    "draftRetainedInConfirm": "{{count}} ligne(s) de votre brouillon restent dans le résultat ; elles n’apparaissent pas en rose dans la liste — seul le badge « Brouillon » les indique.",
+    "alreadyOnLineBadge": "Sur la ligne",
+    "alreadyOnLineTooltip": "Ce produit est déjà sur une ligne de ce document.",
+    "hierarchyStages": {
+      "root": {
+        "title": "Catégorie principale",
+        "description": "Niveau le plus haut. Exemple : Téléphones"
+      },
+      "subcategory": {
+        "title": "Sous-catégorie",
+        "description": "Précise le groupe de produits. Exemple : Téléphones à clavier"
+      },
+      "brand": {
+        "title": "Marque",
+        "description": "Découpage par marque ou fabricant. Exemple : iPhone"
+      },
+      "series": {
+        "title": "Série",
+        "description": "Famille ou série de modèles. Exemple : Série 17"
+      },
+      "products": {
+        "title": "Produits",
+        "description": "Niveau feuille final : la sélection du stock se fait ici."
+      }
+    }
+  }
 }

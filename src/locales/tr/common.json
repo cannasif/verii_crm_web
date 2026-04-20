@@ -3329,7 +3329,11 @@
     "cardView": "Kart Görünümü",
     "listView": "Liste Görünümü",
     "stocks": "Stoklar",
-    "stocksWithImages": "Görselli Stoklar"
+    "stocksWithImages": "Görselli Stoklar",
+    "alreadyInDraftBadge": "Taslakta",
+    "alreadyInDraftTooltip": "Bu stok seçim listenizde zaten mevcut.",
+    "alreadyOnLineBadge": "Satırda",
+    "alreadyOnLineTooltip": "Bu ürün bu belgede zaten bir satırda yer alıyor."
   },
   "catalogStockPicker": {
     "title": "Katalogtan Stok Seç",
@@ -3338,7 +3342,19 @@
     "hierarchyBlueprintDescription": "Katalog içinde aynı mantığı koru: ana kategori, alt kategori, marka, seri ve en sonda ürünler.",
     "hierarchyExampleLabel": "Örnek",
     "hierarchyExampleValue": "Telefonlar > Tuşlu Telefonlar > iPhone > 17 Serisi > Ürünler",
+    "hierarchyInfoButton": "Önerilen kategori akışı",
+    "scrollBack": "Sola kaydır",
+    "scrollForward": "Sağa kaydır",
+    "mobileCategoriesAccordion": "Kategoriler",
+    "mobileStocksAccordion": "Kategori stokları",
     "openButton": "Katalogtan Seç",
+    "viewModeGroupLabel": "Stok görünümü",
+    "viewModeList": "Liste",
+    "viewModeCards": "Kartlar",
+    "listColCode": "Kod",
+    "listColName": "Ad",
+    "listColRelated": "Bağlı",
+    "listColAction": "İşlem",
     "step1Label": "Adım 1",
     "step1Title": "Katalog Seç",
     "step2Label": "Adım 2",
@@ -3390,6 +3406,12 @@
     "selectionPanelTitle": "Seçtiklerin",
     "selectionPanelHint": "Kategori değiştirsen bile seçtiklerin burada kalır. İstersen buradan çıkarabilirsin.",
     "removeSelection": "Seçimi kaldır",
+    "alreadyInDraftBadge": "Taslakta",
+    "alreadyInDraftTooltip": "Bu stok seçim şeridinizde zaten var (daha önce eklediğiniz satırlardan).",
+    "confirmTotalCount": "Toplam {{count}} satır",
+    "draftRetainedInConfirm": "Taslaktaki {{count}} satır Uygula ile korunur; listede pembe seçili görünmez, yalnızca “Taslakta” rozeti gösterilir.",
+    "alreadyOnLineBadge": "Satırda",
+    "alreadyOnLineTooltip": "Bu ürün bu belgede zaten bir satırda yer alıyor.",
     "hierarchyStages": {
       "root": {
         "title": "Ana Kategori",
@@ -4021,7 +4043,15 @@
       "editStockItemDetails": "Stok kalemi detaylarını düzenleyin",
       "description1": "Açıklama 1",
       "description2": "Açıklama 2",
-      "description3": "Açıklama 3"
+      "description3": "Açıklama 3",
+      "discountNumbered1": "1. İndirim",
+      "discountNumbered2": "2. İndirim",
+      "discountNumbered3": "3. İndirim",
+      "descriptionFieldsTitle": "Açıklama alanları",
+      "descriptionField1Label": "Profil",
+      "descriptionField2Label": "Demir",
+      "descriptionField3Label": "Vida",
+      "max200Chars": "Maksimum 200 karakter"
     },
     "sections": {
       "header": "Müşteri ve belge bilgileri",
@@ -4413,7 +4443,25 @@
       "DateFormat": "Tarih formatı seçin",
       "TimeFormat": "Saat formatı seçin",
       "NumberFormat": "Sayı formatı seçin"
+    },
+    "NumberFormatOptions": {
+      "trTR": "Türkçe sayı biçimi (1.234,56)",
+      "enUS": "ABD sayı biçimi (1,234.56)",
+      "deDE": "Almanca sayı biçimi (1.234,56)"
+    },
+    "LineFormSection": {
+      "Title": "Satır formu (Profil / Demir / Vida)",
+      "Description": "Bu ayarlar yalnızca bu tarayıcıda saklanır; sunucuya gönderilmez. Değişiklikler aşağıdaki «Kaydet» ile uygulanır.",
+      "ShowBlock": "Profil, demir, vida alanlarını göster",
+      "ShowBlockHint": "Kapalıyken bu üç alan satır formunda görünmez; satır kaydında ilgili değerler boş gönderilir.",
+      "CustomLabel1": "Profil için özel isim (isteğe bağlı)",
+      "CustomLabel2": "Demir için özel isim (isteğe bağlı)",
+      "CustomLabel3": "Vida için özel isim (isteğe bağlı)",
+      "CustomLabelPlaceholder": "Boş bırak: varsayılan isim"
     }
+  },
+  "lineFormPreferences": {
+    "slotToggleHint": "İşaretli alanlara metin girebilirsiniz; satırı kaydedince tiksiz alanlar boş gider."
   },
   "order": {
     "exchangeRates": {
@@ -4506,7 +4554,14 @@
       "deleteError": "Satır silinirken bir hata oluştu",
       "updateSuccess": "Satırlar güncellendi",
       "updateError": "Satırlar güncellenirken bir hata oluştu",
-      "max200Chars": "Maksimum 200 karakter"
+      "max200Chars": "Maksimum 200 karakter",
+      "discountNumbered1": "1. İndirim",
+      "discountNumbered2": "2. İndirim",
+      "discountNumbered3": "3. İndirim",
+      "descriptionFieldsTitle": "Açıklama alanları",
+      "descriptionField1Label": "Profil",
+      "descriptionField2Label": "Demir",
+      "descriptionField3Label": "Vida"
     },
     "sections": {
       "header": "Müşteri ve belge bilgileri",

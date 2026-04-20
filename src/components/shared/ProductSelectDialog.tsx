@@ -10,6 +10,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -66,6 +67,19 @@ export interface ProductSelectionResult {
   relatedStockIds?: number[];
 }
 
+export function stockMatchesDraftSnapshot(
+  stock: { id: number; erpStockCode: string },
+  snapshot: ProductSelectionResult[]
+): boolean {
+  if (!snapshot.length) return false;
+  const code = (stock.erpStockCode ?? '').trim();
+  return snapshot.some(
+    (item) =>
+      (item.id != null && item.id === stock.id) ||
+      (Boolean((item.code ?? '').trim()) && (item.code ?? '').trim() === code)
+  );
+}
+
 interface ProductSelectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -74,6 +88,8 @@ interface ProductSelectDialogProps {
   multiSelect?: boolean;
   disableRelatedStocks?: boolean;
   initialSelectedResults?: ProductSelectionResult[];
+  /** Belgede (tabloda) zaten satırı olan stoklar — “Satırda” rozeti */
+  existingLineStockMarkers?: ProductSelectionResult[];
 }
 
 interface StockCardProps {
@@ -81,6 +97,8 @@ interface StockCardProps {
   onClick: () => void;
   onRelatedStockSelect?: (stock: StockGetDto) => void;
   selected?: boolean;
+  alreadyInDraft?: boolean;
+  alreadyOnDocumentLine?: boolean;
 }
 
 interface StockWithImageCardProps {
@@ -88,6 +106,8 @@ interface StockWithImageCardProps {
   onClick: () => void;
   onRelatedStockSelect?: (stock: StockGetDto) => void;
   selected?: boolean;
+  alreadyInDraft?: boolean;
+  alreadyOnDocumentLine?: boolean;
 }
 
 function StockCard({
@@ -95,8 +115,10 @@ function StockCard({
   onClick,
   onRelatedStockSelect,
   selected = false,
+  alreadyInDraft = false,
+  alreadyOnDocumentLine = false,
 }: StockCardProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
   const codePairs = [
     { leftLabel: 'Kod1', leftValue: stock.kod1 || '-', rightLabel: 'Kod2', rightValue: stock.kod2 || '-' },
@@ -133,13 +155,43 @@ function StockCard({
       <CardContent className="flex h-full flex-col p-3.5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1.5">
+            <div className="mb-1.5 flex flex-wrap items-center gap-2">
               <span
                 className="max-w-[150px] truncate rounded border border-pink-200 bg-pink-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/30 dark:text-pink-300"
                 title={stock.erpStockCode}
               >
                 {stock.erpStockCode}
               </span>
+              {alreadyOnDocumentLine ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      variant="outline"
+                      className="h-5 shrink-0 border-indigo-300/80 bg-indigo-50 px-1.5 text-[9px] font-semibold text-indigo-900 dark:border-indigo-500/50 dark:bg-indigo-950/50 dark:text-indigo-100"
+                    >
+                      {t('catalogStockPicker.alreadyOnLineBadge')}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-xs">
+                    {t('catalogStockPicker.alreadyOnLineTooltip')}
+                  </TooltipContent>
+                </Tooltip>
+              ) : null}
+              {alreadyInDraft ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      variant="outline"
+                      className="h-5 shrink-0 border-amber-300/80 bg-amber-50 px-1.5 text-[9px] font-semibold text-amber-900 dark:border-amber-600/50 dark:bg-amber-950/40 dark:text-amber-100"
+                    >
+                      {t('catalogStockPicker.alreadyInDraftBadge')}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-xs">
+                    {t('catalogStockPicker.alreadyInDraftTooltip')}
+                  </TooltipContent>
+                </Tooltip>
+              ) : null}
               {chipCodes.map((value) => (
                 <span
                   key={value}
@@ -278,8 +330,10 @@ function StockWithImageCard({
   onClick,
   onRelatedStockSelect,
   selected = false,
+  alreadyInDraft = false,
+  alreadyOnDocumentLine = false,
 }: StockWithImageCardProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const imageUrl = stock.mainImage ? getImageUrl(stock.mainImage.filePath) : null;
   const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
   const codePairs = [
@@ -328,10 +382,40 @@ function StockWithImageCard({
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
-          <div className="absolute left-2.5 top-2.5">
+          <div className="absolute left-2.5 top-2.5 flex max-w-[calc(100%-4rem)] flex-wrap items-center gap-1">
             <span className="max-w-[150px] truncate rounded-md border border-pink-300/80 bg-pink-100/95 px-2 py-0.5 font-mono text-[11px] font-bold text-pink-800 shadow-sm dark:border-pink-700/60 dark:bg-pink-900/80 dark:text-pink-100">
               {stock.erpStockCode}
             </span>
+            {alreadyOnDocumentLine ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="outline"
+                    className="h-5 shrink-0 border-indigo-400/90 bg-indigo-100/95 px-1.5 text-[9px] font-semibold text-indigo-950 shadow-sm dark:border-indigo-500/60 dark:bg-indigo-950/80 dark:text-indigo-50"
+                  >
+                    {t('catalogStockPicker.alreadyOnLineBadge')}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-xs">
+                  {t('catalogStockPicker.alreadyOnLineTooltip')}
+                </TooltipContent>
+              </Tooltip>
+            ) : null}
+            {alreadyInDraft ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="outline"
+                    className="h-5 shrink-0 border-amber-400/90 bg-amber-100/95 px-1.5 text-[9px] font-semibold text-amber-950 shadow-sm dark:border-amber-500/60 dark:bg-amber-950/80 dark:text-amber-50"
+                  >
+                    {t('catalogStockPicker.alreadyInDraftBadge')}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-xs">
+                  {t('catalogStockPicker.alreadyInDraftTooltip')}
+                </TooltipContent>
+              </Tooltip>
+            ) : null}
           </div>
           <div className="absolute right-2.5 top-2.5 flex gap-1">
             {chipCodes.slice(0, 2).map((value) => (
@@ -449,8 +533,10 @@ function StockListItem({
   stock,
   onClick,
   selected = false,
+  alreadyInDraft = false,
+  alreadyOnDocumentLine = false,
 }: StockCardProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
 
   return (
     <div
@@ -463,10 +549,40 @@ function StockListItem({
       )}
       onClick={onClick}
     >
-      <div className="min-w-0 flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         <span className="shrink-0 max-w-[130px] truncate rounded border border-pink-200 bg-pink-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/30 dark:text-pink-300" title={stock.erpStockCode}>
           {stock.erpStockCode}
         </span>
+        {alreadyOnDocumentLine ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                variant="outline"
+                className="h-4 shrink-0 border-indigo-300/80 bg-indigo-50 px-1 text-[8px] font-semibold leading-none text-indigo-900 dark:border-indigo-600/50 dark:bg-indigo-950/40 dark:text-indigo-100"
+              >
+                {t('catalogStockPicker.alreadyOnLineBadge')}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs text-xs">
+              {t('catalogStockPicker.alreadyOnLineTooltip')}
+            </TooltipContent>
+          </Tooltip>
+        ) : null}
+        {alreadyInDraft ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                variant="outline"
+                className="h-4 shrink-0 border-amber-300/80 bg-amber-50 px-1 text-[8px] font-semibold leading-none text-amber-900 dark:border-amber-600/50 dark:bg-amber-950/40 dark:text-amber-100"
+              >
+                {t('catalogStockPicker.alreadyInDraftBadge')}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs text-xs">
+              {t('catalogStockPicker.alreadyInDraftTooltip')}
+            </TooltipContent>
+          </Tooltip>
+        ) : null}
         <span className="min-w-0 truncate text-sm font-semibold text-slate-900 dark:text-white" title={stock.stockName}>
           {stock.stockName}
         </span>
@@ -487,8 +603,10 @@ function StockWithImageListItem({
   stock,
   onClick,
   selected = false,
+  alreadyInDraft = false,
+  alreadyOnDocumentLine = false,
 }: StockWithImageCardProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const imageUrl = stock.mainImage ? getImageUrl(stock.mainImage.filePath) : null;
 
   return (
@@ -516,10 +634,40 @@ function StockWithImageListItem({
         )}
       </div>
 
-      <div className="min-w-0 flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         <span className="shrink-0 max-w-[130px] truncate rounded border border-pink-200 bg-pink-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/30 dark:text-pink-300" title={stock.erpStockCode}>
           {stock.erpStockCode}
         </span>
+        {alreadyOnDocumentLine ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                variant="outline"
+                className="h-4 shrink-0 border-indigo-300/80 bg-indigo-50 px-1 text-[8px] font-semibold leading-none text-indigo-900 dark:border-indigo-600/50 dark:bg-indigo-950/40 dark:text-indigo-100"
+              >
+                {t('catalogStockPicker.alreadyOnLineBadge')}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs text-xs">
+              {t('catalogStockPicker.alreadyOnLineTooltip')}
+            </TooltipContent>
+          </Tooltip>
+        ) : null}
+        {alreadyInDraft ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                variant="outline"
+                className="h-4 shrink-0 border-amber-300/80 bg-amber-50 px-1 text-[8px] font-semibold leading-none text-amber-900 dark:border-amber-600/50 dark:bg-amber-950/40 dark:text-amber-100"
+              >
+                {t('catalogStockPicker.alreadyInDraftBadge')}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs text-xs">
+              {t('catalogStockPicker.alreadyInDraftTooltip')}
+            </TooltipContent>
+          </Tooltip>
+        ) : null}
         <span className="min-w-0 truncate text-sm font-semibold text-slate-900 dark:text-white" title={stock.stockName}>
           {stock.stockName}
         </span>
@@ -544,8 +692,9 @@ export function ProductSelectDialog({
   multiSelect = false,
   disableRelatedStocks = false,
   initialSelectedResults = [],
+  existingLineStockMarkers = [],
 }: ProductSelectDialogProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('stocks');
@@ -558,13 +707,16 @@ export function ProductSelectDialog({
   const [relatedStocksDialogOpen, setRelatedStocksDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<StockGetDto | StockGetWithMainImageDto | null>(null);
   const [selectedResults, setSelectedResults] = useState<ProductSelectionResult[]>([]);
+  const initialDraftSnapshotRef = useRef<ProductSelectionResult[]>([]);
+  const documentLinesSnapshotRef = useRef<ProductSelectionResult[]>([]);
+  const multiSelectSessionStartedRef = useRef(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debouncedSearch = useDebouncedValue(searchQuery, POPUP_SEARCH_DEBOUNCE_MS);
   const isThresholdInput = searchQuery.trim().length > 0 && searchQuery.trim().length < DROPDOWN_MIN_CHARS;
   const rawAppliedAdvancedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
   const hasAdvancedFilters = rawAppliedAdvancedFilters.length > 0;
-  const minCharsHint = t('common.dropdown.minCharsHint', {
+  const minCharsHint = t('dropdown.minCharsHint', {
     count: DROPDOWN_MIN_CHARS,
     defaultValue: `Minimum ${DROPDOWN_MIN_CHARS} characters`,
   });
@@ -620,9 +772,6 @@ export function ProductSelectDialog({
     }
   };
 
-  // Keep external selections as visual state only; this dialog session should only
-  // submit picks explicitly made after opening.
-
   useEffect(() => {
     if (!open && !relatedStocksDialogOpen) {
       setSearchQuery('');
@@ -636,8 +785,27 @@ export function ProductSelectDialog({
         recognitionRef.current.stop();
       }
       setSelectedResults([]);
+      multiSelectSessionStartedRef.current = false;
+      initialDraftSnapshotRef.current = [];
+      documentLinesSnapshotRef.current = [];
     }
   }, [open, relatedStocksDialogOpen]);
+
+  useEffect(() => {
+    if (!open || relatedStocksDialogOpen || !multiSelect) return;
+    if (!multiSelectSessionStartedRef.current) {
+      const seeded = initialSelectedResults.map((r) => ({ ...r }));
+      initialDraftSnapshotRef.current = seeded;
+      documentLinesSnapshotRef.current = (existingLineStockMarkers ?? []).map((r) => ({ ...r }));
+      setSelectedResults(seeded);
+      multiSelectSessionStartedRef.current = true;
+    }
+  }, [open, relatedStocksDialogOpen, initialSelectedResults, multiSelect, existingLineStockMarkers]);
+
+  useEffect(() => {
+    if (!open || relatedStocksDialogOpen || multiSelect) return;
+    documentLinesSnapshotRef.current = (existingLineStockMarkers ?? []).map((r) => ({ ...r }));
+  }, [open, relatedStocksDialogOpen, multiSelect, existingLineStockMarkers]);
 
   const getSelectionKey = (value: { id?: number; code: string }): string =>
     value.id != null ? `id:${value.id}` : `code:${value.code}`;
@@ -646,13 +814,8 @@ export function ProductSelectDialog({
     setSelectedResults((prev) => [...prev, result]);
   }, []);
 
-  const removeOneSelection = useCallback((result: ProductSelectionResult): void => {
-    const targetKey = getSelectionKey(result);
-    setSelectedResults((prev) => {
-      const removeIndex = prev.findIndex((item) => getSelectionKey(item) === targetKey);
-      if (removeIndex < 0) return prev;
-      return prev.filter((_, index) => index !== removeIndex);
-    });
+  const removeSelectionAtIndex = useCallback((index: number): void => {
+    setSelectedResults((prev) => prev.filter((_, i) => i !== index));
   }, []);
   const selectedKeySet = useMemo(
     () => new Set(selectedResults.map((item) => getSelectionKey(item))),
@@ -667,19 +830,9 @@ export function ProductSelectDialog({
     selectedKeySet.forEach((key) => combined.add(key));
     return combined;
   }, [initialSelectedKeySet, selectedKeySet]);
-  const selectedGroupedResults = useMemo(() => {
-    const grouped = new Map<string, { item: ProductSelectionResult; count: number }>();
-    selectedResults.forEach((item) => {
-      const codeKey = item.code || '';
-      const current = grouped.get(codeKey);
-      if (current) {
-        current.count += 1;
-      } else {
-        grouped.set(codeKey, { item, count: 1 });
-      }
-    });
-    return Array.from(grouped.values());
-  }, [selectedResults]);
+
+  const draftSnapshotList = initialDraftSnapshotRef.current;
+  const documentLinesList = documentLinesSnapshotRef.current;
 
   const stocksDropdown = useDropdownInfiniteSearch<StockGetDto>({
     entityKey: 'stocks',
@@ -843,6 +996,8 @@ export function ProductSelectDialog({
               onClick={() => handleStockSelect(stock)}
               onRelatedStockSelect={handleStockSelect}
               selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
+              alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
+              alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
             />
           ))}
         </div>
@@ -858,6 +1013,8 @@ export function ProductSelectDialog({
             onClick={() => handleStockSelect(stock)}
             onRelatedStockSelect={handleStockSelect}
             selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
+            alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
+            alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
           />
         ))}
       </div>
@@ -895,6 +1052,8 @@ export function ProductSelectDialog({
               onClick={() => handleStockSelect(stock)}
               onRelatedStockSelect={handleStockSelect}
               selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
+              alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
+              alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
             />
           ))}
         </div>
@@ -910,6 +1069,8 @@ export function ProductSelectDialog({
             onClick={() => handleStockSelect(stock)}
             onRelatedStockSelect={handleStockSelect}
             selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
+            alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
+            alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
           />
         ))}
       </div>
@@ -1038,7 +1199,7 @@ export function ProductSelectDialog({
                     className="h-10 sm:h-11 rounded-xl bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400"
                   >
                     <Filter className="h-4 w-4 mr-2" />
-                    {t('common.filters', { defaultValue: 'Filtreler' })}
+                    {t('filters', { defaultValue: 'Filtreler' })}
                     {hasAdvancedFilters ? (
                       <span className="ml-2 inline-flex min-w-5 justify-center rounded-full bg-pink-100 px-1.5 py-0.5 text-[10px] font-semibold text-pink-700 dark:bg-pink-900/40 dark:text-pink-300">
                         {rawAppliedAdvancedFilters.length}
@@ -1078,7 +1239,7 @@ export function ProductSelectDialog({
                         setFilterPopoverOpen(false);
                       }}
                     >
-                      {t('common.cancel', { defaultValue: 'İptal' })}
+                      {t('cancel', { defaultValue: 'İptal' })}
                     </Button>
                     <Button
                       type="button"
@@ -1088,7 +1249,7 @@ export function ProductSelectDialog({
                         setFilterPopoverOpen(false);
                       }}
                     >
-                      {t('common.apply', { defaultValue: 'Uygula' })}
+                      {t('apply', { defaultValue: 'Uygula' })}
                     </Button>
                   </div>
                 </PopoverContent>
@@ -1126,35 +1287,31 @@ export function ProductSelectDialog({
             </div>
           </div>
           {multiSelect && selectedResults.length > 0 ? (
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                {t('common.selected', { defaultValue: 'Secilen' })}: {selectedResults.length}
+            <div className="mt-3 flex max-h-28 flex-wrap items-center gap-2 overflow-y-auto pr-1">
+              <span className="w-full text-xs font-semibold text-slate-500 dark:text-slate-400 sm:w-auto">
+                {t('selected', { defaultValue: 'Secilen' })}: {selectedResults.length}
               </span>
-              {selectedGroupedResults.slice(0, 6).map(({ item, count }) => {
-                const fullLabel = `${item.code}${count > 1 ? ` x${count}` : ''}`;
-                return (
+              {selectedResults.map((item, index) => (
                 <button
-                  key={`${item.id ?? 'x'}-${item.code}`}
+                  key={`pick-${index}-${getSelectionKey(item)}`}
                   type="button"
-                  onClick={() => removeOneSelection(item)}
-                  title={fullLabel}
-                  className="inline-flex max-w-[min(11rem,42vw)] items-center gap-1 rounded-full border border-pink-200 dark:border-pink-700/40 bg-pink-50 dark:bg-pink-900/20 px-2 py-1 text-left text-[11px] font-medium text-pink-700 dark:text-pink-300 sm:max-w-[13rem]"
+                  onClick={() => removeSelectionAtIndex(index)}
+                  title={item.code}
+                  className="inline-flex max-w-[min(11rem,42vw)] items-center gap-1 rounded-full border border-pink-200 bg-pink-50 px-2 py-1 text-left text-[11px] font-medium text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/20 dark:text-pink-300 sm:max-w-[13rem]"
                 >
-                  <span className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+                  <span className="flex min-w-0 flex-1 flex-col gap-0 overflow-hidden text-left leading-tight">
                     <span className="truncate font-mono" title={item.code}>
                       {item.code}
                     </span>
-                    {count > 1 ? (
-                      <span className="shrink-0 tabular-nums">x{count}</span>
+                    {item.name ? (
+                      <span className="truncate text-[10px] font-normal text-pink-600/90 dark:text-pink-300/80" title={item.name}>
+                        {item.name}
+                      </span>
                     ) : null}
                   </span>
                   <X className="h-3 w-3 shrink-0 opacity-70" />
                 </button>
-              );
-              })}
-              {selectedGroupedResults.length > 6 ? (
-                <span className="text-[11px] text-slate-400">+{selectedGroupedResults.length - 6}</span>
-              ) : null}
+              ))}
             </div>
           ) : null}
         </div>
@@ -1203,7 +1360,7 @@ export function ProductSelectDialog({
               }}
               disabled={selectedResults.length === 0}
             >
-              {t('common.clear', { defaultValue: 'Temizle' })}
+              {t('clear', { defaultValue: 'Temizle' })}
             </Button>
             <Button
               type="button"
@@ -1211,7 +1368,7 @@ export function ProductSelectDialog({
               disabled={selectedResults.length === 0}
               className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white"
             >
-              {t('common.addSelected', { defaultValue: 'Secilenleri Ekle' })} ({selectedResults.length})
+              {t('addSelected', { defaultValue: 'Secilenleri Ekle' })} ({selectedResults.length})
             </Button>
           </div>
         ) : null}

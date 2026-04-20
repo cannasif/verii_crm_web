@@ -92,7 +92,15 @@
       "message": "Para birimi değiştiğinde mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
     },
     "deliveryMethod": "Teslimat Yöntemi",
-    "documentDetail": "Belge Açıklaması"
+    "documentDetail": "Belge Açıklaması",
+    "currencyNameFallback": "Döviz {{code}}",
+    "financialCardTitle": "Finansal",
+    "exchangeRatesLink": "Kurlar",
+    "typeAndDatesCardTitle": "Tip & Tarihler",
+    "offerDateAbbrev": "Sipariş T.",
+    "deliveryDateAbbrev": "Teslim T.",
+    "serialNumber": "Seri No",
+    "notes": "Notlar"
   },
   "lines": {
     "title": "Sipariş Satırları",
@@ -135,6 +143,13 @@
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
     "deleteError": "Sipariş satırı silinemedi.",
+    "descriptionFieldsTitle": "Profil, demir, vida",
+    "descriptionField1Label": "Profil",
+    "descriptionField2Label": "Demir",
+    "descriptionField3Label": "Vida",
+    "discountNumbered1": "1. İndirim",
+    "discountNumbered2": "2. İndirim",
+    "discountNumbered3": "3. İndirim",
     "delete": {
       "confirmTitle": "Satırı Sil",
       "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?",

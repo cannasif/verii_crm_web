@@ -400,7 +400,6 @@ export function OrderCreateForm(): ReactElement {
                         </h3>
                     </div>
                   </div>
-                  
                   <div className="w-full overflow-x-auto p-0">
                       <OrderLineTable
                         lines={lines}

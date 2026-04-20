@@ -157,7 +157,14 @@
     "grandTotal": "Totale generale",
     "currencyTry": "TL",
     "totalDiscount": "Sconto totale",
-    "vatAmount": "Importo IVA"
+    "vatAmount": "Importo IVA",
+    "discountNumbered1": "1. Sconto",
+    "discountNumbered2": "2. Sconto",
+    "discountNumbered3": "3. Sconto",
+    "descriptionFieldsTitle": "Campi descrizione",
+    "descriptionField1Label": "Profilo",
+    "descriptionField2Label": "Ferro",
+    "descriptionField3Label": "Vite"
   },
   "exchangeRates": {
     "title": "Tassi di cambio",

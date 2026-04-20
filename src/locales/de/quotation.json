@@ -88,9 +88,17 @@
       "message": "Wenn die Währung geändert wird, werden alle vorhandenen Zeilen basierend auf der neuen Währung neu berechnet. Bestätigen Sie diesen Vorgang?"
     },
     "deliveryMethod": "Liefermethode",
-    "documentDetail": "Dokumentdetails",
-    "projectCode": "Proje Kodu",
-    "projectCodePlaceholder": "Proje kodunu girin"
+    "documentDetail": "Belegdetails",
+    "projectCode": "Projektcode",
+    "projectCodePlaceholder": "Projektcode eingeben",
+    "currencyNameFallback": "Währung {{code}}",
+    "financialCardTitle": "Finanzen",
+    "exchangeRatesLink": "Kurse",
+    "typeAndDatesCardTitle": "Typ & Termine",
+    "offerDateAbbrev": "Angebotsdatum",
+    "deliveryDateAbbrev": "Lieferdatum",
+    "serialNumber": "Serien-Nr.",
+    "notes": "Notizen"
   },
   "lines": {
     "title": "Angebotszeilen",

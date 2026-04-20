@@ -90,8 +90,16 @@
     },
     "deliveryMethod": "Metodo di consegna",
     "documentDetail": "Dettagli documento",
-    "projectCode": "Proje Kodu",
-    "projectCodePlaceholder": "Proje kodunu girin"
+    "projectCode": "Codice progetto",
+    "projectCodePlaceholder": "Inserisci il codice progetto",
+    "currencyNameFallback": "Valuta {{code}}",
+    "financialCardTitle": "Finanziario",
+    "exchangeRatesLink": "Cambi",
+    "typeAndDatesCardTitle": "Tipo e date",
+    "offerDateAbbrev": "Data ordine",
+    "deliveryDateAbbrev": "Data cons.",
+    "serialNumber": "N. serie",
+    "notes": "Note"
   },
   "lines": {
     "title": "Righe Preventivo",

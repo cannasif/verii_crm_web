@@ -38,19 +38,19 @@
     "status": "Status",
     "revise": "Revise",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
-    "detail": "Detay",
+    "detail": "Details",
     "customerCode": "Customer Code",
     "validUntil": "Valid Until",
-    "revisionNo": "Revizyon No"
+    "revisionNo": "Revision no."
   },
   "detail": {
-    "title": "Quotation Detail",
-    "subtitle": "Teklif bilgilerini, onay akışını ve raporları görüntüleyin",
-    "notFound": "Teklif bulunamadı",
-    "revisionNo": "Revizyon No",
-    "tabDetail": "Detay",
-    "tabApprovalFlow": "Onay Akışı",
-    "tabReport": "Rapor"
+    "title": "Quotation details",
+    "subtitle": "View quotation information, approval flow, and reports",
+    "notFound": "Quotation not found",
+    "revisionNo": "Revision no.",
+    "tabDetail": "Details",
+    "tabApprovalFlow": "Approval flow",
+    "tabReport": "Report"
   },
   "create": {
     "title": "Create New Quotation",
@@ -59,9 +59,9 @@
     "successMessage": "Quotation has been sent to the approval process.",
     "error": "Quotation Could Not Be Created",
     "errorMessage": "An error occurred while creating the quotation.",
-    "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
-    "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "subtitle": "Manage the quotation header, lines, and exchange rates",
+    "invalidCurrency": "Select a valid currency.",
+    "validationError": "Please check the required fields."
   },
   "header": {
     "title": "Quotation Information",
@@ -90,8 +90,16 @@
     },
     "deliveryMethod": "Delivery Method",
     "documentDetail": "Document Details",
-    "projectCode": "Proje Kodu",
-    "projectCodePlaceholder": "Proje kodunu girin"
+    "projectCode": "Project code",
+    "projectCodePlaceholder": "Enter project code",
+    "currencyNameFallback": "Currency {{code}}",
+    "financialCardTitle": "Financial",
+    "exchangeRatesLink": "Rates",
+    "typeAndDatesCardTitle": "Type & dates",
+    "offerDateAbbrev": "Offer date",
+    "deliveryDateAbbrev": "Delivery date",
+    "serialNumber": "Serial no.",
+    "notes": "Notes"
   },
   "lines": {
     "title": "Quotation Lines",
@@ -124,8 +132,8 @@
     "delete": {
       "confirmTitle": "Delete Line",
       "confirmMessage": "Are you sure you want to delete this line?",
-      "confirmTitleMultiple": "Satırları Sil",
-      "confirmMessageMultiple": "Seçili satırları silmek istediğinizden emin misiniz?"
+      "confirmTitleMultiple": "Delete lines",
+      "confirmMessageMultiple": "Are you sure you want to delete the selected lines?"
     },
     "discountLimitExceeded": "Discount rates exceed your authorization limits.",
     "max200Chars": "Maximum 200 characters",
@@ -136,20 +144,24 @@
     "currencyTry": "TL",
     "totalDiscount": "Total Discount",
     "vatAmount": "VAT Amount",
-    "addTitle": "Satır Ekle",
-    "editTitle": "Satır Düzenle",
-    "noItems": "Henüz satır bulunmuyor",
-    "unit": "Birim",
-    "description": "Açıklama",
-    "total": "Toplam",
-    "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
-    "relatedStocks": "Bağlı Stoklar",
-    "createSuccess": "Teklif satırları eklendi.",
-    "createError": "Teklif satırları eklenemedi.",
-    "updateSuccess": "Teklif satırları güncellendi.",
-    "updateError": "Teklif satırları güncellenemedi.",
-    "deleteSuccess": "Teklif satırı silindi.",
-    "deleteError": "Teklif satırı silinemedi."
+    "addTitle": "Add line",
+    "editTitle": "Edit line",
+    "noItems": "No lines yet",
+    "unit": "Unit",
+    "description": "Description",
+    "total": "Total",
+    "requiredFieldsMissing": "Please fill in the required fields.",
+    "relatedStocks": "Related stock",
+    "createSuccess": "Quotation lines added.",
+    "createError": "Quotation lines could not be added.",
+    "updateSuccess": "Quotation lines updated.",
+    "updateError": "Quotation lines could not be updated.",
+    "deleteSuccess": "Quotation line deleted.",
+    "deleteError": "Quotation line could not be deleted.",
+    "descriptionFieldsTitle": "Profile, rebar, screw",
+    "descriptionField1Label": "Profile",
+    "descriptionField2Label": "Rebar",
+    "descriptionField3Label": "Screw"
   },
   "exchangeRates": {
     "title": "Exchange Rates",
@@ -164,13 +176,13 @@
     "dialog": {
       "title": "Exchange Rates",
       "description": "View and edit exchange rate values if needed. Modified rates will not be marked as official rates.",
-      "subtitle": "Teklifte kullanılacak döviz kurlarını kontrol edin",
-      "info": "Kur değişiklikleri satır hesaplamalarını etkiler."
+      "subtitle": "Review exchange rates used on the quotation",
+      "info": "Rate changes affect line calculations."
     },
-    "updateSuccess": "Döviz kurları güncellendi.",
-    "updateError": "Döviz kurları güncellenemedi.",
-    "cannotEditUsedCurrency": "Kullanılan para birimi için kur değiştirilemez.",
-    "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
+    "updateSuccess": "Exchange rates updated.",
+    "updateError": "Exchange rates could not be updated.",
+    "cannotEditUsedCurrency": "The rate cannot be changed for a currency already in use.",
+    "zeroRateError": "Enter a rate to continue."
   },
   "summary": {
     "title": "Summary",
@@ -178,10 +190,10 @@
     "subtotal": "Subtotal",
     "totalVat": "Total VAT",
     "grandTotal": "Grand Total",
-    "generalDiscount": "Genel İskonto",
-    "generalDiscountRate": "Genel İskonto Oranı",
-    "generalDiscountAmount": "Genel İskonto Tutarı",
-    "generalDiscountHelp": "Bu alan tüm teklif toplamına uygulanacak genel iskontoyu ifade eder."
+    "generalDiscount": "Overall discount",
+    "generalDiscountRate": "Overall discount rate",
+    "generalDiscountAmount": "Overall discount amount",
+    "generalDiscountHelp": "Lump-sum discount applied to the quotation total after line totals."
   },
   "offerType": {
     "domestic": "Domestic",
@@ -234,112 +246,75 @@
     }
   },
   "guide": "Guide",
-  "quotation": {
-    "exchangeRates": {
-      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
-    },
-    "list": {
-      "detail": "Detay",
-      "cardTitle": "Teklif listesi",
-      "refresh": "Yenile"
-    },
-    "lines": {
-      "max200Chars": "Maksimum 200 karakter",
-      "currencyTry": "TL",
-      "approvalNeeded": "Onay Gerekiyor",
-      "discountLimitExceeded": "İndirim oranları yetki limitlerinizi aşıyor.",
-      "subtotal": "Ara Toplam",
-      "totalDiscount": "Toplam İndirim",
-      "vatAmount": "KDV Tutarı",
-      "grandTotal": "Genel Toplam",
-      "approvalRequired": "Onay Gerekli"
-    },
-    "header": {
-      "paymentType": "Ödeme Tipi",
-      "deliveryMethod": "Teslim Şekli",
-      "documentDetail": "Belge Detayı"
-    },
-    "loadError": "Veriler yüklenirken hata oluştu.",
-    "summary": {
-      "grandTotalAnalysis": "Genel Toplam Analizi"
-    }
-  },
-  "date": "Tarih",
-  "offerNo": "Teklif No",
-  "customerAccount": "Müşteri Hesabı",
-  "export": "Dışa Aktar",
-  "exportPdf": "PDF Dışa Aktar",
-  "shareMail": "E-posta ile Paylaş",
-  "shareWhatsapp": "WhatsApp ile Paylaş",
   "approval": {
-    "approve": "Onayla",
-    "reject": "Reddet",
-    "sending": "Gönderiliyor...",
-    "sendForApproval": "Onaya Gönder",
-    "approveSuccess": "Teklif başarıyla onaylandı.",
-    "approveError": "Teklif onaylanamadı.",
-    "rejectSuccess": "Teklif reddedildi.",
-    "rejectError": "Teklif reddedilemedi.",
-    "startSuccess": "Onay süreci başlatıldı.",
-    "startError": "Onay süreci başlatılamadı.",
-    "rejectTitle": "Teklifi Reddet",
-    "rejectDescription": "Teklifi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "approve": "Approve",
+    "reject": "Reject",
+    "sending": "Sending...",
+    "sendForApproval": "Send for approval",
+    "approveSuccess": "Quotation approved.",
+    "approveError": "Quotation could not be approved.",
+    "rejectSuccess": "Quotation rejected.",
+    "rejectError": "Quotation could not be rejected.",
+    "startSuccess": "Approval flow started.",
+    "startError": "Approval flow could not be started.",
+    "rejectTitle": "Reject quotation",
+    "rejectDescription": "Enter the reason for rejection.",
+    "rejectReasonPlaceholder": "Reason for rejection"
   },
   "approvalFlow": {
-    "loading": "Onay akışı yükleniyor...",
-    "noData": "Onay akışı kaydı bulunamadı",
-    "notStarted": "Onay akışı henüz başlatılmadı",
-    "stepCompleted": "Tamamlandı",
-    "stepInProgress": "Devam Ediyor",
-    "stepNotStarted": "Başlamadı",
-    "stepRejected": "Reddedildi"
+    "loading": "Loading approval flow...",
+    "noData": "No approval flow record found",
+    "notStarted": "Approval flow has not started yet",
+    "stepCompleted": "Completed",
+    "stepInProgress": "In progress",
+    "stepNotStarted": "Not started",
+    "stepRejected": "Rejected"
   },
   "notes": {
-    "title": "Teklif Notları",
-    "description": "Teklif için iç notlar ekleyin ve güncelleyin.",
-    "placeholder": "Teklif notunu girin",
-    "saving": "Notlar kaydediliyor...",
-    "noteLabel": "Teklif Notu",
-    "saved": "Teklif notları kaydedildi.",
-    "saveError": "Teklif notları kaydedilemedi.",
-    "maxLengthError": "Not alanı en fazla 1000 karakter olabilir.",
-    "maxCountError": "En fazla 10 not ekleyebilirsiniz."
+    "title": "Quotation notes",
+    "description": "Add and update internal notes for the quotation.",
+    "placeholder": "Enter a quotation note",
+    "saving": "Saving notes...",
+    "noteLabel": "Quotation note",
+    "saved": "Quotation notes saved.",
+    "saveError": "Quotation notes could not be saved.",
+    "maxLengthError": "Each note can be at most 1,000 characters.",
+    "maxCountError": "You can add at most 10 notes."
   },
   "sections": {
-    "header": "Başlık Bilgileri",
-    "lines": "Satırlar",
-    "summary": "Özet"
+    "header": "Header information",
+    "lines": "Lines",
+    "summary": "Summary"
   },
   "share": {
-    "downloaded": "Dosya indirildi.",
-    "mailSubject": "Teklif paylaşımı",
-    "mailBody": "Teklif detaylarını inceler misiniz?",
-    "whatsappMessage": "Teklif detaylarını sizinle paylaşıyorum."
+    "downloaded": "File downloaded.",
+    "mailSubject": "Quotation",
+    "mailBody": "Please review the quotation details.",
+    "whatsappMessage": "Sharing the quotation details with you."
   },
   "revision": {
-    "success": "Revizyon kaydı oluşturuldu.",
-    "error": "Revizyon kaydı oluşturulamadı."
+    "success": "Revision created.",
+    "error": "Revision could not be created."
   },
   "update": {
     "saveButton": "Save Changes",
-    "success": "Teklif güncellendi.",
-    "successMessage": "Teklif bilgileri başarıyla güncellendi.",
-    "error": "Teklif güncellenemedi.",
-    "errorMessage": "Teklif güncellenirken bir hata oluştu.",
-    "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "success": "Quotation updated.",
+    "successMessage": "Quotation saved successfully.",
+    "error": "Quotation could not be updated.",
+    "errorMessage": "Something went wrong while updating the quotation.",
+    "invalidCurrency": "Select a valid currency.",
+    "validationError": "Please check the required fields."
   },
   "waitingApprovals": {
-    "title": "Bekleyen Teklif Onayları",
-    "description": "Onay bekleyen teklif kayıtlarını görüntüleyin.",
-    "list": "Bekleyen Onay Listesi",
-    "waiting": "Bekliyor",
-    "noApprovals": "Bekleyen onay kaydı bulunamadı.",
-    "requestId": "Talep No",
-    "status": "Durum",
-    "stepOrder": "Adım Sırası",
-    "approvedBy": "Onaylayan",
-    "actionDate": "İşlem Tarihi"
+    "title": "Quotations awaiting approval",
+    "description": "Quotations that are waiting for approval.",
+    "list": "Pending approvals",
+    "waiting": "Pending",
+    "noApprovals": "No pending approvals.",
+    "requestId": "Request no.",
+    "status": "Status",
+    "stepOrder": "Step",
+    "approvedBy": "Approved by",
+    "actionDate": "Action date"
   }
 }

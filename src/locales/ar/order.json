@@ -90,8 +90,16 @@
     },
     "deliveryMethod": "طريقة التسليم",
     "documentDetail": "تفاصيل المستند",
-    "projectCode": "Proje Kodu",
-    "projectCodePlaceholder": "Proje kodunu girin"
+    "projectCode": "رمز المشروع",
+    "projectCodePlaceholder": "أدخل رمز المشروع",
+    "currencyNameFallback": "العملة {{code}}",
+    "financialCardTitle": "مالي",
+    "exchangeRatesLink": "أسعار الصرف",
+    "typeAndDatesCardTitle": "النوع والتواريخ",
+    "offerDateAbbrev": "ت. الطلب",
+    "deliveryDateAbbrev": "ت. التسليم",
+    "serialNumber": "الرقم التسلسلي",
+    "notes": "ملاحظات"
   },
   "lines": {
     "title": "بنود عرض السعر",

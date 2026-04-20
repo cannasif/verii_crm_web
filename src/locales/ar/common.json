@@ -2813,7 +2813,7 @@
     "loading": "جاري التحميل...",
     "noResults": "لم يتم العثور على نتائج بحث",
     "noProducts": "المخزون غير موجود",
-    "title": "Select Stock",
+    "title": "اختيار المخزون",
     "searchPlaceholder": "البحث برمز المخزون أو الاسم...",
     "voiceSearch": "البحث الصوتي",
     "cardView": "عرض البطاقة",
@@ -2822,7 +2822,11 @@
     "stocksWithImages": "الأسهم مع الصور",
     "balance": "Balance",
     "code1": "Code-1",
-    "code2": "Code-2"
+    "code2": "Code-2",
+    "alreadyInDraftBadge": "مسودة",
+    "alreadyInDraftTooltip": "هذا المخزون موجود بالفعل في قائمة الاختيار الحالية.",
+    "alreadyOnLineBadge": "في السطر",
+    "alreadyOnLineTooltip": "هذا المنتج موجود بالفعل في أحد أسطر هذا المستند."
   },
   "relatedStocksSelectionDialog": {
     "title": "اختيار المخزونات ذات الصلة",
@@ -3763,6 +3767,50 @@
     "Save": "حفظ",
     "SavedSuccessfully": "تم حفظ الإعدادات بنجاح"
   },
+  "systemSettings": {
+    "PageTitle": "إعدادات النظام",
+    "PageDescription": "إدارة تنسيق الأرقام ونطاق العملاء.",
+    "SavedSuccessfully": "تم حفظ إعدادات النظام بنجاح.",
+    "Fields": {
+      "DefaultLanguage": "اللغة الافتراضية",
+      "DefaultCurrencyCode": "العملة الافتراضية",
+      "DefaultTimeZone": "المنطقة الزمنية الافتراضية",
+      "DateFormat": "تنسيق التاريخ",
+      "TimeFormat": "تنسيق الوقت",
+      "NumberFormat": "تنسيق الأرقام",
+      "DecimalPlaces": "عدد المنازل العشرية",
+      "RestrictCustomersBySalesRepMatch": "تقييد العملاء وفق تطابق مندوب المبيعات"
+    },
+    "Descriptions": {
+      "RestrictCustomersBySalesRepMatch": "عند التفعيل، تُقيَّد قوائم العملاء ومنتقي العملاء برموز مندوب المبيعات المطابقة للمستخدم المحدد."
+    },
+    "Placeholders": {
+      "DefaultLanguage": "اختر اللغة",
+      "DefaultCurrencyCode": "اختر العملة",
+      "DefaultTimeZone": "اختر المنطقة الزمنية",
+      "DateFormat": "اختر تنسيق التاريخ",
+      "TimeFormat": "اختر تنسيق الوقت",
+      "NumberFormat": "اختر تنسيق الأرقام"
+    },
+    "NumberFormatOptions": {
+      "trTR": "تنسيق أرقام تركي (1.234,56)",
+      "enUS": "تنسيق أرقام أمريكي (1,234.56)",
+      "deDE": "تنسيق أرقام ألماني (1.234,56)"
+    },
+    "LineFormSection": {
+      "Title": "نموذج السطر (الملف الشخصي / الحديد / البرغي)",
+      "Description": "تُحفَظ هذه الخيارات في هذا المتصفح فقط وليس على الخادم. انقر «حفظ» أدناه لتطبيقها.",
+      "ShowBlock": "إظهار حقول الملف الشخصي / الحديد / البرغي",
+      "ShowBlockHint": "عند الإيقاف، لا تظهر الحقول الثلاثة في نموذج السطر؛ عند حفظ السطر تُرسَل القيم فارغة.",
+      "CustomLabel1": "تسمية مخصصة للملف الشخصي (اختياري)",
+      "CustomLabel2": "تسمية مخصصة للحديد (اختياري)",
+      "CustomLabel3": "تسمية مخصصة للبرغي (اختياري)",
+      "CustomLabelPlaceholder": "اتركه فارغًا للأسماء الافتراضية"
+    }
+  },
+  "lineFormPreferences": {
+    "slotToggleHint": "يمكنك الكتابة فقط في الحقول المحددة؛ تُفرغ الحقول غير المحددة عند حفظ السطر."
+  },
   "order": {
     "exchangeRates": {
       "dialog": {
@@ -4414,5 +4462,105 @@
     "updateSuccess": "تم تحديث حد الخصم بنجاح",
     "updateError": "تعذر تحديث حد الخصم"
   },
-  "exportPreparing": "Hazırlanıyor..."
+  "exportPreparing": "Hazırlanıyor...",
+  "catalogStockPicker": {
+    "title": "اختيار مخزون من الكتالوج",
+    "description": "تصفح الكتالوج كما في المتاجر الإلكترونية، ثم اختر المخزون من قائمة المنتجات المرتبطة.",
+    "hierarchyBlueprintTitle": "مسار التصنيفات الموصى به",
+    "hierarchyBlueprintDescription": "حافظ على نفس البنية: تصنيف رئيسي، فرعي، علامة، سلسلة، ثم المنتجات.",
+    "hierarchyExampleLabel": "مثال",
+    "hierarchyExampleValue": "هواتف > هواتف بأزرار > iPhone > السلسلة 17 > منتجات",
+    "hierarchyInfoButton": "مسار التصنيفات الموصى به",
+    "scrollBack": "تمرير لليسار",
+    "scrollForward": "تمرير لليمين",
+    "mobileCategoriesAccordion": "التصنيفات",
+    "mobileStocksAccordion": "مخزون التصنيف",
+    "openButton": "اختيار من الكتالوج",
+    "viewModeGroupLabel": "عرض المخزون",
+    "viewModeList": "قائمة",
+    "viewModeCards": "بطاقات",
+    "listColCode": "الرمز",
+    "listColName": "الاسم",
+    "listColRelated": "مرتبط",
+    "listColAction": "إجراء",
+    "step1Label": "الخطوة 1",
+    "step1Title": "اختيار الكتالوج",
+    "step2Label": "الخطوة 2",
+    "step2Title": "اختيار التصنيف",
+    "step3Label": "الخطوة 3",
+    "step3Title": "اختيار المخزون",
+    "catalogsTitle": "الكتالوجات",
+    "categoriesTitle": "التصنيفات",
+    "stocksTitle": "مخزون التصنيف",
+    "loadingCatalogs": "جاري تحميل الكتالوجات...",
+    "loadingCategories": "جاري تحميل التصنيفات...",
+    "loadingStocks": "جاري تحميل المخزون...",
+    "noCatalogSelected": "لم يُختر كتالوج",
+    "noLeafSelected": "لم يُختر تصنيف بعد",
+    "subCategoryBadge": "تصنيف فرعي",
+    "leafBadge": "تصنيف نهائي",
+    "emptyCategories": "لا توجد تصنيفات للعرض في هذا المستوى.",
+    "searchPlaceholder": "ابحث ضمن مخزون هذا التصنيف...",
+    "selectLeafTitle": "اختر تصنيفًا أولاً",
+    "selectLeafHint": "انزل إلى التصنيفات الفرعية أو استخدم « قائمة » لجلب منتجات الشجرة الفرعية بالكامل.",
+    "selectedLeaf": "التصنيف المحدد",
+    "selectedPathLabel": "المسار المحدد",
+    "currentPathLabel": "المسار الحالي",
+    "levelBadge": "المستوى {{level}}",
+    "browseChildrenButton": "المستوى الفرعي",
+    "listDescendantsButton": "قائمة",
+    "directCategoryModeBadge": "تصنيف مباشر",
+    "listDescendantsModeBadge": "قائمة الشجرة الفرعية",
+    "rightPanelTitle": "سيظهر المخزون هنا",
+    "rightPanelLeafHint": "اختر المخزون من البطاقات أدناه. بعد الاختيار يُطبَّق كما في اختيار العدسة.",
+    "stocksFoundTitle": "تم العثور على {{count}} مخزون",
+    "selectionReadyTitle": "الاختيار جاهز",
+    "selectionReadyHint": "اختيارك جاهز. يمكنك اختيار مخزون إضافي إن لزم، ثم تطبيق « تطبيق الاختيار ».",
+    "emptyStocksTitle": "لا يوجد مخزون في هذا التصنيف",
+    "emptyStocks": "لا يوجد مخزون مرتبط بهذا التصنيف.",
+    "selectedCount": "{{count}} مخزون محدد",
+    "selectedBadge": "محدد",
+    "selectStockButton": "اختيار المخزون",
+    "relatedStocksBadge": "{{count}} مخزون مرتبط",
+    "relatedStocksHint": "عند اختيار هذا المخزون يمكنك أيضًا اختيار المخزونات المرتبطة.",
+    "groupCode": "المجموعة",
+    "code1": "الرمز 1",
+    "code2": "الرمز 2",
+    "unit": "الوحدة",
+    "loadMore": "تحميل المزيد",
+    "footerHint": "المخزون المختار من الكتالوج يُطبَّق على السطر كما في اختيار العدسة.",
+    "confirmSelection": "تطبيق الاختيار",
+    "back": "رجوع",
+    "selectionPanelTitle": "المخزونات المحددة",
+    "selectionPanelHint": "تبقى اختياراتك هنا حتى لو غيّرت التصنيف. أزل أي مخزون من القائمة إن لزم.",
+    "removeSelection": "إزالة الاختيار",
+    "alreadyInDraftBadge": "مسودة",
+    "alreadyInDraftTooltip": "هذا المخزون موجود بالفعل في شريط الاختيار (أُضيف سابقًا في هذه الشاشة).",
+    "confirmTotalCount": "إجمالي {{count}} سطر",
+    "draftRetainedInConfirm": "{{count}} سطر/أسطر من المسودة تبقى في النتيجة؛ لا تظهر باللون الوردي في القائمة — يشير إليها شارة « مسودة » فقط.",
+    "alreadyOnLineBadge": "في السطر",
+    "alreadyOnLineTooltip": "هذا المنتج موجود بالفعل في أحد أسطر هذا المستند.",
+    "hierarchyStages": {
+      "root": {
+        "title": "التصنيف الرئيسي",
+        "description": "أعلى مستوى. مثال: الهواتف"
+      },
+      "subcategory": {
+        "title": "تصنيف فرعي",
+        "description": "يوضح مجموعة المنتجات. مثال: هواتف بأزرار"
+      },
+      "brand": {
+        "title": "العلامة",
+        "description": "تقسيم حسب العلامة أو المصنع. مثال: iPhone"
+      },
+      "series": {
+        "title": "السلسلة",
+        "description": "عائلة أو سلسلة الطراز. مثال: السلسلة 17"
+      },
+      "products": {
+        "title": "المنتجات",
+        "description": "المستوى النهائي: يتم هنا اختيار المخزون."
+      }
+    }
+  }
 }

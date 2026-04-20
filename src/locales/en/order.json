@@ -90,8 +90,16 @@
     },
     "deliveryMethod": "Delivery Method",
     "documentDetail": "Document Details",
-    "projectCode": "Proje Kodu",
-    "projectCodePlaceholder": "Proje kodunu girin"
+    "projectCode": "Project code",
+    "projectCodePlaceholder": "Enter project code",
+    "currencyNameFallback": "Currency {{code}}",
+    "financialCardTitle": "Financial",
+    "exchangeRatesLink": "Rates",
+    "typeAndDatesCardTitle": "Type & dates",
+    "offerDateAbbrev": "Order date",
+    "deliveryDateAbbrev": "Delivery date",
+    "serialNumber": "Serial no.",
+    "notes": "Notes"
   },
   "lines": {
     "title": "Order Lines",
@@ -139,7 +147,14 @@
     "updateSuccess": "Sipariş satırları güncellendi.",
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
-    "deleteError": "Sipariş satırı silinemedi."
+    "deleteError": "Sipariş satırı silinemedi.",
+    "descriptionFieldsTitle": "Profile, rebar, screw",
+    "descriptionField1Label": "Profile",
+    "descriptionField2Label": "Rebar",
+    "descriptionField3Label": "Screw",
+    "discountNumbered1": "1. Discount",
+    "discountNumbered2": "2. Discount",
+    "discountNumbered3": "3. Discount"
   },
   "exchangeRates": {
     "title": "Exchange Rates",
@@ -223,81 +238,58 @@
       }
     }
   },
-  "order": {
-    "exchangeRates": {
-      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
-    },
-    "list": {
-      "detail": "Detay",
-      "cardTitle": "Sipariş listesi",
-      "refresh": "Yenile"
-    },
-    "loadError": "Veriler yüklenirken hata oluştu.",
-    "lines": {
-      "max200Chars": "Maksimum 200 karakter"
-    },
-    "header": {
-      "paymentType": "Ödeme Tipi",
-      "deliveryMethod": "Teslim Şekli",
-      "offerDate": "Sipariş Tarihi",
-      "documentDetail": "Belge Detayı"
-    },
-    "summary": {
-      "orderTotalAnalysis": "Sipariş Toplam Analizi"
-    }
-  },
-  "loadError": "Veriler yüklenirken hata oluştu.",
+  "loadError": "An error occurred while loading data.",
   "approval": {
-    "approve": "Onayla",
-    "reject": "Reddet",
-    "sending": "Gönderiliyor...",
-    "sendForApproval": "Onaya Gönder",
-    "approveSuccess": "Sipariş başarıyla onaylandı.",
-    "approveError": "Sipariş onaylanamadı.",
-    "rejectSuccess": "Sipariş reddedildi.",
-    "rejectError": "Sipariş reddedilemedi.",
-    "startSuccess": "Onay süreci başlatıldı.",
-    "startError": "Onay süreci başlatılamadı.",
-    "rejectTitle": "Siparişi Reddet",
-    "rejectDescription": "Siparişi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "approve": "Approve",
+    "reject": "Reject",
+    "sending": "Sending...",
+    "sendForApproval": "Send for approval",
+    "approveSuccess": "Order approved.",
+    "approveError": "Order could not be approved.",
+    "rejectSuccess": "Order rejected.",
+    "rejectError": "Order could not be rejected.",
+    "startSuccess": "Approval flow started.",
+    "startError": "Approval flow could not be started.",
+    "rejectTitle": "Reject order",
+    "rejectDescription": "Enter the reason for rejection.",
+    "rejectReasonPlaceholder": "Reason for rejection"
   },
   "approvalFlow": {
-    "loading": "Onay akışı yükleniyor...",
-    "noData": "Onay akışı kaydı bulunamadı",
-    "notStarted": "Onay akışı henüz başlatılmadı",
-    "stepCompleted": "Tamamlandı",
-    "stepInProgress": "Devam Ediyor",
-    "stepNotStarted": "Başlamadı",
-    "stepRejected": "Reddedildi"
+    "loading": "Loading approval flow...",
+    "noData": "No approval flow record found",
+    "notStarted": "Approval flow has not started yet",
+    "stepCompleted": "Completed",
+    "stepInProgress": "In progress",
+    "stepNotStarted": "Not started",
+    "stepRejected": "Rejected"
   },
   "sections": {
-    "header": "Başlık Bilgileri",
-    "lines": "Satırlar",
-    "summary": "Özet"
+    "header": "Header information",
+    "lines": "Lines",
+    "summary": "Summary"
   },
   "revision": {
-    "success": "Revizyon kaydı oluşturuldu.",
-    "error": "Revizyon kaydı oluşturulamadı."
+    "success": "Revision created.",
+    "error": "Revision could not be created."
   },
   "update": {
-    "success": "Sipariş güncellendi.",
-    "successMessage": "Sipariş bilgileri başarıyla güncellendi.",
-    "error": "Sipariş güncellenemedi.",
-    "errorMessage": "Sipariş güncellenirken bir hata oluştu.",
-    "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "success": "Order updated.",
+    "successMessage": "Order saved successfully.",
+    "error": "Order could not be updated.",
+    "errorMessage": "Something went wrong while updating the order.",
+    "invalidCurrency": "Select a valid currency.",
+    "validationError": "Please check the required fields."
   },
   "waitingApprovals": {
-    "title": "Bekleyen Sipariş Onayları",
-    "description": "Onay bekleyen sipariş kayıtlarını görüntüleyin.",
-    "list": "Bekleyen Onay Listesi",
-    "waiting": "Bekliyor",
-    "noApprovals": "Bekleyen onay kaydı bulunamadı.",
-    "requestId": "Talep No",
-    "status": "Durum",
-    "stepOrder": "Adım Sırası",
-    "approvedBy": "Onaylayan",
-    "actionDate": "İşlem Tarihi"
+    "title": "Orders awaiting approval",
+    "description": "Orders that are waiting for approval.",
+    "list": "Pending approvals",
+    "waiting": "Pending",
+    "noApprovals": "No pending approvals.",
+    "requestId": "Request no.",
+    "status": "Status",
+    "stepOrder": "Step",
+    "approvedBy": "Approved by",
+    "actionDate": "Action date"
   }
 }

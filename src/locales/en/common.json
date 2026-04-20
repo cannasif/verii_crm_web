@@ -3310,7 +3310,11 @@
     "cardView": "Card View",
     "listView": "List View",
     "stocks": "stocks",
-    "stocksWithImages": "Stocks with Images"
+    "stocksWithImages": "Stocks with Images",
+    "alreadyInDraftBadge": "In draft",
+    "alreadyInDraftTooltip": "This stock is already in your current selection list.",
+    "alreadyOnLineBadge": "On line",
+    "alreadyOnLineTooltip": "This product is already on a line in this document."
   },
   "catalogStockPicker": {
     "title": "Select Stock From Catalog",
@@ -3319,7 +3323,19 @@
     "hierarchyBlueprintDescription": "Keep the same structure in the catalog: main category, subcategory, brand, series, and finally products.",
     "hierarchyExampleLabel": "Example",
     "hierarchyExampleValue": "Phones > Feature Phones > iPhone > 17 Series > Products",
+    "hierarchyInfoButton": "Recommended category flow",
+    "scrollBack": "Scroll left",
+    "scrollForward": "Scroll right",
+    "mobileCategoriesAccordion": "Categories",
+    "mobileStocksAccordion": "Category stocks",
     "openButton": "Select From Catalog",
+    "viewModeGroupLabel": "Stock layout",
+    "viewModeList": "List",
+    "viewModeCards": "Cards",
+    "listColCode": "Code",
+    "listColName": "Name",
+    "listColRelated": "Linked",
+    "listColAction": "Action",
     "step1Label": "Step 1",
     "step1Title": "Pick Catalog",
     "step2Label": "Step 2",
@@ -3371,6 +3387,12 @@
     "selectionPanelTitle": "Selected Stocks",
     "selectionPanelHint": "Your picks stay here even if you switch categories. Remove any stock from this list if needed.",
     "removeSelection": "Remove selection",
+    "alreadyInDraftBadge": "In draft",
+    "alreadyInDraftTooltip": "This stock is already in your selection strip (added earlier on this screen).",
+    "confirmTotalCount": "Total {{count}} lines",
+    "draftRetainedInConfirm": "{{count}} line(s) from your draft stay in the result; they are not shown as selected in the list—only the “In draft” badge marks them.",
+    "alreadyOnLineBadge": "On line",
+    "alreadyOnLineTooltip": "This product is already on a line in this document.",
     "hierarchyStages": {
       "root": {
         "title": "Main Category",
@@ -3980,7 +4002,15 @@
       "deleteSuccess": "Row deleted",
       "deleteError": "An error occurred while deleting the row",
       "updateSuccess": "Rows updated",
-      "updateError": "An error occurred while updating rows"
+      "updateError": "An error occurred while updating rows",
+      "max200Chars": "Up to 200 characters",
+      "discountNumbered1": "1. Discount",
+      "discountNumbered2": "2. Discount",
+      "discountNumbered3": "3. Discount",
+      "descriptionFieldsTitle": "Description fields",
+      "descriptionField1Label": "Profile",
+      "descriptionField2Label": "Iron",
+      "descriptionField3Label": "Screw"
     },
     "sections": {
       "header": "Customer and document information",
@@ -4357,7 +4387,25 @@
       "DateFormat": "Select date format",
       "TimeFormat": "Select time format",
       "NumberFormat": "Select number format"
+    },
+    "NumberFormatOptions": {
+      "trTR": "Turkish number format (1.234,56)",
+      "enUS": "US number format (1,234.56)",
+      "deDE": "German number format (1.234,56)"
+    },
+    "LineFormSection": {
+      "Title": "Line form (Profile / Rebar / Screw)",
+      "Description": "These options are stored only in this browser, not on the server. Click Save below to apply them.",
+      "ShowBlock": "Show profile / rebar / screw fields",
+      "ShowBlockHint": "When off, the three fields are hidden on line forms; saving a line sends those values empty.",
+      "CustomLabel1": "Optional custom label for profile",
+      "CustomLabel2": "Optional custom label for rebar",
+      "CustomLabel3": "Optional custom label for screw",
+      "CustomLabelPlaceholder": "Leave empty for default names"
     }
+  },
+  "lineFormPreferences": {
+    "slotToggleHint": "You can type in checked fields only; unchecked fields are cleared when you save the line."
   },
   "order": {
     "exchangeRates": {
@@ -4442,7 +4490,15 @@
       "deleteSuccess": "Row deleted",
       "deleteError": "An error occurred while deleting the row",
       "updateSuccess": "Rows updated",
-      "updateError": "An error occurred while updating rows"
+      "updateError": "An error occurred while updating rows",
+      "max200Chars": "Up to 200 characters",
+      "discountNumbered1": "1. Discount",
+      "discountNumbered2": "2. Discount",
+      "discountNumbered3": "3. Discount",
+      "descriptionFieldsTitle": "Description fields",
+      "descriptionField1Label": "Profile",
+      "descriptionField2Label": "Iron",
+      "descriptionField3Label": "Screw"
     },
     "sections": {
       "header": "Customer and document information",

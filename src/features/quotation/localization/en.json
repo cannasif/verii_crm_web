@@ -157,7 +157,14 @@
     "grandTotal": "Grand total",
     "currencyTry": "TL",
     "totalDiscount": "Total discount",
-    "vatAmount": "VAT amount"
+    "vatAmount": "VAT amount",
+    "discountNumbered1": "1. Discount",
+    "discountNumbered2": "2. Discount",
+    "discountNumbered3": "3. Discount",
+    "descriptionFieldsTitle": "Description fields",
+    "descriptionField1Label": "Profile",
+    "descriptionField2Label": "Iron",
+    "descriptionField3Label": "Screw"
   },
   "exchangeRates": {
     "title": "Exchange rates",

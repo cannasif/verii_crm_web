@@ -128,6 +128,7 @@ export function OrderHeaderForm({
   const watchedErpCustomerCode = form.watch('order.erpCustomerCode');
   const watchedCurrency = form.watch('order.currency');
   const watchedRepresentativeId = form.watch('order.representativeId');
+  const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
   const watchedOfferType = form.watch('order.offerType');
 
   const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, true);
@@ -195,6 +196,16 @@ export function OrderHeaderForm({
 
   useEffect(() => {
     if (!hasCustomerOptionsLoaded) return;
+
+    const previousRep = prevRepresentativeIdRef.current ?? null;
+    const currentRep = watchedRepresentativeId ?? null;
+
+    if (previousRep === currentRep) {
+      return;
+    }
+
+    prevRepresentativeIdRef.current = watchedRepresentativeId;
+
     if (!watchedCustomerId && !watchedErpCustomerCode) return;
 
     const hasMatchingCustomer = customerOptions.some(
@@ -216,6 +227,7 @@ export function OrderHeaderForm({
     hasCustomerOptionsLoaded,
     watchedCustomerId,
     watchedErpCustomerCode,
+    watchedRepresentativeId,
   ]);
 
   const allCustomerOptions = useMemo(() => {
@@ -365,7 +377,7 @@ export function OrderHeaderForm({
                     <div className="p-1 rounded-md bg-pink-50 dark:bg-pink-900/20 text-pink-600">
                       <User className="w-3.5 h-3.5" />
                     </div>
-                    {t('order.header.customer')}
+                    {t('order:header.customer')}
                   </div>
                   <div className="flex gap-2">
                     <div className="relative flex-1 group min-w-0">
@@ -381,7 +393,7 @@ export function OrderHeaderForm({
                             if (!customerComboboxOpen) setCustomerComboboxOpen(true);
                           }}
                           onFocus={() => setCustomerComboboxOpen(true)}
-                          placeholder={t('order.header.selectCustomer')}
+                          placeholder={t('order:header.selectCustomer')}
                           disabled={readOnly}
                           autoComplete="off"
                         />
@@ -454,7 +466,7 @@ export function OrderHeaderForm({
                     <div className="p-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600">
                       <Briefcase className="w-3.5 h-3.5" />
                     </div>
-                    {t('order.header.representative')}
+                    {t('order:header.representative')}
                   </div>
                   <FormField
                     control={form.control}
@@ -488,7 +500,7 @@ export function OrderHeaderForm({
                     <div className="p-1 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600">
                       <MapPin className="w-3.5 h-3.5" />
                     </div>
-                    {t('order.header.shippingAddress')}
+                    {t('order:header.shippingAddress')}
                   </div>
                   <FormField
                     control={form.control}
@@ -503,7 +515,7 @@ export function OrderHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
-                            placeholder={t('order.header.selectShippingAddress')}
+                            placeholder={t('order:header.selectShippingAddress')}
                             className={cn(styles.selectTrigger, "px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                           />
                         </FormControl>
@@ -528,7 +540,7 @@ export function OrderHeaderForm({
                 <div className="p-1.5 rounded-md bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">
                   <CreditCard className="h-4 w-4" />
                 </div>
-                Finansal
+                {t('order:header.financialCardTitle')}
               </h4>
               {onExchangeRatesChange && (
                  <Button
@@ -539,7 +551,7 @@ export function OrderHeaderForm({
                    className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
                  >
                    <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
-                   Kurlar
+                   {t('order:header.exchangeRatesLink')}
                  </Button>
                )}
             </div>
@@ -549,7 +561,7 @@ export function OrderHeaderForm({
                 name="order.currency"
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
-                    <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.currency')}>Para Birimi</FormLabel>
+                    <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.currency')}>{t('order:header.currency')}</FormLabel>
                     <div className="relative">
                       <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
                         <Banknote className="h-4 w-4" />
@@ -558,7 +570,7 @@ export function OrderHeaderForm({
                         <VoiceSearchCombobox
                           options={erpRates.map((c: KurDto) => ({
                             value: String(c.dovizTipi),
-                            label: c.dovizIsmi || `Döviz ${c.dovizTipi}`,
+                            label: c.dovizIsmi || t('order:header.currencyNameFallback', { code: c.dovizTipi }),
                           }))}
                           value={field.value ? String(field.value) : ''}
                           onSelect={(v) => v && handleCurrencyChange(v)}
@@ -582,7 +594,7 @@ export function OrderHeaderForm({
                 render={({ field }) => (
                   <FormItem className="space-y-0 relative group">
                     <FormLabel className={styles.label} required>
-                      {t('order.header.paymentType')}
+                      {t('order:header.paymentType')}
                     </FormLabel>
                     <div className="relative">
                       <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}>
@@ -618,7 +630,7 @@ export function OrderHeaderForm({
               <div className="p-1.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-600">
                 <Globe className="h-4 w-4" />
               </div>
-              <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Tip & Tarihler</h4>
+              <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('order:header.typeAndDatesCardTitle')}</h4>
             </div>
             <div className="space-y-4 flex-1">
               {/* FIXED: Changed from grid with 2 columns to flex-col/grid-cols-1 to prevent overlap */}
@@ -657,7 +669,7 @@ export function OrderHeaderForm({
                     name="order.deliveryMethod"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>{t('order.header.deliveryMethod', { defaultValue: 'Teslim Şekli' })}</FormLabel>
+                        <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>{t('order:header.deliveryMethod')}</FormLabel>
                         <div className="relative">
                           <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                           <FormControl>
@@ -689,7 +701,7 @@ export function OrderHeaderForm({
                   name="order.offerDate"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>{t('order.header.offerDate')}</FormLabel>
+                      <FormLabel className={styles.label}>{t('order:header.offerDateAbbrev')}</FormLabel>
                       <div className="relative">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Calendar className="h-4 w-4" /></div>
                         <FormControl>
@@ -711,7 +723,7 @@ export function OrderHeaderForm({
                   name="order.deliveryDate"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
-                      <FormLabel className={styles.label}>Teslim T.</FormLabel>
+                      <FormLabel className={styles.label}>{t('order:header.deliveryDateAbbrev')}</FormLabel>
                       <div className="relative">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                         <FormControl>
@@ -741,7 +753,7 @@ export function OrderHeaderForm({
                 <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600">
                   <FileText className="h-4 w-4" />
                 </div>
-                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('order.header.documentDetail', { defaultValue: 'Belge Detayı' })}</h4>
+                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('order:header.documentDetail')}</h4>
               </div>
               <div className="space-y-4 flex-1">
                  {showDocumentSerialType && (
@@ -750,7 +762,7 @@ export function OrderHeaderForm({
                     name="order.documentSerialTypeId"
                     render={({ field }) => (
                       <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.documentSerialTypeId')}>Seri No</FormLabel>
+                        <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.documentSerialTypeId')}>{t('order:header.serialNumber')}</FormLabel>
                         <div className="relative">
                           <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Hash className="h-4 w-4" /></div>
                           <FormControl>
@@ -779,7 +791,7 @@ export function OrderHeaderForm({
                       <FormItem className="space-y-0 relative group">
                         <FormLabel className={styles.label}>
                           <Folder className="h-3.5 w-3.5" />
-                          {t('quotation.header.projectCode')}
+                          {t('order:header.projectCode')}
                         </FormLabel>
                         <div className="relative">
                           <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
@@ -793,7 +805,7 @@ export function OrderHeaderForm({
                             hasNextPage={projectDropdown.hasNextPage}
                             isLoading={projectDropdown.isLoading}
                             isFetchingNextPage={projectDropdown.isFetchingNextPage}
-                            placeholder={t('quotation.header.projectCodePlaceholder')}
+                            placeholder={t('order:header.projectCodePlaceholder')}
                             searchPlaceholder={t('common.search')}
                             disabled={readOnly}
                           />
@@ -809,7 +821,7 @@ export function OrderHeaderForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group w-full min-w-0">
                       <div className="flex items-center justify-between mb-2">
-                        <FormLabel className={cn(styles.label, "mb-0")}>Notlar</FormLabel>
+                        <FormLabel className={cn(styles.label, "mb-0")}>{t('order:header.notes')}</FormLabel>
                         <span className={cn("text-[10px] transition-colors", (field.value?.length || 0) > 350 ? "text-red-500 font-bold" : "text-zinc-400")}>
                           {field.value?.length || 0}/400
                         </span>
@@ -844,7 +856,7 @@ export function OrderHeaderForm({
                             {...field}
                             value={field.value || ''}
                             maxLength={400}
-                            placeholder={t('order.header.descriptionPlaceholder')}
+                            placeholder={t('order:header.descriptionPlaceholder')}
                             className="min-h-[100px] max-h-[160px] overflow-y-auto w-full break-all whitespace-pre-wrap rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10 shadow-sm"
                             disabled={readOnly}
                           />
@@ -909,10 +921,10 @@ export function OrderHeaderForm({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-pink-600">
               <ArrowRightLeft className="h-5 w-5" />
-              {t('order.header.currencyChange.title')}
+              {t('order:header.currencyChange.title')}
             </DialogTitle>
             <DialogDescription className="pt-2">
-              {t('order.header.currencyChange.message')}
+              {t('order:header.currencyChange.message')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">

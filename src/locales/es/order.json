@@ -90,8 +90,16 @@
     },
     "deliveryMethod": "Método de entrega",
     "documentDetail": "Detalles del documento",
-    "projectCode": "Proje Kodu",
-    "projectCodePlaceholder": "Proje kodunu girin"
+    "projectCode": "Código de proyecto",
+    "projectCodePlaceholder": "Introduzca el código de proyecto",
+    "currencyNameFallback": "Divisa {{code}}",
+    "financialCardTitle": "Finanzas",
+    "exchangeRatesLink": "Tipos de cambio",
+    "typeAndDatesCardTitle": "Tipo y fechas",
+    "offerDateAbbrev": "Fecha pedido",
+    "deliveryDateAbbrev": "Fecha entrega",
+    "serialNumber": "N.º serie",
+    "notes": "Notas"
   },
   "lines": {
     "title": "Líneas de Cotización",

@@ -2781,12 +2781,21 @@
     "cardView": "Kartenansicht",
     "listView": "Listenansicht",
     "stocks": "Aktien",
-    "stocksWithImages": "Aktien mit Bildern"
+    "stocksWithImages": "Aktien mit Bildern",
+    "alreadyInDraftBadge": "Entwurf",
+    "alreadyInDraftTooltip": "Dieser Bestand steht bereits in Ihrer aktuellen Auswahlliste.",
+    "alreadyOnLineBadge": "In Zeile",
+    "alreadyOnLineTooltip": "Dieses Produkt ist in diesem Dokument bereits in einer Zeile enthalten."
   },
   "catalogStockPicker": {
     "title": "Bestand aus Katalog auswählen",
     "description": "Gehen Sie wie bei Trendyol, Hepsiburada oder Amazon durch den Katalog und wählen Sie dann den Bestand aus der verknüpften Produktliste aus.",
     "openButton": "Aus Katalog wählen",
+    "hierarchyInfoButton": "Empfohlener Kategoriefluss",
+    "scrollBack": "Nach links scrollen",
+    "scrollForward": "Nach rechts scrollen",
+    "mobileCategoriesAccordion": "Kategorien",
+    "mobileStocksAccordion": "Kategoriebestände",
     "step1Label": "Schritt 1",
     "step1Title": "Katalog wählen",
     "step2Label": "Schritt 2",
@@ -2830,7 +2839,13 @@
     "back": "Zurück",
     "selectionPanelTitle": "Ausgewählte Bestände",
     "selectionPanelHint": "Ihre Auswahl bleibt hier sichtbar, auch wenn Sie die Kategorie wechseln. Bei Bedarf können Sie Bestände hier entfernen.",
-    "removeSelection": "Auswahl entfernen"
+    "removeSelection": "Auswahl entfernen",
+    "alreadyInDraftBadge": "Entwurf",
+    "alreadyInDraftTooltip": "Dieser Bestand steht bereits in Ihrer Auswahlleiste (zuvor hinzugefügte Zeilen).",
+    "alreadyOnLineBadge": "In Zeile",
+    "alreadyOnLineTooltip": "Dieses Produkt ist in diesem Dokument bereits in einer Zeile enthalten.",
+    "confirmTotalCount": "Gesamt {{count}} Zeilen",
+    "draftRetainedInConfirm": "{{count}} Zeile(n) aus dem Entwurf bleiben beim Übernehmen erhalten; in der Liste werden sie nicht pink markiert—nur das „Entwurf“-Abzeichen."
   },
   "relatedStocksSelectionDialog": {
     "title": "Wählen Sie Verbundene Aktien aus",
@@ -3771,6 +3786,50 @@
     },
     "Save": "Speichern",
     "SavedSuccessfully": "Einstellungen erfolgreich gespeichert"
+  },
+  "systemSettings": {
+    "PageTitle": "Systemeinstellungen",
+    "PageDescription": "Zahlenformat und Kundenkreis verwalten.",
+    "SavedSuccessfully": "Systemeinstellungen wurden gespeichert.",
+    "Fields": {
+      "DefaultLanguage": "Standardsprache",
+      "DefaultCurrencyCode": "Standardwährung",
+      "DefaultTimeZone": "Standardzeitzone",
+      "DateFormat": "Datumsformat",
+      "TimeFormat": "Zeitformat",
+      "NumberFormat": "Zahlenformat",
+      "DecimalPlaces": "Dezimalstellen",
+      "RestrictCustomersBySalesRepMatch": "Kunden nach Vertriebszuordnung einschränken"
+    },
+    "Descriptions": {
+      "RestrictCustomersBySalesRepMatch": "Wenn aktiviert, werden Kundenlisten und -auswahl auf die dem gewählten Benutzer zugeordneten Vertriebsmitarbeiter-Codes begrenzt."
+    },
+    "Placeholders": {
+      "DefaultLanguage": "Sprache wählen",
+      "DefaultCurrencyCode": "Währung wählen",
+      "DefaultTimeZone": "Zeitzone wählen",
+      "DateFormat": "Datumsformat wählen",
+      "TimeFormat": "Zeitformat wählen",
+      "NumberFormat": "Zahlenformat wählen"
+    },
+    "NumberFormatOptions": {
+      "trTR": "Türkisches Zahlenformat (1.234,56)",
+      "enUS": "US-Zahlenformat (1,234.56)",
+      "deDE": "Deutsches Zahlenformat (1.234,56)"
+    },
+    "LineFormSection": {
+      "Title": "Zeilenformular (Profil / Eisen / Schraube)",
+      "Description": "Diese Optionen werden nur in diesem Browser gespeichert, nicht auf dem Server. Klicken Sie unten auf Speichern, um sie anzuwenden.",
+      "ShowBlock": "Felder Profil / Eisen / Schraube anzeigen",
+      "ShowBlockHint": "Wenn ausgeblendet, erscheinen die drei Felder im Zeilenformular nicht; beim Speichern der Zeile werden die Werte leer übermittelt.",
+      "CustomLabel1": "Optionaler eigener Name für Profil",
+      "CustomLabel2": "Optionaler eigener Name für Eisen",
+      "CustomLabel3": "Optionaler eigener Name für Schraube",
+      "CustomLabelPlaceholder": "Leer lassen für Standardnamen"
+    }
+  },
+  "lineFormPreferences": {
+    "slotToggleHint": "Texteingabe nur in angekreuzten Feldern; nicht angekreuzte Felder werden beim Speichern der Zeile geleert."
   },
   "order": {
     "exchangeRates": {

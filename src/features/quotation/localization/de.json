@@ -157,7 +157,14 @@
     "grandTotal": "Gesamtsumme",
     "currencyTry": "TL",
     "totalDiscount": "Gesamtrabatt",
-    "vatAmount": "MwSt.-Betrag"
+    "vatAmount": "MwSt.-Betrag",
+    "discountNumbered1": "1. Rabatt",
+    "discountNumbered2": "2. Rabatt",
+    "discountNumbered3": "3. Rabatt",
+    "descriptionFieldsTitle": "Beschreibungsfelder",
+    "descriptionField1Label": "Profil",
+    "descriptionField2Label": "Eisen",
+    "descriptionField3Label": "Schraube"
   },
   "exchangeRates": {
     "title": "Wechselkurse",

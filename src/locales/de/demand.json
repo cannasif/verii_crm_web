@@ -90,7 +90,17 @@
       "message": "Wenn die Währung geändert wird, werden alle vorhandenen Zeilen entsprechend der neuen Währung neu berechnet. Möchten Sie diesen Vorgang genehmigen?"
     },
     "deliveryMethod": "Liefermethode",
-    "documentDetail": "Dokumentdetails"
+    "documentDetail": "Belegdetails",
+    "projectCode": "Projektcode",
+    "projectCodePlaceholder": "Projektcode eingeben",
+    "currencyNameFallback": "Währung {{code}}",
+    "financialCardTitle": "Finanzen",
+    "exchangeRatesLink": "Kurse",
+    "typeAndDatesCardTitle": "Typ & Termine",
+    "offerDateAbbrev": "Anforderungsdatum",
+    "deliveryDateAbbrev": "Lieferdatum",
+    "serialNumber": "Serien-Nr.",
+    "notes": "Notizen"
   },
   "lines": {
     "title": "Anforderungszeilen",

@@ -157,7 +157,14 @@
     "grandTotal": "Genel Toplam",
     "currencyTry": "TL",
     "totalDiscount": "Toplam İndirim",
-    "vatAmount": "KDV Tutarı"
+    "vatAmount": "KDV Tutarı",
+    "discountNumbered1": "1. İndirim",
+    "discountNumbered2": "2. İndirim",
+    "discountNumbered3": "3. İndirim",
+    "descriptionFieldsTitle": "Açıklama Alanları",
+    "descriptionField1Label": "Profil",
+    "descriptionField2Label": "Demir",
+    "descriptionField3Label": "Vida"
   },
   "exchangeRates": {
     "title": "Döviz Kurları",

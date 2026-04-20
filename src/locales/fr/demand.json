@@ -90,7 +90,17 @@
       "message": "Lorsque la devise change, toutes les lignes existantes seront recalculées selon la nouvelle devise. Approuvez-vous cette opération ?"
     },
     "deliveryMethod": "Mode de livraison",
-    "documentDetail": "Détails du document"
+    "documentDetail": "Détails du document",
+    "projectCode": "Code projet",
+    "projectCodePlaceholder": "Saisir le code projet",
+    "currencyNameFallback": "Devise {{code}}",
+    "financialCardTitle": "Finances",
+    "exchangeRatesLink": "Taux",
+    "typeAndDatesCardTitle": "Type et dates",
+    "offerDateAbbrev": "Date demande",
+    "deliveryDateAbbrev": "Date livr.",
+    "serialNumber": "N° série",
+    "notes": "Notes"
   },
   "lines": {
     "title": "Lignes de la Demande",

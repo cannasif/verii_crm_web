@@ -46,12 +46,19 @@ import {
 } from 'lucide-react';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, CreateDemandLineDto, DemandLineGetDto } from '../types/demand-types';
 import { cn } from '@/lib/utils';
+import {
+  formatLineTableQuickEditDraft,
+  getHtmlNumberInputStepForDecimals,
+  isIntegerQuantityUnit,
+} from '@/lib/system-settings';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { mergeLinesAfterMainLineUpdate } from '@/lib/merge-lines-after-main-update';
 import {
   applyDemandLineQuickFieldPatch,
   type DemandQuickEditField,
 } from '../utils/apply-demand-line-quick-field-patch';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
 
 function toCreateDto(line: DemandLineFormState, demandId: number): CreateDemandLineDto {
   const { id, isEditing, relatedLines, unit, ...rest } = line;
@@ -204,12 +211,23 @@ export function DemandLineTable({
   const createMutation = useCreateDemandLines(demandId ?? 0);
   const updateMutation = useUpdateDemandLines(demandId ?? 0);
   const deleteMutation = useDeleteDemandLine(demandId ?? 0);
+  const systemDecimalPlaces = useSystemSettingsStore((s) => s.settings.decimalPlaces);
+  const numberInputStep = useMemo(
+    () => getHtmlNumberInputStepForDecimals(systemDecimalPlaces),
+    [systemDecimalPlaces]
+  );
   const isExistingDemand = demandId != null && demandId > 0;
   const isDeleting = deleteMutation.isPending;
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
     currency,
     exchangeRates,
   });
+
+  const existingDocumentLineMarkers = useMemo(() => linesToDocumentStockMarkers(lines), [lines]);
+  const existingDocumentLineMarkersForEdit = useMemo(
+    () => (lineToEdit ? linesToDocumentStockMarkersExceptLine(lines, lineToEdit.id) : []),
+    [lines, lineToEdit]
+  );
 
   const styles = {
     glassCard:
@@ -623,7 +641,11 @@ export function DemandLineTable({
       if (!lineAllowsQuickEdit(line) || updateMutation.isPending) return;
       if (quickEdit && quickEdit.lineId !== line.id) return;
       const cur = line[field];
-      setQuickEdit({ lineId: line.id, field, draft: String(cur ?? '') });
+      const draft =
+        typeof cur === 'number' && Number.isFinite(cur)
+          ? formatLineTableQuickEditDraft(field, cur, { unit: line.unit })
+          : '';
+      setQuickEdit({ lineId: line.id, field, draft });
     },
     [lineAllowsQuickEdit, quickEdit, updateMutation.isPending]
   );
@@ -646,8 +668,7 @@ export function DemandLineTable({
 
     let value: number;
     if (quickEdit.field === 'quantity') {
-      const u = (originalLine.unit ?? '').trim().toUpperCase();
-      const intOnly = u === 'AD' || u === 'ADET';
+      const intOnly = isIntegerQuantityUnit(originalLine.unit);
       if (parsedFloat < 0) return;
       value = intOnly ? Math.max(1, Math.round(parsedFloat)) : parsedFloat;
     } else if (quickEdit.field === 'unitPrice') {
@@ -975,7 +996,7 @@ export function DemandLineTable({
                             >
                               <Input
                                 type="number"
-                                step="0.000001"
+                                step={numberInputStep}
                                 min={0}
                                 value={quickEdit.draft}
                                 onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
@@ -1034,13 +1055,8 @@ export function DemandLineTable({
                             >
                               <Input
                                 type="number"
-                                step={
-                                  (line.unit ?? '').trim().toUpperCase() === 'AD' ||
-                                  (line.unit ?? '').trim().toUpperCase() === 'ADET'
-                                    ? '1'
-                                    : '0.1'
-                                }
-                                min={0.1}
+                                step={isIntegerQuantityUnit(line.unit) ? '1' : numberInputStep}
+                                min={isIntegerQuantityUnit(line.unit) ? 1 : 0.1}
                                 value={quickEdit.draft}
                                 onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
                                 className="h-8 w-16 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
@@ -1112,7 +1128,7 @@ export function DemandLineTable({
                                   <div className="flex items-center justify-center gap-1">
                                     <Input
                                       type="number"
-                                      step="0.1"
+                                      step={numberInputStep}
                                       min={0}
                                       max={100}
                                       value={quickEdit.draft}
@@ -1272,6 +1288,7 @@ export function DemandLineTable({
                 pricingRules={pricingRules}
                 userDiscountLimits={userDiscountLimits}
                 isSaving={createMutation.isPending}
+                existingLineStockMarkers={existingDocumentLineMarkers}
               />
             )}
           </div>
@@ -1314,6 +1331,7 @@ export function DemandLineTable({
                 pricingRules={pricingRules}
                 userDiscountLimits={userDiscountLimits}
                 isSaving={updateMutation.isPending}
+                existingLineStockMarkers={existingDocumentLineMarkersForEdit}
               />
             )}
           </div>

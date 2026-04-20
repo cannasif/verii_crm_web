@@ -157,7 +157,14 @@
     "grandTotal": "Total général",
     "currencyTry": "TL",
     "totalDiscount": "Remise totale",
-    "vatAmount": "Montant TVA"
+    "vatAmount": "Montant TVA",
+    "discountNumbered1": "1. Remise",
+    "discountNumbered2": "2. Remise",
+    "discountNumbered3": "3. Remise",
+    "descriptionFieldsTitle": "Champs de description",
+    "descriptionField1Label": "Profil",
+    "descriptionField2Label": "Fer",
+    "descriptionField3Label": "Vis"
   },
   "exchangeRates": {
     "title": "Taux de change",

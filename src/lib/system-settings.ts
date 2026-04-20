@@ -31,6 +31,82 @@ export function getSystemDecimalPlaces(): number {
   return Number.isFinite(value) ? value : 2;
 }
 
+function clampFractionDigits(places: number): number {
+  if (!Number.isFinite(places)) return 2;
+  return Math.min(6, Math.max(0, Math.round(places)));
+}
+
+function roundToFractionDigits(value: number, fractionDigits: number): number {
+  const p = clampFractionDigits(fractionDigits);
+  if (!Number.isFinite(value)) return NaN;
+  if (p === 0) return Math.round(value);
+  const m = 10 ** p;
+  return Math.round(value * m) / m;
+}
+
+/**
+ * Controlled `<input type="number">` value: always `.` as decimal separator, fixed fractional digits.
+ * Uses Sistem Ayarları `decimalPlaces` unless `fractionDigits` is passed.
+ */
+export function formatHtmlNumberInputDraft(
+  value: number | null | undefined,
+  options?: { fractionDigits?: number }
+): string {
+  if (value == null || typeof value !== 'number' || !Number.isFinite(value)) return '';
+  const digits = options?.fractionDigits ?? getSystemDecimalPlaces();
+  const p = clampFractionDigits(digits);
+  const rounded = roundToFractionDigits(value, p);
+  if (p === 0) return String(rounded);
+  return rounded.toFixed(p);
+}
+
+/** `step` for `<input type="number">` aligned with fractional digit precision (e.g. 4 → 0.0001). */
+export function getHtmlNumberInputStepForDecimals(fractionDigits?: number): string {
+  const p = clampFractionDigits(fractionDigits ?? getSystemDecimalPlaces());
+  if (p <= 0) return '1';
+  const step = 1 / 10 ** p;
+  return step.toFixed(p);
+}
+
+/**
+ * Miktar tam sayı olmalı (oklar ±1 adet): AD/ADET ve yaygın ERP kodları.
+ * Birim metni farklı yazılmış olsa da (ör. sondaki nokta) eşleşir.
+ */
+export function isIntegerQuantityUnit(unit: string | null | undefined): boolean {
+  const u = (unit ?? '')
+    .trim()
+    .toUpperCase()
+    .replace(/\u00A0/g, '')
+    .replace(/\.+$/g, '');
+  if (u === 'AD' || u === 'ADET') return true;
+  if (u === 'ADT' || u === 'PCS' || u === 'PCE' || u === 'PC') return true;
+  return false;
+}
+
+/** Line table quick-edit draft: quantity (AD/ADET = integer), unit price & discount rates use system decimals. */
+export function formatLineTableQuickEditDraft(
+  field: string,
+  value: number | null | undefined,
+  options?: { unit?: string | null }
+): string {
+  if (value == null || typeof value !== 'number' || !Number.isFinite(value)) return '';
+
+  if (field === 'quantity') {
+    if (isIntegerQuantityUnit(options?.unit)) return String(Math.max(1, Math.round(value)));
+    return formatHtmlNumberInputDraft(value);
+  }
+
+  if (field === 'unitPrice') {
+    return formatHtmlNumberInputDraft(value);
+  }
+
+  if (field === 'discountRate1' || field === 'discountRate2' || field === 'discountRate3') {
+    return formatHtmlNumberInputDraft(value);
+  }
+
+  return formatHtmlNumberInputDraft(value);
+}
+
 export async function applySystemLanguageIfNeeded(): Promise<void> {
   return Promise.resolve();
 }

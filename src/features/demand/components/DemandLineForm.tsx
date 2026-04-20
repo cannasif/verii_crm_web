@@ -4,6 +4,7 @@ import { type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRe
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
@@ -17,6 +18,9 @@ import { useProductSelection } from '../hooks/useProductSelection';
 import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { demandApi } from '../api/demand-api';
+import { useLineFormUiPreferencesStore } from '@/stores/line-form-ui-preferences-store';
+import { applyLineDescriptionSavePolicy } from '@/lib/apply-line-description-save-policy';
+import { isIntegerQuantityUnit } from '@/lib/system-settings';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/demand-types';
 import {
   Check,
@@ -93,6 +97,7 @@ interface DemandLineFormProps {
   userDiscountLimits?: UserDiscountLimitDto[];
   onSaveMultiple?: (lines: DemandLineFormState[]) => void;
   isSaving?: boolean;
+  existingLineStockMarkers?: ProductSelectionResult[];
 }
 
 export function DemandLineForm({
@@ -105,8 +110,13 @@ export function DemandLineForm({
   userDiscountLimits = [],
   onSaveMultiple,
   isSaving = false,
+  existingLineStockMarkers = [],
 }: DemandLineFormProps): ReactElement {
   const { t } = useTranslation(['demand', 'common']);
+  const showDescriptionSectionPref = useLineFormUiPreferencesStore((s) => s.showDescriptionFieldsSection);
+  const customDescLabel1 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel1);
+  const customDescLabel2 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel2);
+  const customDescLabel3 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel3);
   const { calculateLineTotals } = useDemandCalculations();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
@@ -137,6 +147,22 @@ export function DemandLineForm({
   const [discountRate2InputValue, setDiscountRate2InputValue] = useState<string>(String(line.discountRate2 || ''));
   const [discountRate3InputValue, setDiscountRate3InputValue] = useState<string>(String(line.discountRate3 || ''));
   const prevDiscountRatesRef = useRef({ discountRate1: line.discountRate1, discountRate2: line.discountRate2, discountRate3: line.discountRate3 });
+
+  const [descriptionSlotsEnabled, setDescriptionSlotsEnabled] = useState<[boolean, boolean, boolean]>([true, true, true]);
+
+  useEffect(() => {
+    setDescriptionSlotsEnabled([true, true, true]);
+  }, [line.id]);
+
+  const descriptionSlotLabels = useMemo(
+    () =>
+      [
+        customDescLabel1.trim() || t('demand.lines.descriptionField1Label'),
+        customDescLabel2.trim() || t('demand.lines.descriptionField2Label'),
+        customDescLabel3.trim() || t('demand.lines.descriptionField3Label'),
+      ] as const,
+    [customDescLabel1, customDescLabel2, customDescLabel3, t]
+  );
 
   const mainStockData = useMemo(() => {
     return temporaryStockData.find((data) => data.productCode === formData.productCode);
@@ -174,16 +200,36 @@ export function DemandLineForm({
   const ruleInsightCount = matchingPricingRules.length + (matchingDiscountLimit ? 1 : 0);
 
   type DiscountField = 'discountRate1' | 'discountRate2' | 'discountRate3';
-  const discountInputs: Array<{
-    val: string;
-    setVal: (value: string) => void;
-    field: DiscountField;
-    label: string;
-  }> = [
-    { val: discountRate1InputValue, setVal: setDiscountRate1InputValue, field: 'discountRate1', label: t('demand.lines.discount1') },
-    { val: discountRate2InputValue, setVal: setDiscountRate2InputValue, field: 'discountRate2', label: t('demand.lines.discount2') },
-    { val: discountRate3InputValue, setVal: setDiscountRate3InputValue, field: 'discountRate3', label: t('demand.lines.discount3') },
-  ];
+  const discountInputs = useMemo<
+    Array<{
+      val: string;
+      setVal: (value: string) => void;
+      field: DiscountField;
+      label: string;
+    }>
+  >(
+    () => [
+      {
+        val: discountRate1InputValue,
+        setVal: setDiscountRate1InputValue,
+        field: 'discountRate1',
+        label: t('demand.lines.discountNumbered1'),
+      },
+      {
+        val: discountRate2InputValue,
+        setVal: setDiscountRate2InputValue,
+        field: 'discountRate2',
+        label: t('demand.lines.discountNumbered2'),
+      },
+      {
+        val: discountRate3InputValue,
+        setVal: setDiscountRate3InputValue,
+        field: 'discountRate3',
+        label: t('demand.lines.discountNumbered3'),
+      },
+    ],
+    [discountRate1InputValue, discountRate2InputValue, discountRate3InputValue, t]
+  );
 
   const getDiscountAmount = (field: DiscountField): number => {
     if (field === 'discountRate1') return formData.discountAmount1 || 0;
@@ -656,8 +702,15 @@ export function DemandLineForm({
       return [lineItem, ...nested];
     });
 
+    const prefs = useLineFormUiPreferencesStore.getState();
+    const policy = {
+      showDescriptionFieldsSection: prefs.showDescriptionFieldsSection,
+      slotEnabled: descriptionSlotsEnabled,
+    };
+    const linesWithDescriptionPolicy = flattenedLines.map((l) => applyLineDescriptionSavePolicy(l, policy));
+
     if (onSaveMultiple) {
-      onSaveMultiple(flattenedLines);
+      onSaveMultiple(linesWithDescriptionPolicy);
     } else {
       const firstLine = bulkDraftLines[0];
       if (firstLine) {
@@ -852,6 +905,20 @@ export function DemandLineForm({
       });
       setRelatedLines(updatedRelatedLines);
     }
+
+    if (
+      field === 'unitPrice' &&
+      formData.isMainRelatedProduct === true &&
+      formData.relatedProductKey &&
+      relatedLines.length > 0
+    ) {
+      const nextUnitPrice = calculated.unitPrice;
+      setRelatedLines(
+        relatedLines.map((relatedLine) =>
+          calculateLineTotals({ ...relatedLine, unitPrice: nextUnitPrice })
+        )
+      );
+    }
   };
 
  const handleSave = (e?: React.MouseEvent): void => {
@@ -859,12 +926,20 @@ export function DemandLineForm({
       e.preventDefault();
       e.stopPropagation();
     }
-    
+
+    const prefs = useLineFormUiPreferencesStore.getState();
+    const policy = {
+      showDescriptionFieldsSection: prefs.showDescriptionFieldsSection,
+      slotEnabled: descriptionSlotsEnabled,
+    };
+
     if (onSaveMultiple && relatedLines.length > 0) {
-      const linesToSave = [formData, ...relatedLines];
-      onSaveMultiple(linesToSave);
+      onSaveMultiple([
+        applyLineDescriptionSavePolicy(formData, policy),
+        ...relatedLines.map((rl) => applyLineDescriptionSavePolicy(rl, policy)),
+      ]);
     } else {
-      onSave(formData);
+      onSave(applyLineDescriptionSavePolicy(formData, policy));
     }
   };
 
@@ -872,8 +947,7 @@ export function DemandLineForm({
   const hasDiscount = totalDiscount > 0;
   const hasApprovalWarning = discountValidation.exceedsLimit || formData.approvalStatus === 1;
   const bulkDraftGrandTotal = bulkDraftLines.reduce((sum, item) => sum + (item.lineGrandTotal || 0), 0);
-  const normalizedUnit = (formData.unit ?? '').trim().toUpperCase();
-  const isQuantityIntegerOnly = normalizedUnit === 'AD' || normalizedUnit === 'ADET';
+  const isQuantityIntegerOnly = isIntegerQuantityUnit(formData.unit);
   const quantityStep = isQuantityIntegerOnly ? '1' : '0.1';
   const quantityMin = isQuantityIntegerOnly ? '1' : '0.1';
   const percentageStep = '0.1';
@@ -914,7 +988,7 @@ export function DemandLineForm({
               className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center gap-2"
             >
               <LayoutGrid className="h-4 w-4" />
-              <span className="text-xs font-medium">{t('catalogStockPicker.openButton')}</span>
+              <span className="text-xs font-medium">{t('catalogStockPicker.openButton', { ns: 'common' })}</span>
             </Button>
             <Button
               type="button"
@@ -959,7 +1033,7 @@ export function DemandLineForm({
               hasNextPage={projectDropdown.hasNextPage}
               isLoading={projectDropdown.isLoading}
               isFetchingNextPage={projectDropdown.isFetchingNextPage}
-              placeholder={t('quotation.header.projectCode')}
+              placeholder={t('demand:header.projectCode')}
               searchPlaceholder={t('common.search')}
             />
           </div>
@@ -1202,41 +1276,90 @@ export function DemandLineForm({
             </div>
           )}
 
-          <div className="space-y-3">
-            <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">Açıklama Alanları</h5>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Profile</label>
-                <Input
-                  value={formData.description1 ?? ''}
-                  onChange={(e) => handleFieldChange('description1', e.target.value || null)}
-                  maxLength={200}
-                  placeholder={t('demand.lines.descriptionPlaceholder', { defaultValue: 'Açıklama giriniz...' })}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                />
+          {showDescriptionSectionPref ? (
+            <div className="space-y-3">
+              <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                {t('demand.lines.descriptionFieldsTitle')}
+              </h5>
+              <p className="text-xs text-muted-foreground">{t('lineFormPreferences.slotToggleHint', { ns: 'common' })}</p>
+              <div className="flex flex-wrap items-center gap-4">
+                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                  <Checkbox
+                    checked={descriptionSlotsEnabled[0]}
+                    onCheckedChange={(v) => {
+                      const on = v === true;
+                      setDescriptionSlotsEnabled((prev) => [on, prev[1], prev[2]]);
+                      if (!on) handleFieldChange('description1', null);
+                    }}
+                  />
+                  {descriptionSlotLabels[0]}
+                </label>
+                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                  <Checkbox
+                    checked={descriptionSlotsEnabled[1]}
+                    onCheckedChange={(v) => {
+                      const on = v === true;
+                      setDescriptionSlotsEnabled((prev) => [prev[0], on, prev[2]]);
+                      if (!on) handleFieldChange('description2', null);
+                    }}
+                  />
+                  {descriptionSlotLabels[1]}
+                </label>
+                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                  <Checkbox
+                    checked={descriptionSlotsEnabled[2]}
+                    onCheckedChange={(v) => {
+                      const on = v === true;
+                      setDescriptionSlotsEnabled((prev) => [prev[0], prev[1], on]);
+                      if (!on) handleFieldChange('description3', null);
+                    }}
+                  />
+                  {descriptionSlotLabels[2]}
+                </label>
               </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Demir</label>
-                <Input
-                  value={formData.description2 ?? ''}
-                  onChange={(e) => handleFieldChange('description2', e.target.value || null)}
-                  maxLength={200}
-                  placeholder={t('demand.lines.descriptionPlaceholder', { defaultValue: 'Açıklama giriniz...' })}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Vida</label>
-                <Input
-                  value={formData.description3 ?? ''}
-                  onChange={(e) => handleFieldChange('description3', e.target.value || null)}
-                  maxLength={200}
-                  placeholder={t('demand.lines.descriptionPlaceholder', { defaultValue: 'Açıklama giriniz...' })}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                />
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                    {descriptionSlotLabels[0]}
+                  </label>
+                  <Input
+                    value={formData.description1 ?? ''}
+                    onChange={(e) => handleFieldChange('description1', e.target.value || null)}
+                    maxLength={200}
+                    placeholder={t('demand.lines.max200Chars')}
+                    disabled={!descriptionSlotsEnabled[0]}
+                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                    {descriptionSlotLabels[1]}
+                  </label>
+                  <Input
+                    value={formData.description2 ?? ''}
+                    onChange={(e) => handleFieldChange('description2', e.target.value || null)}
+                    maxLength={200}
+                    placeholder={t('demand.lines.max200Chars')}
+                    disabled={!descriptionSlotsEnabled[1]}
+                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                    {descriptionSlotLabels[2]}
+                  </label>
+                  <Input
+                    value={formData.description3 ?? ''}
+                    onChange={(e) => handleFieldChange('description3', e.target.value || null)}
+                    maxLength={200}
+                    placeholder={t('demand.lines.max200Chars')}
+                    disabled={!descriptionSlotsEnabled[2]}
+                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
 
         <div className="xl:col-span-5 flex flex-col gap-4">
@@ -1378,7 +1501,9 @@ export function DemandLineForm({
         onSelect={handleProductSelect}
         multiSelect
         onMultiSelect={handleMultiProductSelect}
+        existingLineStockMarkers={existingLineStockMarkers}
         initialSelectedResults={bulkDraftLines.map((lineItem) => ({
+          ...(lineItem.productId != null && lineItem.productId > 0 ? { id: lineItem.productId } : {}),
           code: lineItem.productCode || '',
           name: lineItem.productName || '',
           unit: lineItem.unit ?? undefined,
@@ -1392,7 +1517,9 @@ export function DemandLineForm({
         onSelect={handleProductSelect}
         multiSelect
         onMultiSelect={handleMultiProductSelect}
+        existingLineStockMarkers={existingLineStockMarkers}
         initialSelectedResults={bulkDraftLines.map((lineItem) => ({
+          ...(lineItem.productId != null && lineItem.productId > 0 ? { id: lineItem.productId } : {}),
           code: lineItem.productCode || '',
           name: lineItem.productName || '',
           unit: lineItem.unit ?? undefined,

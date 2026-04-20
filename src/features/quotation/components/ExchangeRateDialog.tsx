@@ -1,4 +1,11 @@
-import { type ReactElement, useState, useEffect, useCallback } from 'react';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -18,6 +25,13 @@ import { DollarSign, Edit2, Check, X, RefreshCw, Loader2 } from 'lucide-react';
 import type { QuotationExchangeRateFormState, QuotationExchangeRateGetDto } from '../types/quotation-types';
 import { useUpdateExchangeRateInQuotation } from '../hooks/useUpdateExchangeRateInQuotation';
 import { cn } from '@/lib/utils';
+import {
+  applyExchangeRateDraftToNumberInput,
+  exchangeRateDraftDefaultNumber,
+  formatExchangeRateForEdit,
+  normalizeExchangeRateDraftInput,
+  parseExchangeRateInput,
+} from '@/lib/exchange-rate-input';
 
 interface ExchangeRateDialogProps {
   open: boolean;
@@ -56,11 +70,16 @@ export function ExchangeRateDialog({
   const updateMutation = useUpdateExchangeRateInQuotation(quotationId ?? 0);
   const [localRates, setLocalRates] = useState<QuotationExchangeRateFormState[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingDraft, setEditingDraft] = useState('');
+  const [editMountKey, setEditMountKey] = useState(0);
   const isUpdateMode = quotationId != null && quotationId > 0;
   const isSaving = isUpdateMode && updateMutation.isPending;
 
   useEffect(() => {
     if (open && erpRates.length > 0) {
+      setEditingId(null);
+      setEditingDraft('');
+      setEditMountKey(0);
       const mappedRates: QuotationExchangeRateFormState[] = erpRates.map((rate, index) => {
         const existing = exchangeRates.find((er) => er.dovizTipi === rate.dovizTipi);
         return {
@@ -103,31 +122,52 @@ export function ExchangeRateDialog({
     );
   };
 
-  const mapToUpdateDtos = useCallback((): QuotationExchangeRateGetDto[] => {
-    return localRates.map((r) => ({
-      id: parseRateId(r.id),
-      quotationId: quotationId ?? 0,
-      quotationOfferNo: quotationOfferNo ?? undefined,
-      currency: r.currency || (r.dovizTipi != null ? String(r.dovizTipi) : ''),
-      exchangeRate: r.exchangeRate,
-      exchangeRateDate: r.exchangeRateDate || new Date().toISOString().split('T')[0],
-      isOfficial: r.isOfficial ?? true,
-    }));
-  }, [localRates, quotationId, quotationOfferNo]);
+  const mapRatesToUpdateDtos = useCallback(
+    (rates: QuotationExchangeRateFormState[]): QuotationExchangeRateGetDto[] =>
+      rates.map((r) => ({
+        id: parseRateId(r.id),
+        quotationId: quotationId ?? 0,
+        quotationOfferNo: quotationOfferNo ?? undefined,
+        currency: r.currency || (r.dovizTipi != null ? String(r.dovizTipi) : ''),
+        exchangeRate: r.exchangeRate,
+        exchangeRateDate: r.exchangeRateDate || new Date().toISOString().split('T')[0],
+        isOfficial: r.isOfficial ?? true,
+      })),
+    [quotationId, quotationOfferNo]
+  );
 
   const handleSave = async (): Promise<void> => {
     if (readOnly) return;
+    let ratesToUse = localRates;
+    if (editingId !== null) {
+      const n = parseExchangeRateInput(editingDraft);
+      ratesToUse = localRates.map((rate) => {
+        if (rate.id !== editingId) return rate;
+        if (isCurrencyUsedInLines(rate.dovizTipi || 0)) return rate;
+        const originalRate = erpRates.find((er) => er.dovizTipi === rate.dovizTipi);
+        const isChanged = originalRate?.kurDegeri !== n;
+        return {
+          ...rate,
+          exchangeRate: n,
+          isOfficial: !isChanged && originalRate?.kurDegeri !== null,
+        };
+      });
+      setLocalRates(ratesToUse);
+      setEditingId(null);
+      setEditingDraft('');
+      setEditMountKey(0);
+    }
     if (isUpdateMode) {
       try {
-        await updateMutation.mutateAsync(mapToUpdateDtos());
-        onSave(localRates);
+        await updateMutation.mutateAsync(mapRatesToUpdateDtos(ratesToUse));
+        onSave(ratesToUse);
         onOpenChange(false);
       } catch {
         void 0;
       }
       return;
     }
-    onSave(localRates);
+    onSave(ratesToUse);
     onOpenChange(false);
   };
 
@@ -135,8 +175,17 @@ export function ExchangeRateDialog({
     if (isSaving) return;
     setLocalRates([]);
     setEditingId(null);
+    setEditingDraft('');
+    setEditMountKey(0);
     onOpenChange(false);
   };
+
+  const handleExchangeRateDraftInput = useCallback((e: ChangeEvent<HTMLInputElement> | FormEvent<HTMLInputElement>): void => {
+    const el = e.currentTarget;
+    const next = normalizeExchangeRateDraftInput(el.value);
+    applyExchangeRateDraftToNumberInput(el, next);
+    setEditingDraft(next);
+  }, []);
 
   const handleOpenChange = (next: boolean): void => {
     if (!next && isSaving) return;
@@ -210,12 +259,18 @@ export function ExchangeRateDialog({
                           <TableCell className="text-right">
                             {editingId === rate.id ? (
                               <Input
+                                key={`erp-rate-${rate.id}-${editMountKey}`}
                                 type="number"
-                                step="0.000001"
-                                min="0"
-                                value={rate.exchangeRate}
-                                onChange={(e) => handleRateChange(rate.id, parseFloat(e.target.value) || 0)}
-                                className={cn(styles.input, "w-28 ml-auto")}
+                                lang="en"
+                                inputMode="decimal"
+                                step={0.0001}
+                                min={0}
+                                autoComplete="off"
+                                defaultValue={exchangeRateDraftDefaultNumber(editingDraft)}
+                                onChange={handleExchangeRateDraftInput}
+                                onInput={handleExchangeRateDraftInput}
+                                onWheel={(e) => e.preventDefault()}
+                                className={cn(styles.input, "w-36 ml-auto [appearance:auto]")}
                                 autoFocus
                                 disabled={isUsed}
                               />
@@ -245,7 +300,12 @@ export function ExchangeRateDialog({
                                   type="button"
                                   size="icon"
                                   variant="ghost"
-                                  onClick={() => setEditingId(null)}
+                                  onClick={() => {
+                                    handleRateChange(rate.id, parseExchangeRateInput(editingDraft));
+                                    setEditingId(null);
+                                    setEditingDraft('');
+                                    setEditMountKey(0);
+                                  }}
                                   className={cn(styles.actionButton, "hover:bg-emerald-50 text-emerald-600 dark:hover:bg-emerald-900/20 dark:text-emerald-400")}
                                   disabled={isUsed}
                                 >
@@ -259,6 +319,8 @@ export function ExchangeRateDialog({
                                     const originalRate = erpRates.find((er) => er.dovizTipi === rate.dovizTipi);
                                     handleRateChange(rate.id, originalRate?.kurDegeri || 0);
                                     setEditingId(null);
+                                    setEditingDraft('');
+                                    setEditMountKey(0);
                                   }}
                                   className={cn(styles.actionButton, "hover:bg-rose-50 text-rose-600 dark:hover:bg-rose-900/20 dark:text-rose-400")}
                                 >
@@ -275,6 +337,8 @@ export function ExchangeRateDialog({
                                     toast.error(t('quotation.exchangeRates.cannotEditUsedCurrency'));
                                     return;
                                   }
+                                  setEditingDraft(formatExchangeRateForEdit(rate.exchangeRate));
+                                  setEditMountKey((k) => k + 1);
                                   setEditingId(rate.id);
                                 }}
                                 className={cn(styles.actionButton, "text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:hover:text-blue-400")}

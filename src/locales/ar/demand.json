@@ -90,7 +90,17 @@
       "message": "عند تغيير العملة، ستتم إعادة حساب جميع الأسطر الموجودة وفقًا للعملة الجديدة. هل توافق على هذه العملية؟"
     },
     "deliveryMethod": "طريقة التسليم",
-    "documentDetail": "تفاصيل المستند"
+    "documentDetail": "تفاصيل المستند",
+    "projectCode": "رمز المشروع",
+    "projectCodePlaceholder": "أدخل رمز المشروع",
+    "currencyNameFallback": "العملة {{code}}",
+    "financialCardTitle": "مالي",
+    "exchangeRatesLink": "أسعار الصرف",
+    "typeAndDatesCardTitle": "النوع والتواريخ",
+    "offerDateAbbrev": "ت. الطلب",
+    "deliveryDateAbbrev": "ت. التسليم",
+    "serialNumber": "الرقم التسلسلي",
+    "notes": "ملاحظات"
   },
   "lines": {
     "title": "بنود الطلب",

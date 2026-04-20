@@ -4,6 +4,7 @@ import { type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRe
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -21,6 +22,9 @@ import { quotationApi } from '../api/quotation-api';
 import { quotationLineRequiredSchema, type QuotationLineFormState, type QuotationExchangeRateFormState, type PricingRuleLineGetDto, type UserDiscountLimitDto, type ApprovalStatus } from '../types/quotation-types';
 import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X, LayoutGrid } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { useLineFormUiPreferencesStore } from '@/stores/line-form-ui-preferences-store';
+import { applyLineDescriptionSavePolicy } from '@/lib/apply-line-description-save-policy';
+import { isIntegerQuantityUnit } from '@/lib/system-settings';
 
 interface TemporaryStockData {
   productCode: string;
@@ -74,7 +78,8 @@ function groupMatches(limitCode?: string | null, stockCode?: string | null): boo
 
 interface QuotationLineFormProps {
   line: QuotationLineFormState;
-  onSave: (line: QuotationLineFormState) => void;
+  /** Tek satır kaydı; `onSaveMultiple` + bağlı satırlar varken kullanılmayabilir */
+  onSave?: (line: QuotationLineFormState) => void;
   onCancel: () => void;
   currency: number;
   exchangeRates?: QuotationExchangeRateFormState[];
@@ -82,6 +87,8 @@ interface QuotationLineFormProps {
   userDiscountLimits?: UserDiscountLimitDto[];
   onSaveMultiple?: (lines: QuotationLineFormState[]) => void;
   isSaving?: boolean;
+  /** Belgedeki mevcut satır stokları — stok/katalog seçicide “Satırda” rozeti */
+  existingLineStockMarkers?: ProductSelectionResult[];
 }
 
 export function QuotationLineForm({
@@ -94,8 +101,13 @@ export function QuotationLineForm({
   userDiscountLimits = [],
   onSaveMultiple,
   isSaving = false,
+  existingLineStockMarkers = [],
 }: QuotationLineFormProps): ReactElement {
   const { t } = useTranslation(['quotation', 'common']);
+  const showDescriptionSectionPref = useLineFormUiPreferencesStore((s) => s.showDescriptionFieldsSection);
+  const customDescLabel1 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel1);
+  const customDescLabel2 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel2);
+  const customDescLabel3 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel3);
   const { calculateLineTotals } = useQuotationCalculations();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
@@ -136,17 +148,53 @@ export function QuotationLineForm({
   const [discountRate3InputValue, setDiscountRate3InputValue] = useState<string>(String(line.discountRate3 || ''));
   const prevDiscountRatesRef = useRef({ discountRate1: line.discountRate1, discountRate2: line.discountRate2, discountRate3: line.discountRate3 });
 
+  const [descriptionSlotsEnabled, setDescriptionSlotsEnabled] = useState<[boolean, boolean, boolean]>([true, true, true]);
+
+  useEffect(() => {
+    setDescriptionSlotsEnabled([true, true, true]);
+  }, [line.id]);
+
+  const descriptionSlotLabels = useMemo(
+    () =>
+      [
+        customDescLabel1.trim() || t('quotation.lines.descriptionField1Label'),
+        customDescLabel2.trim() || t('quotation.lines.descriptionField2Label'),
+        customDescLabel3.trim() || t('quotation.lines.descriptionField3Label'),
+      ] as const,
+    [customDescLabel1, customDescLabel2, customDescLabel3, t]
+  );
+
   type DiscountField = 'discountRate1' | 'discountRate2' | 'discountRate3';
-  const discountInputs: Array<{
-    val: string;
-    setVal: (value: string) => void;
-    field: DiscountField;
-    label: string;
-  }> = [
-    { val: discountRate1InputValue, setVal: setDiscountRate1InputValue, field: 'discountRate1', label: '1. İndirim' },
-    { val: discountRate2InputValue, setVal: setDiscountRate2InputValue, field: 'discountRate2', label: '2. İndirim' },
-    { val: discountRate3InputValue, setVal: setDiscountRate3InputValue, field: 'discountRate3', label: '3. İndirim' },
-  ];
+  const discountInputs = useMemo<
+    Array<{
+      val: string;
+      setVal: (value: string) => void;
+      field: DiscountField;
+      label: string;
+    }>
+  >(
+    () => [
+      {
+        val: discountRate1InputValue,
+        setVal: setDiscountRate1InputValue,
+        field: 'discountRate1',
+        label: t('quotation.lines.discountNumbered1'),
+      },
+      {
+        val: discountRate2InputValue,
+        setVal: setDiscountRate2InputValue,
+        field: 'discountRate2',
+        label: t('quotation.lines.discountNumbered2'),
+      },
+      {
+        val: discountRate3InputValue,
+        setVal: setDiscountRate3InputValue,
+        field: 'discountRate3',
+        label: t('quotation.lines.discountNumbered3'),
+      },
+    ],
+    [t, discountRate1InputValue, discountRate2InputValue, discountRate3InputValue]
+  );
 
   const getDiscountAmount = (field: DiscountField): number => {
     if (field === 'discountRate1') return formData.discountAmount1 || 0;
@@ -656,8 +704,15 @@ export function QuotationLineForm({
       return [lineItem, ...nested];
     });
 
+    const prefs = useLineFormUiPreferencesStore.getState();
+    const policy = {
+      showDescriptionFieldsSection: prefs.showDescriptionFieldsSection,
+      slotEnabled: descriptionSlotsEnabled,
+    };
+    const linesWithDescriptionPolicy = flattenedLines.map((l) => applyLineDescriptionSavePolicy(l, policy));
+
     if (onSaveMultiple) {
-      onSaveMultiple(flattenedLines);
+      onSaveMultiple(linesWithDescriptionPolicy);
     } else {
       const firstLine = bulkDraftLines[0];
       if (firstLine) {
@@ -852,14 +907,36 @@ export function QuotationLineForm({
       });
       setRelatedLines(updatedRelatedLines);
     }
+
+    if (
+      field === 'unitPrice' &&
+      formData.isMainRelatedProduct === true &&
+      formData.relatedProductKey &&
+      relatedLines.length > 0
+    ) {
+      const nextUnitPrice = calculated.unitPrice;
+      setRelatedLines(
+        relatedLines.map((relatedLine) =>
+          calculateLineTotals({ ...relatedLine, unitPrice: nextUnitPrice })
+        )
+      );
+    }
   };
 
   const handleSave = (): void => {
+    const prefs = useLineFormUiPreferencesStore.getState();
+    const policy = {
+      showDescriptionFieldsSection: prefs.showDescriptionFieldsSection,
+      slotEnabled: descriptionSlotsEnabled,
+    };
     if (onSaveMultiple && relatedLines.length > 0) {
-      const linesToSave = [formData, ...relatedLines];
+      const linesToSave = [
+        applyLineDescriptionSavePolicy(formData, policy),
+        ...relatedLines.map((rl) => applyLineDescriptionSavePolicy(rl, policy)),
+      ];
       onSaveMultiple(linesToSave);
-    } else {
-      onSave(formData);
+    } else if (onSave) {
+      onSave(applyLineDescriptionSavePolicy(formData, policy));
     }
   };
 
@@ -869,8 +946,7 @@ export function QuotationLineForm({
   const hasApprovalWarning = discountValidation.exceedsLimit || formData.approvalStatus === 1;
   const bulkDraftGrandTotal = bulkDraftLines.reduce((sum, item) => sum + (item.lineGrandTotal || 0), 0);
   const pinkFocusClass = 'focus-visible:border-pink-500 focus-visible:ring-2 focus-visible:ring-pink-500/20';
-  const normalizedUnit = (formData.unit ?? '').trim().toUpperCase();
-  const isQuantityIntegerOnly = normalizedUnit === 'AD' || normalizedUnit === 'ADET';
+  const isQuantityIntegerOnly = isIntegerQuantityUnit(formData.unit);
   const quantityStep = isQuantityIntegerOnly ? '1' : '0.1';
   const quantityMin = isQuantityIntegerOnly ? '1' : '0.1';
   const percentageStep = '0.1';
@@ -910,7 +986,9 @@ export function QuotationLineForm({
               className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center gap-2"
             >
               <LayoutGrid className="h-4 w-4" />
-              <span className="text-xs font-medium">{t('catalogStockPicker.openButton')}</span>
+              <span className="text-xs font-medium">
+                {t('catalogStockPicker.openButton', { ns: 'common' })}
+              </span>
             </Button>
             <Button
               type="button"
@@ -951,7 +1029,7 @@ export function QuotationLineForm({
               hasNextPage={projectDropdown.hasNextPage}
               isLoading={projectDropdown.isLoading}
               isFetchingNextPage={projectDropdown.isFetchingNextPage}
-              placeholder={t('quotation.header.projectCode')}
+              placeholder={t('quotation:header.projectCode')}
               searchPlaceholder={t('common.search')}
             />
           </div>
@@ -1198,51 +1276,92 @@ export function QuotationLineForm({
             </div>
           )}
 
-          <div className="space-y-3">
-            <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-              Açıklama Alanları
-            </h5>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  Profile
+          {showDescriptionSectionPref ? (
+            <div className="space-y-3">
+              <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                {t('quotation.lines.descriptionFieldsTitle')}
+              </h5>
+              <p className="text-xs text-muted-foreground">{t('lineFormPreferences.slotToggleHint', { ns: 'common' })}</p>
+              <div className="flex flex-wrap items-center gap-4">
+                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                  <Checkbox
+                    checked={descriptionSlotsEnabled[0]}
+                    onCheckedChange={(v) => {
+                      const on = v === true;
+                      setDescriptionSlotsEnabled((prev) => [on, prev[1], prev[2]]);
+                      if (!on) handleFieldChange('description1', null);
+                    }}
+                  />
+                  {descriptionSlotLabels[0]}
                 </label>
-                <Input
-                  value={formData.description1 ?? ''}
-                  onChange={(e) => handleFieldChange('description1', e.target.value || null)}
-                  maxLength={200}
-                  placeholder={t('quotation.lines.max200Chars')}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                />
+                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                  <Checkbox
+                    checked={descriptionSlotsEnabled[1]}
+                    onCheckedChange={(v) => {
+                      const on = v === true;
+                      setDescriptionSlotsEnabled((prev) => [prev[0], on, prev[2]]);
+                      if (!on) handleFieldChange('description2', null);
+                    }}
+                  />
+                  {descriptionSlotLabels[1]}
+                </label>
+                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                  <Checkbox
+                    checked={descriptionSlotsEnabled[2]}
+                    onCheckedChange={(v) => {
+                      const on = v === true;
+                      setDescriptionSlotsEnabled((prev) => [prev[0], prev[1], on]);
+                      if (!on) handleFieldChange('description3', null);
+                    }}
+                  />
+                  {descriptionSlotLabels[2]}
+                </label>
               </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                    {descriptionSlotLabels[0]}
+                  </label>
+                  <Input
+                    value={formData.description1 ?? ''}
+                    onChange={(e) => handleFieldChange('description1', e.target.value || null)}
+                    maxLength={200}
+                    placeholder={t('quotation.lines.max200Chars')}
+                    disabled={!descriptionSlotsEnabled[0]}
+                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  Demir
-                </label>
-                <Input
-                  value={formData.description2 ?? ''}
-                  onChange={(e) => handleFieldChange('description2', e.target.value || null)}
-                  maxLength={200}
-                  placeholder={t('quotation.lines.max200Chars')}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                    {descriptionSlotLabels[1]}
+                  </label>
+                  <Input
+                    value={formData.description2 ?? ''}
+                    onChange={(e) => handleFieldChange('description2', e.target.value || null)}
+                    maxLength={200}
+                    placeholder={t('quotation.lines.max200Chars')}
+                    disabled={!descriptionSlotsEnabled[1]}
+                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  Vida
-                </label>
-                <Input
-                  value={formData.description3 ?? ''}
-                  onChange={(e) => handleFieldChange('description3', e.target.value || null)}
-                  maxLength={200}
-                  placeholder={t('quotation.lines.max200Chars')}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                />
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                    {descriptionSlotLabels[2]}
+                  </label>
+                  <Input
+                    value={formData.description3 ?? ''}
+                    onChange={(e) => handleFieldChange('description3', e.target.value || null)}
+                    maxLength={200}
+                    placeholder={t('quotation.lines.max200Chars')}
+                    disabled={!descriptionSlotsEnabled[2]}
+                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
 
         <div className="xl:col-span-5 flex flex-col gap-4">
@@ -1394,7 +1513,9 @@ export function QuotationLineForm({
         onSelect={handleProductSelect}
         multiSelect
         onMultiSelect={handleMultiProductSelect}
+        existingLineStockMarkers={existingLineStockMarkers}
         initialSelectedResults={bulkDraftLines.map((lineItem) => ({
+          ...(lineItem.productId != null && lineItem.productId > 0 ? { id: lineItem.productId } : {}),
           code: lineItem.productCode || '',
           name: lineItem.productName || '',
           unit: lineItem.unit ?? undefined,
@@ -1408,7 +1529,9 @@ export function QuotationLineForm({
         onSelect={handleProductSelect}
         multiSelect
         onMultiSelect={handleMultiProductSelect}
+        existingLineStockMarkers={existingLineStockMarkers}
         initialSelectedResults={bulkDraftLines.map((lineItem) => ({
+          ...(lineItem.productId != null && lineItem.productId > 0 ? { id: lineItem.productId } : {}),
           code: lineItem.productCode || '',
           name: lineItem.productName || '',
           unit: lineItem.unit ?? undefined,
