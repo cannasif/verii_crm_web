@@ -2,19 +2,19 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/': 'dashboard.view',
 
   '/demands': 'sales.demands.view',
-  '/demands/create': 'sales.demands.view',
+  '/demands/create': 'sales.demands.create',
   '/demands/waiting-approvals': 'sales.demands.view',
-  '/demands/:id': 'sales.demands.view',
+  '/demands/:id': 'sales.demands.update',
 
   '/quotations': 'sales.quotations.view',
-  '/quotations/create': 'sales.quotations.view',
+  '/quotations/create': 'sales.quotations.create',
   '/quotations/waiting-approvals': 'sales.quotations.view',
-  '/quotations/:id': 'sales.quotations.view',
+  '/quotations/:id': 'sales.quotations.update',
 
   '/orders': 'sales.orders.view',
-  '/orders/create': 'sales.orders.view',
+  '/orders/create': 'sales.orders.create',
   '/orders/waiting-approvals': 'sales.orders.view',
-  '/orders/:id': 'sales.orders.view',
+  '/orders/:id': 'sales.orders.update',
 
   '/customer-management': 'customers.customer-management.view',
   '/customers/conflict-inbox': 'customers.conflict-inbox.view',
@@ -39,16 +39,17 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/reports': 'reports.list.view',
   '/reports/my': 'reports.list.view',
   '/reports/my/:id': 'reports.viewer.view',
-  '/reports/new': 'reports.builder.view',
+  '/reports/new': 'reports.builder.create',
   '/reports/:id': 'reports.viewer.view',
-  '/reports/:id/edit': 'reports.builder.view',
+  '/reports/:id/edit': 'reports.builder.update',
+  '/reports/:id/edit/preview': 'reports.builder.update',
 
   '/report-designer': 'reports.designer.list.view',
-  '/report-designer/create': 'reports.designer.editor.view',
-  '/report-designer/edit/:id': 'reports.designer.editor.view',
+  '/report-designer/create': 'reports.designer.editor.create',
+  '/report-designer/edit/:id': 'reports.designer.editor.update',
   '/pdf-report-designer': 'reports.designer.list.view',
-  '/pdf-report-designer/create': 'reports.designer.editor.view',
-  '/pdf-report-designer/edit/:id': 'reports.designer.editor.view',
+  '/pdf-report-designer/create': 'reports.designer.editor.create',
+  '/pdf-report-designer/edit/:id': 'reports.designer.editor.update',
   '/pdf-report-designer/table-presets': 'reports.designer.editor.view',
 
   '/powerbi/configuration': 'powerbi.configuration.view',
@@ -79,22 +80,41 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/definitions/sales-type-management': 'definitions.sales-type-management.view',
   '/definitions/sales-rep-management': 'definitions.sales-rep-management.view',
   '/definitions/sales-rep-match-management': 'definitions.sales-rep-match-management.view',
+  '/definitions/category-definitions': 'definitions.category-definitions.view',
 
-  '/user-management': 'admin-only',
+  '/user-management': 'users.user-management.view',
   '/user-discount-limit-management': 'users.discount-limits.view',
-  '/users/mail-settings': 'admin-only',
-  '/settings/system-settings': 'admin-only',
-  '/hangfire-monitoring': 'admin-only',
-  '/access-control/permission-definitions': 'admin-only',
-  '/access-control/permission-groups': 'admin-only',
-  '/access-control/user-group-assignments': 'admin-only',
+  '/users/mail-settings': 'users.mail-settings.view',
+  '/profile': 'users.profile.view',
+  '/settings/system-settings': 'settings.system-settings.view',
+  '/hangfire-monitoring': 'settings.hangfire-monitoring.view',
+  '/settings/integrations/google': 'settings.integrations.google.view',
+  '/settings/integrations/google/sync': 'settings.integrations.google.view',
+  '/settings/integrations/google/logs': 'settings.integrations.google.view',
+  '/settings/integrations/google/auth': 'settings.integrations.google.view',
+  '/settings/integrations/outlook': 'settings.integrations.outlook.view',
+  '/settings/integrations/outlook/sync': 'settings.integrations.outlook.view',
+  '/settings/integrations/outlook/logs': 'settings.integrations.outlook.view',
+  '/settings/integrations/outlook/auth': 'settings.integrations.outlook.view',
+  '/access-control/permission-definitions': 'access-control.permission-definitions.view',
+  '/access-control/permission-groups': 'access-control.permission-groups.view',
+  '/access-control/user-group-assignments': 'access-control.user-group-assignments.view',
 };
 
 export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: string }> = [
   { pattern: /^\/$/, permission: 'dashboard.view' },
 
+  { pattern: /^\/demands\/create(\/|$)/, permission: 'sales.demands.create' },
+  { pattern: /^\/demands\/waiting-approvals(\/|$)/, permission: 'sales.demands.view' },
+  { pattern: /^\/demands\/[^/]+(\/|$)/, permission: 'sales.demands.update' },
   { pattern: /^\/demands(\/|$)/, permission: 'sales.demands.view' },
+  { pattern: /^\/quotations\/create(\/|$)/, permission: 'sales.quotations.create' },
+  { pattern: /^\/quotations\/waiting-approvals(\/|$)/, permission: 'sales.quotations.view' },
+  { pattern: /^\/quotations\/[^/]+(\/|$)/, permission: 'sales.quotations.update' },
   { pattern: /^\/quotations(\/|$)/, permission: 'sales.quotations.view' },
+  { pattern: /^\/orders\/create(\/|$)/, permission: 'sales.orders.create' },
+  { pattern: /^\/orders\/waiting-approvals(\/|$)/, permission: 'sales.orders.view' },
+  { pattern: /^\/orders\/[^/]+(\/|$)/, permission: 'sales.orders.update' },
   { pattern: /^\/orders(\/|$)/, permission: 'sales.orders.view' },
 
   { pattern: /^\/customer-management(\/|$)/, permission: 'customers.customer-management.view' },
@@ -116,16 +136,20 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/product-pricing-group-by-management(\/|$)/, permission: 'pricing.product-pricing-group-by.view' },
   { pattern: /^\/pricing-rules(\/|$)/, permission: 'pricing.pricing-rules.view' },
 
-  { pattern: /^\/reports\/[^/]+\/edit(\/|$)/, permission: 'reports.builder.view' },
-  { pattern: /^\/reports\/new(\/|$)/, permission: 'reports.builder.view' },
+  { pattern: /^\/reports\/[^/]+\/edit\/preview(\/|$)/, permission: 'reports.builder.update' },
+  { pattern: /^\/reports\/[^/]+\/edit(\/|$)/, permission: 'reports.builder.update' },
+  { pattern: /^\/reports\/new(\/|$)/, permission: 'reports.builder.create' },
   { pattern: /^\/reports\/my\/[^/]+(\/|$)/, permission: 'reports.viewer.view' },
   { pattern: /^\/reports\/my(\/|$)/, permission: 'reports.list.view' },
   { pattern: /^\/reports\/[^/]+(\/|$)/, permission: 'reports.viewer.view' },
   { pattern: /^\/reports(\/|$)/, permission: 'reports.list.view' },
 
-  { pattern: /^\/report-designer\/(create|edit)(\/|$)/, permission: 'reports.designer.editor.view' },
+  { pattern: /^\/report-designer\/create(\/|$)/, permission: 'reports.designer.editor.create' },
+  { pattern: /^\/report-designer\/edit\/[^/]+(\/|$)/, permission: 'reports.designer.editor.update' },
   { pattern: /^\/report-designer(\/|$)/, permission: 'reports.designer.list.view' },
-  { pattern: /^\/pdf-report-designer\/(create|edit|table-presets)(\/|$)/, permission: 'reports.designer.editor.view' },
+  { pattern: /^\/pdf-report-designer\/create(\/|$)/, permission: 'reports.designer.editor.create' },
+  { pattern: /^\/pdf-report-designer\/edit\/[^/]+(\/|$)/, permission: 'reports.designer.editor.update' },
+  { pattern: /^\/pdf-report-designer\/table-presets(\/|$)/, permission: 'reports.designer.editor.view' },
   { pattern: /^\/pdf-report-designer(\/|$)/, permission: 'reports.designer.list.view' },
 
   { pattern: /^\/powerbi\/reports\/[^/]+(\/|$)/, permission: 'powerbi.reports.viewer.view' },
@@ -156,8 +180,19 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/definitions\/sales-type-management(\/|$)/, permission: 'definitions.sales-type-management.view' },
   { pattern: /^\/definitions\/sales-rep-management(\/|$)/, permission: 'definitions.sales-rep-management.view' },
   { pattern: /^\/definitions\/sales-rep-match-management(\/|$)/, permission: 'definitions.sales-rep-match-management.view' },
+  { pattern: /^\/definitions\/category-definitions(\/|$)/, permission: 'definitions.category-definitions.view' },
 
+  { pattern: /^\/user-management(\/|$)/, permission: 'users.user-management.view' },
   { pattern: /^\/user-discount-limit-management(\/|$)/, permission: 'users.discount-limits.view' },
+  { pattern: /^\/users\/mail-settings(\/|$)/, permission: 'users.mail-settings.view' },
+  { pattern: /^\/profile(\/|$)/, permission: 'users.profile.view' },
+  { pattern: /^\/settings\/system-settings(\/|$)/, permission: 'settings.system-settings.view' },
+  { pattern: /^\/hangfire-monitoring(\/|$)/, permission: 'settings.hangfire-monitoring.view' },
+  { pattern: /^\/settings\/integrations\/google(\/|$)/, permission: 'settings.integrations.google.view' },
+  { pattern: /^\/settings\/integrations\/outlook(\/|$)/, permission: 'settings.integrations.outlook.view' },
+  { pattern: /^\/access-control\/permission-definitions(\/|$)/, permission: 'access-control.permission-definitions.view' },
+  { pattern: /^\/access-control\/permission-groups(\/|$)/, permission: 'access-control.permission-groups.view' },
+  { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
 ];
 
 export function isLeafPermissionCode(code: string): boolean {
@@ -199,13 +234,7 @@ export const RBAC_FALLBACK_PERMISSION = 'access-control.permission-definitions.v
 
 export const ACCESS_CONTROL_ADMIN_FALLBACK_TO_SYSTEM_ADMIN = true as const;
 
-export const ACCESS_CONTROL_ADMIN_ONLY_PATTERNS: RegExp[] = [
-  /^\/access-control(\/|$)/,
-  /^\/user-management(\/|$)/,
-  /^\/users\/mail-settings(\/|$)/,
-  /^\/settings\/system-settings(\/|$)/,
-  /^\/hangfire-monitoring(\/|$)/,
-];
+export const ACCESS_CONTROL_ADMIN_ONLY_PATTERNS: RegExp[] = [];
 
 
 
@@ -269,9 +298,19 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'definitions.sales-type-management.view': { key: 'sidebar.salesTypeManagement', fallback: 'Satis Tipi Yonetimi' },
   'definitions.sales-rep-management.view': { key: 'sidebar.salesRepManagement', fallback: 'Sales Rep Kod Yonetimi' },
   'definitions.sales-rep-match-management.view': { key: 'sidebar.salesRepMatchManagement', fallback: 'Sales Rep Eslesme Yonetimi' },
+  'definitions.category-definitions.view': { key: 'sidebar.categoryDefinitions', fallback: 'Kategori Tanimlari' },
 
+  'users.user-management.view': { key: 'sidebar.userManagement', fallback: 'Kullanici Yonetimi' },
   'users.discount-limits.view': { key: 'sidebar.userDiscountLimitManagement', fallback: 'Kullanici Iskonto Limit Yonetimi' },
-  'admin-only': { key: 'sidebar.systemSettings', fallback: 'Sistem Ayarları' },
+  'users.mail-settings.view': { key: 'sidebar.mailSettings', fallback: 'Mail Ayarlari' },
+  'users.profile.view': { key: 'sidebar.profile', fallback: 'Profil' },
+  'settings.system-settings.view': { key: 'sidebar.systemSettings', fallback: 'Sistem Ayarlari' },
+  'settings.hangfire-monitoring.view': { key: 'sidebar.hangfireMonitoring', fallback: 'Hangfire Izleme' },
+  'settings.integrations.google.view': { key: 'sidebar.googleConnection', fallback: 'Google Entegrasyonu' },
+  'settings.integrations.outlook.view': { key: 'sidebar.outlookConnection', fallback: 'Outlook Entegrasyonu' },
+  'access-control.permission-definitions.view': { key: 'sidebar.permissionDefinitions', fallback: 'Yetki Tanimlari' },
+  'access-control.permission-groups.view': { key: 'sidebar.permissionGroups', fallback: 'Yetki Gruplari' },
+  'access-control.user-group-assignments.view': { key: 'sidebar.userGroupAssignments', fallback: 'Kullanici Grup Atamalari' },
 };
 
 export function getPermissionDisplayMeta(code: string): { key?: string; fallback: string } | null {
@@ -352,6 +391,7 @@ export const PERMISSION_MODULE_DISPLAY: Record<string, { key: string; fallback: 
   approval: { key: 'sidebar.approvalDefinitions', fallback: 'Approvals' },
   definitions: { key: 'sidebar.definitions', fallback: 'Definitions' },
   users: { key: 'sidebar.users', fallback: 'Users' },
+  settings: { key: 'sidebar.settings', fallback: 'Settings' },
   'access-control': { key: 'sidebar.accessControl', fallback: 'Access Control' },
 };
 
@@ -370,9 +410,21 @@ export const PERMISSION_CODE_CATALOG: string[] = Array.from(
   .sort((a, b) => a.localeCompare(b));
 
 export function getRoutesForPermissionCode(code: string): string[] {
-  const normalizedCode = normalizePermissionCodeForDisplay(code);
+  const parts = code.split('.').filter(Boolean);
+  const action = parts[parts.length - 1]?.toLowerCase() ?? '';
+  const baseCode = isCrudAction(action) ? parts.slice(0, -1).join('.') : code;
   const routes = Object.entries(ROUTE_PERMISSION_MAP)
-    .filter(([, permissionCode]) => permissionCode === normalizedCode)
+    .filter(([, permissionCode]) => {
+      const permissionParts = permissionCode.split('.').filter(Boolean);
+      const permissionAction = permissionParts[permissionParts.length - 1]?.toLowerCase() ?? '';
+      const permissionBaseCode = isCrudAction(permissionAction)
+        ? permissionParts.slice(0, -1).join('.')
+        : permissionCode;
+
+      if (permissionBaseCode !== baseCode) return false;
+      if (!isCrudAction(action)) return true;
+      return permissionAction === action;
+    })
     .map(([route]) => route);
   return routes.sort((a, b) => a.localeCompare(b));
 }
