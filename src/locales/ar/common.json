@@ -696,6 +696,8 @@
     "orderList": "قائمة الطلبات",
     "reportsList": "قائمة",
     "reportsCreate": "إنشاء جديد",
+    "pdfReportsList": "قائمة PDF",
+    "pdfReportsCreate": "إنشاء PDF",
     "googleIntegration": "Google Integration",
     "googleIntegrationConnection": "Connection",
     "googleIntegrationSync": "Sync",

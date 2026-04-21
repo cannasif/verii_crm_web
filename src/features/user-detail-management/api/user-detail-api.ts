@@ -44,8 +44,8 @@ export const userDetailApi = {
 
   getByUserId: async (userId: number): Promise<UserDetailDto | null> => {
     const response = await api.get<ApiResponse<UserDetailDto>>(`/api/UserDetail/user/${userId}`);
-    if (response.success && response.data) {
-      return response.data;
+    if (response.success) {
+      return response.data ?? null;
     }
     if (response.statusCode === 404) {
       return null;

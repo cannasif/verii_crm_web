@@ -43,6 +43,18 @@ interface AppShellStoreState {
 let bootstrapPromise: Promise<void> | null = null;
 const userSummaryPromises = new Map<number, Promise<UserDetailDto | null>>();
 const unreadCountPromises = new Map<number, Promise<number>>();
+const runAsyncTask = (task: () => Promise<unknown>): void => {
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    (window as Window & { requestIdleCallback: (callback: () => void) => number }).requestIdleCallback(() => {
+      void task();
+    });
+    return;
+  }
+
+  globalThis.setTimeout(() => {
+    void task();
+  }, 0);
+};
 
 function getUserSummaryEntry(userId: number | null | undefined): CacheEntry<UserDetailDto | null> | null {
   if (!userId) return null;
@@ -216,19 +228,18 @@ export const useAppShellStore = create<AppShellStoreState>()(
               await applySystemLanguageIfNeeded();
             }
 
-            const softTasks: Promise<unknown>[] = [];
+            get().setBootstrapStatus('ready', null);
+
             if (shouldFetchUserSummary) {
-              softTasks.push(get().refreshUserSummary(userId, true));
+              runAsyncTask(async () => {
+                await get().refreshUserSummary(userId, true);
+              });
             }
             if (shouldFetchUnreadCount) {
-              softTasks.push(get().refreshUnreadCount(userId, true));
+              runAsyncTask(async () => {
+                await get().refreshUnreadCount(userId, true);
+              });
             }
-
-            if (softTasks.length > 0) {
-              await Promise.allSettled(softTasks);
-            }
-
-            get().setBootstrapStatus('ready', null);
           } catch (error) {
             get().setBootstrapStatus('error', error);
             throw error;

@@ -76,15 +76,18 @@ function toBaseRelativePath(fileName: string): string {
   return `${normalizedBase}${fileName}`;
 }
 
+function getRuntimeConfigFileName(): string {
+  return import.meta.env.DEV ? 'config.development.json' : 'config.json';
+}
+
 async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
-  const envUrl = import.meta.env.VITE_API_URL;
   const fallbackConfig: ResolvedRuntimeConfig = {
-    apiUrl: isValidApiUrl(envUrl) ? normalizeBaseUrl(envUrl) : normalizeBaseUrl(DEFAULT_API_BASE_URL),
+    apiUrl: normalizeBaseUrl(DEFAULT_API_BASE_URL),
     baseUrl: normalizeAppBasePath(import.meta.env.BASE_URL || '/'),
   };
 
   try {
-    const response = await fetch(toBaseRelativePath('config.json'), {
+    const response = await fetch(toBaseRelativePath(getRuntimeConfigFileName()), {
       cache: import.meta.env.PROD ? 'no-cache' : 'default',
     });
     if (!response.ok) return fallbackConfig;
@@ -174,6 +177,16 @@ function refreshRuntimeConfigInBackground(): void {
 
 export function loadConfig(): Promise<string> {
   if (!configPromise) {
+    if (import.meta.env.DEV) {
+      configPromise = fetchRuntimeConfig().then((config) => {
+        hydrateMemoryCache(config);
+        persistRuntimeConfig(config);
+        return config;
+      });
+
+      return configPromise.then((config) => config.apiUrl);
+    }
+
     const persisted = readPersistedRuntimeConfig();
 
     if (persisted) {
@@ -204,8 +217,6 @@ export async function getApiUrl(): Promise<string> {
 }
 
 export function getApiBaseUrl(): string {
-  const env = import.meta.env.VITE_API_URL;
-  if (isValidApiUrl(env)) return normalizeBaseUrl(env);
   return cachedApiUrl || normalizeBaseUrl(DEFAULT_API_BASE_URL);
 }
 

@@ -2,6 +2,7 @@ import { type ReactElement, Suspense, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Shield01Icon } from 'hugeicons-react';
 import { PageLoader } from './PageLoader';
+import { RouteNamespaceLoader } from './RouteNamespaceLoader';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
@@ -34,7 +35,7 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
-  const { t } = useTranslation(['common', 'report-designer']);
+  const { t } = useTranslation('common');
   const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
   const canManageIntegrationAuth =
     permissions?.isSystemAdmin === true ||
@@ -125,8 +126,8 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           {
             title: t('sidebar.pdfBuilder'),
             children: [
-              { title: t('pdfReportDesigner.list'), href: '/pdf-report-designer' },
-              { title: t('pdfReportDesigner.create'), href: '/pdf-report-designer/create' },
+              { title: t('sidebar.pdfReportsList'), href: '/pdf-report-designer' },
+              { title: t('sidebar.pdfReportsCreate'), href: '/pdf-report-designer/create' },
             ],
           },
           {
@@ -291,7 +292,9 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           <main className="flex-1 overflow-auto p-4 md:p-6 text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent">
             <div className="w-full min-h-full max-w-[1920px] mx-auto">
               <Suspense fallback={<PageLoader />}>
-                <RoutePermissionGuard />
+                <RouteNamespaceLoader>
+                  <RoutePermissionGuard />
+                </RouteNamespaceLoader>
               </Suspense>
             </div>
           </main>

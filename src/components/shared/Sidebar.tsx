@@ -4,8 +4,8 @@ import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
 
-const LOGO_URL = '/v3logo.png';
-const VERII_LOGO_URL = '/veriicrmlogo.png';
+const LOGO_URL = '/v3logo-sm.png';
+const VERII_LOGO_URL = '/veriicrmlogo-sm.png';
 
 interface NavItem {
   title: string;

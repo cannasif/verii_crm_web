@@ -5,7 +5,6 @@ import type { AxiosError } from 'axios';
 import { useAuthStore } from '@/stores/auth-store';
 import { isTokenValid } from '@/utils/jwt';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
-import { canAccessPath } from '@/features/access-control/utils/hasPermission';
 import { Button } from '@/components/ui/button';
 
 function getStoredToken(): string | null {
@@ -28,7 +27,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
   const hasValidToken = !!(storedToken && isTokenValid(storedToken));
   const isAuthenticated = !!(user && (token || hasValidToken));
   const location = useLocation();
-  const { isError: permissionsIsError, error: permissionsError, refetch: refetchPermissions, isLoading: permissionsLoading, data: permissionsData } = useMyPermissionsQuery();
+  const { isError: permissionsIsError, error: permissionsError, refetch: refetchPermissions } = useMyPermissionsQuery();
   const autoRetryCount = useRef(0);
 
   useEffect(() => {
@@ -56,16 +55,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
 
   if (location.pathname === '/forbidden') {
     return children;
-  }
-
-  if (permissionsLoading) {
-    return (
-      <div className="min-h-[60vh] w-full flex items-center justify-center">
-        <div className="text-slate-500 dark:text-slate-400">
-          {t('common.loading')}
-        </div>
-      </div>
-    );
   }
 
   if (permissionsIsError) {
@@ -108,12 +97,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
         </div>
       </div>
     );
-  }
-
-  const permissions = permissionsData ?? null;
-  const allowed = canAccessPath(permissions, location.pathname);
-  if (!allowed) {
-    return <Navigate to="/forbidden" replace state={{ from: location.pathname }} />;
   }
 
   return children;

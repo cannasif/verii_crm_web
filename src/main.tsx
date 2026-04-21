@@ -11,8 +11,7 @@ import { ensureApiReady } from './lib/axios';
 import { useAuthStore } from './stores/auth-store';
 
 async function bootstrap(): Promise<void> {
-  await ensureApiReady();
-  await ensureI18nReady();
+  await Promise.all([ensureApiReady(), ensureI18nReady()]);
   useAuthStore.getState().init();
   const root = document.getElementById('root')!;
   createRoot(root).render(

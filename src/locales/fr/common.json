@@ -694,6 +694,8 @@
     "productAndStock": "Produits et stocks",
     "reportsList": "Liste",
     "reportsCreate": "Créer nouveau",
+    "pdfReportsList": "Liste PDF",
+    "pdfReportsCreate": "Créer un PDF",
     "definitions": "Définitions",
     "users": "Utilisateurs",
     "googleIntegration": "Google Integration",

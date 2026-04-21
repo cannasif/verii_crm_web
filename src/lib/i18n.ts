@@ -68,6 +68,8 @@ for (const [path, loader] of Object.entries(featureModules)) {
 const DEFAULT_LANG = 'tr';
 const fallbackLng = DEFAULT_LANG;
 const supportedLngs = Object.keys(loaders);
+const INITIAL_NAMESPACES = ['common', 'notification'] as const;
+const loadedBundlesByLanguage: Record<string, Record<string, Record<string, unknown>>> = {};
 
 const toCamelCase = (value: string): string =>
   value.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
@@ -138,38 +140,65 @@ const storedLng = typeof localStorage !== 'undefined' ? localStorage.getItem('i1
 const initialLng = storedLng ? (normalizeLang(storedLng) ?? DEFAULT_LANG) : DEFAULT_LANG;
 const resolvedLng = supportedLngs.includes(initialLng) ? initialLng : DEFAULT_LANG;
 
-export async function loadLanguage(lang: string): Promise<void> {
-  const target = normalizeLang(lang) ?? fallbackLng;
-  const langLoaders = loaders[target] || {};
-  const entries = Object.entries(langLoaders);
-
-  const loadedModules: Record<string, Record<string, unknown>> = {};
-  for (const [ns, loader] of entries) {
-    const mod = await loader();
-    loadedModules[ns] = mod.default;
-  }
-
+function rebuildLanguageResources(lang: string): void {
+  const bundlesForLanguage = loadedBundlesByLanguage[lang] ?? {};
   const scopedBundleByNs: Record<string, Record<string, unknown>> = {};
-  for (const [ns, bundle] of Object.entries(loadedModules)) {
+
+  for (const [ns, bundle] of Object.entries(bundlesForLanguage)) {
     const scoped =
-      typeof bundle[ns] === 'object' && bundle[ns] !== null ? (bundle[ns] as Record<string, unknown>) : bundle;
+      typeof bundle[ns] === 'object' && bundle[ns] !== null
+        ? (bundle[ns] as Record<string, unknown>)
+        : bundle;
     scopedBundleByNs[ns] = scoped;
   }
 
-  for (const ns of Object.keys(loadedModules)) {
-    const baseCompatibility = withNamespaceCompatibility(ns, loadedModules[ns]);
+  for (const [ns, bundle] of Object.entries(bundlesForLanguage)) {
+    const baseCompatibility = withNamespaceCompatibility(ns, bundle);
     for (const [otherNs, scopedBundle] of Object.entries(scopedBundleByNs)) {
-      // Aynı namespace'i tekrar yazma: örn. customer-management + camelCase'i tüm dosyayla
-      // ezmek, `customerManagement.table.*` yolunu kök `table` objesine kaydırıp eksik anahtarlara düşürüyordu.
       if (otherNs === ns) continue;
-      // Ensures `t('quotation.*')` works even when the active namespace is `common`.
       (baseCompatibility as Record<string, unknown>)[otherNs] = scopedBundle;
       (baseCompatibility as Record<string, unknown>)[toCamelCase(otherNs)] = scopedBundle;
       hoistFeatureRootsIntoBundle(baseCompatibility as Record<string, unknown>, otherNs, scopedBundle);
     }
 
-    i18n.addResourceBundle(target, ns, baseCompatibility, true, true);
+    i18n.addResourceBundle(lang, ns, baseCompatibility, true, true);
   }
+}
+
+async function loadNamespace(lang: string, ns: string): Promise<void> {
+  const target = normalizeLang(lang) ?? fallbackLng;
+  const langLoaders = loaders[target] || {};
+  const loader = langLoaders[ns];
+  if (!loader) return;
+
+  if (!loadedBundlesByLanguage[target]) {
+    loadedBundlesByLanguage[target] = {};
+  }
+  if (loadedBundlesByLanguage[target][ns]) return;
+
+  const mod = await loader();
+  loadedBundlesByLanguage[target][ns] = mod.default;
+  rebuildLanguageResources(target);
+}
+
+export async function ensureNamespacesReady(
+  namespaces: readonly string[] | string[],
+  lang?: string
+): Promise<void> {
+  const target = normalizeLang(lang ?? i18n.resolvedLanguage ?? i18n.language ?? fallbackLng) ?? fallbackLng;
+  const uniqueNamespaces = [...new Set(namespaces.map((ns) => ns.trim()).filter(Boolean))];
+  for (const ns of uniqueNamespaces) {
+    await loadNamespace(target, ns);
+  }
+  if (target !== fallbackLng) {
+    for (const ns of uniqueNamespaces) {
+      await loadNamespace(fallbackLng, ns);
+    }
+  }
+}
+
+export async function loadLanguage(lang: string): Promise<void> {
+  await ensureNamespacesReady(INITIAL_NAMESPACES, lang);
 }
 
 const initPromise = (async () => {
@@ -192,14 +221,14 @@ const initPromise = (async () => {
       caches: [],
     },
   });
-  await loadLanguage(fallbackLng);
+  await ensureNamespacesReady(INITIAL_NAMESPACES, fallbackLng);
   if (resolvedLng !== fallbackLng) {
-    await loadLanguage(resolvedLng);
+    await ensureNamespacesReady(INITIAL_NAMESPACES, resolvedLng);
   }
 })();
 
 i18n.on('languageChanged', async (lng) => {
-  await loadLanguage(lng);
+  await ensureNamespacesReady(INITIAL_NAMESPACES, lng);
 });
 
 export async function ensureI18nReady(): Promise<void> {

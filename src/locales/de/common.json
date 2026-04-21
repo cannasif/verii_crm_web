@@ -698,6 +698,8 @@
     "productAndStock": "Produkte & Lagerbestand",
     "reportsList": "Liste",
     "reportsCreate": "Neu erstellen",
+    "pdfReportsList": "PDF-Liste",
+    "pdfReportsCreate": "PDF erstellen",
     "definitions": "Definitionen",
     "users": "Benutzer",
     "googleIntegration": "Google Integration",
