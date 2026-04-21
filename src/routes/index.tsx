@@ -77,6 +77,7 @@ const PdfTablePresetManagementPage = lazyImport(() => import('@/features/pdf-rep
 const ReportsListPage = lazyImport(() => import('@/features/report-builder/pages/ReportsListPage'), 'ReportsListPage');
 const ReportBuilderPage = lazyImport(() => import('@/features/report-builder/pages/ReportBuilderPage'), 'ReportBuilderPage');
 const ReportViewerPage = lazyImport(() => import('@/features/report-builder/pages/ReportViewerPage'), 'ReportViewerPage');
+const MyReportsDashboardPage = lazyImport(() => import('@/features/report-builder/pages/MyReportsDashboardPage'), 'MyReportsDashboardPage');
 const ReportDefinitionList = lazyImport(() => import('@/features/powerbi'), 'ReportDefinitionList');
 const GroupList = lazyImport(() => import('@/features/powerbi'), 'GroupList');
 const UserGroupList = lazyImport(() => import('@/features/powerbi'), 'UserGroupList');
@@ -122,6 +123,7 @@ export function createAppRouter() {
         { path: 'pdf-report-designer/table-presets', element: <PdfTablePresetManagementPage /> },
         { path: 'reports', element: <ReportsListPage /> },
         { path: 'reports/my', element: <ReportsListPage /> },
+        { path: 'reports/my-dashboard', element: <MyReportsDashboardPage /> },
         { path: 'reports/my/:id', element: <ReportViewerPage /> },
         { path: 'reports/new', element: <ReportBuilderPage /> },
         { path: 'reports/:id/edit', element: <ReportBuilderPage /> },

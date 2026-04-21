@@ -221,6 +221,22 @@ export interface ReportDto {
   assignedUserIds?: number[];
 }
 
+export interface MyReportDashboardItem {
+  reportId: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  order: number;
+  hidden?: boolean;
+}
+
+export interface MyReportDashboardLayout {
+  version: 1;
+  updatedAt: string;
+  items: MyReportDashboardItem[];
+}
+
 export interface ReportPreviewRequest {
   connectionKey: string;
   dataSourceType: string;

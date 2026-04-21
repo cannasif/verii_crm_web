@@ -9,84 +9,17 @@ import { useReportsStore } from '../store';
 import { useReportsList } from '../hooks/useReportsList';
 import { Card, CardContent } from '@/components/ui/card';
 import { reportsApi } from '../api';
-import { Copy, Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-react';
-
-function getReportSummary(configJson: string): {
-  widgetCount: number;
-  chartTypes: string[];
-  status: string;
-  version: number;
-  publishedAt?: string;
-  releaseNote?: string;
-  category?: string;
-  tags: string[];
-  audience?: string;
-  refreshCadence?: string;
-  favorite: boolean;
-  sharedWith: string[];
-  subscriptionEnabled: boolean;
-  subscriptionChannel?: string;
-  subscriptionFrequency?: string;
-  owner?: string;
-  certified: boolean;
-  lastReviewedAt?: string;
-} {
-  try {
-    const parsed = JSON.parse(configJson) as {
-      chartType?: string;
-      widgets?: Array<{ chartType?: string }>;
-      lifecycle?: { status?: string; version?: number; publishedAt?: string; releaseNote?: string };
-      governance?: {
-        category?: string;
-        tags?: string[];
-        audience?: string;
-        refreshCadence?: string;
-        favorite?: boolean;
-        sharedWith?: string[];
-        subscriptionEnabled?: boolean;
-        subscriptionChannel?: string;
-        subscriptionFrequency?: string;
-        owner?: string;
-        certified?: boolean;
-        lastReviewedAt?: string;
-      };
-    };
-    const widgets = Array.isArray(parsed.widgets) ? parsed.widgets : [];
-    const chartTypes = widgets.length > 0
-      ? widgets.map((widget) => widget.chartType).filter((value): value is string => Boolean(value))
-      : parsed.chartType
-        ? [parsed.chartType]
-        : [];
-    return {
-      widgetCount: widgets.length > 0 ? widgets.length : 1,
-      chartTypes: [...new Set(chartTypes)],
-      status: parsed.lifecycle?.status ?? 'draft',
-      version: parsed.lifecycle?.version ?? 1,
-      publishedAt: parsed.lifecycle?.publishedAt,
-      releaseNote: parsed.lifecycle?.releaseNote,
-      category: parsed.governance?.category,
-      tags: parsed.governance?.tags ?? [],
-      audience: parsed.governance?.audience,
-      refreshCadence: parsed.governance?.refreshCadence,
-      favorite: parsed.governance?.favorite ?? false,
-      sharedWith: parsed.governance?.sharedWith ?? [],
-      subscriptionEnabled: parsed.governance?.subscriptionEnabled ?? false,
-      subscriptionChannel: parsed.governance?.subscriptionChannel,
-      subscriptionFrequency: parsed.governance?.subscriptionFrequency,
-      owner: parsed.governance?.owner,
-      certified: parsed.governance?.certified ?? false,
-      lastReviewedAt: parsed.governance?.lastReviewedAt,
-    };
-  } catch {
-    return { widgetCount: 1, chartTypes: [], status: 'draft', version: 1, tags: [], favorite: false, sharedWith: [], subscriptionEnabled: false, certified: false };
-  }
-}
+import { Copy, ExternalLink, LayoutGrid, Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useAuthStore } from '@/stores/auth-store';
+import { createDashboardItem, getReportSummary, loadMyDashboardLayout, saveMyDashboardLayout, sanitizeMyDashboardLayout } from '../utils';
 
 export function ReportsListPage(): ReactElement {
   const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
   const location = useLocation();
   const isMyReports = location.pathname === '/reports/my';
+  const userId = useAuthStore((state) => state.user?.id);
   const { search, setSearch } = useReportsStore();
   const { data: items = [], isLoading: loading, error: queryError, refetch } = useReportsList(
     search || undefined,
@@ -94,6 +27,23 @@ export function ReportsListPage(): ReactElement {
   );
   const [pendingId, setPendingId] = useState<number | null>(null);
   const error = queryError?.message ?? null;
+
+  const handleAddToDashboard = (reportId: number): void => {
+    if (!userId) return;
+    const currentLayout = sanitizeMyDashboardLayout(loadMyDashboardLayout(userId), items.map((item) => item.id));
+    if (currentLayout.items.some((item) => item.reportId === reportId)) {
+      toast.info(t('common.reportBuilder.dashboardAlreadyAdded'));
+      return;
+    }
+    const nextLayout = {
+      version: 1 as const,
+      updatedAt: new Date().toISOString(),
+      items: [...currentLayout.items, createDashboardItem(reportId, currentLayout.items)],
+    };
+    saveMyDashboardLayout(userId, nextLayout);
+    toast.success(t('common.reportBuilder.dashboardAdded'));
+  };
+
   const getStatusLabel = (status: string): string =>
     status === 'published'
       ? t('common.reportBuilder.lifecycle.publish')
@@ -150,12 +100,20 @@ export function ReportsListPage(): ReactElement {
             {isMyReports ? t('common.reportBuilder.myReportsDescription') : t('common.reportBuilder.allReportsDescription')}
           </p>
         </div>
-        {!isMyReports && (
-          <Button onClick={() => navigate('/reports/new')}>
-            <Plus className="mr-2 size-4" />
-            {t('common.reportBuilder.newReport')}
-          </Button>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {isMyReports && (
+            <Button variant="outline" onClick={() => navigate('/reports/my-dashboard')}>
+              <LayoutGrid className="mr-2 size-4" />
+              {t('common.reportBuilder.openMyDashboard')}
+            </Button>
+          )}
+          {!isMyReports && (
+            <Button onClick={() => navigate('/reports/new')}>
+              <Plus className="mr-2 size-4" />
+              {t('common.reportBuilder.newReport')}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="flex gap-2">
@@ -284,6 +242,32 @@ export function ReportsListPage(): ReactElement {
                     >
                       {pendingId === r.id ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
                     </Button>
+                  )}
+                  {isMyReports && (
+                    <>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToDashboard(r.id);
+                        }}
+                      >
+                        <Plus className="size-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate('/reports/my-dashboard');
+                        }}
+                      >
+                        <ExternalLink className="size-4" />
+                      </Button>
+                    </>
                   )}
                   {!isMyReports && r.canManage !== false && (
                     <Button
