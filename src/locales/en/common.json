@@ -1295,6 +1295,8 @@
     "definitions": "Definitions",
     "users": "Users",
     "accessControl": "Access Control",
+    "accessControlManagementGroup": "Permissions and User Management",
+    "accessControlSystemGroup": "System Tools",
     "permissionDefinitions": "Permission Definitions",
     "permissionGroups": "Permission Groups",
     "userGroupAssignments": "User Group Assignments",

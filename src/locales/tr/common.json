@@ -1292,6 +1292,8 @@
     "settings": "Ayarlar",
     "logout": "Çıkış Yap",
     "accessControl": "Erişim Kontrolü",
+    "accessControlManagementGroup": "Yetki ve Kullanıcı Yönetimi",
+    "accessControlSystemGroup": "Sistem Araçları",
     "permissionDefinitions": "İzin Tanımları",
     "permissionGroups": "İzin Grupları",
     "userGroupAssignments": "Kullanıcı Grup Atamaları",

@@ -201,14 +201,24 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         title: t('sidebar.accessControl'),
         icon: <Shield01Icon size={iconSize} className="text-violet-500" />,
         children: [
-          { title: t('sidebar.userManagement'), href: '/user-management' },
-          { title: t('sidebar.mailSettings'), href: '/users/mail-settings' },
-          { title: t('sidebar.permissionDefinitions'), href: '/access-control/permission-definitions' },
-          { title: t('sidebar.permissionGroups'), href: '/access-control/permission-groups' },
-          { title: t('sidebar.userGroupAssignments'), href: '/access-control/user-group-assignments' },
           {
-            title: t('menu', { ns: 'hangfire-monitoring', defaultValue: 'Hangfire İzleme' }),
-            href: '/hangfire-monitoring',
+            title: t('sidebar.accessControlManagementGroup', { defaultValue: 'Yetki ve Kullanıcı Yönetimi' }),
+            children: [
+              { title: t('sidebar.userManagement'), href: '/user-management' },
+              { title: t('sidebar.userGroupAssignments'), href: '/access-control/user-group-assignments' },
+              { title: t('sidebar.permissionGroups'), href: '/access-control/permission-groups' },
+              { title: t('sidebar.permissionDefinitions'), href: '/access-control/permission-definitions' },
+            ],
+          },
+          {
+            title: t('sidebar.accessControlSystemGroup', { defaultValue: 'Sistem Araçları' }),
+            children: [
+              { title: t('sidebar.mailSettings'), href: '/users/mail-settings' },
+              {
+                title: t('menu', { ns: 'hangfire-monitoring', defaultValue: 'Hangfire İzleme' }),
+                href: '/hangfire-monitoring',
+              },
+            ],
           },
         ],
       },
