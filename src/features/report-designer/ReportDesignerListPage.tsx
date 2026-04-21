@@ -35,6 +35,7 @@ import { useDeleteReportTemplate } from './hooks/useDeleteReportTemplate';
 import { useGenerateReportPdf } from './hooks/useGenerateReportPdf';
 import type { ReportTemplateGetDto } from './types/report-template-types';
 import { DocumentRuleType } from './types/report-template-types';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 function downloadBlobAsPdf(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
@@ -47,6 +48,7 @@ function downloadBlobAsPdf(blob: Blob, filename: string): void {
 
 export function ReportDesignerListPage(): ReactElement {
   const { t } = useTranslation(['report-designer', 'common']);
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('reports.designer.list.view');
   const navigate = useNavigate();
   const { data: templates = [], isLoading } = useReportTemplateList();
   const deleteMutation = useDeleteReportTemplate();
@@ -116,12 +118,14 @@ export function ReportDesignerListPage(): ReactElement {
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
           {t('reportDesigner.list.title')}
         </h1>
-        <Button asChild>
-          <Link to="/report-designer/create" className="inline-flex items-center gap-2">
-            <Plus className="size-4" />
-            {t('reportDesigner.list.createNew')}
-          </Link>
-        </Button>
+        {canCreate ? (
+          <Button asChild>
+            <Link to="/report-designer/create" className="inline-flex items-center gap-2">
+              <Plus className="size-4" />
+              {t('reportDesigner.list.createNew')}
+            </Link>
+          </Button>
+        ) : null}
       </div>
       <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/50">
         {isLoading ? (
@@ -178,27 +182,33 @@ export function ReportDesignerListPage(): ReactElement {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link to={`/report-designer/edit/${template.id}`} className="flex items-center gap-2">
-                            <Pencil className="size-4" />
-                            {t('common.edit')}
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleCopyClick(template)}>
-                          <Copy className="size-4" />
-                          {t('pdfReportDesigner.copy')}
-                        </DropdownMenuItem>
+                        {canUpdate ? (
+                          <DropdownMenuItem asChild>
+                            <Link to={`/report-designer/edit/${template.id}`} className="flex items-center gap-2">
+                              <Pencil className="size-4" />
+                              {t('common.edit')}
+                            </Link>
+                          </DropdownMenuItem>
+                        ) : null}
+                        {canCreate ? (
+                          <DropdownMenuItem onClick={() => handleCopyClick(template)}>
+                            <Copy className="size-4" />
+                            {t('pdfReportDesigner.copy')}
+                          </DropdownMenuItem>
+                        ) : null}
                         <DropdownMenuItem onClick={() => handlePdfClick(template)}>
                           <FileDown className="size-4" />
                           {t('pdfReportDesigner.generatePdf')}
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => handleDeleteClick(template)}
-                        >
-                          <Trash2 className="size-4" />
-                          {t('common.delete.action')}
-                        </DropdownMenuItem>
+                        {canDelete ? (
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => handleDeleteClick(template)}
+                          >
+                            <Trash2 className="size-4" />
+                            {t('common.delete.action')}
+                          </DropdownMenuItem>
+                        ) : null}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -209,7 +219,7 @@ export function ReportDesignerListPage(): ReactElement {
         )}
       </div>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('pdfReportDesigner.deleteTemplateTitle')}</DialogTitle>

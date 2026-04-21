@@ -14,6 +14,7 @@ import {
 import { DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { useDeleteSalesRepMatch } from '../hooks/useDeleteSalesRepMatch';
 import type { SalesRepMatchGetDto } from '../types/sales-rep-match-types';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 type SalesRepMatchColumnKey = keyof SalesRepMatchGetDto;
 
@@ -71,6 +72,7 @@ export function SalesRepMatchTable({
   paginationInfoText,
 }: SalesRepMatchTableProps): ReactElement {
   const { t } = useTranslation(['sales-rep-match-management', 'common']);
+  const { canDelete } = useCrudPermissions();
   const deleteSalesRepMatch = useDeleteSalesRepMatch();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<SalesRepMatchGetDto | null>(null);
@@ -101,21 +103,23 @@ export function SalesRepMatchTable({
           errorText={t('error')}
           emptyText={emptyText}
           minTableWidthClassName="min-w-[960px] lg:min-w-[1160px]"
-          showActionsColumn
+          showActionsColumn={canDelete}
           actionsHeaderLabel={t('common.actions', { ns: 'common' })}
           renderActionsCell={(item) => (
             <div className="flex justify-end gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setSelectedItem(item);
-                  setDeleteDialogOpen(true);
-                }}
-                className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-              >
-                <Trash2 size={16} />
-              </Button>
+              {canDelete ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setSelectedItem(item);
+                    setDeleteDialogOpen(true);
+                  }}
+                  className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                >
+                  <Trash2 size={16} />
+                </Button>
+              ) : null}
             </div>
           )}
           pageSize={pageSize}
@@ -134,7 +138,7 @@ export function SalesRepMatchTable({
         />
       </ManagementDataTableChrome>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
           <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
             <div className="h-20 w-20 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-2">

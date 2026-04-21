@@ -36,9 +36,11 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 export function DemandDetailPage(): ReactElement {
   const { t } = useTranslation(['demand', 'common']);
+  const { canUpdate } = useCrudPermissions('sales.demands.update');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
@@ -67,7 +69,8 @@ export function DemandDetailPage(): ReactElement {
   const demandStatus = Number((demand as { status?: number; Status?: number })?.status ?? (demand as { status?: number; Status?: number })?.Status);
   const isReadOnly = demandStatus === 2 || demandStatus === 3 || demandStatus === 4;
   const isClosed = demandStatus === 4;
-  const linesEnabled = !isReadOnly;
+  const editEnabled = canUpdate && !isReadOnly;
+  const linesEnabled = editEnabled;
 
   const form = useForm<CreateDemandSchema>({
     resolver: zodResolver(createDemandSchema),
@@ -582,7 +585,7 @@ export function DemandDetailPage(): ReactElement {
                       revisionNo={demand?.revisionNo}
                       demandId={demandId}
                       demandOfferNo={demand?.offerNo}
-                      readOnly={isReadOnly}
+                      readOnly={!editEnabled}
                       showDocumentSerialType={false}
                     />
                     </div>

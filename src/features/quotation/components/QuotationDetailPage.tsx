@@ -42,6 +42,7 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 function addDaysToDateOnly(dateValue: string, days: number): string {
   const date = new Date(`${dateValue}T12:00:00`);
@@ -78,6 +79,7 @@ function parsePersistedId(formId: string | number | undefined, prefix: string): 
 
 export function QuotationDetailPage(): ReactElement {
   const { t } = useTranslation(['quotation', 'common']);
+  const { canUpdate } = useCrudPermissions('sales.quotations.update');
   const { id: paramId } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
@@ -108,7 +110,8 @@ export function QuotationDetailPage(): ReactElement {
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
   const isReadOnly = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4;
   const isClosed = quotationStatus === 4;
-  const linesEnabled = !isReadOnly;
+  const editEnabled = canUpdate && !isReadOnly;
+  const linesEnabled = editEnabled;
   const form = useForm<CreateQuotationSchema>({
     resolver: zodResolver(createQuotationSchema),
     mode: 'onChange',
@@ -734,7 +737,7 @@ export function QuotationDetailPage(): ReactElement {
                       revisionNo={quotation?.revisionNo}
                       quotationId={quotation?.id}
                       quotationOfferNo={quotation?.offerNo}
-                      readOnly={isReadOnly}
+                      readOnly={!editEnabled}
                       showDocumentSerialType={false}
                     />
                     </div>

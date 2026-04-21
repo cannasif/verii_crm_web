@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
 import { useDeleteCustomerType } from '../hooks/useDeleteCustomerType';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import type { CustomerTypeDto } from '../types/customer-type-types';
 import { Edit2, Trash2, Tag, FileText, Calendar, User } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
@@ -145,6 +146,7 @@ export function CustomerTypeTable({
   paginationInfoText,
 }: CustomerTypeTableProps): ReactElement {
   const { t, i18n } = useTranslation(['customer-type-management', 'common']);
+  const { canUpdate, canDelete } = useCrudPermissions();
   const deleteCustomerType = useDeleteCustomerType();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedCustomerType, setSelectedCustomerType] = useState<CustomerTypeDto | null>(null);
@@ -152,6 +154,7 @@ export function CustomerTypeTable({
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
 
   const handleDeleteClick = (customerType: CustomerTypeDto): void => {
+    if (!canDelete) return;
     setSelectedCustomerType(customerType);
     setDeleteDialogOpen(true);
   };
@@ -179,22 +182,26 @@ export function CustomerTypeTable({
 
   const renderActionsCell = (customerType: CustomerTypeDto): ReactElement => (
     <div className="flex justify-end gap-2 opacity-100 transition-opacity">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => onEdit(customerType)}
-        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-      >
-        <Edit2 size={16} />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handleDeleteClick(customerType)}
-        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-      >
-        <Trash2 size={16} />
-      </Button>
+      {canUpdate && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onEdit(customerType)}
+          className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+        >
+          <Edit2 size={16} />
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteClick(customerType)}
+          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+        >
+          <Trash2 size={16} />
+        </Button>
+      )}
     </div>
   );
 
@@ -218,7 +225,7 @@ export function CustomerTypeTable({
         errorText={errorText}
         emptyText={emptyText}
         minTableWidthClassName={minTableWidthClassName}
-        showActionsColumn={showActionsColumn}
+        showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
         actionsHeaderLabel={actionsHeaderLabel}
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}

@@ -1,4 +1,4 @@
-import { type ReactElement, type ReactNode, useState, useEffect, useMemo, useCallback } from 'react';
+import { lazy, Suspense, type ReactElement, type ReactNode, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
@@ -63,8 +63,13 @@ import type { FilterRow } from '@/lib/advanced-filter-types';
 import { ActivityStatusBadge } from './ActivityStatusBadge';
 import { ActivityPriorityBadge } from './ActivityPriorityBadge';
 import { Alert02Icon } from 'hugeicons-react';
-import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
-import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+const GoogleCustomerMailDialog = lazy(() =>
+  import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
+);
+const OutlookCustomerMailDialog = lazy(() =>
+  import('@/features/outlook-integration/components/OutlookCustomerMailDialog').then((module) => ({ default: module.OutlookCustomerMailDialog }))
+);
 
 const PAGE_KEY = 'activity-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -105,6 +110,7 @@ function toCurrentLocalDateTime(): string {
 
 export function ActivityManagementPage(): ReactElement {
   const { t } = useTranslation(['activity-management', 'common']);
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('activity.activity-management.view');
   const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -271,6 +277,7 @@ export function ActivityManagementPage(): ReactElement {
   }, [searchTerm, appliedAdvancedFilters, appliedFilterLogic]);
 
   const handleAddClick = (): void => {
+    if (!canCreate) return;
     setEditingActivity(null);
     setFormOpen(true);
   };
@@ -291,11 +298,13 @@ export function ActivityManagementPage(): ReactElement {
   };
 
   const handleEdit = (activity: ActivityDto): void => {
+    if (!canUpdate) return;
     setEditingActivity(activity);
     setFormOpen(true);
   };
 
   const handleDeleteClick = (activity: ActivityDto): void => {
+    if (!canDelete) return;
     setSelectedActivity(activity);
     setDeleteDialogOpen(true);
   };
@@ -318,6 +327,7 @@ export function ActivityManagementPage(): ReactElement {
   };
 
   const handleStatusChange = async (activity: ActivityDto, newStatus: ActivityStatus): Promise<void> => {
+    if (!canUpdate) return;
     await updateActivity.mutateAsync({
       id: activity.id,
       data: toUpdateActivityDto(activity, { status: newStatus }),
@@ -517,7 +527,7 @@ export function ActivityManagementPage(): ReactElement {
 
     return (
       <div className="flex justify-end gap-1 opacity-100 transition-opacity">
-        {!isCompleted && !isCancelled && (
+        {canUpdate && !isCompleted && !isCancelled && (
           <>
             <Button
               variant="ghost"
@@ -540,14 +550,16 @@ export function ActivityManagementPage(): ReactElement {
             <div className="w-px h-4 bg-slate-200 dark:bg-white/10 mx-1 self-center" />
           </>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-blue-600 hover:bg-blue-50 dark:text-blue-400"
-          onClick={() => handleEdit(activity)}
-        >
-          <Edit2 size={16} />
-        </Button>
+        {canUpdate ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-blue-600 hover:bg-blue-50 dark:text-blue-400"
+            onClick={() => handleEdit(activity)}
+          >
+            <Edit2 size={16} />
+          </Button>
+        ) : null}
         <Button
           variant="ghost"
           size="icon"
@@ -566,14 +578,16 @@ export function ActivityManagementPage(): ReactElement {
         >
           <Mail size={16} />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-red-600 hover:bg-red-50 dark:text-red-400"
-          onClick={() => handleDeleteClick(activity)}
-        >
-          <Trash2 size={16} />
-        </Button>
+        {canDelete ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-red-600 hover:bg-red-50 dark:text-red-400"
+            onClick={() => handleDeleteClick(activity)}
+          >
+            <Trash2 size={16} />
+          </Button>
+        ) : null}
       </div>
     );
   };
@@ -589,13 +603,15 @@ export function ActivityManagementPage(): ReactElement {
             {t('activityManagement.description')}
           </p>
         </div>
-        <Button
-          onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
-        >
-          <Plus size={18} className="mr-2" />
-          {t('activityManagement.create')}
-        </Button>
+        {canCreate ? (
+          <Button
+            onClick={handleAddClick}
+            className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          >
+            <Plus size={18} className="mr-2" />
+            {t('activityManagement.create')}
+          </Button>
+        ) : null}
       </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
@@ -719,7 +735,7 @@ export function ActivityManagementPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="max-w-sm bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 rounded-xl p-0 overflow-hidden">
           <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/10">
             <DialogTitle className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
@@ -750,32 +766,38 @@ export function ActivityManagementPage(): ReactElement {
         </DialogContent>
       </Dialog>
 
-      <GoogleCustomerMailDialog
-        open={mailDialogOpen}
-        onOpenChange={setMailDialogOpen}
-        moduleKey="activity"
-        recordId={selectedActivity?.id ?? 0}
-        customerId={selectedActivity?.potentialCustomerId}
-        contactId={selectedActivity?.contactId}
-        customerName={selectedActivity?.potentialCustomer?.name}
-        contactName={selectedActivity?.contact?.fullName}
-        customerCode={selectedActivity?.erpCustomerCode}
-        contextTitle={selectedActivity?.subject}
-        recordOwnerName={selectedActivity?.assignedUser?.fullName}
-      />
-      <OutlookCustomerMailDialog
-        open={outlookMailDialogOpen}
-        onOpenChange={setOutlookMailDialogOpen}
-        moduleKey="activity"
-        recordId={selectedActivity?.id ?? 0}
-        customerId={selectedActivity?.potentialCustomerId}
-        contactId={selectedActivity?.contactId}
-        customerName={selectedActivity?.potentialCustomer?.name}
-        contactName={selectedActivity?.contact?.fullName}
-        customerCode={selectedActivity?.erpCustomerCode}
-        contextTitle={selectedActivity?.subject}
-        recordOwnerName={selectedActivity?.assignedUser?.fullName}
-      />
+      <Suspense fallback={null}>
+        {mailDialogOpen && selectedActivity ? (
+          <GoogleCustomerMailDialog
+            open={mailDialogOpen}
+            onOpenChange={setMailDialogOpen}
+            moduleKey="activity"
+            recordId={selectedActivity.id}
+            customerId={selectedActivity.potentialCustomerId}
+            contactId={selectedActivity.contactId}
+            customerName={selectedActivity.potentialCustomer?.name}
+            contactName={selectedActivity.contact?.fullName}
+            customerCode={selectedActivity.erpCustomerCode}
+            contextTitle={selectedActivity.subject}
+            recordOwnerName={selectedActivity.assignedUser?.fullName}
+          />
+        ) : null}
+        {outlookMailDialogOpen && selectedActivity ? (
+          <OutlookCustomerMailDialog
+            open={outlookMailDialogOpen}
+            onOpenChange={setOutlookMailDialogOpen}
+            moduleKey="activity"
+            recordId={selectedActivity.id}
+            customerId={selectedActivity.potentialCustomerId}
+            contactId={selectedActivity.contactId}
+            customerName={selectedActivity.potentialCustomer?.name}
+            contactName={selectedActivity.contact?.fullName}
+            customerCode={selectedActivity.erpCustomerCode}
+            contextTitle={selectedActivity.subject}
+            recordOwnerName={selectedActivity.assignedUser?.fullName}
+          />
+        ) : null}
+      </Suspense>
 
       <ActivityForm
         open={formOpen}

@@ -27,6 +27,7 @@ import { useDeleteApprovalFlowStep } from '../hooks/useDeleteApprovalFlowStep';
 import { useApprovalRoleGroupOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import type { ApprovalFlowStepGetDto } from '../types/approval-flow-step-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 interface ApprovalFlowStepListProps {
   approvalFlowId: number;
@@ -65,6 +66,7 @@ const LABEL_STYLE = "text-[11px] text-slate-500 dark:text-slate-400 uppercase tr
 
 export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListProps): ReactElement {
   const { t } = useTranslation();
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('approval.flow-management.view');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
@@ -163,24 +165,28 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
   };
 
   const handleAddClick = (): void => {
+    if (!canCreate) return;
     setEditingStep(null);
     form.reset({ approvalRoleGroupId: 0 });
     setFormOpen(true);
   };
 
   const handleEditClick = (step: ApprovalFlowStepGetDto): void => {
+    if (!canUpdate) return;
     setEditingStep(step);
     form.reset({ approvalRoleGroupId: step.approvalRoleGroupId });
     setFormOpen(true);
   };
 
   const handleDeleteClick = (step: ApprovalFlowStepGetDto): void => {
+    if (!canDelete) return;
     if (confirm(t('approvalFlowStep.messages.deleteConfirm'))) {
       deleteStep.mutate({ id: step.id, approvalFlowId: step.approvalFlowId });
     }
   };
 
   const handleFormSubmit = async (data: StepFormSchema): Promise<void> => {
+    if (!canCreate && !canUpdate) return;
     if (editingStep) {
       await updateStep.mutateAsync({
         id: editingStep.id,
@@ -215,14 +221,16 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
               {t('approvalFlowStep.title')}
             </h3>
           </div>
-          <Button 
-            onClick={handleAddClick} 
-            size="sm"
-            className="px-4 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-xs font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            {t('approvalFlowStep.addButton')}
-          </Button>
+          {canCreate ? (
+            <Button 
+              onClick={handleAddClick} 
+              size="sm"
+              className="px-4 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-xs font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {t('approvalFlowStep.addButton')}
+            </Button>
+          ) : null}
         </div>
 
         <div>
@@ -239,10 +247,19 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
               {sortedSteps.map((step, index) => (
                 <div
                   key={step.id}
-                  draggable
-                  onDragStart={() => handleDragStart(index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDragEnd={handleDragEnd}
+                  draggable={canUpdate}
+                  onDragStart={() => {
+                    if (!canUpdate) return;
+                    handleDragStart(index);
+                  }}
+                  onDragOver={(e) => {
+                    if (!canUpdate) return;
+                    handleDragOver(e, index);
+                  }}
+                  onDragEnd={() => {
+                    if (!canUpdate) return;
+                    handleDragEnd();
+                  }}
                   className={`
                     flex items-center gap-4 p-4 rounded-xl border cursor-move transition-all duration-200 group
                     ${draggedIndex === index 
@@ -269,22 +286,26 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                   </div>
 
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditClick(step)}
-                      className="h-8 w-8 text-slate-500 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/10 rounded-lg"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteClick(step)}
-                      className="h-8 w-8 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {canUpdate ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditClick(step)}
+                        className="h-8 w-8 text-slate-500 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/10 rounded-lg"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    ) : null}
+                    {canDelete ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteClick(step)}
+                        className="h-8 w-8 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -293,7 +314,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
         </div>
       </div>
 
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+      <Dialog open={(canCreate || canUpdate) && formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-lg shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl p-0 overflow-hidden">
           <DialogHeader className="border-b border-slate-100 dark:border-white/5 px-6 py-5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md shrink-0 flex-row items-center justify-between space-y-0">
             <div className="flex items-center gap-3">

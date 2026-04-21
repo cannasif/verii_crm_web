@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dialog';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 const LIST_PARAMS = {
   pageNumber: 1,
@@ -44,6 +45,7 @@ const LIST_PARAMS = {
 
 export function ReportDefinitionList(): ReactElement {
   const { t } = useTranslation();
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('powerbi.report-definitions.view');
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
@@ -133,10 +135,12 @@ export function ReportDefinitionList(): ReactElement {
         <h1 className="text-3xl font-bold tracking-tight">
           {t('powerbi.reportDefinition.title')}
         </h1>
-        <Button onClick={handleAdd}>
-          <Plus className="mr-2 h-4 w-4" />
-          {t('powerbi.reportDefinition.add')}
-        </Button>
+        {canCreate ? (
+          <Button onClick={handleAdd}>
+            <Plus className="mr-2 h-4 w-4" />
+            {t('powerbi.reportDefinition.add')}
+          </Button>
+        ) : null}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
@@ -206,17 +210,21 @@ export function ReportDefinitionList(): ReactElement {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => handleEdit(row)}>
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteClick(row)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {canUpdate ? (
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(row)}>
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    ) : null}
+                    {canDelete ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteClick(row)}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))
@@ -226,14 +234,14 @@ export function ReportDefinitionList(): ReactElement {
       </div>
 
       <ReportDefinitionForm
-        open={formOpen}
+        open={canCreate || canUpdate ? formOpen : false}
         onOpenChange={setFormOpen}
         initial={editing}
         onSubmit={handleFormSubmit}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
       />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('common.delete.confirmTitle')}</DialogTitle>

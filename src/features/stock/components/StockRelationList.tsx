@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { useStockRelations } from '../hooks/useStockRelations';
 import { useStockRelationDelete } from '../hooks/useStockRelationDelete';
 import type { StockRelationDto } from '../types';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 
 interface StockRelationListProps {
@@ -31,12 +32,14 @@ interface StockRelationListProps {
 
 export function StockRelationList({ stockId }: StockRelationListProps): ReactElement {
   const { t } = useTranslation(['stock', 'common']);
+  const { canDelete } = useCrudPermissions('stock.stocks.view');
   const { data: relations, isLoading } = useStockRelations(stockId);
   const deleteRelation = useStockRelationDelete();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [relationToDelete, setRelationToDelete] = useState<StockRelationDto | null>(null);
 
   const handleDeleteClick = (relation: StockRelationDto): void => {
+    if (!canDelete) return;
     setRelationToDelete(relation);
     setDeleteDialogOpen(true);
   };
@@ -138,22 +141,24 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
                   )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="
-                        h-8 w-8 p-0 
-                        text-zinc-400 hover:text-red-600 
-                        hover:bg-red-50 dark:hover:bg-red-950/20 
-                        rounded-lg transition-all
-                        opacity-0 group-hover:opacity-100 focus:opacity-100
-                    "
-                    onClick={() => handleDeleteClick(relation)}
-                    disabled={deleteRelation.isPending}
-                    title={t('stock.relations.delete')}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {canDelete ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="
+                          h-8 w-8 p-0 
+                          text-zinc-400 hover:text-red-600 
+                          hover:bg-red-50 dark:hover:bg-red-950/20 
+                          rounded-lg transition-all
+                          opacity-0 group-hover:opacity-100 focus:opacity-100
+                      "
+                      onClick={() => handleDeleteClick(relation)}
+                      disabled={deleteRelation.isPending}
+                      title={t('stock.relations.delete')}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  ) : null}
                 </TableCell>
               </TableRow>
             ))}
@@ -161,7 +166,7 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
         </Table>
       </div>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px]">
           <DialogHeader>
             <div className="flex items-center gap-2 text-red-600 mb-2">

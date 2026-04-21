@@ -36,9 +36,11 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 export function OrderDetailPage(): ReactElement {
   const { t } = useTranslation();
+  const { canUpdate } = useCrudPermissions('sales.orders.update');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
@@ -67,7 +69,8 @@ export function OrderDetailPage(): ReactElement {
   const orderStatus = Number((order as { status?: number; Status?: number })?.status ?? (order as { status?: number; Status?: number })?.Status);
   const isReadOnly = orderStatus === 2 || orderStatus === 3 || orderStatus === 4;
   const isClosed = orderStatus === 4;
-  const linesEnabled = !isReadOnly;
+  const editEnabled = canUpdate && !isReadOnly;
+  const linesEnabled = editEnabled;
 
   const form = useForm<CreateOrderSchema>({
     resolver: zodResolver(createOrderSchema),
@@ -583,7 +586,7 @@ export function OrderDetailPage(): ReactElement {
                       revisionNo={order?.revisionNo}
                       orderId={orderId}
                       orderOfferNo={order?.offerNo}
-                      readOnly={isReadOnly}
+                      readOnly={!editEnabled}
                       showDocumentSerialType={false}
                     />
                     </div>

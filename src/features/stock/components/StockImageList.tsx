@@ -18,6 +18,7 @@ import { useStockImageDelete } from '../hooks/useStockImageDelete';
 import { useStockImageSetPrimary } from '../hooks/useStockImageSetPrimary';
 import { getImageUrl } from '../utils/image-url';
 import type { StockImageDto } from '../types';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 interface StockImageListProps {
   stockId: number;
@@ -25,6 +26,7 @@ interface StockImageListProps {
 
 export function StockImageList({ stockId }: StockImageListProps): ReactElement {
   const { t } = useTranslation(['stock', 'common']);
+  const { canUpdate, canDelete } = useCrudPermissions('stock.stocks.view');
   const { data: images, isLoading, isFetching } = useStockImages(stockId);
   const deleteImage = useStockImageDelete();
   const setPrimary = useStockImageSetPrimary();
@@ -32,6 +34,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
   const [imageToDelete, setImageToDelete] = useState<StockImageDto | null>(null);
 
   const handleDeleteClick = (image: StockImageDto): void => {
+    if (!canDelete) return;
     setImageToDelete(image);
     setDeleteDialogOpen(true);
   };
@@ -48,6 +51,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
   };
 
   const handleSetPrimary = async (image: StockImageDto): Promise<void> => {
+    if (!canUpdate) return;
     await setPrimary.mutateAsync({
       id: image.id,
       stockId,
@@ -144,7 +148,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
               </div>
 
               <div className="flex gap-2 mt-auto">
-                {!image.isPrimary ? (
+                {!image.isPrimary && canUpdate ? (
                   <Button
                     variant="outline"
                     size="sm"
@@ -161,29 +165,33 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                         </>
                     )}
                   </Button>
-                ) : (
+                ) : image.isPrimary ? (
                     <div className="flex-1 flex items-center justify-center h-8 text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 rounded-md border border-emerald-100 dark:border-emerald-900/20">
                         <CheckCircle2 className="h-3 w-3 mr-1.5" />
                         {t('stock.images.isPrimary')}
                     </div>
+                ) : (
+                  <div className="flex-1" />
                 )}
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-md transition-colors"
-                  onClick={() => handleDeleteClick(image)}
-                  disabled={deleteImage.isPending}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {canDelete ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-md transition-colors"
+                    onClick={() => handleDeleteClick(image)}
+                    disabled={deleteImage.isPending}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                ) : null}
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px]">
           <DialogHeader>
             <div className="flex items-center gap-2 text-red-600 mb-2">

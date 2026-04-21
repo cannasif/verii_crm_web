@@ -34,6 +34,7 @@ import { useSyncPermissionDefinitionsMutation } from '../hooks/useSyncPermission
 import { useCreatePermissionDefinitionMutation } from '../hooks/useCreatePermissionDefinitionMutation';
 import { useUpdatePermissionDefinitionMutation } from '../hooks/useUpdatePermissionDefinitionMutation';
 import { useDeletePermissionDefinitionMutation } from '../hooks/useDeletePermissionDefinitionMutation';
+import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
@@ -78,6 +79,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const updateMutation = useUpdatePermissionDefinitionMutation();
   const deleteMutation = useDeletePermissionDefinitionMutation();
   const syncMutation = useSyncPermissionDefinitionsMutation();
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.permission-definitions.view');
 
   const items = data?.data ?? EMPTY_PERMISSION_DEFINITIONS;
   const totalCount = data?.totalCount ?? 0;
@@ -120,11 +122,13 @@ export function PermissionDefinitionsPage(): ReactElement {
   };
 
   const handleAddClick = (): void => {
+    if (!canCreate) return;
     setEditingItem(null);
     setFormOpen(true);
   };
 
   const handleEditClick = (item: PermissionDefinitionDto): void => {
+    if (!canUpdate) return;
     setEditingItem(item);
     setFormOpen(true);
   };
@@ -145,6 +149,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   };
 
   const handleDeleteClick = (item: PermissionDefinitionDto): void => {
+    if (!canDelete) return;
     setItemToDelete(item);
     setDeleteDialogOpen(true);
   };
@@ -189,22 +194,26 @@ export function PermissionDefinitionsPage(): ReactElement {
 
   const renderActionsCell = (item: PermissionDefinitionDto): ReactElement => (
     <div className="flex justify-end gap-2">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
-        onClick={() => handleEditClick(item)}
-      >
-        {t('common.edit')}
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="rounded-xl text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-        onClick={() => handleDeleteClick(item)}
-      >
-        {t('common.delete.action')}
-      </Button>
+      {canUpdate && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
+          onClick={() => handleEditClick(item)}
+        >
+          {t('common.edit')}
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="rounded-xl text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+          onClick={() => handleDeleteClick(item)}
+        >
+          {t('common.delete.action')}
+        </Button>
+      )}
     </div>
   );
 
@@ -224,15 +233,17 @@ export function PermissionDefinitionsPage(): ReactElement {
               {t('permissionDefinitions.description')}
             </p>
           </div>
-          <div className="flex shrink-0">
-            <Button
-              onClick={handleAddClick}
-              className="h-11 rounded-2xl border-0 bg-linear-to-r from-pink-600 to-orange-600 px-6 text-sm font-bold text-white shadow-lg shadow-pink-500/20 transition-transform hover:scale-[1.02] hover:text-white"
-            >
-              <Plus size={18} className="mr-2" />
-              {t('permissionDefinitions.add')}
-            </Button>
-          </div>
+          {canCreate && (
+            <div className="flex shrink-0">
+              <Button
+                onClick={handleAddClick}
+                className="h-11 rounded-2xl border-0 bg-linear-to-r from-pink-600 to-orange-600 px-6 text-sm font-bold text-white shadow-lg shadow-pink-500/20 transition-transform hover:scale-[1.02] hover:text-white"
+              >
+                <Plus size={18} className="mr-2" />
+                {t('permissionDefinitions.add')}
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -307,16 +318,18 @@ export function PermissionDefinitionsPage(): ReactElement {
             onSearchChange={setSearchTerm}
             leftSlot={
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
-                  onClick={handleSyncFromRoutes}
-                  disabled={isLoading || syncMutation.isPending}
-                >
-                  <RefreshCw size={16} className={syncMutation.isPending ? 'animate-spin mr-2' : 'mr-2'} />
-                  {t('permissionDefinitions.syncFromRoutes')}
-                </Button>
+                {canUpdate && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
+                    onClick={handleSyncFromRoutes}
+                    disabled={isLoading || syncMutation.isPending}
+                  >
+                    <RefreshCw size={16} className={syncMutation.isPending ? 'animate-spin mr-2' : 'mr-2'} />
+                    {t('permissionDefinitions.syncFromRoutes')}
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -384,7 +397,7 @@ export function PermissionDefinitionsPage(): ReactElement {
             errorText={t('common.error')}
             emptyText={t('common.noData')}
             minTableWidthClassName="min-w-[700px]"
-            showActionsColumn
+            showActionsColumn={canUpdate || canDelete}
             actionsHeaderLabel={t('common.actions')}
             renderActionsCell={renderActionsCell}
             pageSize={pageSize}
@@ -422,7 +435,7 @@ export function PermissionDefinitionsPage(): ReactElement {
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="overflow-hidden border-slate-200 bg-white p-0 shadow-2xl dark:border-cyan-800/30 dark:bg-blue-950">
           <DialogHeader className="border-b border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
             <DialogTitle className="text-xl font-black text-slate-900 dark:text-white">

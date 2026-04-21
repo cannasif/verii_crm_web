@@ -16,6 +16,7 @@ import { useDeletePricingRuleHeader } from '../hooks/useDeletePricingRuleHeader'
 import { toast } from 'sonner';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 export interface ColumnDef<T> {
   key: keyof T | 'status';
@@ -110,11 +111,13 @@ export function PricingRuleTable({
   disablePaginationButtons = false,
 }: PricingRuleTableProps): ReactElement {
   const { t } = useTranslation();
+  const { canUpdate, canDelete } = useCrudPermissions('pricing.pricing-rules.view');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedHeader, setSelectedHeader] = useState<PricingRuleHeaderGetDto | null>(null);
   const deleteHeader = useDeletePricingRuleHeader();
 
   const handleDeleteClick = (header: PricingRuleHeaderGetDto): void => {
+    if (!canDelete) return;
     setSelectedHeader(header);
     setDeleteDialogOpen(true);
   };
@@ -134,22 +137,26 @@ export function PricingRuleTable({
 
   const renderActionsCell = (header: PricingRuleHeaderGetDto): ReactElement => (
     <div className="flex justify-end gap-2 opacity-100 transition-opacity">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => onEdit(header)}
-        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-      >
-        <Edit2 size={16} />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handleDeleteClick(header)}
-        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-      >
-        <Trash2 size={16} />
-      </Button>
+      {canUpdate ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onEdit(header)}
+          className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+        >
+          <Edit2 size={16} />
+        </Button>
+      ) : null}
+      {canDelete ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteClick(header)}
+          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+        >
+          <Trash2 size={16} />
+        </Button>
+      ) : null}
     </div>
   );
 
@@ -173,7 +180,7 @@ export function PricingRuleTable({
         errorText={errorText}
         emptyText={emptyText}
         minTableWidthClassName={minTableWidthClassName}
-        showActionsColumn={showActionsColumn}
+        showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
         actionsHeaderLabel={actionsHeaderLabel}
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}
@@ -195,7 +202,7 @@ export function PricingRuleTable({
       />
       </ManagementDataTableChrome>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
           <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
             <div className="h-20 w-20 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300">

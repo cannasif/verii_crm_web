@@ -27,6 +27,7 @@ import {
 import type { PowerBIReportRoleMapping } from '../types/powerbiRls.types';
 import { PowerbiRlsForm } from './PowerbiRlsForm';
 import type { PowerbiRlsFormSchema } from '../types/powerbiRls.types';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 const LIST_PARAMS = { pageNumber: 1, pageSize: 100, sortBy: 'Id', sortDirection: 'desc' as const };
 
@@ -44,6 +45,7 @@ export function PowerbiRlsList({
   setEditing,
 }: PowerbiRlsListProps): ReactElement {
   const { t } = useTranslation();
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('powerbi.rls.view');
   const { data, isLoading } = usePowerbiRlsList(LIST_PARAMS);
   const deleteMutation = useDeletePowerbiRls();
   const createMutation = useCreatePowerbiRls();
@@ -54,6 +56,7 @@ export function PowerbiRlsList({
   const items = data?.data ?? [];
 
   const handleEdit = (item: PowerBIReportRoleMapping): void => {
+    if (!canUpdate) return;
     setEditing(item);
     setFormOpen(true);
   };
@@ -64,6 +67,7 @@ export function PowerbiRlsList({
   };
 
   const handleDeleteClick = (item: PowerBIReportRoleMapping): void => {
+    if (!canDelete) return;
     setSelectedItem(item);
     setDeleteDialogOpen(true);
   };
@@ -122,17 +126,21 @@ export function PowerbiRlsList({
                   <TableCell className="text-muted-foreground text-sm">{row.createdBy ?? '-'}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{row.updatedBy ?? '-'}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => handleEdit(row)}>
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteClick(row)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {canUpdate ? (
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(row)}>
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    ) : null}
+                    {canDelete ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteClick(row)}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))
@@ -142,14 +150,14 @@ export function PowerbiRlsList({
       </div>
 
       <PowerbiRlsForm
-        open={formOpen}
+        open={(canCreate || canUpdate) ? formOpen : false}
         onOpenChange={handleFormClose}
         initial={editing}
         onSubmit={handleFormSubmit}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
       />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('powerbiRls.delete')}</DialogTitle>

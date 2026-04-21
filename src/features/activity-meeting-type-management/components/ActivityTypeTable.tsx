@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeleteActivityType } from '../hooks/useDeleteActivityType';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import type { ActivityTypeDto } from '../types/activity-type-types';
 import { Edit2, Trash2, FileText, Calendar, User, ListTodo } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
@@ -148,6 +149,7 @@ export function ActivityTypeTable({
   paginationInfoText,
 }: ActivityTypeTableProps): ReactElement {
   const { t, i18n } = useTranslation(['activity-meeting-type-management', 'common']);
+  const { canUpdate, canDelete } = useCrudPermissions();
   const deleteActivityType = useDeleteActivityType();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedActivityType, setSelectedActivityType] = useState<ActivityTypeDto | null>(null);
@@ -155,6 +157,7 @@ export function ActivityTypeTable({
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
 
   const handleDeleteClick = (activityType: ActivityTypeDto): void => {
+    if (!canDelete) return;
     setSelectedActivityType(activityType);
     setDeleteDialogOpen(true);
   };
@@ -182,22 +185,26 @@ export function ActivityTypeTable({
 
   const renderActionsCell = (activityType: ActivityTypeDto): ReactElement => (
     <div className="flex justify-end gap-2 opacity-100 transition-opacity">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => onEdit(activityType)}
-        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-      >
-        <Edit2 size={16} />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handleDeleteClick(activityType)}
-        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-      >
-        <Trash2 size={16} />
-      </Button>
+      {canUpdate && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onEdit(activityType)}
+          className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+        >
+          <Edit2 size={16} />
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteClick(activityType)}
+          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+        >
+          <Trash2 size={16} />
+        </Button>
+      )}
     </div>
   );
 
@@ -221,7 +228,7 @@ export function ActivityTypeTable({
         errorText={errorText}
         emptyText={emptyText}
         minTableWidthClassName={minTableWidthClassName}
-        showActionsColumn={showActionsColumn}
+        showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
         actionsHeaderLabel={actionsHeaderLabel}
         renderActionsCell={renderActionsCell}
         rowClassName={rowClassName}

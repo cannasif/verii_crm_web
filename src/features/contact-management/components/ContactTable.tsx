@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { toast } from 'sonner';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 export interface ColumnDef<T> {
   key: keyof T;
@@ -216,6 +217,7 @@ export function ContactTable({
   paginationInfoText,
 }: ContactTableProps): ReactElement {
   const { t, i18n } = useTranslation(['contact-management', 'common']);
+  const { canUpdate, canDelete } = useCrudPermissions('customers.contact-management.view');
   const deleteContact = useDeleteContact();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<ContactDto | null>(null);
@@ -223,6 +225,7 @@ export function ContactTable({
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
 
   const handleDeleteClick = (contact: ContactDto): void => {
+    if (!canDelete) return;
     setSelectedContact(contact);
     setDeleteDialogOpen(true);
   };
@@ -250,14 +253,16 @@ export function ContactTable({
 
   const renderActionsCell = (contact: ContactDto): ReactElement => (
     <div className="flex justify-end gap-2 opacity-100 transition-opacity">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => onEdit(contact)}
-        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-      >
-        <Edit2 size={16} />
-      </Button>
+      {canUpdate ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onEdit(contact)}
+          className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+        >
+          <Edit2 size={16} />
+        </Button>
+      ) : null}
       <Button
         variant="ghost"
         size="icon"
@@ -267,14 +272,16 @@ export function ContactTable({
       >
         <Activity size={16} />
       </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handleDeleteClick(contact)}
-        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-      >
-        <Trash2 size={16} />
-      </Button>
+      {canDelete ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteClick(contact)}
+          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+        >
+          <Trash2 size={16} />
+        </Button>
+      ) : null}
     </div>
   );
 
@@ -320,7 +327,7 @@ export function ContactTable({
       />
       </div>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
           <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
             <div className="h-20 w-20 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300">
