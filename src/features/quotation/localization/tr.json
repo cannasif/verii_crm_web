@@ -164,7 +164,8 @@
     "descriptionFieldsTitle": "Açıklama Alanları",
     "descriptionField1Label": "Profil",
     "descriptionField2Label": "Demir",
-    "descriptionField3Label": "Vida"
+    "descriptionField3Label": "Vida",
+    "doubleClickToEdit": "Düzenlemek için çift tıklayın"
   },
   "exchangeRates": {
     "title": "Döviz Kurları",

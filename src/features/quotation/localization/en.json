@@ -164,7 +164,8 @@
     "descriptionFieldsTitle": "Description fields",
     "descriptionField1Label": "Profile",
     "descriptionField2Label": "Iron",
-    "descriptionField3Label": "Screw"
+    "descriptionField3Label": "Screw",
+    "doubleClickToEdit": "Double-click to edit"
   },
   "exchangeRates": {
     "title": "Exchange rates",

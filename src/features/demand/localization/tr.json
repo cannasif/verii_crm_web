@@ -142,7 +142,8 @@
     "description1": "Açıklama 1",
     "description2": "Açıklama 2",
     "description3": "Açıklama 3",
-    "descriptionPlaceholder": "Açıklama giriniz..."
+    "descriptionPlaceholder": "Açıklama giriniz...",
+    "doubleClickToEdit": "Düzenlemek için çift tıklayın"
   },
   "exchangeRates": {
     "title": "Döviz Kurları",

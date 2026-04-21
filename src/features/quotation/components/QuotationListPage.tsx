@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,8 +39,12 @@ import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
-import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
-import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
+const GoogleCustomerMailDialog = lazy(() =>
+  import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
+);
+const OutlookCustomerMailDialog = lazy(() =>
+  import('@/features/outlook-integration/components/OutlookCustomerMailDialog').then((module) => ({ default: module.OutlookCustomerMailDialog }))
+);
 
 const PAGE_KEY = 'quotation-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -534,36 +538,42 @@ export function QuotationListPage(): ReactElement {
             </CardContent>
           </Card>
         </div>
-        <GoogleCustomerMailDialog
-          open={mailDialogOpen}
-          onOpenChange={setMailDialogOpen}
-          moduleKey="quotation"
-          recordId={selectedQuotation?.id ?? 0}
-          customerId={selectedQuotation?.potentialCustomerId}
-          contactId={selectedQuotation?.contactId}
-          customerName={selectedQuotation?.potentialCustomerName}
-          customerCode={selectedQuotation?.erpCustomerCode}
-          recordNo={selectedQuotation?.offerNo}
-          revisionNo={selectedQuotation?.revisionNo}
-          totalAmountDisplay={selectedQuotation?.grandTotalDisplay ?? undefined}
-          validUntil={selectedQuotation?.validUntil}
-          recordOwnerName={selectedQuotation?.representativeName}
-        />
-        <OutlookCustomerMailDialog
-          open={outlookMailDialogOpen}
-          onOpenChange={setOutlookMailDialogOpen}
-          moduleKey="quotation"
-          recordId={selectedQuotation?.id ?? 0}
-          customerId={selectedQuotation?.potentialCustomerId}
-          contactId={selectedQuotation?.contactId}
-          customerName={selectedQuotation?.potentialCustomerName}
-          customerCode={selectedQuotation?.erpCustomerCode}
-          recordNo={selectedQuotation?.offerNo}
-          revisionNo={selectedQuotation?.revisionNo}
-          totalAmountDisplay={selectedQuotation?.grandTotalDisplay ?? undefined}
-          validUntil={selectedQuotation?.validUntil}
-          recordOwnerName={selectedQuotation?.representativeName}
-        />
+        <Suspense fallback={null}>
+          {mailDialogOpen && selectedQuotation ? (
+            <GoogleCustomerMailDialog
+              open={mailDialogOpen}
+              onOpenChange={setMailDialogOpen}
+              moduleKey="quotation"
+              recordId={selectedQuotation.id}
+              customerId={selectedQuotation.potentialCustomerId}
+              contactId={selectedQuotation.contactId}
+              customerName={selectedQuotation.potentialCustomerName}
+              customerCode={selectedQuotation.erpCustomerCode}
+              recordNo={selectedQuotation.offerNo}
+              revisionNo={selectedQuotation.revisionNo}
+              totalAmountDisplay={selectedQuotation.grandTotalDisplay ?? undefined}
+              validUntil={selectedQuotation.validUntil}
+              recordOwnerName={selectedQuotation.representativeName}
+            />
+          ) : null}
+          {outlookMailDialogOpen && selectedQuotation ? (
+            <OutlookCustomerMailDialog
+              open={outlookMailDialogOpen}
+              onOpenChange={setOutlookMailDialogOpen}
+              moduleKey="quotation"
+              recordId={selectedQuotation.id}
+              customerId={selectedQuotation.potentialCustomerId}
+              contactId={selectedQuotation.contactId}
+              customerName={selectedQuotation.potentialCustomerName}
+              customerCode={selectedQuotation.erpCustomerCode}
+              recordNo={selectedQuotation.offerNo}
+              revisionNo={selectedQuotation.revisionNo}
+              totalAmountDisplay={selectedQuotation.grandTotalDisplay ?? undefined}
+              validUntil={selectedQuotation.validUntil}
+              recordOwnerName={selectedQuotation.representativeName}
+            />
+          ) : null}
+        </Suspense>
       </div>
     </div>
   );

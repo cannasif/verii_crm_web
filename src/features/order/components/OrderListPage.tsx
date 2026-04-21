@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,8 +39,12 @@ import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
 import { useCreateRevisionOfOrder } from '../hooks/useCreateRevisionOfOrder';
-import { GoogleCustomerMailDialog } from '@/features/google-integration/components/GoogleCustomerMailDialog';
-import { OutlookCustomerMailDialog } from '@/features/outlook-integration/components/OutlookCustomerMailDialog';
+const GoogleCustomerMailDialog = lazy(() =>
+  import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
+);
+const OutlookCustomerMailDialog = lazy(() =>
+  import('@/features/outlook-integration/components/OutlookCustomerMailDialog').then((module) => ({ default: module.OutlookCustomerMailDialog }))
+);
 
 const PAGE_KEY = 'order-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -532,36 +536,42 @@ export function OrderListPage(): ReactElement {
           </Card>
         </div>
       </div>
-      <GoogleCustomerMailDialog
-        open={mailDialogOpen}
-        onOpenChange={setMailDialogOpen}
-        moduleKey="order"
-        recordId={selectedOrder?.id ?? 0}
-        customerId={selectedOrder?.potentialCustomerId}
-        contactId={selectedOrder?.contactId}
-        customerName={selectedOrder?.potentialCustomerName}
-        customerCode={selectedOrder?.erpCustomerCode}
-        recordNo={selectedOrder?.offerNo}
-        revisionNo={selectedOrder?.revisionNo}
-        totalAmountDisplay={selectedOrder?.grandTotalDisplay ?? undefined}
-        validUntil={selectedOrder?.validUntil}
-        recordOwnerName={selectedOrder?.representativeName}
-      />
-      <OutlookCustomerMailDialog
-        open={outlookMailDialogOpen}
-        onOpenChange={setOutlookMailDialogOpen}
-        moduleKey="order"
-        recordId={selectedOrder?.id ?? 0}
-        customerId={selectedOrder?.potentialCustomerId}
-        contactId={selectedOrder?.contactId}
-        customerName={selectedOrder?.potentialCustomerName}
-        customerCode={selectedOrder?.erpCustomerCode}
-        recordNo={selectedOrder?.offerNo}
-        revisionNo={selectedOrder?.revisionNo}
-        totalAmountDisplay={selectedOrder?.grandTotalDisplay ?? undefined}
-        validUntil={selectedOrder?.validUntil}
-        recordOwnerName={selectedOrder?.representativeName}
-      />
+      <Suspense fallback={null}>
+        {mailDialogOpen && selectedOrder ? (
+          <GoogleCustomerMailDialog
+            open={mailDialogOpen}
+            onOpenChange={setMailDialogOpen}
+            moduleKey="order"
+            recordId={selectedOrder.id}
+            customerId={selectedOrder.potentialCustomerId}
+            contactId={selectedOrder.contactId}
+            customerName={selectedOrder.potentialCustomerName}
+            customerCode={selectedOrder.erpCustomerCode}
+            recordNo={selectedOrder.offerNo}
+            revisionNo={selectedOrder.revisionNo}
+            totalAmountDisplay={selectedOrder.grandTotalDisplay ?? undefined}
+            validUntil={selectedOrder.validUntil}
+            recordOwnerName={selectedOrder.representativeName}
+          />
+        ) : null}
+        {outlookMailDialogOpen && selectedOrder ? (
+          <OutlookCustomerMailDialog
+            open={outlookMailDialogOpen}
+            onOpenChange={setOutlookMailDialogOpen}
+            moduleKey="order"
+            recordId={selectedOrder.id}
+            customerId={selectedOrder.potentialCustomerId}
+            contactId={selectedOrder.contactId}
+            customerName={selectedOrder.potentialCustomerName}
+            customerCode={selectedOrder.erpCustomerCode}
+            recordNo={selectedOrder.offerNo}
+            revisionNo={selectedOrder.revisionNo}
+            totalAmountDisplay={selectedOrder.grandTotalDisplay ?? undefined}
+            validUntil={selectedOrder.validUntil}
+            recordOwnerName={selectedOrder.representativeName}
+          />
+        ) : null}
+      </Suspense>
     </div>
   );
 }

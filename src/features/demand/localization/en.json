@@ -142,7 +142,8 @@
     "description1": "Description 1",
     "description2": "Description 2",
     "description3": "Description 3",
-    "descriptionPlaceholder": "Enter description..."
+    "descriptionPlaceholder": "Enter description...",
+    "doubleClickToEdit": "Double-click to edit"
   },
   "exchangeRates": {
     "title": "Exchange Rates",
