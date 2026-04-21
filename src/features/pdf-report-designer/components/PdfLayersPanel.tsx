@@ -1,5 +1,5 @@
 import type { ChangeEvent, ReactElement } from 'react';
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { Eye, EyeOff, Lock, Unlock, ChevronUp, ChevronDown, Layers, ChevronRight, Trash2, Settings, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -61,7 +61,19 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
     () => elementOrder.map((id) => elementsById[id]).filter(Boolean),
     [elementOrder, elementsById]
   );
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    return window.matchMedia('(max-width: 1439px)').matches;
+  });
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia('(max-width: 1439px)');
+    const handleChange = (event: MediaQueryListEvent): void => {
+      setCollapsed(event.matches);
+    };
+    mql.addEventListener('change', handleChange);
+    return () => mql.removeEventListener('change', handleChange);
+  }, []);
   const selectedElement =
     selectedIds.length === 1 ? elementsById[selectedIds[0]] : null;
 

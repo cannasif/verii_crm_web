@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Upload, ChevronLeft, ChevronRight, Palette } from 'lucide-react';
+import { Upload, ChevronLeft, ChevronRight, Palette, Search, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
@@ -96,12 +96,16 @@ function Section({
   title: string;
   items: PdfFieldPaletteItem[];
   idPrefix: string;
-}): ReactElement {
+}): ReactElement | null {
+  if (items.length === 0) return null;
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
-        {title}
-      </span>
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+          {title}
+        </span>
+        <span className="text-[10px] text-slate-300 dark:text-slate-600">{items.length}</span>
+      </div>
       <div className="flex flex-col gap-1">
         {items.map((field, index) => (
           <DraggablePaletteItem
@@ -112,6 +116,16 @@ function Section({
         ))}
       </div>
     </div>
+  );
+}
+
+function filterItems(items: PdfFieldPaletteItem[], query: string): PdfFieldPaletteItem[] {
+  if (!query.trim()) return items;
+  const normalized = query.trim().toLowerCase();
+  return items.filter(
+    (item) =>
+      item.label.toLowerCase().includes(normalized) ||
+      (item.path ?? '').toLowerCase().includes(normalized)
   );
 }
 
@@ -451,6 +465,7 @@ export function PdfSidebar({
 }: PdfSidebarProps = {}): ReactElement {
   const { t } = useTranslation(['report-designer', 'common']);
   const [collapsed, setCollapsed] = useState(false);
+  const [search, setSearch] = useState('');
   const fieldsItems = headerFields ?? [];
   const tableColumnsItems = lineFields ?? [];
   const exchangeRateColumnsItems = exchangeRateFields ?? [];
@@ -464,6 +479,22 @@ export function PdfSidebar({
   const addTableItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.addTable'), path: '', type: 'table' };
   const logoImageItem: PdfFieldPaletteItem = { label: t('reportDesigner.palette.logoImage'), path: '', type: 'image', value: 'Logo' };
   const allImageItems = [logoImageItem, ...imageFieldsItems];
+
+  const basicBlocks: PdfFieldPaletteItem[] = [textItem, shapeItem, containerItem, noteItem, summaryItem, quotationTotalsItem];
+  const filteredBasic = filterItems(basicBlocks, search);
+  const filteredFields = filterItems(fieldsItems, search);
+  const filteredTable = filterItems(tableColumnsItems, search);
+  const filteredExchange = filterItems(exchangeRateColumnsItems, search);
+  const filteredAddTable = filterItems([addTableItem], search);
+  const filteredImages = filterItems(allImageItems, search);
+  const hasSearchMatches =
+    filteredBasic.length +
+      filteredFields.length +
+      filteredTable.length +
+      filteredExchange.length +
+      filteredAddTable.length +
+      filteredImages.length >
+    0;
 
   if (collapsed) {
     return (
@@ -490,46 +521,83 @@ export function PdfSidebar({
   }
 
   return (
-    <div className="flex min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/30">
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-2.5 dark:border-slate-700">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          {t('reportDesigner.palette.title')}
-        </span>
-        <TooltipProvider delayDuration={300}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
-                onClick={() => setCollapsed(true)}
-              >
-                <ChevronLeft className="size-3.5" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="right">Daralt</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+    <div className="flex min-h-0 w-60 shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/30">
+      <div className="flex shrink-0 flex-col gap-2 border-b border-slate-200 px-3 py-2.5 dark:border-slate-700">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {t('reportDesigner.palette.title')}
+            </span>
+            <span className="text-[10.5px] leading-snug text-slate-400 dark:text-slate-500">
+              {t('reportDesigner.palette.subtitle')}
+            </span>
+          </div>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                  onClick={() => setCollapsed(true)}
+                >
+                  <ChevronLeft className="size-3.5" />
+                </button>
+              </TooltipTrigger>
+                <TooltipContent side="right">{t('reportDesigner.palette.title')}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8 pl-7 pr-7 text-xs"
+            placeholder={t('reportDesigner.palette.searchPlaceholder')}
+            aria-label={t('reportDesigner.palette.searchPlaceholder')}
+          />
+          {search.length > 0 ? (
+            <button
+              type="button"
+              className="absolute right-1.5 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700"
+              onClick={() => setSearch('')}
+              aria-label="clear"
+            >
+              <X className="size-3" />
+            </button>
+          ) : null}
+        </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-col gap-5 p-4">
-          <Section title={t('reportDesigner.palette.text')} items={[textItem, shapeItem, containerItem, noteItem, summaryItem, quotationTotalsItem]} idPrefix="pdf-palette-text" />
-          <Section title={t('reportDesigner.palette.fields')} items={fieldsItems} idPrefix="pdf-palette-fields" />
-          <Section title={t('reportDesigner.palette.tableColumns')} items={tableColumnsItems} idPrefix="pdf-palette-table-columns" />
-          {exchangeRateColumnsItems.length > 0 && (
-            <Section
-              title={t('reportDesigner.palette.exchangeRates')}
-              items={exchangeRateColumnsItems}
-              idPrefix="pdf-palette-exchange-rates"
-            />
+          {!hasSearchMatches ? (
+            <div className="rounded-md border border-dashed border-slate-200 bg-white px-3 py-4 text-center text-[11px] text-slate-400 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-500">
+              {t('reportDesigner.palette.noSearchResults')}
+            </div>
+          ) : (
+            <>
+              <Section
+                title={t('reportDesigner.palette.basicBlocks')}
+                items={filteredBasic}
+                idPrefix="pdf-palette-text"
+              />
+              <Section title={t('reportDesigner.palette.fields')} items={filteredFields} idPrefix="pdf-palette-fields" />
+              <Section title={t('reportDesigner.palette.tableColumns')} items={filteredTable} idPrefix="pdf-palette-table-columns" />
+              <Section
+                title={t('reportDesigner.palette.exchangeRates')}
+                items={filteredExchange}
+                idPrefix="pdf-palette-exchange-rates"
+              />
+              <Section title={t('reportDesigner.palette.addTable')} items={filteredAddTable} idPrefix="pdf-palette-add-table" />
+              <Section title={t('reportDesigner.palette.images')} items={filteredImages} idPrefix="pdf-palette-images" />
+            </>
           )}
-          <Section title={t('reportDesigner.palette.addTable')} items={[addTableItem]} idPrefix="pdf-palette-add-table" />
-          <Section title={t('reportDesigner.palette.images')} items={allImageItems} idPrefix="pdf-palette-images" />
         </div>
         <div className="flex flex-col gap-3 border-t border-slate-200 p-4 dark:border-slate-700">
           <TextPropertiesPanel />
           <FieldPropertiesPanel />
-      <ImagePropertiesPanel templateId={templateId} ruleType={ruleType} />
+          <ImagePropertiesPanel templateId={templateId} ruleType={ruleType} />
         </div>
       </div>
     </div>

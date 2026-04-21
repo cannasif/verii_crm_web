@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Undo2, Redo2, Grid3X3, ArrowLeft, AlertTriangle, FileText } from 'lucide-react';
+import { Undo2, Redo2, Grid3X3, ArrowLeft, AlertTriangle, FileText, Sparkles, ChevronDown, ChevronUp, PanelsTopLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { PdfDesignerOnboardingPanel } from '../components/PdfDesignerOnboardingPanel';
 import {
   Tooltip,
   TooltipContent,
@@ -74,10 +75,7 @@ import {
   A4_MM_HEIGHT,
   PDF_REPORT_DRAFT_STORAGE_KEY,
 } from '../constants';
-import {
-  PDF_LAYOUT_PRESET,
-  getAvailableLayoutPresets,
-} from '../constants/layout-presets';
+import { PDF_LAYOUT_PRESET } from '../constants/layout-presets';
 
 const RULE_TYPE_OPTIONS: TemplateDesignerRuleTypeValue[] = [
   TemplateDesignerRuleType.Demand,
@@ -634,7 +632,6 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
   const ruleType = (form.watch('ruleType') ?? TemplateDesignerRuleType.Demand) as TemplateDesignerRuleTypeValue;
   const layoutPreset = form.watch('layoutPreset') ?? PDF_LAYOUT_PRESET.Custom;
-  const availableLayoutPresets = useMemo(() => getAvailableLayoutPresets(ruleType), [ruleType]);
   const isCanvasLocked = false;
   const ruleTypeForFields = ruleTypeForApi(ruleType);
   const { data: fieldsData } = usePdfReportTemplateFields(ruleTypeForFields);
@@ -1406,8 +1403,16 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     });
   }, []);
 
+  const [identityExpanded, setIdentityExpanded] = useState<boolean>(() => {
+    if (isEdit) return false;
+    if (typeof window === 'undefined') return true;
+    return !window.matchMedia('(max-width: 1279px)').matches;
+  });
+  const watchedTitle = form.watch('title') ?? '';
+  const watchedDefault = form.watch('default') ?? false;
+
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-slate-200 bg-slate-50 shadow-sm dark:border-slate-800 dark:bg-slate-950">
       {hasDraft && !draftBannerDismissed && (
         <Alert className="rounded-none border-x-0 border-t-0 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30">
           <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
@@ -1439,18 +1444,65 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 <ArrowLeft className="size-4" />
               </Button>
               <Separator orientation="vertical" className="mx-0.5 h-5" />
-              <div className="flex min-w-0 items-center gap-2">
+              <div className="flex min-w-0 flex-1 items-center gap-2">
                 <FileText className="size-4 shrink-0 text-slate-400 dark:text-slate-500" />
                 <span className="truncate text-sm font-semibold text-slate-800 dark:text-white">
-                  {isEdit ? t('pdfReportDesigner.editTemplate') : t('pdfReportDesigner.newTemplate')}
+                  {watchedTitle.trim().length > 0
+                    ? watchedTitle
+                    : isEdit
+                      ? t('pdfReportDesigner.editTemplate')
+                      : t('pdfReportDesigner.newTemplate')}
                 </span>
+                <Badge variant="outline" className="shrink-0 text-[10px] font-normal">
+                  {getRuleTypeLabel(ruleType, t)}
+                </Badge>
+                {watchedDefault ? (
+                  <Badge variant="secondary" className="shrink-0 text-[10px] font-normal">
+                    {t('pdfReportDesigner.setDefaultTemplate')}
+                  </Badge>
+                ) : null}
                 {isEdit && (
-                  <Badge variant="secondary" className="shrink-0 text-[11px]">
+                  <Badge variant="secondary" className="shrink-0 text-[10px]">
                     {t('common.update')}
                   </Badge>
                 )}
+                {!isEdit && !hasElements ? (
+                  <Badge
+                    variant="outline"
+                    className="hidden gap-1 border-sky-200 bg-sky-50 text-[10px] text-sky-700 dark:border-sky-900/60 dark:bg-sky-950/40 dark:text-sky-300 md:inline-flex"
+                  >
+                    <Sparkles className="size-3" />
+                    {t('pdfReportDesigner.onboardingBadge')}
+                  </Badge>
+                ) : null}
               </div>
-              <div className="flex-1" />
+              <TooltipProvider delayDuration={400}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                      onClick={() => setIdentityExpanded((prev) => !prev)}
+                      aria-expanded={identityExpanded}
+                    >
+                      <PanelsTopLeft className="size-3.5" />
+                      {identityExpanded ? (
+                        <ChevronUp className="size-3.5" />
+                      ) : (
+                        <ChevronDown className="size-3.5" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    {identityExpanded
+                      ? t('pdfReportDesigner.collapseIdentity')
+                      : t('pdfReportDesigner.expandIdentity')}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <Separator orientation="vertical" className="mx-0.5 h-5" />
               <TooltipProvider delayDuration={400}>
                 <div className="flex items-center gap-0.5">
                   <Tooltip>
@@ -1486,7 +1538,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 </div>
               </TooltipProvider>
               <Separator orientation="vertical" className="mx-1 h-5" />
-              <div className="flex items-center gap-1.5">
+              <div className="hidden items-center gap-1.5 md:flex">
                 <Grid3X3 className="size-3.5 text-slate-400" />
                 <Switch
                   id="snap-toggle"
@@ -1497,283 +1549,169 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                   {t('pdfReportDesigner.snapToGrid')}
                 </Label>
               </div>
-              <Separator orientation="vertical" className="mx-1 h-5" />
+              <Separator orientation="vertical" className="mx-1 hidden h-5 md:block" />
               <Button
                 type="submit"
                 size="sm"
                 disabled={isSaving || (isEdit && !templateByIdLoaded) || !isFormValid}
-                className="min-w-[80px]"
+                className="min-w-[88px] shadow-sm"
               >
                 {isSaving ? t('common.saving') : isEdit ? t('common.update') : t('common.save')}
               </Button>
             </div>
 
-            <div className="flex flex-wrap items-end gap-3 border-t border-slate-100 bg-slate-50/70 px-4 py-2.5 dark:border-slate-800 dark:bg-slate-900/40">
-              <FormField
-                control={form.control}
-                name="ruleType"
-                render={({ field }) => (
-                  <FormItem className="w-44">
-                    <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.documentType')}</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(Number(value) as TemplateDesignerRuleTypeValue)}
-                      value={field.value?.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="h-8 w-full text-xs">
-                          <SelectValue placeholder={t('common.select')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {RULE_TYPE_OPTIONS.map((value) => (
-                          <SelectItem key={value} value={value.toString()}>
-                            {getRuleTypeLabel(value, t)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem className="min-w-[180px] flex-1">
-                    <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.title')}</FormLabel>
-                    <FormControl>
-                      <Input className="h-8 text-xs" placeholder={t('pdfReportDesigner.titlePlaceholder')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="layoutPreset"
-                render={({ field }) => (
-                  <FormItem className="w-60">
-                    <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.layoutPreset.label')}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="h-8 w-full text-xs">
-                          <SelectValue placeholder={t('common.select')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {availableLayoutPresets.map((preset) => (
-                          <SelectItem key={preset.value} value={preset.value}>
-                            {t(preset.titleKey)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="pageCount"
-                render={({ field }) => (
-                  <FormItem className="w-24">
-                    <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.pageCount')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={1}
-                        max={20}
-                        disabled={isCanvasLocked}
-                        value={field.value}
-                        onChange={(e) =>
-                          field.onChange(Math.min(20, Math.max(1, Number(e.target.value) || 1)))
-                        }
-                        className="h-8 text-xs"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="default"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-2 space-y-0 pb-1">
-                    <FormControl>
-                      <Checkbox checked={field.value ?? false} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <FormLabel className="cursor-pointer text-xs font-normal text-slate-700 dark:text-slate-300">
-                      {t('pdfReportDesigner.setDefaultTemplate')}
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
-            </div>
+            {identityExpanded ? (
+              <div className="border-t border-slate-100 bg-slate-50/70 px-4 py-2.5 dark:border-slate-800 dark:bg-slate-900/40">
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600 dark:bg-slate-700 dark:text-slate-200">
+                    1
+                  </span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    {t('pdfReportDesigner.identityTitle')}
+                  </span>
+                  <span className="hidden text-xs text-slate-400 dark:text-slate-500 md:inline">
+                    {t('pdfReportDesigner.identityHint')}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-end gap-3">
+                  <FormField
+                    control={form.control}
+                    name="ruleType"
+                    render={({ field }) => (
+                      <FormItem className="w-48">
+                        <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.documentType')}</FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value) as TemplateDesignerRuleTypeValue)}
+                          value={field.value?.toString()}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="h-9 w-full text-xs">
+                              <SelectValue placeholder={t('common.select')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {RULE_TYPE_OPTIONS.map((value) => (
+                              <SelectItem key={value} value={value.toString()}>
+                                {getRuleTypeLabel(value, t)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem className="min-w-[220px] flex-1">
+                        <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.title')}</FormLabel>
+                        <FormControl>
+                          <Input className="h-9 text-xs" placeholder={t('pdfReportDesigner.titlePlaceholder')} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pageCount"
+                    render={({ field }) => (
+                      <FormItem className="w-24">
+                        <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.pageCount')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={1}
+                            max={20}
+                            disabled={isCanvasLocked}
+                            value={field.value}
+                            onChange={(e) =>
+                              field.onChange(Math.min(20, Math.max(1, Number(e.target.value) || 1)))
+                            }
+                            className="h-9 text-xs"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="default"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-md border border-slate-200 bg-white px-3 py-[7px] dark:border-slate-700 dark:bg-slate-950/60">
+                        <FormControl>
+                          <Checkbox checked={field.value ?? false} onCheckedChange={field.onChange} />
+                        </FormControl>
+                        <FormLabel className="cursor-pointer text-xs font-normal text-slate-700 dark:text-slate-300">
+                          {t('pdfReportDesigner.setDefaultTemplate')}
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            ) : null}
           </form>
         </Form>
 
-        <div className="grid gap-3 border-t border-slate-100 bg-slate-50/70 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/40 xl:grid-cols-[1.1fr_0.9fr_0.9fr_0.9fr_1fr]">
-          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  {t('pdfReportDesigner.qualityTitle')}
-                </div>
-                <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
-                  {t('pdfReportDesigner.qualitySubtitle')}
-                </h2>
-              </div>
-              <Badge variant={pdfQualityScore >= 84 ? 'default' : pdfQualityScore >= 60 ? 'secondary' : 'destructive'}>
-                {pdfQualityScore}/100
-              </Badge>
-            </div>
-            <p className="text-sm text-slate-700 dark:text-slate-300">{pdfNarrative}</p>
-            {pdfQualityIssues.length > 0 ? (
-              <ul className="mt-3 space-y-1 text-xs text-slate-500 dark:text-slate-400">
-                {pdfQualityIssues.slice(0, 4).map((issue) => (
-                  <li key={issue}>• {issue}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-3 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                {t('pdfReportDesigner.qualityReady')}
-              </p>
-            )}
-          </div>
-
-          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {t('pdfReportDesigner.smartStartTitle')}
-            </div>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {t('pdfReportDesigner.smartStartDescription')}
-            </p>
-            <div className="mt-3 grid gap-2">
-              <Button type="button" variant="outline" onClick={handleApplyStarterLayout}>
-                {t('pdfReportDesigner.smartStartActions.applyStarter')}
-              </Button>
-              {ruleType !== TemplateDesignerRuleType.Activity ? (
-                <>
-                  <Button type="button" variant="outline" onClick={handleAddSmartTable}>
-                    {t('pdfReportDesigner.smartStartActions.addTable')}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={handleAddSmartTotals}>
-                    {t('pdfReportDesigner.smartStartActions.addTotals')}
-                  </Button>
-                </>
-              ) : null}
-              <Button type="button" variant="outline" onClick={handleAddSmartNote}>
-                {t('pdfReportDesigner.smartStartActions.addNote')}
-              </Button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {t('pdfReportDesigner.presetGalleryTitle')}
-            </div>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {t('pdfReportDesigner.presetGalleryDescription')}
-            </p>
-            <div className="mt-3 grid gap-2">
-              <Button type="button" variant="outline" onClick={() => handleApplyPdfPreset('commercialStarter')}>
-                {t('pdfReportDesigner.presetGallery.commercialStarter')}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => handleApplyPdfPreset('compactSummary')}>
-                {t('pdfReportDesigner.presetGallery.compactSummary')}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => handleApplyPdfPreset('lineFocused')}>
-                {t('pdfReportDesigner.presetGallery.lineFocused')}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => handleApplyPdfPreset('signatureReady')}>
-                {t('pdfReportDesigner.presetGallery.signatureReady')}
-              </Button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {t('pdfReportDesigner.reusableBlocksTitle')}
-            </div>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {t('pdfReportDesigner.reusableBlocksDescription')}
-            </p>
-            <div className="mt-3 grid gap-2">
-              <Button type="button" variant="outline" onClick={() => handleAddReusableBlock('customerSummary')}>
-                {t('pdfReportDesigner.reusableBlocks.customerSummary')}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => handleAddReusableBlock('documentMeta')}>
-                {t('pdfReportDesigner.reusableBlocks.documentMeta')}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => handleAddReusableBlock('signature')}>
-                {t('pdfReportDesigner.reusableBlocks.signature')}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => handleAddReusableBlock('noteBox')}>
-                {t('pdfReportDesigner.reusableBlocks.noteBox')}
-              </Button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border bg-white/80 p-3 dark:bg-slate-950/60">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {t('pdfReportDesigner.healthTitle')}
-            </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              <div className="rounded-xl border px-3 py-2">
-                <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  {t('pdfReportDesigner.healthMetrics.elements')}
-                </div>
-                <div className="mt-1 text-lg font-semibold">{orderedElements.length}</div>
-              </div>
-              <div className="rounded-xl border px-3 py-2">
-                <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  {t('pdfReportDesigner.healthMetrics.pages')}
-                </div>
-                <div className="mt-1 text-lg font-semibold">{pageCount}</div>
-              </div>
-              <div className="rounded-xl border px-3 py-2">
-                <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  {t('pdfReportDesigner.healthMetrics.tables')}
-                </div>
-                <div className="mt-1 text-lg font-semibold">{orderedElements.filter((element) => element.type === 'table').length}</div>
-              </div>
-              <div className="rounded-xl border px-3 py-2">
-                <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  {t('pdfReportDesigner.healthMetrics.boundFields')}
-                </div>
-                <div className="mt-1 text-lg font-semibold">{orderedElements.filter((element) => 'path' in element && Boolean(element.path)).length}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2.5 border-t border-slate-100 bg-white px-4 py-1.5 dark:border-slate-800 dark:bg-slate-950">
-          <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-            {t('pdfReportDesigner.pages')}
-          </span>
-          <div className="flex flex-wrap gap-1">
-            {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
-              <Button
-                key={pageNumber}
-                type="button"
-                size="sm"
-                variant={currentPage === pageNumber ? 'default' : 'outline'}
-                className="h-6 min-w-[52px] px-3 text-xs"
-                onClick={() => handleNavigateToPage(pageNumber)}
-              >
-                {t('pdfReportDesigner.pageNumber', { page: pageNumber })}
-              </Button>
-            ))}
-          </div>
-        </div>
+        <PdfDesignerOnboardingPanel
+          qualityScore={pdfQualityScore}
+          qualityNarrative={pdfNarrative}
+          qualityIssues={pdfQualityIssues}
+          qualityReadyLabel={t('pdfReportDesigner.qualityReady')}
+          qualityTitle={t('pdfReportDesigner.qualityTitle')}
+          healthTitle={t('pdfReportDesigner.healthTitle')}
+          metrics={[
+            { label: t('pdfReportDesigner.healthMetrics.elements'), value: orderedElements.length },
+            { label: t('pdfReportDesigner.healthMetrics.pages'), value: pageCount },
+            {
+              label: t('pdfReportDesigner.healthMetrics.tables'),
+              value: orderedElements.filter((element) => element.type === 'table').length,
+            },
+            {
+              label: t('pdfReportDesigner.healthMetrics.boundFields'),
+              value: orderedElements.filter((element) => 'path' in element && Boolean(element.path)).length,
+            },
+          ]}
+          smartStartDescription={t('pdfReportDesigner.smartStartDescription')}
+          presetGalleryDescription={t('pdfReportDesigner.presetGalleryDescription')}
+          reusableBlocksDescription={t('pdfReportDesigner.reusableBlocksDescription')}
+          onApplyStarter={handleApplyStarterLayout}
+          onAddSmartTable={handleAddSmartTable}
+          onAddSmartTotals={handleAddSmartTotals}
+          onAddSmartNote={handleAddSmartNote}
+          onApplyPreset={handleApplyPdfPreset}
+          onAddReusableBlock={handleAddReusableBlock}
+          presetLabels={{
+            commercialStarter: t('pdfReportDesigner.presetGallery.commercialStarter'),
+            compactSummary: t('pdfReportDesigner.presetGallery.compactSummary'),
+            lineFocused: t('pdfReportDesigner.presetGallery.lineFocused'),
+            signatureReady: t('pdfReportDesigner.presetGallery.signatureReady'),
+          }}
+          smartStartLabels={{
+            applyStarter: t('pdfReportDesigner.smartStartActions.applyStarter'),
+            addTable: t('pdfReportDesigner.smartStartActions.addTable'),
+            addTotals: t('pdfReportDesigner.smartStartActions.addTotals'),
+            addNote: t('pdfReportDesigner.smartStartActions.addNote'),
+          }}
+          reusableBlockLabels={{
+            customerSummary: t('pdfReportDesigner.reusableBlocks.customerSummary'),
+            documentMeta: t('pdfReportDesigner.reusableBlocks.documentMeta'),
+            signature: t('pdfReportDesigner.reusableBlocks.signature'),
+            noteBox: t('pdfReportDesigner.reusableBlocks.noteBox'),
+          }}
+          showTableActions={ruleType !== TemplateDesignerRuleType.Activity}
+          initialExpanded={!hasElements}
+        />
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {!isCanvasLocked ? (
           <DndContext onDragEnd={handleDragEnd}>
-            <div className="flex min-h-0 flex-1">
+            <div className="flex min-h-0 flex-1 overflow-hidden">
               <PdfSidebar
                 headerFields={headerFields}
                 lineFields={lineFields}
@@ -1804,10 +1742,44 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 ]}
               />
               <PdfLayersPanel onNavigateToPage={handleNavigateToPage} templateId={editId} ruleType={ruleType} />
-              
             </div>
           </DndContext>
         ) : null}
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2.5 border-t border-slate-200 bg-white px-4 py-1.5 dark:border-slate-700 dark:bg-slate-950">
+        <div className="flex shrink-0 items-center gap-1.5">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            {t('pdfReportDesigner.pages')}
+          </span>
+        </div>
+        <Separator orientation="vertical" className="h-4" />
+        <div className="flex flex-wrap gap-1">
+          {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
+            <Button
+              key={pageNumber}
+              type="button"
+              size="sm"
+              variant={currentPage === pageNumber ? 'default' : 'outline'}
+              className="h-6 min-w-[52px] px-3 text-xs"
+              onClick={() => handleNavigateToPage(pageNumber)}
+            >
+              {t('pdfReportDesigner.pageNumber', { page: pageNumber })}
+            </Button>
+          ))}
+        </div>
+        <div className="ml-auto flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400">
+          <span className="hidden md:inline">
+            {t('pdfReportDesigner.activePageHint', {
+              current: currentPage,
+              total: pageCount,
+            })}
+          </span>
+          <Separator orientation="vertical" className="hidden h-3 md:block" />
+          <span className="hidden md:inline">
+            {t('pdfReportDesigner.healthMetrics.elements')}: {orderedElements.length}
+          </span>
+        </div>
       </div>
     </div>
   );

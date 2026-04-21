@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Settings2, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
@@ -78,7 +78,19 @@ function evaluateVisibilityRules(
 
 export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspectorPanelProps): ReactElement {
   const { t } = useTranslation(['report-designer', 'common']);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 1279px)').matches;
+  });
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia('(max-width: 1279px)');
+    const handleChange = (event: MediaQueryListEvent): void => {
+      setCollapsed(event.matches);
+    };
+    mql.addEventListener('change', handleChange);
+    return () => mql.removeEventListener('change', handleChange);
+  }, []);
   const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
   const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
