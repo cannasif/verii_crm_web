@@ -6,10 +6,10 @@ export const PDF_REPORT_TEMPLATE_KEYS = {
 } as const;
 
 export const pdfReportTemplateQueryKeys = {
-  list: (params?: { pageNumber?: number; pageSize?: number; search?: string; ruleType?: number; isActive?: boolean }) =>
+  list: (params?: { pageNumber?: number; pageSize?: number; search?: string; sortBy?: string; sortDirection?: 'asc' | 'desc'; ruleType?: number; isActive?: boolean }) =>
     [PDF_REPORT_TEMPLATE_KEYS.LIST, params ?? {}] as const,
   item: (id: number) => [PDF_REPORT_TEMPLATE_KEYS.ITEM, id] as const,
   fields: (ruleType: number) => [PDF_REPORT_TEMPLATE_KEYS.FIELDS, ruleType] as const,
-  presetList: (params?: { pageNumber?: number; pageSize?: number; search?: string; ruleType?: number; isActive?: boolean }) =>
+  presetList: (params?: { pageNumber?: number; pageSize?: number; search?: string; sortBy?: string; sortDirection?: 'asc' | 'desc'; ruleType?: number; isActive?: boolean }) =>
     [PDF_REPORT_TEMPLATE_KEYS.PRESET_LIST, params ?? {}] as const,
 };
