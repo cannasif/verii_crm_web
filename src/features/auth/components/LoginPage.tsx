@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation, Trans } from 'react-i18next';
@@ -26,9 +26,9 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
-import { AuthBackground } from './AuthBackground';
-
-import loginImage from '../../../../public/veriicrmlogo.png';
+import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
+const loginImage = '/veriicrmlogo-sm.png';
+const AuthBackground = lazy(async () => import('./AuthBackground').then((mod) => ({ default: mod.AuthBackground })));
 
 import { 
   Location01Icon, 
@@ -59,6 +59,14 @@ export function LoginPage(): React.JSX.Element {
   const [capsLockActive, setCapsLockActive] = useState(false);
   
   const [showAnimation, setShowAnimation] = useState(true);
+  const [didMeasureBranchesReady, setDidMeasureBranchesReady] = useState(false);
+
+  useEffect(() => {
+    const startMark = 'login:mount:start';
+    clearPerfMarks(startMark, 'login:mount_to_paint', 'login:mount_to_paint:end');
+    perfMark(startMark);
+    perfMeasureOnNextPaint('login:mount_to_paint', startMark);
+  }, []);
 
   const form = useForm<z.input<typeof loginRequestSchema>>({
     resolver: zodResolver(loginRequestSchema),
@@ -83,6 +91,12 @@ export function LoginPage(): React.JSX.Element {
       navigate('/', { replace: true });
     }
   }, [searchParams, setSearchParams, t, navigate, logout]);
+
+  useEffect(() => {
+    if (didMeasureBranchesReady || !branches || branches.length === 0) return;
+    setDidMeasureBranchesReady(true);
+    perfMeasureOnNextPaint('login:mount_to_branches_ready_paint', 'login:mount:start', `branches=${branches.length}`);
+  }, [branches, didMeasureBranchesReady]);
 
   const onSubmit = (data: z.output<typeof loginRequestSchema>): void => {
     login({ ...data });
@@ -120,7 +134,9 @@ export function LoginPage(): React.JSX.Element {
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-[#0f0518]/60 to-[#0f0518]" />
       </div>
 
-      <AuthBackground isActive={showAnimation} />
+      <Suspense fallback={null}>
+        <AuthBackground isActive={showAnimation} />
+      </Suspense>
 
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 animate-[fadeIn_1s_ease-out]">
         

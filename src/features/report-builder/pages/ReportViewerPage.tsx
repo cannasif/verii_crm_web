@@ -1,11 +1,9 @@
-import type { ReactElement } from 'react';
+import { lazy, Suspense, type ReactElement } from 'react';
 import { useEffect, useCallback, useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useReportBuilderStore } from '../store';
 import { reportsApi } from '../api';
-import { PreviewPanel } from '../components/PreviewPanel';
-import { RuntimeFiltersPanel } from '../components/RuntimeFiltersPanel';
 import { Badge } from '@/components/ui/badge';
 import { Download, FileJson, Loader2, Pencil, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -15,6 +13,15 @@ import type { CalculatedField, DataSourceParameterBinding, ReportPreviewResponse
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/stores/auth-store';
+import { Skeleton } from '@/components/ui/skeleton';
+import { DeferOnView } from '@/components/shared/DeferOnView';
+
+const PreviewPanel = lazy(async () =>
+  import('../components/PreviewPanel').then((mod) => ({ default: mod.PreviewPanel }))
+);
+const RuntimeFiltersPanel = lazy(async () =>
+  import('../components/RuntimeFiltersPanel').then((mod) => ({ default: mod.RuntimeFiltersPanel }))
+);
 
 function getWidgetPanelClass(widget: ReportWidget): string {
   if (widget.size === 'full') return 'xl:col-span-3';
@@ -537,15 +544,17 @@ export function ReportViewerPage(): ReactElement {
             </Card>
           )}
 
-          <RuntimeFiltersPanel
-            schema={schema}
-            loading={ui.previewLoading}
-            onApply={async () => {
-              await runPreview(viewerParameterValues);
-              await runAllWidgetPreviews(viewerParameterValues);
-            }}
-            onReset={loadReport}
-          />
+          <Suspense fallback={<Skeleton className="h-40 w-full rounded-lg" />}>
+            <RuntimeFiltersPanel
+              schema={schema}
+              loading={ui.previewLoading}
+              onApply={async () => {
+                await runPreview(viewerParameterValues);
+                await runAllWidgetPreviews(viewerParameterValues);
+              }}
+              onReset={loadReport}
+            />
+          </Suspense>
 
           <Card>
             <CardContent className="space-y-3 p-4">
@@ -663,39 +672,51 @@ export function ReportViewerPage(): ReactElement {
                   const minHeightClassName = getWidgetHeightClass(widget);
                   if (isPrimaryWidget) {
                     return (
-                      <PreviewPanel
+                      <DeferOnView
                         key={widget.id}
-                        columns={preview.columns}
-                        rows={preview.rows}
-                        chartType={config.chartType}
-                        loading={ui.previewLoading}
-                        error={ui.error}
-                        empty={false}
-                      title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
-                      subtitle={widget.appearance?.subtitle || t('common.reportBuilder.primaryWidgetPreview')}
-                      appearance={widget.appearance}
-                      labelOverrides={buildWidgetLabelOverrides(widget)}
-                      className={panelClassName}
-                      minHeightClassName={minHeightClassName}
-                    />
+                        fallback={<Skeleton className={cn('w-full rounded-2xl', panelClassName, minHeightClassName)} />}
+                      >
+                        <Suspense fallback={<Skeleton className={cn('w-full rounded-2xl', panelClassName, minHeightClassName)} />}>
+                          <PreviewPanel
+                            columns={preview.columns}
+                            rows={preview.rows}
+                            chartType={config.chartType}
+                            loading={ui.previewLoading}
+                            error={ui.error}
+                            empty={false}
+                            title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
+                            subtitle={widget.appearance?.subtitle || t('common.reportBuilder.primaryWidgetPreview')}
+                            appearance={widget.appearance}
+                            labelOverrides={buildWidgetLabelOverrides(widget)}
+                            className={panelClassName}
+                            minHeightClassName={minHeightClassName}
+                          />
+                        </Suspense>
+                      </DeferOnView>
                     );
                   }
                   return (
-                    <PreviewPanel
+                    <DeferOnView
                       key={widget.id}
-                      columns={widgetPreview?.columns ?? []}
-                      rows={widgetPreview?.rows ?? []}
-                      chartType={widget.chartType}
-                      loading={widgetPreview?.loading ?? false}
-                      error={widgetPreview?.error ?? null}
-                      empty={!(widgetPreview?.columns?.length || widgetPreview?.rows?.length)}
-                      title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
-                      subtitle={widget.appearance?.subtitle || t('common.reportBuilder.additionalWidgetPreview')}
-                      appearance={widget.appearance}
-                      labelOverrides={buildWidgetLabelOverrides(widget)}
-                      className={panelClassName}
-                      minHeightClassName={minHeightClassName}
-                    />
+                      fallback={<Skeleton className={cn('w-full rounded-2xl', panelClassName, minHeightClassName)} />}
+                    >
+                      <Suspense fallback={<Skeleton className={cn('w-full rounded-2xl', panelClassName, minHeightClassName)} />}>
+                        <PreviewPanel
+                          columns={widgetPreview?.columns ?? []}
+                          rows={widgetPreview?.rows ?? []}
+                          chartType={widget.chartType}
+                          loading={widgetPreview?.loading ?? false}
+                          error={widgetPreview?.error ?? null}
+                          empty={!(widgetPreview?.columns?.length || widgetPreview?.rows?.length)}
+                          title={widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 })}
+                          subtitle={widget.appearance?.subtitle || t('common.reportBuilder.additionalWidgetPreview')}
+                          appearance={widget.appearance}
+                          labelOverrides={buildWidgetLabelOverrides(widget)}
+                          className={panelClassName}
+                          minHeightClassName={minHeightClassName}
+                        />
+                      </Suspense>
+                    </DeferOnView>
                   );
                 })}
               </div>

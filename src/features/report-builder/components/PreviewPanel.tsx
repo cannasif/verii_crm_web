@@ -1,12 +1,16 @@
-import type { ReactElement } from 'react';
+import { lazy, Suspense, type ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ReportChart } from './ReportChart';
 import { cn } from '@/lib/utils';
 import type { ChartType, ReportWidgetAppearance } from '../types';
 import { BarChart3, DatabaseZap, Loader2, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const ReportChart = lazy(() =>
+  import('./ReportChart').then((module) => ({ default: module.ReportChart }))
+);
 
 interface PreviewPanelProps {
   columns: string[];
@@ -72,6 +76,7 @@ export function PreviewPanel({
         : backgroundStyle === 'muted'
           ? 'bg-muted/60'
           : '';
+  const chartSkeleton = <Skeleton className="h-full min-h-[240px] w-full rounded-2xl" />;
 
   return (
     <div
@@ -137,7 +142,9 @@ export function PreviewPanel({
       )}
       {!loading && !error && !empty && (
         <div className="flex-1 overflow-hidden">
-          <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} />
+          <Suspense fallback={chartSkeleton}>
+            <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} />
+          </Suspense>
         </div>
       )}
       <Dialog open={expanded} onOpenChange={setExpanded}>
@@ -148,7 +155,9 @@ export function PreviewPanel({
           </DialogHeader>
           <div className="h-full min-h-0 p-6">
             <div className="h-full rounded-2xl border bg-background p-4">
-              <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} className="h-full max-h-none" />
+              <Suspense fallback={chartSkeleton}>
+                <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} className="h-full max-h-none" />
+              </Suspense>
             </div>
           </div>
         </DialogContent>

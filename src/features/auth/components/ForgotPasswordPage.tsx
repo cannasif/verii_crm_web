@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Mail02Icon } from 'hugeicons-react';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
-import loginImage from '../../../../public/veriicrmlogo.png';
+const loginImage = '/veriicrmlogo-sm.png';
 
 export function ForgotPasswordPage(): React.JSX.Element {
   const { t } = useTranslation('auth');

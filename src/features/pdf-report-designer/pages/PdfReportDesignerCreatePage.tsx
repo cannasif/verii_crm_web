@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { lazy, Suspense, type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
@@ -12,7 +12,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Undo2, Redo2, Grid3X3, ArrowLeft, AlertTriangle, FileText, Sparkles, ChevronDown, ChevronUp, PanelsTopLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { PdfDesignerOnboardingPanel } from '../components/PdfDesignerOnboardingPanel';
 import {
   Tooltip,
   TooltipContent,
@@ -47,13 +46,10 @@ import {
   parseContainerIdFromDroppableId,
   parseTableIdFromDroppableId,
 } from '../components/PdfA4Canvas';
-import {
-  PdfSidebar,
-  type PdfSidebarDragData,
-  type PdfFieldPaletteItem,
+import type {
+  PdfSidebarDragData,
+  PdfFieldPaletteItem,
 } from '../components/PdfSidebar';
-import { PdfInspectorPanel } from '../components/PdfInspectorPanel';
-import { PdfLayersPanel } from '../components/PdfLayersPanel';
 import type { PdfCanvasElement, PdfReportElement, PdfTableElement } from '../types/pdf-report-template.types';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { usePdfReportTemplateFields } from '../hooks/usePdfReportTemplateFields';
@@ -76,6 +72,20 @@ import {
   PDF_REPORT_DRAFT_STORAGE_KEY,
 } from '../constants';
 import { PDF_LAYOUT_PRESET } from '../constants/layout-presets';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const PdfDesignerOnboardingPanel = lazy(() =>
+  import('../components/PdfDesignerOnboardingPanel').then((module) => ({ default: module.PdfDesignerOnboardingPanel }))
+);
+const PdfSidebar = lazy(() =>
+  import('../components/PdfSidebar').then((module) => ({ default: module.PdfSidebar }))
+);
+const PdfInspectorPanel = lazy(() =>
+  import('../components/PdfInspectorPanel').then((module) => ({ default: module.PdfInspectorPanel }))
+);
+const PdfLayersPanel = lazy(() =>
+  import('../components/PdfLayersPanel').then((module) => ({ default: module.PdfLayersPanel }))
+);
 
 const RULE_TYPE_OPTIONS: TemplateDesignerRuleTypeValue[] = [
   TemplateDesignerRuleType.Demand,
@@ -89,6 +99,10 @@ const DEFAULT_ELEMENT_WIDTH = 200;
 const DEFAULT_ELEMENT_HEIGHT = 50;
 const DEFAULT_TABLE_WIDTH = 680;
 const DEFAULT_TABLE_HEIGHT = 220;
+
+function PdfSidePanelSkeleton({ className = '' }: { className?: string }): ReactElement {
+  return <Skeleton className={`min-h-[320px] rounded-2xl ${className}`.trim()} />;
+}
 
 interface PdfFieldLike {
   label: string;
@@ -1657,69 +1671,73 @@ export function PdfReportDesignerCreatePage(): ReactElement {
           </form>
         </Form>
 
-        <PdfDesignerOnboardingPanel
-          qualityScore={pdfQualityScore}
-          qualityNarrative={pdfNarrative}
-          qualityIssues={pdfQualityIssues}
-          qualityReadyLabel={t('pdfReportDesigner.qualityReady')}
-          qualityTitle={t('pdfReportDesigner.qualityTitle')}
-          healthTitle={t('pdfReportDesigner.healthTitle')}
-          metrics={[
-            { label: t('pdfReportDesigner.healthMetrics.elements'), value: orderedElements.length },
-            { label: t('pdfReportDesigner.healthMetrics.pages'), value: pageCount },
-            {
-              label: t('pdfReportDesigner.healthMetrics.tables'),
-              value: orderedElements.filter((element) => element.type === 'table').length,
-            },
-            {
-              label: t('pdfReportDesigner.healthMetrics.boundFields'),
-              value: orderedElements.filter((element) => 'path' in element && Boolean(element.path)).length,
-            },
-          ]}
-          smartStartDescription={t('pdfReportDesigner.smartStartDescription')}
-          presetGalleryDescription={t('pdfReportDesigner.presetGalleryDescription')}
-          reusableBlocksDescription={t('pdfReportDesigner.reusableBlocksDescription')}
-          onApplyStarter={handleApplyStarterLayout}
-          onAddSmartTable={handleAddSmartTable}
-          onAddSmartTotals={handleAddSmartTotals}
-          onAddSmartNote={handleAddSmartNote}
-          onApplyPreset={handleApplyPdfPreset}
-          onAddReusableBlock={handleAddReusableBlock}
-          presetLabels={{
-            commercialStarter: t('pdfReportDesigner.presetGallery.commercialStarter'),
-            compactSummary: t('pdfReportDesigner.presetGallery.compactSummary'),
-            lineFocused: t('pdfReportDesigner.presetGallery.lineFocused'),
-            signatureReady: t('pdfReportDesigner.presetGallery.signatureReady'),
-          }}
-          smartStartLabels={{
-            applyStarter: t('pdfReportDesigner.smartStartActions.applyStarter'),
-            addTable: t('pdfReportDesigner.smartStartActions.addTable'),
-            addTotals: t('pdfReportDesigner.smartStartActions.addTotals'),
-            addNote: t('pdfReportDesigner.smartStartActions.addNote'),
-          }}
-          reusableBlockLabels={{
-            customerSummary: t('pdfReportDesigner.reusableBlocks.customerSummary'),
-            documentMeta: t('pdfReportDesigner.reusableBlocks.documentMeta'),
-            signature: t('pdfReportDesigner.reusableBlocks.signature'),
-            noteBox: t('pdfReportDesigner.reusableBlocks.noteBox'),
-          }}
-          showTableActions={ruleType !== TemplateDesignerRuleType.Activity}
-          initialExpanded={!hasElements}
-        />
+        <Suspense fallback={<PdfSidePanelSkeleton className="w-full" />}>
+          <PdfDesignerOnboardingPanel
+            qualityScore={pdfQualityScore}
+            qualityNarrative={pdfNarrative}
+            qualityIssues={pdfQualityIssues}
+            qualityReadyLabel={t('pdfReportDesigner.qualityReady')}
+            qualityTitle={t('pdfReportDesigner.qualityTitle')}
+            healthTitle={t('pdfReportDesigner.healthTitle')}
+            metrics={[
+              { label: t('pdfReportDesigner.healthMetrics.elements'), value: orderedElements.length },
+              { label: t('pdfReportDesigner.healthMetrics.pages'), value: pageCount },
+              {
+                label: t('pdfReportDesigner.healthMetrics.tables'),
+                value: orderedElements.filter((element) => element.type === 'table').length,
+              },
+              {
+                label: t('pdfReportDesigner.healthMetrics.boundFields'),
+                value: orderedElements.filter((element) => 'path' in element && Boolean(element.path)).length,
+              },
+            ]}
+            smartStartDescription={t('pdfReportDesigner.smartStartDescription')}
+            presetGalleryDescription={t('pdfReportDesigner.presetGalleryDescription')}
+            reusableBlocksDescription={t('pdfReportDesigner.reusableBlocksDescription')}
+            onApplyStarter={handleApplyStarterLayout}
+            onAddSmartTable={handleAddSmartTable}
+            onAddSmartTotals={handleAddSmartTotals}
+            onAddSmartNote={handleAddSmartNote}
+            onApplyPreset={handleApplyPdfPreset}
+            onAddReusableBlock={handleAddReusableBlock}
+            presetLabels={{
+              commercialStarter: t('pdfReportDesigner.presetGallery.commercialStarter'),
+              compactSummary: t('pdfReportDesigner.presetGallery.compactSummary'),
+              lineFocused: t('pdfReportDesigner.presetGallery.lineFocused'),
+              signatureReady: t('pdfReportDesigner.presetGallery.signatureReady'),
+            }}
+            smartStartLabels={{
+              applyStarter: t('pdfReportDesigner.smartStartActions.applyStarter'),
+              addTable: t('pdfReportDesigner.smartStartActions.addTable'),
+              addTotals: t('pdfReportDesigner.smartStartActions.addTotals'),
+              addNote: t('pdfReportDesigner.smartStartActions.addNote'),
+            }}
+            reusableBlockLabels={{
+              customerSummary: t('pdfReportDesigner.reusableBlocks.customerSummary'),
+              documentMeta: t('pdfReportDesigner.reusableBlocks.documentMeta'),
+              signature: t('pdfReportDesigner.reusableBlocks.signature'),
+              noteBox: t('pdfReportDesigner.reusableBlocks.noteBox'),
+            }}
+            showTableActions={ruleType !== TemplateDesignerRuleType.Activity}
+            initialExpanded={!hasElements}
+          />
+        </Suspense>
       </div>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {!isCanvasLocked ? (
           <DndContext onDragEnd={handleDragEnd}>
             <div className="flex min-h-0 flex-1 overflow-hidden">
-              <PdfSidebar
-                headerFields={headerFields}
-                lineFields={lineFields}
-                exchangeRateFields={exchangeRateFields}
-                imageFields={imageFields}
-                templateId={editId}
-                ruleType={ruleType}
-              />
+              <Suspense fallback={<PdfSidePanelSkeleton className="hidden w-72 shrink-0 xl:block" />}>
+                <PdfSidebar
+                  headerFields={headerFields}
+                  lineFields={lineFields}
+                  exchangeRateFields={exchangeRateFields}
+                  imageFields={imageFields}
+                  templateId={editId}
+                  ruleType={ruleType}
+                />
+              </Suspense>
               <PdfA4Canvas
                 currentPage={currentPage}
                 pageCount={pageCount}
@@ -1733,15 +1751,19 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 onPageRef={handlePageRef}
                 onPageChange={handleNavigateToPage}
               />
-              <PdfInspectorPanel
-                pageCount={pageCount}
-                fieldDefinitions={[
-                  ...(fieldsData?.headerFields ?? []),
-                  ...(fieldsData?.lineFields ?? []),
-                  ...(fieldsData?.exchangeRateFields ?? []),
-                ]}
-              />
-              <PdfLayersPanel onNavigateToPage={handleNavigateToPage} templateId={editId} ruleType={ruleType} />
+              <Suspense fallback={<PdfSidePanelSkeleton className="hidden w-64 shrink-0 xl:block" />}>
+                <PdfInspectorPanel
+                  pageCount={pageCount}
+                  fieldDefinitions={[
+                    ...(fieldsData?.headerFields ?? []),
+                    ...(fieldsData?.lineFields ?? []),
+                    ...(fieldsData?.exchangeRateFields ?? []),
+                  ]}
+                />
+              </Suspense>
+              <Suspense fallback={<PdfSidePanelSkeleton className="hidden w-52 shrink-0 2xl:block" />}>
+                <PdfLayersPanel onNavigateToPage={handleNavigateToPage} templateId={editId} ruleType={ruleType} />
+              </Suspense>
             </div>
           </DndContext>
         ) : null}

@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { formatSystemCurrency, formatSystemDate } from '@/lib/system-settings';
+import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -100,6 +101,14 @@ export function DashboardPage(): ReactElement {
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [chartMenuOpen, setChartMenuOpen] = useState(false);
   const chartMenuRef = useRef<HTMLDivElement>(null);
+  const didMeasureDashboardReady = useRef(false);
+
+  useEffect(() => {
+    const startMark = 'dashboard:mount:start';
+    clearPerfMarks(startMark, 'dashboard:mount_to_paint', 'dashboard:mount_to_paint:end');
+    perfMark(startMark);
+    perfMeasureOnNextPaint('dashboard:mount_to_paint', startMark);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -124,6 +133,12 @@ export function DashboardPage(): ReactElement {
       setPageTitle(null);
     };
   }, [t, setPageTitle]);
+
+  useEffect(() => {
+    if (didMeasureDashboardReady.current || isLoading) return;
+    didMeasureDashboardReady.current = true;
+    perfMeasureOnNextPaint('dashboard:mount_to_data_ready_paint', 'dashboard:mount:start');
+  }, [isLoading]);
 
   const getUserDisplayName = (): string => {
     if (!user) return t('user');

@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { LockKeyIcon, ViewIcon, ViewOffIcon } from 'hugeicons-react';
-import loginImage from '../../../../public/veriicrmlogo.png';
+const loginImage = '/veriicrmlogo-sm.png';
 
 export function ResetPasswordPage(): React.JSX.Element {
   const { t } = useTranslation('auth');

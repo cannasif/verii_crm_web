@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { FileDown, FileSpreadsheet, FileType, Loader2 } from 'lucide-react';
-import { exportGridToExcel, exportGridToPdf, type GridExportColumn } from '@/lib/grid-export';
+import type { GridExportColumn } from '@/lib/grid-export';
 
 interface GridExportMenuProps {
   fileName: string;
@@ -35,6 +35,7 @@ export function GridExportMenu({ fileName, columns, rows, translationNamespace, 
     setIsExporting(true);
     try {
       const { columns: resolvedColumns, rows: resolvedRows } = await resolveExportData();
+      const { exportGridToExcel } = await import('@/lib/grid-export');
       await exportGridToExcel({ fileName, columns: resolvedColumns, rows: resolvedRows });
     } finally {
       setIsExporting(false);
@@ -46,6 +47,7 @@ export function GridExportMenu({ fileName, columns, rows, translationNamespace, 
     setIsExporting(true);
     try {
       const { columns: resolvedColumns, rows: resolvedRows } = await resolveExportData();
+      const { exportGridToPdf } = await import('@/lib/grid-export');
       await exportGridToPdf({ fileName, columns: resolvedColumns, rows: resolvedRows });
     } finally {
       setIsExporting(false);

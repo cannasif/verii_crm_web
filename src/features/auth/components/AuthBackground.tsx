@@ -14,6 +14,12 @@ export const AuthBackground: React.FC<AuthBackgroundProps> = ({ isActive }) => {
     let cleanup: (() => void) | null = null;
 
     void (async () => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isSmallViewport = window.innerWidth < 1024;
+      const devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+
+      if (prefersReducedMotion) return;
+
       const THREE = await import('three');
       if (cancelled || !mountRef.current) return;
 
@@ -32,12 +38,16 @@ export const AuthBackground: React.FC<AuthBackgroundProps> = ({ isActive }) => {
       );
       camera.position.z = 40;
 
-      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: false,
+        powerPreference: 'low-power',
+      });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setPixelRatio(devicePixelRatio);
       mountRef.current.appendChild(renderer.domElement);
 
-      const particleCount = 200;
+      const particleCount = isSmallViewport ? 90 : 140;
       const particlesGeometry = new THREE.BufferGeometry();
       const particlesPositions = new Float32Array(particleCount * 3);
       const particlesVelocities: { x: number; y: number; z: number }[] = [];
@@ -80,7 +90,7 @@ export const AuthBackground: React.FC<AuthBackgroundProps> = ({ isActive }) => {
       const linesMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
       scene.add(linesMesh);
 
-      const pulsesCount = 15;
+      const pulsesCount = isSmallViewport ? 6 : 10;
       const pulsesGeo = new THREE.BufferGeometry();
       const pulsesPos = new Float32Array(pulsesCount * 3);
       const pulsesGeoAttr = new THREE.BufferAttribute(pulsesPos, 3);
@@ -125,7 +135,7 @@ export const AuthBackground: React.FC<AuthBackgroundProps> = ({ isActive }) => {
         particlesMesh.geometry.attributes.position.needsUpdate = true;
 
         let lineIdx = 0;
-        const connectionDistance = 8;
+        const connectionDistance = isSmallViewport ? 6 : 7;
         const connections: [number, number][] = [];
 
         for (let i = 0; i < particleCount; i++) {
@@ -153,7 +163,7 @@ export const AuthBackground: React.FC<AuthBackgroundProps> = ({ isActive }) => {
         const pPos = pulsesMesh.geometry.attributes.position.array as Float32Array;
         activePulses.forEach((pulse, idx) => {
           if (!pulse.active) {
-            if (Math.random() > 0.95 && connections.length > 0) {
+            if (Math.random() > (isSmallViewport ? 0.975 : 0.96) && connections.length > 0) {
               const conn = connections[Math.floor(Math.random() * connections.length)];
               pulse.active = true;
               pulse.startIdx = conn[0];
@@ -185,9 +195,9 @@ export const AuthBackground: React.FC<AuthBackgroundProps> = ({ isActive }) => {
         });
         pulsesMesh.geometry.attributes.position.needsUpdate = true;
 
-        scene.rotation.y += 0.0008;
-        camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY * 0.5 - camera.position.y) * 0.05;
+        scene.rotation.y += isSmallViewport ? 0.00035 : 0.00055;
+        camera.position.x += (mouseX * (isSmallViewport ? 0.22 : 0.35) - camera.position.x) * 0.04;
+        camera.position.y += (-mouseY * (isSmallViewport ? 0.22 : 0.35) - camera.position.y) * 0.04;
         camera.lookAt(0, 0, 0);
 
         renderer.render(scene, camera);
@@ -203,6 +213,7 @@ export const AuthBackground: React.FC<AuthBackgroundProps> = ({ isActive }) => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       };
       window.addEventListener('resize', handleResize);
 

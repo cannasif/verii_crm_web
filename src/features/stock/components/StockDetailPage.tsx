@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { lazy, Suspense, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
@@ -10,21 +10,44 @@ import { ArrowLeft, Box, Image as ImageIcon, Layers, Info, PackageOpen, ShieldCh
 import { cn } from '@/lib/utils';
 import { useStockDetail } from '../hooks/useStockDetail';
 import { StockBasicInfo } from './StockBasicInfo';
-import { StockDetailForm } from './StockDetailForm';
-import { StockImageUpload } from './StockImageUpload';
-import { StockImageList } from './StockImageList';
-import { StockRelationForm } from './StockRelationForm';
-import { StockRelationList } from './StockRelationList';
+import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+
+const StockDetailForm = lazy(() =>
+  import('./StockDetailForm').then((module) => ({ default: module.StockDetailForm }))
+);
+const StockImageUpload = lazy(() =>
+  import('./StockImageUpload').then((module) => ({ default: module.StockImageUpload }))
+);
+const StockImageList = lazy(() =>
+  import('./StockImageList').then((module) => ({ default: module.StockImageList }))
+);
+const StockRelationForm = lazy(() =>
+  import('./StockRelationForm').then((module) => ({ default: module.StockRelationForm }))
+);
+const StockRelationList = lazy(() =>
+  import('./StockRelationList').then((module) => ({ default: module.StockRelationList }))
+);
 
 export function StockDetailPage(): ReactElement {
   const { t } = useTranslation(['stock', 'common']);
+  const { canCreate, canUpdate } = useCrudPermissions('stock.stocks.view');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const [activeTab, setActiveTab] = useState('basic');
   const stockId = id ? parseInt(id, 10) : 0;
+  const didMeasureDataReady = useRef(false);
 
   const { data: stock, isLoading } = useStockDetail(stockId);
+  const canModify = canCreate || canUpdate;
+
+  useEffect(() => {
+    const startMark = 'stock-detail:mount:start';
+    clearPerfMarks(startMark, 'stock-detail:mount_to_paint', 'stock-detail:mount_to_paint:end');
+    perfMark(startMark);
+    perfMeasureOnNextPaint('stock-detail:mount_to_paint', startMark);
+  }, []);
 
   useEffect(() => {
     if (stock) {
@@ -32,6 +55,19 @@ export function StockDetailPage(): ReactElement {
     }
     return () => setPageTitle(null);
   }, [stock, t, setPageTitle]);
+
+  useEffect(() => {
+    if (isLoading || !stock || didMeasureDataReady.current) return;
+    didMeasureDataReady.current = true;
+    perfMeasureOnNextPaint('stock-detail:mount_to_data_ready_paint', 'stock-detail:mount:start', `stockId=${stockId}`);
+  }, [didMeasureDataReady, isLoading, stock, stockId]);
+
+  useEffect(() => {
+    const startMark = `stock-detail:tab:${activeTab}:start`;
+    clearPerfMarks(startMark, `stock-detail:tab_switch_to_paint:${activeTab}`, `stock-detail:tab_switch_to_paint:${activeTab}:end`);
+    perfMark(startMark);
+    perfMeasureOnNextPaint(`stock-detail:tab_switch_to_paint:${activeTab}`, startMark);
+  }, [activeTab]);
 
   if (isLoading) {
     return (
@@ -143,7 +179,9 @@ export function StockDetailPage(): ReactElement {
                             <div className="lg:col-span-8">
                                 <Card className="border-none shadow-none bg-transparent">
                                     <CardContent className="p-0">
-                                        <StockDetailForm stockId={stockId} />
+                                        <Suspense fallback={<Skeleton className="h-[420px] w-full rounded-xl" />}>
+                                          {activeTab === 'basic' ? <StockDetailForm stockId={stockId} /> : null}
+                                        </Suspense>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -151,40 +189,57 @@ export function StockDetailPage(): ReactElement {
                     </TabsContent>
 
                     <TabsContent value="images" className="mt-0 focus-visible:outline-none animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        <div className="space-y-8">
-                            <div className="bg-zinc-50/50 dark:bg-white/5 border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-xl p-8 hover:bg-zinc-50 dark:hover:bg-white/10 transition-colors">
-                                <StockImageUpload stockId={stockId} />
-                            </div>
-                            <div className="relative">
-                                <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                    <div className="w-full border-t border-zinc-200 dark:border-white/10"></div>
+                        <Suspense fallback={<StockTabSkeleton />}>
+                            {activeTab === 'images' ? (
+                                <div className="space-y-8">
+                                    <div className="bg-zinc-50/50 dark:bg-white/5 border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-xl p-8 hover:bg-zinc-50 dark:hover:bg-white/10 transition-colors">
+                                        {canModify ? <StockImageUpload stockId={stockId} /> : null}
+                                    </div>
+                                    <div className="relative">
+                                        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                            <div className="w-full border-t border-zinc-200 dark:border-white/10"></div>
+                                        </div>
+                                        <div className="relative flex justify-center">
+                                            <span className="px-3 bg-white/0 text-sm text-muted-foreground bg-white dark:bg-[#1a1025]">{t('stock.detail.gallery')}</span>
+                                        </div>
+                                    </div>
+                                    <StockImageList stockId={stockId} />
                                 </div>
-                                <div className="relative flex justify-center">
-                                    <span className="px-3 bg-white/0 text-sm text-muted-foreground bg-white dark:bg-[#1a1025]">{t('stock.detail.gallery')}</span>
-                                </div>
-                            </div>
-                            <StockImageList stockId={stockId} />
-                        </div>
+                            ) : null}
+                        </Suspense>
                     </TabsContent>
 
                     <TabsContent value="relations" className="mt-0 focus-visible:outline-none animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        <div className="grid gap-8 lg:grid-cols-12">
-                             <div className="lg:col-span-4">
-                                <div className="bg-gradient-to-br from-white to-zinc-50 dark:from-white/5 dark:to-transparent rounded-xl p-6 border border-zinc-100 dark:border-white/5 shadow-sm sticky top-6">
-                                    <h3 className="font-semibold text-lg mb-2">{t('stock.detail.addRelation')}</h3>
-                                    <p className="text-sm text-muted-foreground mb-6">{t('stock.detail.relationHint', { defaultValue: 'Bu stoka ait alt veya üst ürün tanımlayın.' })}</p>
-                                    <StockRelationForm stockId={stockId} />
+                        <Suspense fallback={<StockTabSkeleton tall />}>
+                            {activeTab === 'relations' ? (
+                                <div className="grid gap-8 lg:grid-cols-12">
+                                     <div className="lg:col-span-4">
+                                        <div className="bg-gradient-to-br from-white to-zinc-50 dark:from-white/5 dark:to-transparent rounded-xl p-6 border border-zinc-100 dark:border-white/5 shadow-sm sticky top-6">
+                                            <h3 className="font-semibold text-lg mb-2">{t('stock.detail.addRelation')}</h3>
+                                            <p className="text-sm text-muted-foreground mb-6">{t('stock.detail.relationHint', { defaultValue: 'Bu stoka ait alt veya üst ürün tanımlayın.' })}</p>
+                                            {canModify ? <StockRelationForm stockId={stockId} /> : null}
+                                        </div>
+                                     </div>
+                                     <div className="lg:col-span-8">
+                                        <StockRelationList stockId={stockId} />
+                                     </div>
                                 </div>
-                             </div>
-                             <div className="lg:col-span-8">
-                                <StockRelationList stockId={stockId} />
-                             </div>
-                        </div>
+                            ) : null}
+                        </Suspense>
                     </TabsContent>
                 </div>
             </Tabs>
         </div>
       </div>
+    </div>
+  );
+}
+
+function StockTabSkeleton({ tall = false }: { tall?: boolean }): ReactElement {
+  return (
+    <div className="space-y-6">
+      <Skeleton className={`w-full rounded-2xl ${tall ? 'h-[420px]' : 'h-[220px]'}`} />
+      <Skeleton className="h-[220px] w-full rounded-2xl" />
     </div>
   );
 }

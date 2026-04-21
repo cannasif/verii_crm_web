@@ -62,6 +62,7 @@ import {
 } from '@/lib/management-list-layout';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { usePdfReportTemplateList } from '../hooks/usePdfReportTemplateList';
 import { useDeletePdfReportTemplate } from '../hooks/useDeletePdfReportTemplate';
 import { useGeneratePdfReportDocument } from '../hooks/useGeneratePdfReportDocument';
@@ -136,6 +137,7 @@ function downloadBlobAsPdf(blob: Blob, filename: string): void {
 
 export function PdfReportDesignerListPage(): ReactElement {
   const { t, i18n } = useTranslation(['report-designer', 'common']);
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('reports.designer.list.view');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
@@ -401,12 +403,14 @@ export function PdfReportDesignerListPage(): ReactElement {
               Table Presets
             </Link>
           </Button>
-          <Button asChild>
-            <Link to="/pdf-report-designer/create" className="inline-flex items-center gap-2">
-              <Plus className="size-4" />
-              {t('pdfReportDesigner.createNew')}
-            </Link>
-          </Button>
+          {canCreate ? (
+            <Button asChild>
+              <Link to="/pdf-report-designer/create" className="inline-flex items-center gap-2">
+                <Plus className="size-4" />
+                {t('pdfReportDesigner.createNew')}
+              </Link>
+            </Button>
+          ) : null}
         </div>
       </div>
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
@@ -546,7 +550,7 @@ export function PdfReportDesignerListPage(): ReactElement {
                 loadingText={t('common.loading')}
                 emptyText={hasActiveFilters ? t('common.noResults') : t('pdfReportDesigner.noTemplates')}
                 minTableWidthClassName="min-w-[1100px]"
-                showActionsColumn
+                showActionsColumn={canCreate || canUpdate || canDelete}
                 actionsHeaderLabel={t('common.actions')}
                 renderActionsCell={(template) => (
                   <div className="flex justify-end">
@@ -561,32 +565,38 @@ export function PdfReportDesignerListPage(): ReactElement {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link to={`/pdf-report-designer/edit/${template.id}`} className="flex items-center gap-2">
-                            <Pencil className="size-4" />
-                            {t('common.edit')}
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleCopyAction(template)}>
-                          <Copy className="size-4" />
-                          {t('pdfReportDesigner.copy')}
-                        </DropdownMenuItem>
+                        {canUpdate ? (
+                          <DropdownMenuItem asChild>
+                            <Link to={`/pdf-report-designer/edit/${template.id}`} className="flex items-center gap-2">
+                              <Pencil className="size-4" />
+                              {t('common.edit')}
+                            </Link>
+                          </DropdownMenuItem>
+                        ) : null}
+                        {canCreate ? (
+                          <DropdownMenuItem onClick={() => handleCopyAction(template)}>
+                            <Copy className="size-4" />
+                            {t('pdfReportDesigner.copy')}
+                          </DropdownMenuItem>
+                        ) : null}
                         <DropdownMenuItem onClick={() => handlePdfAction(template)}>
                           <FileDown className="size-4" />
                           {t('pdfReportDesigner.generatePdf')}
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => handleRowDeleteClick(template)}
-                        >
-                          <Trash2 className="size-4" />
-                          {t('common.delete.action')}
-                        </DropdownMenuItem>
+                        {canDelete ? (
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => handleRowDeleteClick(template)}
+                          >
+                            <Trash2 className="size-4" />
+                            {t('common.delete.action')}
+                          </DropdownMenuItem>
+                        ) : null}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                 )}
-                onRowDoubleClick={(template) => navigate(`/pdf-report-designer/edit/${template.id}`)}
+                onRowDoubleClick={canUpdate ? (template) => navigate(`/pdf-report-designer/edit/${template.id}`) : undefined}
                 pageSize={pageSize}
                 pageSizeOptions={PAGE_SIZE_OPTIONS}
                 onPageSizeChange={setPageSize}
@@ -606,7 +616,7 @@ export function PdfReportDesignerListPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('pdfReportDesigner.deleteTemplateTitle')}</DialogTitle>
