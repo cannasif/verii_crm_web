@@ -58,6 +58,8 @@ import { useUpdatePdfReportTemplate } from '../hooks/useUpdatePdfReportTemplate'
 import { usePdfReportTemplateById } from '../hooks/usePdfReportTemplateById';
 import { dtoToPdfCanvasElements, pdfCanvasElementsToDto } from '../utils/dto-to-canvas';
 import { getApiErrorMessage } from '../utils/get-api-error-message';
+import { createPdfElement } from '../utils/create-pdf-element';
+import type { PdfCanvasContextAddPayload } from '../components/PdfCanvasContextMenu';
 import { createClientId } from '@/lib/create-client-id';
 import type {
   ReportTemplateCreateDto,
@@ -1077,6 +1079,28 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     handleAddReusableBlock('documentMeta');
   }, [handleAddReusableBlock, handleAddSmartTable, handleAddSmartTotals, handleApplyStarterLayout]);
 
+  const handleContextAdd = useCallback(
+    (payload: PdfCanvasContextAddPayload): void => {
+      if (payload.type === 'table' && ruleType === TemplateDesignerRuleType.Activity) {
+        return;
+      }
+      const element = createPdfElement({
+        type: payload.type,
+        section: payload.section,
+        x: payload.x,
+        y: payload.y,
+        pageNumber: currentPage,
+        fieldLabel: payload.field?.label,
+        fieldPath: payload.field?.path,
+        texts: {
+          doubleClickToEdit: t('reportDesigner.defaults.doubleClickToEdit'),
+        },
+      });
+      if (element) addElement(element);
+    },
+    [addElement, currentPage, ruleType, t]
+  );
+
   useEffect(() => {
     if (layoutPreset !== PDF_LAYOUT_PRESET.Custom) {
       form.setValue('layoutPreset', PDF_LAYOUT_PRESET.Custom, {
@@ -1444,6 +1468,43 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         </Alert>
       )}
 
+      {!isEdit && !hasElements ? (
+        <div className="shrink-0 border-b border-slate-200 bg-linear-to-r from-sky-50/80 via-white to-indigo-50/60 px-4 py-2 dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11.5px] leading-snug text-slate-500 dark:text-slate-400">
+            <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
+              <Sparkles className="size-3.5 text-sky-500" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider">
+                {t('pdfReportDesigner.onboardingBadge')}
+              </span>
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex size-4 items-center justify-center rounded-full bg-sky-100 text-[9.5px] font-semibold text-sky-700 dark:bg-sky-950/40 dark:text-sky-300">
+                1
+              </span>
+              {t('pdfReportDesigner.stepper.identify', { defaultValue: 'Pick document type & title' })}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex size-4 items-center justify-center rounded-full bg-slate-100 text-[9.5px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                2
+              </span>
+              {t('pdfReportDesigner.stepper.design', { defaultValue: 'Drag elements from the left' })}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex size-4 items-center justify-center rounded-full bg-slate-100 text-[9.5px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                3
+              </span>
+              {t('pdfReportDesigner.stepper.configure', { defaultValue: 'Configure on the right' })}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex size-4 items-center justify-center rounded-full bg-slate-100 text-[9.5px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                4
+              </span>
+              {t('pdfReportDesigner.stepper.save', { defaultValue: 'Save your template' })}
+            </span>
+          </div>
+        </div>
+      ) : null}
+
       <div className="shrink-0 border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -1748,8 +1809,13 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                   ...(fieldsData?.lineFields ?? []),
                   ...(fieldsData?.exchangeRateFields ?? []),
                 ]}
+                headerFields={fieldsData?.headerFields ?? []}
+                lineFields={fieldsData?.lineFields ?? []}
+                allowTable={ruleType !== TemplateDesignerRuleType.Activity}
                 onPageRef={handlePageRef}
                 onPageChange={handleNavigateToPage}
+                onContextAdd={handleContextAdd}
+                onApplyPreset={handleApplyPdfPreset}
               />
               <Suspense fallback={<PdfSidePanelSkeleton className="hidden w-64 shrink-0 xl:block" />}>
                 <PdfInspectorPanel

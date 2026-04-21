@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
+import { PdfElementTypeIcon, getPdfElementTypeKey } from './PdfElementTypeBadge';
 import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
 import { resolvePdfImageSrc } from '../utils/resolve-pdf-image-src';
 import {
@@ -188,7 +189,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
                 <ChevronRight className="size-3.5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="left">Daralt</TooltipContent>
+            <TooltipContent side="left">{t('common.collapse', { defaultValue: 'Collapse' })}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
@@ -230,11 +231,24 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
               </div>
               <button
                 type="button"
-                className="min-w-0 flex-1 truncate text-left text-slate-700 dark:text-slate-300"
+                className="flex min-w-0 flex-1 items-center gap-1.5 truncate text-left text-slate-700 dark:text-slate-300"
                 onClick={() => handleFocusElement(id)}
-                title={`${getLabel(el)} — odaklan`}
+                title={`${getLabel(el)}`}
               >
-                {getLabel(el)}
+                <span
+                  className={`flex size-4 shrink-0 items-center justify-center rounded ${
+                    isSelected
+                      ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300'
+                      : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                  }`}
+                >
+                  <PdfElementTypeIcon type={getPdfElementTypeKey(el)} className="size-3" />
+                </span>
+                <span className={`min-w-0 flex-1 truncate ${el.hidden ? 'opacity-50' : ''}`}>
+                  {getLabel(el)}
+                </span>
+                {el.locked ? <Lock className="size-3 shrink-0 text-slate-400" /> : null}
+                {el.hidden ? <EyeOff className="size-3 shrink-0 text-slate-400" /> : null}
               </button>
               <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
                 <button

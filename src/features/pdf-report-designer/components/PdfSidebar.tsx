@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
@@ -13,7 +13,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Upload, ChevronLeft, ChevronRight, Palette, Search, X } from 'lucide-react';
+import {
+  Upload,
+  ChevronLeft,
+  ChevronRight,
+  Palette,
+  Search,
+  X,
+  Blocks,
+  Tag,
+  Columns3,
+  Table as TableIconLucide,
+  Banknote,
+  Image as ImageIconLucide,
+  MousePointer2,
+  MoveRight,
+  Settings2,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { FONT_FAMILIES, FONT_SIZES } from '../constants';
@@ -88,33 +104,77 @@ function DraggablePaletteItem({
   );
 }
 
+interface PaletteSectionProps {
+  title: string;
+  items: PdfFieldPaletteItem[];
+  idPrefix: string;
+  icon?: ReactNode;
+  hint?: string;
+  emphasis?: 'primary' | 'default' | 'muted';
+  defaultCollapsed?: boolean;
+}
+
 function Section({
   title,
   items,
   idPrefix,
-}: {
-  title: string;
-  items: PdfFieldPaletteItem[];
-  idPrefix: string;
-}): ReactElement | null {
+  icon,
+  hint,
+  emphasis = 'default',
+  defaultCollapsed = false,
+}: PaletteSectionProps): ReactElement | null {
+  const [collapsed, setCollapsed] = useState<boolean>(defaultCollapsed);
   if (items.length === 0) return null;
+  const emphasisClasses: Record<'primary' | 'default' | 'muted', string> = {
+    primary: 'text-slate-700 dark:text-slate-200',
+    default: 'text-slate-500 dark:text-slate-400',
+    muted: 'text-slate-400 dark:text-slate-500',
+  };
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
-          {title}
+    <div className="flex flex-col gap-1.5">
+      <button
+        type="button"
+        onClick={() => setCollapsed((prev) => !prev)}
+        className="flex items-center justify-between gap-2 rounded-md px-1 py-0.5 text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/40"
+        aria-expanded={!collapsed}
+      >
+        <span className="flex min-w-0 items-center gap-1.5">
+          {icon ? (
+            <span className={`shrink-0 ${emphasisClasses[emphasis]}`}>{icon}</span>
+          ) : null}
+          <span
+            className={`truncate text-[10.5px] font-semibold uppercase tracking-widest ${emphasisClasses[emphasis]}`}
+          >
+            {title}
+          </span>
         </span>
-        <span className="text-[10px] text-slate-300 dark:text-slate-600">{items.length}</span>
-      </div>
-      <div className="flex flex-col gap-1">
-        {items.map((field, index) => (
-          <DraggablePaletteItem
-            key={`${idPrefix}-${field.path || field.type}-${index}`}
-            field={field}
-            id={`${idPrefix}-${field.path || field.type}-${index}`}
+        <span className="flex shrink-0 items-center gap-1.5">
+          <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+            {items.length}
+          </span>
+          <ChevronRight
+            className={`size-3 text-slate-400 transition-transform ${collapsed ? 'rotate-0' : 'rotate-90'}`}
           />
-        ))}
-      </div>
+        </span>
+      </button>
+      {!collapsed ? (
+        <>
+          {hint ? (
+            <p className="px-1 text-[10.5px] leading-snug text-slate-400 dark:text-slate-500">
+              {hint}
+            </p>
+          ) : null}
+          <div className="flex flex-col gap-1">
+            {items.map((field, index) => (
+              <DraggablePaletteItem
+                key={`${idPrefix}-${field.path || field.type}-${index}`}
+                field={field}
+                id={`${idPrefix}-${field.path || field.type}-${index}`}
+              />
+            ))}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
@@ -577,20 +637,74 @@ export function PdfSidebar({
             </div>
           ) : (
             <>
+              {search.length === 0 ? (
+                <div className="rounded-md border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
+                  <div className="mb-2 flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <Blocks className="size-3.5" />
+                    {t('pdfReportDesigner.paletteHowTo', { defaultValue: 'How to build a page' })}
+                  </div>
+                  <ol className="flex flex-col gap-1.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                    <li className="flex items-start gap-1.5">
+                      <MousePointer2 className="mt-0.5 size-3 shrink-0 text-slate-400" />
+                      <span>{t('pdfReportDesigner.paletteSteps.s1', { defaultValue: 'Pick a block or field from below.' })}</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <MoveRight className="mt-0.5 size-3 shrink-0 text-slate-400" />
+                      <span>{t('pdfReportDesigner.paletteSteps.s2', { defaultValue: 'Drop it onto the A4 canvas in the center.' })}</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <Settings2 className="mt-0.5 size-3 shrink-0 text-slate-400" />
+                      <span>{t('pdfReportDesigner.paletteSteps.s3', { defaultValue: 'Fine-tune it using the inspector on the right.' })}</span>
+                    </li>
+                  </ol>
+                </div>
+              ) : null}
               <Section
                 title={t('reportDesigner.palette.basicBlocks')}
                 items={filteredBasic}
                 idPrefix="pdf-palette-text"
+                icon={<Blocks className="size-3.5" />}
+                emphasis="primary"
+                hint={t('pdfReportDesigner.paletteSectionHints.basicBlocks', { defaultValue: 'Static building blocks — titles, paragraphs, shapes.' })}
               />
-              <Section title={t('reportDesigner.palette.fields')} items={filteredFields} idPrefix="pdf-palette-fields" />
-              <Section title={t('reportDesigner.palette.tableColumns')} items={filteredTable} idPrefix="pdf-palette-table-columns" />
+              <Section
+                title={t('reportDesigner.palette.fields')}
+                items={filteredFields}
+                idPrefix="pdf-palette-fields"
+                icon={<Tag className="size-3.5" />}
+                emphasis="primary"
+                hint={t('pdfReportDesigner.paletteSectionHints.fields', { defaultValue: 'Dynamic fields bound to your document data.' })}
+              />
+              <Section
+                title={t('reportDesigner.palette.addTable')}
+                items={filteredAddTable}
+                idPrefix="pdf-palette-add-table"
+                icon={<TableIconLucide className="size-3.5" />}
+                emphasis="primary"
+                hint={t('pdfReportDesigner.paletteSectionHints.addTable', { defaultValue: 'Insert a table to list items or details.' })}
+              />
+              <Section
+                title={t('reportDesigner.palette.tableColumns')}
+                items={filteredTable}
+                idPrefix="pdf-palette-table-columns"
+                icon={<Columns3 className="size-3.5" />}
+                hint={t('pdfReportDesigner.paletteSectionHints.tableColumns', { defaultValue: 'Drag into an existing table to add columns.' })}
+                defaultCollapsed={true}
+              />
               <Section
                 title={t('reportDesigner.palette.exchangeRates')}
                 items={filteredExchange}
                 idPrefix="pdf-palette-exchange-rates"
+                icon={<Banknote className="size-3.5" />}
+                defaultCollapsed={true}
               />
-              <Section title={t('reportDesigner.palette.addTable')} items={filteredAddTable} idPrefix="pdf-palette-add-table" />
-              <Section title={t('reportDesigner.palette.images')} items={filteredImages} idPrefix="pdf-palette-images" />
+              <Section
+                title={t('reportDesigner.palette.images')}
+                items={filteredImages}
+                idPrefix="pdf-palette-images"
+                icon={<ImageIconLucide className="size-3.5" />}
+                defaultCollapsed={true}
+              />
             </>
           )}
         </div>

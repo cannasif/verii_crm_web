@@ -1,13 +1,30 @@
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Settings2, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Settings2,
+  ChevronLeft,
+  ChevronRight,
+  Move,
+  Layers2,
+  Palette,
+  Eye,
+  Table as TableIcon,
+  Columns3,
+  MessageSquareText,
+  Sigma,
+  Receipt,
+  Layers,
+  Type as TypeIcon,
+  Sparkles,
+} from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
 import { Input } from '@/components/ui/input';
@@ -24,6 +41,8 @@ import { PDF_TABLE_PRESETS, getPdfTablePreset } from '../constants/table-presets
 import { usePdfTablePresetList } from '../hooks/usePdfTablePresetList';
 import type { FieldDefinitionDto } from '@/features/pdf-report';
 import type { PdfVisibilityRule } from '../types/pdf-report-template.types';
+import { PdfInspectorSection } from './PdfInspectorSection';
+import { PdfElementTypeIcon, getPdfElementTypeKey } from './PdfElementTypeBadge';
 
 interface PdfInspectorPanelProps {
   pageCount: number;
@@ -156,9 +175,12 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
     return (
       <div className="flex min-h-0 w-64 shrink-0 flex-col border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2.5 dark:border-slate-700">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            {t('reportDesigner.inspector.title')}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <Settings2 className="size-3.5 text-slate-400" />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {t('reportDesigner.inspector.title')}
+            </span>
+          </div>
           <TooltipProvider delayDuration={300}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -174,8 +196,18 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
             </Tooltip>
           </TooltipProvider>
         </div>
-        <div className="flex flex-1 items-center justify-center p-4">
-          <p className="text-center text-xs text-slate-400 dark:text-slate-500">{t('reportDesigner.inspector.selectHint')}</p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 p-5 text-center">
+          <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
+            <Sparkles className="size-5" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+              {t('pdfReportDesigner.inspectorSelectionEmptyHeadline')}
+            </span>
+            <span className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+              {t('pdfReportDesigner.inspectorSelectionEmptyBody')}
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -228,12 +260,18 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
     },
   ];
 
+  const elementTypeKey = getPdfElementTypeKey(selectedElement);
+  const elementTypeLabel = t(`pdfReportDesigner.elementTypes.${elementTypeKey}` as unknown as string);
+
   return (
     <div className="flex min-h-0 w-64 shrink-0 flex-col overflow-y-auto border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-4 py-2.5 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          {t('reportDesigner.inspector.title')}
-        </span>
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/95 px-4 py-2.5 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90">
+        <div className="flex items-center gap-1.5">
+          <Settings2 className="size-3.5 text-slate-400" />
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            {t('reportDesigner.inspector.title')}
+          </span>
+        </div>
         <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -249,221 +287,253 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="flex flex-col gap-3 p-3">
-      <div className="grid grid-cols-2 gap-2">
-        <div className="flex flex-col gap-1">
-          <Label className="text-xs">X</Label>
-          <Input
-            type="number"
-            value={selectedElement.x}
-            onChange={(e) =>
-              updateElement(selectedElement.id, { x: Number(e.target.value) || 0 })
-            }
-            className="h-8 text-xs"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label className="text-xs">Y</Label>
-          <Input
-            type="number"
-            value={selectedElement.y}
-            onChange={(e) =>
-              updateElement(selectedElement.id, { y: Number(e.target.value) || 0 })
-            }
-            className="h-8 text-xs"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label className="text-xs">W</Label>
-          <Input
-            type="number"
-            value={selectedElement.width}
-            onChange={(e) =>
-              updateElement(selectedElement.id, { width: Number(e.target.value) || 0 })
-            }
-            className="h-8 text-xs"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label className="text-xs">H</Label>
-          <Input
-            type="number"
-            value={selectedElement.height}
-            onChange={(e) =>
-              updateElement(selectedElement.id, { height: Number(e.target.value) || 0 })
-            }
-            className="h-8 text-xs"
-          />
-        </div>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.inspector.zIndex')}</Label>
-        <Input
-          type="number"
-          value={selectedElement.zIndex ?? ''}
-          onChange={(e) =>
-            updateElement(selectedElement.id, {
-              zIndex: e.target.value === '' ? undefined : Number(e.target.value),
-            })
-          }
-          className="h-8 text-xs"
-          placeholder={t('reportDesigner.inspector.zIndexPlaceholder')}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.inspector.rotation')}</Label>
-        <Input
-          type="number"
-          value={selectedElement.rotation ?? 0}
-          onChange={(e) =>
-            updateElement(selectedElement.id, { rotation: Number(e.target.value) || 0 })
-          }
-          className="h-8 text-xs"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('pdfReportDesigner.visiblePages')}</Label>
-        <Input
-          value={pageNumbersValue}
-          onChange={(e) =>
-            updateElement(selectedElement.id, {
-              pageNumbers: normalizePageNumbers(e.target.value, pageCount),
-            })
-          }
-          className="h-8 text-xs"
-          placeholder={t('pdfReportDesigner.visiblePagesPlaceholder')}
-        />
-      </div>
-      {!isPdfTableElement(selectedElement) ? (
-        <div className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900/50">
-          <Label className="text-xs">{t('pdfReportDesigner.visibilityRuleTitle')}</Label>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">{t('pdfReportDesigner.visibilityRuleDescription')}</p>
-          <div className="grid gap-2">
-            {visibilityRulePresets.map((preset) => (
-              <button
-                key={preset.key}
-                type="button"
-                className="rounded-md border px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
-                onClick={() => updateVisibilityRules(preset.rules, preset.logic)}
-              >
-                {preset.label}
-              </button>
-            ))}
+
+      <div className="border-b border-slate-200 bg-white/80 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900/40">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+            <PdfElementTypeIcon type={elementTypeKey} className="size-4" />
           </div>
-          <Select
-            value={selectedElement.visibilityLogic ?? 'all'}
-            onValueChange={(value: 'all' | 'any') => updateVisibilityRules(visibilityRules, value)}
-          >
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('pdfReportDesigner.visibilityLogic.all')}</SelectItem>
-              <SelectItem value="any">{t('pdfReportDesigner.visibilityLogic.any')}</SelectItem>
-            </SelectContent>
-          </Select>
-          {visibilityRules.map((rule, ruleIndex) => {
-            const fieldDefinition = fieldDefinitions.find((field) => field.path === rule.fieldPath);
-            return (
-              <div key={`${selectedElement.id}-rule-${ruleIndex}`} className="rounded-md border border-slate-200 p-2 dark:border-slate-700">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                    {t('pdfReportDesigner.visibilityRuleItemTitle', { index: ruleIndex + 1 })}
-                  </div>
-                  <button
-                    type="button"
-                    className="text-[11px] font-medium text-rose-500"
-                    onClick={() => updateVisibilityRules(visibilityRules.filter((_, index) => index !== ruleIndex))}
-                  >
-                    {t('pdfReportDesigner.visibilityRuleRemove')}
-                  </button>
-                </div>
-                <Input
-                  value={rule.fieldPath ?? ''}
-                  onChange={(e) =>
-                    updateVisibilityRules(
-                      visibilityRules.map((item, index) =>
-                        index === ruleIndex ? { ...item, fieldPath: e.target.value || undefined } : item,
-                      ),
-                    )
-                  }
-                  className="h-8 text-xs"
-                  placeholder={t('pdfReportDesigner.visibilityRuleFieldPlaceholder')}
-                />
-                <Select
-                  value={rule.operator ?? 'equals'}
-                  onValueChange={(value: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty') =>
-                    updateVisibilityRules(
-                      visibilityRules.map((item, index) =>
-                        index === ruleIndex ? { ...item, operator: value } : item,
-                      ),
-                    )
-                  }
-                >
-                  <SelectTrigger className="mt-2 h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="equals">{t('pdfReportDesigner.visibilityOperators.equals')}</SelectItem>
-                    <SelectItem value="notEquals">{t('pdfReportDesigner.visibilityOperators.notEquals')}</SelectItem>
-                    <SelectItem value="isEmpty">{t('pdfReportDesigner.visibilityOperators.isEmpty')}</SelectItem>
-                    <SelectItem value="isNotEmpty">{t('pdfReportDesigner.visibilityOperators.isNotEmpty')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input
-                  value={rule.value ?? ''}
-                  onChange={(e) =>
-                    updateVisibilityRules(
-                      visibilityRules.map((item, index) =>
-                        index === ruleIndex ? { ...item, value: e.target.value || undefined } : item,
-                      ),
-                    )
-                  }
-                  className="mt-2 h-8 text-xs"
-                  placeholder={t('pdfReportDesigner.visibilityRuleValuePlaceholder')}
-                />
-                <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-                  {fieldDefinition?.description ?? t('pdfReportDesigner.visibilityRulePreviewNoField')}
-                </div>
-              </div>
-            );
-          })}
-          <button
-            type="button"
-            className="h-8 rounded-md border px-3 text-xs font-medium"
-            onClick={() => updateVisibilityRules([...visibilityRules, { operator: 'equals' }])}
-          >
-            {t('pdfReportDesigner.visibilityRuleAdd')}
-          </button>
-          <div className="rounded-md bg-slate-50 px-2 py-2 text-[11px] text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-            <div className="font-medium">{t('pdfReportDesigner.visibilityRulePreviewTitle')}</div>
-            {visibilityRules.length > 0 ? visibilityRules.map((rule, ruleIndex) => {
-              const fieldDefinition = fieldDefinitions.find((field) => field.path === rule.fieldPath);
-              return (
-                <div key={`${selectedElement.id}-preview-${ruleIndex}`} className="mt-1">
-                  <div>{t('pdfReportDesigner.visibilityRulePreviewRule', { index: ruleIndex + 1 })}</div>
-                  <div>{fieldDefinition?.description ?? t('pdfReportDesigner.visibilityRulePreviewNoField')}</div>
-                  <div>
-                    {t('pdfReportDesigner.visibilityRulePreviewSample', {
-                      value: fieldDefinition?.exampleValue ?? t('pdfReportDesigner.visibilityRulePreviewEmptyValue'),
-                    })}
-                  </div>
-                </div>
-              );
-            }) : null}
-            <div className="mt-1 font-medium">
-              {visibilityPreviewResult == null
-                ? t('pdfReportDesigner.visibilityRulePreviewIncomplete')
-                : visibilityPreviewResult
-                  ? t('pdfReportDesigner.visibilityRulePreviewVisible')
-                  : t('pdfReportDesigner.visibilityRulePreviewHidden')}
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+              {t('pdfReportDesigner.inspectorSelectionTitle')}
+            </div>
+            <div className="truncate text-xs font-semibold text-slate-700 dark:text-slate-200">
+              {elementTypeLabel}
             </div>
           </div>
+          {selectedElement.locked ? (
+            <Badge variant="outline" className="shrink-0 text-[9px] uppercase tracking-wider">
+              lock
+            </Badge>
+          ) : null}
+          {selectedElement.hidden ? (
+            <Badge variant="secondary" className="shrink-0 text-[9px] uppercase tracking-wider">
+              hide
+            </Badge>
+          ) : null}
         </div>
-      ) : null}
+        {selectedElement.locked ? (
+          <p className="mt-1.5 text-[10.5px] leading-snug text-amber-600 dark:text-amber-400">
+            {t('pdfReportDesigner.inspectorLockHint')}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="flex flex-col gap-2 p-3">
+      <PdfInspectorSection
+        title={t('pdfReportDesigner.inspectorGroups.position')}
+        icon={<Move className="size-3.5" />}
+        defaultOpen={true}
+      >
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col gap-1">
+            <Label className="text-xs">X</Label>
+            <Input
+              type="number"
+              value={selectedElement.x}
+              onChange={(e) =>
+                updateElement(selectedElement.id, { x: Number(e.target.value) || 0 })
+              }
+              className="h-8 text-xs"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label className="text-xs">Y</Label>
+            <Input
+              type="number"
+              value={selectedElement.y}
+              onChange={(e) =>
+                updateElement(selectedElement.id, { y: Number(e.target.value) || 0 })
+              }
+              className="h-8 text-xs"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label className="text-xs">W</Label>
+            <Input
+              type="number"
+              value={selectedElement.width}
+              onChange={(e) =>
+                updateElement(selectedElement.id, { width: Number(e.target.value) || 0 })
+              }
+              className="h-8 text-xs"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label className="text-xs">H</Label>
+            <Input
+              type="number"
+              value={selectedElement.height}
+              onChange={(e) =>
+                updateElement(selectedElement.id, { height: Number(e.target.value) || 0 })
+              }
+              className="h-8 text-xs"
+            />
+          </div>
+        </div>
+      </PdfInspectorSection>
+
+      <PdfInspectorSection
+        title={t('pdfReportDesigner.inspectorGroups.pageVisibility')}
+        icon={<Eye className="size-3.5" />}
+        defaultOpen={false}
+        tone="muted"
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <Label className="text-xs">{t('pdfReportDesigner.visiblePages')}</Label>
+            <Input
+              value={pageNumbersValue}
+              onChange={(e) =>
+                updateElement(selectedElement.id, {
+                  pageNumbers: normalizePageNumbers(e.target.value, pageCount),
+                })
+              }
+              className="h-8 text-xs"
+              placeholder={t('pdfReportDesigner.visiblePagesPlaceholder')}
+            />
+          </div>
+          {!isPdfTableElement(selectedElement) ? (
+            <div className="flex flex-col gap-2">
+              <Label className="text-xs">{t('pdfReportDesigner.visibilityRuleTitle')}</Label>
+              <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                {t('pdfReportDesigner.visibilityRuleDescription')}
+              </p>
+              <div className="grid gap-1.5">
+                {visibilityRulePresets.map((preset) => (
+                  <button
+                    key={preset.key}
+                    type="button"
+                    className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-left text-xs font-medium transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/40 dark:hover:bg-slate-800"
+                    onClick={() => updateVisibilityRules(preset.rules, preset.logic)}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+              <Select
+                value={selectedElement.visibilityLogic ?? 'all'}
+                onValueChange={(value: 'all' | 'any') => updateVisibilityRules(visibilityRules, value)}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('pdfReportDesigner.visibilityLogic.all')}</SelectItem>
+                  <SelectItem value="any">{t('pdfReportDesigner.visibilityLogic.any')}</SelectItem>
+                </SelectContent>
+              </Select>
+              {visibilityRules.map((rule, ruleIndex) => {
+                const fieldDefinition = fieldDefinitions.find((field) => field.path === rule.fieldPath);
+                return (
+                  <div key={`${selectedElement.id}-rule-${ruleIndex}`} className="rounded-md border border-slate-200 p-2 dark:border-slate-700">
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                        {t('pdfReportDesigner.visibilityRuleItemTitle', { index: ruleIndex + 1 })}
+                      </div>
+                      <button
+                        type="button"
+                        className="text-[11px] font-medium text-rose-500"
+                        onClick={() => updateVisibilityRules(visibilityRules.filter((_, index) => index !== ruleIndex))}
+                      >
+                        {t('pdfReportDesigner.visibilityRuleRemove')}
+                      </button>
+                    </div>
+                    <Input
+                      value={rule.fieldPath ?? ''}
+                      onChange={(e) =>
+                        updateVisibilityRules(
+                          visibilityRules.map((item, index) =>
+                            index === ruleIndex ? { ...item, fieldPath: e.target.value || undefined } : item,
+                          ),
+                        )
+                      }
+                      className="h-8 text-xs"
+                      placeholder={t('pdfReportDesigner.visibilityRuleFieldPlaceholder')}
+                    />
+                    <Select
+                      value={rule.operator ?? 'equals'}
+                      onValueChange={(value: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty') =>
+                        updateVisibilityRules(
+                          visibilityRules.map((item, index) =>
+                            index === ruleIndex ? { ...item, operator: value } : item,
+                          ),
+                        )
+                      }
+                    >
+                      <SelectTrigger className="mt-2 h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="equals">{t('pdfReportDesigner.visibilityOperators.equals')}</SelectItem>
+                        <SelectItem value="notEquals">{t('pdfReportDesigner.visibilityOperators.notEquals')}</SelectItem>
+                        <SelectItem value="isEmpty">{t('pdfReportDesigner.visibilityOperators.isEmpty')}</SelectItem>
+                        <SelectItem value="isNotEmpty">{t('pdfReportDesigner.visibilityOperators.isNotEmpty')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      value={rule.value ?? ''}
+                      onChange={(e) =>
+                        updateVisibilityRules(
+                          visibilityRules.map((item, index) =>
+                            index === ruleIndex ? { ...item, value: e.target.value || undefined } : item,
+                          ),
+                        )
+                      }
+                      className="mt-2 h-8 text-xs"
+                      placeholder={t('pdfReportDesigner.visibilityRuleValuePlaceholder')}
+                    />
+                    <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                      {fieldDefinition?.description ?? t('pdfReportDesigner.visibilityRulePreviewNoField')}
+                    </div>
+                  </div>
+                );
+              })}
+              <button
+                type="button"
+                className="h-8 rounded-md border px-3 text-xs font-medium"
+                onClick={() => updateVisibilityRules([...visibilityRules, { operator: 'equals' }])}
+              >
+                {t('pdfReportDesigner.visibilityRuleAdd')}
+              </button>
+              <div className="rounded-md bg-slate-50 px-2 py-2 text-[11px] text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                <div className="font-medium">{t('pdfReportDesigner.visibilityRulePreviewTitle')}</div>
+                {visibilityRules.length > 0 ? visibilityRules.map((rule, ruleIndex) => {
+                  const fieldDefinition = fieldDefinitions.find((field) => field.path === rule.fieldPath);
+                  return (
+                    <div key={`${selectedElement.id}-preview-${ruleIndex}`} className="mt-1">
+                      <div>{t('pdfReportDesigner.visibilityRulePreviewRule', { index: ruleIndex + 1 })}</div>
+                      <div>{fieldDefinition?.description ?? t('pdfReportDesigner.visibilityRulePreviewNoField')}</div>
+                      <div>
+                        {t('pdfReportDesigner.visibilityRulePreviewSample', {
+                          value: fieldDefinition?.exampleValue ?? t('pdfReportDesigner.visibilityRulePreviewEmptyValue'),
+                        })}
+                      </div>
+                    </div>
+                  );
+                }) : null}
+                <div className="mt-1 font-medium">
+                  {visibilityPreviewResult == null
+                    ? t('pdfReportDesigner.visibilityRulePreviewIncomplete')
+                    : visibilityPreviewResult
+                      ? t('pdfReportDesigner.visibilityRulePreviewVisible')
+                      : t('pdfReportDesigner.visibilityRulePreviewHidden')}
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </PdfInspectorSection>
+
       {isPdfTableElement(selectedElement) ? (
         <>
-          <div className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-2">
+          <PdfInspectorSection
+            title={t('pdfReportDesigner.inspectorGroups.tableSetup')}
+            icon={<TableIcon className="size-3.5" />}
+            defaultOpen={true}
+            tone="accent"
+          >
+            <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <Label className="text-xs">{t('reportDesigner.tableDesigner.presetLibrary')}</Label>
               <Select
@@ -681,25 +751,32 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
                 />
               </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-2">
-              <Label className="text-xs">{t('reportDesigner.tableDesigner.columns')}</Label>
+            </div>
+          </PdfInspectorSection>
+          <PdfInspectorSection
+            title={t('pdfReportDesigner.inspectorGroups.tableColumns')}
+            icon={<Columns3 className="size-3.5" />}
+            defaultOpen={true}
+            tone="accent"
+            actions={
               <button
                 type="button"
-                className="rounded border border-slate-300 bg-white px-2 py-1 text-[11px] font-medium text-slate-700"
-                onClick={() =>
+                className="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10.5px] font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+                onClick={(e) => {
+                  e.stopPropagation();
                   addColumnToTable(selectedElement.id, {
                     label: `Column ${selectedElement.columns.length + 1}`,
                     path: '',
                     align: 'left',
                     format: 'text',
-                  })
-                }
+                  });
+                }}
               >
-                {t('reportDesigner.tableDesigner.addColumn')}
+                +
               </button>
-            </div>
+            }
+          >
+          <div className="flex flex-col gap-2">
             {selectedElement.columns.map((column, index) => (
               <div key={`${column.path}-${index}`} className="rounded border border-slate-200 bg-white p-2">
                 <div className="mb-2 flex items-center justify-between gap-2">
@@ -792,110 +869,104 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
               </div>
             ))}
           </div>
+          </PdfInspectorSection>
         </>
       ) : (
         <>
           {selectedElement.type !== 'container' ? (
-            <div className="flex flex-col gap-2">
-              <Label className="text-xs">{t('reportDesigner.inspector.parentContainer')}</Label>
-              <Select
-                value={selectedElement.parentId ?? '__none__'}
-                onValueChange={(value) =>
-                  updateReportElement(selectedElement.id, {
-                    parentId: value === '__none__' ? undefined : value,
-                  })
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">{t('reportDesigner.inspector.noParent')}</SelectItem>
-                  {availableContainers.map((container) => (
-                    <SelectItem key={container.id} value={container.id}>
-                      {container.text || container.value || container.id}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <PdfInspectorSection
+              title={t('pdfReportDesigner.inspectorGroups.parent')}
+              icon={<Layers2 className="size-3.5" />}
+              defaultOpen={false}
+              tone="muted"
+            >
+              <div className="flex flex-col gap-1">
+                <Label className="text-xs">{t('reportDesigner.inspector.parentContainer')}</Label>
+                <Select
+                  value={selectedElement.parentId ?? '__none__'}
+                  onValueChange={(value) =>
+                    updateReportElement(selectedElement.id, {
+                      parentId: value === '__none__' ? undefined : value,
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">{t('reportDesigner.inspector.noParent')}</SelectItem>
+                    {availableContainers.map((container) => (
+                      <SelectItem key={container.id} value={container.id}>
+                        {container.text || container.value || container.id}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </PdfInspectorSection>
           ) : null}
-          <div className="flex flex-col gap-2">
-            <Label className="text-xs">{t('reportDesigner.inspector.border')}</Label>
-            <Input
-              value={style.border ?? ''}
-              onChange={(e) =>
-                updateReportElement(selectedElement.id, {
-                  style: { ...style, border: e.target.value || undefined },
-                })
-              }
-              className="h-8 text-xs"
-              placeholder={t('reportDesigner.inspector.borderPlaceholder')}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label className="text-xs">{t('reportDesigner.inspector.radius')}</Label>
-            <Input
-              type="number"
-              min={0}
-              value={style.radius ?? 0}
-              onChange={(e) =>
-                updateReportElement(selectedElement.id, {
-                  style: { ...style, radius: Number(e.target.value) || 0 },
-                })
-              }
-              className="h-8 text-xs"
-            />
-          </div>
           {selectedElement.type === 'note' ? (
-            <>
+            <PdfInspectorSection
+              title={t('pdfReportDesigner.inspectorGroups.noteContent')}
+              icon={<MessageSquareText className="size-3.5" />}
+              defaultOpen={true}
+              tone="accent"
+            >
               <div className="flex flex-col gap-2">
-                <Label className="text-xs">{t('reportDesigner.noteDesigner.title')}</Label>
-                <Input
-                  value={selectedElement.text ?? ''}
-                  onChange={(e) => updateReportElement(selectedElement.id, { text: e.target.value })}
-                  className="h-8 text-xs"
-                />
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs">{t('reportDesigner.noteDesigner.title')}</Label>
+                  <Input
+                    value={selectedElement.text ?? ''}
+                    onChange={(e) => updateReportElement(selectedElement.id, { text: e.target.value })}
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs">{t('reportDesigner.noteDesigner.body')}</Label>
+                  <Input
+                    value={selectedElement.value ?? ''}
+                    onChange={(e) => updateReportElement(selectedElement.id, { value: e.target.value })}
+                    className="h-8 text-xs"
+                    placeholder={t('reportDesigner.noteDesigner.bodyPlaceholder')}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs">{t('reportDesigner.noteDesigner.binding')}</Label>
+                  <Input
+                    value={selectedElement.path ?? ''}
+                    onChange={(e) => updateReportElement(selectedElement.id, { path: e.target.value })}
+                    className="h-8 text-xs"
+                    placeholder={t('reportDesigner.noteDesigner.bindingPlaceholder')}
+                  />
+                </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <Label className="text-xs">{t('reportDesigner.noteDesigner.body')}</Label>
-                <Input
-                  value={selectedElement.value ?? ''}
-                  onChange={(e) => updateReportElement(selectedElement.id, { value: e.target.value })}
-                  className="h-8 text-xs"
-                  placeholder={t('reportDesigner.noteDesigner.bodyPlaceholder')}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label className="text-xs">{t('reportDesigner.noteDesigner.binding')}</Label>
-                <Input
-                  value={selectedElement.path ?? ''}
-                  onChange={(e) => updateReportElement(selectedElement.id, { path: e.target.value })}
-                  className="h-8 text-xs"
-                  placeholder={t('reportDesigner.noteDesigner.bindingPlaceholder')}
-                />
-              </div>
-            </>
+            </PdfInspectorSection>
           ) : null}
           {selectedElement.type === 'summary' ? (
-            <div className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-2">
-              <div className="flex items-center justify-between gap-2">
-                <Label className="text-xs">{t('reportDesigner.summaryDesigner.items')}</Label>
+            <PdfInspectorSection
+              title={t('pdfReportDesigner.inspectorGroups.summary')}
+              icon={<Sigma className="size-3.5" />}
+              defaultOpen={true}
+              tone="accent"
+              actions={
                 <button
                   type="button"
-                  className="rounded border border-slate-300 bg-white px-2 py-1 text-[11px] font-medium text-slate-700"
-                  onClick={() =>
+                  className="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10.5px] font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     updateReportElement(selectedElement.id, {
                       summaryItems: [
                         ...(selectedElement.summaryItems ?? []),
                         { label: `Item ${(selectedElement.summaryItems?.length ?? 0) + 1}`, path: '', format: 'text' },
                       ],
-                    })
-                  }
+                    });
+                  }}
                 >
-                  {t('reportDesigner.summaryDesigner.addItem')}
+                  +
                 </button>
-              </div>
+              }
+            >
+              <div className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900/30">
               {(selectedElement.summaryItems ?? []).map((item, index) => (
                 <div key={`${item.label}-${index}`} className="rounded border border-slate-200 p-2">
                   <div className="mb-2 flex items-center justify-between gap-2">
@@ -962,10 +1033,17 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+            </PdfInspectorSection>
           ) : null}
           {selectedElement.type === 'quotationTotals' ? (
-            <div className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-2">
+            <PdfInspectorSection
+              title={t('pdfReportDesigner.inspectorGroups.quotationTotalsOptions')}
+              icon={<Receipt className="size-3.5" />}
+              defaultOpen={true}
+              tone="accent"
+            >
+            <div className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900/30">
               <Label className="text-xs">{t('reportDesigner.quotationTotalsDesigner.title')}</Label>
               <Input
                 value={selectedElement.text ?? ''}
@@ -1102,110 +1180,193 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
                 </div>
               </div>
             </div>
+            </PdfInspectorSection>
           ) : null}
-          <div className="flex flex-col gap-2">
-            <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
-            <Select
-              value={String(selectedElement.fontSize ?? 14)}
-              onValueChange={(v) =>
-                updateReportElement(selectedElement.id, { fontSize: Number(v) })
-              }
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {FONT_SIZES.map((size) => (
-                  <SelectItem key={size} value={String(size)}>
-                    {size} px
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
-            <Select
-              value={selectedElement.fontFamily ?? 'Arial'}
-              onValueChange={(v) =>
-                updateReportElement(selectedElement.id, { fontFamily: v })
-              }
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {FONT_FAMILIES.map((f) => (
-                  <SelectItem key={f.value} value={f.value}>
-                    {f.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label className="text-xs">{t('reportDesigner.inspector.alignment')}</Label>
-            <Select
-              value={style.textAlign ?? 'left'}
-              onValueChange={(v: 'left' | 'center' | 'right') =>
-                updateReportElement(selectedElement.id, {
-                  style: { ...style, textAlign: v },
-                })
-              }
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="left">{t('reportDesigner.inspector.left')}</SelectItem>
-                <SelectItem value="center">{t('reportDesigner.inspector.center')}</SelectItem>
-                <SelectItem value="right">{t('reportDesigner.inspector.right')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label className="text-xs">{t('reportDesigner.inspector.background')}</Label>
-            <div className="flex gap-2">
-              <input
-                type="color"
-                value={style.background ?? '#ffffff'}
-                onChange={(e) =>
-                  updateReportElement(selectedElement.id, {
-                    style: { ...style, background: e.target.value },
-                  })
-                }
-                className="h-8 w-10 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
-              />
-              <Input
-                value={style.background ?? ''}
-                onChange={(e) =>
-                  updateReportElement(selectedElement.id, {
-                    style: { ...style, background: e.target.value || undefined },
-                  })
-                }
-                className="h-8 flex-1 text-xs"
-                placeholder={t('reportDesigner.inspector.backgroundPlaceholder')}
-              />
+
+          <PdfInspectorSection
+            title={t('pdfReportDesigner.inspectorGroups.typography')}
+            icon={<TypeIcon className="size-3.5" />}
+            defaultOpen={true}
+          >
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
+                <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
+                <Select
+                  value={String(selectedElement.fontSize ?? 14)}
+                  onValueChange={(v) =>
+                    updateReportElement(selectedElement.id, { fontSize: Number(v) })
+                  }
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FONT_SIZES.map((size) => (
+                      <SelectItem key={size} value={String(size)}>
+                        {size} px
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
+                <Select
+                  value={selectedElement.fontFamily ?? 'Arial'}
+                  onValueChange={(v) =>
+                    updateReportElement(selectedElement.id, { fontFamily: v })
+                  }
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FONT_FAMILIES.map((f) => (
+                      <SelectItem key={f.value} value={f.value}>
+                        {f.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label className="text-xs">{t('reportDesigner.inspector.alignment')}</Label>
+                <Select
+                  value={style.textAlign ?? 'left'}
+                  onValueChange={(v: 'left' | 'center' | 'right') =>
+                    updateReportElement(selectedElement.id, {
+                      style: { ...style, textAlign: v },
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="left">{t('reportDesigner.inspector.left')}</SelectItem>
+                    <SelectItem value="center">{t('reportDesigner.inspector.center')}</SelectItem>
+                    <SelectItem value="right">{t('reportDesigner.inspector.right')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label className="text-xs">{t('reportDesigner.inspector.opacity')}</Label>
+          </PdfInspectorSection>
+
+          <PdfInspectorSection
+            title={t('pdfReportDesigner.inspectorGroups.appearance')}
+            icon={<Palette className="size-3.5" />}
+            defaultOpen={false}
+          >
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
+                <Label className="text-xs">{t('reportDesigner.inspector.background')}</Label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={style.background ?? '#ffffff'}
+                    onChange={(e) =>
+                      updateReportElement(selectedElement.id, {
+                        style: { ...style, background: e.target.value },
+                      })
+                    }
+                    className="h-8 w-10 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
+                  />
+                  <Input
+                    value={style.background ?? ''}
+                    onChange={(e) =>
+                      updateReportElement(selectedElement.id, {
+                        style: { ...style, background: e.target.value || undefined },
+                      })
+                    }
+                    className="h-8 flex-1 text-xs"
+                    placeholder={t('reportDesigner.inspector.backgroundPlaceholder')}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label className="text-xs">{t('reportDesigner.inspector.border')}</Label>
+                <Input
+                  value={style.border ?? ''}
+                  onChange={(e) =>
+                    updateReportElement(selectedElement.id, {
+                      style: { ...style, border: e.target.value || undefined },
+                    })
+                  }
+                  className="h-8 text-xs"
+                  placeholder={t('reportDesigner.inspector.borderPlaceholder')}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs">{t('reportDesigner.inspector.radius')}</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={style.radius ?? 0}
+                    onChange={(e) =>
+                      updateReportElement(selectedElement.id, {
+                        style: { ...style, radius: Number(e.target.value) || 0 },
+                      })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs">{t('reportDesigner.inspector.opacity')}</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    value={opacity}
+                    onChange={(e) =>
+                      updateReportElement(selectedElement.id, {
+                        style: { ...style, opacity: Number(e.target.value) || 0 },
+                      })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          </PdfInspectorSection>
+        </>
+      )}
+
+      <PdfInspectorSection
+        title={t('pdfReportDesigner.inspectorGroups.advanced')}
+        icon={<Layers className="size-3.5" />}
+        defaultOpen={false}
+        tone="muted"
+      >
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
+            <Label className="text-xs">{t('reportDesigner.inspector.zIndex')}</Label>
             <Input
               type="number"
-              min={0}
-              max={1}
-              step={0.1}
-              value={opacity}
+              value={selectedElement.zIndex ?? ''}
               onChange={(e) =>
-                updateReportElement(selectedElement.id, {
-                  style: { ...style, opacity: Number(e.target.value) || 0 },
+                updateElement(selectedElement.id, {
+                  zIndex: e.target.value === '' ? undefined : Number(e.target.value),
                 })
+              }
+              className="h-8 text-xs"
+              placeholder={t('reportDesigner.inspector.zIndexPlaceholder')}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label className="text-xs">{t('reportDesigner.inspector.rotation')}</Label>
+            <Input
+              type="number"
+              value={selectedElement.rotation ?? 0}
+              onChange={(e) =>
+                updateElement(selectedElement.id, { rotation: Number(e.target.value) || 0 })
               }
               className="h-8 text-xs"
             />
           </div>
-        </>
-      )}
+        </div>
+      </PdfInspectorSection>
       </div>
     </div>
   );

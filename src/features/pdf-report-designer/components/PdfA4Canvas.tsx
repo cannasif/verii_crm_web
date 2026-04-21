@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useEffect, useCallback, useMemo, useState } from 'react';
+import { useEffect, useCallback, useMemo, useRef, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import quotationTotalsLayoutSpecJson from '../specs/quotation-totals-layout-spec.json';
 import { type RndDragCallback, type RndResizeCallback, Rnd } from 'react-rnd';
@@ -29,6 +29,10 @@ import {
 } from '@/components/ui/select';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import type { FieldDefinitionDto } from '@/features/pdf-report';
+import {
+  PdfCanvasContextMenu,
+  type PdfCanvasContextAddPayload,
+} from './PdfCanvasContextMenu';
 import {
   isPdfTableElement,
   type PdfCanvasElement,
@@ -134,8 +138,13 @@ export interface PdfA4CanvasProps {
   templateId?: number | null;
   ruleType?: number;
   fieldDefinitions?: FieldDefinitionDto[];
+  headerFields?: FieldDefinitionDto[];
+  lineFields?: FieldDefinitionDto[];
+  allowTable?: boolean;
   onPageRef?: (page: number, el: HTMLDivElement | null) => void;
   onPageChange?: (page: number) => void;
+  onContextAdd?: (payload: PdfCanvasContextAddPayload) => void;
+  onApplyPreset?: (preset: 'commercialStarter' | 'compactSummary' | 'lineFocused' | 'signatureReady') => void;
 }
 
 function shouldRenderOnPage(element: PdfCanvasElement, currentPage: number): boolean {
@@ -1023,8 +1032,13 @@ export function PdfA4Canvas({
   templateId,
   ruleType,
   fieldDefinitions = [],
+  headerFields = [],
+  lineFields = [],
+  allowTable = true,
   onPageRef,
   onPageChange,
+  onContextAdd,
+  onApplyPreset,
 }: PdfA4CanvasProps): ReactElement {
   const { t } = useTranslation(['report-designer', 'common']);
   const [previewVisibilityRules, setPreviewVisibilityRules] = useState(true);
@@ -1121,6 +1135,7 @@ export function PdfA4Canvas({
   const contentDroppable = useDroppable({ id: A4_CONTENT_DROPPABLE_ID });
   const footerDroppable = useDroppable({ id: A4_FOOTER_DROPPABLE_ID });
   const pageDroppable = useDroppable({ id: A4_PAGE_DROPPABLE_ID });
+  const activePageRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col items-center gap-10 overflow-auto bg-slate-100 px-8 py-10 dark:bg-slate-900">
@@ -1128,17 +1143,24 @@ export function PdfA4Canvas({
         const isActivePage = pageNum === currentPage;
         const resolvedForPage = resolveCanvasElements(elements, pageNum);
 
-        return (
+        const pageContent = (
           <div key={pageNum} id={`pdf-canvas-page-${pageNum}`} className="flex flex-col items-center gap-2">
             <div className={`flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest ${isActivePage ? 'text-blue-500' : 'text-slate-400'}`}>
               <div className={`h-px w-8 ${isActivePage ? 'bg-blue-400' : 'bg-slate-300'}`} />
               {t('pdfReportDesigner.pageNumber', { page: pageNum })}
-              {isActivePage && <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">aktif</span>}
+              {isActivePage && (
+                <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
+                  {t('pdfReportDesigner.canvasActiveBadge', { defaultValue: 'active' })}
+                </span>
+              )}
               <div className={`h-px w-8 ${isActivePage ? 'bg-blue-400' : 'bg-slate-300'}`} />
             </div>
 
             <div
-              ref={(el) => onPageRef?.(pageNum, el)}
+              ref={(el) => {
+                onPageRef?.(pageNum, el);
+                if (isActivePage) activePageRef.current = el;
+              }}
               className={`relative shrink-0 bg-white transition-all duration-200 ${
                 isActivePage
                   ? 'shadow-xl ring-2 ring-blue-400 ring-offset-2'
@@ -1327,9 +1349,50 @@ export function PdfA4Canvas({
                     </Rnd>
                   );
                 })}
+
+              {isActivePage && resolvedForPage.length === 0 ? (
+                <div className="pointer-events-none absolute inset-0 z-1 flex items-center justify-center p-8">
+                  <div className="pointer-events-auto max-w-xs rounded-xl border border-dashed border-slate-300 bg-white/80 p-5 text-center shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
+                    <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-full bg-blue-50 text-blue-500 dark:bg-blue-950/50 dark:text-blue-400">
+                      <GripVertical className="size-5" />
+                    </div>
+                    <div className="mb-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      {t('pdfReportDesigner.canvasEmptyHeadline', { defaultValue: 'Drop your first element here' })}
+                    </div>
+                    <div className="text-[11.5px] leading-snug text-slate-500 dark:text-slate-400">
+                      {t('pdfReportDesigner.canvasEmptyBody', {
+                        defaultValue: 'Drag fields, tables, text or images from the left palette onto this page to start building your template.',
+                      })}
+                    </div>
+                    <div className="mt-2 text-[10.5px] text-slate-400 dark:text-slate-500">
+                      {t('pdfReportDesigner.canvasEmptyRightClickHint', {
+                        defaultValue: 'Tip: right-click anywhere on the page to add.',
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         );
+
+        if (isActivePage && onContextAdd) {
+          return (
+            <PdfCanvasContextMenu
+              key={pageNum}
+              pageRef={activePageRef}
+              onAdd={onContextAdd}
+              onApplyPreset={onApplyPreset}
+              headerFields={headerFields}
+              lineFields={lineFields}
+              allowTable={allowTable}
+              allowPresets={!!onApplyPreset}
+            >
+              {pageContent}
+            </PdfCanvasContextMenu>
+          );
+        }
+        return pageContent;
       })}
       <AlertDialog
         open={deleteDialogElementId != null}
