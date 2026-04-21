@@ -33,6 +33,7 @@ interface ComboboxProps {
   className?: string
   modal?: boolean
   disabled?: boolean
+  onSearchChange?: (search: string) => void
 }
 
 export function Combobox({
@@ -44,10 +45,19 @@ export function Combobox({
   emptyText = "Sonuç bulunamadı.",
   className,
   modal = false,
-  disabled = false
+  disabled = false,
+  onSearchChange,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
+
+  const handleSearchChange = React.useCallback(
+    (next: string) => {
+      setSearchQuery(next)
+      onSearchChange?.(next)
+    },
+    [onSearchChange]
+  )
 
   const selectedOption = options.find((option) => option.value === value)
 
@@ -77,10 +87,10 @@ export function Combobox({
           <CommandInput 
             placeholder={searchPlaceholder} 
             value={searchQuery}
-            onValueChange={setSearchQuery}
+            onValueChange={handleSearchChange}
           >
              <VoiceSearchButton 
-                onResult={(text) => setSearchQuery(text)} 
+                onResult={(text) => handleSearchChange(text)} 
                 className="h-7 w-7 mr-1" 
              />
           </CommandInput>

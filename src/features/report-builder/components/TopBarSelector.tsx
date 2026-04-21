@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Combobox } from '@/components/ui/combobox';
 import {
   Select,
   SelectContent,
@@ -12,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { ConnectionDto, DataSourceCatalogItem, DataSourceParameter, DataSourceParameterBinding, DataSourceParameterBindingType } from '../types';
-import { Database, Layers3, Loader2, Search, Sparkles } from 'lucide-react';
+import { Database, Layers3, Loader2, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TopBarSelectorProps {
@@ -24,13 +25,15 @@ interface TopBarSelectorProps {
   connectionKey: string;
   dataSourceType: string;
   dataSourceName: string;
-  dataSourceSearch: string;
+  reportName?: string;
+  datasetChecked?: boolean;
   connectionsLoading: boolean;
   dataSourcesLoading: boolean;
   checkLoading: boolean;
   onConnectionChange: (key: string) => void;
   onTypeChange: (type: string) => void;
   onNameChange: (name: string) => void;
+  onReportNameChange?: (name: string) => void;
   onParameterBindingChange: (
     name: string,
     source: DataSourceParameterBindingType,
@@ -55,13 +58,15 @@ export function TopBarSelector({
   connectionKey,
   dataSourceType,
   dataSourceName,
-  dataSourceSearch,
+  reportName,
+  datasetChecked,
   connectionsLoading,
   dataSourcesLoading,
   checkLoading,
   onConnectionChange,
   onTypeChange,
   onNameChange,
+  onReportNameChange,
   onParameterBindingChange,
   onSearchChange,
   onCheck,
@@ -88,38 +93,41 @@ export function TopBarSelector({
     { value: 'now', label: t('common.reportBuilder.parameterSources.now') },
   ];
 
+  const showReportNameField = typeof onReportNameChange === 'function';
   return (
-    <div className={cn('rounded-2xl border bg-card p-4 shadow-xs')}>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-base font-semibold">
-            {mode === 'basic' ? t('common.reportBuilder.simpleTopbarTitle') : t('common.reportBuilder.datasetSetupTitle')}
+    <div className={cn('rounded-xl border bg-card p-4 shadow-xs')}>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <div className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+            <Database className="size-3.5" />
+          </div>
+          <h2 className="text-sm font-semibold">
+            {t('common.reportBuilder.setupSectionTitle')}
           </h2>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {mode === 'basic' ? t('common.reportBuilder.simpleTopbarDescription') : t('common.reportBuilder.datasetSetupDescription')}
-          </p>
         </div>
         {mode === 'advanced' ? (
-          <div className="flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
-            <Sparkles className="size-3.5" />
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <Sparkles className="size-3" />
             {t('common.reportBuilder.datasetSetupTip')}
           </div>
         ) : null}
       </div>
 
-      <div className={cn(
-        'grid gap-3',
-        mode === 'basic' ? 'md:grid-cols-2' : 'xl:grid-cols-[1.1fr_0.8fr_1fr_1.4fr_auto]',
+      <ol className={cn(
+        'grid gap-2.5',
+        showReportNameField
+          ? 'md:grid-cols-2 xl:grid-cols-[1fr_1fr_1.4fr_1.4fr_auto]'
+          : 'md:grid-cols-[1fr_1fr_2fr_auto] xl:grid-cols-[1fr_1fr_2fr_auto]',
       )}>
-        <div className="rounded-xl border bg-background p-3">
-          <Label className="mb-2 flex items-center gap-2">
-            <Database className="size-4 text-primary" />
+        <li className="space-y-1.5">
+          <Label className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <span className="flex size-4 items-center justify-center rounded-full bg-primary/10 text-[9px] font-bold text-primary">1</span>
             {mode === 'basic' ? t('common.reportBuilder.simpleConnectionLabel') : t('common.reportBuilder.connection')}
-            {connectionsLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
+            {connectionsLoading && <Loader2 className="size-3 animate-spin text-muted-foreground" />}
           </Label>
           <Select value={connectionKey || undefined} onValueChange={onConnectionChange}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="CRM / ERP" />
+              <SelectValue placeholder={t('common.reportBuilder.connectionPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
               {connectionList.map((c) => (
@@ -129,14 +137,18 @@ export function TopBarSelector({
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </li>
 
-        <div className="rounded-xl border bg-background p-3">
-          <Label className="mb-2 flex items-center gap-2">
-            <Layers3 className="size-4 text-primary" />
+        <li className="space-y-1.5">
+          <Label className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <span className="flex size-4 items-center justify-center rounded-full bg-primary/10 text-[9px] font-bold text-primary">2</span>
             {mode === 'basic' ? t('common.reportBuilder.simpleDatasetTypeLabel') : t('common.reportBuilder.datasetType')}
           </Label>
-          <Select value={dataSourceType} onValueChange={onTypeChange}>
+          <Select
+            value={dataSourceType}
+            onValueChange={onTypeChange}
+            disabled={!connectionKey}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t('common.reportBuilder.datasetTypePlaceholder')} />
             </SelectTrigger>
@@ -148,48 +160,60 @@ export function TopBarSelector({
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </li>
 
-        <div className="rounded-xl border bg-background p-3">
-          <Label className="mb-2 flex items-center gap-2">
-            <Search className="size-4 text-primary" />
-            {mode === 'basic' ? t('common.reportBuilder.simpleDatasetSearchLabel') : t('common.reportBuilder.datasetSearch')}
+        <li className="space-y-1.5">
+          <Label className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <span className="flex size-4 items-center justify-center rounded-full bg-primary/10 text-[9px] font-bold text-primary">3</span>
+            {mode === 'basic' ? t('common.reportBuilder.simpleDatasetLabel') : t('common.reportBuilder.dataset')}
+            {dataSourcesLoading && <Loader2 className="size-3 animate-spin text-muted-foreground" />}
+            {datasetChecked && dataSourceName ? (
+              <Layers3 className="size-3 text-emerald-600" aria-label="checked" />
+            ) : null}
           </Label>
-          <Input
-            placeholder={t('common.reportBuilder.datasetSearchPlaceholder')}
-            value={dataSourceSearch}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="text-sm"
+          <Combobox
+            options={dataSourceList.map((item) => ({ value: item.fullName, label: item.displayName }))}
+            value={dataSourceName || undefined}
+            onValueChange={onNameChange}
+            onSearchChange={onSearchChange}
+            placeholder={t('common.reportBuilder.datasetPlaceholder')}
+            searchPlaceholder={t('common.reportBuilder.datasetSearchPlaceholder')}
+            emptyText={t('common.reportBuilder.datasetEmpty')}
             disabled={!connectionKey || !dataSourceType}
           />
-        </div>
+        </li>
 
-        <div className="rounded-xl border bg-background p-3">
-          <Label className="mb-2 flex items-center gap-2">
-            {mode === 'basic' ? t('common.reportBuilder.simpleDatasetLabel') : t('common.reportBuilder.dataset')}
-            {dataSourcesLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
-          </Label>
-          <Select value={dataSourceName || undefined} onValueChange={onNameChange} disabled={!connectionKey || !dataSourceType}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={t('common.reportBuilder.datasetPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {dataSourceList.map((item) => (
-                <SelectItem key={item.fullName} value={item.fullName}>
-                  {item.displayName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {showReportNameField ? (
+          <li className="space-y-1.5">
+            <Label className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+              <span className="flex size-4 items-center justify-center rounded-full bg-primary/10 text-[9px] font-bold text-primary">4</span>
+              {t('common.reportBuilder.reportName')}
+            </Label>
+            <Input
+              value={reportName ?? ''}
+              onChange={(event) => onReportNameChange?.(event.target.value)}
+              placeholder={t('common.reportBuilder.reportNamePlaceholder')}
+              className="h-9"
+            />
+          </li>
+        ) : null}
 
-        <div className={cn('flex items-end', mode === 'basic' ? 'md:col-span-2' : '')}>
-          <Button className="w-full xl:w-auto" onClick={onCheck} disabled={checkLoading || connectionsLoading}>
+        <li className="flex items-end">
+          <Button
+            className="h-9 w-full xl:w-auto"
+            onClick={onCheck}
+            disabled={checkLoading || connectionsLoading || !dataSourceName}
+          >
             {checkLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
             {mode === 'basic' ? t('common.reportBuilder.simpleCheckAction') : t('common.reportBuilder.check')}
           </Button>
-        </div>
-      </div>
+        </li>
+      </ol>
+      {!connectionKey ? (
+        <p className="mt-2 text-[11px] text-muted-foreground">{t('common.reportBuilder.datasetDisabledHint')}</p>
+      ) : !dataSourceName && dataSourceType ? (
+        <p className="mt-2 text-[11px] text-muted-foreground">{t('common.reportBuilder.datasetPickHint')}</p>
+      ) : null}
 
       {dataSourceType === 'function' && dataSourceParameters.length > 0 ? (
         <div className="mt-4 rounded-2xl border bg-background p-4">
