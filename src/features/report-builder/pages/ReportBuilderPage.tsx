@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { lazy, Suspense, type ReactElement } from 'react';
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
@@ -45,7 +45,6 @@ import { TopBarSelector } from '../components/TopBarSelector';
 import { FieldsPanel } from '../components/FieldsPanel';
 import { SlotsPanel } from '../components/SlotsPanel';
 import { PropertiesPanel } from '../components/PropertiesPanel';
-import { PreviewPanel } from '../components/PreviewPanel';
 import { DashboardLayoutPreview } from '../components/DashboardLayoutPreview';
 import { Toast } from '../components/Toast';
 import { useReportBuilderStore } from '../store';
@@ -64,6 +63,14 @@ import { Loader2 } from 'lucide-react';
 import { ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Database, Filter, LayoutGrid, Lightbulb, Plus, Sparkles, Trash2, TriangleAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUserList } from '@/features/user-management/hooks/useUserList';
+import { DeferOnView } from '@/components/shared/DeferOnView';
+import { Skeleton } from '@/components/ui/skeleton';
+import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
+import { cn } from '@/lib/utils';
+
+const PreviewPanel = lazy(() =>
+  import('../components/PreviewPanel').then((module) => ({ default: module.PreviewPanel }))
+);
 
 function getSlotTypeFromId(id: string): 'axis' | 'values' | 'legend' | 'filters' | null {
   if (id === 'slot-axis') return 'axis';
@@ -71,6 +78,10 @@ function getSlotTypeFromId(id: string): 'axis' | 'values' | 'legend' | 'filters'
   if (id === 'slot-legend') return 'legend';
   if (id === 'slot-filters') return 'filters';
   return null;
+}
+
+function PreviewPanelSkeleton({ className = '' }: { className?: string }): ReactElement {
+  return <Skeleton className={`min-h-[320px] w-full rounded-2xl ${className}`.trim()} />;
 }
 
 function buildWidgetLabelOverrides(widget?: {
@@ -233,6 +244,15 @@ export function ReportBuilderPage(): ReactElement {
   const [wizardGoal, setWizardGoal] = useState<'executive' | 'operations' | 'performance'>('operations');
   const [wizardVisual, setWizardVisual] = useState<'table' | 'chart' | 'trend' | 'kpi'>('table');
   const [wizardBreakdown, setWizardBreakdown] = useState<'recommended' | 'none'>('recommended');
+  const previewCycleRef = useRef(0);
+  const previewLoadingRef = useRef(false);
+
+  useEffect(() => {
+    const startMark = 'report-builder:mount:start';
+    clearPerfMarks(startMark, 'report-builder:mount_to_paint', 'report-builder:mount_to_paint:end');
+    perfMark(startMark);
+    perfMeasureOnNextPaint('report-builder:mount_to_paint', startMark);
+  }, []);
   const { data: usersResponse } = useUserList({
     pageNumber: 1,
     pageSize: 100,
@@ -543,32 +563,6 @@ export function ReportBuilderPage(): ReactElement {
       legend,
     });
   }, [config.axis?.field, config.chartType, config.legend?.field, config.values, datasetReady, getFieldLabel, hasAxis, hasLegend, t]);
-  const builderReadinessSteps = [
-    {
-      key: 'dataset',
-      done: datasetReady,
-      title: t('common.reportBuilder.readiness.datasetTitle'),
-      description: t('common.reportBuilder.readiness.datasetDescription'),
-    },
-    {
-      key: 'visual',
-      done: Boolean(config.chartType),
-      title: t('common.reportBuilder.readiness.visualTitle'),
-      description: t('common.reportBuilder.readiness.visualDescription'),
-    },
-    {
-      key: 'axis',
-      done: !requiresAxis || hasAxis,
-      title: !requiresAxis ? t('common.reportBuilder.readiness.columnsTitle') : t('common.reportBuilder.readiness.axisTitle'),
-      description: !requiresAxis ? t('common.reportBuilder.readiness.columnsDescription') : t('common.reportBuilder.readiness.axisDescription'),
-    },
-    {
-      key: 'value',
-      done: hasValue,
-      title: t('common.reportBuilder.readiness.valueTitle'),
-      description: t('common.reportBuilder.readiness.valueDescription'),
-    },
-  ];
 
   const previewRunnerRef = useRef<{ execute: () => void; cancel: () => void } | null>(null);
   const guidedAutoGoalRef = useRef<'executive' | 'operations' | 'performance' | null>(null);
@@ -858,6 +852,29 @@ export function ReportBuilderPage(): ReactElement {
     if (config.chartType === 'matrix' && matrixError) return;
     previewRunnerRef.current?.execute();
   }, [config, dataSourceChecked, kpiError, matrixError, meta.connectionKey, meta.dataSourceName, meta.dataSourceType, pieError]);
+
+  useEffect(() => {
+    if (ui.previewLoading && !previewLoadingRef.current) {
+      previewLoadingRef.current = true;
+      previewCycleRef.current += 1;
+      const startMark = `report-builder:preview:${previewCycleRef.current}:start`;
+      clearPerfMarks(startMark);
+      perfMark(startMark);
+      return;
+    }
+
+    if (!ui.previewLoading && previewLoadingRef.current) {
+      previewLoadingRef.current = false;
+      if (ui.error) return;
+      const cycle = previewCycleRef.current;
+      const startMark = `report-builder:preview:${cycle}:start`;
+      perfMeasureOnNextPaint(
+        'report-builder:preview_ready_to_paint',
+        startMark,
+        `cycle=${cycle}; rows=${preview.rows.length}; columns=${preview.columns.length}`
+      );
+    }
+  }, [preview.columns.length, preview.rows.length, ui.error, ui.previewLoading]);
 
   const handleSave = async (): Promise<void> => {
     if (saveBlocked) {
@@ -1306,6 +1323,54 @@ export function ReportBuilderPage(): ReactElement {
     setGuidedGoal('operations');
   }, [advancedWorkspaceMode, builderMode, datasetReady, guidedGoal]);
 
+  const unifiedProgressSteps = useMemo(() => {
+    const fieldsReady = builderMode === 'basic'
+      ? simpleTableFields.length > 0
+      : (hasValue && (!requiresAxis || hasAxis));
+    const datasetDescription = datasetReady
+      ? (meta.dataSourceName || t('common.reportBuilder.stepProgressDatasetDone'))
+      : t('common.reportBuilder.stepProgressDatasetPending');
+    const identityDescription = meta.name?.trim()
+      ? t('common.reportBuilder.stepProgressIdentityDone')
+      : t('common.reportBuilder.stepProgressIdentityPending');
+    const fieldsDescription = fieldsReady
+      ? t('common.reportBuilder.stepProgressFieldsDone')
+      : t('common.reportBuilder.stepProgressFieldsPending');
+    const saveDescription = !saveBlocked
+      ? t('common.reportBuilder.stepProgressSaveReady')
+      : t('common.reportBuilder.stepProgressSaveBlocked', { count: reportHardBlockers.length });
+    return [
+      {
+        key: 'dataset',
+        index: 1,
+        done: datasetReady,
+        title: t('common.reportBuilder.stepProgressDataset'),
+        description: datasetDescription,
+      },
+      {
+        key: 'identity',
+        index: 2,
+        done: Boolean(meta.name?.trim()),
+        title: t('common.reportBuilder.stepProgressIdentity'),
+        description: identityDescription,
+      },
+      {
+        key: 'fields',
+        index: 3,
+        done: fieldsReady,
+        title: t('common.reportBuilder.stepProgressFields'),
+        description: fieldsDescription,
+      },
+      {
+        key: 'save',
+        index: 4,
+        done: !saveBlocked,
+        title: t('common.reportBuilder.stepProgressSave'),
+        description: saveDescription,
+      },
+    ];
+  }, [builderMode, datasetReady, hasAxis, hasValue, meta.dataSourceName, meta.name, reportHardBlockers.length, requiresAxis, saveBlocked, simpleTableFields.length, t]);
+
   return (
     <DndContext
       sensors={sensors}
@@ -1313,188 +1378,116 @@ export function ReportBuilderPage(): ReactElement {
       onDragEnd={handleDragEnd}
     >
       <div className="flex h-[calc(100vh-4rem)] min-h-0 flex-col gap-4 p-4">
-        <div className="shrink-0 rounded-2xl border bg-linear-to-r from-slate-50 via-white to-sky-50 px-5 py-4 shadow-xs dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
-          <div className="flex flex-wrap items-start gap-4">
-            <div className="min-w-[260px] flex-1">
-              <div className="mb-3 flex items-center gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => navigate('/reports')}>
-                  <ArrowLeft className="mr-1 size-4" />
-                  {t('common.back')}
+        <header className="shrink-0 overflow-hidden rounded-2xl border bg-linear-to-r from-slate-50 via-white to-sky-50 shadow-xs dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+          <div className="flex flex-wrap items-center gap-3 border-b bg-background/70 px-5 py-2.5 backdrop-blur dark:bg-slate-950/40">
+            <Button type="button" variant="ghost" size="sm" onClick={() => navigate('/reports')} className="h-7 px-2 text-xs">
+              <ArrowLeft className="mr-1 size-4" />
+              {t('common.back')}
+            </Button>
+            {builderMode === 'advanced' ? (
+              <>
+                <div className="h-4 w-px bg-border" aria-hidden="true" />
+                <Badge variant="outline" className="font-mono">{lifecycleStatusLabel}</Badge>
+                <Badge variant="secondary" className="font-mono">v{lifecycle.version}</Badge>
+              </>
+            ) : null}
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              <div
+                role="tablist"
+                aria-label={t('common.reportBuilder.modeTabGroupLabel')}
+                className="flex items-center gap-0.5 rounded-lg border bg-background/80 p-0.5 shadow-xs"
+              >
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={builderMode === 'basic' ? 'default' : 'ghost'}
+                  onClick={() => setBuilderMode('basic')}
+                  className="h-7 px-3 text-xs"
+                  role="tab"
+                  aria-selected={builderMode === 'basic'}
+                >
+                  {t('common.reportBuilder.basicMode')}
                 </Button>
-                {builderMode === 'advanced' ? (
-                  <>
-                    <Badge variant="outline" className="font-mono">{lifecycleStatusLabel}</Badge>
-                    <Badge variant="secondary" className="font-mono">v{lifecycle.version}</Badge>
-                  </>
-                ) : null}
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={builderMode === 'advanced' ? 'default' : 'ghost'}
+                  onClick={() => setBuilderMode('advanced')}
+                  className="h-7 px-3 text-xs"
+                  role="tab"
+                  aria-selected={builderMode === 'advanced'}
+                >
+                  {t('common.reportBuilder.advancedMode')}
+                </Button>
               </div>
-              <h1 className="text-xl font-semibold">
+              {builderMode === 'advanced' ? (
+                <div
+                  role="tablist"
+                  aria-label={t('common.reportBuilder.workspaceTabGroupLabel')}
+                  className="flex items-center gap-0.5 rounded-lg border bg-background/80 p-0.5 shadow-xs"
+                >
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={advancedWorkspaceMode === 'guided' ? 'default' : 'ghost'}
+                    onClick={() => setAdvancedWorkspaceMode('guided')}
+                    className="h-7 px-3 text-xs"
+                    role="tab"
+                    aria-selected={advancedWorkspaceMode === 'guided'}
+                  >
+                    {t('common.reportBuilder.advancedWorkspaceModes.guided')}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={advancedWorkspaceMode === 'expert' ? 'default' : 'ghost'}
+                    onClick={() => setAdvancedWorkspaceMode('expert')}
+                    className="h-7 px-3 text-xs"
+                    role="tab"
+                    aria-selected={advancedWorkspaceMode === 'expert'}
+                  >
+                    {t('common.reportBuilder.advancedWorkspaceModes.expert')}
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
+            <div className="min-w-[260px] flex-1">
+              <h1 className="text-xl font-semibold tracking-tight">
                 {builderMode === 'basic'
                   ? (isEdit ? t('common.reportBuilder.simpleEditTitle') : t('common.reportBuilder.simpleCreateTitle'))
                   : (isEdit ? t('common.reportBuilder.editStudioTitle') : t('common.reportBuilder.newStudioTitle'))}
               </h1>
-              <p className="text-muted-foreground mt-2 max-w-3xl text-sm">
+              <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-6">
                 {builderMode === 'basic' ? t('common.reportBuilder.simpleTableDescription') : t('common.reportBuilder.studioDescription')}
               </p>
-              {builderMode === 'advanced' ? (
-                <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                  {builderReadinessSteps.map((step, index) => (
-                    <div key={step.key} className={`rounded-xl border px-3 py-2 text-xs ${step.done ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-background text-muted-foreground'}`}>
-                      <div className="font-semibold">{index + 1}. {step.title}</div>
-                      <div className="mt-1 text-[11px]">{step.description}</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="mt-4 grid gap-2 md:grid-cols-3">
-                  <div className={`rounded-xl border px-3 py-3 text-sm ${datasetReady ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
-                    <div className="font-medium">1. {t('common.reportBuilder.simpleStepChooseView')}</div>
-                    <div className="mt-1 text-xs">{meta.dataSourceName || t('common.reportBuilder.notConnected')}</div>
-                  </div>
-                  <div className={`rounded-xl border px-3 py-3 text-sm ${simpleTableFields.length > 0 ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
-                    <div className="font-medium">2. {t('common.reportBuilder.simpleStepChooseFields')}</div>
-                    <div className="mt-1 text-xs">
-                      {simpleTableFields.length > 0
-                        ? t('common.reportBuilder.simpleSelectedFieldsCount', { count: simpleTableFields.length })
-                        : t('common.reportBuilder.simpleChecklistFieldsPending')}
-                    </div>
-                  </div>
-                  <div className={`rounded-xl border px-3 py-3 text-sm ${meta.name?.trim() ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
-                    <div className="font-medium">3. {t('common.reportBuilder.simpleStepSave')}</div>
-                    <div className="mt-1 text-xs">
-                      {meta.name?.trim() || t('common.reportBuilder.simpleChecklistNamePending')}
-                    </div>
+              {!datasetReady ? (
+                <div className="mt-3 inline-flex max-w-2xl items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-xs">
+                  <Lightbulb className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <div>
+                    <div className="font-medium text-foreground">{t('common.reportBuilder.firstTimeHintTitle')}</div>
+                    <div className="text-muted-foreground">{t('common.reportBuilder.firstTimeHintDescription')}</div>
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
-            {builderMode === 'advanced' ? (
-            advancedWorkspaceMode === 'expert' ? (
-            <div className="grid min-w-[300px] gap-3 md:grid-cols-3">
-              <div className="rounded-xl border bg-background p-3">
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <Database className="size-4 text-primary" />
-                  {t('common.reportBuilder.datasetHealth')}
-                </div>
-                <div className="text-sm font-semibold">
-                  {datasetReady ? meta.dataSourceName : t('common.reportBuilder.notConnected')}
-                </div>
-                <div className="text-muted-foreground mt-1 text-xs">
-                  {datasetReady ? t('common.reportBuilder.datasetChecked') : t('common.reportBuilder.datasetPending')}
-                </div>
-              </div>
-              <div className="rounded-xl border bg-background p-3">
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <LayoutGrid className="size-4 text-primary" />
-                  {t('common.reportBuilder.widgetSummary')}
-                </div>
-                <div className="text-2xl font-semibold">{widgetsCount}</div>
-                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.widgetSummaryDescription')}</div>
-              </div>
-              <div className="rounded-xl border bg-background p-3">
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <BarChart3 className="size-4 text-primary" />
-                  {t('common.reportBuilder.fieldSummary')}
-                </div>
-                <div className="text-2xl font-semibold">{fieldsCount}</div>
-                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.fieldSummaryDescription')}</div>
-              </div>
-              <div className="rounded-xl border bg-background p-3 md:col-span-3">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    <CheckCircle2 className="size-4 text-primary" />
-                    {t('common.reportBuilder.qualityTitle')}
-                  </div>
-                  <Badge variant={reportQualityScore >= 84 ? 'default' : reportQualityScore >= 60 ? 'secondary' : 'destructive'}>
-                    {reportQualityScore}/100
-                  </Badge>
-                </div>
-                {reportQualityIssues.length > 0 ? (
-                  <div className="space-y-1.5">
-                    <div className="text-sm font-medium">{t('common.reportBuilder.qualityNeedsAttention')}</div>
-                    <ul className="text-muted-foreground space-y-1 text-xs">
-                      {reportQualityIssues.slice(0, 3).map((issue) => (
-                        <li key={issue}>• {issue}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                    {t('common.reportBuilder.qualityReady')}
-                  </div>
-                )}
-              </div>
-            </div>
-            ) : (
-            <div className="grid min-w-[300px] gap-3">
-              <div className="rounded-xl border bg-background p-3">
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <Database className="size-4 text-primary" />
-                  {t('common.reportBuilder.datasetHealth')}
-                </div>
-                <div className="text-sm font-semibold">
-                  {datasetReady ? meta.dataSourceName : t('common.reportBuilder.notConnected')}
-                </div>
-                <div className="text-muted-foreground mt-1 text-xs">
-                  {datasetReady ? t('common.reportBuilder.datasetChecked') : t('common.reportBuilder.datasetPending')}
-                </div>
-              </div>
-            </div>
-            )
-            ) : (
-            <div className="grid min-w-[300px] gap-3">
-              <div className="rounded-xl border bg-background p-3">
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <Database className="size-4 text-primary" />
-                  {t('common.reportBuilder.datasetHealth')}
-                </div>
-                <div className="text-sm font-semibold">
-                  {datasetReady ? meta.dataSourceName : t('common.reportBuilder.notConnected')}
-                </div>
-                <div className="text-muted-foreground mt-1 text-xs">
-                  {datasetReady ? t('common.reportBuilder.datasetChecked') : t('common.reportBuilder.datasetPending')}
-                </div>
-              </div>
-            </div>
-            )}
-            <div className="flex items-center gap-2">
-              {builderMode === 'advanced' ? (
-                <div className="mr-2 flex rounded-xl border bg-background p-1">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setBuilderMode('basic')}
-                  >
-                    {t('common.reportBuilder.basicMode')}
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="default"
-                    onClick={() => setBuilderMode('advanced')}
-                  >
-                    {t('common.reportBuilder.advancedMode')}
-                  </Button>
-                </div>
-              ) : (
-                <Button type="button" variant="outline" onClick={() => setBuilderMode('advanced')}>
-                  {t('common.reportBuilder.openAdvancedMode')}
-                </Button>
-              )}
-              {builderMode === 'advanced' && isEdit && (
+
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
+              {builderMode === 'advanced' && isEdit ? (
                 <Button variant="outline" asChild>
                   <Link to={`/reports/${reportId}/edit/preview`} target="_blank" rel="noreferrer">
                     {t('common.reportBuilder.preview')}
                   </Link>
                 </Button>
-              )}
-              {builderMode === 'advanced' && isEdit && (
+              ) : null}
+              {builderMode === 'advanced' && isEdit ? (
                 <Button variant="outline" onClick={() => navigate(`/reports/${reportId}`)}>
                   {t('common.cancel')}
                 </Button>
-              )}
-              <Button onClick={handleSave} disabled={ui.saveLoading}>
+              ) : null}
+              <Button onClick={handleSave} disabled={ui.saveLoading} className="min-w-[160px]">
                 {ui.saveLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
                 {builderMode === 'basic'
                   ? (isEdit ? t('common.reportBuilder.simpleUpdateAction') : t('common.reportBuilder.simpleSaveAction'))
@@ -1502,7 +1495,100 @@ export function ReportBuilderPage(): ReactElement {
               </Button>
             </div>
           </div>
-        </div>
+
+          <div className="border-t bg-background/40 px-5 py-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <Sparkles className="size-3.5 text-primary" />
+                {t('common.reportBuilder.stepProgressTitle')}
+              </div>
+              <Badge
+                variant={saveBlocked ? 'secondary' : 'default'}
+                className={cn(
+                  saveBlocked
+                    ? 'bg-amber-500/15 text-amber-700 hover:bg-amber-500/15 dark:text-amber-300'
+                    : 'bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-300'
+                )}
+              >
+                {saveBlocked
+                  ? t('common.reportBuilder.stepProgressSaveBlocked', { count: reportHardBlockers.length })
+                  : t('common.reportBuilder.stepProgressSaveReady')}
+              </Badge>
+            </div>
+            <ol className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+              {unifiedProgressSteps.map((step) => (
+                <li
+                  key={step.key}
+                  className={cn(
+                    'flex items-start gap-2.5 rounded-xl border px-3 py-2.5 text-xs transition-colors',
+                    step.done
+                      ? 'border-emerald-200 bg-emerald-50/80 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200'
+                      : 'bg-background text-muted-foreground'
+                  )}
+                >
+                  <div
+                    className={cn(
+                      'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold',
+                      step.done
+                        ? 'border-emerald-500 bg-emerald-500 text-white'
+                        : 'border-border bg-background text-muted-foreground'
+                    )}
+                  >
+                    {step.done ? <CheckCircle2 className="size-3.5" /> : step.index}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12px] font-semibold">{step.title}</div>
+                    <div className="mt-0.5 line-clamp-2 text-[11px] opacity-80">{step.description}</div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+
+            {builderMode === 'advanced' && advancedWorkspaceMode === 'expert' ? (
+              <div className="mt-3 grid grid-cols-2 gap-3 rounded-xl border bg-background/70 px-3 py-2.5 lg:grid-cols-4">
+                <div className="flex items-start gap-2">
+                  <Database className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{t('common.reportBuilder.heroMetricDataset')}</div>
+                    <div className="mt-0.5 truncate text-sm font-semibold">
+                      {datasetReady ? meta.dataSourceName : t('common.reportBuilder.notConnected')}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <LayoutGrid className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{t('common.reportBuilder.heroMetricWidgets')}</div>
+                    <div className="mt-0.5 text-sm font-semibold">{widgetsCount}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <BarChart3 className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{t('common.reportBuilder.heroMetricFields')}</div>
+                    <div className="mt-0.5 text-sm font-semibold">{fieldsCount}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2
+                    className={cn(
+                      'mt-0.5 size-4 shrink-0',
+                      reportQualityScore >= 84
+                        ? 'text-emerald-600 dark:text-emerald-400'
+                        : reportQualityScore >= 60
+                          ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-destructive'
+                    )}
+                  />
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{t('common.reportBuilder.heroMetricQuality')}</div>
+                    <div className="mt-0.5 text-sm font-semibold">{reportQualityScore}/100</div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </header>
         {saveBlocked && builderMode === 'advanced' && advancedWorkspaceMode === 'expert' ? (
           <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -1620,7 +1706,12 @@ export function ReportBuilderPage(): ReactElement {
         </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center gap-4 rounded-2xl border bg-card p-4">
+        <div className="rounded-2xl border bg-card p-4">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            <span className="flex size-4 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">2</span>
+            {t('common.reportBuilder.stepProgressIdentity')}
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
           <div className="flex-1 space-y-1 min-w-[200px]">
             <Label>{t('common.reportBuilder.reportName')}</Label>
             <Input
@@ -1667,6 +1758,7 @@ export function ReportBuilderPage(): ReactElement {
               <div className="font-medium">{t('common.reportBuilder.simpleTableDescription')}</div>
             </div>
           )}
+          </div>
         </div>
 
         {datasetReady && builderMode === 'advanced' ? (
@@ -2388,34 +2480,6 @@ export function ReportBuilderPage(): ReactElement {
         </div>
         ) : null}
 
-        {builderMode === 'advanced' ? (
-          <div className="rounded-2xl border bg-card p-4">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="min-w-[260px] flex-1">
-                <h2 className="text-sm font-semibold">{t('common.reportBuilder.advancedWorkspaceTitle')}</h2>
-                <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.advancedWorkspaceDescription')}</p>
-                <p className="mt-2 text-xs font-medium text-foreground/80">{t('common.reportBuilder.advancedWorkspaceModeHint')}</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant={advancedWorkspaceMode === 'guided' ? 'default' : 'outline'}
-                  onClick={() => setAdvancedWorkspaceMode('guided')}
-                >
-                  {t('common.reportBuilder.advancedWorkspaceModes.guided')}
-                </Button>
-                <Button
-                  type="button"
-                  variant={advancedWorkspaceMode === 'expert' ? 'default' : 'outline'}
-                  onClick={() => setAdvancedWorkspaceMode('expert')}
-                >
-                  {t('common.reportBuilder.advancedWorkspaceModes.expert')}
-                </Button>
-              </div>
-            </div>
-          </div>
-        ) : null}
-
         {datasetReady && builderMode === 'basic' ? (
           <div className="rounded-2xl border bg-card p-4">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
@@ -2592,20 +2656,24 @@ export function ReportBuilderPage(): ReactElement {
               </div>
 
               <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-1">
-                <div className="rounded-2xl border bg-card p-4">
-                  <PreviewPanel
-                    title={t('common.reportBuilder.activeWidgetPreview')}
-                    subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
-                    columns={preview.columns}
-                    rows={preview.rows}
-                    chartType={config.chartType}
-                    appearance={activeWidget?.appearance}
-                    labelOverrides={buildWidgetLabelOverrides(activeWidget)}
-                    loading={ui.previewLoading}
-                    error={ui.error}
-                    empty={!dataSourceChecked}
-                  />
-                </div>
+                <DeferOnView fallback={<PreviewPanelSkeleton className="border bg-card p-4" />}>
+                  <div className="rounded-2xl border bg-card p-4">
+                    <Suspense fallback={<PreviewPanelSkeleton />}>
+                      <PreviewPanel
+                        title={t('common.reportBuilder.activeWidgetPreview')}
+                        subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
+                        columns={preview.columns}
+                        rows={preview.rows}
+                        chartType={config.chartType}
+                        appearance={activeWidget?.appearance}
+                        labelOverrides={buildWidgetLabelOverrides(activeWidget)}
+                        loading={ui.previewLoading}
+                        error={ui.error}
+                        empty={!dataSourceChecked}
+                      />
+                    </Suspense>
+                  </div>
+                </DeferOnView>
                 <div className="rounded-2xl border bg-card p-4">
                   <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardLayoutTitle')}</h3>
                   <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardLayoutDescription')}</p>
@@ -2630,20 +2698,24 @@ export function ReportBuilderPage(): ReactElement {
           ) : (
             <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-[1.35fr_0.65fr]">
               <div className="flex min-h-0 flex-col overflow-y-auto pr-1">
-                <div className="shrink-0">
-                  <PreviewPanel
-                    title={t('common.reportBuilder.activeWidgetPreview')}
-                    subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
-                    columns={preview.columns}
-                    rows={preview.rows}
-                    chartType={config.chartType}
-                    appearance={activeWidget?.appearance}
-                    labelOverrides={buildWidgetLabelOverrides(activeWidget)}
-                    loading={ui.previewLoading}
-                    error={ui.error}
-                    empty={!dataSourceChecked}
-                  />
-                </div>
+                <DeferOnView fallback={<PreviewPanelSkeleton className="shrink-0" />}>
+                  <div className="shrink-0">
+                    <Suspense fallback={<PreviewPanelSkeleton />}>
+                      <PreviewPanel
+                        title={t('common.reportBuilder.activeWidgetPreview')}
+                        subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
+                        columns={preview.columns}
+                        rows={preview.rows}
+                        chartType={config.chartType}
+                        appearance={activeWidget?.appearance}
+                        labelOverrides={buildWidgetLabelOverrides(activeWidget)}
+                        loading={ui.previewLoading}
+                        error={ui.error}
+                        empty={!dataSourceChecked}
+                      />
+                    </Suspense>
+                  </div>
+                </DeferOnView>
                 <div className="mt-4 rounded-2xl border bg-card p-4">
                   <div className="mb-3">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.widgetAssistantCurrentTitle')}</h3>
@@ -2750,18 +2822,22 @@ export function ReportBuilderPage(): ReactElement {
               <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {t('common.reportBuilder.simplePreviewBadge')}
               </div>
-              <PreviewPanel
-                title={t('common.reportBuilder.simplePreviewTitle')}
-                subtitle={t('common.reportBuilder.simplePreviewDescription')}
-                columns={preview.columns}
-                rows={preview.rows}
-                chartType={config.chartType}
-                appearance={activeWidget?.appearance}
-                labelOverrides={buildWidgetLabelOverrides(activeWidget)}
-                loading={ui.previewLoading}
-                error={ui.error}
-                empty={!dataSourceChecked}
-              />
+              <DeferOnView fallback={<PreviewPanelSkeleton />}>
+                <Suspense fallback={<PreviewPanelSkeleton />}>
+                  <PreviewPanel
+                    title={t('common.reportBuilder.simplePreviewTitle')}
+                    subtitle={t('common.reportBuilder.simplePreviewDescription')}
+                    columns={preview.columns}
+                    rows={preview.rows}
+                    chartType={config.chartType}
+                    appearance={activeWidget?.appearance}
+                    labelOverrides={buildWidgetLabelOverrides(activeWidget)}
+                    loading={ui.previewLoading}
+                    error={ui.error}
+                    empty={!dataSourceChecked}
+                  />
+                </Suspense>
+              </DeferOnView>
             </div>
           </div>
         )}
