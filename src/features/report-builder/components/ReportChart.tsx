@@ -128,7 +128,13 @@ function formatAxisTooltipLabel(value: unknown): string {
 export function ReportChart({ columns, rows, chartType, className, appearance, labelOverrides }: ReportChartProps): ReactElement {
   const { t } = useTranslation('common');
   const [showAllSeries, setShowAllSeries] = useState(false);
-  const recharts = useRechartsModule();
+  const needsRecharts =
+    chartType === 'bar' ||
+    chartType === 'stackedBar' ||
+    chartType === 'line' ||
+    chartType === 'pie' ||
+    chartType === 'donut';
+  const recharts = useRechartsModule(needsRecharts);
   const Recharts = recharts;
   const palette = useMemo(() => buildPalette(appearance?.accentColor), [appearance?.accentColor]);
   const tableDensity = appearance?.tableDensity ?? 'comfortable';

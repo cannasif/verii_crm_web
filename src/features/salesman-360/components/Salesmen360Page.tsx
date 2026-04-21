@@ -285,6 +285,7 @@ function DistributionAndTrendCharts({
   currencyFormatter,
   t,
   noDataKey,
+  chartsEnabled = true,
 }: {
   distribution: Salesmen360DistributionDto;
   monthlyTrend: { month: string; demandCount: number; quotationCount: number; orderCount: number }[];
@@ -293,8 +294,9 @@ function DistributionAndTrendCharts({
   currencyFormatter: Intl.NumberFormat;
   t: (key: string) => string;
   noDataKey: string;
+  chartsEnabled?: boolean;
 }): ReactElement {
-  const recharts = useRechartsModule();
+  const recharts = useRechartsModule(chartsEnabled);
   const Recharts = recharts;
   const pieData = [
     { name: t('salesman360.analyticsCharts.demand'), value: distribution.demandCount },
@@ -411,10 +413,11 @@ export function Salesmen360Page(): ReactElement {
   const rawUserId = params.userId ?? '';
   const userId = rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('ALL');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
   const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam);
-  const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam);
-  const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam);
+  const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, activeTab === 'analytics');
+  const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, activeTab === 'analytics');
   const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(userId, 12);
   const executeActionMutation = useExecuteSalesmenActionMutation(userId);
 
@@ -539,7 +542,7 @@ export function Salesmen360Page(): ReactElement {
         </div>
       </header>
 
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'overview' | 'analytics')} className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">{t('salesman360.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="analytics">{t('salesman360.tabs.analytics')}</TabsTrigger>
@@ -687,6 +690,7 @@ export function Salesmen360Page(): ReactElement {
                   currencyFormatter={currencyFormatter}
                   t={t}
                   noDataKey="common.noData"
+                  chartsEnabled={activeTab === 'analytics'}
                 />
               ) : null}
             </>

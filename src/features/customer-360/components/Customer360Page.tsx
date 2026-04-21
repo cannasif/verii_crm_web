@@ -403,6 +403,7 @@ function AnalyticsChartsSection({
   tc,
   noDataKey,
   showAmountBar = true,
+  chartsEnabled = true,
 }: {
   distribution: Customer360DistributionDto;
   monthlyTrend: { month: string; demandCount: number; quotationCount: number; orderCount: number }[];
@@ -412,8 +413,9 @@ function AnalyticsChartsSection({
   tc: (key: string, opts?: Record<string, unknown>) => string;
   noDataKey: string;
   showAmountBar?: boolean;
+  chartsEnabled?: boolean;
 }): ReactElement {
-  const recharts = useRechartsModule();
+  const recharts = useRechartsModule(chartsEnabled);
   const Recharts = recharts;
   const pieData = [
     { name: tc('analyticsCharts.demand'), value: distribution.demandCount },
@@ -831,14 +833,15 @@ export function Customer360Page(): ReactElement {
   const { user } = useAuthStore();
   const id = Number(customerId ?? 0);
   const [currency, setCurrency] = useState<string>(ALL_CURRENCY);
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
   const [quickActivityOpen, setQuickActivityOpen] = useState(false);
   const createActivity = useCreateActivity();
   const currencyParam = currency === ALL_CURRENCY ? undefined : currency;
   const { data, isLoading, isError, error, refetch } = useCustomer360OverviewQuery(id, currencyParam);
   const { data: analytics, isLoading: isAnalyticsLoading, isError: isAnalyticsError } =
-    useCustomer360AnalyticsSummaryQuery(id, currencyParam);
+    useCustomer360AnalyticsSummaryQuery(id, currencyParam, activeTab === 'analytics');
   const { data: chartsData, isLoading: isChartsLoading, isError: isChartsError } =
-    useCustomer360AnalyticsChartsQuery(id, 12, currencyParam);
+    useCustomer360AnalyticsChartsQuery(id, 12, currencyParam, activeTab === 'analytics');
   const { data: cohortData, isLoading: isCohortLoading } = useCustomer360CohortQuery(id, 12);
   const { data: customerImages = [], isLoading: isImagesLoading, isError: isImagesError } = useCustomerImagesQuery(id);
   const { data: quickQuotations = [], isLoading: isQuickQuotationsLoading, isError: isQuickQuotationsError } = useCustomer360QuickQuotationsQuery(id);
@@ -1003,7 +1006,7 @@ export function Customer360Page(): ReactElement {
         </div>
       </header>
 
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'overview' | 'analytics')} className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">{tc('tabs.overview')}</TabsTrigger>
           <TabsTrigger value="analytics">{tc('tabs.analytics')}</TabsTrigger>
@@ -1186,6 +1189,7 @@ export function Customer360Page(): ReactElement {
                     tc={tc}
                     noDataKey="common.noData"
                     showAmountBar={!isAllCurrencies}
+                    chartsEnabled={activeTab === 'analytics'}
                   />
                 </>
               ) : null}

@@ -25,7 +25,7 @@ export function useSalesmenOverviewQuery(userId: number, currency?: string) {
   });
 }
 
-export function useSalesmenAnalyticsSummaryQuery(userId: number, currency?: string) {
+export function useSalesmenAnalyticsSummaryQuery(userId: number, currency?: string, enabled = true) {
   return useQuery({
     queryKey: ['salesmen360', 'summary', userId, currency ?? 'ALL'],
     queryFn: ({ signal }) =>
@@ -35,14 +35,15 @@ export function useSalesmenAnalyticsSummaryQuery(userId: number, currency?: stri
         signal,
       }),
     staleTime: SUMMARY_STALE_MS,
-    enabled: userId > 0,
+    enabled: userId > 0 && enabled,
   });
 }
 
 export function useSalesmenAnalyticsChartsQuery(
   userId: number,
   months = 12,
-  currency?: string
+  currency?: string,
+  enabled = true
 ) {
   return useQuery({
     queryKey: ['salesmen360', 'charts', userId, months, currency ?? 'ALL'],
@@ -54,7 +55,7 @@ export function useSalesmenAnalyticsChartsQuery(
         signal,
       }),
     staleTime: CHARTS_STALE_MS,
-    enabled: userId > 0,
+    enabled: userId > 0 && enabled,
   });
 }
 

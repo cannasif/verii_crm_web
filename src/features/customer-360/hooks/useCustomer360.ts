@@ -37,22 +37,22 @@ export function useCustomer360OverviewQuery(id: number, currency?: string) {
   });
 }
 
-export function useCustomer360AnalyticsSummaryQuery(id: number, currency?: string) {
+export function useCustomer360AnalyticsSummaryQuery(id: number, currency?: string, enabled = true) {
   return useQuery({
     queryKey: ['customer360', 'summary', id, currency ?? 'ALL'],
     queryFn: ({ signal }) => getCustomer360AnalyticsSummary({ id, currency, signal }),
     staleTime: SUMMARY_STALE_MS,
-    enabled: id > 0,
+    enabled: id > 0 && enabled,
   });
 }
 
-export function useCustomer360AnalyticsChartsQuery(id: number, months?: number, currency?: string) {
+export function useCustomer360AnalyticsChartsQuery(id: number, months?: number, currency?: string, enabled = true) {
   return useQuery({
     queryKey: ['customer360', 'charts', id, months ?? 12, currency ?? 'ALL'],
     queryFn: ({ signal }) =>
       getCustomer360AnalyticsCharts({ id, months: months ?? 12, currency, signal }),
     staleTime: CHARTS_STALE_MS,
-    enabled: id > 0,
+    enabled: id > 0 && enabled,
   });
 }
 

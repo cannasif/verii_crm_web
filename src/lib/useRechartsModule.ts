@@ -17,11 +17,11 @@ function loadRechartsModule(): Promise<RechartsModule> {
   return loadPromise;
 }
 
-export function useRechartsModule(): RechartsModule | null {
+export function useRechartsModule(enabled = true): RechartsModule | null {
   const [module, setModule] = useState<RechartsModule | null>(cachedModule);
 
   useEffect(() => {
-    if (module) return;
+    if (!enabled || module) return;
     let active = true;
 
     void loadRechartsModule().then((loaded) => {
@@ -32,8 +32,7 @@ export function useRechartsModule(): RechartsModule | null {
     return () => {
       active = false;
     };
-  }, [module]);
+  }, [enabled, module]);
 
   return module;
 }
-
