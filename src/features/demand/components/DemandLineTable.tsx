@@ -46,6 +46,7 @@ import {
 } from 'lucide-react';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, CreateDemandLineDto, DemandLineGetDto } from '../types/demand-types';
 import { cn } from '@/lib/utils';
+import { getImageUrl } from '@/lib/image-url';
 import {
   formatLineTableQuickEditDraft,
   getHtmlNumberInputStepForDecimals,
@@ -930,6 +931,7 @@ export function DemandLineTable({
                     const isRelatedProduct = line.relatedProductKey !== null && line.relatedProductKey !== undefined;
                     const isMainStock = line.isMainRelatedProduct === true;
                     const hasApprovalWarning = line.approvalStatus === 1;
+                    const lineImagePath = line.imagePath ?? undefined;
 
                     return (
                       <tr
@@ -942,28 +944,38 @@ export function DemandLineTable({
                       >
                         {/* STOK BİLGİSİ */}
                         <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "pl-6")}>
-                          <div className="flex flex-col gap-1.5">
-                            <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                              {line.productCode || '-'}
-                            </div>
-                            {line.productName && (
-                              <div className="text-xs font-medium text-zinc-500 line-clamp-1" title={line.productName}>
-                                {line.productName}
+                          <div className="flex gap-3">
+                            {lineImagePath ? (
+                              <img
+                                src={getImageUrl(lineImagePath) ?? undefined}
+                                alt={line.productName || line.productCode || 'Line image'}
+                                loading="lazy"
+                                className="h-10 w-10 shrink-0 rounded-md border border-zinc-200 object-cover dark:border-zinc-700"
+                              />
+                            ) : null}
+                            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                              <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                                {line.productCode || '-'}
                               </div>
-                            )}
-                            {line.unit && (
-                              <div className="text-[11px] font-semibold text-purple-600 dark:text-purple-300">
-                                {t('demand.lines.unit')}: {line.unit}
-                              </div>
-                            )}
+                              {line.productName && (
+                                <div className="text-xs font-medium text-zinc-500 line-clamp-1" title={line.productName}>
+                                  {line.productName}
+                                </div>
+                              )}
+                              {line.unit && (
+                                <div className="text-[11px] font-semibold text-purple-600 dark:text-purple-300">
+                                  {t('demand.lines.unit')}: {line.unit}
+                                </div>
+                              )}
 
-                            {(line.description1 || line.description2 || line.description3) && (
-                              <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                                {line.description1 && <div className="line-clamp-1">Profile: {line.description1}</div>}
-                                {line.description2 && <div className="line-clamp-1">Demir: {line.description2}</div>}
-                                {line.description3 && <div className="line-clamp-1">Vida: {line.description3}</div>}
-                              </div>
-                            )}
+                              {(line.description1 || line.description2 || line.description3) && (
+                                <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                                  {line.description1 && <div className="line-clamp-1">Profile: {line.description1}</div>}
+                                  {line.description2 && <div className="line-clamp-1">Demir: {line.description2}</div>}
+                                  {line.description3 && <div className="line-clamp-1">Vida: {line.description3}</div>}
+                                </div>
+                              )}
+                            </div>
                             
                             <div className="flex flex-wrap gap-2 mt-1">
                               {hasApprovalWarning && (
