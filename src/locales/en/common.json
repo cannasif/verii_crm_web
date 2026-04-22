@@ -192,6 +192,14 @@
     "templateSaveFailed": "Template could not be saved",
     "imageMax2Mb": "The image can be up to 2 MB.",
     "imageUploadFailed": "Failed to upload image",
+    "lineImage": {
+      "title": "Line image",
+      "empty": "No image has been added for this line yet",
+      "add": "Add image",
+      "change": "Change image",
+      "remove": "Remove image",
+      "hint": "Adding an image is optional."
+    },
     "selectImage": "select image",
     "imageSettings": "Image Properties",
     "imageUrl": "Image URL",

@@ -98,6 +98,7 @@ export interface CreateDemandLineDto {
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
+  imagePath?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -128,6 +129,7 @@ export interface UpdateDemandLineDto {
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
+  imagePath?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;
@@ -161,6 +163,7 @@ export interface DemandLineGetDto {
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
+  imagePath?: string | null;
   relatedStockId?: number | null;
   relatedProductKey?: string | null;
   isMainRelatedProduct?: boolean;

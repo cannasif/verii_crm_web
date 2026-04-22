@@ -23,12 +23,25 @@ const PRESET_BASE = '/api/pdf-table-presets';
 
 export interface UploadPdfAssetOptions {
   templateId?: number;
-  assetScope?: 'quick-quotation' | 'pdf-designer' | 'report-builder' | 'template';
+  assetScope?:
+    | 'quick-quotation'
+    | 'pdf-designer'
+    | 'report-builder'
+    | 'template'
+    | 'quotation-line'
+    | 'demand-line'
+    | 'order-line';
   elementId?: string;
   pageNumber?: number;
   tempQuotattionId?: number;
   tempQuotattionLineId?: number;
   productCode?: string;
+  quotationId?: number;
+  quotationLineId?: number;
+  demandId?: number;
+  demandLineId?: number;
+  orderId?: number;
+  orderLineId?: number;
 }
 
 function normalizeTemplateItem(item: unknown): ReportTemplateGetDto {
@@ -277,6 +290,24 @@ export const pdfReportTemplateApi = {
     }
     if (options?.productCode) {
       formData.append('productCode', options.productCode);
+    }
+    if (typeof options?.quotationId === 'number' && Number.isFinite(options.quotationId) && options.quotationId > 0) {
+      formData.append('quotationId', String(options.quotationId));
+    }
+    if (typeof options?.quotationLineId === 'number' && Number.isFinite(options.quotationLineId) && options.quotationLineId > 0) {
+      formData.append('quotationLineId', String(options.quotationLineId));
+    }
+    if (typeof options?.demandId === 'number' && Number.isFinite(options.demandId) && options.demandId > 0) {
+      formData.append('demandId', String(options.demandId));
+    }
+    if (typeof options?.demandLineId === 'number' && Number.isFinite(options.demandLineId) && options.demandLineId > 0) {
+      formData.append('demandLineId', String(options.demandLineId));
+    }
+    if (typeof options?.orderId === 'number' && Number.isFinite(options.orderId) && options.orderId > 0) {
+      formData.append('orderId', String(options.orderId));
+    }
+    if (typeof options?.orderLineId === 'number' && Number.isFinite(options.orderLineId) && options.orderLineId > 0) {
+      formData.append('orderLineId', String(options.orderLineId));
     }
 
     const response = await api.post<unknown>(`${BASE}/assets/upload`, formData);

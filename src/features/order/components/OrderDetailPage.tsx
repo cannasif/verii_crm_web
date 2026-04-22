@@ -177,6 +177,7 @@ export function OrderDetailPage(): ReactElement {
         description2: line.description2 || null,
         description3: line.description3 || null,
         pricingRuleHeaderId: line.pricingRuleHeaderId || null,
+        imagePath: line.imagePath || null,
         relatedStockId: line.relatedStockId || null,
         relatedProductKey: line.relatedProductKey || null,
         isMainRelatedProduct: line.isMainRelatedProduct || false,

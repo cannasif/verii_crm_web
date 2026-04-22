@@ -197,6 +197,14 @@
     "templateSaveFailed": "Şablon kaydedilemedi",
     "imageMax2Mb": "Resim en fazla 2 MB olabilir.",
     "imageUploadFailed": "Resim yüklenemedi",
+    "lineImage": {
+      "title": "Kalem görseli",
+      "empty": "Bu kalem için henüz görsel eklenmedi",
+      "add": "Görsel ekle",
+      "change": "Görseli değiştir",
+      "remove": "Görseli kaldır",
+      "hint": "Görsel eklemek opsiyoneldir."
+    },
     "selectImage": "Resim seç",
     "imageSettings": "Resim Özellikleri",
     "imageUrl": "Resim URL",

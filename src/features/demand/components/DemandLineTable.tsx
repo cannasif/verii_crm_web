@@ -70,6 +70,7 @@ function toCreateDto(line: DemandLineFormState, demandId: number): CreateDemandL
     productName: line.productName ?? '',
     approvalStatus: line.approvalStatus ?? 0,
     erpProjectCode: line.projectCode ?? null,
+    imagePath: line.imagePath ?? null,
   };
 }
 
@@ -116,6 +117,7 @@ function dtoToFormState(dto: DemandLineGetDto, index: number): DemandLineFormSta
     description3: dto.description3 ?? null,
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
     projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
+    imagePath: dto.imagePath ?? null,
     relatedStockId: dto.relatedStockId ?? null,
     relatedProductKey: dto.relatedProductKey ?? null,
     isMainRelatedProduct: dto.isMainRelatedProduct ?? false,
@@ -151,6 +153,7 @@ function toUpdateDto(line: DemandLineFormState, demandId: number): DemandLineGet
     pricingRuleHeaderId: line.pricingRuleHeaderId ?? null,
     projectCode: line.projectCode ?? null,
     erpProjectCode: line.projectCode ?? null,
+    imagePath: line.imagePath ?? null,
     relatedStockId: line.relatedStockId ?? null,
     relatedProductKey: line.relatedProductKey ?? null,
     isMainRelatedProduct: line.isMainRelatedProduct ?? false,
@@ -1332,6 +1335,12 @@ export function DemandLineTable({
                 userDiscountLimits={userDiscountLimits}
                 isSaving={updateMutation.isPending}
                 existingLineStockMarkers={existingDocumentLineMarkersForEdit}
+                allowImageUpload={Boolean(parseLineId(lineToEdit.id))}
+                imageUploadScope="demand-line"
+                imageUploadExtras={{
+                  demandId: demandId ?? undefined,
+                  demandLineId: parseLineId(lineToEdit.id) ?? undefined,
+                }}
               />
             )}
           </div>

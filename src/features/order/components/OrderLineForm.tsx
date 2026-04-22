@@ -1,7 +1,8 @@
 'use client';
 
-import { type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRef } from 'react';
+import { type ChangeEvent, type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,6 +19,9 @@ import { useProductSelection } from '../hooks/useProductSelection';
 import { formatCurrency } from '../utils/format-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { orderApi } from '../api/order-api';
+import { pdfReportTemplateApi } from '@/features/pdf-report';
+import type { UploadPdfAssetOptions } from '@/features/pdf-report/api/pdf-report-template-api';
+import { getImageUrl } from '@/lib/image-url';
 import type { OrderLineFormState, OrderExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/order-types';
 import {
   Check,
@@ -32,6 +36,8 @@ import {
   AlertTriangle,
   Loader2,
   X,
+  ImagePlus,
+  Trash2,
 } from 'lucide-react';
 import { useLineFormUiPreferencesStore } from '@/stores/line-form-ui-preferences-store';
 import { applyLineDescriptionSavePolicy } from '@/lib/apply-line-description-save-policy';
@@ -98,6 +104,9 @@ interface OrderLineFormProps {
   onSaveMultiple?: (lines: OrderLineFormState[]) => void;
   isSaving?: boolean;
   existingLineStockMarkers?: ProductSelectionResult[];
+  allowImageUpload?: boolean;
+  imageUploadScope?: 'order-line';
+  imageUploadExtras?: Omit<UploadPdfAssetOptions, 'assetScope'>;
 }
 
 export function OrderLineForm({
@@ -111,6 +120,9 @@ export function OrderLineForm({
   onSaveMultiple,
   isSaving = false,
   existingLineStockMarkers = [],
+  allowImageUpload = false,
+  imageUploadScope = 'order-line',
+  imageUploadExtras,
 }: OrderLineFormProps): ReactElement {
   const { t } = useTranslation();
   const showDescriptionSectionPref = useLineFormUiPreferencesStore((s) => s.showDescriptionFieldsSection);
@@ -147,6 +159,8 @@ export function OrderLineForm({
   const [discountRate2InputValue, setDiscountRate2InputValue] = useState<string>(String(line.discountRate2 || ''));
   const [discountRate3InputValue, setDiscountRate3InputValue] = useState<string>(String(line.discountRate3 || ''));
   const prevDiscountRatesRef = useRef({ discountRate1: line.discountRate1, discountRate2: line.discountRate2, discountRate3: line.discountRate3 });
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const [descriptionSlotsEnabled, setDescriptionSlotsEnabled] = useState<[boolean, boolean, boolean]>([true, true, true]);
 
@@ -922,6 +936,28 @@ export function OrderLineForm({
     }
   };
 
+  const handleImageSelect = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    try {
+      const uploaded = await pdfReportTemplateApi.uploadAsset(file, {
+        assetScope: imageUploadScope,
+        orderId: imageUploadExtras?.orderId,
+        orderLineId: imageUploadExtras?.orderLineId,
+      });
+      handleFieldChange('imagePath', uploaded.relativeUrl);
+      toast.success(t('common.saved'));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t('common.imageUploadFailed');
+      toast.error(t('common.imageUploadFailed'), { description: message });
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const handleSave = (): void => {
     const prefs = useLineFormUiPreferencesStore.getState();
     const policy = {
@@ -1366,6 +1402,62 @@ export function OrderLineForm({
         </div>
 
         <div className="xl:col-span-5 flex flex-col gap-4">
+          {allowImageUpload ? (
+            <div className="bg-slate-50 dark:bg-[#1a1025]/50 rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    {t('common.lineImage.title')}
+                  </h5>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('common.lineImage.hint')}
+                  </p>
+                </div>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(event) => void handleImageSelect(event)}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={isUploadingImage}
+                  className="rounded-xl"
+                >
+                  {isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+                  <span className="ml-2">
+                    {formData.imagePath ? t('common.lineImage.change') : t('common.lineImage.add')}
+                  </span>
+                </Button>
+              </div>
+              {formData.imagePath ? (
+                <div className="space-y-3">
+                  <img
+                    src={getImageUrl(formData.imagePath) ?? formData.imagePath}
+                    alt={formData.productName || t('common.lineImage.title')}
+                    className="h-44 w-full rounded-xl border border-slate-200 dark:border-white/10 object-cover bg-white dark:bg-[#0f0a18]"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => handleFieldChange('imagePath', null)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    {t('common.lineImage.remove')}
+                  </Button>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-slate-300 dark:border-white/10 bg-white/70 dark:bg-[#0f0a18] px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                  {t('common.lineImage.empty')}
+                </div>
+              )}
+            </div>
+          ) : null}
+
           <div className="bg-slate-50 dark:bg-[#1a1025]/50 rounded-2xl p-5 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
             <div className="flex justify-between items-center text-sm gap-4">
               <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.subtotal')}</span>

@@ -71,6 +71,7 @@ function toCreateDto(line: QuotationLineFormState, quotationId: number): CreateQ
     productName: line.productName ?? '',
     approvalStatus: line.approvalStatus ?? 0,
     erpProjectCode: line.projectCode ?? null,
+    imagePath: line.imagePath ?? null,
   };
 }
 
@@ -117,6 +118,7 @@ function dtoToFormState(dto: QuotationLineGetDto, index: number): QuotationLineF
     description3: dto.description3 ?? null,
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
     projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
+    imagePath: dto.imagePath ?? null,
     relatedStockId: dto.relatedStockId ?? null,
     relatedProductKey: dto.relatedProductKey ?? null,
     isMainRelatedProduct: dto.isMainRelatedProduct ?? false,
@@ -152,6 +154,7 @@ function toUpdateDto(line: QuotationLineFormState, quotationId: number): Quotati
     pricingRuleHeaderId: line.pricingRuleHeaderId ?? null,
     projectCode: line.projectCode ?? null,
     erpProjectCode: line.projectCode ?? null,
+    imagePath: line.imagePath ?? null,
     relatedStockId: line.relatedStockId ?? null,
     relatedProductKey: line.relatedProductKey ?? null,
     isMainRelatedProduct: line.isMainRelatedProduct ?? false,
@@ -1292,6 +1295,13 @@ export function QuotationLineTable({
                 userDiscountLimits={userDiscountLimits}
                 isSaving={updateMutation.isPending}
                 existingLineStockMarkers={existingDocumentLineMarkersForEdit}
+                allowImageUpload={Boolean(parseLineId(lineToEdit.id))}
+                imageUploadScope="quotation-line"
+                imageUploadExtras={{
+                  quotationId: quotationId ?? undefined,
+                  quotationLineId: parseLineId(lineToEdit.id) ?? undefined,
+                  productCode: lineToEdit.productCode || undefined,
+                }}
               />
             )}
           </div>
