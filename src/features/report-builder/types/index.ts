@@ -223,6 +223,8 @@ export interface ReportDto {
 
 export interface MyReportDashboardItem {
   reportId: number;
+  widgetId?: string;
+  widgetTitle?: string;
   x: number;
   y: number;
   w: number;

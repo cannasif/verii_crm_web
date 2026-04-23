@@ -13,6 +13,7 @@ import { Copy, ExternalLink, LayoutGrid, Loader2, Pencil, Plus, Search, Trash2 }
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth-store';
 import { createDashboardItem, getReportSummary, loadMyDashboardLayout, saveMyDashboardLayout, sanitizeMyDashboardLayout } from '../utils';
+import type { ReportConfig } from '../types';
 
 export function ReportsListPage(): ReactElement {
   const { t, i18n } = useTranslation('common');
@@ -30,15 +31,29 @@ export function ReportsListPage(): ReactElement {
 
   const handleAddToDashboard = (reportId: number): void => {
     if (!userId) return;
+    const report = items.find((item) => item.id === reportId);
+    let defaultWidgetId: string | undefined;
+    let defaultWidgetTitle: string | undefined;
+    if (report) {
+      try {
+        const parsed = JSON.parse(report.configJson) as ReportConfig;
+        const firstWidget = parsed.widgets?.[0];
+        defaultWidgetId = firstWidget?.id;
+        defaultWidgetTitle = firstWidget?.title?.trim() || undefined;
+      } catch {
+        defaultWidgetId = undefined;
+        defaultWidgetTitle = undefined;
+      }
+    }
     const currentLayout = sanitizeMyDashboardLayout(loadMyDashboardLayout(userId), items.map((item) => item.id));
-    if (currentLayout.items.some((item) => item.reportId === reportId)) {
+    if (currentLayout.items.some((item) => item.reportId === reportId && (item.widgetId ?? undefined) === defaultWidgetId)) {
       toast.info(t('common.reportBuilder.dashboardAlreadyAdded'));
       return;
     }
     const nextLayout = {
       version: 1 as const,
       updatedAt: new Date().toISOString(),
-      items: [...currentLayout.items, createDashboardItem(reportId, currentLayout.items)],
+      items: [...currentLayout.items, createDashboardItem(reportId, currentLayout.items, { widgetId: defaultWidgetId, widgetTitle: defaultWidgetTitle })],
     };
     saveMyDashboardLayout(userId, nextLayout);
     toast.success(t('common.reportBuilder.dashboardAdded'));
@@ -102,9 +117,9 @@ export function ReportsListPage(): ReactElement {
         </div>
         <div className="flex flex-wrap gap-2">
           {isMyReports && (
-            <Button variant="outline" onClick={() => navigate('/reports/my-dashboard')}>
+            <Button variant="outline" onClick={() => navigate('/')}>
               <LayoutGrid className="mr-2 size-4" />
-              {t('common.reportBuilder.openMyDashboard')}
+              {t('common.reportBuilder.openDashboardHome')}
             </Button>
           )}
           {!isMyReports && (
@@ -262,7 +277,7 @@ export function ReportsListPage(): ReactElement {
                         size="icon-sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate('/reports/my-dashboard');
+                          navigate('/');
                         }}
                       >
                         <ExternalLink className="size-4" />

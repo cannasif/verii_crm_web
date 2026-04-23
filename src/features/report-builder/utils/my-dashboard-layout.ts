@@ -16,6 +16,8 @@ function isDashboardItem(value: unknown): value is MyReportDashboardItem {
   if (typeof value !== 'object' || value == null) return false;
   const item = value as Record<string, unknown>;
   return Number.isFinite(Number(item.reportId))
+    && (item.widgetId == null || typeof item.widgetId === 'string')
+    && (item.widgetTitle == null || typeof item.widgetTitle === 'string')
     && Number.isFinite(Number(item.x))
     && Number.isFinite(Number(item.y))
     && Number.isFinite(Number(item.w))
@@ -27,6 +29,8 @@ function normalizeItem(item: MyReportDashboardItem): MyReportDashboardItem {
   const maxX = Math.max(0, DASHBOARD_CANVAS_WIDTH - DASHBOARD_ITEM_MIN_WIDTH);
   return {
     reportId: item.reportId,
+    widgetId: item.widgetId?.trim() || undefined,
+    widgetTitle: item.widgetTitle?.trim() || undefined,
     x: Math.max(0, Math.min(maxX, Math.round(item.x))),
     y: Math.max(0, Math.round(item.y)),
     w: Math.max(DASHBOARD_ITEM_MIN_WIDTH, Math.round(item.w)),
@@ -75,12 +79,13 @@ export function sanitizeMyDashboardLayout(
   allowedReportIds: number[],
 ): MyReportDashboardLayout {
   const allowed = new Set(allowedReportIds);
-  const deduped = new Set<number>();
+  const deduped = new Set<string>();
   const items = layout.items
     .filter((item) => allowed.has(item.reportId))
     .filter((item) => {
-      if (deduped.has(item.reportId)) return false;
-      deduped.add(item.reportId);
+      const key = `${item.reportId}:${item.widgetId ?? '__report__'}`;
+      if (deduped.has(key)) return false;
+      deduped.add(key);
       return true;
     })
     .map(normalizeItem)
@@ -94,7 +99,11 @@ export function sanitizeMyDashboardLayout(
   };
 }
 
-export function createDashboardItem(reportId: number, existingItems: MyReportDashboardItem[]): MyReportDashboardItem {
+export function createDashboardItem(
+  reportId: number,
+  existingItems: MyReportDashboardItem[],
+  options?: { widgetId?: string; widgetTitle?: string },
+): MyReportDashboardItem {
   const index = existingItems.length;
   const column = index % 3;
   const row = Math.floor(index / 3);
@@ -102,6 +111,8 @@ export function createDashboardItem(reportId: number, existingItems: MyReportDas
 
   return {
     reportId,
+    widgetId: options?.widgetId?.trim() || undefined,
+    widgetTitle: options?.widgetTitle?.trim() || undefined,
     x: column * (DASHBOARD_ITEM_DEFAULT_WIDTH + gap),
     y: row * (DASHBOARD_ITEM_DEFAULT_HEIGHT + gap),
     w: DASHBOARD_ITEM_DEFAULT_WIDTH,

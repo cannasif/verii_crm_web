@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { formatSystemCurrency, formatSystemDate } from '@/lib/system-settings';
 import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
+import { AssignedReportsDashboardSection } from '@/features/report-builder/components/AssignedReportsDashboardSection';
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -575,6 +576,8 @@ export function DashboardPage(): ReactElement {
             </CardWrapper>
         ))}
       </div>
+
+      <AssignedReportsDashboardSection />
 
     </div>
   );
