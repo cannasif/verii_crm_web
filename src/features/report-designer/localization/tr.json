@@ -419,6 +419,13 @@
     "visibilityRulePreviewIncomplete": "Kural henüz tamamlanmadı.",
     "visibilityRulePreviewVisible": "Bu örnek veride öğe görünür olur.",
     "visibilityRulePreviewHidden": "Bu örnek veride öğe gizlenir.",
+    "conditionalStyleDescription": "Alan değeri belirli bir koşulu sağladığında öğeye renk, arka plan veya çerçeve uygula.",
+    "conditionalStyleAdd": "Stil kuralı ekle",
+    "conditionalStyleItemTitle": "Stil kuralı {{index}}",
+    "conditionalStyleColor": "Yazı rengi",
+    "conditionalStyleBackground": "Arka plan",
+    "conditionalStyleBorder": "Kenarlık",
+    "conditionalStyleFontWeight": "Yazı kalınlığı",
     "visibilityLogic": {
       "all": "Tüm kurallar sağlanırsa göster",
       "any": "Kurallardan biri sağlanırsa göster"
@@ -434,7 +441,26 @@
       "equals": "Eşitse göster",
       "notEquals": "Eşit değilse göster",
       "isEmpty": "Boşsa göster",
-      "isNotEmpty": "Doluysa göster"
+      "isNotEmpty": "Doluysa göster",
+      "greaterThan": "Büyükse uygula",
+      "greaterOrEqual": "Büyük veya eşitse uygula",
+      "lessThan": "Küçükse uygula",
+      "lessOrEqual": "Küçük veya eşitse uygula",
+      "contains": "İçeriyorsa uygula"
+    },
+    "inspectorGroups": {
+      "position": "Konum",
+      "pageVisibility": "Sayfa ve görünürlük",
+      "conditionalStyling": "Koşullu stil",
+      "tableSetup": "Tablo kurulumu",
+      "tableColumns": "Tablo sütunları",
+      "parent": "Bağlı kapsayıcı",
+      "noteContent": "Not içeriği",
+      "summary": "Özet alanı",
+      "quotationTotalsOptions": "Toplam ayarları",
+      "typography": "Tipografi",
+      "appearance": "Görünüm",
+      "advanced": "Gelişmiş"
     }
   }
 }

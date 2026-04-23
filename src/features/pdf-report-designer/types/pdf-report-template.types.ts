@@ -14,13 +14,35 @@ export interface PdfElementStyle {
   opacity?: number;
 }
 
+export type PdfRuleOperator =
+  | 'equals'
+  | 'notEquals'
+  | 'isEmpty'
+  | 'isNotEmpty'
+  | 'greaterThan'
+  | 'greaterOrEqual'
+  | 'lessThan'
+  | 'lessOrEqual'
+  | 'contains';
+
 export interface PdfVisibilityRule {
   fieldPath?: string;
-  operator?: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty';
+  operator?: PdfRuleOperator;
   value?: string;
 }
 
 export type PdfVisibilityLogic = 'all' | 'any';
+
+export interface PdfConditionalStyleRule {
+  fieldPath?: string;
+  operator?: PdfRuleOperator;
+  value?: string;
+  color?: string;
+  background?: string;
+  border?: string;
+  fontWeight?: number | string;
+  opacity?: number;
+}
 
 export interface PdfSummaryItem {
   label: string;
@@ -48,7 +70,7 @@ export interface PdfQuotationTotalsOptions {
   hideEmptyNote?: boolean;
 }
 
-interface PdfReportElementBase {
+export interface PdfReportElementBase {
   id: string;
   section: PdfReportSection;
   x: number;
@@ -73,6 +95,7 @@ interface PdfReportElementBase {
   visibilityRule?: PdfVisibilityRule;
   visibilityRules?: PdfVisibilityRule[];
   visibilityLogic?: PdfVisibilityLogic;
+  conditionalStyleRules?: PdfConditionalStyleRule[];
 }
 
 export interface PdfReportElement extends PdfReportElementBase {

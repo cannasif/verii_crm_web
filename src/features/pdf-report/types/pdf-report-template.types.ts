@@ -57,10 +57,39 @@ export interface PdfReportElementStyleDto {
 
 export interface PdfVisibilityRuleDto {
   fieldPath?: string;
-  operator?: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty';
+  operator?:
+    | 'equals'
+    | 'notEquals'
+    | 'isEmpty'
+    | 'isNotEmpty'
+    | 'greaterThan'
+    | 'greaterOrEqual'
+    | 'lessThan'
+    | 'lessOrEqual'
+    | 'contains';
   value?: string;
 }
 export type PdfVisibilityLogicDto = 'all' | 'any';
+
+export interface PdfConditionalStyleRuleDto {
+  fieldPath?: string;
+  operator?:
+    | 'equals'
+    | 'notEquals'
+    | 'isEmpty'
+    | 'isNotEmpty'
+    | 'greaterThan'
+    | 'greaterOrEqual'
+    | 'lessThan'
+    | 'lessOrEqual'
+    | 'contains';
+  value?: string;
+  color?: string;
+  background?: string;
+  border?: string;
+  fontWeight?: number | string;
+  opacity?: number;
+}
 
 export interface PdfSummaryItemDto {
   label: string;
@@ -163,6 +192,7 @@ export interface ReportTemplateElementDto {
   visibilityRule?: PdfVisibilityRuleDto;
   visibilityRules?: PdfVisibilityRuleDto[];
   visibilityLogic?: PdfVisibilityLogicDto;
+  conditionalStyleRules?: PdfConditionalStyleRuleDto[];
 }
 
 export interface ReportTemplateDataDto {

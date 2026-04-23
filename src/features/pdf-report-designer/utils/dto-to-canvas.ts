@@ -125,6 +125,7 @@ export function dtoToPdfCanvasElements(
       visibilityRule: dto.visibilityRule,
       visibilityRules: dto.visibilityRules,
       visibilityLogic: dto.visibilityLogic,
+      conditionalStyleRules: dto.conditionalStyleRules,
       pageNumbers: Array.isArray(dto.pageNumbers)
         ? dto.pageNumbers.filter((pageNumber): pageNumber is number => Number.isInteger(pageNumber))
         : undefined,
@@ -187,6 +188,7 @@ export function pdfCanvasElementsToDto(
       visibilityRule: 'visibilityRule' in el ? el.visibilityRule : undefined,
       visibilityRules: 'visibilityRules' in el ? el.visibilityRules : undefined,
       visibilityLogic: 'visibilityLogic' in el ? el.visibilityLogic : undefined,
+      conditionalStyleRules: 'conditionalStyleRules' in el ? el.conditionalStyleRules : undefined,
       pageNumbers: el.pageNumbers,
     };
     if (el.type === 'table') {

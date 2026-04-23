@@ -419,6 +419,13 @@
     "visibilityRulePreviewIncomplete": "The rule is not complete yet.",
     "visibilityRulePreviewVisible": "This element would be visible with the sample value.",
     "visibilityRulePreviewHidden": "This element would be hidden with the sample value.",
+    "conditionalStyleDescription": "Apply color, background, or border styling when a field value matches a condition.",
+    "conditionalStyleAdd": "Add style rule",
+    "conditionalStyleItemTitle": "Style rule {{index}}",
+    "conditionalStyleColor": "Text color",
+    "conditionalStyleBackground": "Background",
+    "conditionalStyleBorder": "Border",
+    "conditionalStyleFontWeight": "Font weight",
     "visibilityLogic": {
       "all": "Show when all rules match",
       "any": "Show when any rule matches"
@@ -434,7 +441,26 @@
       "equals": "Show when equal",
       "notEquals": "Show when not equal",
       "isEmpty": "Show when empty",
-      "isNotEmpty": "Show when not empty"
+      "isNotEmpty": "Show when not empty",
+      "greaterThan": "Apply when greater than",
+      "greaterOrEqual": "Apply when greater or equal",
+      "lessThan": "Apply when less than",
+      "lessOrEqual": "Apply when less or equal",
+      "contains": "Apply when contains"
+    },
+    "inspectorGroups": {
+      "position": "Position",
+      "pageVisibility": "Page & visibility",
+      "conditionalStyling": "Conditional styling",
+      "tableSetup": "Table setup",
+      "tableColumns": "Table columns",
+      "parent": "Parent container",
+      "noteContent": "Note content",
+      "summary": "Summary",
+      "quotationTotalsOptions": "Totals options",
+      "typography": "Typography",
+      "appearance": "Appearance",
+      "advanced": "Advanced"
     }
   }
 }

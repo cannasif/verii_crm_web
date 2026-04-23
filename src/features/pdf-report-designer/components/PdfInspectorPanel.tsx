@@ -40,7 +40,7 @@ import { FONT_FAMILIES, FONT_SIZES } from '../constants';
 import { PDF_TABLE_PRESETS, getPdfTablePreset } from '../constants/table-presets';
 import { usePdfTablePresetList } from '../hooks/usePdfTablePresetList';
 import type { FieldDefinitionDto } from '@/features/pdf-report';
-import type { PdfVisibilityRule } from '../types/pdf-report-template.types';
+import type { PdfCanvasElement, PdfConditionalStyleRule, PdfRuleOperator, PdfVisibilityRule } from '../types/pdf-report-template.types';
 import { PdfInspectorSection } from './PdfInspectorSection';
 import { PdfElementTypeIcon, getPdfElementTypeKey } from './PdfElementTypeBadge';
 
@@ -68,19 +68,13 @@ function normalizePageNumbers(rawValue: string, pageCount: number): number[] | u
 function evaluateVisibilityRule(
   rule: {
     fieldPath?: string;
-    operator?: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty';
+    operator?: PdfRuleOperator;
     value?: string;
   } | undefined,
   sampleValue?: string,
 ): boolean | null {
   if (!rule?.fieldPath || !rule.operator) return null;
-  const currentValue = sampleValue ?? '';
-  if (rule.operator === 'isEmpty') return currentValue.trim().length === 0;
-  if (rule.operator === 'isNotEmpty') return currentValue.trim().length > 0;
-  if (rule.value == null) return null;
-  if (rule.operator === 'equals') return currentValue === rule.value;
-  if (rule.operator === 'notEquals') return currentValue !== rule.value;
-  return null;
+  return evaluateRule(rule.operator, sampleValue, rule.value);
 }
 
 function evaluateVisibilityRules(
@@ -93,6 +87,54 @@ function evaluateVisibilityRules(
   const results = normalizedRules.map((rule) => evaluateVisibilityRule(rule, getSampleValue(rule.fieldPath)));
   if (results.some((result) => result == null)) return null;
   return logic === 'any' ? results.some(Boolean) : results.every(Boolean);
+}
+
+function parseRuleNumber(value?: string): number | null {
+  if (value == null) return null;
+  const normalized = value.trim().replace(/\s+/g, '').replace(',', '.');
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function evaluateRule(
+  operator: PdfRuleOperator,
+  sampleValue?: string,
+  expectedValue?: string,
+): boolean | null {
+  const currentValue = sampleValue?.trim() ?? '';
+  if (operator === 'isEmpty') return currentValue.length === 0;
+  if (operator === 'isNotEmpty') return currentValue.length > 0;
+  if (operator === 'contains') {
+    if (!expectedValue) return null;
+    return currentValue.toLowerCase().includes(expectedValue.trim().toLowerCase());
+  }
+  if (expectedValue == null) return null;
+  const expected = expectedValue.trim();
+  if (operator === 'equals' || operator === 'notEquals') {
+    const currentNumber = parseRuleNumber(currentValue);
+    const expectedNumber = parseRuleNumber(expected);
+    const equals =
+      currentNumber != null && expectedNumber != null
+        ? currentNumber === expectedNumber
+        : currentValue.localeCompare(expected, undefined, { sensitivity: 'accent' }) === 0;
+    return operator === 'equals' ? equals : !equals;
+  }
+  const currentNumber = parseRuleNumber(currentValue);
+  const expectedNumber = parseRuleNumber(expected);
+  if (currentNumber == null || expectedNumber == null) return false;
+  switch (operator) {
+    case 'greaterThan':
+      return currentNumber > expectedNumber;
+    case 'greaterOrEqual':
+      return currentNumber >= expectedNumber;
+    case 'lessThan':
+      return currentNumber < expectedNumber;
+    case 'lessOrEqual':
+      return currentNumber <= expectedNumber;
+    default:
+      return null;
+  }
 }
 
 export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspectorPanelProps): ReactElement {
@@ -135,11 +177,12 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
     (element) => element.type === 'container' && element.id !== selectedElement?.id
   );
   const visibilityRules =
-    selectedElement && !isPdfTableElement(selectedElement)
+    selectedElement
       ? selectedElement.visibilityRules ?? (selectedElement.visibilityRule ? [selectedElement.visibilityRule] : [])
       : [];
+  const conditionalStyleRules = selectedElement?.conditionalStyleRules ?? [];
   const visibilityPreviewResult =
-    selectedElement && !isPdfTableElement(selectedElement)
+    selectedElement
       ? evaluateVisibilityRules(
           visibilityRules,
           selectedElement.visibilityLogic ?? 'all',
@@ -228,13 +271,29 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
       : PDF_TABLE_PRESETS;
 
   const updateVisibilityRules = (rules: PdfVisibilityRule[], nextLogic?: 'all' | 'any'): void => {
-    if (!selectedElement || isPdfTableElement(selectedElement)) return;
+    if (!selectedElement) return;
     const normalizedRules = rules.filter((rule) => rule.fieldPath || rule.operator || rule.value);
-    updateReportElement(selectedElement.id, {
+    updateElement(selectedElement.id, {
       visibilityRule: normalizedRules[0],
       visibilityRules: normalizedRules.length > 0 ? normalizedRules : undefined,
       visibilityLogic: nextLogic ?? selectedElement.visibilityLogic ?? 'all',
-    });
+    } as Partial<PdfCanvasElement>);
+  };
+  const updateConditionalStyleRules = (rules: PdfConditionalStyleRule[]): void => {
+    if (!selectedElement) return;
+    const normalizedRules = rules.filter((rule) =>
+      rule.fieldPath ||
+      rule.operator ||
+      rule.value ||
+      rule.color ||
+      rule.background ||
+      rule.border ||
+      rule.fontWeight != null ||
+      rule.opacity != null
+    );
+    updateElement(selectedElement.id, {
+      conditionalStyleRules: normalizedRules.length > 0 ? normalizedRules : undefined,
+    } as Partial<PdfCanvasElement>);
   };
   const visibilityRulePresets = [
     {
@@ -393,8 +452,7 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
               placeholder={t('pdfReportDesigner.visiblePagesPlaceholder')}
             />
           </div>
-          {!isPdfTableElement(selectedElement) ? (
-            <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
               <Label className="text-xs">{t('pdfReportDesigner.visibilityRuleTitle')}</Label>
               <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400">
                 {t('pdfReportDesigner.visibilityRuleDescription')}
@@ -453,7 +511,7 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
                     />
                     <Select
                       value={rule.operator ?? 'equals'}
-                      onValueChange={(value: 'equals' | 'notEquals' | 'isEmpty' | 'isNotEmpty') =>
+                      onValueChange={(value: PdfRuleOperator) =>
                         updateVisibilityRules(
                           visibilityRules.map((item, index) =>
                             index === ruleIndex ? { ...item, operator: value } : item,
@@ -469,6 +527,11 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
                         <SelectItem value="notEquals">{t('pdfReportDesigner.visibilityOperators.notEquals')}</SelectItem>
                         <SelectItem value="isEmpty">{t('pdfReportDesigner.visibilityOperators.isEmpty')}</SelectItem>
                         <SelectItem value="isNotEmpty">{t('pdfReportDesigner.visibilityOperators.isNotEmpty')}</SelectItem>
+                        <SelectItem value="greaterThan">{t('pdfReportDesigner.visibilityOperators.greaterThan')}</SelectItem>
+                        <SelectItem value="greaterOrEqual">{t('pdfReportDesigner.visibilityOperators.greaterOrEqual')}</SelectItem>
+                        <SelectItem value="lessThan">{t('pdfReportDesigner.visibilityOperators.lessThan')}</SelectItem>
+                        <SelectItem value="lessOrEqual">{t('pdfReportDesigner.visibilityOperators.lessOrEqual')}</SelectItem>
+                        <SelectItem value="contains">{t('pdfReportDesigner.visibilityOperators.contains')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <Input
@@ -521,7 +584,163 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
                 </div>
               </div>
             </div>
-          ) : null}
+        </div>
+      </PdfInspectorSection>
+
+      <PdfInspectorSection
+        title={t('pdfReportDesigner.inspectorGroups.conditionalStyling')}
+        icon={<Palette className="size-3.5" />}
+        defaultOpen={false}
+        tone="muted"
+      >
+        <div className="flex flex-col gap-3">
+          <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+            {t('pdfReportDesigner.conditionalStyleDescription')}
+          </p>
+          {conditionalStyleRules.map((rule, ruleIndex) => {
+            const fieldDefinition = fieldDefinitions.find((field) => field.path === rule.fieldPath);
+            return (
+              <div key={`${selectedElement.id}-style-rule-${ruleIndex}`} className="rounded-md border border-slate-200 p-2 dark:border-slate-700">
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    {t('pdfReportDesigner.conditionalStyleItemTitle', { index: ruleIndex + 1 })}
+                  </div>
+                  <button
+                    type="button"
+                    className="text-[11px] font-medium text-rose-500"
+                    onClick={() =>
+                      updateConditionalStyleRules(conditionalStyleRules.filter((_, index) => index !== ruleIndex))
+                    }
+                  >
+                    {t('pdfReportDesigner.visibilityRuleRemove')}
+                  </button>
+                </div>
+                <Input
+                  value={rule.fieldPath ?? ''}
+                  onChange={(e) =>
+                    updateConditionalStyleRules(
+                      conditionalStyleRules.map((item, index) =>
+                        index === ruleIndex ? { ...item, fieldPath: e.target.value || undefined } : item,
+                      ),
+                    )
+                  }
+                  className="h-8 text-xs"
+                  placeholder={t('pdfReportDesigner.visibilityRuleFieldPlaceholder')}
+                />
+                <Select
+                  value={rule.operator ?? 'equals'}
+                  onValueChange={(value: PdfRuleOperator) =>
+                    updateConditionalStyleRules(
+                      conditionalStyleRules.map((item, index) =>
+                        index === ruleIndex ? { ...item, operator: value } : item,
+                      ),
+                    )
+                  }
+                >
+                  <SelectTrigger className="mt-2 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="equals">{t('pdfReportDesigner.visibilityOperators.equals')}</SelectItem>
+                    <SelectItem value="notEquals">{t('pdfReportDesigner.visibilityOperators.notEquals')}</SelectItem>
+                    <SelectItem value="isEmpty">{t('pdfReportDesigner.visibilityOperators.isEmpty')}</SelectItem>
+                    <SelectItem value="isNotEmpty">{t('pdfReportDesigner.visibilityOperators.isNotEmpty')}</SelectItem>
+                    <SelectItem value="greaterThan">{t('pdfReportDesigner.visibilityOperators.greaterThan')}</SelectItem>
+                    <SelectItem value="greaterOrEqual">{t('pdfReportDesigner.visibilityOperators.greaterOrEqual')}</SelectItem>
+                    <SelectItem value="lessThan">{t('pdfReportDesigner.visibilityOperators.lessThan')}</SelectItem>
+                    <SelectItem value="lessOrEqual">{t('pdfReportDesigner.visibilityOperators.lessOrEqual')}</SelectItem>
+                    <SelectItem value="contains">{t('pdfReportDesigner.visibilityOperators.contains')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  value={rule.value ?? ''}
+                  onChange={(e) =>
+                    updateConditionalStyleRules(
+                      conditionalStyleRules.map((item, index) =>
+                        index === ruleIndex ? { ...item, value: e.target.value || undefined } : item,
+                      ),
+                    )
+                  }
+                  className="mt-2 h-8 text-xs"
+                  placeholder={t('pdfReportDesigner.visibilityRuleValuePlaceholder')}
+                />
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-[11px]">{t('pdfReportDesigner.conditionalStyleColor')}</Label>
+                    <Input
+                      value={rule.color ?? ''}
+                      onChange={(e) =>
+                        updateConditionalStyleRules(
+                          conditionalStyleRules.map((item, index) =>
+                            index === ruleIndex ? { ...item, color: e.target.value || undefined } : item,
+                          ),
+                        )
+                      }
+                      className="h-8 text-xs"
+                      placeholder="#dc2626"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-[11px]">{t('pdfReportDesigner.conditionalStyleBackground')}</Label>
+                    <Input
+                      value={rule.background ?? ''}
+                      onChange={(e) =>
+                        updateConditionalStyleRules(
+                          conditionalStyleRules.map((item, index) =>
+                            index === ruleIndex ? { ...item, background: e.target.value || undefined } : item,
+                          ),
+                        )
+                      }
+                      className="h-8 text-xs"
+                      placeholder="#fef2f2"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-[11px]">{t('pdfReportDesigner.conditionalStyleBorder')}</Label>
+                    <Input
+                      value={rule.border ?? ''}
+                      onChange={(e) =>
+                        updateConditionalStyleRules(
+                          conditionalStyleRules.map((item, index) =>
+                            index === ruleIndex ? { ...item, border: e.target.value || undefined } : item,
+                          ),
+                        )
+                      }
+                      className="h-8 text-xs"
+                      placeholder="1px solid #dc2626"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-[11px]">{t('pdfReportDesigner.conditionalStyleFontWeight')}</Label>
+                    <Input
+                      value={rule.fontWeight?.toString() ?? ''}
+                      onChange={(e) =>
+                        updateConditionalStyleRules(
+                          conditionalStyleRules.map((item, index) =>
+                            index === ruleIndex
+                              ? { ...item, fontWeight: e.target.value || undefined }
+                              : item,
+                          ),
+                        )
+                      }
+                      className="h-8 text-xs"
+                      placeholder="700"
+                    />
+                  </div>
+                </div>
+                <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                  {fieldDefinition?.description ?? t('pdfReportDesigner.visibilityRulePreviewNoField')}
+                </div>
+              </div>
+            );
+          })}
+          <button
+            type="button"
+            className="h-8 rounded-md border px-3 text-xs font-medium"
+            onClick={() => updateConditionalStyleRules([...conditionalStyleRules, { operator: 'equals' }])}
+          >
+            {t('pdfReportDesigner.conditionalStyleAdd')}
+          </button>
         </div>
       </PdfInspectorSection>
 

@@ -39,10 +39,13 @@ import {
   type PdfReportElement,
   type PdfTableElement,
   type PdfReportSection,
+  type PdfRuleOperator,
   type PdfSummaryItem,
   type PdfVisibilityRule,
 } from '../types/pdf-report-template.types';
 import {
+  A4_MM_WIDTH,
+  A4_MM_HEIGHT,
   FONT_FAMILIES,
   FONT_SIZES,
   A4_CANVAS_WIDTH,
@@ -55,6 +58,8 @@ import {
   SNAP_GRID_SIZE,
   KEYBOARD_MOVE_STEP,
   KEYBOARD_MOVE_STEP_SHIFT,
+  mmToCanvasX,
+  mmToCanvasY,
 } from '../constants';
 import { clampElementToSection } from '../utils/dto-to-canvas';
 import { resolvePdfImageSrc } from '../utils/resolve-pdf-image-src';
@@ -157,13 +162,7 @@ function evaluateVisibilityRule(
   sampleValue?: string,
 ): boolean {
   if (!rule?.fieldPath || !rule.operator) return true;
-  const currentValue = sampleValue ?? '';
-  if (rule.operator === 'isEmpty') return currentValue.trim().length === 0;
-  if (rule.operator === 'isNotEmpty') return currentValue.trim().length > 0;
-  if (rule.value == null) return true;
-  if (rule.operator === 'equals') return currentValue === rule.value;
-  if (rule.operator === 'notEquals') return currentValue !== rule.value;
-  return true;
+  return evaluateRule(rule.operator, sampleValue, rule.value);
 }
 
 function evaluateVisibilityRules(
@@ -175,6 +174,97 @@ function evaluateVisibilityRules(
   if (normalizedRules.length === 0) return true;
   const results = normalizedRules.map((rule) => evaluateVisibilityRule(rule, getSampleValue(rule.fieldPath)));
   return logic === 'any' ? results.some(Boolean) : results.every(Boolean);
+}
+
+function parseRuleNumber(value?: string): number | null {
+  if (value == null) return null;
+  const normalized = value.trim().replace(/\s+/g, '').replace(',', '.');
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function evaluateRule(
+  operator: PdfRuleOperator,
+  sampleValue?: string,
+  expectedValue?: string,
+): boolean {
+  const currentValue = sampleValue?.trim() ?? '';
+  if (operator === 'isEmpty') return currentValue.length === 0;
+  if (operator === 'isNotEmpty') return currentValue.length > 0;
+  if (operator === 'contains') {
+    return !!expectedValue && currentValue.toLowerCase().includes(expectedValue.trim().toLowerCase());
+  }
+  if (expectedValue == null) return true;
+  const expected = expectedValue.trim();
+  if (operator === 'equals' || operator === 'notEquals') {
+    const currentNumber = parseRuleNumber(currentValue);
+    const expectedNumber = parseRuleNumber(expected);
+    const equals =
+      currentNumber != null && expectedNumber != null
+        ? currentNumber === expectedNumber
+        : currentValue.localeCompare(expected, undefined, { sensitivity: 'accent' }) === 0;
+    return operator === 'equals' ? equals : !equals;
+  }
+  const currentNumber = parseRuleNumber(currentValue);
+  const expectedNumber = parseRuleNumber(expected);
+  if (currentNumber == null || expectedNumber == null) return false;
+  switch (operator) {
+    case 'greaterThan':
+      return currentNumber > expectedNumber;
+    case 'greaterOrEqual':
+      return currentNumber >= expectedNumber;
+    case 'lessThan':
+      return currentNumber < expectedNumber;
+    case 'lessOrEqual':
+      return currentNumber <= expectedNumber;
+    default:
+      return true;
+  }
+}
+
+function applyConditionalStyleRules(
+  element: PdfCanvasElement,
+  getSampleValue: (fieldPath?: string) => string | undefined,
+): PdfCanvasElement {
+  const rules = element.conditionalStyleRules ?? [];
+  if (rules.length === 0) return element;
+
+  let nextColor = 'color' in element ? element.color : undefined;
+  const nextStyle = { ...(element.style ?? {}) };
+  let changed = false;
+
+  for (const rule of rules) {
+    if (!rule.fieldPath || !rule.operator) continue;
+    if (!evaluateRule(rule.operator, getSampleValue(rule.fieldPath), rule.value)) continue;
+    if (rule.color) {
+      nextColor = rule.color;
+      changed = true;
+    }
+    if (rule.background) {
+      nextStyle.background = rule.background;
+      changed = true;
+    }
+    if (rule.border) {
+      nextStyle.border = rule.border;
+      changed = true;
+    }
+    if (rule.fontWeight != null) {
+      nextStyle.fontWeight = rule.fontWeight;
+      changed = true;
+    }
+    if (rule.opacity != null) {
+      nextStyle.opacity = rule.opacity;
+      changed = true;
+    }
+  }
+
+  if (!changed) return element;
+  return {
+    ...element,
+    color: nextColor,
+    style: nextStyle,
+  };
 }
 
 interface ResolvedCanvasElement {
@@ -281,6 +371,113 @@ const quotationTotalsLayoutSpec = quotationTotalsLayoutSpecJson.quotationTotals;
 
 const DEFAULT_FONT_SIZE = 14;
 const DEFAULT_FONT_FAMILY = 'Arial';
+const RULER_GUTTER = 28;
+const RULER_MINOR_STEP_MM = 5;
+const RULER_MAJOR_STEP_MM = 10;
+
+function buildRulerMarks(maxMm: number, axis: 'x' | 'y'): Array<{ mm: number; offset: number; major: boolean; label: string }> {
+  const marks: Array<{ mm: number; offset: number; major: boolean; label: string }> = [];
+  for (let mm = 0; mm <= maxMm; mm += RULER_MINOR_STEP_MM) {
+    const major = mm % RULER_MAJOR_STEP_MM === 0;
+    marks.push({
+      mm,
+      offset: axis === 'x' ? mmToCanvasX(mm) : mmToCanvasY(mm),
+      major,
+      label: `${(mm / 10).toFixed(mm % 10 === 0 ? 0 : 1)}`,
+    });
+  }
+  if (marks.length === 0 || marks[marks.length - 1]?.mm !== maxMm) {
+    marks.push({
+      mm: maxMm,
+      offset: axis === 'x' ? mmToCanvasX(maxMm) : mmToCanvasY(maxMm),
+      major: true,
+      label: `${(maxMm / 10).toFixed(1)}`,
+    });
+  }
+  return marks;
+}
+
+function CanvasRulers(): ReactElement {
+  const horizontalMarks = buildRulerMarks(A4_MM_WIDTH, 'x');
+  const verticalMarks = buildRulerMarks(A4_MM_HEIGHT, 'y');
+
+  return (
+    <>
+      <div
+        className="absolute left-0 top-0 z-20 rounded-tl-md border-b border-r border-slate-200 bg-white/95 text-[9px] font-semibold tracking-wide text-slate-400"
+        style={{ width: RULER_GUTTER, height: RULER_GUTTER }}
+      >
+        <div className="flex h-full items-center justify-center">cm</div>
+      </div>
+
+      <div
+        className="pointer-events-none absolute left-[28px] top-0 z-20 border-b border-slate-200 bg-white/95"
+        style={{ width: A4_CANVAS_WIDTH, height: RULER_GUTTER }}
+      >
+        {horizontalMarks.map((mark) => (
+          <div
+            key={`top-${mark.mm}`}
+            className="absolute top-0"
+            style={{ left: mark.offset }}
+          >
+            <div
+              className={`w-px bg-slate-300 ${mark.major ? 'h-4' : 'h-2.5'}`}
+            />
+            {mark.major ? (
+              <div className="mt-0.5 -translate-x-1/2 text-[9px] font-medium text-slate-500">
+                {mark.label}
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      <div
+        className="pointer-events-none absolute left-0 top-[28px] z-20 border-r border-slate-200 bg-white/95"
+        style={{ width: RULER_GUTTER, height: A4_CANVAS_HEIGHT }}
+      >
+        {verticalMarks.map((mark) => (
+          <div
+            key={`left-${mark.mm}`}
+            className="absolute left-0"
+            style={{ top: mark.offset }}
+          >
+            <div
+              className={`bg-slate-300 ${mark.major ? 'h-px w-4' : 'h-px w-2.5'}`}
+            />
+            {mark.major ? (
+              <div className="-mt-1 ml-1.5 text-[9px] font-medium text-slate-500">
+                {mark.label}
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      <div
+        className="pointer-events-none absolute right-0 top-[28px] z-20 border-l border-slate-200 bg-white/95"
+        style={{ width: RULER_GUTTER, height: A4_CANVAS_HEIGHT }}
+      >
+        {verticalMarks.map((mark) => (
+          <div
+            key={`right-${mark.mm}`}
+            className="absolute right-0"
+            style={{ top: mark.offset }}
+          >
+            <div
+              className={`bg-slate-300 ${mark.major ? 'ml-auto h-px w-4' : 'ml-auto h-px w-2.5'}`}
+            />
+            {mark.major ? (
+              <div className="-mt-1 mr-1.5 text-right text-[9px] font-medium text-slate-500">
+                {mark.label}
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
 
 function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement {
   const { t } = useTranslation(['report-designer', 'common']);
@@ -1157,22 +1354,27 @@ export function PdfA4Canvas({
             </div>
 
             <div
-              ref={(el) => {
-                onPageRef?.(pageNum, el);
-                if (isActivePage) activePageRef.current = el;
-              }}
-              className={`relative shrink-0 bg-white transition-all duration-200 ${
-                isActivePage
-                  ? 'shadow-xl ring-2 ring-blue-400 ring-offset-2'
-                  : 'cursor-pointer shadow-md opacity-70 hover:opacity-90 hover:shadow-lg'
-              }`}
-              style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
-              onClick={() => {
-                setSelectedIds([]);
-                if (!isActivePage) onPageChange?.(pageNum);
-              }}
-              role="presentation"
+              className="relative shrink-0"
+              style={{ width: A4_CANVAS_WIDTH + RULER_GUTTER * 2, height: A4_CANVAS_HEIGHT + RULER_GUTTER }}
             >
+              <CanvasRulers />
+              <div
+                ref={(el) => {
+                  onPageRef?.(pageNum, el);
+                  if (isActivePage) activePageRef.current = el;
+                }}
+                className={`absolute left-[28px] top-[28px] bg-white transition-all duration-200 ${
+                  isActivePage
+                    ? 'shadow-xl ring-2 ring-blue-400 ring-offset-2'
+                    : 'cursor-pointer shadow-md opacity-70 hover:opacity-90 hover:shadow-lg'
+                }`}
+                style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
+                onClick={() => {
+                  setSelectedIds([]);
+                  if (!isActivePage) onPageChange?.(pageNum);
+                }}
+                role="presentation"
+              >
               {isActivePage ? (
                 <button
                   type="button"
@@ -1231,17 +1433,21 @@ export function PdfA4Canvas({
               )}
 
               {resolvedForPage
-                .filter(({ element }) => {
-                  if (element.hidden) return false;
-                  if (!previewVisibilityRules || isPdfTableElement(element) || element.type === 'container') return true;
-                  const rules = element.visibilityRules ?? (element.visibilityRule ? [element.visibilityRule] : []);
-                  return evaluateVisibilityRules(
-                    rules,
-                    element.visibilityLogic ?? 'all',
-                    (fieldPath) => fieldDefinitions.find((field) => field.path === fieldPath)?.exampleValue,
-                  );
-                })
-                .map(({ element: el, absoluteX, absoluteY }) => {
+                .map(({ element, absoluteX, absoluteY }) => {
+                  const getSampleValue = (fieldPath?: string) =>
+                    fieldDefinitions.find((field) => field.path === fieldPath)?.exampleValue;
+                  if (element.hidden) return null;
+                  if (previewVisibilityRules) {
+                    const rules = element.visibilityRules ?? (element.visibilityRule ? [element.visibilityRule] : []);
+                    const visible = evaluateVisibilityRules(
+                      rules,
+                      element.visibilityLogic ?? 'all',
+                      getSampleValue,
+                    );
+                    if (!visible) return null;
+                  }
+
+                  const el = applyConditionalStyleRules(element, getSampleValue);
                   const isFlashing = flashingId === el.id;
                   const isSelected = selectedIds.includes(el.id);
 
@@ -1303,7 +1509,8 @@ export function PdfA4Canvas({
                         opacity: el.style?.opacity ?? 1,
                         transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
                         borderRadius: el.style?.radius != null ? `${el.style.radius}px` : undefined,
-                        background: el.type === 'shape' ? el.style?.background : undefined,
+                        background: el.style?.background,
+                        border: el.style?.border,
                       }}
                     >
                       <div
@@ -1348,7 +1555,8 @@ export function PdfA4Canvas({
                       </div>
                     </Rnd>
                   );
-                })}
+                })
+                .filter((item): item is ReactElement => item != null)}
 
               {isActivePage && resolvedForPage.length === 0 ? (
                 <div className="pointer-events-none absolute inset-0 z-1 flex items-center justify-center p-8">
@@ -1372,6 +1580,7 @@ export function PdfA4Canvas({
                   </div>
                 </div>
               ) : null}
+              </div>
             </div>
           </div>
         );
