@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,7 +59,7 @@ import {
 } from '../utils';
 import type { Field } from '../types';
 import { Loader2 } from 'lucide-react';
-import { ArrowLeft, ArrowRight, BarChart3, CheckCircle2, ChevronDown, Filter, LayoutGrid, Lightbulb, Plus, Sparkles, Trash2, TriangleAlert, Users, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BarChart3, CheckCircle2, ChevronDown, Filter, LayoutGrid, Lightbulb, Plus, Sparkles, Trash2, TriangleAlert, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUserList } from '@/features/user-management/hooks/useUserList';
 import { DeferOnView } from '@/components/shared/DeferOnView';
@@ -144,6 +143,91 @@ function CollapsibleCard({
         </div>
       </button>
       {open ? <div className="mt-4">{children}</div> : null}
+    </div>
+  );
+}
+
+function ReportAssignmentPanel({
+  title,
+  description,
+  summary,
+  emptyState,
+  selectPlaceholder,
+  searchPlaceholder,
+  emptyText,
+  userOptions,
+  assignedUserIds,
+  selectedAssignedUsers,
+  onAddAssignedUser,
+  onRequestRemoveAssignedUser,
+  removeLabel,
+}: {
+  title: string;
+  description: string;
+  summary: string;
+  emptyState: string;
+  selectPlaceholder: string;
+  searchPlaceholder: string;
+  emptyText: string;
+  userOptions: ComboboxOption[];
+  assignedUserIds: number[];
+  selectedAssignedUsers: Array<{ userId: number; label: string }>;
+  onAddAssignedUser: (userIdRaw: string) => void;
+  onRequestRemoveAssignedUser: (userId: number) => void;
+  removeLabel: string;
+}): ReactElement {
+  return (
+    <div className="rounded-2xl border bg-card p-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-[260px] flex-1">
+          <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {title}
+          </div>
+          <p className="text-muted-foreground text-sm leading-6">{description}</p>
+        </div>
+        <Badge variant="secondary" className="rounded-full px-3 py-1">
+          {summary}
+        </Badge>
+      </div>
+      <div className="mt-4 grid gap-4 xl:grid-cols-[360px_1fr]">
+        <div className="space-y-3">
+          <Combobox
+            options={userOptions.filter((option) => !assignedUserIds.includes(Number(option.value)))}
+            onValueChange={onAddAssignedUser}
+            placeholder={selectPlaceholder}
+            searchPlaceholder={searchPlaceholder}
+            emptyText={emptyText}
+          />
+          <div className="rounded-xl border border-dashed bg-muted/10 px-3 py-3 text-xs text-muted-foreground">
+            {description}
+          </div>
+        </div>
+        <div className="rounded-xl border bg-background p-3">
+          {selectedAssignedUsers.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {selectedAssignedUsers.map((user) => (
+                <div
+                  key={user.userId}
+                  className="inline-flex max-w-full items-center gap-2 rounded-full border bg-muted/30 px-3 py-1.5 text-sm"
+                >
+                  <span className="truncate">{user.label}</span>
+                  <button
+                    type="button"
+                    className="text-muted-foreground transition hover:text-foreground"
+                    onClick={() => onRequestRemoveAssignedUser(user.userId)}
+                    aria-label={removeLabel}
+                    title={removeLabel}
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">{emptyState}</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1710,6 +1794,25 @@ export function ReportBuilderPage(): ReactElement {
           onSearchChange={setDataSourceSearch}
           onCheck={checkDataSource}
         />
+        <ReportAssignmentPanel
+          title={t('common.reportBuilder.sharedWith')}
+          description={t('common.reportBuilder.sharedWithDescription')}
+          summary={
+            selectedAssignedUsers.length > 0
+              ? t('common.reportBuilder.sharedWithSummary', { count: selectedAssignedUsers.length })
+              : t('common.reportBuilder.sharedWithNone')
+          }
+          emptyState={t('common.reportBuilder.sharedWithNone')}
+          selectPlaceholder={t('common.reportBuilder.sharedWithSelect')}
+          searchPlaceholder={t('common.reportBuilder.sharedWithSearch')}
+          emptyText={t('common.reportBuilder.sharedWithEmpty')}
+          userOptions={userOptions}
+          assignedUserIds={assignedUserIds}
+          selectedAssignedUsers={selectedAssignedUsers}
+          onAddAssignedUser={handleAddAssignedUser}
+          onRequestRemoveAssignedUser={setRemoveAssignedUserId}
+          removeLabel={t('common.reportBuilder.removeAssignedUser')}
+        />
         {builderMode === 'advanced' && advancedWorkspaceMode === 'expert' ? (
           <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/20 px-3 py-2 text-xs">
             <CheckCircle2 className="size-3.5 text-primary" />
@@ -2734,72 +2837,6 @@ export function ReportBuilderPage(): ReactElement {
             </div>
           </div>
         )}
-        {builderMode === 'advanced' && advancedWorkspaceMode === 'expert' ? (
-          <CollapsibleCard
-            icon={<Users className="size-4" />}
-            title={t('common.reportBuilder.sharedWith')}
-            description={t('common.reportBuilder.sharedWithDescription')}
-            summary={
-              selectedAssignedUsers.length > 0
-                ? t('common.reportBuilder.sharedWithSummary', { count: selectedAssignedUsers.length })
-                : t('common.reportBuilder.sharedWithNone')
-            }
-            defaultOpen={false}
-          >
-            <div className="grid gap-3 xl:grid-cols-[320px_1fr]">
-              <Combobox
-                options={userOptions.filter((option) => !assignedUserIds.includes(Number(option.value)))}
-                onValueChange={handleAddAssignedUser}
-                placeholder={t('common.reportBuilder.sharedWithSelect')}
-                searchPlaceholder={t('common.reportBuilder.sharedWithSearch')}
-                emptyText={t('common.reportBuilder.sharedWithEmpty')}
-              />
-            </div>
-            <div className="mt-3 rounded-xl border bg-background">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('common.reportBuilder.assignedUserName')}</TableHead>
-                    <TableHead>{t('common.reportBuilder.assignedUserEmail')}</TableHead>
-                    <TableHead className="w-[120px]">{t('common.actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {selectedAssignedUsers.length > 0 ? (
-                    selectedAssignedUsers.map((user) => {
-                      const parts = user.label.match(/^(.*)\s+\((.*)\)$/);
-                      const name = parts?.[1] ?? user.label;
-                      const email = parts?.[2] ?? '-';
-                      return (
-                        <TableRow key={user.userId}>
-                          <TableCell className="font-medium">{name}</TableCell>
-                          <TableCell>{email}</TableCell>
-                          <TableCell>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setRemoveAssignedUserId(user.userId)}
-                            >
-                              {t('common.remove')}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3} className="text-muted-foreground">
-                        {t('common.reportBuilder.sharedWithNone')}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CollapsibleCard>
-        ) : null}
-
         <AlertDialog open={deleteWidgetId != null} onOpenChange={(open) => !open && setDeleteWidgetId(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>

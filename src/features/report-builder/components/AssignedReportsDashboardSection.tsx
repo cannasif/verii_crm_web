@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ExternalLink, LayoutGrid, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { CheckCircle2, ExternalLink, LayoutGrid, PencilRuler, Plus, RefreshCw, Save, Sparkles, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,13 +35,17 @@ import {
   sanitizeMyDashboardLayout,
   saveMyDashboardLayout,
 } from '../utils';
+import { reportBuilderQueryKeys, REPORTS_LIST_STALE_TIME_MS } from '../utils/query-keys';
 
 interface DashboardChoice {
   reportId: number;
   reportName: string;
+  reportSubtitle?: string;
   widgetId?: string;
   widgetTitle: string;
   subtitle?: string;
+  chartType?: string;
+  kind: 'dashboard' | 'widget' | 'report';
 }
 
 function getItemKey(item: Pick<MyReportDashboardItem, 'reportId' | 'widgetId'>): string {
@@ -55,36 +60,92 @@ function parseReportConfig(configJson: string): ReportConfig | null {
   }
 }
 
+function normalizeReportConfig(config: ReportConfig | null): ReportConfig | null {
+  if (!config) return null;
+
+  const rawWidgets = Array.isArray(config.widgets) ? config.widgets : [];
+  const widgets: ReportWidget[] = rawWidgets.length > 0
+    ? rawWidgets.map((widget, index) => ({
+        ...widget,
+        id: widget.id?.trim() ? widget.id : config.activeWidgetId?.trim() || `fallback-widget-${index + 1}`,
+        title: widget.title?.trim() || config.chartType || `Widget ${index + 1}`,
+        filters: widget.filters ?? config.filters ?? [],
+        values: widget.values ?? config.values ?? [],
+        chartType: widget.chartType ?? config.chartType,
+      }))
+    : [
+        {
+          id: config.activeWidgetId?.trim() || 'widget-1',
+          title: config.chartType || 'Widget 1',
+          chartType: config.chartType,
+          axis: config.axis,
+          values: config.values ?? [],
+          legend: config.legend,
+          sorting: config.sorting,
+          filters: config.filters ?? [],
+          appearance: undefined,
+          size: 'half',
+          height: 'md',
+        },
+      ];
+
+  const activeWidgetId =
+    config.activeWidgetId && widgets.some((widget) => widget.id === config.activeWidgetId)
+      ? config.activeWidgetId
+      : widgets[0]?.id;
+
+  const activeWidget = widgets.find((widget) => widget.id === activeWidgetId) ?? widgets[0];
+
+  return {
+    ...config,
+    chartType: activeWidget?.chartType ?? config.chartType,
+    axis: activeWidget?.axis ?? config.axis,
+    values: activeWidget?.values ?? config.values ?? [],
+    legend: activeWidget?.legend ?? config.legend,
+    sorting: activeWidget?.sorting ?? config.sorting,
+    filters: activeWidget?.filters ?? config.filters ?? [],
+    widgets,
+    activeWidgetId,
+  };
+}
+
+function getNormalizedWidgets(config: ReportConfig | null): ReportWidget[] {
+  return normalizeReportConfig(config)?.widgets ?? [];
+}
+
 function getSelectableChoices(report: ReportDto, t: (key: string) => string): DashboardChoice[] {
-  const config = parseReportConfig(report.configJson);
-  const widgets = config?.widgets ?? [];
-  if (widgets.length === 0) {
-    const fallbackType = config?.chartType ? t(`common.reportBuilder.chartTypes.${config.chartType}`) : t('common.reportBuilder.dashboardItemTypes.report');
-    return [
-      {
-        reportId: report.id,
-        reportName: report.name,
-        widgetTitle: fallbackType,
-        subtitle: report.description || report.dataSourceName,
-      },
-    ];
-  }
+  const config = normalizeReportConfig(parseReportConfig(report.configJson));
+  const widgets = getNormalizedWidgets(config);
+  const reportName = report.name?.trim() || report.dataSourceName || t('common.reportBuilder.dashboardItemTypes.report');
+  const reportSubtitle = report.description?.trim() || report.dataSourceName;
 
   return [
     {
       reportId: report.id,
-      reportName: report.name,
+      reportName,
+      reportSubtitle,
       widgetTitle: t('common.reportBuilder.dashboardItemTypes.dashboard'),
-      subtitle: report.description || report.dataSourceName,
+      subtitle: reportSubtitle,
+      kind: 'dashboard',
     },
     ...widgets.map((widget, index) => ({
       reportId: report.id,
-      reportName: report.name,
+      reportName,
+      reportSubtitle,
       widgetId: widget.id,
-      widgetTitle: widget.title?.trim() || `${report.name} ${index + 1}`,
-      subtitle: widget.appearance?.subtitle?.trim() || report.description || report.dataSourceName,
+      widgetTitle: widget.title?.trim() || `${reportName} ${index + 1}`,
+      subtitle: widget.appearance?.subtitle?.trim() || reportSubtitle,
+      chartType: widget.chartType,
+      kind: 'widget' as const,
     })),
   ];
+}
+
+function getChartTypeLabel(chartType: string | undefined, t: (key: string) => string): string {
+  if (!chartType) return t('common.reportBuilder.dashboardItemTypes.widget');
+  const translationKey = `common.reportBuilder.chartTypes.${chartType}`;
+  const translated = t(translationKey);
+  return translated === translationKey ? chartType : translated;
 }
 
 function resolveBindingValue(binding: DataSourceParameterBinding, user: { id: number; email: string } | null): string {
@@ -186,11 +247,13 @@ function CompactWidgetPreview({
   widget,
   title,
   minHeightClassName,
+  headerActions,
 }: {
   report: ReportDto;
   widget?: ReportWidget;
   title: string;
   minHeightClassName?: string;
+  headerActions?: ReactElement;
 }): ReactElement {
   const { t } = useTranslation('common');
   const currentUser = useAuthStore((state) => state.user);
@@ -198,7 +261,7 @@ function CompactWidgetPreview({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const config = useMemo(() => parseReportConfig(report.configJson), [report.configJson]);
+  const config = useMemo(() => normalizeReportConfig(parseReportConfig(report.configJson)), [report.configJson]);
   const previewConfig = useMemo(
     () => buildPreviewPayload(report, widget, config, currentUser),
     [config, currentUser, report, widget],
@@ -255,6 +318,7 @@ function CompactWidgetPreview({
       subtitle={previewConfig.subtitle}
       appearance={previewConfig.appearance}
       labelOverrides={previewConfig.labelOverrides}
+      headerActions={headerActions}
       className="h-full"
       minHeightClassName={minHeightClassName}
     />
@@ -264,15 +328,31 @@ function CompactWidgetPreview({
 function DashboardWidgetPreviewContent({
   item,
   report,
+  editable,
+  onRemove,
 }: {
   item: MyReportDashboardItem;
   report: ReportDto;
+  editable: boolean;
+  onRemove: () => void;
 }): ReactElement {
   const { t } = useTranslation('common');
-  const config = useMemo(() => parseReportConfig(report.configJson), [report.configJson]);
-  const widgets = config?.widgets ?? [];
-  const selectedWidget = widgets.find((widget) => widget.id === item.widgetId);
+  const navigate = useNavigate();
+  const detailQuery = useQuery({
+    queryKey: [...reportBuilderQueryKeys.list('detail'), report.id],
+    queryFn: () => reportsApi.get(report.id),
+    placeholderData: report,
+    staleTime: REPORTS_LIST_STALE_TIME_MS,
+  });
+  const fullReport = detailQuery.data ?? report;
+  const config = useMemo(() => normalizeReportConfig(parseReportConfig(fullReport.configJson)), [fullReport.configJson]);
+  const widgets = useMemo(() => getNormalizedWidgets(config), [config]);
+  const selectedWidget = widgets.find((widget) => widget.id === item.widgetId) ?? widgets[0];
   const isDashboardView = !item.widgetId && widgets.length > 0;
+
+  if (detailQuery.isLoading && !detailQuery.data) {
+    return <Skeleton className="h-full min-h-[220px] w-full rounded-2xl" />;
+  }
 
   if (isDashboardView) {
     const previewWidgets = widgets.slice(0, 4);
@@ -283,13 +363,23 @@ function DashboardWidgetPreviewContent({
             <p className="truncate text-base font-semibold">{report.name}</p>
             <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.dashboardItemTypes.dashboard')}</p>
           </div>
-          <Badge variant="outline">{previewWidgets.length} / {widgets.length}</Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline">{previewWidgets.length} / {widgets.length}</Badge>
+            <Button size="icon-sm" variant="secondary" onClick={() => navigate(`/reports/my/${report.id}`)} title={t('common.reportBuilder.openReport')}>
+              <ExternalLink className="size-4" />
+            </Button>
+            {editable ? (
+              <Button size="icon-sm" variant="destructive" onClick={onRemove} title={t('common.remove')}>
+                <Trash2 className="size-4" />
+              </Button>
+            ) : null}
+          </div>
         </div>
         <div className={cn('grid flex-1 gap-3', previewWidgets.length === 1 ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-2')}>
           {previewWidgets.map((widget) => (
             <CompactWidgetPreview
               key={widget.id}
-              report={report}
+              report={fullReport}
               widget={widget}
               title={widget.title?.trim() || t('common.reportBuilder.dashboardItemTypes.widget')}
               minHeightClassName="min-h-[180px]"
@@ -302,10 +392,22 @@ function DashboardWidgetPreviewContent({
 
   return (
     <CompactWidgetPreview
-      report={report}
+      report={fullReport}
       widget={selectedWidget}
-      title={item.widgetTitle || selectedWidget?.title?.trim() || report.name}
+      title={item.widgetTitle || selectedWidget?.title?.trim() || fullReport.name}
       minHeightClassName="min-h-[220px]"
+      headerActions={
+        <>
+          <Button size="icon-sm" variant="secondary" onClick={() => navigate(`/reports/my/${report.id}`)} title={t('common.reportBuilder.openReport')}>
+            <ExternalLink className="size-4" />
+          </Button>
+          {editable ? (
+            <Button size="icon-sm" variant="destructive" onClick={onRemove} title={t('common.remove')}>
+              <Trash2 className="size-4" />
+            </Button>
+          ) : null}
+        </>
+      }
     />
   );
 }
@@ -313,39 +415,18 @@ function DashboardWidgetPreviewContent({
 function DashboardReportWidget({
   item,
   report,
+  editable,
   onRemove,
 }: {
   item: MyReportDashboardItem;
   report: ReportDto;
+  editable: boolean;
   onRemove: () => void;
 }): ReactElement {
-  const { t } = useTranslation('common');
-  const navigate = useNavigate();
-
   return (
-    <div className="group relative h-full">
-      <div className="absolute inset-x-3 top-3 z-20 flex items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-wrap gap-2">
-          <Badge variant="secondary" className="max-w-[180px] truncate bg-background/90 backdrop-blur">
-            {report.name}
-          </Badge>
-          {item.widgetTitle && item.widgetTitle !== report.name ? (
-            <Badge variant="outline" className="max-w-[180px] truncate bg-background/90 backdrop-blur">
-              {item.widgetTitle}
-            </Badge>
-          ) : null}
-        </div>
-        <div className="flex items-center gap-2 opacity-100 transition md:opacity-0 md:group-hover:opacity-100">
-          <Button size="icon-sm" variant="secondary" onClick={() => navigate(`/reports/my/${report.id}`)} title={t('common.reportBuilder.openReport')}>
-            <ExternalLink className="size-4" />
-          </Button>
-          <Button size="icon-sm" variant="destructive" onClick={onRemove} title={t('common.remove')}>
-            <Trash2 className="size-4" />
-          </Button>
-        </div>
-      </div>
+    <div className="h-full">
       <DeferOnView fallback={<Skeleton className="h-full min-h-[220px] w-full rounded-2xl" />}>
-        <DashboardWidgetPreviewContent item={item} report={report} />
+        <DashboardWidgetPreviewContent item={item} report={report} editable={editable} onRemove={onRemove} />
       </DeferOnView>
     </div>
   );
@@ -357,12 +438,28 @@ export function AssignedReportsDashboardSection(): ReactElement {
   const navigate = useNavigate();
   const { data: reports = [], isLoading, error } = useReportsList(undefined, 'assigned');
   const [layout, setLayout] = useState<MyReportDashboardLayout>({ version: 1, updatedAt: new Date().toISOString(), items: [] });
+  const [savedLayout, setSavedLayout] = useState<MyReportDashboardLayout>({ version: 1, updatedAt: new Date().toISOString(), items: [] });
   const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle');
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const reportMap = useMemo(() => new Map(reports.map((report) => [report.id, report])), [reports]);
   const allowedReportIds = useMemo(() => reports.map((report) => report.id), [reports]);
+  const reportDetailQueries = useQueries({
+    queries: reports.map((report) => ({
+      queryKey: [...reportBuilderQueryKeys.list('detail'), report.id],
+      queryFn: () => reportsApi.get(report.id),
+      placeholderData: report,
+      staleTime: REPORTS_LIST_STALE_TIME_MS,
+    })),
+  });
+  const reportsWithDetails = useMemo(
+    () => reportDetailQueries.map((query, index) => query.data ?? reports[index]).filter((report): report is ReportDto => Boolean(report)),
+    [reportDetailQueries, reports],
+  );
+  const detailedReportMap = useMemo(() => new Map(reportsWithDetails.map((report) => [report.id, report])), [reportsWithDetails]);
 
   useEffect(() => {
     if (!userId) {
@@ -370,24 +467,32 @@ export function AssignedReportsDashboardSection(): ReactElement {
       return;
     }
     const stored = loadMyDashboardLayout(userId);
-    setLayout(sanitizeMyDashboardLayout(stored, allowedReportIds));
+    const sanitized = sanitizeMyDashboardLayout(stored, allowedReportIds);
+    setLayout(sanitized);
+    setSavedLayout(sanitized);
+    setSaveState('idle');
     setIsHydrated(true);
   }, [allowedReportIds, userId]);
 
   useEffect(() => {
-    if (!userId || !isHydrated) return;
-    saveMyDashboardLayout(userId, layout);
-  }, [isHydrated, layout, userId]);
+    if (saveState !== 'saved') return;
+    const timer = window.setTimeout(() => setSaveState('idle'), 2200);
+    return () => window.clearTimeout(timer);
+  }, [saveState]);
 
   const placedKeys = useMemo(() => new Set(layout.items.map(getItemKey)), [layout.items]);
+  const hasUnsavedChanges = useMemo(
+    () => JSON.stringify(layout.items) !== JSON.stringify(savedLayout.items),
+    [layout.items, savedLayout.items],
+  );
   const choices = useMemo(
     () =>
-      reports
+      reportsWithDetails
         .flatMap((report) => getSelectableChoices(report, t))
+        .filter((choice) => choice.reportId > 0 && choice.reportName.trim().length > 0)
         .filter((choice) => !placedKeys.has(`${choice.reportId}:${choice.widgetId ?? '__report__'}`)),
-    [placedKeys, reports, t],
+    [placedKeys, reportsWithDetails, t],
   );
-
   const updateItems = (updater: (items: MyReportDashboardItem[]) => MyReportDashboardItem[]): void => {
     setLayout((current) => ({
       version: 1,
@@ -405,6 +510,7 @@ export function AssignedReportsDashboardSection(): ReactElement {
       }),
     ]);
     setSelectedItemKey(`${choice.reportId}:${choice.widgetId ?? '__report__'}`);
+    setIsEditMode(true);
     setPickerOpen(false);
   };
 
@@ -412,16 +518,35 @@ export function AssignedReportsDashboardSection(): ReactElement {
     const nextKey = getItemKey(item);
     updateItems((items) => items.filter((current) => getItemKey(current) !== nextKey));
     setSelectedItemKey((current) => (current === nextKey ? null : current));
+    setIsEditMode(true);
   };
 
   const handleReset = (): void => {
     setLayout({ version: 1, updatedAt: new Date().toISOString(), items: [] });
+    setSelectedItemKey(null);
+    setSaveState('idle');
+    setIsEditMode(true);
+  };
+
+  const handleSaveLayout = (): void => {
+    if (!userId) return;
+    const nextLayout: MyReportDashboardLayout = {
+      version: 1,
+      updatedAt: new Date().toISOString(),
+      items: layout.items,
+    };
+    saveMyDashboardLayout(userId, nextLayout);
+    setLayout(nextLayout);
+    setSavedLayout(nextLayout);
+    setSaveState('saved');
+    setIsEditMode(false);
     setSelectedItemKey(null);
   };
 
   const handleDragStop: RndDragCallback = (_event, data) => {
     const itemKey = String(data.node.dataset.itemKey ?? '');
     updateItems((items) => items.map((item) => (getItemKey(item) === itemKey ? { ...item, x: data.x, y: data.y } : item)));
+    setIsEditMode(true);
   };
 
   const handleResizeStop: RndResizeCallback = (_event, _direction, ref, _delta, position) => {
@@ -439,11 +564,12 @@ export function AssignedReportsDashboardSection(): ReactElement {
           : item,
       ),
     );
+    setIsEditMode(true);
   };
 
   return (
     <>
-      <Card className="border-2 border-slate-300/75 bg-stone-50/90 shadow-md shadow-slate-900/[0.05] dark:border-white/10 dark:bg-[#120c18]">
+      <Card className="border border-slate-300/80 bg-stone-50/95 shadow-sm shadow-slate-900/3 dark:border-white/10 dark:bg-[#120c18]">
         <CardHeader className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-white">
@@ -452,21 +578,39 @@ export function AssignedReportsDashboardSection(): ReactElement {
             </CardTitle>
             <CardDescription>{t('common.reportBuilder.dashboardHomeDescription')}</CardDescription>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {hasUnsavedChanges ? (
+              <Badge variant="outline" className="rounded-full border-amber-300/80 bg-amber-50 px-3 py-1 text-[11px] text-amber-800 dark:border-amber-300/30 dark:bg-amber-500/10 dark:text-amber-200">
+                {t('common.reportBuilder.dashboardUnsavedChangesBadge')}
+              </Badge>
+            ) : null}
             <Button variant="outline" onClick={() => setPickerOpen(true)} disabled={isLoading || choices.length === 0}>
               <Plus className="mr-2 size-4" />
               {t('common.reportBuilder.addReportsToDashboard')}
             </Button>
-            <Button variant="outline" onClick={handleReset} disabled={layout.items.length === 0}>
+            <Button variant={isEditMode ? 'secondary' : 'outline'} onClick={() => setIsEditMode((current) => !current)} disabled={layout.items.length === 0}>
+              <PencilRuler className="mr-2 size-4" />
+              {isEditMode ? t('common.reportBuilder.finishEditingLayout') : t('common.reportBuilder.editLayout')}
+            </Button>
+            <Button onClick={handleSaveLayout} disabled={!isHydrated || !hasUnsavedChanges}>
+              {saveState === 'saved' ? <CheckCircle2 className="mr-2 size-4" /> : <Save className="mr-2 size-4" />}
+              {saveState === 'saved' ? t('common.reportBuilder.dashboardLayoutSaved') : t('common.reportBuilder.saveDashboardLayout')}
+            </Button>
+            <Button variant="ghost" onClick={handleReset} disabled={layout.items.length === 0}>
               <RefreshCw className="mr-2 size-4" />
               {t('common.reportBuilder.resetMyDashboard')}
             </Button>
-            <Button variant="outline" onClick={() => navigate('/reports/my')}>
+            <Button variant="ghost" onClick={() => navigate('/reports/my')}>
               {t('common.reportBuilder.goToMyReports')}
             </Button>
           </div>
         </CardHeader>
         <CardContent>
+          {hasUnsavedChanges ? (
+            <div className="mb-4 rounded-2xl border border-amber-400/30 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-200">
+              {t('common.reportBuilder.dashboardUnsavedChanges')}
+            </div>
+          ) : null}
           {isLoading ? (
             <div className="grid gap-4 lg:grid-cols-2">
               <Skeleton className="h-[240px] w-full rounded-2xl" />
@@ -492,12 +636,43 @@ export function AssignedReportsDashboardSection(): ReactElement {
             </div>
           ) : (
             <div
-              className="relative overflow-auto rounded-2xl border border-dashed border-border/70 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:24px_24px] p-3"
+              className={cn(
+                "relative overflow-auto rounded-[24px] border p-4 transition-all duration-300",
+                isEditMode
+                  ? "border-pink-200/80 bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.06),transparent_24%),linear-gradient(to_right,rgba(148,163,184,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.06)_1px,transparent_1px)] bg-size-[auto,32px_32px,32px_32px]"
+                  : "border-slate-200/80 bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.05),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] dark:border-white/10 dark:bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.08),transparent_20%),linear-gradient(180deg,rgba(15,23,42,0.42),rgba(15,23,42,0.20))]",
+              )}
               style={{ minHeight: 720 }}
             >
+              <div className="mb-4 flex items-center justify-between gap-3 px-1">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{t('common.reportBuilder.dashboardCanvasTitle')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {isEditMode
+                      ? t('common.reportBuilder.dashboardCanvasEditingDescription')
+                      : t('common.reportBuilder.dashboardCanvasSavedDescription')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {isEditMode ? (
+                    <Badge variant="secondary" className="rounded-full px-3 py-1 text-[11px]">
+                      <Sparkles className="mr-1 size-3.5" />
+                      {t('common.reportBuilder.editModeActive')}
+                    </Badge>
+                  ) : null}
+                  <Badge variant="outline" className="rounded-full border-white/10 bg-background/60 px-3 py-1 text-[11px]">
+                    {layout.items.length} {layout.items.length === 1 ? t('common.reportBuilder.dashboardItemTypes.widget') : t('common.reportBuilder.dashboardCanvasItemsBadge')}
+                  </Badge>
+                </div>
+              </div>
+              {!isEditMode ? (
+                <div className="mb-4 rounded-xl border border-slate-200/80 bg-white/80 px-4 py-2.5 text-xs text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                  {t('common.reportBuilder.dashboardSavedViewHint')}
+                </div>
+              ) : null}
               <div className="relative min-h-[680px]" style={{ width: DASHBOARD_CANVAS_WIDTH }}>
                 {layout.items.map((item) => {
-                  const report = reportMap.get(item.reportId);
+                  const report = detailedReportMap.get(item.reportId) ?? reportMap.get(item.reportId);
                   if (!report) return null;
                   const itemKey = getItemKey(item);
 
@@ -509,6 +684,8 @@ export function AssignedReportsDashboardSection(): ReactElement {
                       minWidth={DASHBOARD_ITEM_MIN_WIDTH}
                       minHeight={DASHBOARD_ITEM_MIN_HEIGHT}
                       bounds="parent"
+                      disableDragging={!isEditMode}
+                      enableResizing={isEditMode}
                       dragGrid={[DASHBOARD_GRID_SIZE, DASHBOARD_GRID_SIZE]}
                       resizeGrid={[DASHBOARD_GRID_SIZE, DASHBOARD_GRID_SIZE]}
                       onDragStart={() => setSelectedItemKey(itemKey)}
@@ -516,9 +693,13 @@ export function AssignedReportsDashboardSection(): ReactElement {
                       onDragStop={handleDragStop}
                       onResizeStop={handleResizeStop}
                       data-item-key={itemKey}
-                      className={cn(selectedItemKey === itemKey ? 'z-20' : 'z-10')}
+                      className={cn(
+                        selectedItemKey === itemKey ? 'z-20' : 'z-10',
+                        !isEditMode && 'transition-transform duration-200 hover:-translate-y-0.5',
+                        isEditMode && 'outline outline-pink-200/70',
+                      )}
                     >
-                      <DashboardReportWidget item={item} report={report} onRemove={() => handleRemoveItem(item)} />
+                      <DashboardReportWidget item={item} report={report} editable={isEditMode} onRemove={() => handleRemoveItem(item)} />
                     </Rnd>
                   );
                 })}
@@ -529,12 +710,12 @@ export function AssignedReportsDashboardSection(): ReactElement {
       </Card>
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>{t('common.reportBuilder.addReportsToDashboard')}</DialogTitle>
             <DialogDescription>{t('common.reportBuilder.dashboardPickerDescription')}</DialogDescription>
           </DialogHeader>
-          <div className="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
+          <div className="max-h-[72vh] space-y-4 overflow-y-auto pr-1">
             {choices.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border/80 bg-muted/10 p-6 text-center text-sm text-muted-foreground">
                 {t('common.reportBuilder.availableReportsEmpty')}
@@ -547,28 +728,76 @@ export function AssignedReportsDashboardSection(): ReactElement {
                   return map;
                 }, new Map()),
               ).map(([reportId, group]) => (
-                <div key={reportId} className="rounded-2xl border border-border/70 bg-background/80 p-4">
-                  <div className="mb-3">
-                    <p className="font-semibold">{group[0]?.reportName}</p>
-                    <p className="text-muted-foreground mt-1 text-xs">{reportMap.get(reportId)?.description || reportMap.get(reportId)?.dataSourceName}</p>
+                <div key={reportId} className="rounded-2xl border border-border/70 bg-background/90 p-5 shadow-sm">
+                  <div className="mb-4">
+                    <p className="text-base font-semibold">{group[0]?.reportName}</p>
+                    <p className="text-muted-foreground mt-1 text-xs">{group[0]?.reportSubtitle || reportMap.get(reportId)?.dataSourceName}</p>
                   </div>
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {group.map((choice) => (
-                      <button
-                        key={`${choice.reportId}:${choice.widgetId ?? '__report__'}`}
-                        type="button"
-                        onClick={() => handleAddChoice(choice)}
-                        className="rounded-xl border border-border/70 bg-muted/10 p-4 text-left transition hover:border-pink-400/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/10"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="font-medium">{choice.widgetTitle}</p>
-                            <p className="text-muted-foreground mt-1 text-xs">{choice.subtitle}</p>
-                          </div>
-                          <Plus className="mt-0.5 size-4 text-pink-600 dark:text-pink-400" />
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <div className="rounded-xl border border-border/70 bg-muted/10 p-3.5">
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        {t('common.reportBuilder.dashboardPickerReportSection')}
+                      </p>
+                      {group.some((choice) => choice.kind !== 'widget') ? (
+                        <div className="grid gap-3">
+                          {group.filter((choice) => choice.kind !== 'widget').map((choice) => (
+                            <button
+                              key={`${choice.reportId}:${choice.widgetId ?? '__report__'}`}
+                              type="button"
+                              onClick={() => handleAddChoice(choice)}
+                              className="rounded-xl border border-border/70 bg-background p-4 text-left transition hover:border-pink-400/50 hover:bg-pink-50/40 dark:hover:bg-pink-500/10"
+                            >
+                              <div className="mb-2 flex flex-wrap gap-2">
+                                <Badge variant="secondary">{choice.kind === 'dashboard' ? t('common.reportBuilder.dashboardItemTypes.dashboard') : t('common.reportBuilder.dashboardItemTypes.report')}</Badge>
+                                {choice.chartType ? <Badge variant="outline">{getChartTypeLabel(choice.chartType, t)}</Badge> : null}
+                              </div>
+                              <p className="font-medium">{choice.widgetTitle}</p>
+                              <p className="text-muted-foreground mt-1 text-xs">
+                                {choice.kind === 'dashboard'
+                                  ? t('common.reportBuilder.dashboardPickerWholeReportDescription')
+                                  : choice.subtitle}
+                              </p>
+                              <div className="mt-3 flex items-center text-xs font-medium text-pink-600 dark:text-pink-400">
+                                <Plus className="mr-1 size-3.5" />
+                                {t('common.reportBuilder.addToMyDashboard')}
+                              </div>
+                            </button>
+                          ))}
                         </div>
-                      </button>
-                    ))}
+                      ) : null}
+                    </div>
+                    <div className="rounded-xl border border-border/70 bg-muted/10 p-3.5">
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        {t('common.reportBuilder.dashboardPickerWidgetSection')}
+                      </p>
+                      {group.some((choice) => choice.kind === 'widget') ? (
+                        <div className="grid gap-3">
+                          {group.filter((choice) => choice.kind === 'widget').map((choice) => (
+                            <button
+                              key={`${choice.reportId}:${choice.widgetId ?? '__report__'}`}
+                              type="button"
+                              onClick={() => handleAddChoice(choice)}
+                              className="rounded-xl border border-border/70 bg-background p-4 text-left transition hover:border-pink-400/50 hover:bg-pink-50/40 dark:hover:bg-pink-500/10"
+                            >
+                              <div className="mb-2 flex flex-wrap gap-2">
+                                <Badge variant="secondary">{t('common.reportBuilder.dashboardItemTypes.widget')}</Badge>
+                                <Badge variant="outline">{getChartTypeLabel(choice.chartType, t)}</Badge>
+                              </div>
+                              <p className="font-medium">{choice.widgetTitle}</p>
+                              <p className="text-muted-foreground mt-1 text-xs">{choice.subtitle || t('common.reportBuilder.dashboardPickerWidgetDescription')}</p>
+                              <div className="mt-3 flex items-center text-xs font-medium text-pink-600 dark:text-pink-400">
+                                <Plus className="mr-1 size-3.5" />
+                                {t('common.reportBuilder.addToMyDashboard')}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border border-dashed border-border/70 bg-background px-4 py-5 text-sm text-muted-foreground">
+                          {t('common.reportBuilder.dashboardPickerNoWidgets')}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))

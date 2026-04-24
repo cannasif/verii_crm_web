@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ReactElement } from 'react';
+import { lazy, Suspense, type ReactElement, type ReactNode } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -25,6 +25,7 @@ interface PreviewPanelProps {
   minHeightClassName?: string;
   appearance?: ReportWidgetAppearance;
   labelOverrides?: Record<string, string>;
+  headerActions?: ReactNode;
 }
 
 export function PreviewPanel({
@@ -40,6 +41,7 @@ export function PreviewPanel({
   minHeightClassName,
   appearance,
   labelOverrides,
+  headerActions,
 }: PreviewPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
@@ -93,26 +95,31 @@ export function PreviewPanel({
           <h3 className={cn('text-sm font-semibold tracking-tight', titleClassName, titleAlign === 'center' && 'text-center')}>{resolvedTitle}</h3>
           {subtitle && <p className={cn('mt-1 text-xs', subtitleClassName)}>{subtitle}</p>}
         </div>
-        {showStats && !loading && !error && !empty && (
-          <div className="flex items-center gap-2">
-            <span className={metricClassName}>
-              {columns.length} {t('common.reportBuilder.columns')}
-            </span>
-            <span className={metricClassName}>
-              {rows.length} {t('common.reportBuilder.rows')}
-            </span>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="size-8 shrink-0 rounded-full"
-              onClick={() => setExpanded(true)}
-              aria-label={t('common.expand')}
-            >
-              <Maximize2 className="size-4" />
-            </Button>
+        {(showStats && !loading && !error && !empty) || headerActions ? (
+          <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
+            {showStats && !loading && !error && !empty ? (
+              <>
+                <span className={metricClassName}>
+                  {columns.length} {t('common.reportBuilder.columns')}
+                </span>
+                <span className={metricClassName}>
+                  {rows.length} {t('common.reportBuilder.rows')}
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="size-8 shrink-0 rounded-full"
+                  onClick={() => setExpanded(true)}
+                  aria-label={t('common.expand')}
+                >
+                  <Maximize2 className="size-4" />
+                </Button>
+              </>
+            ) : null}
+            {headerActions}
           </div>
-        )}
+        ) : null}
       </div>
       {loading && (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 text-muted-foreground text-sm">
