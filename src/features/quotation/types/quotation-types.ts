@@ -281,6 +281,8 @@ export interface QuotationLineFormState extends Omit<CreateQuotationLineDto, 'qu
   relatedLines?: QuotationLineFormState[];
   supplierCode?: string;
   supplierName?: string;
+  pendingImageFile?: File | null;
+  pendingImagePreviewUrl?: string | null;
 }
 
 export interface QuotationExchangeRateFormState {

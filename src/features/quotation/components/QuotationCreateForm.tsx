@@ -29,11 +29,13 @@ import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import { createEmptyQuotationNotes } from './QuotationNotesDialog';
 import { mapQuotationNotesToPayload, quotationNotesDtoToNotesList } from '../utils/quotation-payload-mapper';
 import { quotationApi } from '../api/quotation-api';
+import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
+import type { QuotationGetDto, QuotationLineGetDto } from '../types/quotation-types';
 
 const CREATE_SECTION_CARD_CLASSNAME =
   'rounded-2xl overflow-hidden border border-slate-400 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_28px_-22px_rgba(15,23,42,0.40)] ring-1 ring-slate-300/70 dark:border-white/16 dark:bg-[#120b1d]/82 dark:ring-white/12';
@@ -47,6 +49,37 @@ function addDaysToDateOnly(dateValue: string, days: number): string {
   if (Number.isNaN(date.getTime())) return dateValue;
   date.setDate(date.getDate() + days);
   return date.toISOString().split('T')[0];
+}
+
+async function finalizePendingQuotationImages(
+  quotation: QuotationGetDto,
+  draftLines: QuotationLineFormState[]
+): Promise<void> {
+  const createdLines = quotation.lines && quotation.lines.length > 0
+    ? quotation.lines
+    : await quotationApi.getQuotationLinesByQuotationId(quotation.id);
+
+  for (let index = 0; index < draftLines.length; index += 1) {
+    const draftLine = draftLines[index];
+    const pendingImageFile = draftLine.pendingImageFile;
+    const createdLine = createdLines[index];
+
+    if (!pendingImageFile || !createdLine?.id) continue;
+
+    const uploaded = await pdfReportTemplateApi.uploadAsset(pendingImageFile, {
+      assetScope: 'quotation-line',
+      quotationId: quotation.id,
+      quotationLineId: createdLine.id,
+      productCode: draftLine.productCode || createdLine.productCode || undefined,
+    });
+
+    await quotationApi.updateQuotationLines([
+      {
+        ...(createdLine as QuotationLineGetDto),
+        imagePath: uploaded.relativeUrl,
+      },
+    ]);
+  }
 }
 
 export function QuotationCreateForm(): ReactElement {
@@ -184,8 +217,14 @@ export function QuotationCreateForm(): ReactElement {
 
     try {
       const linesToSend = lines.map((line) => {
-        const { id: _ignoredId, isEditing, relatedLines, ...cleanLineData } =
-          line as QuotationLineFormState & { relatedLines?: unknown[] };
+        const {
+          id: _ignoredId,
+          isEditing,
+          relatedLines,
+          pendingImageFile: _pendingImageFile,
+          pendingImagePreviewUrl: _pendingImagePreviewUrl,
+          ...cleanLineData
+        } = line as QuotationLineFormState & { relatedLines?: unknown[] };
         
         return {
           ...cleanLineData,
@@ -256,6 +295,7 @@ export function QuotationCreateForm(): ReactElement {
       const result = await createMutation.mutateAsync(payload);
 
       if (result.success && result.data) {
+        await finalizePendingQuotationImages(result.data, lines);
         const notesList = quotationNotesDtoToNotesList(quotationNotes);
         if (notesList.length > 0) {
           await quotationApi.updateNotesListByQuotationId(result.data.id, { notes: notesList });

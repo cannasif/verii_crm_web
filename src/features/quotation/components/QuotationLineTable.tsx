@@ -27,6 +27,7 @@ import { useCreateQuotationLines } from '../hooks/useCreateQuotationLines';
 import { useUpdateQuotationLines } from '../hooks/useUpdateQuotationLines';
 import { useDeleteQuotationLine } from '../hooks/useDeleteQuotationLine';
 import { quotationApi } from '../api/quotation-api';
+import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { formatCurrency } from '../utils/format-currency';
 import { exportQuotationLinesPdf } from '../utils/export-quotation-lines-pdf';
 import {
@@ -63,7 +64,7 @@ import {
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 
 function toCreateDto(line: QuotationLineFormState, quotationId: number): CreateQuotationLineDto {
-  const { id, isEditing, relatedLines, unit, ...rest } = line;
+  const { id, isEditing, relatedLines, unit, pendingImageFile, pendingImagePreviewUrl, ...rest } = line;
   return {
     ...rest,
     quotationId,
@@ -128,6 +129,8 @@ function dtoToFormState(dto: QuotationLineGetDto, index: number): QuotationLineF
 }
 
 function toUpdateDto(line: QuotationLineFormState, quotationId: number): QuotationLineGetDto {
+  void line.pendingImageFile;
+  void line.pendingImagePreviewUrl;
   const lineId = parseLineId(line.id) ?? 0;
   return {
     id: lineId,
@@ -162,6 +165,43 @@ function toUpdateDto(line: QuotationLineFormState, quotationId: number): Quotati
     approvalStatus: line.approvalStatus ?? 0,
     createdAt: '',
   };
+}
+
+async function finalizeCreatedLineImages(
+  draftLines: QuotationLineFormState[],
+  createdLines: QuotationLineGetDto[],
+  quotationId: number
+): Promise<QuotationLineGetDto[]> {
+  const nextCreated = [...createdLines];
+
+  for (let index = 0; index < draftLines.length; index += 1) {
+    const draftLine = draftLines[index];
+    const pendingImageFile = draftLine.pendingImageFile;
+    const createdLine = nextCreated[index];
+
+    if (!pendingImageFile || !createdLine?.id) continue;
+
+    const uploaded = await pdfReportTemplateApi.uploadAsset(pendingImageFile, {
+      assetScope: 'quotation-line',
+      quotationId,
+      quotationLineId: createdLine.id,
+      productCode: draftLine.productCode || createdLine.productCode || undefined,
+    });
+
+    const [updatedLine] = await quotationApi.updateQuotationLines([
+      {
+        ...createdLine,
+        imagePath: uploaded.relativeUrl,
+      },
+    ]);
+
+    nextCreated[index] = updatedLine ?? {
+      ...createdLine,
+      imagePath: uploaded.relativeUrl,
+    };
+  }
+
+  return nextCreated;
 }
 
 interface QuotationLineTableProps {
@@ -529,7 +569,8 @@ export function QuotationLineTable({
         try {
           const dtos: CreateQuotationLineDto[] = [toCreateDto(lineToAdd, quotationId)];
           const created = await createMutation.mutateAsync(dtos);
-          const mapped = created.map((dto, i) => dtoToFormState(dto, lines.length + i));
+          const finalized = await finalizeCreatedLineImages([lineToAdd], created, quotationId);
+          const mapped = finalized.map((dto, i) => dtoToFormState(dto, lines.length + i));
           setLines([...lines, ...mapped]);
           setAddLineDialogOpen(false);
           setNewLine(null);
@@ -553,7 +594,8 @@ export function QuotationLineTable({
         try {
           const dtos: CreateQuotationLineDto[] = linesToAdd.map((l) => toCreateDto(l, quotationId));
           const created = await createMutation.mutateAsync(dtos);
-          const mapped = created.map((dto, i) => dtoToFormState(dto, lines.length + i));
+          const finalized = await finalizeCreatedLineImages(linesToAdd, created, quotationId);
+          const mapped = finalized.map((dto, i) => dtoToFormState(dto, lines.length + i));
           setLines([...lines, ...mapped]);
           setAddLineDialogOpen(false);
           setNewLine(null);

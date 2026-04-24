@@ -159,6 +159,7 @@ export function QuotationLineForm({
   const prevDiscountRatesRef = useRef({ discountRate1: line.discountRate1, discountRate2: line.discountRate2, discountRate3: line.discountRate3 });
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const persistedLineId = imageUploadExtras?.quotationLineId;
 
   const [descriptionSlotsEnabled, setDescriptionSlotsEnabled] = useState<[boolean, boolean, boolean]>([true, true, true]);
 
@@ -265,6 +266,14 @@ export function QuotationLineForm({
       setRelatedLines([]);
     }
   }, [line]);
+
+  useEffect(() => {
+    return () => {
+      if (formData.pendingImagePreviewUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(formData.pendingImagePreviewUrl);
+      }
+    };
+  }, [formData.pendingImagePreviewUrl]);
 
   useEffect(() => {
     const lineRelatedLines = (line as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines || [];
@@ -579,15 +588,35 @@ export function QuotationLineForm({
     event.target.value = '';
     if (!file) return;
 
+    if (!persistedLineId) {
+      if (formData.pendingImagePreviewUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(formData.pendingImagePreviewUrl);
+      }
+      const previewUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({
+        ...prev,
+        imagePath: null,
+        pendingImageFile: file,
+        pendingImagePreviewUrl: previewUrl,
+      }));
+      toast.success(t('common.saved'));
+      return;
+    }
+
     setIsUploadingImage(true);
     try {
       const uploaded = await pdfReportTemplateApi.uploadAsset(file, {
         assetScope: imageUploadScope,
         quotationId: imageUploadExtras?.quotationId,
-        quotationLineId: imageUploadExtras?.quotationLineId,
+        quotationLineId: persistedLineId,
         productCode: imageUploadExtras?.productCode || formData.productCode || undefined,
       });
-      handleFieldChange('imagePath', uploaded.relativeUrl);
+      setFormData((prev) => ({
+        ...prev,
+        imagePath: uploaded.relativeUrl,
+        pendingImageFile: null,
+        pendingImagePreviewUrl: null,
+      }));
       toast.success(t('common.saved'));
     } catch (error) {
       const message = error instanceof Error ? error.message : t('common.imageUploadFailed');
@@ -595,6 +624,20 @@ export function QuotationLineForm({
     } finally {
       setIsUploadingImage(false);
     }
+  };
+
+  const currentImagePreview = formData.pendingImagePreviewUrl || formData.imagePath;
+
+  const handleRemoveImage = (): void => {
+    if (formData.pendingImagePreviewUrl?.startsWith('blob:')) {
+      URL.revokeObjectURL(formData.pendingImagePreviewUrl);
+    }
+    setFormData((prev) => ({
+      ...prev,
+      imagePath: null,
+      pendingImageFile: null,
+      pendingImagePreviewUrl: null,
+    }));
   };
 
   const handleProductSelect = async (product: ProductSelectionResult): Promise<void> => {
@@ -1431,21 +1474,21 @@ export function QuotationLineForm({
                     <ImagePlus className="h-4 w-4" />
                   )}
                   <span className="ml-2">
-                    {formData.imagePath ? t('common.lineImage.change') : t('common.lineImage.add')}
+                    {currentImagePreview ? t('common.lineImage.change') : t('common.lineImage.add')}
                   </span>
                 </Button>
               </div>
-              {formData.imagePath ? (
+              {currentImagePreview ? (
                 <div className="space-y-3">
                   <img
-                    src={getImageUrl(formData.imagePath) ?? formData.imagePath}
+                    src={formData.pendingImagePreviewUrl || getImageUrl(formData.imagePath) || formData.imagePath || ''}
                     alt={formData.productName || t('common.lineImage.title')}
                     className="h-44 w-full rounded-xl border border-slate-200 dark:border-white/10 object-cover bg-white dark:bg-[#0f0a18]"
                   />
                   <Button
                     type="button"
                     variant="ghost"
-                    onClick={() => handleFieldChange('imagePath', null)}
+                    onClick={handleRemoveImage}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
