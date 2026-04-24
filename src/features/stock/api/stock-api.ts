@@ -117,12 +117,7 @@ export const stockApi = {
 
     const response = await api.post<ApiResponse<StockImageDto[]>>(
       `/api/StockImage/upload/${stockId}`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
+      formData
     );
     
     if (!response.success) {
@@ -142,12 +137,7 @@ export const stockApi = {
 
     const response = await api.post<ApiResponse<StockImageBulkImportQueuedDto>>(
       '/api/StockImage/bulk-import',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
+      formData
     );
 
     if (!response.success) {

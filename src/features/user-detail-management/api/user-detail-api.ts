@@ -82,12 +82,7 @@ export const userDetailApi = {
 
     const response = await api.post<ApiResponse<UserDetailDto>>(
       `/api/UserDetail/users/${userId}/profile-picture`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
+      formData
     );
     if (response.success && response.data) {
       return response.data;

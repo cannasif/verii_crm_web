@@ -357,7 +357,12 @@ api.interceptors.request.use((config) => {
     config.params = clampPagedRequestParams(config.params);
   }
 
-  if (config.data !== undefined) {
+  const isFormDataPayload = typeof FormData !== 'undefined' && config.data instanceof FormData;
+
+  if (isFormDataPayload) {
+    delete config.headers['Content-Type'];
+    delete config.headers['content-type'];
+  } else if (config.data !== undefined) {
     config.data = normalizeOutgoingUtcDateStrings(config.data);
   }
 

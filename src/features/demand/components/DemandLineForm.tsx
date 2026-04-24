@@ -946,6 +946,7 @@ export function DemandLineForm({
         assetScope: imageUploadScope,
         demandId: imageUploadExtras?.demandId,
         demandLineId: imageUploadExtras?.demandLineId,
+        productCode: imageUploadExtras?.productCode || formData.productCode || undefined,
       });
       handleFieldChange('imagePath', uploaded.relativeUrl);
       toast.success(t('common.saved'));
@@ -1421,7 +1422,7 @@ export function DemandLineForm({
                   type="button"
                   variant="outline"
                   onClick={() => imageInputRef.current?.click()}
-                  disabled={isUploadingImage}
+                  disabled={isUploadingImage || !formData.productCode}
                   className="rounded-xl"
                 >
                   {isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}

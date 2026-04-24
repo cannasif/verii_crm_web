@@ -1304,6 +1304,12 @@ export function DemandLineTable({
                 userDiscountLimits={userDiscountLimits}
                 isSaving={createMutation.isPending}
                 existingLineStockMarkers={existingDocumentLineMarkers}
+                allowImageUpload
+                imageUploadScope="demand-line"
+                imageUploadExtras={{
+                  demandId: demandId ?? undefined,
+                  productCode: newLine.productCode || undefined,
+                }}
               />
             )}
           </div>

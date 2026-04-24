@@ -1422,7 +1422,7 @@ export function QuotationLineForm({
                   type="button"
                   variant="outline"
                   onClick={() => imageInputRef.current?.click()}
-                  disabled={isUploadingImage}
+                  disabled={isUploadingImage || !formData.productCode}
                   className="rounded-xl"
                 >
                   {isUploadingImage ? (

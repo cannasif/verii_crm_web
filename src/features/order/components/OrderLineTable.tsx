@@ -1304,6 +1304,12 @@ export function OrderLineTable({
                 userDiscountLimits={userDiscountLimits}
                 isSaving={createMutation.isPending}
                 existingLineStockMarkers={existingDocumentLineMarkers}
+                allowImageUpload
+                imageUploadScope="order-line"
+                imageUploadExtras={{
+                  orderId: orderId ?? undefined,
+                  productCode: newLine.productCode || undefined,
+                }}
               />
             )}
           </div>

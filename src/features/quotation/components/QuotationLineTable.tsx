@@ -1256,6 +1256,12 @@ export function QuotationLineTable({
                 onSaveMultiple={handleSaveMultipleLines}
                 isSaving={createMutation.isPending}
                 existingLineStockMarkers={existingDocumentLineMarkers}
+                allowImageUpload
+                imageUploadScope="quotation-line"
+                imageUploadExtras={{
+                  quotationId: quotationId ?? undefined,
+                  productCode: newLine.productCode || undefined,
+                }}
               />
             )}
           </div>
