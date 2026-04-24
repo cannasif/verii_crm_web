@@ -389,10 +389,10 @@ export function OrderHeaderForm({
                           className={cn(styles.inputBase, "pl-10 font-medium truncate caret-pink-500")}
                           value={customerSearchQuery}
                           onChange={(e) => {
-                            setCustomerSearchQuery(e.target.value);
-                            if (!customerComboboxOpen) setCustomerComboboxOpen(true);
+                            const v = e.target.value;
+                            setCustomerSearchQuery(v);
+                            setCustomerComboboxOpen(v.trim().length > 0);
                           }}
-                          onFocus={() => setCustomerComboboxOpen(true)}
                           placeholder={t('order:header.selectCustomer')}
                           disabled={readOnly}
                           autoComplete="off"

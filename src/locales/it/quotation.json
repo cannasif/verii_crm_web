@@ -60,7 +60,15 @@
     "errorMessage": "Si è verificato un errore durante la creazione del preventivo.",
     "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "pageTitle": "Preventivo",
+    "pageDescription": "Compila testata, aggiungi righe, controlla il riepilogo e salva.",
+    "helpTitle": "Come si usa",
+    "helpTriggerLabel": "Suggerimenti",
+    "helpStep1": "Cliente: digita per cercare o rubrica; se serve, scegli prima il tipo di serie.",
+    "helpStep2": "Regola data offerta, consegna e tassi di cambio.",
+    "helpStep3": "Aggiungi righe; usa Esporta in basso per PDF o condivisione.",
+    "helpStep4": "Controlla i totali a destra e premi Salva."
   },
   "header": {
     "title": "Informazioni Preventivo",

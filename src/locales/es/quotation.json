@@ -60,7 +60,15 @@
     "errorMessage": "Ocurrió un error al crear la cotización.",
     "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "pageTitle": "Cotización",
+    "pageDescription": "Complete el encabezado, añada líneas, revise el resumen y guarde.",
+    "helpTitle": "Cómo usar",
+    "helpTriggerLabel": "Consejos de uso",
+    "helpStep1": "Cliente: escriba para buscar o use la agenda; si aplica, elija primero el tipo de serie.",
+    "helpStep2": "Ajuste fecha de oferta, entrega y tipos de cambio.",
+    "helpStep3": "Añada líneas; use Exportar abajo para PDF o compartir.",
+    "helpStep4": "Revise totales a la derecha y pulse Guardar."
   },
   "header": {
     "title": "Información de Cotización",

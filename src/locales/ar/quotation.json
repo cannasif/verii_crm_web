@@ -60,7 +60,15 @@
     "errorMessage": "حدث خطأ أثناء إنشاء عرض السعر.",
     "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "pageTitle": "عرض سعر",
+    "pageDescription": "أكمل الرأس، أضف الأسطر، راجع الملخص ثم احفظ.",
+    "helpTitle": "طريقة الاستخدام",
+    "helpTriggerLabel": "نصائح",
+    "helpStep1": "العميل: اكتب للبحث أو الدفتر؛ إن لزم اختر نوع التسلسل أولاً.",
+    "helpStep2": "اضبط تاريخ العرض والتسليم وأسعار الصرف.",
+    "helpStep3": "أضف الأسطر؛ استخدم تصدير في الأسفل لملف PDF أو المشاركة.",
+    "helpStep4": "راجع الإجماليات على اليمين ثم اضغط حفظ."
   },
   "header": {
     "title": "معلومات عرض السعر",

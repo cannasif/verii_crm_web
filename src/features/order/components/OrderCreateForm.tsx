@@ -14,7 +14,8 @@ import { OrderSummaryCard } from './OrderSummaryCard';
 import { Button } from '@/components/ui/button';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
-import { ArrowLeft, Save, X, FileText, Layers, Calculator } from 'lucide-react';
+import { Save, X, FileText, Layers, Calculator } from 'lucide-react';
+import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
@@ -36,7 +37,7 @@ const CREATE_HEADER_FORM_SURFACE_CLASSNAME =
   '[&_label]:text-slate-800 dark:[&_label]:text-slate-200 [&_input]:border-slate-500/70 [&_input]:bg-white [&_input]:shadow-sm [&_input]:placeholder:text-slate-400 [&_input]:focus-visible:border-pink-500/85 [&_input]:focus-visible:ring-pink-200/70 dark:[&_input]:border-white/20 dark:[&_input]:bg-[#120d1d] dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus-visible:border-pink-400/60 dark:[&_input]:focus-visible:ring-pink-400/20 [&_textarea]:border-slate-500/70 [&_textarea]:bg-white [&_textarea]:shadow-sm [&_textarea]:placeholder:text-slate-400 [&_textarea]:focus-visible:border-pink-500/85 [&_textarea]:focus-visible:ring-pink-200/70 dark:[&_textarea]:border-white/20 dark:[&_textarea]:bg-[#120d1d] dark:[&_textarea]:placeholder:text-slate-500 dark:[&_textarea]:focus-visible:border-pink-400/60 dark:[&_textarea]:focus-visible:ring-pink-400/20 [&_[data-slot=select-trigger]]:border-slate-500/70 [&_[data-slot=select-trigger]]:bg-white [&_[data-slot=select-trigger]]:shadow-sm dark:[&_[data-slot=select-trigger]]:border-white/20 dark:[&_[data-slot=select-trigger]]:bg-[#120d1d]';
 
 export function OrderCreateForm(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['order', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
@@ -132,8 +133,8 @@ export function OrderCreateForm(): ReactElement {
 
   const onSubmit = async (data: CreateOrderSchema): Promise<void> => {
     if (lines.length === 0) {
-      toast.error(t('order.create.error'), {
-        description: t('order.lines.required'),
+      toast.error(t('create.error'), {
+        description: t('lines.required'),
       });
       return;
     }
@@ -141,8 +142,8 @@ export function OrderCreateForm(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 400);
     if (overLimitNote) {
-      toast.error(t('order.create.error'), {
-        description: t('order.create.notesMaxLengthError'),
+      toast.error(t('create.error'), {
+        description: t('create.notesMaxLengthError'),
       });
       return;
     }
@@ -187,7 +188,7 @@ export function OrderCreateForm(): ReactElement {
         : String(data.order.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('order.create.invalidCurrency'));
+        throw new Error(t('create.invalidCurrency'));
       }
 
       const orderData: CreateOrderDto = {
@@ -226,19 +227,19 @@ export function OrderCreateForm(): ReactElement {
         if (notesList.length > 0) {
           await orderApi.updateNotesListByOrderId(result.data.id, { notes: notesList });
         }
-        toast.success(t('order.create.success'), {
-          description: t('order.create.successMessage'),
+        toast.success(t('create.success'), {
+          description: t('create.successMessage'),
         });
         navigate(`/orders/${result.data.id}`);
       } else {
-        throw new Error(result.message || t('order.create.errorMessage'));
+        throw new Error(result.message || t('create.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('order.create.errorMessage');
+      let errorMessage = t('create.errorMessage');
       if (error instanceof Error) {
         errorMessage = error.message; 
       }
-      toast.error(t('order.create.error'), {
+      toast.error(t('create.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -257,8 +258,8 @@ export function OrderCreateForm(): ReactElement {
     const sampleNewRate = findExchangeRateByDovizTipi(newCurrencyNum, exchangeRates, erpRates);
 
     if (!sampleOldRate || sampleOldRate <= 0 || !sampleNewRate || sampleNewRate <= 0) {
-      toast.error(t('order.update.error'), {
-        description: t('order.exchangeRates.zeroRateError', {
+      toast.error(t('update.error'), {
+        description: t('exchangeRates.zeroRateError', {
           defaultValue: 'Lutfen devam edebilmek icin kur degeri girin.',
         }),
       });
@@ -292,8 +293,8 @@ export function OrderCreateForm(): ReactElement {
 
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('order.create.error'), {
-        description: t('order.create.validationError'),
+      toast.error(t('create.error'), {
+        description: t('create.validationError'),
       });
       return;
     }
@@ -306,52 +307,27 @@ export function OrderCreateForm(): ReactElement {
       <FormProvider {...form}>
         <form onSubmit={handleFormSubmit} className="space-y-0">
           
-          {/* Header Section */}
-          <div className="relative mb-10 pt-6">
-            <div className="absolute left-0 top-6 hidden lg:block">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => navigate(-1)}
-                className="group h-11 w-11 rounded-xl bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/10 hover:border-pink-500/50 hover:shadow-[0_0_20px_-5px_rgba(236,72,153,0.3)] transition-all duration-300"
-              >
-                <ArrowLeft className="h-5 w-5 text-zinc-500 group-hover:text-pink-600 transition-colors" />
-              </Button>
-            </div>
+          <DocumentCreatePageHeader
+            title={t('create.pageTitle')}
+            description={t('create.pageDescription')}
+            onBack={() => navigate(-1)}
+            backLabel={t('back', { ns: 'common' })}
+            helpTitle={t('create.helpTitle')}
+            helpTriggerLabel={t('create.helpTriggerLabel')}
+            helpSteps={[
+              t('create.helpStep1'),
+              t('create.helpStep2'),
+              t('create.helpStep3'),
+              t('create.helpStep4'),
+            ]}
+          />
 
-            <div className="flex flex-col items-center justify-center text-center px-4">
-              <div className="lg:hidden self-start mb-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate(-1)}
-                  className="rounded-lg border-zinc-200 dark:border-zinc-800"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  {t('common.back', 'Geri')}
-                </Button>
-              </div>
-
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-zinc-900 dark:text-white">
-                {t('order.create.title')}
-              </h1>
-              
-              <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-3 max-w-2xl mx-auto leading-relaxed">
-                {t('order.create.subtitle')}
-              </p>
-
-              <div className="h-1.5 w-24 bg-linear-to-r from-pink-500 to-purple-600 rounded-full mt-6 shadow-lg shadow-pink-500/20" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start mt-6">
             {/* Left Content Column */}
             <div className="flex flex-col gap-6 min-w-0 h-fit">
               
               {/* Section 1: Order Information */}
-              <section aria-label={t('order.sections.header')}>
+              <section aria-label={t('sections.header')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
                   <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
@@ -360,7 +336,7 @@ export function OrderCreateForm(): ReactElement {
                     <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('order.sections.header')}
+                            {t('sections.header')}
                         </h3>
                     </div>
                   </div>
@@ -387,7 +363,7 @@ export function OrderCreateForm(): ReactElement {
               </section>
 
               {/* Section 2: Order Lines */}
-              <section aria-label={t('order.sections.lines')}>
+              <section aria-label={t('sections.lines')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
                    <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
@@ -396,7 +372,7 @@ export function OrderCreateForm(): ReactElement {
                     <div className="flex items-center gap-2">
                         <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('order.sections.lines')}
+                            {t('sections.lines')}
                         </h3>
                     </div>
                   </div>
@@ -427,7 +403,7 @@ export function OrderCreateForm(): ReactElement {
                     <div className="flex items-center gap-2">
                         <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('order.sections.summary')}
+                            {t('sections.summary')}
                         </h3>
                     </div>
                   </div>
@@ -448,7 +424,7 @@ export function OrderCreateForm(): ReactElement {
               className="group w-full sm:w-auto"
             >
               <X className="mr-2 h-4 w-4" />
-              {t('order.cancel')}
+              {t('cancel')}
             </Button>
             <FormSubmitTooltipWrap
               schema={createOrderSchema}
@@ -464,8 +440,8 @@ export function OrderCreateForm(): ReactElement {
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending
-                  ? t('order.saving')
-                  : t('order.save')
+                  ? t('saving')
+                  : t('save')
                 }
               </Button>
             </FormSubmitTooltipWrap>

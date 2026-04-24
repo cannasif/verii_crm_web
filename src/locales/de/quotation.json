@@ -60,7 +60,15 @@
     "errorMessage": "Beim Erstellen des Angebots ist ein Fehler aufgetreten.",
     "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "pageTitle": "Angebot",
+    "pageDescription": "Kopfdaten ausfüllen, Positionen hinzufügen, Summe prüfen und speichern.",
+    "helpTitle": "Bedienung",
+    "helpTriggerLabel": "Hinweise",
+    "helpStep1": "Kunde: tippen zum Suchen oder Adressbuch; ggf. zuerst Serientyp wählen.",
+    "helpStep2": "Angebotsdatum, Lieferung und Kurse nach Bedarf anpassen.",
+    "helpStep3": "Positionen hinzufügen; unten Export für PDF oder Teilen.",
+    "helpStep4": "Summen rechts prüfen und auf Speichern klicken."
   },
   "header": {
     "title": "Angebotsinformationen",

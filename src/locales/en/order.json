@@ -61,7 +61,15 @@
     "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
     "validationError": "Lütfen zorunlu alanları kontrol edin.",
-    "notesMaxLengthError": "Each note can be at most 400 characters."
+    "notesMaxLengthError": "Each note can be at most 400 characters.",
+    "pageTitle": "Order",
+    "pageDescription": "Fill in the header, add lines, check the summary, then save.",
+    "helpTitle": "How to use",
+    "helpTriggerLabel": "Usage tips",
+    "helpStep1": "Search the customer field or use the address-book icon for advanced selection.",
+    "helpStep2": "Complete representative, currency, shipping address, and payment details.",
+    "helpStep3": "Add products in the lines section; verify rates and discounts.",
+    "helpStep4": "Review totals in the right-hand summary, then click Save."
   },
   "header": {
     "title": "Order Information",

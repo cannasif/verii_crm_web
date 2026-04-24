@@ -69,7 +69,15 @@
     "errorMessage": "Teklif oluşturulurken bir hata oluştu.",
     "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "pageTitle": "Teklif",
+    "pageDescription": "Başlık bilgilerini doldurun, satırları ekleyin ve özeti kontrol ederek kaydedin.",
+    "helpTitle": "Nasıl kullanılır?",
+    "helpTriggerLabel": "Kullanım ipuçları",
+    "helpStep1": "Müşteri alanında yazarak arayın veya rehber ikonundan seçim yapın; seri tipi gerekiyorsa önce onu seçin.",
+    "helpStep2": "Teklif tarihi, teslimat ve döviz kurlarını ihtiyaca göre düzenleyin.",
+    "helpStep3": "Satırlara ürün ekleyin; PDF veya paylaşım için alttaki Dışa Aktar menüsünü kullanabilirsiniz.",
+    "helpStep4": "Sağdaki özetten toplamları kontrol edin ve Kaydet ile kaydedin."
   },
   "header": {
     "title": "Teklif Bilgileri",

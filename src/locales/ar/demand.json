@@ -62,7 +62,15 @@
     "paymentTypeRequired": "Payment type is required.",
     "invalidCurrency": "Invalid currency.",
     "validationError": "Please check required fields.",
-    "notesMaxLengthError": "يمكن أن تحتوي كل ملاحظة على 400 حرف كحد أقصى."
+    "notesMaxLengthError": "يمكن أن تحتوي كل ملاحظة على 400 حرف كحد أقصى.",
+    "pageTitle": "طلب",
+    "pageDescription": "أكمل الرأس، أضف الأسطر، راجع الملخص ثم احفظ.",
+    "helpTitle": "طريقة الاستخدام",
+    "helpTriggerLabel": "نصائح",
+    "helpStep1": "العميل: اكتب للبحث أو استخدم أيقونة الدفتر للاختيار المتقدم.",
+    "helpStep2": "أكمل المندوب والعملة والتسليم والدفع.",
+    "helpStep3": "أضف الأسطر؛ تتحدث المبالغ عند تغيير العملة.",
+    "helpStep4": "راجع الإجماليات على اليمين ثم اضغط حفظ."
   },
   "header": {
     "title": "معلومات الطلب",
@@ -291,5 +299,11 @@
     "actionDate": "Action Date",
     "status": "Status",
     "waiting": "Waiting"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "كل ملاحظة 100 حرف كحد أقصى. يرجى المراجعة.",
+      "noteLabel": "ملاحظة"
+    }
   }
 }

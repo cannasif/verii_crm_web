@@ -61,7 +61,15 @@
     "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
     "validationError": "Lütfen zorunlu alanları kontrol edin.",
-    "notesMaxLengthError": "Cada nota puede tener como máximo 400 caracteres."
+    "notesMaxLengthError": "Cada nota puede tener como máximo 400 caracteres.",
+    "pageTitle": "Pedido",
+    "pageDescription": "Complete el encabezado, añada líneas, revise el resumen y guarde.",
+    "helpTitle": "Cómo usar",
+    "helpTriggerLabel": "Consejos de uso",
+    "helpStep1": "Cliente: escriba para buscar o use el icono de agenda para selección avanzada.",
+    "helpStep2": "Complete representante, moneda, dirección de envío y pago.",
+    "helpStep3": "Añada líneas; revise tipos de cambio y descuentos.",
+    "helpStep4": "Revise totales a la derecha y pulse Guardar."
   },
   "header": {
     "title": "Información de Cotización",

@@ -418,10 +418,10 @@ export function QuotationHeaderForm({
                           style={forcePaddingStyle}
                           value={customerSearchQuery}
                           onChange={(e) => {
-                            setCustomerSearchQuery(e.target.value);
-                            if (!customerComboboxOpen) setCustomerComboboxOpen(true);
+                            const v = e.target.value;
+                            setCustomerSearchQuery(v);
+                            setCustomerComboboxOpen(v.trim().length > 0);
                           }}
-                          onFocus={() => setCustomerComboboxOpen(true)}
                           placeholder={t('quotation:header.selectCustomer')}
                           disabled={readOnly}
                           autoComplete="off"

@@ -62,7 +62,15 @@
     "paymentTypeRequired": "Ödeme tipi zorunludur.",
     "invalidCurrency": "Geçersiz para birimi.",
     "validationError": "Lütfen zorunlu alanları kontrol edin.",
-    "notesMaxLengthError": "Her not en fazla 400 karakter olabilir."
+    "notesMaxLengthError": "Her not en fazla 400 karakter olabilir.",
+    "pageTitle": "Talep",
+    "pageDescription": "Başlık bilgilerini doldurun, satırları ekleyin ve özeti kontrol ederek kaydedin.",
+    "helpTitle": "Nasıl kullanılır?",
+    "helpTriggerLabel": "Kullanım ipuçları",
+    "helpStep1": "Müşteri alanında yazarak arayın veya rehber ikonundan gelişmiş seçim yapın.",
+    "helpStep2": "Temsilci, para birimi, teslimat ve ödeme bilgilerini tamamlayın.",
+    "helpStep3": "Satırlar bölümünden ürünleri ekleyin; para birimi değişince tutarlar güncellenir.",
+    "helpStep4": "Sağdaki özetten toplamları kontrol edin ve Kaydet ile kaydedin."
   },
   "header": {
     "title": "Talep Bilgileri",
@@ -310,7 +318,8 @@
   },
   "quotation": {
     "notes": {
-      "maxLengthError": "Her not en fazla 100 karakter olabilir. Lütfen kontrol edin."
+      "maxLengthError": "Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.",
+      "noteLabel": "Not"
     }
   }
 }

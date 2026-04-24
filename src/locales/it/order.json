@@ -61,7 +61,15 @@
     "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
     "validationError": "Lütfen zorunlu alanları kontrol edin.",
-    "notesMaxLengthError": "Ogni nota può contenere al massimo 400 caratteri."
+    "notesMaxLengthError": "Ogni nota può contenere al massimo 400 caratteri.",
+    "pageTitle": "Ordine",
+    "pageDescription": "Compila testata, aggiungi righe, controlla il riepilogo e salva.",
+    "helpTitle": "Come si usa",
+    "helpTriggerLabel": "Suggerimenti",
+    "helpStep1": "Cliente: digita per cercare o usa la rubrica per la selezione avanzata.",
+    "helpStep2": "Completa rappresentante, valuta, indirizzo di spedizione e pagamento.",
+    "helpStep3": "Aggiungi righe; verifica tassi e sconti.",
+    "helpStep4": "Controlla i totali a destra e premi Salva."
   },
   "header": {
     "title": "Informazioni Preventivo",

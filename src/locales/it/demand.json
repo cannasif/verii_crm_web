@@ -62,7 +62,15 @@
     "paymentTypeRequired": "Payment type is required.",
     "invalidCurrency": "Invalid currency.",
     "validationError": "Please check required fields.",
-    "notesMaxLengthError": "Ogni nota può contenere al massimo 400 caratteri."
+    "notesMaxLengthError": "Ogni nota può contenere al massimo 400 caratteri.",
+    "pageTitle": "Richiesta",
+    "pageDescription": "Compila testata, aggiungi righe, controlla il riepilogo e salva.",
+    "helpTitle": "Come si usa",
+    "helpTriggerLabel": "Suggerimenti",
+    "helpStep1": "Cliente: digita per cercare o usa la rubrica per la selezione avanzata.",
+    "helpStep2": "Completa rappresentante, valuta, consegna e pagamento.",
+    "helpStep3": "Aggiungi righe; gli importi si aggiornano al cambio valuta.",
+    "helpStep4": "Controlla i totali a destra e premi Salva."
   },
   "header": {
     "title": "Informazioni Richiesta",
@@ -291,5 +299,11 @@
     "actionDate": "Action Date",
     "status": "Status",
     "waiting": "Waiting"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "Ogni nota può contenere al massimo 100 caratteri. Controlla.",
+      "noteLabel": "Nota"
+    }
   }
 }

@@ -61,7 +61,15 @@
     "errorMessage": "An error occurred while creating the quotation.",
     "subtitle": "Manage the quotation header, lines, and exchange rates",
     "invalidCurrency": "Select a valid currency.",
-    "validationError": "Please check the required fields."
+    "validationError": "Please check the required fields.",
+    "pageTitle": "Quotation",
+    "pageDescription": "Fill in the header, add lines, check the summary, then save.",
+    "helpTitle": "How to use",
+    "helpTriggerLabel": "Usage tips",
+    "helpStep1": "Search the customer field or use the address-book icon; pick document serial type first if required.",
+    "helpStep2": "Adjust offer date, delivery, and exchange rates as needed.",
+    "helpStep3": "Add line items; use Export at the bottom for PDF or sharing.",
+    "helpStep4": "Review totals in the summary on the right, then click Save."
   },
   "header": {
     "title": "Quotation Information",

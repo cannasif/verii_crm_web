@@ -62,7 +62,15 @@
     "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
     "validationError": "Lütfen zorunlu alanları kontrol edin.",
-    "notesMaxLengthError": "Her not en fazla 400 karakter olabilir."
+    "notesMaxLengthError": "Her not en fazla 400 karakter olabilir.",
+    "pageTitle": "Sipariş",
+    "pageDescription": "Başlık bilgilerini doldurun, satırları ekleyin ve özeti kontrol ederek kaydedin.",
+    "helpTitle": "Nasıl kullanılır?",
+    "helpTriggerLabel": "Kullanım ipuçları",
+    "helpStep1": "Müşteri alanında yazarak arayın veya rehber ikonundan gelişmiş seçim yapın.",
+    "helpStep2": "Temsilci, para birimi, sevk adresi ve ödeme bilgilerini tamamlayın.",
+    "helpStep3": "Satırlar bölümünden ürünleri ekleyin; kur ve iskonto alanlarını kontrol edin.",
+    "helpStep4": "Sağdaki özetten toplamları kontrol edin ve Kaydet ile kaydedin."
   },
   "header": {
     "title": "Sipariş Bilgileri",

@@ -62,7 +62,15 @@
     "paymentTypeRequired": "Payment type is required.",
     "invalidCurrency": "Invalid currency.",
     "validationError": "Please check required fields.",
-    "notesMaxLengthError": "Chaque note peut contenir au plus 400 caractères."
+    "notesMaxLengthError": "Chaque note peut contenir au plus 400 caractères.",
+    "pageTitle": "Demande",
+    "pageDescription": "Renseignez l’en-tête, ajoutez les lignes, vérifiez le résumé puis enregistrez.",
+    "helpTitle": "Mode d’emploi",
+    "helpTriggerLabel": "Conseils",
+    "helpStep1": "Client : saisissez pour filtrer ou utilisez le carnet d’adresses pour une sélection avancée.",
+    "helpStep2": "Complétez représentant, devise, livraison et paiement.",
+    "helpStep3": "Ajoutez des lignes ; les montants se mettent à jour si la devise change.",
+    "helpStep4": "Contrôlez les totaux à droite puis cliquez sur Enregistrer."
   },
   "header": {
     "title": "Informations de la Demande",
@@ -291,5 +299,11 @@
     "actionDate": "Action Date",
     "status": "Status",
     "waiting": "Waiting"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "Chaque note peut contenir au plus 100 caractères. Veuillez vérifier.",
+      "noteLabel": "Note"
+    }
   }
 }

@@ -1,5 +1,7 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { getNamespacesForPath } from './route-namespaces';
+import { getAppBasePath } from './api-config';
 
 const i18n = i18next.createInstance();
 
@@ -197,8 +199,29 @@ export async function ensureNamespacesReady(
   }
 }
 
+/** Router basename sonrası path (ör. /demands/create) — route → namespace eşlemesi için */
+function normalizePathnameForRouteNamespaces(pathname: string): string {
+  const base = getAppBasePath();
+  if (base !== '/' && pathname.startsWith(base)) {
+    const stripped = pathname.slice(base.length) || '/';
+    return stripped.startsWith('/') ? stripped : `/${stripped}`;
+  }
+  return pathname || '/';
+}
+
+/** Dil değişince veya loadLanguage ile: açık sayfanın i18n namespace'lerini hedef dilde yükle */
+export async function ensureRouteNamespacesForLanguage(lang: string): Promise<void> {
+  if (typeof window === 'undefined') return;
+  const pathname = normalizePathnameForRouteNamespaces(window.location.pathname);
+  const routeNamespaces = getNamespacesForPath(pathname);
+  const target = normalizeLang(lang) ?? fallbackLng;
+  await ensureNamespacesReady(routeNamespaces, target);
+}
+
 export async function loadLanguage(lang: string): Promise<void> {
-  await ensureNamespacesReady(INITIAL_NAMESPACES, lang);
+  const target = normalizeLang(lang) ?? fallbackLng;
+  await ensureNamespacesReady(INITIAL_NAMESPACES, target);
+  await ensureRouteNamespacesForLanguage(target);
 }
 
 const initPromise = (async () => {
@@ -228,7 +251,9 @@ const initPromise = (async () => {
 })();
 
 i18n.on('languageChanged', async (lng) => {
-  await ensureNamespacesReady(INITIAL_NAMESPACES, lng);
+  const target = normalizeLang(lng) ?? fallbackLng;
+  await ensureNamespacesReady(INITIAL_NAMESPACES, target);
+  await ensureRouteNamespacesForLanguage(target);
 });
 
 export async function ensureI18nReady(): Promise<void> {

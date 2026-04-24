@@ -61,7 +61,15 @@
     "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
     "validationError": "Lütfen zorunlu alanları kontrol edin.",
-    "notesMaxLengthError": "Jede Notiz darf höchstens 400 Zeichen enthalten."
+    "notesMaxLengthError": "Jede Notiz darf höchstens 400 Zeichen enthalten.",
+    "pageTitle": "Auftrag",
+    "pageDescription": "Kopfdaten ausfüllen, Positionen hinzufügen, Summe prüfen und speichern.",
+    "helpTitle": "Bedienung",
+    "helpTriggerLabel": "Hinweise",
+    "helpStep1": "Kunde: tippen zum Suchen oder über das Adressbuch erweitert auswählen.",
+    "helpStep2": "Vertriebsmitarbeiter, Währung, Lieferadresse und Zahlungsdaten vervollständigen.",
+    "helpStep3": "Positionen hinzufügen; Kurse und Rabatte prüfen.",
+    "helpStep4": "Summen rechts prüfen und auf Speichern klicken."
   },
   "header": {
     "title": "Angebotsinformationen",

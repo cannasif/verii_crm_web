@@ -62,7 +62,15 @@
     "paymentTypeRequired": "Payment type is required.",
     "invalidCurrency": "Invalid currency.",
     "validationError": "Please check required fields.",
-    "notesMaxLengthError": "Each note can be at most 400 characters."
+    "notesMaxLengthError": "Each note can be at most 400 characters.",
+    "pageTitle": "Demand",
+    "pageDescription": "Fill in the header, add lines, check the summary, then save.",
+    "helpTitle": "How to use",
+    "helpTriggerLabel": "Usage tips",
+    "helpStep1": "Search the customer field or use the address-book icon for advanced selection.",
+    "helpStep2": "Complete representative, currency, delivery, and payment details.",
+    "helpStep3": "Add products in the lines section; amounts update when currency changes.",
+    "helpStep4": "Review totals in the right-hand summary, then click Save."
   },
   "header": {
     "title": "Demand Information",
@@ -299,5 +307,11 @@
     "actionDate": "Action Date",
     "status": "Status",
     "waiting": "Waiting"
+  },
+  "quotation": {
+    "notes": {
+      "maxLengthError": "Each note can be at most 100 characters. Please check.",
+      "noteLabel": "Note"
+    }
   }
 }

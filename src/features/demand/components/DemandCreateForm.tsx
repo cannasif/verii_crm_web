@@ -14,7 +14,8 @@ import { DemandSummaryCard } from './DemandSummaryCard';
 import { Button } from '@/components/ui/button';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
-import { ArrowLeft, Save, X, FileText, Layers, Calculator } from 'lucide-react';
+import { Save, X, FileText, Layers, Calculator } from 'lucide-react';
+import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import type { DemandLineFormState, DemandExchangeRateFormState, DemandBulkCreateDto, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/demand-types';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
@@ -305,47 +306,22 @@ export function DemandCreateForm(): ReactElement {
       <FormProvider {...form}>
         <form onSubmit={handleFormSubmit} className="space-y-0">
           
-          {/* Header */}
-          <div className="relative mb-10 pt-6">
-            <div className="absolute left-0 top-6 hidden lg:block">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => navigate(-1)}
-                className="group h-11 w-11 rounded-xl bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/10 hover:border-pink-500/50 hover:shadow-[0_0_20px_-5px_rgba(236,72,153,0.3)] transition-all duration-300"
-              >
-                <ArrowLeft className="h-5 w-5 text-zinc-500 group-hover:text-pink-600 transition-colors" />
-              </Button>
-            </div>
+          <DocumentCreatePageHeader
+            title={t('create.pageTitle')}
+            description={t('create.pageDescription')}
+            onBack={() => navigate(-1)}
+            backLabel={t('back')}
+            helpTitle={t('create.helpTitle')}
+            helpTriggerLabel={t('create.helpTriggerLabel')}
+            helpSteps={[
+              t('create.helpStep1'),
+              t('create.helpStep2'),
+              t('create.helpStep3'),
+              t('create.helpStep4'),
+            ]}
+          />
 
-            <div className="flex flex-col items-center justify-center text-center px-4">
-              <div className="lg:hidden self-start mb-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate(-1)}
-                  className="rounded-lg border-zinc-200 dark:border-zinc-800"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  {t('back')}
-                </Button>
-              </div>
-
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-zinc-900 dark:text-white">
-                {t('create.title')}
-              </h1>
-              
-              <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-3 max-w-2xl mx-auto leading-relaxed">
-                {t('create.subtitle')}
-              </p>
-
-              <div className="h-1.5 w-24 bg-linear-to-r from-pink-500 to-purple-600 rounded-full mt-6 shadow-lg shadow-pink-500/20" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start mt-6">
             {/* SOL KISIM: h-fit ekli */}
             <div className="flex flex-col gap-6 min-w-0 h-fit">
               

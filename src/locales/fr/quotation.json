@@ -60,7 +60,15 @@
     "errorMessage": "Une erreur est survenue lors de la création du devis.",
     "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "pageTitle": "Devis",
+    "pageDescription": "Renseignez l’en-tête, ajoutez les lignes, vérifiez le résumé puis enregistrez.",
+    "helpTitle": "Mode d’emploi",
+    "helpTriggerLabel": "Conseils",
+    "helpStep1": "Client : saisissez pour filtrer ou carnet d’adresses ; choisissez d’abord le type de série si requis.",
+    "helpStep2": "Ajustez date d’offre, livraison et taux de change.",
+    "helpStep3": "Ajoutez des lignes ; utilisez Exporter en bas pour PDF ou partage.",
+    "helpStep4": "Contrôlez les totaux à droite puis cliquez sur Enregistrer."
   },
   "header": {
     "title": "Informations Devis",
