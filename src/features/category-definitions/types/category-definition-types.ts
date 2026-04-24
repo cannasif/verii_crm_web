@@ -73,6 +73,7 @@ export interface CatalogStockItemDto {
   kod3?: string | null;
   kod3Adi?: string | null;
   isPrimaryCategory: boolean;
+  imageUrl?: string | null;
 }
 
 export type CatalogStockListResponse = PagedResponse<CatalogStockItemDto>;
