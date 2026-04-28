@@ -302,6 +302,21 @@ export function DailyTasksPage(): ReactElement {
   const [editingActivity, setEditingActivity] = useState<ActivityDto | null>(null);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [calendarViewMode, setCalendarViewMode] = useState<'weekly' | 'monthly'>('monthly');
+  const [tasksWeekStart, setTasksWeekStart] = useState<Date>(() => {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+    const mon = new Date(d.setDate(diff));
+    mon.setHours(0, 0, 0, 0);
+    return mon;
+  });
+  const [listSelectedDate, setListSelectedDate] = useState<string>(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [calendarWeekStart, setCalendarWeekStart] = useState<Date>(() => {
     const d = new Date();
     const day = d.getDay();
@@ -384,17 +399,20 @@ export function DailyTasksPage(): ReactElement {
     return `${year}-${month}-${day}`;
   };
 
-  // --- Date Helpers ---
-  const getWeekDateRange = (): { startDate: string; endDate: string } => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-    const monday = new Date(today.setDate(diff));
-    monday.setHours(0, 0, 0, 0);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-    return { startDate: formatDateKey(monday), endDate: formatDateKey(sunday) };
+  const normalizeToMonday = (date: Date): Date => {
+    const next = new Date(date);
+    const day = next.getDay();
+    const diff = next.getDate() - (day === 0 ? 6 : day - 1);
+    next.setDate(diff);
+    next.setHours(0, 0, 0, 0);
+    return next;
+  };
+
+  const parseDateKey = (value: string): Date => {
+    const [year, month, day] = value.split('-').map(Number);
+    const parsed = new Date(year, month - 1, day);
+    parsed.setHours(0, 0, 0, 0);
+    return parsed;
   };
 
   const getCalendarDateRange = (): { startDate: string; endDate: string } => {
@@ -417,20 +435,36 @@ export function DailyTasksPage(): ReactElement {
     return { startDate: formatDateKey(start), endDate: formatDateKey(end) };
   };
 
-  const weekDateRange = getWeekDateRange();
+  const getTasksWeekDateRange = (): { startDate: string; endDate: string } => {
+    const start = new Date(tasksWeekStart);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    return { startDate: formatDateKey(start), endDate: formatDateKey(end) };
+  };
+
+  const getListDayDateRange = (): { startDate: string; endDate: string } => {
+    return { startDate: listSelectedDate, endDate: listSelectedDate };
+  };
+
   const calendarDateRange = getCalendarDateRange();
   const weeklyDateRange = getWeeklyDateRange();
+  const tasksWeekDateRange = getTasksWeekDateRange();
+  const listDayDateRange = getListDayDateRange();
 
-  // --- Filters ---
   const calendarRange = activeTab === 'calendar' && calendarViewMode === 'weekly' ? weeklyDateRange : calendarDateRange;
-  const apiDateRange = activeTab === 'list' ? weekDateRange : activeTab === 'calendar' ? calendarRange : weekDateRange;
+  const activeDateRange =
+    activeTab === 'tasks'
+      ? tasksWeekDateRange
+      : activeTab === 'list'
+        ? listDayDateRange
+        : calendarRange;
   const filters: Array<{ column: string; operator: string; value: string }> = [
     statusFilter !== 'all' ? { column: 'Status', operator: 'eq', value: statusFilter } : undefined,
     assignedUserFilter ? { column: 'AssignedUserId', operator: 'eq', value: assignedUserFilter.toString() } : undefined,
-    (activeTab === 'tasks' || activeTab === 'list') ? { column: 'StartDateTime', operator: 'gte', value: apiDateRange.startDate } : undefined,
-    (activeTab === 'tasks' || activeTab === 'list') ? { column: 'StartDateTime', operator: 'lte', value: apiDateRange.endDate } : undefined,
-    activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'gte', value: calendarRange.startDate } : undefined,
-    activeTab === 'calendar' ? { column: 'StartDateTime', operator: 'lte', value: calendarRange.endDate } : undefined,
+    { column: 'StartDateTime', operator: 'gte', value: activeDateRange.startDate },
+    { column: 'StartDateTime', operator: 'lte', value: activeDateRange.endDate },
   ].filter((f): f is { column: string; operator: string; value: string } => f !== undefined);
 
   const { data, isLoading, isFetching, error, refetch, dataUpdatedAt } = useQuery({
@@ -442,13 +476,13 @@ export function DailyTasksPage(): ReactElement {
       calendarMonth.getFullYear(),
       calendarMonth.getMonth(),
       calendarWeekStart.toISOString(),
+      tasksWeekStart.toISOString(),
+      listSelectedDate,
       statusFilter,
       assignedUserFilter ?? 'all',
       debouncedSearchTerm,
-      apiDateRange.startDate,
-      apiDateRange.endDate,
-      calendarRange.startDate,
-      calendarRange.endDate,
+      activeDateRange.startDate,
+      activeDateRange.endDate,
     ],
     queryFn: () =>
       activityApi.getAllList({
@@ -482,31 +516,16 @@ export function DailyTasksPage(): ReactElement {
     let filtered = activities;
     if (statusFilter !== 'all') filtered = filtered.filter((activity) => String(activity.status) === statusFilter);
     if (assignedUserFilter) filtered = filtered.filter((activity) => activity.assignedUserId === assignedUserFilter);
-    
-    if (activeTab === 'tasks') {
-      filtered = filtered.filter((activity) => {
-        if (!activity.activityDate) return false;
-        const activityDate = new Date(activity.activityDate);
-        return activityDate >= new Date(weekDateRange.startDate) && activityDate <= new Date(weekDateRange.endDate);
-      });
-    }
-    if (activeTab === 'list') {
-      filtered = filtered.filter((activity) => {
-        if (!activity.activityDate) return false;
-        const activityDate = new Date(activity.activityDate);
-        return activityDate >= new Date(weekDateRange.startDate) && activityDate <= new Date(weekDateRange.endDate);
-      });
-    }
-    if (activeTab === 'calendar') {
-      const calRange = calendarViewMode === 'weekly' ? weeklyDateRange : calendarDateRange;
-      filtered = filtered.filter((activity) => {
-        if (!activity.activityDate) return false;
-        const activityDate = new Date(activity.activityDate);
-        return activityDate >= new Date(calRange.startDate) && activityDate <= new Date(calRange.endDate);
-      });
-    }
+
+    filtered = filtered.filter((activity) => {
+      const rawDate = activity.activityDate ?? activity.startDateTime;
+      if (!rawDate) return false;
+      const activityDateKey = formatDateKey(new Date(rawDate));
+      return activityDateKey >= activeDateRange.startDate && activityDateKey <= activeDateRange.endDate;
+    });
+
     return filtered;
-  }, [activities, statusFilter, assignedUserFilter, activeTab, weekDateRange, calendarDateRange, calendarViewMode, weeklyDateRange]);
+  }, [activities, statusFilter, assignedUserFilter, activeDateRange]);
 
   const getAssignedUserName = (userId?: number) =>
     userOptions.find((option) => option.id === userId)?.fullName || t('dailyTasks.unassigned');
@@ -625,6 +644,19 @@ export function DailyTasksPage(): ReactElement {
   const handlePreviousMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1));
   const handleNextMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1));
   const handleToday = () => setCalendarMonth(new Date());
+  const handlePreviousTasksWeek = () => {
+    const next = new Date(tasksWeekStart);
+    next.setDate(next.getDate() - 7);
+    setTasksWeekStart(normalizeToMonday(next));
+  };
+  const handleNextTasksWeek = () => {
+    const next = new Date(tasksWeekStart);
+    next.setDate(next.getDate() + 7);
+    setTasksWeekStart(normalizeToMonday(next));
+  };
+  const handleCurrentTasksWeek = () => {
+    setTasksWeekStart(normalizeToMonday(new Date()));
+  };
   const handlePreviousWeek = () => {
     const next = new Date(calendarWeekStart);
     next.setDate(next.getDate() - 7);
@@ -636,13 +668,7 @@ export function DailyTasksPage(): ReactElement {
     setCalendarWeekStart(next);
   };
   const handleThisWeek = () => {
-    const d = new Date();
-    const day = d.getDay();
-    const diff = d.getDate() - (day === 0 ? 6 : day - 1);
-    const mon = new Date(d);
-    mon.setDate(diff);
-    mon.setHours(0, 0, 0, 0);
-    setCalendarWeekStart(mon);
+    setCalendarWeekStart(normalizeToMonday(new Date()));
   };
 
   const handleReviewOpenTasks = () => {
@@ -1269,10 +1295,10 @@ export function DailyTasksPage(): ReactElement {
         
         {/* 2. KONTROL PANELİ: Responsive Layout */}
         <div className="sticky top-2 z-30 bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg rounded-2xl p-3 md:p-4 transition-all duration-300">
-            <div className="flex flex-col xl:flex-row gap-4 justify-between items-center">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                 
                 {/* Sol: Tablar (Mobilde Grid) */}
-                <TabsList className="bg-slate-100 dark:bg-white/5 p-1 rounded-xl h-auto w-full xl:w-auto grid grid-cols-3 xl:flex gap-1">
+                <TabsList className="bg-white dark:bg-white/5 border border-slate-300/80 dark:border-white/10 shadow-sm p-1 rounded-xl h-auto w-full xl:w-auto grid grid-cols-3 xl:flex gap-1">
                     <TabsTrigger value="tasks" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-[#2d1b4e] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md py-2 px-2 md:px-4 text-[10px] md:text-xs font-medium transition-all duration-300">
                         <LayoutGrid size={14} className="mr-1 md:mr-2 md:w-4 md:h-4" />
                         <span className="truncate">{t('dailyTasks.weeklyTasks')}</span>
@@ -1288,14 +1314,14 @@ export function DailyTasksPage(): ReactElement {
                 </TabsList>
 
                 {/* Sağ: Filtreler (Mobilde Stack) */}
-                <div className="flex flex-col sm:flex-row w-full xl:w-auto gap-3">
-                    <div className="relative w-full sm:w-[240px]">
+                <div className="grid w-full grid-cols-1 gap-3 xl:w-auto xl:grid-cols-[minmax(220px,260px)_auto_minmax(170px,220px)_auto] xl:items-start">
+                    <div className="relative w-full min-w-0">
                       <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       <Input
                         value={searchTerm}
                         onChange={(event) => setSearchTerm(event.target.value)}
                         placeholder={t('dailyTasks.searchPlaceholder')}
-                        className="h-10 rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 pl-9 pr-10 focus-visible:ring-pink-500"
+                        className="h-10 rounded-xl border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm pl-9 pr-10 focus-visible:ring-pink-500"
                       />
                       {isFetching ? (
                         <RefreshCw className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-pink-500" />
@@ -1303,7 +1329,7 @@ export function DailyTasksPage(): ReactElement {
                     </div>
                     
                     {/* Status Pill Group (Scrollable on mobile) */}
-                    <div className="flex items-center p-1 bg-slate-100/50 dark:bg-white/5 rounded-xl border border-slate-200/50 dark:border-white/5 w-full sm:w-auto overflow-x-auto no-scrollbar">
+                    <div className="flex w-full items-center overflow-x-auto rounded-xl border border-slate-300/80 bg-white p-1 shadow-sm no-scrollbar dark:border-white/5 dark:bg-white/5 xl:max-w-[380px]">
                         <div className="flex gap-1 min-w-max">
                             <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className={filterButtonStyle(statusFilter === 'all')}>
                                 {t('dailyTasks.all')}
@@ -1321,7 +1347,7 @@ export function DailyTasksPage(): ReactElement {
                     </div>
 
                     {/* Personel Seçimi */}
-                    <div className="flex items-center gap-2 w-full sm:w-[160px]">
+                    <div className="flex w-full min-w-0 items-center gap-2 rounded-xl border border-slate-300/80 bg-white px-2 py-1 shadow-sm dark:border-white/10 dark:bg-white/5 xl:w-[220px]">
                       <User size={14} className="shrink-0 text-pink-500" />
                       <VoiceSearchCombobox
                         options={userFilterOptions}
@@ -1333,9 +1359,65 @@ export function DailyTasksPage(): ReactElement {
                         isLoading={userDropdown.isLoading}
                         isFetchingNextPage={userDropdown.isFetchingNextPage}
                         placeholder={t('dailyTasks.allEmployees')}
-                        className="h-10 rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 focus:ring-pink-500 flex-1 min-w-0"
+                        className="h-9 rounded-lg border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 focus:ring-pink-500 flex-1 min-w-0"
                       />
                     </div>
+
+                    {activeTab === 'tasks' ? (
+                      <div className="flex w-full min-w-0 flex-col gap-2 rounded-xl border border-slate-300/80 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-white/5 xl:min-w-[290px]">
+                        <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                          {t('dailyTasks.weeklyTasks', { defaultValue: 'Haftalık görevler' })}
+                        </div>
+                        <div className="flex w-full flex-wrap items-center gap-2">
+                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-md" onClick={handlePreviousTasksWeek}>
+                            <ChevronLeft size={14} />
+                          </Button>
+                          <Input
+                            type="date"
+                            value={formatDateKey(tasksWeekStart)}
+                            onChange={(e) => {
+                              if (!e.target.value) return;
+                              setTasksWeekStart(normalizeToMonday(parseDateKey(e.target.value)));
+                            }}
+                            className="h-8 min-w-[150px] flex-1 rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+                          />
+                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-md" onClick={handleNextTasksWeek}>
+                            <ChevronRight size={14} />
+                          </Button>
+                          <Button type="button" variant="outline" size="sm" className="h-8 rounded-lg text-xs sm:ml-auto" onClick={handleCurrentTasksWeek}>
+                            {t('dailyTasks.thisWeek', { defaultValue: 'Bu Hafta' })}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {activeTab === 'list' ? (
+                      <div className="flex w-full min-w-0 flex-col gap-2 rounded-xl border border-slate-300/80 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-white/5 xl:min-w-[260px]">
+                        <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                          {t('dailyTasks.dailyList', { defaultValue: 'Günlük liste' })}
+                        </div>
+                        <div className="flex w-full flex-wrap items-center gap-2">
+                          <Input
+                            type="date"
+                            value={listSelectedDate}
+                            onChange={(e) => {
+                              if (!e.target.value) return;
+                              setListSelectedDate(e.target.value);
+                            }}
+                            className="h-8 min-w-[150px] flex-1 rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-8 rounded-lg text-xs sm:ml-auto"
+                            onClick={() => setListSelectedDate(formatDateKey(new Date()))}
+                          >
+                            {t('dailyTasks.today', { defaultValue: 'Bugün' })}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : null}
                 </div>
             </div>
         </div>
