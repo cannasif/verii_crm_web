@@ -3,7 +3,7 @@ import { useEffect, useCallback, useMemo, useRef, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import quotationTotalsLayoutSpecJson from '../specs/quotation-totals-layout-spec.json';
 import { type RndDragCallback, type RndResizeCallback, Rnd } from 'react-rnd';
-import { GripVertical, Settings, Trash2, Upload } from 'lucide-react';
+import { GripVertical, Settings, Trash2, Upload, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -65,6 +65,7 @@ import { clampElementToSection } from '../utils/dto-to-canvas';
 import { resolvePdfImageSrc } from '../utils/resolve-pdf-image-src';
 import { uploadPdfTemplateImage } from '../utils/upload-pdf-template-image';
 import { formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
+import { cn } from '@/lib/utils';
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 
@@ -495,9 +496,10 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
   return (
     <div
       ref={setNodeRef}
-      className={`flex h-full min-h-8 w-full flex-col overflow-hidden border border-slate-400 bg-white ${
-        isOver ? 'ring-2 ring-inset ring-blue-400' : ''
-      }`}
+      className={cn(
+        "flex h-full min-h-8 w-full flex-col overflow-hidden border border-slate-200 bg-white/95 shadow-sm transition-all duration-300",
+        isOver ? "ring-2 ring-inset ring-pink-500/50" : ""
+      )}
     >
       {table.columns.length === 0 ? (
         <span className="flex flex-1 items-center justify-center px-2 py-1 text-xs text-slate-500">
@@ -505,7 +507,7 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
         </span>
       ) : (
         <>
-          <div className="flex flex-row items-stretch border-b border-slate-300 bg-slate-100">
+          <div className="flex flex-row items-stretch border-b border-slate-200/60 bg-stone-100/80">
             {table.columns.map((col) => (
               <div
                 key={col.path}
@@ -525,15 +527,16 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
               </div>
             ))}
           </div>
-          <div className="border-b border-slate-200 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-slate-600">
+          <div className="border-b border-slate-200/60 bg-pink-500/5 px-2 py-1 text-[11px] font-bold text-pink-600/80">
             {groupHeaderLabel}: PRJ-01
           </div>
           {[0, 1].map((rowIndex) => (
             <div
               key={`sample-row-${rowIndex}`}
-              className={`flex flex-row items-stretch border-b border-slate-200 text-xs ${
-                rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'
-              }`}
+              className={cn(
+                "flex flex-row items-stretch border-b border-slate-100 text-xs transition-colors",
+                rowIndex % 2 === 0 ? "bg-white" : "bg-stone-50/50"
+              )}
             >
               {table.columns.map((col) => {
                 const isDetailColumn = detailColumnPath != null && col.path === detailColumnPath;
@@ -705,9 +708,9 @@ function FieldElementBlock({
       <div
         className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400"
         style={{
-          background: style.background ?? '#ffffff',
-          border: style.border ?? '1px solid #cbd5e1',
-          borderRadius: style.radius != null ? `${style.radius}px` : '0px',
+          background: style.background ?? 'transparent',
+          border: style.border ?? '1px dashed #e2e8f0',
+          borderRadius: style.radius != null ? `${style.radius}px` : '4px',
         }}
       >
         Shape
@@ -764,9 +767,12 @@ function FieldElementBlock({
         {items.map((row, index) => (
           <div
             key={`${row.label}-${index}`}
-            className={`flex items-center justify-between rounded border ${
-              row.emphasize ? 'bg-slate-900 font-semibold text-white border-slate-900' : 'bg-white border-slate-200 text-slate-700'
-            }`}
+            className={cn(
+              "flex items-center justify-between rounded-lg border transition-all duration-300",
+              row.emphasize 
+                ? "bg-slate-900 font-bold text-white border-slate-900 shadow-md dark:bg-pink-600 dark:border-pink-500" 
+                : "bg-white border-slate-200/60 text-slate-700 hover:border-slate-300"
+            )}
             style={{
               minHeight: `${quotationTotalsLayoutSpec.rowHeight}px`,
               paddingLeft: `${quotationTotalsLayoutSpec.rowPaddingX}px`,
@@ -824,7 +830,7 @@ function FieldElementBlock({
         </div>
         {showNote ? (
           <div
-            className="border border-slate-200 bg-slate-50 text-slate-600"
+            className="rounded-lg border border-slate-200/60 bg-stone-50/50 text-slate-600 dark:bg-white/5"
             style={{
               marginTop: `${quotationTotalsLayoutSpec.noteTopGap}px`,
               paddingLeft: `${quotationTotalsLayoutSpec.notePaddingX}px`,
@@ -878,12 +884,13 @@ function ContainerElementBlock({ element }: { element: PdfReportElement }): Reac
   return (
     <div
       ref={setNodeRef}
-      className={`flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400 ${
-        isOver ? 'ring-2 ring-inset ring-blue-400' : ''
-      }`}
+      className={cn(
+        "flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 transition-all duration-300",
+        isOver ? "ring-2 ring-inset ring-pink-500/50 bg-pink-500/5" : ""
+      )}
       style={{
-        background: style.background ?? '#ffffff',
-        border: style.border ?? '1px solid #cbd5e1',
+        background: style.background ?? 'transparent',
+        border: style.border ?? '1px dashed #e2e8f0',
         borderRadius: style.radius != null ? `${style.radius}px` : '0px',
       }}
     >
@@ -1216,7 +1223,11 @@ function DroppableSection({
     <div
       ref={setNodeRef}
       style={style}
-      className={`${className} ${isOver ? 'ring-2 ring-inset ring-blue-400' : ''}`}
+      className={cn(
+        className,
+        "transition-all duration-300",
+        isOver ? "ring-2 ring-inset ring-pink-500/50 bg-pink-500/5" : ""
+      )}
     >
       {children}
     </div>
@@ -1335,22 +1346,25 @@ export function PdfA4Canvas({
   const activePageRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col items-center gap-10 overflow-auto bg-slate-100 px-8 py-10 dark:bg-slate-900">
+    <div className="flex min-h-0 flex-1 flex-col items-center gap-10 overflow-auto bg-stone-100/40 px-8 py-10 dark:bg-[#0f0a15]">
       {Array.from({ length: pageCount }, (_, i) => i + 1).map((pageNum) => {
         const isActivePage = pageNum === currentPage;
         const resolvedForPage = resolveCanvasElements(elements, pageNum);
 
         const pageContent = (
           <div key={pageNum} id={`pdf-canvas-page-${pageNum}`} className="flex flex-col items-center gap-2">
-            <div className={`flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest ${isActivePage ? 'text-blue-500' : 'text-slate-400'}`}>
-              <div className={`h-px w-8 ${isActivePage ? 'bg-blue-400' : 'bg-slate-300'}`} />
+            <div className={cn(
+              "flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300",
+              isActivePage ? "text-pink-600 dark:text-pink-400" : "text-slate-400 dark:text-slate-600"
+            )}>
+              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-pink-500/50" : "bg-slate-300/50 dark:bg-slate-800")} />
               {t('pdfReportDesigner.pageNumber', { page: pageNum })}
               {isActivePage && (
-                <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
-                  {t('pdfReportDesigner.canvasActiveBadge', { defaultValue: 'active' })}
+                <span className="rounded-full bg-pink-500/10 px-2 py-0.5 text-[9px] font-bold text-pink-600 ring-1 ring-pink-500/20 dark:bg-pink-500/20 dark:text-pink-400">
+                  {t('pdfReportDesigner.canvasActiveBadge', { defaultValue: 'ACTIVE' })}
                 </span>
               )}
-              <div className={`h-px w-8 ${isActivePage ? 'bg-blue-400' : 'bg-slate-300'}`} />
+              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-pink-500/50" : "bg-slate-300/50 dark:bg-slate-800")} />
             </div>
 
             <div
@@ -1363,11 +1377,12 @@ export function PdfA4Canvas({
                   onPageRef?.(pageNum, el);
                   if (isActivePage) activePageRef.current = el;
                 }}
-                className={`absolute left-[28px] top-[28px] bg-white transition-all duration-200 ${
+                className={cn(
+                  "absolute left-[28px] top-[28px] bg-white transition-all duration-300 shadow-2xl",
                   isActivePage
-                    ? 'shadow-xl ring-2 ring-blue-400 ring-offset-2'
-                    : 'cursor-pointer shadow-md opacity-70 hover:opacity-90 hover:shadow-lg'
-                }`}
+                    ? "ring-2 ring-pink-500/40 ring-offset-4 dark:ring-offset-[#0f0a15]"
+                    : "cursor-pointer opacity-60 grayscale-[0.5] hover:opacity-100 hover:grayscale-0"
+                )}
                 style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
                 onClick={() => {
                   setSelectedIds([]);
@@ -1498,13 +1513,14 @@ export function PdfA4Canvas({
                       enableResizing={!el.locked}
                       cancel="[data-delete-element], [data-text-edit], [data-image-upload], [data-element-settings]"
                       dragHandleClassName="pdf-element-drag-handle"
-                      className={`relative z-10 flex flex-col overflow-hidden border bg-slate-50 transition-shadow ${
+                      className={cn(
+                        "relative z-10 flex flex-col overflow-hidden border bg-white/50 shadow-sm transition-all duration-300 backdrop-blur-xs",
                         isFlashing
-                          ? 'border-amber-400 ring-4 ring-amber-400 ring-offset-1 animate-pulse'
+                          ? "border-amber-400 ring-4 ring-amber-400 ring-offset-1 animate-pulse"
                           : isSelected
-                          ? 'border-blue-500 ring-1 ring-blue-500'
-                          : 'border-slate-300'
-                      }`}
+                          ? "border-pink-500/60 ring-1 ring-pink-500/40 shadow-lg shadow-pink-500/5"
+                          : "border-slate-200/80 hover:border-slate-300"
+                      )}
                       style={{
                         opacity: el.style?.opacity ?? 1,
                         transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
@@ -1525,7 +1541,7 @@ export function PdfA4Canvas({
                       />
                       <div
                         data-drag-handle
-                        className="pdf-element-drag-handle relative z-10 flex h-5 shrink-0 cursor-grab items-center justify-center border-b border-slate-200 bg-slate-100/80 active:cursor-grabbing"
+                        className="pdf-element-drag-handle relative z-10 flex h-5 shrink-0 cursor-grab items-center justify-center border-b border-slate-200/60 bg-stone-100/80 active:cursor-grabbing dark:bg-white/5"
                         onClick={(e) => e.stopPropagation()}
                         role="presentation"
                       >
@@ -1561,8 +1577,8 @@ export function PdfA4Canvas({
               {isActivePage && resolvedForPage.length === 0 ? (
                 <div className="pointer-events-none absolute inset-0 z-1 flex items-center justify-center p-8">
                   <div className="pointer-events-auto max-w-xs rounded-xl border border-dashed border-slate-300 bg-white/80 p-5 text-center shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
-                    <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-full bg-blue-50 text-blue-500 dark:bg-blue-950/50 dark:text-blue-400">
-                      <GripVertical className="size-5" />
+                    <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-pink-500/10 text-pink-500 ring-1 ring-pink-500/20 dark:bg-pink-500/20 dark:text-pink-400">
+                      <GripVertical className="size-6" />
                     </div>
                     <div className="mb-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
                       {t('pdfReportDesigner.canvasEmptyHeadline', { defaultValue: 'Drop your first element here' })}
@@ -1609,24 +1625,37 @@ export function PdfA4Canvas({
           if (!open) setDeleteDialogElementId(null);
         }}
       >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.delete.confirmTitle', { ns: 'common' })}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('common.delete.confirmMessage', { ns: 'common' })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel', { ns: 'common' })}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (deleteDialogElementId) removeElement(deleteDialogElementId);
-                setDeleteDialogElementId(null);
-              }}
-            >
-              {t('common.delete.action', { ns: 'common' })}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent className="max-w-[400px] border-slate-300/80 bg-stone-50/95 p-0 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/90 dark:ring-0">
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+          
+          <div className="relative z-10 p-6">
+            <AlertDialogHeader>
+              <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
+                <AlertTriangle className="size-6" />
+              </div>
+              <AlertDialogTitle className="text-center text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                {t('common.delete.confirmTitle', { ns: 'common' })}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-center text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                {t('common.delete.confirmMessage', { ns: 'common' })}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            
+            <AlertDialogFooter className="mt-8 flex-col gap-3 sm:flex-col sm:justify-center sm:space-x-0">
+              <AlertDialogAction
+                onClick={() => {
+                  if (deleteDialogElementId) removeElement(deleteDialogElementId);
+                  setDeleteDialogElementId(null);
+                }}
+                className="h-10 w-full bg-linear-to-r from-rose-600 to-rose-700 font-bold text-white shadow-lg shadow-rose-500/20 ring-1 ring-rose-500/30 transition-all duration-300 hover:scale-[1.02] hover:from-rose-500 hover:to-rose-600 active:scale-[0.98]"
+              >
+                {t('common.delete.action', { ns: 'common' })}
+              </AlertDialogAction>
+              <AlertDialogCancel className="h-10 w-full border-slate-200/60 bg-white/50 font-bold text-slate-600 transition-all duration-300 hover:bg-white hover:text-slate-900 dark:border-white/5 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white">
+                {t('common.cancel', { ns: 'common' })}
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </div>

@@ -234,7 +234,7 @@ export function UserDiscountLimitManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('create', { defaultValue: t('common.create') })}
@@ -292,69 +292,69 @@ export function UserDiscountLimitManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <UserDiscountLimitTable
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={items}
-            rowKey={(r) => r.id}
-            renderCell={(row, key) => {
-              const val = row[key];
-              if (val == null && val !== 0) return '-';
-              if (key === 'createdDate' || key === 'updatedDate') {
-                return new Date(String(val)).toLocaleDateString(i18n.language);
-              }
-              if (key === 'maxDiscount1' || key === 'maxDiscount2' || key === 'maxDiscount3') {
-                return val != null ? `${Number(val).toFixed(2)}%` : '-';
-              }
-              return String(val);
-            }}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={(k) => {
-              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-              else {
-                setSortBy(k);
-                setSortDirection('asc');
-              }
-            }}
-            renderSortIcon={(k) => {
-              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading}
-            loadingText={t('common.loading', { ns: 'common' })}
-            errorText={t('deleteError')}
-            emptyText={t('noData')}
-            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
-            showActionsColumn
-            actionsHeaderLabel={t('common.actions', { ns: 'common' })}
-            onEdit={handleEdit}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous', { ns: 'common' })}
-            nextLabel={t('common.next', { ns: 'common' })}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+            <UserDiscountLimitTable
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={items}
+              rowKey={(r) => r.id}
+              renderCell={(row, key) => {
+                const val = row[key];
+                if (val == null && val !== 0) return '-';
+                if (key === 'createdDate' || key === 'updatedDate') {
+                  return new Date(String(val)).toLocaleDateString(i18n.language);
+                }
+                if (key === 'maxDiscount1' || key === 'maxDiscount2' || key === 'maxDiscount3') {
+                  return val != null ? `${Number(val).toFixed(2)}%` : '-';
+                }
+                return String(val);
+              }}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={(k) => {
+                if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+                else {
+                  setSortBy(k);
+                  setSortDirection('asc');
+                }
+              }}
+              renderSortIcon={(k) => {
+                if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+                );
+              }}
+              isLoading={isLoading}
+              loadingText={t('common.loading', { ns: 'common' })}
+              errorText={t('deleteError')}
+              emptyText={t('noData')}
+              minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+              showActionsColumn
+              actionsHeaderLabel={t('common.actions', { ns: 'common' })}
+              onEdit={handleEdit}
+              rowClassName="group"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('common.previous', { ns: 'common' })}
+              nextLabel={t('common.next', { ns: 'common' })}
+              paginationInfoText={t('common.table.showing', {
+                from: startRow,
+                to: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
           </div>
         </CardContent>
       </Card>

@@ -65,16 +65,7 @@ export function ReportsListPage(): ReactElement {
       : status === 'archived'
         ? t('common.reportBuilder.lifecycle.archive')
         : t('common.reportBuilder.lifecycle.draft');
-  const getAudienceLabel = (audience?: string): string | null =>
-    audience ? t(`common.reportBuilder.audiences.${audience}`) : null;
-  const getRefreshCadenceLabel = (cadence?: string): string | null =>
-    cadence ? t(`common.reportBuilder.refreshCadences.${cadence}`) : null;
-  const getSubscriptionFrequencyLabel = (frequency?: string): string | null =>
-    frequency ? t(`common.reportBuilder.subscriptionFrequencies.${frequency}`) : null;
-  const getAccessLevelLabel = (accessLevel?: string): string | null =>
-    accessLevel && accessLevel !== 'none'
-      ? t(`common.reportBuilder.accessLevels.${accessLevel}`)
-      : null;
+
 
   const handleDuplicate = async (reportId: number): Promise<void> => {
     try {
@@ -105,41 +96,61 @@ export function ReportsListPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">
-            {isMyReports ? t('common.reportBuilder.myReportsTitle') : t('common.reportBuilder.allReportsTitle')}
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            {isMyReports ? t('common.reportBuilder.myReportsDescription') : t('common.reportBuilder.allReportsDescription')}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {isMyReports && (
-            <Button variant="outline" onClick={() => navigate('/')}>
-              <LayoutGrid className="mr-2 size-4" />
-              {t('common.reportBuilder.openDashboardHome')}
-            </Button>
-          )}
-          {!isMyReports && (
-            <Button onClick={() => navigate('/reports/new')}>
-              <Plus className="mr-2 size-4" />
-              {t('common.reportBuilder.newReport')}
-            </Button>
-          )}
-        </div>
-      </div>
+    <div className="w-full px-6 pt-0 pb-8 space-y-6 animate-in fade-in duration-500">
+      <div className="flex flex-col gap-6 pt-6">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <LayoutGrid className="size-8 text-pink-600 dark:text-pink-400 relative z-10" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                {isMyReports ? t('common.reportBuilder.myReportsTitle') : t('common.reportBuilder.allReportsTitle')}
+              </h1>
+              <div className="flex items-center gap-2 mt-1">
+                <div />
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+                  {isMyReports ? t('common.reportBuilder.myReportsDescription') : t('common.reportBuilder.allReportsDescription')}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {isMyReports && (
+              <Button
+                variant="outline"
+                onClick={() => navigate('/')}
+                className="rounded-xl border-slate-200 dark:border-white/10 h-11 px-6 font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-sm"
+              >
+                <LayoutGrid className="mr-2 size-4 text-pink-500" />
+                {t('common.reportBuilder.openDashboardHome')}
+              </Button>
+            )}
+            {!isMyReports && (
+              <Button
+                onClick={() => navigate('/reports/new')}
+                className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white h-11 px-8 font-bold border-0 shadow-lg shadow-pink-500/20 transition-all hover:scale-105 active:scale-95
+                opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              >
+                <Plus className="mr-2 size-4" />
+                {t('common.reportBuilder.newReport')}
+              </Button>
+            )}
 
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Search className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2" />
-          <Input
-            placeholder={t('common.reportBuilder.searchReport')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 bg-white/50 dark:bg-white/[0.02] p-2 rounded-2xl border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-inner">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+            <Input
+              placeholder={t('common.reportBuilder.searchReport')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-11 h-12 bg-transparent border-0 focus-visible:ring-0 text-base font-medium placeholder:text-slate-400 placeholder:font-normal"
+            />
+          </div>
         </div>
       </div>
 
@@ -165,143 +176,146 @@ export function ReportsListPage(): ReactElement {
       )}
 
       {!loading && items.length > 0 && (
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-3">
           {items.map((r) => {
             const summary = getReportSummary(r.configJson);
             return (
-            <Card
-              key={r.id}
-              className="cursor-pointer transition-colors hover:bg-muted/50"
-              onClick={() => navigate(isMyReports ? `/reports/my/${r.id}` : `/reports/${r.id}`)}
-            >
-              <CardContent className="flex flex-row items-center justify-between gap-4 py-4">
-                <div>
-                  <p className="font-medium">{r.name}</p>
-                  <p className="text-muted-foreground text-sm">
-                    {r.connectionKey} / {r.dataSourceType} / {r.dataSourceName}
-                  </p>
-                  {(summary.owner || summary.lastReviewedAt) && (
-                    <p className="text-muted-foreground mt-1 text-xs">
-                      {summary.owner ? `${t('common.reportBuilder.owner').toLowerCase()}: ${summary.owner}` : ''}
-                      {summary.owner && summary.lastReviewedAt ? ' • ' : ''}
-                      {summary.lastReviewedAt ? `${t('common.reportBuilder.reviewed').toLowerCase()}: ${new Date(summary.lastReviewedAt).toLocaleDateString(i18n.language)}` : ''}
-                    </p>
-                  )}
-                  {summary.releaseNote && (
-                    <p className="text-muted-foreground mt-1 text-xs">{summary.releaseNote}</p>
-                  )}
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {summary.favorite && <Badge variant="default">{t('common.reportBuilder.favorite')}</Badge>}
-                    {summary.certified && <Badge variant="default">{t('common.reportBuilder.certified')}</Badge>}
-                    <Badge variant={summary.status === 'published' ? 'default' : summary.status === 'archived' ? 'destructive' : 'secondary'}>
-                      {getStatusLabel(summary.status)}
-                    </Badge>
-                    <Badge variant="outline">v{summary.version}</Badge>
-                    {summary.category && <Badge variant="outline">{summary.category}</Badge>}
-                    {summary.audience && <Badge variant="outline">{getAudienceLabel(summary.audience)}</Badge>}
-                    {r.accessLevel && r.accessLevel !== 'owner' && (
-                      <Badge variant="outline">{getAccessLevelLabel(r.accessLevel)}</Badge>
-                    )}
-                    {summary.refreshCadence && <Badge variant="outline">{getRefreshCadenceLabel(summary.refreshCadence)}</Badge>}
-                    {summary.subscriptionEnabled && summary.subscriptionFrequency && (
-                      <Badge variant="outline">{t('common.reportBuilder.subscriptionShort', { value: getSubscriptionFrequencyLabel(summary.subscriptionFrequency) })}</Badge>
-                    )}
-                    {summary.sharedWith.length > 0 && (
-                      <Badge variant="outline">{t('common.reportBuilder.sharedShort', { count: summary.sharedWith.length })}</Badge>
-                    )}
-                    <Badge variant="secondary">{t('common.reportBuilder.widgetCountBadge', { count: summary.widgetCount })}</Badge>
-                    {summary.chartTypes.slice(0, 3).map((chartType) => (
-                        <Badge key={chartType} variant="outline">
-                        {t(`common.reportBuilder.chartTypes.${chartType}`)}
-                      </Badge>
-                    ))}
-                    {summary.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="secondary">
-                        #{tag}
-                      </Badge>
-                    ))}
+              <Card
+                key={r.id}
+                className="group cursor-pointer transition-all hover:bg-white dark:hover:bg-white/5 border-slate-200 dark:border-white/10 hover:border-pink-500/30 dark:hover:border-pink-500/30 bg-white/80 dark:bg-white/[0.03] shadow-sm hover:shadow-md rounded-2xl overflow-hidden"
+                onClick={() => navigate(isMyReports ? `/reports/my/${r.id}` : `/reports/${r.id}`)}
+              >
+                <CardContent className="flex flex-row items-center justify-between gap-4 py-5 px-6">
+                  <div className="flex items-center gap-5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm group-hover:scale-105 transition-transform">
+                      <LayoutGrid className="size-6 text-slate-500 dark:text-slate-400 group-hover:text-pink-500 transition-colors" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-black text-slate-800 dark:text-white uppercase text-sm tracking-wide">{r.name}</p>
+                        {summary.certified && (
+                          <div className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm shadow-emerald-500/20">
+                            <Plus className="size-2.5 stroke-[4]" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mt-0.5">
+                        {r.connectionKey} <span className="mx-1 text-slate-300">/</span> {r.dataSourceType} <span className="mx-1 text-slate-300">/</span> {r.dataSourceName}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <Badge variant="secondary" className="rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-100 dark:border-pink-500/20 font-bold px-2 py-0.5 text-[10px] uppercase">
+                          {getStatusLabel(summary.status)}
+                        </Badge>
+                        <Badge variant="outline" className="rounded-md border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                          v{summary.version}
+                        </Badge>
+                        {summary.category && (
+                          <Badge variant="outline" className="rounded-md border-indigo-100 dark:border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                            {summary.category}
+                          </Badge>
+                        )}
+                        {summary.sharedWith.length > 0 && (
+                          <Badge variant="outline" className="rounded-md border-orange-100 dark:border-orange-500/20 bg-orange-50/50 dark:bg-orange-500/5 text-orange-600 dark:text-orange-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                            {t('common.reportBuilder.sharedShort', { count: summary.sharedWith.length })}
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="rounded-md bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                          {t('common.reportBuilder.widgetCountBadge', { count: summary.widgetCount })}
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <p className="text-muted-foreground text-xs">
-                    {summary.publishedAt
-                      ? new Date(summary.publishedAt).toLocaleDateString(i18n.language)
-                      : r.updatedAt
-                        ? new Date(r.updatedAt).toLocaleDateString(i18n.language)
-                        : ''}
-                  </p>
-                  {!isMyReports && r.canManage !== false && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      disabled={pendingId === r.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/reports/${r.id}/edit`);
-                      }}
-                    >
-                      <Pencil className="size-4" />
-                    </Button>
-                  )}
-                  {!isMyReports && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      disabled={pendingId === r.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void handleDuplicate(r.id);
-                      }}
-                    >
-                      {pendingId === r.id ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
-                    </Button>
-                  )}
-                  {isMyReports && (
-                    <>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToDashboard(r.id);
-                        }}
-                      >
-                        <Plus className="size-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate('/');
-                        }}
-                      >
-                        <ExternalLink className="size-4" />
-                      </Button>
-                    </>
-                  )}
-                  {!isMyReports && r.canManage !== false && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      disabled={pendingId === r.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void handleDelete(r.id);
-                      }}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )})}
+                  <div className="flex items-center gap-6">
+                    <div className="text-right hidden sm:block">
+
+                      <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-0.5 uppercase">
+                        {summary.publishedAt
+                          ? new Date(summary.publishedAt).toLocaleDateString(i18n.language)
+                          : r.updatedAt
+                            ? new Date(r.updatedAt).toLocaleDateString(i18n.language)
+                            : '-'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {!isMyReports && r.canManage !== false && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          disabled={pendingId === r.id}
+                          className="size-9 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/reports/${r.id}/edit`);
+                          }}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                      )}
+                      {!isMyReports && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          disabled={pendingId === r.id}
+                          className="size-9 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleDuplicate(r.id);
+                          }}
+                        >
+                          {pendingId === r.id ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
+                        </Button>
+                      )}
+                      {isMyReports && (
+                        <>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-9 rounded-xl hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:text-pink-600 dark:hover:text-pink-400"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddToDashboard(r.id);
+                            }}
+                          >
+                            <Plus className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-9 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-600 dark:hover:text-slate-400"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate('/');
+                            }}
+                          >
+                            <ExternalLink className="size-4" />
+                          </Button>
+                        </>
+                      )}
+                      {!isMyReports && r.canManage !== false && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          disabled={pendingId === r.id}
+                          className="size-9 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 text-red-500/70"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleDelete(r.id);
+                          }}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       )}
     </div>

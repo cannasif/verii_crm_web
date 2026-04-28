@@ -33,12 +33,12 @@ export function MailSettingsPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
           {t('mailSettings.PageTitle')}
         </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <p className="text-muted-foreground mt-1 text-sm font-medium transition-colors">
           {t('mailSettings.PageDescription')}
         </p>
       </div>

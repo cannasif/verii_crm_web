@@ -263,7 +263,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('approvalFlow.addButton')}
@@ -308,11 +308,10 @@ export function ApprovalFlowManagementPage(): ReactElement {
                       variant="ghost"
                       size="sm"
                       onClick={() => setActiveFilter(filter)}
-                      className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${
-                        activeFilter === filter
-                          ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
-                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                      }`}
+                      className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
+                        ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                        }`}
                     >
                       {filter === 'all'
                         ? t('common.all')
@@ -342,80 +341,79 @@ export function ApprovalFlowManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <ApprovalFlowTable
-            onEdit={handleEdit}
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={currentPageRows}
-            rowKey={(r) => r.id}
-            renderCell={(row, key) => {
-              const val = row[key];
-              if (key === 'documentType') return getDocumentTypeLabel(t, row.documentType);
-              if (key === 'isActive') {
-                return (
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      row.isActive
+            <ApprovalFlowTable
+              onEdit={handleEdit}
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={currentPageRows}
+              rowKey={(r) => r.id}
+              renderCell={(row, key) => {
+                const val = row[key];
+                if (key === 'documentType') return getDocumentTypeLabel(t, row.documentType);
+                if (key === 'isActive') {
+                  return (
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${row.isActive
                         ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400'
                         : 'bg-slate-100 text-slate-600 dark:bg-slate-500/20 dark:text-slate-400'
-                    }`}
-                  >
-                    {row.isActive ? t('approvalFlow.active') : t('approvalFlow.inactive')}
-                  </span>
+                        }`}
+                    >
+                      {row.isActive ? t('approvalFlow.active') : t('approvalFlow.inactive')}
+                    </span>
+                  );
+                }
+                if (val == null && val !== 0) return '-';
+                if (key === 'id') return `#${val}`;
+                if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
+                if (key === 'createdByFullUser') return row.createdByFullUser || '-';
+                return String(val);
+              }}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={(k) => {
+                if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+                else {
+                  setSortBy(k);
+                  setSortDirection('asc');
+                }
+              }}
+              renderSortIcon={(k) => {
+                if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
                 );
-              }
-              if (val == null && val !== 0) return '-';
-              if (key === 'id') return `#${val}`;
-              if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
-              if (key === 'createdByFullUser') return row.createdByFullUser || '-';
-              return String(val);
-            }}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={(k) => {
-              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-              else {
-                setSortBy(k);
-                setSortDirection('asc');
-              }
-            }}
-            renderSortIcon={(k) => {
-              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading}
-            loadingText={t('common.loading')}
-            errorText={t('approvalFlow.error', { defaultValue: 'Hata oluştu' })}
-            emptyText={t('approvalFlow.noData')}
-            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
-            showActionsColumn
-            actionsHeaderLabel={t('approvalFlow.table.actions')}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+              }}
+              isLoading={isLoading}
+              loadingText={t('common.loading')}
+              errorText={t('approvalFlow.error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('approvalFlow.noData')}
+              minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+              showActionsColumn
+              actionsHeaderLabel={t('approvalFlow.table.actions')}
+              rowClassName="group"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('common.previous')}
+              nextLabel={t('common.next')}
+              paginationInfoText={t('common.table.showing', {
+                from: startRow,
+                to: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
           </div>
         </CardContent>
       </Card>

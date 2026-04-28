@@ -1,6 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { WandSparkles, X } from 'lucide-react';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -170,38 +172,59 @@ export function CategoryRuleDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[680px] p-0 overflow-hidden border-0 shadow-2xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl ring-1 ring-zinc-200 dark:ring-zinc-800">
-        <DialogHeader className="p-6 pb-3">
-          <DialogTitle className="text-2xl font-bold tracking-tight">
-            {initialData ? t('categoryDefinitions.editRuleTitle') : t('categoryDefinitions.createRuleTitle')}
-          </DialogTitle>
-          <DialogDescription className="text-base">
-            {initialData
-              ? t('categoryDefinitions.editRuleDescription', { category: categoryName ?? '-' })
-              : t('categoryDefinitions.createRuleDescription', { category: categoryName ?? '-' })}
-          </DialogDescription>
+      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] !max-w-[840px] max-h-[calc(100dvh-1.5rem)] p-0 overflow-hidden border-0 shadow-2xl bg-white dark:bg-[#180F22] rounded-3xl ring-1 ring-slate-200 dark:ring-white/10 flex flex-col">
+        <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
+          <X size={20} strokeWidth={2.5} />
+        </DialogPrimitive.Close>
+        <DialogHeader className="p-6 pb-4 border-b border-slate-100 dark:border-white/5 text-left shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <WandSparkles className="h-6 w-6 text-pink-600 dark:text-pink-400 relative z-10" />
+            </div>
+            <div>
+              <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {initialData ? t('categoryDefinitions.editRuleTitle') : t('categoryDefinitions.createRuleTitle')}
+              </DialogTitle>
+              <DialogDescription className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+                {initialData
+                  ? t('categoryDefinitions.editRuleDescription', { category: categoryName ?? '-' })
+                  : t('categoryDefinitions.createRuleDescription', { category: categoryName ?? '-' })}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
-        <div className="space-y-4 px-6 pb-6">
-          <div className="grid gap-4 md:grid-cols-2">
+        <div className="flex-1 overflow-y-auto space-y-5 px-6 py-6">
+          <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('categoryDefinitions.form.ruleName')}{requiredMark}</label>
-              <Input required aria-required="true" value={form.ruleName} onChange={(e) => setForm((p) => ({ ...p, ruleName: e.target.value }))} />
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleName')}{requiredMark}</label>
+              <Input
+                required
+                aria-required="true"
+                value={form.ruleName}
+                onChange={(e) => setForm((p) => ({ ...p, ruleName: e.target.value }))}
+                className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+              />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('categoryDefinitions.form.ruleCode')}</label>
-              <Input value={form.ruleCode ?? ''} onChange={(e) => setForm((p) => ({ ...p, ruleCode: e.target.value.toUpperCase() }))} />
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleCode')}</label>
+              <Input
+                value={form.ruleCode ?? ''}
+                onChange={(e) => setForm((p) => ({ ...p, ruleCode: e.target.value.toUpperCase() }))}
+                className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono uppercase tracking-wider font-semibold"
+              />
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('categoryDefinitions.form.stockAttribute')}{requiredMark}</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.stockAttribute')}{requiredMark}</label>
               <Select value={String(form.stockAttributeType)} onValueChange={(value) => setForm((p) => ({ ...p, stockAttributeType: Number(value) }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium"><SelectValue /></SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1627] shadow-xl">
                   {STOCK_ATTRIBUTE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={String(option.value)}>
+                    <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
                       {t(`categoryDefinitions.ruleAttributes.${option.labelKey}`)}
                     </SelectItem>
                   ))}
@@ -209,12 +232,12 @@ export function CategoryRuleDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('categoryDefinitions.form.operator')}{requiredMark}</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.operator')}{requiredMark}</label>
               <Select value={String(form.operatorType)} onValueChange={(value) => setForm((p) => ({ ...p, operatorType: Number(value) }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium"><SelectValue /></SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1627] shadow-xl">
                   {OPERATOR_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={String(option.value)}>
+                    <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
                       {t(`categoryDefinitions.ruleOperators.${option.labelKey}`)}
                     </SelectItem>
                   ))}
@@ -223,9 +246,9 @@ export function CategoryRuleDialog({
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-[1fr_120px]">
+          <div className="grid gap-5 md:grid-cols-[1fr_120px]">
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('categoryDefinitions.form.ruleValue')}{requiredMark}</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleValue')}{requiredMark}</label>
               {supportsSuggestedValues ? (
                 <div className="space-y-3">
                   <Combobox
@@ -237,7 +260,6 @@ export function CategoryRuleDialog({
                         setValueSearch('');
                         return;
                       }
-
                       setForm((p) => ({ ...p, value }));
                     }}
                     placeholder={t('categoryDefinitions.form.ruleValueDropdownPlaceholder')}
@@ -248,18 +270,18 @@ export function CategoryRuleDialog({
                     disabled={valueOptionsQuery.isLoading}
                   />
 
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
                     {isListOperator
                       ? t('categoryDefinitions.form.ruleValueInListHelp')
                       : t('categoryDefinitions.form.ruleValueDropdownHelp')}
                   </p>
 
-                  <div className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/5">
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] p-4 shadow-sm">
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         {t('categoryDefinitions.form.ruleValueTopMatchesTitle')}
                       </p>
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
                         {t('categoryDefinitions.form.ruleValueTopMatchesSubtitle')}
                       </span>
                     </div>
@@ -268,20 +290,19 @@ export function CategoryRuleDialog({
                         <Badge
                           key={`${form.stockAttributeType}-${option.value}`}
                           variant="outline"
-                          className="cursor-pointer rounded-full px-3 py-1 text-xs"
+                          className="cursor-pointer rounded-full px-3 py-1 text-xs border-pink-200 dark:border-pink-500/30 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-colors font-semibold"
                           onClick={() => {
                             if (isListOperator) {
                               addListValue(option.value);
                               return;
                             }
-
                             setForm((prev) => ({ ...prev, value: option.value }));
                           }}
                         >
                           {option.value} ({option.usageCount})
                         </Badge>
                       )) : (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
                           {t('categoryDefinitions.form.ruleValueTopMatchesEmpty')}
                         </span>
                       )}
@@ -289,18 +310,18 @@ export function CategoryRuleDialog({
                   </div>
 
                   {isListOperator ? (
-                    <div className="flex flex-wrap gap-2 rounded-lg border border-dashed border-slate-300 p-3 dark:border-white/10">
+                    <div className="flex flex-wrap gap-2 rounded-2xl border border-dashed border-pink-200 dark:border-pink-500/30 bg-pink-50/50 dark:bg-pink-500/5 p-4">
                       {selectedListValues.length > 0 ? selectedListValues.map((value) => (
                         <Badge
                           key={value}
                           variant="secondary"
-                          className="cursor-pointer"
+                          className="cursor-pointer rounded-full font-semibold hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-500/20 dark:hover:text-red-400 transition-colors"
                           onClick={() => removeListValue(value)}
                         >
                           {value} ×
                         </Badge>
                       )) : (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs font-medium text-pink-500 dark:text-pink-400">
                           {t('categoryDefinitions.form.ruleValueInListEmpty')}
                         </span>
                       )}
@@ -310,6 +331,7 @@ export function CategoryRuleDialog({
                       value={form.value}
                       onChange={(e) => setForm((p) => ({ ...p, value: e.target.value }))}
                       placeholder={t('categoryDefinitions.form.ruleValueDropdownPlaceholder')}
+                      className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
                     />
                   )}
                 </div>
@@ -320,33 +342,43 @@ export function CategoryRuleDialog({
                     value={form.value}
                     onChange={(e) => setForm((p) => ({ ...p, value: e.target.value }))}
                     placeholder={t('categoryDefinitions.form.ruleValuePlaceholder')}
+                    className="rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium resize-none"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
                     {t('categoryDefinitions.form.ruleValueManualHelp')}
                   </p>
                 </div>
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('categoryDefinitions.form.priority')}</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.priority')}</label>
               <Input
                 type="number"
                 value={form.priority}
                 onChange={(e) => setForm((p) => ({ ...p, priority: Number(e.target.value) }))}
+                className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
               />
             </div>
           </div>
         </div>
 
-        <div className="px-6 pb-1 text-xs text-muted-foreground">
-          <span className="text-destructive">*</span> {t('common.required')}
-        </div>
-
-        <DialogFooter className="border-t bg-slate-50/80 px-6 py-4 dark:border-white/10 dark:bg-white/5">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
+        <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-6 py-4 flex-col sm:flex-row gap-3 shrink-0">
+          <div className="flex-1 flex items-center text-xs font-semibold text-slate-400">
+            <span className="text-pink-500 mr-1">*</span> {t('common.required')}
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+            className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 font-bold px-6 h-11"
+          >
             {t('common.cancel')}
           </Button>
-          <Button onClick={() => void handleSubmit()} disabled={isDisabled}>
+          <Button
+            onClick={() => void handleSubmit()}
+            disabled={isDisabled}
+            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11"
+          >
             {isLoading ? t('common.saving') : initialData ? t('common.update') : t('categoryDefinitions.actions.createRule')}
           </Button>
         </DialogFooter>

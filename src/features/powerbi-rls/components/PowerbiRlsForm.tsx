@@ -16,7 +16,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import {
@@ -31,8 +30,8 @@ import { powerbiRlsFormSchema, type PowerbiRlsFormSchema } from '../types/powerb
 import type { PowerBIReportRoleMapping } from '../types/powerbiRls.types';
 import { useUserAuthorityList } from '../hooks/usePowerbiRls';
 import { usePowerbiReportDefinitionList } from '@/features/powerbi/hooks/usePowerbiReportDefinition';
-import { Loader2 } from 'lucide-react';
-import { isZodFieldRequired } from '@/lib/zod-required';
+import { Loader2, ShieldAlert, X } from 'lucide-react';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 
 const REPORT_LIST_PARAMS = { pageNumber: 1, pageSize: 500, sortBy: 'Id', sortDirection: 'desc' as const };
 const ROLE_LIST_PARAMS = { pageNumber: 1, pageSize: 500 };
@@ -86,101 +85,125 @@ export function PowerbiRlsForm({
     }
   }, [initial, form, open]);
 
+  const selectTriggerClass = "w-full h-10 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 transition-all font-medium";
+  const inputClass = "w-full h-10 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 transition-all font-medium";
+  const labelClass = "text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>
-            {initial ? t('powerbiRls.edit') : t('powerbiRls.new')}
-          </DialogTitle>
-          <DialogDescription>
-            {t('powerbiRls.description')}
-          </DialogDescription>
+      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] !max-w-[900px] p-0 border-0 shadow-2xl bg-white dark:bg-[#180F22] rounded-3xl ring-1 ring-slate-200 dark:ring-white/10 flex flex-col overflow-hidden">
+        <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
+          <X size={20} strokeWidth={2.5} />
+        </DialogPrimitive.Close>
+
+        <DialogHeader className="p-6 pb-4 border-b border-slate-100 dark:border-white/5 text-left">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ShieldAlert className="h-6 w-6 text-pink-600 dark:text-pink-400 relative z-10" />
+            </div>
+            <div>
+              <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {initial ? t('powerbiRls.edit') : t('powerbiRls.new')}
+              </DialogTitle>
+              <DialogDescription className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+                {t('powerbiRls.description')}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="powerBIReportDefinitionId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={isZodFieldRequired(powerbiRlsFormSchema, 'powerBIReportDefinitionId')}>
-                    {t('powerbiRls.report')}
-                  </FormLabel>
-                  <Select
-                    onValueChange={(v) => field.onChange(Number(v))}
-                    value={field.value ? String(field.value) : ''}
-                  >
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="space-y-4 px-6 pt-2 pb-5">
+              <FormField
+                control={form.control}
+                name="powerBIReportDefinitionId"
+                render={({ field }) => (
+                  <FormItem>
+                    <label className={labelClass}>{t('powerbiRls.report')}</label>
+                    <Select
+                      onValueChange={(v) => field.onChange(Number(v))}
+                      value={field.value ? String(field.value) : ''}
+                    >
+                      <FormControl>
+                        <SelectTrigger className={selectTriggerClass}>
+                          <SelectValue placeholder={t('powerbiRls.report')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="w-[var(--radix-select-trigger-width)] rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
+                        {reports.map((r) => (
+                          <SelectItem key={r.id} value={String(r.id)} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
+                            {r.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="roleId"
+                render={({ field }) => (
+                  <FormItem>
+                    <label className={labelClass}>{t('powerbiRls.role')}</label>
+                    <Select
+                      onValueChange={(v) => field.onChange(Number(v))}
+                      value={field.value ? String(field.value) : ''}
+                    >
+                      <FormControl>
+                        <SelectTrigger className={selectTriggerClass}>
+                          <SelectValue placeholder={t('powerbiRls.role')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="w-[var(--radix-select-trigger-width)] rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
+                        {roles.map((r) => (
+                          <SelectItem key={r.id} value={String(r.id)} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
+                            {r.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="rlsRoles"
+                render={({ field }) => (
+                  <FormItem>
+                    <label className={labelClass}>{t('powerbiRls.rlsRoles')}</label>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('powerbiRls.report')} />
-                      </SelectTrigger>
+                      <Input
+                        placeholder={t('powerbiRls.rlsRolesPlaceholder')}
+                        {...field}
+                        className={inputClass}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      {reports.map((r) => (
-                        <SelectItem key={r.id} value={String(r.id)}>
-                          {r.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="roleId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={isZodFieldRequired(powerbiRlsFormSchema, 'roleId')}>
-                    {t('powerbiRls.role')}
-                  </FormLabel>
-                  <Select
-                    onValueChange={(v) => field.onChange(Number(v))}
-                    value={field.value ? String(field.value) : ''}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('powerbiRls.role')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {roles.map((r) => (
-                        <SelectItem key={r.id} value={String(r.id)}>
-                          {r.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="rlsRoles"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={isZodFieldRequired(powerbiRlsFormSchema, 'rlsRoles')}>
-                    {t('powerbiRls.rlsRoles')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('powerbiRls.rlsRolesPlaceholder')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-6 py-4 flex-col sm:flex-row gap-3">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => onOpenChange(false)}
+                className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 font-bold px-6 h-11"
+              >
                 {t('powerbiRls.cancel')}
               </Button>
-              <Button type="submit" disabled={isSubmitting || !isFormValid}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button 
+                type="submit" 
+                disabled={isSubmitting || !isFormValid}
+                className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 px-8 h-11 gap-2"
+              >
+                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t('powerbiRls.save')}
               </Button>
             </DialogFooter>

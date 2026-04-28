@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 interface PdfLayersPanelProps {
   onNavigateToPage: (page: number) => void;
@@ -173,8 +174,10 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
 
   return (
     <>
-      <div className="flex min-h-0 w-52 shrink-0 flex-col border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
-      <div className="flex items-center justify-between border-b border-slate-200 px-3 py-2.5 dark:border-slate-700">
+    <div className="relative flex min-h-0 w-52 shrink-0 flex-col border-l border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="relative z-10 flex flex-col h-full">
+      <div className="flex items-center justify-between border-b border-slate-300/80 px-3 py-2.5 dark:border-white/5">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           {t('reportDesigner.layers.title')}
         </span>
@@ -203,11 +206,12 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
           return (
             <div
               key={id}
-              className={`group flex items-center gap-1 rounded-md border px-2 py-1.5 text-xs transition-colors ${
+              className={cn(
+                "group flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-all duration-300",
                 isSelected
-                  ? 'border-blue-400 bg-blue-50 dark:border-blue-600 dark:bg-blue-950/30'
-                  : 'border-transparent hover:border-slate-200 hover:bg-slate-100 dark:hover:border-slate-700 dark:hover:bg-slate-800'
-              }`}
+                  ? "border-pink-500/50 bg-white shadow-md dark:border-pink-500/30 dark:bg-white/10"
+                  : "border-transparent hover:border-slate-300/60 hover:bg-white/50 dark:hover:border-white/10 dark:hover:bg-white/5"
+              )}
             >
               <div className="flex flex-col">
                 <button
@@ -236,11 +240,12 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
                 title={`${getLabel(el)}`}
               >
                 <span
-                  className={`flex size-4 shrink-0 items-center justify-center rounded ${
+                  className={cn(
+                    "flex size-4 shrink-0 items-center justify-center rounded transition-colors",
                     isSelected
-                      ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300'
-                      : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                  }`}
+                      ? "bg-linear-to-br from-pink-500 to-orange-500 text-white shadow-lg shadow-pink-500/20"
+                      : "bg-slate-200/50 text-slate-500 dark:bg-white/10 dark:text-slate-400"
+                  )}
                 >
                   <PdfElementTypeIcon type={getPdfElementTypeKey(el)} className="size-3" />
                 </span>
@@ -307,7 +312,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
         {selectedElement && !isPdfTableElement(selectedElement) && (
           <div
             ref={settingsPanelRef}
-            className="mt-2 rounded-md border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900/40"
+            className="mt-2 rounded-xl border border-slate-300/80 bg-white/50 p-2 shadow-sm dark:border-white/10 dark:bg-white/5"
           >
             <div className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
               {t('reportDesigner.actions.settings')}
@@ -435,7 +440,8 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
         )}
       </div>
       </div>
-      <AlertDialog
+    </div>
+    <AlertDialog
         open={deleteDialogElementId != null}
         onOpenChange={(open) => {
           if (!open) setDeleteDialogElementId(null);

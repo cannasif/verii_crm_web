@@ -83,6 +83,7 @@ export function GroupPermissionsPanel({
               </div>
             </div>
           )}
+          {/*tablo bölümü*/}
           <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
             <p className="text-sm font-medium mb-2 inline-flex items-center">
               {t('permissionGroups.form.permissions')}

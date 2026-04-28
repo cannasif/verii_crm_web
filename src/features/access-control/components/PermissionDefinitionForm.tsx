@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,7 +32,8 @@ import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayLabel } from '../utils/permission-config';
 import { Badge } from '@/components/ui/badge';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { KeyRound, Sparkles } from 'lucide-react';
+import { KeyRound, X, FileText, Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface PermissionDefinitionFormProps {
   open: boolean;
@@ -41,6 +43,19 @@ interface PermissionDefinitionFormProps {
   isLoading?: boolean;
   usedCodes?: string[];
 }
+
+const INPUT_STYLE = `
+  h-11 rounded-lg
+  bg-slate-50 dark:bg-white/5
+  border border-slate-200 dark:border-white/10
+  text-slate-900 dark:text-white text-sm
+  placeholder:text-slate-400 dark:placeholder:text-slate-500
+  focus-visible:bg-white dark:focus-visible:bg-white/5
+  focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  transition-all duration-200 w-full
+`;
+
+const LABEL_STYLE = 'text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2';
 
 export function PermissionDefinitionForm({
   open,
@@ -107,132 +122,160 @@ export function PermissionDefinitionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95%] max-w-2xl overflow-visible border border-slate-100 bg-white p-0 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#130822] dark:text-white sm:w-full sm:rounded-2xl">
-        <DialogHeader className="sticky top-0 z-10 border-b border-slate-100 bg-linear-to-r from-slate-50 via-white to-cyan-50/50 px-6 py-5 backdrop-blur-sm dark:border-white/5 dark:from-[#1a1025] dark:via-[#130822] dark:to-cyan-950/30">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-              <Sparkles className="size-4" />
-              {item ? t('permissionDefinitions.form.editTitle') : t('permissionDefinitions.form.addTitle')}
+      <DialogContent className="max-h-[92dvh] w-[98vw] !max-w-5xl overflow-hidden flex flex-col border-none p-0 text-slate-900 shadow-2xl dark:bg-[#130822] dark:text-white sm:w-[90vw] rounded-[2.5rem] [&>button:last-of-type]:hidden">
+        <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
+          <X size={20} strokeWidth={2.5} />
+        </DialogPrimitive.Close>
+
+        <DialogHeader className="p-4 pb-4 shrink-0">
+          <div className="flex items-center gap-5">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-linear-to-br from-pink-500 to-orange-500 shadow-lg shadow-pink-500/20">
+              <KeyRound size={32} className="text-white" strokeWidth={2.5} />
             </div>
-            <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              {item
-                ? t('permissionDefinitions.form.editTitle')
-                : t('permissionDefinitions.form.addTitle')}
-            </DialogTitle>
-            <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
-              {item
-                ? t('permissionDefinitions.form.editDescription')
-                : t('permissionDefinitions.form.addDescription')}
-            </DialogDescription>
+            <div className="space-y-1">
+              <DialogTitle className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                {item
+                  ? t('permissionDefinitions.form.editTitle')
+                  : t('permissionDefinitions.form.addTitle')}
+              </DialogTitle>
+              <DialogDescription className="flex text-slate-500 dark:text-slate-400 text-sm font-medium">
+                {item
+                  ? t('permissionDefinitions.form.editDescription')
+                  : t('permissionDefinitions.form.addDescription')}
+              </DialogDescription>
+            </div>
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8 pt-0 sm:pt-0 custom-scrollbar">
           <Form {...form}>
             <form id="permission-definition-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-              <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="inline-flex items-center" required={isZodFieldRequired(createPermissionDefinitionSchema, 'code')}>
-                      {t('permissionDefinitions.form.code')}
-                      <FieldHelpTooltip text={t('help.permissionDefinition.code')} />
-                    </FormLabel>
-                    <FormControl>
-                      <Combobox
-                        options={permissionCodeOptions}
-                        value={field.value}
-                        modal
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          const title = getPermissionDisplayLabel(value, (key, fallback) => t(key, fallback));
-                          if (!form.getValues('name') && title) {
-                            form.setValue('name', title, { shouldDirty: true });
-                          }
-                        }}
-                        placeholder={t('permissionDefinitions.form.codePlaceholder')}
-                        searchPlaceholder={t('permissionDefinitions.form.codeSearchPlaceholder')}
-                        emptyText={t('permissionDefinitions.form.codeEmpty')}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    {field.value ? (
-                      <div className="pt-3">
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
-                          {t('permissionDefinitions.form.affectedRoutes'
-                          )}
+              <div className="space-y-6 pt-4 border-t border-dashed border-slate-200 dark:border-white/10">
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <KeyRound size={16} className="text-pink-500" />
+                        {t('permissionDefinitions.form.code')}
+                        <FieldHelpTooltip text={t('help.permissionDefinition.code')} />
+                        {isZodFieldRequired(createPermissionDefinitionSchema, 'code') && <span className="text-destructive ml-0.5">*</span>}
+                      </FormLabel>
+                      <FormControl>
+                        <Combobox
+                          options={permissionCodeOptions}
+                          value={field.value}
+                          modal
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            const title = getPermissionDisplayLabel(value, (key, fallback) => t(key, fallback));
+                            if (!form.getValues('name') && title) {
+                              form.setValue('name', title, { shouldDirty: true });
+                            }
+                          }}
+                          placeholder={t('permissionDefinitions.form.codePlaceholder')}
+                          searchPlaceholder={t('permissionDefinitions.form.codeSearchPlaceholder')}
+                          emptyText={t('permissionDefinitions.form.codeEmpty')}
+                          className={cn(INPUT_STYLE, "justify-start px-3 h-11 font-medium")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      {field.value ? (
+                        <div className="mt-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/5 p-4">
+                          <div className="flex items-center gap-2 mb-2 text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            <Info size={14} className="text-pink-500" />
+                            {t('permissionDefinitions.form.affectedRoutes')}
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {getRoutesForPermissionCode(field.value).length === 0 ? (
+                              <span className="text-xs text-slate-400 font-medium">
+                                {t('permissionDefinitions.form.affectedRoutesNone')}
+                              </span>
+                            ) : (
+                              getRoutesForPermissionCode(field.value).map((route) => (
+                                <Badge key={route} variant="secondary" className="font-mono text-[10px] bg-white dark:bg-white/10 border-slate-200 dark:border-white/10">
+                                  {route}
+                                </Badge>
+                              ))
+                            )}
+                          </div>
                         </div>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {getRoutesForPermissionCode(field.value).length === 0 ? (
-                            <span className="text-xs text-slate-400">
-                              {t('permissionDefinitions.form.affectedRoutesNone'
-                              )}
-                            </span>
-                          ) : (
-                            getRoutesForPermissionCode(field.value).map((route) => (
-                              <Badge key={route} variant="secondary" className="font-mono text-xs">
-                                {route}
-                              </Badge>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    ) : null}
-                  </FormItem>
-                )}
-              />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="inline-flex items-center" required={isZodFieldRequired(createPermissionDefinitionSchema, 'name')}>
-                      {t('permissionDefinitions.form.name')}
-                      <FieldHelpTooltip text={t('help.permissionDefinition.name')} />
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder={t('permissionDefinitions.form.namePlaceholder')} maxLength={150} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="inline-flex items-center">
-                      {t('permissionDefinitions.form.description')}
-                      <FieldHelpTooltip text={t('help.permissionDefinition.description')} />
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionDefinitions.form.descriptionPlaceholder')} maxLength={500} className="min-h-[80px]" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      ) : null}
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid gap-6 sm:grid-cols-1">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}>
+                          <FileText size={16} className="text-pink-500" />
+                          {t('permissionDefinitions.form.name')}
+                          <FieldHelpTooltip text={t('help.permissionDefinition.name')} />
+                          {isZodFieldRequired(createPermissionDefinitionSchema, 'name') && <span className="text-destructive ml-0.5">*</span>}
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('permissionDefinitions.form.namePlaceholder')} maxLength={150} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}>
+                          <Info size={16} className="text-pink-500" />
+                          {t('permissionDefinitions.form.description')}
+                          <FieldHelpTooltip text={t('help.permissionDefinition.description')} />
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionDefinitions.form.descriptionPlaceholder')} maxLength={500} className={cn(INPUT_STYLE, "min-h-[100px] py-3")} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </form>
           </Form>
         </div>
 
-        <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            {t('common.cancel')}
-          </Button>
-          <span className="inline-flex items-center gap-1">
-            <FieldHelpTooltip text={t('help.permissionDefinition.save')} side="top" />
-            <Button type="submit" form="permission-definition-form" disabled={isLoading || !isFormValid} className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white">
-              <KeyRound className="mr-2 size-4" />
-              {isLoading ? t('common.saving') : t('common.save')}
+        <DialogFooter className="px-8 py-6 shrink-0 border-t border-dashed border-slate-200 dark:border-white/10 mt-auto">
+          <div className="flex flex-row items-center justify-end gap-3 w-full">
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={isLoading} className="h-11 px-6 rounded-xl dark:bg-[#180F22] font-bold border border-slate-200 hover:bg-slate-100 dark:border-white/10 dark:hover:bg-white/10 text-xs sm:text-sm">
+              {t('common.cancel')}
             </Button>
-          </span>
+            <div className="inline-flex items-center gap-2">
+              <FieldHelpTooltip text={t('help.permissionDefinition.save')} side="top" />
+              <Button
+                type="submit"
+                form="permission-definition-form"
+                disabled={isLoading || !isFormValid}
+                className="h-11 px-6 sm:px-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-pink-500/25 text-xs sm:text-sm"
+              >
+                {isLoading ? (
+                  <>
+                    <X className="mr-2 size-4 animate-spin" />
+                    {t('common.saving')}
+                  </>
+                ) : (
+                  <>
+                    <KeyRound className="mr-2 size-4" />
+                    {t('common.save')}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

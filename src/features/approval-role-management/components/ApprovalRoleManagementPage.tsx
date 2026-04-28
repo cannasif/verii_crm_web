@@ -146,9 +146,9 @@ export function ApprovalRoleManagementPage(): ReactElement {
   const exportColumns = useMemo(
     () =>
       orderedVisibleColumns.map((key) => {
-          const col = tableColumns.find((c) => c.key === key);
-          return { key, label: col?.label ?? key };
-        }),
+        const col = tableColumns.find((c) => c.key === key);
+        return { key, label: col?.label ?? key };
+      }),
     [tableColumns, orderedVisibleColumns]
   );
 
@@ -249,7 +249,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('approvalRole.addButton')}
@@ -307,65 +307,65 @@ export function ApprovalRoleManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <ApprovalRoleTable
-            onEdit={handleEdit}
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={roles}
-            rowKey={(r) => r.id}
-            renderCell={(row, key) => {
-              const val = row[key];
-              if (val == null && val !== 0) return '-';
-              if (key === 'id') return `#${val}`;
-              if (key === 'approvalRoleGroupName') return row.approvalRoleGroupName || '-';
-              if (key === 'name') return row.name || '-';
-              if (key === 'maxAmount')
-                return new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'TRY' }).format(row.maxAmount ?? 0);
-              if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
-              if (key === 'createdByFullUser') return row.createdByFullUser || row.createdByFullName || row.createdBy || '-';
-              return String(val);
-            }}
-            sortBy={sortByDisplayKey}
-            sortDirection={sortDirection}
-            onSortChange={handleSortChange}
-            renderSortIcon={(k) => {
-              const backendKey = SORT_MAP[k as string] ?? k;
-              if (sortBy !== backendKey) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading || isFetching}
-            loadingText={t('approvalRole.loading')}
-            errorText={t('approvalRole.messages.error', { defaultValue: 'Hata oluştu' })}
-            emptyText={t('approvalRole.noData')}
-            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
-            showActionsColumn
-            actionsHeaderLabel={t('approvalRole.table.actions')}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+            <ApprovalRoleTable
+              onEdit={handleEdit}
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={roles}
+              rowKey={(r) => r.id}
+              renderCell={(row, key) => {
+                const val = row[key];
+                if (val == null && val !== 0) return '-';
+                if (key === 'id') return `#${val}`;
+                if (key === 'approvalRoleGroupName') return row.approvalRoleGroupName || '-';
+                if (key === 'name') return row.name || '-';
+                if (key === 'maxAmount')
+                  return new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'TRY' }).format(row.maxAmount ?? 0);
+                if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
+                if (key === 'createdByFullUser') return row.createdByFullUser || row.createdByFullName || row.createdBy || '-';
+                return String(val);
+              }}
+              sortBy={sortByDisplayKey}
+              sortDirection={sortDirection}
+              onSortChange={handleSortChange}
+              renderSortIcon={(k) => {
+                const backendKey = SORT_MAP[k as string] ?? k;
+                if (sortBy !== backendKey) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+                );
+              }}
+              isLoading={isLoading || isFetching}
+              loadingText={t('approvalRole.loading')}
+              errorText={t('approvalRole.messages.error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('approvalRole.noData')}
+              minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+              showActionsColumn
+              actionsHeaderLabel={t('approvalRole.table.actions')}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              rowClassName="group"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('common.previous')}
+              nextLabel={t('common.next')}
+              paginationInfoText={t('common.table.showing', {
+                from: startRow,
+                to: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
           </div>
         </CardContent>
       </Card>

@@ -16,7 +16,7 @@ import {
   Receipt,
   Layers,
   Type as TypeIcon,
-  Sparkles,
+  MousePointer2,
 } from 'lucide-react';
 import {
   Tooltip,
@@ -193,12 +193,13 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
   if (collapsed) {
     return (
       <TooltipProvider delayDuration={300}>
-        <div className="flex min-h-0 w-8 shrink-0 flex-col items-center border-l border-slate-200 bg-slate-50/80 py-2 dark:border-slate-700 dark:bg-slate-900/30">
+        <div className="relative flex min-h-0 w-8 shrink-0 flex-col items-center border-l border-slate-300/80 bg-stone-50/95 py-2 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60">
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="rounded p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:hover:bg-slate-700"
+                className="relative z-10 rounded p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:hover:bg-white/10"
                 onClick={() => setCollapsed(false)}
               >
                 <ChevronLeft className="size-4" />
@@ -206,8 +207,8 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
             </TooltipTrigger>
             <TooltipContent side="left">{t('reportDesigner.inspector.title')}</TooltipContent>
           </Tooltip>
-          <div className="mt-3">
-            <Settings2 className="size-3.5 text-slate-300" />
+          <div className="relative z-10 mt-3">
+            <Settings2 className="size-3.5 text-slate-300 dark:text-slate-600" />
           </div>
         </div>
       </TooltipProvider>
@@ -216,40 +217,43 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
 
   if (!selectedElement) {
     return (
-      <div className="flex min-h-0 w-64 shrink-0 flex-col border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2.5 dark:border-slate-700">
-          <div className="flex items-center gap-1.5">
-            <Settings2 className="size-3.5 text-slate-400" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {t('reportDesigner.inspector.title')}
-            </span>
+      <div className="relative flex min-h-0 w-64 shrink-0 flex-col overflow-y-auto border-l border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+        <div className="relative z-10 flex h-full flex-col">
+          <div className="flex items-center justify-between border-b border-slate-300/80 px-4 py-2.5 dark:border-white/5">
+            <div className="flex items-center gap-1.5">
+              <Settings2 className="size-3.5 text-slate-400" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                {t('reportDesigner.inspector.title')}
+              </span>
+            </div>
+            <TooltipProvider delayDuration={300}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-white/10"
+                    onClick={() => setCollapsed(true)}
+                  >
+                    <ChevronRight className="size-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="left">Daralt</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-          <TooltipProvider delayDuration={300}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
-                  onClick={() => setCollapsed(true)}
-                >
-                  <ChevronRight className="size-3.5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="left">Daralt</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 p-5 text-center">
-          <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
-            <Sparkles className="size-5" />
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-              {t('pdfReportDesigner.inspectorSelectionEmptyHeadline')}
-            </span>
-            <span className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
-              {t('pdfReportDesigner.inspectorSelectionEmptyBody')}
-            </span>
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-white/50 shadow-sm ring-1 ring-slate-200/50 dark:bg-white/5 dark:ring-white/10">
+              <MousePointer2 className="size-7 text-slate-300 dark:text-slate-600" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-200">
+                {t('pdfReportDesigner.inspectorSelectionEmptyHeadline', { defaultValue: 'No element selected' })}
+              </span>
+              <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+                {t('pdfReportDesigner.inspectorSelectionEmptyBody', { defaultValue: 'Select an element on the canvas to fine-tune its properties and behavior.' })}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -323,8 +327,10 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
   const elementTypeLabel = t(`pdfReportDesigner.elementTypes.${elementTypeKey}` as unknown as string);
 
   return (
-    <div className="flex min-h-0 w-64 shrink-0 flex-col overflow-y-auto border-l border-slate-200 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/30">
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/95 px-4 py-2.5 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90">
+    <div className="relative flex min-h-0 w-64 shrink-0 flex-col overflow-y-auto border-l border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="relative z-10 flex flex-col">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-300/80 bg-stone-50/95 px-4 py-2.5 backdrop-blur-sm dark:border-white/5 dark:bg-[#1a1025]/80">
         <div className="flex items-center gap-1.5">
           <Settings2 className="size-3.5 text-slate-400" />
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -347,7 +353,7 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
         </TooltipProvider>
       </div>
 
-      <div className="border-b border-slate-200 bg-white/80 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900/40">
+      <div className="border-b border-slate-300/80 bg-white/50 px-3 py-2.5 dark:border-white/5 dark:bg-white/5">
         <div className="flex items-center gap-2">
           <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
             <PdfElementTypeIcon type={elementTypeKey} className="size-4" />
@@ -1586,6 +1592,7 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
           </div>
         </div>
       </PdfInspectorSection>
+      </div>
       </div>
     </div>
   );

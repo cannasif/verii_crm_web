@@ -15,7 +15,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { PowerBIReportDefinitionGetDto } from '../types/powerbiReportDefinition.types';
 import type { PowerBIReportDefinitionFormSchema } from '../types/powerbiReportDefinition.types';
 import { ReportDefinitionForm } from './ReportDefinitionForm';
-import { PowerbiReportSyncCard } from '@/features/powerbi-sync';
 import {
   Table,
   TableBody,
@@ -130,14 +129,19 @@ export function ReportDefinitionList(): ReactElement {
 
   return (
     <div className="w-full space-y-6">
-      <PowerbiReportSyncCard />
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <h1 className="text-3xl font-bold tracking-tight">
           {t('powerbi.reportDefinition.title')}
         </h1>
         {canCreate ? (
-          <Button onClick={handleAdd}>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button
+            onClick={handleAdd}
+            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] h-11 px-6 gap-2
+            opacity-50 grayscale-[0] 
+            dark:opacity-100 dark:grayscale-0"
+          >
+            <Plus className="h-4 w-4" />
             {t('powerbi.reportDefinition.add')}
           </Button>
         ) : null}
@@ -174,63 +178,65 @@ export function ReportDefinitionList(): ReactElement {
         </Button>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t('powerbi.reportDefinition.name')}</TableHead>
-              <TableHead>{t('powerbi.reportDefinition.workspaceId')}</TableHead>
-              <TableHead>{t('powerbi.reportDefinition.reportId')}</TableHead>
-              <TableHead>{t('powerbi.reportDefinition.isActive')}</TableHead>
-              <TableHead className="text-right">{t('common.actions')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                </TableCell>
+      <div className="rounded-2xl border border-slate-200 bg-white/80 p-2 dark:border-white/10 dark:bg-white/[0.03]">
+        <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-white/5">
+          <Table>
+            <TableHeader >
+              <TableRow className="font-bold text-slate-700 dark:text-white dark:bg-[#231A2C] border-b border-slate-200 dark:border-white/5">
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{t('powerbi.reportDefinition.name')}</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white border-r border-slate-200 dark:border-white/5">{t('powerbi.reportDefinition.workspaceId')}</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white border-r border-slate-200 dark:border-white/5">{t('powerbi.reportDefinition.reportId')}</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white border-r border-slate-200 dark:border-white/5">{t('powerbi.reportDefinition.isActive')}</TableHead>
+                <TableHead className="text-right text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">{t('common.actions')}</TableHead>
               </TableRow>
-            ) : filteredItems.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  {t('common.noData')}
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredItems.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="font-medium">{row.name}</TableCell>
-                  <TableCell className="font-mono text-xs">{row.workspaceId}</TableCell>
-                  <TableCell className="font-mono text-xs">{row.reportId}</TableCell>
-                  <TableCell>
-                    <Badge variant={row.isActive ? 'default' : 'secondary'}>
-                      {row.isActive ? t('status.active') : t('status.inactive')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {canUpdate ? (
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(row)}>
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                    ) : null}
-                    {canDelete ? (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteClick(row)}
-                        className="text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    ) : null}
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : filteredItems.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    {t('common.noData')}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredItems.map((row) => (
+                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-pink-50/30 dark:hover:bg-pink-500/5 transition-colors">
+                    <TableCell className="font-bold text-slate-700 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{row.name}</TableCell>
+                    <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-white/5">{row.workspaceId}</TableCell>
+                    <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-white/5">{row.reportId}</TableCell>
+                    <TableCell className="border-r border-slate-200 dark:border-white/5">
+                      <Badge variant={row.isActive ? 'default' : 'secondary'}>
+                        {row.isActive ? t('status.active') : t('status.inactive')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {canUpdate ? (
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(row)}>
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                      ) : null}
+                      {canDelete ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteClick(row)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       <ReportDefinitionForm

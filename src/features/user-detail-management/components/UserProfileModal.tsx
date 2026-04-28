@@ -1,25 +1,25 @@
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadLanguage } from '@/lib/i18n';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select';
-import { 
-  Mail02Icon, 
-  Moon02Icon, 
-  LanguageSquareIcon, 
-  UserIcon, 
+import {
+  Mail02Icon,
+  Moon02Icon,
+  LanguageSquareIcon,
+  UserIcon,
   ArrowRight01Icon,
   Logout02Icon,
   Sun01Icon,
   ShieldEnergyIcon,
-  Cancel01Icon 
+  Cancel01Icon
 } from 'hugeicons-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import * as DialogPrimitive from "@radix-ui/react-dialog"; 
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -46,8 +46,8 @@ const languages = [
   { code: 'ar', name: 'العربية', flag: '🇸🇦', short: 'AR' },
 ];
 
-export function UserProfileModal({ 
-  open, 
+export function UserProfileModal({
+  open,
   onOpenChange,
   onOpenProfileDetails
 }: UserProfileModalProps): ReactElement {
@@ -70,7 +70,7 @@ export function UserProfileModal({
     navigate('/auth/login', { replace: true });
   };
 
-  const darkMode = theme === 'dark';
+  const darkMode = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   const handleLanguageChange = async (value: string): Promise<void> => {
     const target = value.toLowerCase() === 'sa' ? 'ar' : value.toLowerCase();
@@ -94,8 +94,8 @@ export function UserProfileModal({
         <DialogPrimitive.Close className={cn(
           "absolute right-4 top-4 md:right-6 md:top-6 z-50 rounded-2xl p-2.5 transition-all duration-200",
           "active:scale-90",
-          darkMode 
-            ? "bg-white/5 text-white/40 hover:bg-red-600 hover:text-white" 
+          darkMode
+            ? "bg-white/5 text-white/40 hover:bg-red-600 hover:text-white"
             : "bg-slate-100 text-slate-400 hover:bg-red-600 hover:text-white"
         )}>
           <Cancel01Icon size={20} strokeWidth={2.5} />
@@ -106,11 +106,11 @@ export function UserProfileModal({
 
         <div className="flex flex-col md:flex-row w-full h-full overflow-y-auto md:overflow-hidden">
           <div className={cn(
-            "w-full md:w-[320px] lg:w-[380px] flex flex-col items-center justify-center md:justify-start md:pt-16 p-6 md:p-10 border-b md:border-b-0 md:border-r shrink-0 relative overflow-hidden transition-all duration-500",
+            "w-full md:w-[320px] lg:w-[380px] rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center justify-center md:justify-start md:pt-16 p-6 md:p-10 border-b md:border-b-0 md:border-r shrink-0 relative overflow-hidden transition-all duration-500",
             darkMode ? "bg-linear-to-b from-[#1a1025] to-[#120c18] border-white/5" : "bg-slate-50/80 border-slate-100"
           )}>
             <div className="absolute top-[-20%] left-[-20%] w-64 h-64 bg-pink-500/10 rounded-full blur-[80px]" />
-            
+
             <div className="relative group mb-4 md:mb-6 mt-4 md:mt-0">
               <div className={cn(
                 "w-20 h-20 sm:w-24 sm:h-24 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border-4 rotate-2 transition-transform group-hover:rotate-0 duration-500 p-1 shadow-2xl",
@@ -146,7 +146,7 @@ export function UserProfileModal({
               </Badge>
             </div>
 
-            <div className="w-full mt-4 md:mt-8 space-y-3 z-10 px-2 md:px-8">
+            <div className="mt-4 md:mt-8 space-y-3 z-10 px-2 md:px-8">
               <div className={cn("flex items-center gap-3 md:gap-4 p-2.5 md:p-3 rounded-2xl transition-all", darkMode ? "bg-white/5" : "bg-white shadow-sm")}>
                 <Mail02Icon size={16} className="text-pink-500 shrink-0" />
                 <span className="text-xs font-semibold truncate opacity-70">{user?.email}</span>
@@ -154,10 +154,10 @@ export function UserProfileModal({
             </div>
           </div>
 
-          <div className="flex-1 p-5 md:p-10 lg:p-12 flex flex-col min-h-0 relative">
-            <div className="flex items-center gap-3 mb-4 md:mb-8 shrink-0">
+          <div className="flex-1 p-5 md:p-10 lg:p-6 flex flex-col min-h-0 relative">
+            <div className="flex items-center gap-3 mb-2 md:mb-6 shrink-0 pb-3 md:pb- border-b border-dashed border-slate-200 dark:border-white/10">
               <div className="w-1.5 h-5 md:h-8 bg-linear-to-b from-pink-500 to-purple-600 rounded-full" />
-              <h3 className="text-lg md:text-3xl lg:text-4xl font-black tracking-tight uppercase">{t('sidebar.settings')}</h3>
+              <h3 className="text-lg md:text-4xl lg:text-3x1 font-black tracking-tight uppercase">{t('sidebar.settings')}</h3>
             </div>
 
             <div className={cn(
@@ -166,7 +166,7 @@ export function UserProfileModal({
             )}>
               <button
                 className={cn(
-                  "group w-full p-3 md:p-5 lg:p-6 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all duration-300",
+                  "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all duration-300",
                   darkMode ? "border-white/5 bg-white/5 hover:bg-white/[0.08] hover:border-pink-500/30" : "border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:border-pink-200"
                 )}
                 onClick={onOpenProfileDetails}
@@ -184,7 +184,7 @@ export function UserProfileModal({
               </button>
 
               <div className={cn(
-                "group w-full p-3 md:p-5 lg:p-6 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
+                "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
                 darkMode ? "border-white/5 bg-white/5" : "border-slate-100 bg-slate-50/50"
               )}>
                 <div className="flex items-center gap-3 md:gap-4 flex-1">
@@ -198,8 +198,8 @@ export function UserProfileModal({
                 <Select value={currentLanguage.code} onValueChange={handleLanguageChange} disabled={isChangingLanguage}>
                   <SelectTrigger className={cn(
                     "w-16 md:w-24 lg:w-28 h-9 md:h-10 shadow-none focus:ring-0 font-black text-xs md:text-sm transition-all",
-                    darkMode 
-                      ? "bg-white/10 border-none hover:bg-white/20" 
+                    darkMode
+                      ? "bg-white/10 border-none hover:bg-white/20"
                       : "bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700"
                   )}>
                     <span>{currentLanguage.short}</span>
@@ -209,8 +209,8 @@ export function UserProfileModal({
                     darkMode ? "bg-[#1a1025] border-white/10 text-white" : "bg-white border-slate-200 text-slate-900"
                   )}>
                     {languages.map((l) => (
-                      <SelectItem 
-                        key={l.code} 
+                      <SelectItem
+                        key={l.code}
                         value={l.code}
                         className={cn(
                           "rounded-xl my-1 transition-colors focus:bg-pink-600 focus:text-white cursor-pointer",
@@ -228,7 +228,7 @@ export function UserProfileModal({
               </div>
 
               <div className={cn(
-                "group w-full p-3 md:p-5 lg:p-6 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
+                "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
                 darkMode ? "border-white/5 bg-white/5" : "border-slate-100 bg-slate-50/50"
               )}>
                 <div className="flex items-center gap-3 md:gap-4">
@@ -239,17 +239,20 @@ export function UserProfileModal({
                     <p className="font-bold text-sm md:text-base lg:text-lg">{t('appearance')}</p>
                   </div>
                 </div>
-                <Switch 
-                  checked={darkMode} 
-                  onCheckedChange={() => setTheme(darkMode ? 'light' : 'dark')} 
+                <Switch
+                  checked={darkMode}
+                  onCheckedChange={() => setTheme(darkMode ? 'light' : 'dark')}
                   className="data-[state=checked]:bg-pink-600 scale-75 md:scale-100"
                 />
               </div>
             </div>
 
-            <div className="mt-4 md:mt-6 pt-4 md:pt-10 border-t border-dashed border-slate-200 dark:border-white/10 shrink-0 pb-2 md:pb-0">
+            <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-dashed border-slate-200 dark:border-white/10 shrink-0 pb-1 md:pb-0">
               <Button
-                className="w-full h-11 md:h-14 lg:h-15 rounded-[1.2rem] md:rounded-[1.8rem] text-white font-black text-sm md:text-lg lg:text-xl bg-linear-to-r from-pink-600 to-orange-600 hover:scale-[1.01] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)]"
+                className="w-full h-11 md:h-14 lg:h-15 rounded-[1.2rem] md:rounded-[1.3rem] text-white font-black text-sm md:text-lg lg:text-xl bg-linear-to-r from-pink-600 to-orange-600 hover:scale-[1.01] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)]
+                opacity-60 grayscale-[0] 
+                dark:opacity-100 dark:grayscale-0
+                "
                 onClick={handleLogout}
               >
                 <Logout02Icon size={18} className="mr-3 md:w-5 md:h-5" />

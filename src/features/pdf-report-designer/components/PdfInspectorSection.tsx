@@ -25,9 +25,9 @@ export function PdfInspectorSection({
   const [open, setOpen] = useState<boolean>(defaultOpen);
 
   const toneClasses: Record<'default' | 'accent' | 'muted', string> = {
-    default: 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/50',
-    accent: 'border-blue-200 bg-blue-50/40 dark:border-blue-900/50 dark:bg-blue-950/20',
-    muted: 'border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-900/30',
+    default: 'border-slate-300/80 bg-white/50 dark:border-white/10 dark:bg-white/5',
+    accent: 'border-pink-500/30 bg-pink-500/5 dark:border-pink-500/20 dark:bg-pink-500/10',
+    muted: 'border-slate-300/60 bg-slate-50/40 dark:border-white/5 dark:bg-white/5',
   };
 
   return (

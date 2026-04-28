@@ -82,17 +82,17 @@ export function Combobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+      <PopoverContent className="w-[calc(var(--radix-popover-trigger-width))] p-0" align="start">
         <Command>
-          <CommandInput 
-            placeholder={searchPlaceholder} 
+          <CommandInput
+            placeholder={searchPlaceholder}
             value={searchQuery}
             onValueChange={handleSearchChange}
           >
-             <VoiceSearchButton 
-                onResult={(text) => handleSearchChange(text)} 
-                className="h-7 w-7 mr-1" 
-             />
+            <VoiceSearchButton
+              onResult={(text) => handleSearchChange(text)}
+              className="h-7 w-7 mr-1"
+            />
           </CommandInput>
           <CommandList
             className="overflow-y-auto overscroll-contain"

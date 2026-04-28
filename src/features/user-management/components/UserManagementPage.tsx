@@ -151,9 +151,9 @@ export function UserManagementPage(): ReactElement {
   const exportColumns = useMemo(
     () =>
       orderedVisibleColumns.map((key) => {
-          const col = tableColumns.find((c) => c.key === key);
-          return { key, label: col?.label ?? key };
-        }),
+        const col = tableColumns.find((c) => c.key === key);
+        return { key, label: col?.label ?? key };
+      }),
     [tableColumns, orderedVisibleColumns]
   );
 
@@ -286,7 +286,10 @@ export function UserManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11
+          opacity-40 grayscale-[0] 
+          dark:opacity-100 dark:grayscale-0
+          "
         >
           <Plus size={18} className="mr-2" />
           {t('userManagement.addButton')}
@@ -346,80 +349,80 @@ export function UserManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <UserTable
-            onEdit={handleEdit}
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={users}
-            rowKey={(r) => r.id}
-            renderCell={(row, key) => {
-              if (key === 'status') {
-                return (
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={row.isActive}
-                      onCheckedChange={(checked) => handleStatusChange(row, checked)}
-                      disabled={updateUserStatus.isPending}
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {row.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
-                    </span>
-                    {row.isEmailConfirmed && (
-                      <Badge variant="outline" className="text-xs">
-                        {t('userManagement.table.confirmed')}
-                      </Badge>
-                    )}
-                  </div>
+            <UserTable
+              onEdit={handleEdit}
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={users}
+              rowKey={(r) => r.id}
+              renderCell={(row, key) => {
+                if (key === 'status') {
+                  return (
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={row.isActive}
+                        onCheckedChange={(checked) => handleStatusChange(row, checked)}
+                        disabled={updateUserStatus.isPending}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {row.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
+                      </span>
+                      {row.isEmailConfirmed && (
+                        <Badge variant="outline" className="text-xs">
+                          {t('userManagement.table.confirmed')}
+                        </Badge>
+                      )}
+                    </div>
+                  );
+                }
+                const val = row[key as keyof UserDto];
+                if (val == null) return '-';
+                if (key === 'id') return `#${val}`;
+                if (key === 'role') return <Badge variant="outline">{row.role || '-'}</Badge>;
+                if (key === 'creationTime') return row.creationTime ? new Date(row.creationTime).toLocaleDateString(i18n.language) : '-';
+                return String(val ?? '');
+              }}
+              sortBy={sortByDisplayKey}
+              sortDirection={sortDirection}
+              onSortChange={handleSortChange}
+              renderSortIcon={(k) => {
+                const backendKey = k === 'status' ? 'IsActive' : k === 'id' ? 'Id' : k === 'username' ? 'Username' : k === 'email' ? 'Email' : k === 'fullName' ? 'FullName' : k === 'role' ? 'Role' : k === 'creationTime' ? 'CreationTime' : k;
+                if (sortBy !== backendKey) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
                 );
-              }
-              const val = row[key as keyof UserDto];
-              if (val == null) return '-';
-              if (key === 'id') return `#${val}`;
-              if (key === 'role') return <Badge variant="outline">{row.role || '-'}</Badge>;
-              if (key === 'creationTime') return row.creationTime ? new Date(row.creationTime).toLocaleDateString(i18n.language) : '-';
-              return String(val ?? '');
-            }}
-            sortBy={sortByDisplayKey}
-            sortDirection={sortDirection}
-            onSortChange={handleSortChange}
-            renderSortIcon={(k) => {
-              const backendKey = k === 'status' ? 'IsActive' : k === 'id' ? 'Id' : k === 'username' ? 'Username' : k === 'email' ? 'Email' : k === 'fullName' ? 'FullName' : k === 'role' ? 'Role' : k === 'creationTime' ? 'CreationTime' : k;
-              if (sortBy !== backendKey) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading}
-            loadingText={t('userManagement.table.loading')}
-            errorText={t('userManagement.messages.error', { defaultValue: 'Hata oluştu' })}
-            emptyText={t('userManagement.table.noData')}
-            minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
-            showActionsColumn
-            actionsHeaderLabel={t('common.actions')}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+              }}
+              isLoading={isLoading}
+              loadingText={t('userManagement.table.loading')}
+              errorText={t('userManagement.messages.error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('userManagement.table.noData')}
+              minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
+              showActionsColumn
+              actionsHeaderLabel={t('common.actions')}
+              rowClassName="group"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('common.previous')}
+              nextLabel={t('common.next')}
+              paginationInfoText={t('common.table.showing', {
+                from: startRow,
+                to: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
           </div>
         </CardContent>
       </Card>

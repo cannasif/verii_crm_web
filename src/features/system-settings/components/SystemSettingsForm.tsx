@@ -3,8 +3,9 @@ import { type ReactElement, useEffect, useMemo } from 'react';
 import { type Resolver, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Loader2 } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -97,14 +98,17 @@ export function SystemSettingsForm({
     );
   }
 
+  const headerCardStyle = `
+    overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 
+    bg-white dark:bg-[#180F22] backdrop-blur-md px-2 py-6 shadow-xl 
+    transition-all duration-300 relative
+  `;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('systemSettings.PageTitle')}</CardTitle>
-            <CardDescription>{t('systemSettings.PageDescription')}</CardDescription>
-          </CardHeader>
+        <Card className={headerCardStyle}>
+
           <CardContent className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
@@ -143,6 +147,7 @@ export function SystemSettingsForm({
                   </FormLabel>
                   <FormControl>
                     <Input
+                      className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0C0516]"
                       type="number"
                       min={0}
                       max={6}
@@ -272,9 +277,18 @@ export function SystemSettingsForm({
           </CardContent>
         </Card>
 
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting || !form.formState.isValid}>
-            {isSubmitting ? t('common.saving') : t('common.save')}
+        <div className="flex justify-end pt-4">
+          <Button
+            type="submit"
+            disabled={isSubmitting || !form.formState.isValid}
+            className="min-w-[120px] bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('common.saving')}
+              </>
+            ) : t('common.save')}
           </Button>
         </div>
       </form>

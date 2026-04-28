@@ -1,13 +1,12 @@
 import { type ReactElement, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-// 1. useLocation'ı ekledik
-import { useNavigate, useLocation } from 'react-router-dom'; 
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu08Icon, SearchList01Icon, Cancel01Icon, Mic01Icon } from 'hugeicons-react'
 import { useAuthStore } from '@/stores/auth-store';
-import { useAppShellStore } from '@/stores/app-shell-store';
 import { useUIStore } from '@/stores/ui-store';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
 import { UserProfileModal } from '@/features/user-detail-management/components/UserProfileModal';
+import { useAppShellStore } from '@/stores/app-shell-store';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
 import { cn } from '@/lib/utils';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
@@ -15,8 +14,7 @@ import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 export function Navbar(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // 2. Mevcut rotayı takip etmek için location'ı aldık
-  const location = useLocation(); 
+  const location = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuthStore();
@@ -35,9 +33,7 @@ export function Navbar(): ReactElement {
     },
   });
 
-  // 3. KRİTİK NOKTA: Sayfa değiştiği an aramayı temizleyen efekt
   useEffect(() => {
-    // Kullanıcı bir menüye tıkladığında ve sayfa değiştiğinde aramayı sıfırla
     setSearchQuery('');
   }, [location.pathname, setSearchQuery]);
 
@@ -70,12 +66,12 @@ export function Navbar(): ReactElement {
         "bg-white/80 dark:bg-[#0c0516]/80"
       )}>
         <div className="flex items-center gap-2 sm:gap-4 shrink-0 h-20">
-            <button 
-                onClick={toggleSidebar} 
-                className="p-2 shrink-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-pink-500 hover:bg-pink-500/10 dark:hover:text-pink-400 dark:hover:bg-pink-500/20 hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] transition-all duration-300 focus:outline-none"
-              >
-                <Menu08Icon size={24} />
-            </button>
+          <button
+            onClick={toggleSidebar}
+            className="p-2 shrink-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-pink-500 hover:bg-pink-500/10 dark:hover:text-pink-400 dark:hover:bg-pink-500/20 hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] transition-all duration-300 focus:outline-none"
+          >
+            <Menu08Icon size={24} />
+          </button>
 
           <div className="relative hidden md:block w-full max-md group">
             <div className="absolute inset-0 bg-linear-to-r from-pink-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
@@ -84,8 +80,8 @@ export function Navbar(): ReactElement {
               <input
                 ref={searchInputRef}
                 type="text"
-                value={searchQuery} 
-                onChange={handleSearch} 
+                value={searchQuery}
+                onChange={handleSearch}
                 placeholder={t('navbar.search_placeholder')}
                 className={cn(
                   "w-full py-3 pl-12 pr-24 text-base md:text-sm font-medium transition-all duration-300 outline-none rounded-2xl border",
@@ -100,8 +96,8 @@ export function Navbar(): ReactElement {
                     onClick={(e) => { e.preventDefault(); startListening(); }}
                     className={cn(
                       "p-2 rounded-xl transition-all duration-300",
-                      isListening 
-                        ? "text-pink-500 bg-pink-500/10 animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.3)]" 
+                      isListening
+                        ? "text-pink-500 bg-pink-500/10 animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.3)]"
                         : "text-slate-400 hover:text-pink-500 hover:bg-slate-100 dark:hover:bg-white/10"
                     )}
                     title={t('common.voiceSearchTitle')}
@@ -111,7 +107,7 @@ export function Navbar(): ReactElement {
                 )}
 
                 {searchQuery && (
-                  <button 
+                  <button
                     onClick={() => setSearchQuery('')}
                     className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
                   >
@@ -123,12 +119,12 @@ export function Navbar(): ReactElement {
           </div>
 
           {isSupported && (
-            <button 
+            <button
               onClick={(e) => { e.preventDefault(); startListening(); }}
               className={cn(
                 "p-2 md:hidden rounded-xl transition-all duration-300 relative",
-                isListening 
-                  ? "text-pink-500 bg-pink-500/10 animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.3)]" 
+                isListening
+                  ? "text-pink-500 bg-pink-500/10 animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.3)]"
                   : "text-slate-500 dark:text-slate-400 hover:text-pink-500 hover:bg-pink-500/10"
               )}
             >
@@ -139,11 +135,11 @@ export function Navbar(): ReactElement {
             </button>
           )}
         </div>
-        
+
         <div className="flex items-center justify-end shrink-0 gap-3 sm:gap-8 h-20">
           <div className="flex items-center gap-3 sm:gap-8 shrink-0">
             <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer text-slate-500 hover:text-pink-500 dark:text-slate-400 dark:hover:text-pink-400 flex items-center justify-center group shrink-0">
-                <NotificationIcon />
+              <NotificationIcon />
             </div>
           </div>
 
@@ -175,8 +171,8 @@ export function Navbar(): ReactElement {
         </div>
       </header>
 
-      <UserProfileModal 
-        open={userProfileModalOpen} 
+      <UserProfileModal
+        open={userProfileModalOpen}
         onOpenChange={setUserProfileModalOpen}
         onOpenProfileDetails={() => {
           setUserProfileModalOpen(false);

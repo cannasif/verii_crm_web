@@ -22,7 +22,8 @@ import {
 } from '@/components/ui/form';
 import { titleFormSchema, type TitleFormSchema } from '../types/title-types';
 import type { TitleDto } from '../types/title-types';
-import { Users, X } from 'lucide-react';
+import { Users, X, Loader2 } from 'lucide-react';
+import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface TitleFormProps {
   open: boolean;
@@ -34,25 +35,18 @@ interface TitleFormProps {
 
 const INPUT_STYLE = `
   h-12 rounded-xl
-  bg-slate-50 dark:bg-[#0f0a18] 
-  border border-slate-200 dark:border-white/10 
+  bg-slate-50 dark:bg-[#0c0516]
+  border border-slate-200 dark:border-white/10
   text-slate-900 dark:text-white text-sm
-  placeholder:text-slate-400 dark:placeholder:text-slate-600 
-  
-  focus-visible:ring-0 focus-visible:ring-offset-0 
-  
-  focus:bg-white 
-  focus:border-pink-500 
-  focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)] 
-
-  dark:focus:bg-[#0f0a18] 
-  dark:focus:border-pink-500/60 
-  dark:focus:shadow-[0_0_0_3px_rgba(236,72,153,0.1)]
-
+  placeholder:text-slate-400 dark:placeholder:text-slate-600
+  focus-visible:ring-0 focus-visible:ring-offset-0
+  focus:bg-white focus:border-pink-500 focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)]
+  dark:focus:bg-[#0c0516] dark:focus:border-pink-500/60 dark:focus:shadow-[0_0_0_3px_rgba(236,72,153,0.1)]
   transition-all duration-200
 `;
 
-const LABEL_STYLE = "text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold ml-1 mb-1.5 block";
+const LABEL_STYLE =
+  'text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold ml-1 mb-1.5 block';
 
 export function TitleForm({
   open,
@@ -98,49 +92,47 @@ export function TitleForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl transition-all duration-200">
-        <DialogHeader className="sticky top-0 z-10 px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm flex-row items-center justify-between space-y-0">
-          <div className="flex items-center gap-3">
-             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
-                  <Users size={20} className="text-pink-600 dark:text-pink-500" />
-                </div>
+      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(50vw-2rem)] !max-w-[96vw] xl:max-w-[700px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white/90 dark:bg-[#130822]/90 border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2.5rem]">
+
+        <DialogHeader className="px-6 sm:px-8 py-6 border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10 backdrop-blur-sm">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
+                <Users size={24} className="text-pink-600 dark:text-pink-400" />
               </div>
-             <div>
-                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                  {title
-                    ? t('titleManagement.form.editTitle')
-                    : t('titleManagement.form.addTitle')}
-                </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">
-                  {title
-                    ? t('titleManagement.form.editDescription')
-                    : t('titleManagement.form.addDescription')}
-                </DialogDescription>
-             </div>
+            </div>
+            <div>
+              <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
+                {title
+                  ? t('titleManagement.form.editTitle')
+                  : t('titleManagement.form.addTitle')}
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
+                {title
+                  ? t('titleManagement.form.editDescription')
+                  : t('titleManagement.form.addDescription')}
+              </DialogDescription>
+            </div>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
+          <button
             onClick={() => onOpenChange(false)}
-            className="h-8 w-8 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
           >
-            <X size={20} />
-            <span className="sr-only">{t('common.close')}</span>
-          </Button>
+            <X size={20} className="relative z-10" />
+            <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar bg-white dark:bg-[#130822]">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form id="title-form" onSubmit={form.handleSubmit(handleSubmit)} className="grid grid-cols-1 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <FormField
                 control={form.control}
                 name="titleName"
                 render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className={LABEL_STYLE}>
-                      {t('titleManagement.form.titleName')} *
+                  <FormItem className="space-y-0">
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(titleFormSchema, 'titleName')}>
+                      {t('titleManagement.form.titleName')}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -159,7 +151,7 @@ export function TitleForm({
                 control={form.control}
                 name="code"
                 render={({ field }) => (
-                  <FormItem className="space-y-1">
+                  <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
                       {t('titleManagement.form.code')}
                     </FormLabel>
@@ -180,27 +172,29 @@ export function TitleForm({
           </Form>
         </div>
 
-        <DialogFooter className="sticky bottom-0 z-10 px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm sm:justify-between sm:space-x-0">
-          <div className="flex items-center gap-3 w-full justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isLoading}
-              className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl transition-colors"
-            >
-              {t('titleManagement.form.cancel')}
-            </Button>
-            <Button 
-              onClick={form.handleSubmit(handleSubmit)}
-              disabled={isLoading || !isFormValid}
-              className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white border-0 shadow-lg shadow-pink-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              {isLoading
-                ? t('titleManagement.saving')
-                : t('titleManagement.save')}
-            </Button>
-          </div>
+        <DialogFooter className="px-6 sm:px-8 py-6 border-t border-slate-100 dark:border-white/5 shrink-0 flex flex-row justify-end gap-4 backdrop-blur-sm">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+            className="h-12 px-8 rounded-2xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 font-bold transition-all"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            type="submit"
+            form="title-form"
+            disabled={isLoading || !isFormValid}
+            className="h-12 px-10 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('common.saving')}
+              </>
+            ) : t('common.save')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

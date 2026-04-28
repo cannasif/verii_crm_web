@@ -2,7 +2,7 @@ import { type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { Building2, UserRound, X } from 'lucide-react';
+import { Building2, Loader2, UserRound, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -70,34 +70,35 @@ export function SalesRepForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[900px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl">
-        <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-sky-500 to-cyan-500 p-0.5">
-              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
-                <UserRound size={20} className="text-sky-600 dark:text-sky-500" />
+      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[700px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white/90 dark:bg-[#130822]/90 backdrop-blur-xl border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2.5rem]">
+        <DialogHeader className="px-6 sm:px-8 py-6 border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
+                <UserRound size={24} className="text-pink-600 dark:text-pink-400" />
               </div>
             </div>
             <div>
-              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
+              <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
                 {t('form.addTitle')}
               </DialogTitle>
-              <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
+              <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                 {t('form.addDescription')}
               </DialogDescription>
             </div>
           </div>
           <button
             onClick={() => onOpenChange(false)}
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-500 dark:text-slate-400"
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
           >
-            <X size={20} />
+            <X size={20} className="relative z-10" />
+            <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-5 md:grid-cols-2">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-6 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="branchCode"
@@ -173,12 +174,27 @@ export function SalesRepForm({
           </Form>
         </div>
 
-        <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm shrink-0 flex flex-row justify-end gap-3">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading} className="bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 h-11 px-6 rounded-xl">
+        <DialogFooter className="px-6 sm:px-8 py-6 border-t border-slate-100 dark:border-white/5 shrink-0 flex flex-row justify-end gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+            className="h-12 px-8 rounded-2xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 font-bold transition-all"
+          >
             {t('common.cancel', { ns: 'common' })}
           </Button>
-          <Button onClick={form.handleSubmit(handleSubmit)} disabled={isLoading || !form.formState.isValid} className="bg-linear-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white border-0 shadow-lg shadow-sky-500/20 h-11 px-8 rounded-xl font-bold tracking-wide transition-all hover:scale-105">
-            {isLoading ? t('common.saving', { ns: 'common' }) : t('common.save', { ns: 'common' })}
+          <Button
+            onClick={form.handleSubmit(handleSubmit)}
+            disabled={isLoading || !form.formState.isValid}
+            className="h-12 px-10 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] disabled:opacity-50 "
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('common.saving', { ns: 'common' })}
+              </>
+            ) : t('common.save', { ns: 'common' })}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -4,8 +4,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, ShieldCheck, Sparkles, UserRound } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, UserRound } from 'lucide-react';
 import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useUserPermissionGroupsQuery } from '../hooks/useUserPermissionGroupsQuery';
 import { useSetUserPermissionGroupsMutation } from '../hooks/useSetUserPermissionGroupsMutation';
@@ -51,14 +50,28 @@ export function UserGroupAssignmentsPage(): ReactElement {
     setHasChanges(false);
   };
 
+
+  const headerCardStyle = `
+    overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 
+    bg-white/80 dark:bg-[#180F22] backdrop-blur-md p-6 shadow-xl 
+    transition-all duration-300 relative
+  `;
+
+  const statCardStyle = `
+    rounded-2xl border border-slate-200 dark:border-white/10 
+    bg-white/90 dark:bg-[#1E1627] p-5 shadow-sm 
+    transition-all duration-300 hover:shadow-md group
+  `;
+
   return (
     <div className="w-full space-y-6">
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.userGroupAssignments'), isActive: true }]} />
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
-        <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-          <Sparkles className="size-4" />
-          {t('sidebar.userGroupAssignments')}
-        </div>
+      <div className={headerCardStyle}>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 dark:bg-pink-500/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/5 dark:bg-orange-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10" />
+        <div className="min-w-0"></div>
+
         <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white transition-colors">
           {t('userGroupAssignments.title')}
         </h1>
@@ -70,10 +83,10 @@ export function UserGroupAssignmentsPage(): ReactElement {
           <span className="italic">{t('help.userAssignment.systemAdminNote')}</span>
         </p>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-cyan-100 p-2.5 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3 relative z-10">
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl bg-pink-100 p-3 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
                 <UserRound className="size-4" />
               </div>
               <div>
@@ -86,9 +99,9 @@ export function UserGroupAssignmentsPage(): ReactElement {
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl bg-emerald-100 p-3 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
                 <ShieldCheck className="size-4" />
               </div>
               <div>
@@ -99,9 +112,9 @@ export function UserGroupAssignmentsPage(): ReactElement {
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-pink-100 p-2.5 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300">
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl bg-orange-100 p-3 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border border-orange-100 dark:border-orange-500/20">
                 <CheckCircle2 className="size-4" />
               </div>
               <div>
@@ -117,18 +130,13 @@ export function UserGroupAssignmentsPage(): ReactElement {
         </div>
       </div>
 
-      <div className="rounded-[28px] border border-slate-200 bg-white/85 p-5 shadow-sm backdrop-blur-xl dark:border-cyan-800/30 dark:bg-blue-950/45 sm:p-6">
+      <div className="mt-5 rounded-[2rem] border border-slate-200 bg-slate-50/80 p-6 border border-slate-200 dark:border-white/10  dark:bg-[#1E1627]">
         <div>
           <div className="mb-3 flex items-center justify-between gap-3">
             <label className="text-sm font-medium flex items-center gap-1">
               {t('userGroupAssignments.selectUser')}
               <FieldHelpTooltip text={t('help.userAssignment.user')} />
             </label>
-            {selectedUserId != null ? (
-              <Badge className="rounded-xl border-0 bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
-                {t('userGroupAssignments.selectUser')}
-              </Badge>
-            ) : null}
           </div>
           <VoiceSearchCombobox
             options={userDropdown.options}
@@ -145,7 +153,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
         </div>
 
         {selectedUserId != null && (
-          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-cyan-800/30 dark:bg-blue-900/20">
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 border border-slate-200 dark:border-white/10  dark:bg-[#180F22]">
             <label className="mb-3 flex items-center gap-1 text-sm font-medium">
               {t('userGroupAssignments.assignedGroups')}
               <FieldHelpTooltip text={t('help.userAssignment.groups')} />

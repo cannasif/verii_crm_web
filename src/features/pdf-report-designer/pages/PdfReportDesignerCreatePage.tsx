@@ -8,10 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Undo2, Redo2, Grid3X3, ArrowLeft, AlertTriangle, FileText, Sparkles, ChevronDown, ChevronUp, PanelsTopLeft } from 'lucide-react';
+
+import { Undo2, Redo2, Grid3X3, ArrowLeft, AlertTriangle, FileText, Sparkles, ChevronDown, ChevronUp, PanelsTopLeft, Loader2, Box } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
@@ -33,7 +34,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
+
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import {
@@ -599,7 +600,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       resolver: zodResolver(pdfReportDesignerCreateSchema),
       mode: 'onChange',
       reValidateMode: 'onChange',
-        defaultValues: {
+      defaultValues: {
         ruleType: TemplateDesignerRuleType.Demand,
         title: '',
         default: false,
@@ -1450,64 +1451,81 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   const watchedDefault = form.watch('default') ?? false;
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-slate-200 bg-slate-50 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-slate-300/80 bg-stone-50/95 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none dark:ring-0">
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-br from-pink-500/5 to-orange-500/5 dark:from-pink-500/10 dark:to-orange-500/10" />
       {hasDraft && !draftBannerDismissed && (
-        <Alert className="rounded-none border-x-0 border-t-0 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30">
-          <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
-          <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-amber-800 dark:text-amber-200">{t('pdfReportDesigner.draftFound')}</span>
-            <span className="flex gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={handleRestoreDraft}>
+        <div className="relative z-20 border-b border-amber-200/60 bg-amber-50/80 px-4 py-2.5 backdrop-blur-md dark:border-amber-900/40 dark:bg-amber-950/40">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
+              <span className="text-sm font-medium text-amber-900 dark:text-amber-200">{t('pdfReportDesigner.draftFound')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleRestoreDraft}
+                className="h-7 border-amber-200 bg-white/50 text-xs font-bold hover:bg-white dark:border-amber-800 dark:bg-white/5 dark:hover:bg-white/10"
+              >
                 {t('pdfReportDesigner.restoreDraft')}
               </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={handleClearDraft}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleClearDraft}
+                className="h-7 text-xs font-bold text-amber-700 hover:bg-amber-100 dark:text-amber-400 dark:hover:bg-amber-900/40"
+              >
                 {t('pdfReportDesigner.discardDraft')}
               </Button>
-            </span>
-          </AlertDescription>
-        </Alert>
+            </div>
+          </div>
+        </div>
       )}
 
       {!isEdit && !hasElements ? (
-        <div className="shrink-0 border-b border-slate-200 bg-linear-to-r from-sky-50/80 via-white to-indigo-50/60 px-4 py-2 dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11.5px] leading-snug text-slate-500 dark:text-slate-400">
+        <div className="relative shrink-0 border-b border-slate-300/80 bg-stone-50/95 px-4 py-2.5 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60">
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+          <div className="relative z-10 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
             <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
-              <Sparkles className="size-3.5 text-sky-500" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider">
+              <Sparkles className="size-3.5 text-pink-500" />
+              <span className="font-bold uppercase tracking-widest text-[10px]">
                 {t('pdfReportDesigner.onboardingBadge')}
               </span>
             </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-flex size-4 items-center justify-center rounded-full bg-sky-100 text-[9.5px] font-semibold text-sky-700 dark:bg-sky-950/40 dark:text-sky-300">
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-flex size-4.5 items-center justify-center rounded-full bg-pink-500/10 text-[10px] font-bold text-pink-600 ring-1 ring-pink-500/20 dark:bg-pink-500/20 dark:text-pink-400">
                 1
               </span>
-              {t('pdfReportDesigner.stepper.identify', { defaultValue: 'Pick document type & title' })}
+              <span className="font-medium">{t('pdfReportDesigner.stepper.identify', { defaultValue: 'Pick document type & title' })}</span>
             </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-flex size-4 items-center justify-center rounded-full bg-slate-100 text-[9.5px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-flex size-4.5 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-600 ring-1 ring-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:ring-white/5">
                 2
               </span>
-              {t('pdfReportDesigner.stepper.design', { defaultValue: 'Drag elements from the left' })}
+              <span className="font-medium">{t('pdfReportDesigner.stepper.design', { defaultValue: 'Drag elements from the left' })}</span>
             </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-flex size-4 items-center justify-center rounded-full bg-slate-100 text-[9.5px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-flex size-4.5 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-600 ring-1 ring-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:ring-white/5">
                 3
               </span>
-              {t('pdfReportDesigner.stepper.configure', { defaultValue: 'Configure on the right' })}
+              <span className="font-medium">{t('pdfReportDesigner.stepper.configure', { defaultValue: 'Configure on the right' })}</span>
             </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-flex size-4 items-center justify-center rounded-full bg-slate-100 text-[9.5px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-flex size-4.5 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-600 ring-1 ring-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:ring-white/5">
                 4
               </span>
-              {t('pdfReportDesigner.stepper.save', { defaultValue: 'Save your template' })}
+              <span className="font-medium">{t('pdfReportDesigner.stepper.save', { defaultValue: 'Save your template' })}</span>
             </span>
           </div>
         </div>
       ) : null}
 
-      <div className="shrink-0 border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
+      <div className="relative shrink-0 overflow-hidden border-b border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="relative z-10">
             <div className="flex items-center gap-2 px-4 py-2">
               <Button
                 type="button"
@@ -1619,6 +1637,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                   id="snap-toggle"
                   checked={snapEnabled}
                   onCheckedChange={setSnapEnabled}
+                  className="shadow-sm transition-all duration-300"
                 />
                 <Label htmlFor="snap-toggle" className="cursor-pointer text-xs font-normal text-slate-600 dark:text-slate-400">
                   {t('pdfReportDesigner.snapToGrid')}
@@ -1629,14 +1648,19 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 type="submit"
                 size="sm"
                 disabled={isSaving || (isEdit && !templateByIdLoaded) || !isFormValid}
-                className="min-w-[88px] shadow-sm"
+                className="min-w-[100px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500"
               >
-                {isSaving ? t('common.saving') : isEdit ? t('common.update') : t('common.save')}
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    {t('common.saving')}
+                  </>
+                ) : isEdit ? t('common.update') : t('common.save')}
               </Button>
             </div>
 
             {identityExpanded ? (
-              <div className="border-t border-slate-100 bg-slate-50/70 px-4 py-2.5 dark:border-slate-800 dark:bg-slate-900/40">
+              <div className="relative z-10 border-t border-slate-300/60 bg-stone-50/50 px-4 py-3 dark:border-white/5 dark:bg-white/5">
                 <div className="mb-2 flex items-center gap-2">
                   <span className="inline-flex size-4 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600 dark:bg-slate-700 dark:text-slate-200">
                     1
@@ -1718,7 +1742,10 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-md border border-slate-200 bg-white px-3 py-[7px] dark:border-slate-700 dark:bg-slate-950/60">
                         <FormControl>
-                          <Checkbox checked={field.value ?? false} onCheckedChange={field.onChange} />
+                          <Switch 
+                            checked={field.value ?? false} 
+                            onCheckedChange={field.onChange} 
+                          />
                         </FormControl>
                         <FormLabel className="cursor-pointer text-xs font-normal text-slate-700 dark:text-slate-300">
                           {t('pdfReportDesigner.setDefaultTemplate')}
@@ -1835,38 +1862,54 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         ) : null}
       </div>
 
-      <div className="flex shrink-0 items-center gap-2.5 border-t border-slate-200 bg-white px-4 py-1.5 dark:border-slate-700 dark:bg-slate-950">
-        <div className="flex shrink-0 items-center gap-1.5">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-            {t('pdfReportDesigner.pages')}
-          </span>
-        </div>
-        <Separator orientation="vertical" className="h-4" />
-        <div className="flex flex-wrap gap-1">
-          {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
-            <Button
-              key={pageNumber}
-              type="button"
-              size="sm"
-              variant={currentPage === pageNumber ? 'default' : 'outline'}
-              className="h-6 min-w-[52px] px-3 text-xs"
-              onClick={() => handleNavigateToPage(pageNumber)}
-            >
-              {t('pdfReportDesigner.pageNumber', { page: pageNumber })}
-            </Button>
-          ))}
-        </div>
-        <div className="ml-auto flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400">
-          <span className="hidden md:inline">
-            {t('pdfReportDesigner.activePageHint', {
-              current: currentPage,
-              total: pageCount,
-            })}
-          </span>
-          <Separator orientation="vertical" className="hidden h-3 md:block" />
-          <span className="hidden md:inline">
-            {t('pdfReportDesigner.healthMetrics.elements')}: {orderedElements.length}
-          </span>
+      <div className="relative z-30 shrink-0 overflow-hidden border-t border-slate-300/80 bg-stone-50/95 px-4 py-2 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/80 dark:shadow-none dark:ring-0">
+        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 rounded-lg bg-white/40 px-2 py-1 dark:bg-white/5">
+              <PanelsTopLeft className="size-3.5 text-slate-400" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                {t('pdfReportDesigner.pages')}
+              </span>
+            </div>
+            <Separator orientation="vertical" className="h-4 opacity-50" />
+            <div className="flex flex-wrap gap-1.5">
+              {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
+                <Button
+                  key={pageNumber}
+                  type="button"
+                  size="sm"
+                  className={cn(
+                    "h-7 min-w-[60px] px-3 text-[11px] font-bold transition-all duration-300",
+                    currentPage === pageNumber
+                      ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 hover:scale-[1.05]"
+                      : "border-slate-200/60 bg-white/40 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-white/5 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+                  )}
+                  variant={currentPage === pageNumber ? 'default' : 'outline'}
+                  onClick={() => handleNavigateToPage(pageNumber)}
+                >
+                  {t('pdfReportDesigner.pageNumber', { page: pageNumber })}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 text-[10.5px] font-medium text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-1.5">
+              <span className="opacity-60">{t('pdfReportDesigner.activePageHint', {
+                current: currentPage,
+                total: pageCount,
+              })}</span>
+            </div>
+            <Separator orientation="vertical" className="h-3 opacity-50" />
+            <div className="flex items-center gap-1.5">
+              <Box className="size-3.5 opacity-60" />
+              <span className="font-bold text-slate-700 dark:text-slate-300">
+                {orderedElements.length}
+              </span>
+              <span className="opacity-60">{t('pdfReportDesigner.healthMetrics.elements')}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

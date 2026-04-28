@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { KeyRound, Loader2, Plus, RefreshCw, ShieldCheck, Sparkles } from 'lucide-react';
+import { KeyRound, Loader2, Plus, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DataTableActionBar,
@@ -12,7 +12,6 @@ import {
   type DataTableGridColumn,
 } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -217,19 +216,31 @@ export function PermissionDefinitionsPage(): ReactElement {
     </div>
   );
 
+  const headerCardStyle = `
+    overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 
+    bg-white dark:bg-[#180F22] backdrop-blur-md p-6 shadow-xl 
+    transition-all duration-300 relative
+  `;
+
+  const statCardStyle = `
+    rounded-2xl border border-slate-200 dark:border-white/10 
+    bg-white/90 dark:bg-[#1E1627] p-5 shadow-sm 
+    transition-all duration-300 hover:shadow-md group
+  `;
+
   return (
     <div className="w-full space-y-6">
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+      <div className={headerCardStyle}>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 dark:bg-pink-500/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/5 dark:bg-orange-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
+
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
           <div className="min-w-0">
-            <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-              <Sparkles className="size-4" />
-              {t('sidebar.permissionDefinitions')}
-            </div>
-            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white transition-colors">
+
+            <h1 className="mt-4 text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
               {t('permissionDefinitions.title')}
             </h1>
-            <p className="mt-2 max-w-2xl text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors">
+            <p className="mt-2 max-w-2xl text-sm font-medium text-slate-500 dark:text-slate-400">
               {t('permissionDefinitions.description')}
             </p>
           </div>
@@ -237,52 +248,55 @@ export function PermissionDefinitionsPage(): ReactElement {
             <div className="flex shrink-0">
               <Button
                 onClick={handleAddClick}
-                className="h-11 rounded-2xl border-0 bg-linear-to-r from-pink-600 to-orange-600 px-6 text-sm font-bold text-white shadow-lg shadow-pink-500/20 transition-transform hover:scale-[1.02] hover:text-white"
+                className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25
+                opacity-50 grayscale-[0] 
+                dark:opacity-100 dark:grayscale-0
+                "
               >
-                <Plus size={18} className="mr-2" />
+                <Plus size={20} className="mr-2" />
                 {t('permissionDefinitions.add')}
               </Button>
             </div>
           )}
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-cyan-100 p-2.5 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
-                <KeyRound className="size-4" />
+        <div className="mt-8 grid gap-4 sm:grid-cols-3 relative z-10">
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl bg-pink-100 p-3 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
+                <KeyRound className="size-5" />
               </div>
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                   {t('permissionDefinitions.title')}
                 </p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{totalCount}</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white leading-none mt-1">{totalCount}</p>
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                <ShieldCheck className="size-4" />
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl bg-emerald-100 p-3 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
+                <ShieldCheck className="size-5" />
               </div>
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                   {t('permissionDefinitions.table.isActive')}
                 </p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{activeCount}</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white leading-none mt-1">{activeCount}</p>
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-pink-100 p-2.5 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300">
-                <RefreshCw className="size-4" />
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl bg-orange-100 p-3 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border border-orange-100 dark:border-orange-500/20">
+                <RefreshCw className="size-5" />
               </div>
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                   {t('permissionDefinitions.syncSummaryTitle', { defaultValue: 'Route Sync' })}
                 </p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{PERMISSION_CODE_CATALOG.length}</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white leading-none mt-1">{PERMISSION_CODE_CATALOG.length}</p>
               </div>
             </div>
           </div>
@@ -308,9 +322,9 @@ export function PermissionDefinitionsPage(): ReactElement {
             filterColumns={filterColumns}
             defaultFilterColumn="code"
             draftFilterRows={[]}
-            onDraftFilterRowsChange={() => {}}
-            onApplyFilters={() => {}}
-            onClearFilters={() => {}}
+            onDraftFilterRowsChange={() => { }}
+            onApplyFilters={() => { }}
+            onClearFilters={() => { }}
             translationNamespace="access-control"
             appliedFilterCount={0}
             searchValue={searchTerm}
@@ -350,78 +364,82 @@ export function PermissionDefinitionsPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <ManagementDataTableChrome>
-          <DataTableGrid<PermissionDefinitionDto, PermissionDefinitionColumnKey>
-            columns={columns}
-            visibleColumnKeys={visibleColumns as PermissionDefinitionColumnKey[]}
-            rows={filteredItems}
-            rowKey={(r) => r.id}
-            renderCell={(row, key) => {
-              if (key === 'code') return <span className="font-mono text-sm">{row.code}</span>;
-              if (key === 'name') {
-                return (
-                  <div className="flex flex-col">
-                    <span>
-                      {getPermissionDisplayLabel(row.code, (key, fallback) => t(key, fallback))}
-                    </span>
-                    {(() => {
-                      const displayName = getPermissionDisplayLabel(row.code, (key, fallback) => t(key, fallback));
-                      const storedName = row.name;
-                      if (storedName.trim().toLowerCase() === displayName.trim().toLowerCase()) return null;
-                      return (
-                        <span className="text-xs text-slate-500 dark:text-slate-400">{storedName}</span>
-                      );
-                    })()}
-                  </div>
-                );
-              }
-              if (key === 'isActive') {
-                return (
-                  <Badge variant={row.isActive ? 'default' : 'secondary'}>
-                    {row.isActive ? t('common.yes') : t('common.no')}
-                  </Badge>
-                );
-              }
-              if (key === 'updatedDate') {
-                return (
-                  <span className="text-slate-500 text-sm">
-                    {row.updatedDate ? new Date(row.updatedDate).toLocaleDateString() : '-'}
-                  </span>
-                );
-              }
-              return '-';
-            }}
-            isLoading={isLoading}
-            isError={false}
-            loadingText={t('common.loading')}
-            errorText={t('common.error')}
-            emptyText={t('common.noData')}
-            minTableWidthClassName="min-w-[700px]"
-            showActionsColumn={canUpdate || canDelete}
-            actionsHeaderLabel={t('common.actions')}
-            renderActionsCell={renderActionsCell}
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={t('permissionDefinitions.table.showing', {
-              from: (pageNumber - 1) * pageSize + 1,
-              to: Math.min(pageNumber * pageSize, totalCount),
-              total: totalCount,
-            })}
-            centerColumnHeaders
-          />
-          </ManagementDataTableChrome>
+            <ManagementDataTableChrome>
+              <DataTableGrid<PermissionDefinitionDto, PermissionDefinitionColumnKey>
+                columns={columns}
+                visibleColumnKeys={visibleColumns as PermissionDefinitionColumnKey[]}
+                rows={filteredItems}
+                rowKey={(r) => r.id}
+                renderCell={(row, key) => {
+                  if (key === 'code') return <span className="font-mono text-sm">{row.code}</span>;
+                  if (key === 'name') {
+                    return (
+                      <div className="flex flex-col">
+                        <span>
+                          {getPermissionDisplayLabel(row.code, (key, fallback) => t(key, fallback))}
+                        </span>
+                        {(() => {
+                          const displayName = getPermissionDisplayLabel(row.code, (key, fallback) => t(key, fallback));
+                          const storedName = row.name;
+                          if (storedName.trim().toLowerCase() === displayName.trim().toLowerCase()) return null;
+                          return (
+                            <span className="text-xs text-slate-500 dark:text-slate-400">{storedName}</span>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }
+                  if (key === 'isActive') {
+                    return row.isActive ? (
+                      <div className="inline-flex items-center justify-center px-2 py-1 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black text-[12px] capitalize opacity-70 shadow-sm transition-all dark:opacity-100 dark:bg-white dark:from-white dark:to-white dark:text-black">
+                        {t('common.yes')}
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center justify-center px-2 py-1 rounded-xl bg-slate-100 text-slate-500 font-bold text-[12px] capitalize tracking-wider dark:bg-slate-800 dark:text-slate-400">
+                        {t('common.no')}
+                      </div>
+                    );
+                  }
+                  if (key === 'updatedDate') {
+                    return (
+                      <span className="text-slate-500 text-sm">
+                        {row.updatedDate ? new Date(row.updatedDate).toLocaleDateString() : '-'}
+                      </span>
+                    );
+                  }
+                  return '-';
+                }}
+                isLoading={isLoading}
+                isError={false}
+                loadingText={t('common.loading')}
+                errorText={t('common.error')}
+                emptyText={t('common.noData')}
+                minTableWidthClassName="min-w-[700px]"
+                showActionsColumn={canUpdate || canDelete}
+                actionsHeaderLabel={t('common.actions')}
+                renderActionsCell={renderActionsCell}
+                pageSize={pageSize}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                onPageSizeChange={(s) => {
+                  setPageSize(s);
+                  setPageNumber(1);
+                }}
+                pageNumber={pageNumber}
+                totalPages={totalPages}
+                hasPreviousPage={pageNumber > 1}
+                hasNextPage={pageNumber < totalPages}
+                onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+                onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+                previousLabel={t('common.previous')}
+                nextLabel={t('common.next')}
+                paginationInfoText={t('permissionDefinitions.table.showing', {
+                  from: (pageNumber - 1) * pageSize + 1,
+                  to: Math.min(pageNumber * pageSize, totalCount),
+                  total: totalCount,
+                })}
+                centerColumnHeaders
+              />
+            </ManagementDataTableChrome>
           </div>
         </CardContent>
       </Card>

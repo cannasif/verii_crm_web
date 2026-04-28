@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,7 +28,8 @@ import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { createPermissionGroupSchema, type CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
 import type { PermissionGroupDto } from '../types/access-control.types';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { ShieldCheck, Sparkles } from 'lucide-react';
+import { ShieldCheck, Sparkles, X, FileText, Info, Lock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface PermissionGroupFormProps {
   open: boolean;
@@ -36,6 +38,19 @@ interface PermissionGroupFormProps {
   item?: PermissionGroupDto | null;
   isLoading?: boolean;
 }
+
+const INPUT_STYLE = `
+  h-11 rounded-lg
+  bg-slate-50 dark:bg-white/5
+  border border-slate-200 dark:border-white/10
+  text-slate-900 dark:text-white text-sm
+  placeholder:text-slate-400 dark:placeholder:text-slate-500
+  focus-visible:bg-white dark:focus-visible:bg-white/5
+  focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  transition-all duration-200 w-full
+`;
+
+const LABEL_STYLE = 'text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2';
 
 export function PermissionGroupForm({
   open,
@@ -90,105 +105,142 @@ export function PermissionGroupForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-linear-to-r from-slate-50 via-white to-cyan-50/50 dark:from-[#1a1025] dark:via-[#130822] dark:to-cyan-950/30">
-          <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-            <Sparkles className="size-4" />
-            {item ? t('permissionGroups.form.editTitle') : t('permissionGroups.form.addTitle')}
+      <DialogContent className="max-h-[92dvh] w-[95%] !max-w-5xl overflow-hidden flex flex-col border border-slate-100 dark:border-white/10 p-0 text-slate-900 shadow-2xl dark:bg-[#130822] dark:text-white sm:w-full rounded-2xl [&>button:last-of-type]:hidden">
+        <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
+          <X size={20} strokeWidth={2.5} />
+        </DialogPrimitive.Close>
+
+        <DialogHeader className="p-2 pb-0 shrink-0">
+          <div className="flex items-center gap-5">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-linear-to-br from-pink-500 to-orange-500 shadow-lg shadow-pink-500/20">
+              <ShieldCheck size={32} className="text-white" strokeWidth={2.5} />
+            </div>
+            <div className="space-y-1">
+
+              <DialogTitle className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                {item
+                  ? t('permissionGroups.form.editTitle')
+                  : t('permissionGroups.form.addTitle')}
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+                {item
+                  ? t('permissionGroups.form.editDescription')
+                  : t('permissionGroups.form.addDescription')}
+              </DialogDescription>
+            </div>
           </div>
-          <DialogTitle className="text-xl font-bold">
-            {item
-              ? t('permissionGroups.form.editTitle')
-              : t('permissionGroups.form.addTitle')}
-          </DialogTitle>
-          <DialogDescription>
-            {item
-              ? t('permissionGroups.form.editDescription')
-              : t('permissionGroups.form.addDescription')}
-          </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8 pt-0 sm:pt-0 custom-scrollbar">
           <Form {...form}>
             <form id="permission-group-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="inline-flex items-center" required={isZodFieldRequired(createPermissionGroupSchema, 'name')}>
-                      {t('permissionGroups.form.name')}
-                      <FieldHelpTooltip text={t('help.permissionGroup.name')} />
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder={t('permissionGroups.form.namePlaceholder')} maxLength={100} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('permissionGroups.form.description')}</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionGroups.form.descriptionPlaceholder')} maxLength={500} className="min-h-[80px]" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-6 pt-6 border-t border-dashed border-slate-200 dark:border-white/10">
+                <div className="grid gap-6 sm:grid-cols-2 items-start">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}>
+                          <FileText size={16} className="text-pink-500" />
+                          {t('permissionGroups.form.name')}
+                          <FieldHelpTooltip text={t('help.permissionGroup.name')} />
+                          {isZodFieldRequired(createPermissionGroupSchema, 'name') && <span className="text-destructive ml-0.5">*</span>}
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} className={INPUT_STYLE} placeholder={t('permissionGroups.form.namePlaceholder')} maxLength={100} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="isActive"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-[0.65rem] border border-slate-200 bg-slate-50/50 p-2.5 px-4 dark:border-white/10 dark:bg-white/5 h-[45px] mt-[34px]">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-sm font-bold flex items-center gap-2">
+                            <Sparkles size={16} className="text-pink-500" />
+                            {t('permissionGroups.form.isActive')}
+                            <FieldHelpTooltip text={t('help.permissionGroup.isActive')} />
+                          </FormLabel>
+                        </div>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <Info size={16} className="text-pink-500" />
+                        {t('permissionGroups.form.description')}
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionGroups.form.descriptionPlaceholder')} maxLength={500} className={cn(INPUT_STYLE, "min-h-[100px] py-3")} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                  /*Tablo bölümü*/
+                <FormField
+                  control={form.control}
+                  name="permissionDefinitionIds"
+                  render={({ field }) => (
+                    <FormItem >
+                      <FormLabel className={cn(LABEL_STYLE, "mb-3")}>
+                        <Lock size={16} className="text-pink-500" />
+                        {t('permissionGroups.form.permissions')}
+                        <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
+                      </FormLabel>
+                      <FormControl>
+                        <PermissionDefinitionMultiSelect value={field.value} onChange={field.onChange} disabled={isLoading} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <FormField
-                control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <FormLabel className="inline-flex items-center">
-                      {t('permissionGroups.form.isActive')}
-                      <FieldHelpTooltip text={t('help.permissionGroup.isActive')} />
-                    </FormLabel>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="permissionDefinitionIds"
-                render={({ field }) => (
-                  <FormItem className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <FormLabel className="inline-flex items-center">
-                      {t('permissionGroups.form.permissions')}
-                      <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
-                    </FormLabel>
-                    <FormControl>
-                      <PermissionDefinitionMultiSelect value={field.value} onChange={field.onChange} disabled={isLoading} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </form>
           </Form>
         </div>
 
-        <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            {t('common.cancel')}
-          </Button>
-          <span className="inline-flex items-center gap-1">
-            <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
-            <Button type="submit" form="permission-group-form" disabled={isLoading || !isFormValid} className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white">
-              <ShieldCheck className="mr-2 size-4" />
-              {isLoading ? t('common.saving') : t('common.save')}
+        <DialogFooter className="px-8 py-4 shrink-0 border-t border-dashed border-slate-200 dark:border-white/10 mt-auto">
+          <div className="flex flex-row items-center justify-end gap-3 w-full">
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={isLoading} className="h-11 px-6 rounded-xl dark:bg-[#180F22] font-bold border border-slate-200 hover:bg-slate-100 dark:border-white/10 dark:hover:bg-white/10 text-xs sm:text-sm">
+              {t('common.cancel')}
             </Button>
-          </span>
+            <div className="inline-flex items-center gap-2">
+              <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
+              <Button
+                type="submit"
+                form="permission-group-form"
+                disabled={isLoading || !isFormValid}
+                className="h-11 px-6 sm:px-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-pink-500/25 text-xs sm:text-sm"
+              >
+                {isLoading ? (
+                  <>
+                    <X className="mr-2 size-4 animate-spin" />
+                    {t('common.saving')}
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="mr-2 size-4" />
+                    {t('common.save')}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

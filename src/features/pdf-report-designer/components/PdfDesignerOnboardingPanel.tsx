@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, Sparkles, LayoutTemplate, Blocks, Gauge, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,24 +77,21 @@ export function PdfDesignerOnboardingPanel({
   const tone = getScoreTone(qualityScore);
   const hasIssues = qualityIssues.length > 0;
 
-  const toneClasses: Record<'emerald' | 'amber' | 'rose', string> = {
-    emerald:
-      'text-emerald-700 ring-emerald-200 bg-emerald-50 dark:text-emerald-300 dark:ring-emerald-900/60 dark:bg-emerald-950/40',
-    amber:
-      'text-amber-700 ring-amber-200 bg-amber-50 dark:text-amber-300 dark:ring-amber-900/60 dark:bg-amber-950/40',
-    rose:
-      'text-rose-700 ring-rose-200 bg-rose-50 dark:text-rose-300 dark:ring-rose-900/60 dark:bg-rose-950/40',
-  };
-
   return (
     <section
       aria-label={qualityTitle}
-      className="border-t border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-950"
+      className="relative overflow-hidden border-t border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0"
     >
-      <div className="flex flex-wrap items-center gap-3 px-4 py-2.5">
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="relative z-10 flex flex-wrap items-center gap-3 px-4 py-2.5">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <div
-            className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-inset ${toneClasses[tone]}`}
+            className={cn(
+              "flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ring-1 ring-inset transition-all duration-300",
+              tone === 'emerald' && "bg-emerald-500/10 text-emerald-600 ring-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400",
+              tone === 'amber' && "bg-amber-500/10 text-amber-600 ring-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400",
+              tone === 'rose' && "bg-rose-500/10 text-rose-600 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400"
+            )}
           >
             <Gauge className="size-3.5" />
             <span>
@@ -120,8 +118,13 @@ export function PdfDesignerOnboardingPanel({
         <div className="flex shrink-0 items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" size="sm" className="h-8 gap-1.5">
-                <Sparkles className="size-3.5" />
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-1.5 border-slate-300/80 bg-white/50 font-bold text-slate-700 shadow-sm transition-all hover:bg-white hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+              >
+                <Sparkles className="size-3.5 text-pink-500" />
                 {t('pdfReportDesigner.smartStartTitle')}
                 <ChevronDown className="size-3.5 opacity-60" />
               </Button>
@@ -144,8 +147,13 @@ export function PdfDesignerOnboardingPanel({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" size="sm" className="h-8 gap-1.5">
-                <LayoutTemplate className="size-3.5" />
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-1.5 border-slate-300/80 bg-white/50 font-bold text-slate-700 shadow-sm transition-all hover:bg-white hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+              >
+                <LayoutTemplate className="size-3.5 text-orange-500" />
                 {t('pdfReportDesigner.presetGalleryTitle')}
                 <ChevronDown className="size-3.5 opacity-60" />
               </Button>
@@ -172,8 +180,13 @@ export function PdfDesignerOnboardingPanel({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" size="sm" className="h-8 gap-1.5">
-                <Blocks className="size-3.5" />
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-1.5 border-slate-300/80 bg-white/50 font-bold text-slate-700 shadow-sm transition-all hover:bg-white hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+              >
+                <Blocks className="size-3.5 text-blue-500" />
                 {t('pdfReportDesigner.reusableBlocksTitle')}
                 <ChevronDown className="size-3.5 opacity-60" />
               </Button>
@@ -202,12 +215,12 @@ export function PdfDesignerOnboardingPanel({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-8 gap-1 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            className="h-8 gap-1 font-medium text-slate-500 hover:bg-slate-200/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
             onClick={() => setExpanded((prev) => !prev)}
             aria-expanded={expanded}
           >
             {expanded ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
-            <span className="text-xs">
+            <span className="text-[11px] font-bold uppercase tracking-wider">
               {expanded
                 ? t('pdfReportDesigner.hideGuidance')
                 : t('pdfReportDesigner.showGuidance')}
@@ -217,8 +230,8 @@ export function PdfDesignerOnboardingPanel({
       </div>
 
       {expanded ? (
-        <div className="grid gap-3 border-t border-slate-100 bg-slate-50/70 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/40 lg:grid-cols-[1.2fr_1fr]">
-          <div className="rounded-xl border bg-white p-3 dark:border-slate-800 dark:bg-slate-950/60">
+        <div className="relative z-10 grid gap-3 border-t border-slate-200/60 bg-stone-50/50 px-4 py-3 dark:border-white/5 dark:bg-white/5 lg:grid-cols-[1.2fr_1fr]">
+          <div className="rounded-xl border border-slate-200/80 bg-white/50 p-3 shadow-sm dark:border-white/10 dark:bg-[#1a1025]/40">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {qualityTitle}
@@ -243,7 +256,7 @@ export function PdfDesignerOnboardingPanel({
             )}
           </div>
 
-          <div className="rounded-xl border bg-white p-3 dark:border-slate-800 dark:bg-slate-950/60">
+          <div className="rounded-xl border border-slate-200/80 bg-white/50 p-3 shadow-sm dark:border-white/10 dark:bg-[#1a1025]/40">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {healthTitle}
             </span>
@@ -251,7 +264,7 @@ export function PdfDesignerOnboardingPanel({
               {metrics.map((metric) => (
                 <div
                   key={metric.label}
-                  className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/40"
+                  className="rounded-lg border border-slate-200/60 bg-white/80 px-3 py-2 shadow-xs dark:border-white/5 dark:bg-white/5"
                 >
                   <div className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
                     {metric.label}

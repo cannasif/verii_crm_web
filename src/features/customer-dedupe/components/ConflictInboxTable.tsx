@@ -122,12 +122,16 @@ export function ConflictInboxTable({
 
   const renderActionsCell = (row: CustomerDuplicateCandidateDto): ReactElement => (
     <div className="flex gap-2">
-      <Button variant="outline" size="sm" onClick={() => setPreviewRow(row)}>
-        <Eye className="h-4 w-4 mr-1" />
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setPreviewRow(row)}
+        className="h-9 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 font-semibold gap-1.5 transition-all"
+      >
+        <Eye className="h-4 w-4" />
         {t('previewMerge')}
       </Button>
       <Button
-        variant="default"
         size="sm"
         disabled={mergeMutation.isPending}
         onClick={() => {
@@ -140,8 +144,9 @@ export function ConflictInboxTable({
             { onSuccess: onMergeSuccess }
           );
         }}
+        className="h-9 rounded-xl bg-linear-to-r from-emerald-500 to-green-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_4px_12px_-4px_rgba(16,185,129,0.5)] disabled:opacity-50 disabled:hover:scale-100 gap-1.5"
       >
-        <Merge className="h-4 w-4 mr-1" />
+        <Merge className="h-4 w-4" />
         {t('merge')}
       </Button>
     </div>

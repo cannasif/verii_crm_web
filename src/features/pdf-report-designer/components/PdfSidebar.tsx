@@ -41,6 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 export type PdfFieldPaletteType = 'text' | 'field' | 'table' | 'table-column' | 'image' | 'shape' | 'container' | 'note' | 'summary' | 'quotationTotals';
 
@@ -96,8 +97,10 @@ function DraggablePaletteItem({
       style={style}
       {...listeners}
       {...attributes}
-      className="cursor-grab rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 active:cursor-grabbing dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 data-[dragging=true]:opacity-50"
-      data-dragging={isDragging ?? undefined}
+      className={cn(
+        "cursor-grab rounded-lg border border-slate-300/80 bg-white/70 px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-all duration-300 hover:border-pink-500/30 hover:bg-white hover:shadow-md active:cursor-grabbing dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10",
+        isDragging && "opacity-50 scale-95"
+      )}
     >
       {field.label}
     </div>
@@ -212,78 +215,81 @@ function TextPropertiesPanel(): ReactElement | null {
   const fontFamily = selectedElement.fontFamily ?? 'Arial';
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        {t('reportDesigner.properties.textTitle')}
-      </span>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.text')}</Label>
-        <Input
-          value={selectedElement.text ?? ''}
-          onChange={(e) => updateReportElement(selectedElement.id, { text: e.target.value })}
-          className="min-h-[60px] text-sm"
-          placeholder={t('reportDesigner.properties.textPlaceholder')}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
-        <Select
-          value={String(fontSize)}
-          onValueChange={(v) =>
-            updateReportElement(selectedElement.id, { fontSize: Number(v) })
-          }
-        >
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FONT_SIZES.map((size) => (
-              <SelectItem key={size} value={String(size)}>
-                {size} px
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
-        <Select
-          value={fontFamily}
-          onValueChange={(v) =>
-            updateReportElement(selectedElement.id, { fontFamily: v })
-          }
-        >
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FONT_FAMILIES.map((f) => (
-              <SelectItem key={f.value} value={f.value}>
-                {f.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.color')}</Label>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            value={selectedElement.color ?? '#374151'}
-            onChange={(e) =>
-              updateReportElement(selectedElement.id, { color: e.target.value })
-            }
-            className="h-8 w-10 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
-          />
+    <div className="relative flex flex-col gap-3 rounded-xl border border-slate-300/80 bg-stone-50/95 p-3 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="relative z-10 flex flex-col gap-3">
+        <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          {t('reportDesigner.properties.textTitle')}
+        </span>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.text')}</Label>
           <Input
-            value={selectedElement.color ?? ''}
-            onChange={(e) =>
-              updateReportElement(selectedElement.id, { color: e.target.value || undefined })
-            }
-            className="h-8 flex-1 text-xs"
-            placeholder={t('reportDesigner.properties.colorPlaceholder')}
+            value={selectedElement.text ?? ''}
+            onChange={(e) => updateReportElement(selectedElement.id, { text: e.target.value })}
+            className="min-h-[60px] text-sm"
+            placeholder={t('reportDesigner.properties.textPlaceholder')}
           />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
+          <Select
+            value={String(fontSize)}
+            onValueChange={(v) =>
+              updateReportElement(selectedElement.id, { fontSize: Number(v) })
+            }
+          >
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_SIZES.map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size} px
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
+          <Select
+            value={fontFamily}
+            onValueChange={(v) =>
+              updateReportElement(selectedElement.id, { fontFamily: v })
+            }
+          >
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_FAMILIES.map((f) => (
+                <SelectItem key={f.value} value={f.value}>
+                  {f.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.color')}</Label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={selectedElement.color ?? '#374151'}
+              onChange={(e) =>
+                updateReportElement(selectedElement.id, { color: e.target.value })
+              }
+              className="h-8 w-10 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
+            />
+            <Input
+              value={selectedElement.color ?? ''}
+              onChange={(e) =>
+                updateReportElement(selectedElement.id, { color: e.target.value || undefined })
+              }
+              className="h-8 flex-1 text-xs"
+              placeholder={t('reportDesigner.properties.colorPlaceholder')}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -313,78 +319,81 @@ function FieldPropertiesPanel(): ReactElement | null {
   const fontFamily = selectedElement.fontFamily ?? 'Arial';
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        {t('reportDesigner.properties.fieldTitle')}
-      </span>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.valueLabel')}</Label>
-        <Input
-          value={selectedElement.value ?? ''}
-          readOnly
-          className="text-sm bg-slate-50 dark:bg-slate-800"
-          placeholder={t('reportDesigner.properties.draggedFieldPlaceholder')}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
-        <Select
-          value={String(fontSize)}
-          onValueChange={(v) =>
-            updateReportElement(selectedElement.id, { fontSize: Number(v) })
-          }
-        >
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FONT_SIZES.map((size) => (
-              <SelectItem key={size} value={String(size)}>
-                {size} px
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
-        <Select
-          value={fontFamily}
-          onValueChange={(v) =>
-            updateReportElement(selectedElement.id, { fontFamily: v })
-          }
-        >
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FONT_FAMILIES.map((f) => (
-              <SelectItem key={f.value} value={f.value}>
-                {f.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.color')}</Label>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            value={selectedElement.color ?? '#374151'}
-            onChange={(e) =>
-              updateReportElement(selectedElement.id, { color: e.target.value })
-            }
-            className="h-8 w-10 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
-          />
+    <div className="relative flex flex-col gap-3 rounded-xl border border-slate-300/80 bg-stone-50/95 p-3 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="relative z-10 flex flex-col gap-3">
+        <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          {t('reportDesigner.properties.fieldTitle')}
+        </span>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.valueLabel')}</Label>
           <Input
-            value={selectedElement.color ?? ''}
-            onChange={(e) =>
-              updateReportElement(selectedElement.id, { color: e.target.value || undefined })
-            }
-            className="h-8 flex-1 text-xs"
-            placeholder={t('reportDesigner.properties.colorPlaceholder')}
+            value={selectedElement.value ?? ''}
+            readOnly
+            className="text-sm bg-slate-50 dark:bg-slate-800"
+            placeholder={t('reportDesigner.properties.draggedFieldPlaceholder')}
           />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.fontSize')}</Label>
+          <Select
+            value={String(fontSize)}
+            onValueChange={(v) =>
+              updateReportElement(selectedElement.id, { fontSize: Number(v) })
+            }
+          >
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_SIZES.map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size} px
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.fontFamily')}</Label>
+          <Select
+            value={fontFamily}
+            onValueChange={(v) =>
+              updateReportElement(selectedElement.id, { fontFamily: v })
+            }
+          >
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_FAMILIES.map((f) => (
+                <SelectItem key={f.value} value={f.value}>
+                  {f.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.color')}</Label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={selectedElement.color ?? '#374151'}
+              onChange={(e) =>
+                updateReportElement(selectedElement.id, { color: e.target.value })
+              }
+              className="h-8 w-10 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
+            />
+            <Input
+              value={selectedElement.color ?? ''}
+              onChange={(e) =>
+                updateReportElement(selectedElement.id, { color: e.target.value || undefined })
+              }
+              className="h-8 flex-1 text-xs"
+              placeholder={t('reportDesigner.properties.colorPlaceholder')}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -449,67 +458,70 @@ function ImagePropertiesPanel({
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        {t('reportDesigner.properties.imageTitle')}
-      </span>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.imageUrl')}</Label>
-        <Input
-          value={selectedElement.value ?? ''}
-          onChange={(e) => updateReportElement(selectedElement.id, { value: e.target.value })}
-          className="text-sm"
-          placeholder={t('reportDesigner.properties.imageUrlPlaceholder')}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.uploadFromFile')}</Label>
-        <input
-          id={`pdf-report-designer-image-upload-${selectedElement.id}`}
-          type="file"
-          accept="image/*"
-          className="sr-only"
-          onChange={handleFileChange}
-        />
-        <Label
-          htmlFor={`pdf-report-designer-image-upload-${selectedElement.id}`}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-medium ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <Upload className="size-3.5" />
-          {t('reportDesigner.properties.selectImageMax2Mb')}
-        </Label>
-      </div>
-      {isUrl && (
-        <div className="rounded border border-slate-200 bg-slate-50 p-2">
-          <span className="text-xs text-slate-500">{t('reportDesigner.properties.preview')}</span>
-          <img
-            src={resolvePdfImageSrc(selectedElement.value ?? '')}
-            alt=""
-            className="mt-1 max-h-20 w-full object-contain"
+    <div className="relative flex flex-col gap-3 rounded-xl border border-slate-300/80 bg-stone-50/95 p-3 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="relative z-10 flex flex-col gap-3">
+        <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          {t('reportDesigner.properties.imageTitle')}
+        </span>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.imageUrl')}</Label>
+          <Input
+            value={selectedElement.value ?? ''}
+            onChange={(e) => updateReportElement(selectedElement.id, { value: e.target.value })}
+            className="text-sm"
+            placeholder={t('reportDesigner.properties.imageUrlPlaceholder')}
           />
         </div>
-      )}
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs">{t('reportDesigner.properties.imageFit')}</Label>
-        <Select
-          value={selectedElement.style?.imageFit ?? 'contain'}
-          onValueChange={(value: 'contain' | 'cover') =>
-            updateReportElement(selectedElement.id, {
-              style: {
-                ...selectedElement.style,
-                imageFit: value,
-              },
-            })
-          }
-        >
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="contain">{t('reportDesigner.properties.imageFitContain')}</SelectItem>
-            <SelectItem value="cover">{t('reportDesigner.properties.imageFitCover')}</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.uploadFromFile')}</Label>
+          <input
+            id={`pdf-report-designer-image-upload-${selectedElement.id}`}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={handleFileChange}
+          />
+          <Label
+            htmlFor={`pdf-report-designer-image-upload-${selectedElement.id}`}
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-medium ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <Upload className="size-3.5" />
+            {t('reportDesigner.properties.selectImageMax2Mb')}
+          </Label>
+        </div>
+        {isUrl && (
+          <div className="rounded border border-slate-200 bg-slate-50 p-2">
+            <span className="text-xs text-slate-500">{t('reportDesigner.properties.preview')}</span>
+            <img
+              src={resolvePdfImageSrc(selectedElement.value ?? '')}
+              alt=""
+              className="mt-1 max-h-20 w-full object-contain"
+            />
+          </div>
+        )}
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs">{t('reportDesigner.properties.imageFit')}</Label>
+          <Select
+            value={selectedElement.style?.imageFit ?? 'contain'}
+            onValueChange={(value: 'contain' | 'cover') =>
+              updateReportElement(selectedElement.id, {
+                style: {
+                  ...selectedElement.style,
+                  imageFit: value,
+                },
+              })
+            }
+          >
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="contain">{t('reportDesigner.properties.imageFitContain')}</SelectItem>
+              <SelectItem value="cover">{t('reportDesigner.properties.imageFitCover')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );
@@ -581,8 +593,9 @@ export function PdfSidebar({
   }
 
   return (
-    <div className="flex min-h-0 w-60 shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/30">
-      <div className="flex shrink-0 flex-col gap-2 border-b border-slate-200 px-3 py-2.5 dark:border-slate-700">
+    <div className="relative flex min-h-0 w-60 shrink-0 flex-col overflow-hidden border-r border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="relative z-10 flex shrink-0 flex-col gap-2 border-b border-slate-300/80 px-3 py-2.5 dark:border-white/5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-0.5">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -629,7 +642,7 @@ export function PdfSidebar({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="relative z-10 min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-col gap-5 p-4">
           {!hasSearchMatches ? (
             <div className="rounded-md border border-dashed border-slate-200 bg-white px-3 py-4 text-center text-[11px] text-slate-400 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-500">
@@ -638,7 +651,7 @@ export function PdfSidebar({
           ) : (
             <>
               {search.length === 0 ? (
-                <div className="rounded-md border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
+                <div className="rounded-xl border border-slate-300/80 bg-white/50 p-3 shadow-sm dark:border-white/10 dark:bg-white/5">
                   <div className="mb-2 flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <Blocks className="size-3.5" />
                     {t('pdfReportDesigner.paletteHowTo', { defaultValue: 'How to build a page' })}

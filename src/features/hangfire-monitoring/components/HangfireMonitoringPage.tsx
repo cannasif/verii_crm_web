@@ -10,7 +10,7 @@ import {
   ManagementDataTableChrome,
   type DataTableGridColumn,
 } from '@/components/shared';
-import { Loader2, RefreshCw, Activity, Play, ShieldAlert, Clock3, CheckCircle2 } from 'lucide-react';
+import { Loader2, RefreshCw, Play, ShieldAlert, Clock3, CheckCircle2, Timer, Zap } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import {
@@ -34,13 +34,28 @@ import type {
   HangfireRecurringJobItemDto,
   HangfireSuccessJobItemDto,
 } from '../types/hangfireMonitoring.types';
+import { cn } from '@/lib/utils';
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 type FailedColumnKey = 'jobId' | 'jobName' | 'state' | 'time' | 'reason';
 type SuccessColumnKey = 'jobId' | 'jobName' | 'recurringJobId' | 'queue' | 'duration' | 'retryCount' | 'time';
 type RecurringColumnKey = 'id' | 'job' | 'cron' | 'nextExecution' | 'lastExecution' | 'queue';
+
+const headerCardStyle = `
+  relative overflow-hidden rounded-[2.5rem] p-8 mb-8
+  bg-white dark:bg-[#180F22]
+  border border-slate-100 dark:border-white/5
+  shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)]
+`;
+
+const statCardStyle = `
+  relative overflow-hidden rounded-[2rem] p-6
+  bg-white dark:bg-[#1E1627]
+  border border-slate-100 dark:border-white/5
+  shadow-sm hover:shadow-md transition-all duration-300
+`;
 
 function formatDate(value?: string): string {
   if (!value) return '-';
@@ -185,48 +200,48 @@ export function HangfireMonitoringPage(): ReactElement {
   ];
 
   const renderRecurringCell = (item: HangfireRecurringJobItemDto, key: RecurringColumnKey): ReactElement | string => {
-    if (key === 'id') return item.id;
+    if (key === 'id') return <span className="font-mono text-xs">{item.id}</span>;
     if (key === 'job') {
       return (
-        <div>
-          <div className="font-medium">{item.jobName}</div>
-          {item.method ? <div className="text-xs text-slate-500">{item.method}</div> : null}
-          {item.error ? <div className="text-xs text-red-500">{item.error}</div> : null}
+        <div className="flex flex-col gap-0.5">
+          <div className="font-bold text-slate-900 dark:text-white">{item.jobName}</div>
+          {item.method ? <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 truncate max-w-[200px]">{item.method}</div> : null}
+          {item.error ? <div className="text-[10px] font-bold text-red-500 flex items-center gap-1"><ShieldAlert size={10} /> {item.error}</div> : null}
         </div>
       );
     }
-    if (key === 'cron') return item.cron || '-';
-    if (key === 'nextExecution') return formatDate(item.nextExecution);
-    if (key === 'lastExecution') return formatDate(item.lastExecution);
-    if (key === 'queue') return item.queue || '-';
+    if (key === 'cron') return <Badge variant="secondary" className="font-mono text-[10px] bg-slate-100 dark:bg-white/5">{item.cron || '-'}</Badge>;
+    if (key === 'nextExecution') return <div className="text-xs font-medium">{formatDate(item.nextExecution)}</div>;
+    if (key === 'lastExecution') return <div className="text-xs text-slate-500">{formatDate(item.lastExecution)}</div>;
+    if (key === 'queue') return <Badge variant="outline" className="rounded-lg text-[10px] uppercase font-black">{item.queue || '-'}</Badge>;
     return '-';
   };
 
   const renderFailedCell = (item: HangfireFailedResponseDto['items'][number], key: FailedColumnKey): ReactElement | string => {
-    if (key === 'jobId') return item.jobId || '-';
-    if (key === 'jobName') return item.jobName || '-';
-    if (key === 'state') return <Badge variant="destructive">{item.state || 'Failed'}</Badge>;
-    if (key === 'time') return formatDate(item.failedAt);
-    if (key === 'reason') return item.reason || '-';
+    if (key === 'jobId') return <span className="font-mono text-xs">{item.jobId || '-'}</span>;
+    if (key === 'jobName') return <span className="font-bold">{item.jobName || '-'}</span>;
+    if (key === 'state') return <Badge variant="destructive" className="rounded-lg font-black text-[10px]">{item.state || 'FAILED'}</Badge>;
+    if (key === 'time') return <div className="text-xs">{formatDate(item.failedAt)}</div>;
+    if (key === 'reason') return <div className="text-[11px] text-red-500 max-w-[250px] truncate">{item.reason || '-'}</div>;
     return '-';
   };
 
   const renderSuccessCell = (item: HangfireSuccessJobItemDto, key: SuccessColumnKey): ReactElement | string | number => {
-    if (key === 'jobId') return item.jobId || '-';
-    if (key === 'jobName') return item.jobName || '-';
-    if (key === 'recurringJobId') return item.recurringJobId || '-';
-    if (key === 'queue') return item.queue || '-';
-    if (key === 'duration') return formatDuration(item.durationMs);
-    if (key === 'retryCount') return item.retryCount;
-    if (key === 'time') return formatDate(item.finishedAt);
+    if (key === 'jobId') return <span className="font-mono text-xs">{item.jobId || '-'}</span>;
+    if (key === 'jobName') return <span className="font-bold">{item.jobName || '-'}</span>;
+    if (key === 'recurringJobId') return <span className="text-xs text-slate-500">{item.recurringJobId || '-'}</span>;
+    if (key === 'queue') return <Badge variant="outline" className="text-[10px]">{item.queue || '-'}</Badge>;
+    if (key === 'duration') return <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-bold text-[11px]">{formatDuration(item.durationMs)}</Badge>;
+    if (key === 'retryCount') return <Badge variant="outline" className="rounded-full w-6 h-6 p-0 flex items-center justify-center font-bold text-xs">{item.retryCount}</Badge>;
+    if (key === 'time') return <div className="text-xs">{formatDate(item.finishedAt)}</div>;
     return '-';
   };
 
   if (isInitialLoading) {
     return (
       <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
-        <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">{t('common:loading')}</p>
+        <Loader2 className="h-10 w-10 animate-spin text-pink-500" />
+        <p className="text-sm font-bold text-slate-500 animate-pulse">{t('common:loading')}</p>
       </div>
     );
   }
@@ -240,87 +255,101 @@ export function HangfireMonitoringPage(): ReactElement {
         ]}
       />
 
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-              <Activity className="size-4" />
-              {t('hero.badge', { defaultValue: 'Job Kontrol Merkezi' })}
-            </div>
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                {t('title')}
-              </h1>
-              <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                {t('description')}
-              </p>
-            </div>
+      <div className={headerCardStyle}>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 dark:bg-pink-500/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/5 dark:bg-orange-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
+
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
+          <div className="min-w-0">
+
+            <h1 className="mt-4 text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+              {t('title')}
+            </h1>
+            <p className="mt-2 text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 max-w-2xl">
+              {t('description')}
+            </p>
           </div>
-          <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing} className="rounded-2xl">
-            <RefreshCw size={18} className={isRefreshing ? 'mr-2 animate-spin' : 'mr-2'} />
+
+          <Button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25
+            opacity-50 grayscale-[0] 
+            dark:opacity-100 dark:grayscale-0"
+          >
+            <RefreshCw size={18} className={cn("mr-2", isRefreshing && "animate-spin")} />
             {t('refresh')}
           </Button>
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <Card className="border-slate-200/70 bg-white/85 shadow-sm dark:border-white/10 dark:bg-white/5">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-500">{t('stats.enqueued')}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-black text-slate-900 dark:text-white">
-              {statsQuery.data?.enqueued ?? 0}
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200/70 bg-white/85 shadow-sm dark:border-white/10 dark:bg-white/5">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-500">{t('stats.processing')}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-black text-slate-900 dark:text-white">
-              {statsQuery.data?.processing ?? 0}
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200/70 bg-white/85 shadow-sm dark:border-white/10 dark:bg-white/5">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm text-slate-500">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                {t('stats.succeeded')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-black text-emerald-600">
-              {statsQuery.data?.succeeded ?? 0}
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200/70 bg-white/85 shadow-sm dark:border-white/10 dark:bg-white/5">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm text-slate-500">
-                <ShieldAlert className="h-4 w-4 text-red-500" />
-                {t('stats.failed')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-black text-red-600">
-              {statsQuery.data?.failed ?? 0}
-            </CardContent>
-          </Card>
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 relative z-10">
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+                <Timer size={24} strokeWidth={2.5} />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('stats.enqueued')}</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white">{statsQuery.data?.enqueued ?? 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400">
+                <Zap size={24} strokeWidth={2.5} />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('stats.processing')}</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white">{statsQuery.data?.processing ?? 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                <CheckCircle2 size={24} strokeWidth={2.5} />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('stats.succeeded')}</p>
+                <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{statsQuery.data?.succeeded ?? 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={statCardStyle}>
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400">
+                <ShieldAlert size={24} strokeWidth={2.5} />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('stats.failed')}</p>
+                <p className="text-2xl font-black text-red-600 dark:text-red-400">{statsQuery.data?.failed ?? 0}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.25fr_0.95fr]">
-        <Card className="overflow-hidden border-0 bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_55%,#0ea5e9_100%)] text-white shadow-xl">
+        <Card className="overflow-hidden border-none bg-white dark:bg-[linear-gradient(135deg,#1E1627_10%,#1E1627_45%,#EB2757_300%)] text-black dark:text-white shadow-xl rounded-2x1">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-xl">
               <Play className="h-5 w-5" />
               {t('recurring.title')}
             </CardTitle>
-            <CardDescription className="text-sky-100">
+            <CardDescription className="text-white-100/80">
               {t('recurring.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
               <div className="space-y-2">
-                <div className="text-sm font-semibold text-sky-50">{t('recurring.selectLabel')}</div>
+                <div className="text-sm font-semibold text-[#EB000B] dark:text-sky-50">{t('recurring.selectLabel')}</div>
                 <Select value={selectedRecurringJobId} onValueChange={setSelectedRecurringJobId}>
-                  <SelectTrigger className="border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/15">
+                  <SelectTrigger className="border-[#F7DEEE] dark:border-white/20 bg-white/10 text-black dark:text-white backdrop-blur hover:bg-white/15">
                     <SelectValue placeholder={t('recurring.selectPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -336,7 +365,9 @@ export function HangfireMonitoringPage(): ReactElement {
               <Button
                 onClick={() => selectedRecurringJobId && triggerRecurringJobMutation.mutate(selectedRecurringJobId)}
                 disabled={!selectedRecurringJobId || triggerRecurringJobMutation.isPending}
-                className="bg-white text-slate-900 hover:bg-slate-100"
+                className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl 
+                opacity-50 grayscale-[0] 
+                dark:opacity-100 dark:grayscale-0"
               >
                 {triggerRecurringJobMutation.isPending ? (
                   <Loader2 size={16} className="mr-2 animate-spin" />
@@ -348,38 +379,38 @@ export function HangfireMonitoringPage(): ReactElement {
             </div>
 
             <div className="grid gap-3 md:grid-cols-3">
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">
+              <div className="rounded-2xl border border-[#F6DFEE] dark:border-none bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#EB000B] dark:text-sky-100">
                   {t('recurring.table.id')}
                 </div>
-                <div className="mt-2 text-sm font-medium text-white">
+                <div className="mt-2 text-sm font-medium text-black dark:text-white">
                   {selectedRecurringJob?.id ?? '-'}
                 </div>
               </div>
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">
+              <div className="rounded-2xl border border-[#F6DFEE] dark:border-none bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#EB000B] dark:text-sky-100">
                   {t('recurring.table.nextExecution')}
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-sm font-medium text-white">
+                <div className="mt-2 flex items-center gap-2 text-sm font-medium text-black dark:text-white">
                   <Clock3 className="h-4 w-4 text-sky-200" />
                   {formatDate(selectedRecurringJob?.nextExecution)}
                 </div>
               </div>
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">
+              <div className="rounded-2xl border border-[#F6DFEE] dark:border-none bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#EB000B] dark:text-sky-100">
                   {t('recurring.table.queue')}
                 </div>
-                <div className="mt-2 text-sm font-medium text-white">
+                <div className="mt-2 text-sm font-medium text-black dark:text-white">
                   {selectedRecurringJob?.queue ?? '-'}
                 </div>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="border-white/15 bg-white/10 text-white">
+              <Badge variant="secondary" className="border-[#F6DFEE] dark:border-white/15 bg-white/10 text-[#EB000B] dark:text-white">
                 {t('recurring.labels.schedule', { defaultValue: 'Zamanlama' })}: {normalizeCron(selectedRecurringJob?.cron)}
               </Badge>
-              <Badge variant="secondary" className="border-white/15 bg-white/10 text-white">
+              <Badge variant="secondary" className="border-[#F6DFEE] dark:border-white/15 bg-white/10 text-[#EB000B] dark:text-white">
                 {t('recurring.labels.method', { defaultValue: 'Method' })}: {selectedRecurringJob?.method ?? '-'}
               </Badge>
               {selectedRecurringJob?.error ? (
@@ -387,7 +418,7 @@ export function HangfireMonitoringPage(): ReactElement {
                   {t('recurring.labels.error', { defaultValue: 'Hata var' })}
                 </Badge>
               ) : (
-                <Badge className="bg-emerald-500 text-white hover:bg-emerald-500">
+                <Badge className="border-[#F6DFEE] dark:border-white/15 bg-white/10 text-[#EB000B] dark:text-white">
                   {t('recurring.labels.healthy', { defaultValue: 'Sağlıklı' })}
                 </Badge>
               )}
@@ -395,7 +426,7 @@ export function HangfireMonitoringPage(): ReactElement {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200/80 shadow-sm">
+        <Card className="border-slate-200/20 bg-white dark:bg-[#1E1627] shadow-sm rounded-2x1">
           <CardHeader>
             <CardTitle>{t('summary.title', { defaultValue: 'Sistem Özeti' })}</CardTitle>
             <CardDescription>
@@ -403,49 +434,56 @@ export function HangfireMonitoringPage(): ReactElement {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 dark:border-white/5 dark:bg-white/5">
+              <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 {t('summary.totalJobs', { defaultValue: 'Toplam recurring job' })}
               </div>
-              <div className="mt-2 text-2xl font-black text-slate-900 dark:text-white">
+              <div className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
                 {recurringHealth.total}
               </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-                  {t('summary.withQueue', { defaultValue: 'Queue bilgisi olan' })}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-5 dark:border-emerald-500/20 dark:bg-emerald-500/10">
+                <div className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                  {t('summary.withQueue', { defaultValue: 'Aktif Kuyruklar' })}
                 </div>
-                <div className="mt-2 text-2xl font-black text-emerald-700 dark:text-emerald-200">
+                <div className="mt-1 text-2xl font-black text-emerald-700 dark:text-emerald-300">
                   {recurringHealth.withQueue}
                 </div>
               </div>
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-500/30 dark:bg-red-500/10">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-red-700 dark:text-red-300">
-                  {t('summary.withErrors', { defaultValue: 'Hata veren recurring job' })}
+              <div className="rounded-2xl border border-red-100 bg-red-50/50 p-5 dark:border-red-500/20 dark:bg-red-500/10">
+                <div className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400">
+                  {t('summary.withErrors', { defaultValue: 'Hatalı İşler' })}
                 </div>
-                <div className="mt-2 text-2xl font-black text-red-700 dark:text-red-200">
+                <div className="mt-1 text-2xl font-black text-red-700 dark:text-red-300">
                   {recurringHealth.withErrors}
                 </div>
               </div>
             </div>
-            <div className="rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300">
-              {t('summary.help', {
-                defaultValue: 'Bu ekran, zamanlanmış işleri hızla tetiklemek ve başarılı/başarısız job akışını tek noktadan izlemek için ürünleştirilmiştir.',
-              })}
+            <div className="p-4 rounded-2xl bg-linear-to-br from-pink-500/5 to-orange-500/5 border border-pink-500/10 dark:from-pink-500/10 dark:to-orange-500/10">
+              <p className="text-xs font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
+                {t('summary.help', {
+                  defaultValue: 'Bu ekran, zamanlanmış işleri hızla tetiklemek ve başarılı/başarısız job akışını tek noktadan izlemek için ürünleştirilmiştir.',
+                })}
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-slate-200/80 shadow-sm">
-        <CardHeader>
-          <CardTitle>{t('recurring.tableTitle', { defaultValue: 'Recurring Job Listesi' })}</CardTitle>
-          <CardDescription>
-            {t('recurring.tableDescription', { defaultValue: 'Zamanlanmış işleri tablo görünümünde incele, satır seç ve üstteki kontrol alanından tetikle.' })}
-          </CardDescription>
+      <Card className="border-slate-200/20 bg-white dark:bg-[#180F22] shadow-xl rounded-2xl overflow-hidden mt-6">
+        <CardHeader className="px-8 py-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-pink-500/10 text-pink-600 dark:text-pink-400">
+              <Zap size={20} />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-black">{t('recurring.tableTitle', { defaultValue: 'Zamanlanmış İşler' })}</CardTitle>
+              <CardDescription className="text-sm font-medium">{t('recurring.tableDescription')}</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-8 py-4 border-t border-slate-100 dark:border-white/5">
           <ManagementDataTableChrome>
             <DataTableGrid<HangfireRecurringJobItemDto, RecurringColumnKey>
               columns={recurringColumns}
@@ -476,19 +514,25 @@ export function HangfireMonitoringPage(): ReactElement {
               paginationInfoText={t('failed.total') + `: ${recurringJobsQuery.data?.total ?? 0}`}
               rowClassName={(row: HangfireRecurringJobItemDto) => (selectedRecurringJobId === row.id ? 'bg-pink-50 dark:bg-pink-500/10' : undefined)}
               onRowClick={(row: HangfireRecurringJobItemDto) => setSelectedRecurringJobId(row.id)}
+              centerColumnHeaders
             />
           </ManagementDataTableChrome>
         </CardContent>
       </Card>
 
-      <Card className="border-slate-200/80 shadow-sm">
-        <CardHeader>
-          <CardTitle>{t('succeeded.title')}</CardTitle>
-          <CardDescription>
-            {t('succeeded.description', { defaultValue: 'Tamamlanan job geçmişini, süre ve retry bilgisiyle izle.' })}
-          </CardDescription>
+      <Card className="border-none bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
+        <CardHeader className="px-8 py-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 size={20} />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-black">{t('succeeded.title')}</CardTitle>
+              <CardDescription className="text-sm font-medium">{t('succeeded.description')}</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-8 py-4 border-t border-slate-100 dark:border-white/5">
           <ManagementDataTableChrome>
             <DataTableGrid<HangfireSuccessJobItemDto, SuccessColumnKey>
               columns={successColumns}
@@ -516,20 +560,26 @@ export function HangfireMonitoringPage(): ReactElement {
               onNextPage={() => setSuccessPage((p) => Math.min(successTotalPages, p + 1))}
               previousLabel={t('common:previous')}
               nextLabel={t('common:next')}
-              paginationInfoText={t('failed.total') + `: ${successQuery.data?.total ?? 0}`}
+              paginationInfoText={t('common:total') + `: ${successQuery.data?.total ?? 0}`}
+              centerColumnHeaders
             />
           </ManagementDataTableChrome>
         </CardContent>
       </Card>
 
-      <Card className="border-slate-200/80 shadow-sm">
-        <CardHeader>
-          <CardTitle>{t('failed.title')}</CardTitle>
-          <CardDescription>
-            {t('failed.description', { defaultValue: 'Hata alan işleri, zaman ve neden bilgisiyle izleyin.' })}
-          </CardDescription>
+      <Card className="border-none bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
+        <CardHeader className="px-8 py-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400">
+              <ShieldAlert size={20} />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-black">{t('failed.title')}</CardTitle>
+              <CardDescription className="text-sm font-medium">{t('failed.description')}</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-8 py-4 border-t border-slate-100 dark:border-white/5">
           <ManagementDataTableChrome>
             <DataTableGrid<HangfireFailedResponseDto['items'][number], FailedColumnKey>
               columns={failedColumns}
@@ -557,25 +607,31 @@ export function HangfireMonitoringPage(): ReactElement {
               onNextPage={() => setFailedPage((p) => Math.min(failedTotalPages, p + 1))}
               previousLabel={t('common:previous')}
               nextLabel={t('common:next')}
-              paginationInfoText={t('failed.total') + `: ${failedQuery.data?.total ?? 0}`}
+              paginationInfoText={t('common:total') + `: ${failedQuery.data?.total ?? 0}`}
+              centerColumnHeaders
             />
           </ManagementDataTableChrome>
         </CardContent>
       </Card>
 
-      <Card className="border-slate-200/80 shadow-sm">
-        <CardHeader>
-          <CardTitle>{t('deadLetter.title')}</CardTitle>
-          <CardDescription>
-            {t('deadLetter.description', { defaultValue: 'Dead-letter kuyruğuna düşen kayıtları tek yerde takip et.' })}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300">
-            <ShieldAlert className="h-4 w-4 text-amber-500" />
-            {t('deadLetter.enqueued')}: {deadLetterQuery.data?.enqueued ?? 0}
+      <Card className="border-none bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
+        <CardHeader className="px-8 py-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <ShieldAlert size={20} />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-black">{t('deadLetter.title')}</CardTitle>
+              <CardDescription className="text-sm font-medium">{t('deadLetter.description')}</CardDescription>
+            </div>
           </div>
-
+        </CardHeader>
+        <CardContent className="px-8 py-4 border-t border-slate-100 dark:border-white/5">
+          <div className="px-8 py-4 bg-amber-500/5 flex items-center gap-3">
+            <div className="text-xs font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">
+              {t('deadLetter.enqueued')}: {deadLetterQuery.data?.enqueued ?? 0}
+            </div>
+          </div>
           <ManagementDataTableChrome>
             <DataTableGrid<HangfireFailedResponseDto['items'][number], FailedColumnKey>
               columns={failedColumns}
@@ -583,8 +639,8 @@ export function HangfireMonitoringPage(): ReactElement {
               rows={deadLetterQuery.data?.items ?? []}
               rowKey={(row: HangfireFailedResponseDto['items'][number]) => `dead-${row.jobId}-${row.enqueuedAt ?? ''}`}
               renderCell={(row: HangfireFailedResponseDto['items'][number], key: FailedColumnKey) => {
-                if (key === 'state') return <Badge variant="secondary">{row.state || 'Enqueued'}</Badge>;
-                if (key === 'time') return formatDate(row.enqueuedAt);
+                if (key === 'state') return <Badge variant="secondary" className="font-black text-[10px]">{row.state || 'ENQUEUED'}</Badge>;
+                if (key === 'time') return <div className="text-xs">{formatDate(row.enqueuedAt)}</div>;
                 return renderFailedCell(row, key);
               }}
               isLoading={deadLetterQuery.isLoading}
@@ -607,11 +663,12 @@ export function HangfireMonitoringPage(): ReactElement {
               onNextPage={() => setDeadLetterPage((p) => Math.min(deadLetterTotalPages, p + 1))}
               previousLabel={t('common:previous')}
               nextLabel={t('common:next')}
-              paginationInfoText={t('failed.total') + `: ${deadLetterQuery.data?.total ?? 0}`}
+              paginationInfoText={t('common:total') + `: ${deadLetterQuery.data?.total ?? 0}`}
+              centerColumnHeaders
             />
           </ManagementDataTableChrome>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }

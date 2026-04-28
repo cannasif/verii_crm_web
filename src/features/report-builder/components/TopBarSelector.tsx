@@ -13,10 +13,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { ConnectionDto, DataSourceCatalogItem, DataSourceParameter, DataSourceParameterBinding, DataSourceParameterBindingType } from '../types';
-import { Database, Layers3, Loader2, Sparkles } from 'lucide-react';
+import { Database, Layers3, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TopBarSelectorProps {
+  className?: string;
   mode?: 'basic' | 'advanced';
   connections: ConnectionDto[];
   dataSources: DataSourceCatalogItem[];
@@ -50,6 +51,7 @@ const TYPE_OPTIONS = [
 ];
 
 export function TopBarSelector({
+  className,
   mode = 'advanced',
   connections,
   dataSources,
@@ -75,15 +77,15 @@ export function TopBarSelector({
   const connectionList = Array.isArray(connections) ? connections : [];
   const dataSourceList = dataSourceName && !dataSources.some((item) => item.fullName === dataSourceName)
     ? [
-        ...dataSources,
-        {
-          schemaName: '',
-          objectName: dataSourceName,
-          fullName: dataSourceName,
-          type: dataSourceType,
-          displayName: dataSourceName,
-        },
-      ]
+      ...dataSources,
+      {
+        schemaName: '',
+        objectName: dataSourceName,
+        fullName: dataSourceName,
+        type: dataSourceType,
+        displayName: dataSourceName,
+      },
+    ]
     : dataSources;
   const parameterSourceOptions: { value: DataSourceParameterBindingType; label: string }[] = [
     { value: 'literal', label: t('common.reportBuilder.parameterSources.literal') },
@@ -95,22 +97,26 @@ export function TopBarSelector({
 
   const showReportNameField = typeof onReportNameChange === 'function';
   return (
-    <div className={cn('rounded-xl border bg-card p-4 shadow-xs')}>
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
-            <Database className="size-3.5" />
+    <div className={cn(
+      'relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0',
+      className
+    )}>
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+
+      <div className="relative z-10 mb-5 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-linear-to-br from-pink-500 to-orange-500 text-white shadow-lg shadow-pink-500/20">
+            <Database className="size-5" />
           </div>
-          <h2 className="text-sm font-semibold">
-            {t('common.reportBuilder.setupSectionTitle')}
-          </h2>
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">
+              {t('common.reportBuilder.setupSectionTitle')}
+            </h2>
+            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              {t('common.reportBuilder.datasetSetupTip')}
+            </p>
+          </div>
         </div>
-        {mode === 'advanced' ? (
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <Sparkles className="size-3" />
-            {t('common.reportBuilder.datasetSetupTip')}
-          </div>
-        ) : null}
       </div>
 
       <ol className={cn(
@@ -200,7 +206,7 @@ export function TopBarSelector({
 
         <li className="flex items-end">
           <Button
-            className="h-9 w-full xl:w-auto"
+            className="h-9 w-full bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 opacity-30 hover:opacity-100 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 hover:opacity-30 xl:w-auto"
             onClick={onCheck}
             disabled={checkLoading || connectionsLoading || !dataSourceName}
           >

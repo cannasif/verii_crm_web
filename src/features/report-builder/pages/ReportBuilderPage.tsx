@@ -59,7 +59,7 @@ import {
 } from '../utils';
 import type { Field } from '../types';
 import { Loader2 } from 'lucide-react';
-import { ArrowLeft, ArrowRight, BarChart3, CheckCircle2, ChevronDown, Filter, LayoutGrid, Lightbulb, Plus, Sparkles, Trash2, TriangleAlert, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BarChart3, Check, CheckCircle2, ChevronDown, Filter, LayoutGrid, LayoutTemplate, Lightbulb, Plus, Settings2, Sparkles, Trash2, TriangleAlert, X, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUserList } from '@/features/user-management/hooks/useUserList';
 import { DeferOnView } from '@/components/shared/DeferOnView';
@@ -108,46 +108,58 @@ function CollapsibleCard({
   return (
     <div
       className={cn(
-        'rounded-2xl border p-4 transition-colors',
-        tone === 'muted' ? 'bg-muted/20' : 'bg-card'
+        'relative overflow-hidden rounded-2xl border transition-all duration-300 shadow-sm',
+        tone === 'muted'
+          ? 'bg-slate-100/50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5'
+          : 'border-slate-300/80 bg-stone-50/95 ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:ring-0'
       )}
     >
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-start justify-between gap-3 text-left"
-        aria-expanded={open}
-      >
-        <div className="flex min-w-0 items-start gap-2">
-          {icon ? <span className="mt-0.5 shrink-0 text-primary">{icon}</span> : null}
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold">{title}</h2>
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/2 dark:to-orange-500/2 opacity-30 " />
+      <div className="relative z-10 p-4">
+        <button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          className="flex w-full items-start justify-between gap-3 text-left group"
+          aria-expanded={open}
+        >
+          <div className="flex min-w-0 items-start gap-3">
+            {icon ? (
+              <span className="mt-0.5 shrink-0 flex size-8 items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 group-hover:scale-110 transition-transform">
+                {icon}
+              </span>
+            ) : null}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">{title}</h2>
+              </div>
+              {description ? (
+                <p className="text-slate-500 dark:text-slate-400 mt-1 text-[11px] font-medium leading-relaxed">{description}</p>
+              ) : null}
+              {summary && !open ? (
+                <p className="mt-2 text-xs font-bold text-pink-600 dark:text-pink-400 uppercase tracking-tight">{summary}</p>
+              ) : null}
             </div>
-            {description ? (
-              <p className="text-muted-foreground mt-1 text-xs">{description}</p>
-            ) : null}
-            {summary && !open ? (
-              <p className="mt-1 text-xs font-medium text-foreground/80">{summary}</p>
-            ) : null}
           </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          {action}
-          <ChevronDown
-            className={cn(
-              'size-4 text-muted-foreground transition-transform',
-              open ? 'rotate-180' : ''
-            )}
-          />
-        </div>
-      </button>
-      {open ? <div className="mt-4">{children}</div> : null}
+          <div className="flex shrink-0 items-center gap-2">
+            {action}
+            <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 transition-colors group-hover:bg-pink-50 dark:group-hover:bg-pink-500/10 group-hover:text-pink-500">
+              <ChevronDown
+                className={cn(
+                  'size-4 transition-transform duration-300',
+                  open ? 'rotate-180' : ''
+                )}
+              />
+            </div>
+          </div>
+        </button>
+        {open ? <div className="mt-5 animate-in fade-in slide-in-from-top-2 duration-300">{children}</div> : null}
+      </div>
     </div>
   );
 }
 
 function ReportAssignmentPanel({
+  className,
   title,
   description,
   summary,
@@ -162,6 +174,7 @@ function ReportAssignmentPanel({
   onRequestRemoveAssignedUser,
   removeLabel,
 }: {
+  className?: string;
   title: string;
   description: string;
   summary: string;
@@ -177,19 +190,23 @@ function ReportAssignmentPanel({
   removeLabel: string;
 }): ReactElement {
   return (
-    <div className="rounded-2xl border bg-card p-4">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+    <div className={cn(
+      'relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0',
+      className
+    )}>
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+      <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-[260px] flex-1">
-          <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="mb-2 inline-flex rounded-full border border-pink-200 bg-pink-100/50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-400">
             {title}
           </div>
-          <p className="text-muted-foreground text-sm leading-6">{description}</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{description}</p>
         </div>
-        <Badge variant="secondary" className="rounded-full px-3 py-1">
+        <Badge variant="secondary" className="rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-4 py-1.5 font-bold text-slate-700 dark:text-slate-300">
           {summary}
         </Badge>
       </div>
-      <div className="mt-4 grid gap-4 xl:grid-cols-[360px_1fr]">
+      <div className="relative z-10 mt-6 grid gap-4 xl:grid-cols-[360px_1fr]">
         <div className="space-y-3">
           <Combobox
             options={userOptions.filter((option) => !assignedUserIds.includes(Number(option.value)))}
@@ -198,33 +215,38 @@ function ReportAssignmentPanel({
             searchPlaceholder={searchPlaceholder}
             emptyText={emptyText}
           />
-          <div className="rounded-xl border border-dashed bg-muted/10 px-3 py-3 text-xs text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-slate-300/50 bg-slate-50/50 px-4 py-4 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-white/[0.02] dark:text-slate-400 leading-relaxed">
             {description}
           </div>
         </div>
-        <div className="rounded-xl border bg-background p-3">
+        <div className="rounded-xl border border-slate-200/80 bg-white/50 p-4 dark:border-white/5 dark:bg-white/[0.02] shadow-inner">
           {selectedAssignedUsers.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2.5">
               {selectedAssignedUsers.map((user) => (
                 <div
                   key={user.userId}
-                  className="inline-flex max-w-full items-center gap-2 rounded-full border bg-muted/30 px-3 py-1.5 text-sm"
+                  className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-pink-300 hover:bg-pink-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-pink-500/30 dark:hover:bg-pink-500/10"
                 >
                   <span className="truncate">{user.label}</span>
                   <button
                     type="button"
-                    className="text-muted-foreground transition hover:text-foreground"
+                    className="text-slate-400 transition-colors hover:text-pink-500"
                     onClick={() => onRequestRemoveAssignedUser(user.userId)}
                     aria-label={removeLabel}
                     title={removeLabel}
                   >
-                    <X className="size-3.5" />
+                    <X className="size-4" />
                   </button>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-sm text-muted-foreground">{emptyState}</div>
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <div className="mb-2 size-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400">
+                <Plus className="size-5 opacity-50" />
+              </div>
+              <div className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{emptyState}</div>
+            </div>
           )}
         </div>
       </div>
@@ -581,12 +603,12 @@ export function ReportBuilderPage(): ReactElement {
     () =>
       guidedGoal
         ? getRecommendedGuidedTask({
-            goal: guidedGoal,
-            hasDateAxis: Boolean(recommendedAxisField && getFieldSemanticType(recommendedAxisField) === 'date'),
-            hasMetric: Boolean(recommendedValueField),
-            hasBreakdownCandidate: Boolean(recommendedLegendField ?? recommendedAxisField),
-            previewRowCount: preview.rows.length,
-          })
+          goal: guidedGoal,
+          hasDateAxis: Boolean(recommendedAxisField && getFieldSemanticType(recommendedAxisField) === 'date'),
+          hasMetric: Boolean(recommendedValueField),
+          hasBreakdownCandidate: Boolean(recommendedLegendField ?? recommendedAxisField),
+          previewRowCount: preview.rows.length,
+        })
         : null,
     [guidedGoal, preview.rows.length, recommendedAxisField, recommendedLegendField, recommendedValueField],
   );
@@ -716,24 +738,24 @@ export function ReportBuilderPage(): ReactElement {
   const guidedAutoGoalRef = useRef<'executive' | 'operations' | 'performance' | null>(null);
   const nextStep = !datasetReady
     ? {
-        title: t('common.reportBuilder.nextStepDatasetTitle'),
-        description: t('common.reportBuilder.nextStepDatasetDescription'),
-        actionLabel: t('common.reportBuilder.nextStepDatasetAction'),
-        action: () => checkDataSource(),
-      }
+      title: t('common.reportBuilder.nextStepDatasetTitle'),
+      description: t('common.reportBuilder.nextStepDatasetDescription'),
+      actionLabel: t('common.reportBuilder.nextStepDatasetAction'),
+      action: () => checkDataSource(),
+    }
     : (requiresAxis && !hasAxis) || !hasValue
       ? {
-          title: t('common.reportBuilder.nextStepMappingTitle'),
-          description: t('common.reportBuilder.nextStepMappingDescription'),
-          actionLabel: t('common.reportBuilder.nextStepMappingAction'),
-          action: () => handleSmartComplete(),
-        }
+        title: t('common.reportBuilder.nextStepMappingTitle'),
+        description: t('common.reportBuilder.nextStepMappingDescription'),
+        actionLabel: t('common.reportBuilder.nextStepMappingAction'),
+        action: () => handleSmartComplete(),
+      }
       : {
-          title: t('common.reportBuilder.nextStepDesignTitle'),
-          description: t('common.reportBuilder.nextStepDesignDescription'),
-          actionLabel: t('common.reportBuilder.nextStepDesignAction'),
-          action: () => setUi({ toast: { message: t('common.reportBuilder.designControlsHint'), variant: 'success' } }),
-        };
+        title: t('common.reportBuilder.nextStepDesignTitle'),
+        description: t('common.reportBuilder.nextStepDesignDescription'),
+        actionLabel: t('common.reportBuilder.nextStepDesignAction'),
+        action: () => setUi({ toast: { message: t('common.reportBuilder.designControlsHint'), variant: 'success' } }),
+      };
   const wizardCanContinue = wizardStep === 1 ? datasetReady : true;
   const wizardSummary = useMemo(
     () =>
@@ -770,12 +792,12 @@ export function ReportBuilderPage(): ReactElement {
       const nextWidgets = currentWidgets.map((widget) =>
         widget.id === nextActiveWidgetId
           ? {
-              ...widget,
-              chartType: 'table' as const,
-              axis: undefined,
-              legend: undefined,
-              values: nextValues,
-            }
+            ...widget,
+            chartType: 'table' as const,
+            axis: undefined,
+            legend: undefined,
+            values: nextValues,
+          }
           : widget,
       );
 
@@ -1225,21 +1247,21 @@ export function ReportBuilderPage(): ReactElement {
     (task: GuidedWidgetTask, goal: 'executive' | 'operations' | 'performance') => {
       const goalPreset = goal === 'executive'
         ? {
-            themePreset: 'executive' as const,
-            tone: 'neutral' as const,
-            backgroundStyle: 'card' as const,
-          }
+          themePreset: 'executive' as const,
+          tone: 'neutral' as const,
+          backgroundStyle: 'card' as const,
+        }
         : goal === 'performance'
           ? {
-              themePreset: 'performance' as const,
-              tone: 'bold' as const,
-              backgroundStyle: 'gradient' as const,
-            }
+            themePreset: 'performance' as const,
+            tone: 'bold' as const,
+            backgroundStyle: 'gradient' as const,
+          }
           : {
-              themePreset: 'operations' as const,
-              tone: 'soft' as const,
-              backgroundStyle: 'muted' as const,
-            };
+            themePreset: 'operations' as const,
+            tone: 'soft' as const,
+            backgroundStyle: 'muted' as const,
+          };
       if (task === 'summaryKpi') {
         return {
           title: t('common.reportBuilder.widgetTaskCards.summaryKpi.title'),
@@ -1518,41 +1540,44 @@ export function ReportBuilderPage(): ReactElement {
       },
     ];
   }, [builderMode, datasetReady, hasAxis, hasValue, meta.dataSourceName, meta.name, reportHardBlockers.length, requiresAxis, saveBlocked, simpleTableFields.length, t]);
-
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={pointerWithin}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-[calc(100vh-4rem)] min-h-0 flex-col gap-4 p-4">
-        <header className="shrink-0 rounded-xl border bg-card shadow-xs">
-          <div className="flex flex-wrap items-center gap-3 px-4 py-2.5">
+      <div className={cn(
+        "flex min-h-0 flex-col gap-4 p-4",
+        "h-auto"
+      )}>
+        <header className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+          <div className="relative z-10 flex flex-wrap items-center gap-3 px-4 py-2.5">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={() => navigate('/reports')}
-              className="h-8 px-2 text-xs"
+              className="h-8 px-2 text-xs hover:bg-slate-200/50 dark:hover:bg-white/10"
             >
               <ArrowLeft className="mr-1 size-4" />
               {t('common.back')}
             </Button>
-            <div className="h-5 w-px bg-border" aria-hidden="true" />
+            <div className="h-5 w-px bg-slate-300 dark:bg-white/10" aria-hidden="true" />
             <div className="min-w-0">
-              <h1 className="truncate text-sm font-semibold tracking-tight">
+              <h1 className="truncate text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">
                 {builderMode === 'basic'
                   ? (isEdit ? t('common.reportBuilder.simpleEditTitle') : t('common.reportBuilder.simpleCreateTitle'))
                   : (isEdit ? t('common.reportBuilder.editStudioTitle') : t('common.reportBuilder.newStudioTitle'))}
               </h1>
               {builderMode === 'advanced' ? (
-                <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <span className="font-mono uppercase">{lifecycleStatusLabel}</span>
-                  <span aria-hidden="true">·</span>
-                  <span className="font-mono">v{lifecycle.version}</span>
+                <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                  <span className="uppercase">{lifecycleStatusLabel}</span>
+                  <span aria-hidden="true" className="opacity-50">·</span>
+                  <span>v{lifecycle.version}</span>
                   {datasetReady ? (
                     <>
-                      <span aria-hidden="true">·</span>
+                      <span aria-hidden="true" className="opacity-50">·</span>
                       <span className="truncate" title={meta.dataSourceName}>{meta.dataSourceName}</span>
                     </>
                   ) : null}
@@ -1561,64 +1586,88 @@ export function ReportBuilderPage(): ReactElement {
             </div>
 
             <div className="ml-auto flex flex-wrap items-center gap-2">
-              <div
-                role="tablist"
-                aria-label={t('common.reportBuilder.modeTabGroupLabel')}
-                className="flex items-center gap-0.5 rounded-md border bg-muted/40 p-0.5"
-              >
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={builderMode === 'basic' ? 'default' : 'ghost'}
-                  onClick={() => setBuilderMode('basic')}
-                  className="h-7 px-3 text-xs"
-                  role="tab"
-                  aria-selected={builderMode === 'basic'}
-                >
-                  {t('common.reportBuilder.basicMode')}
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={builderMode === 'advanced' ? 'default' : 'ghost'}
-                  onClick={() => setBuilderMode('advanced')}
-                  className="h-7 px-3 text-xs"
-                  role="tab"
-                  aria-selected={builderMode === 'advanced'}
-                >
-                  {t('common.reportBuilder.advancedMode')}
-                </Button>
-              </div>
-              {builderMode === 'advanced' ? (
+              {/* Mode Switching Tabs */}
+              <div className="flex items-center gap-3">
+                {/* Main Builder Mode: Basic vs Advanced */}
                 <div
                   role="tablist"
-                  aria-label={t('common.reportBuilder.workspaceTabGroupLabel')}
-                  className="flex items-center gap-0.5 rounded-md border bg-muted/40 p-0.5"
+                  aria-label={t('common.reportBuilder.modeTabGroupLabel')}
+                  className="flex items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100/50 p-1 dark:border-white/5 dark:bg-white/5 backdrop-blur-md shadow-sm"
                 >
-                  <Button
+                  <button
                     type="button"
-                    size="sm"
-                    variant={advancedWorkspaceMode === 'guided' ? 'default' : 'ghost'}
-                    onClick={() => setAdvancedWorkspaceMode('guided')}
-                    className="h-7 px-3 text-xs"
+                    onClick={() => setBuilderMode('basic')}
+                    className={cn(
+                      "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
+                      builderMode === 'basic'
+                        ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
+                    )}
                     role="tab"
-                    aria-selected={advancedWorkspaceMode === 'guided'}
+                    aria-selected={builderMode === 'basic'}
                   >
-                    {t('common.reportBuilder.advancedWorkspaceModes.guided')}
-                  </Button>
-                  <Button
+                    <LayoutTemplate className={cn("size-3.5 transition-transform group-hover:scale-110", builderMode === 'basic' ? "fill-white/20" : "opacity-70")} />
+                    {t('common.reportBuilder.basicMode')}
+                  </button>
+
+                  <button
                     type="button"
-                    size="sm"
-                    variant={advancedWorkspaceMode === 'expert' ? 'default' : 'ghost'}
-                    onClick={() => setAdvancedWorkspaceMode('expert')}
-                    className="h-7 px-3 text-xs"
+                    onClick={() => setBuilderMode('advanced')}
+                    className={cn(
+                      "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
+                      builderMode === 'advanced'
+                        ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
+                    )}
                     role="tab"
-                    aria-selected={advancedWorkspaceMode === 'expert'}
+                    aria-selected={builderMode === 'advanced'}
                   >
-                    {t('common.reportBuilder.advancedWorkspaceModes.expert')}
-                  </Button>
+                    <Zap className={cn("size-3.5 transition-transform group-hover:scale-110", builderMode === 'advanced' ? "fill-white/20" : "opacity-70")} />
+                    {t('common.reportBuilder.advancedMode')}
+                  </button>
                 </div>
-              ) : null}
+
+                {/* Sub-workspace Mode: Guided vs Expert */}
+                {builderMode === 'advanced' ? (
+                  <div
+                    role="tablist"
+                    aria-label={t('common.reportBuilder.workspaceTabGroupLabel')}
+                    className="flex items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100/50 p-1 dark:border-white/5 dark:bg-white/5 backdrop-blur-md shadow-sm animate-in fade-in slide-in-from-left-2 duration-300"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setAdvancedWorkspaceMode('guided')}
+                      className={cn(
+                        "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
+                        advancedWorkspaceMode === 'guided'
+                          ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                          : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
+                      )}
+                      role="tab"
+                      aria-selected={advancedWorkspaceMode === 'guided'}
+                    >
+                      <Sparkles className={cn("size-3.5 transition-transform group-hover:scale-110", advancedWorkspaceMode === 'guided' ? "fill-white/20" : "opacity-70")} />
+                      {t('common.reportBuilder.advancedWorkspaceModes.guided')}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAdvancedWorkspaceMode('expert')}
+                      className={cn(
+                        "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
+                        advancedWorkspaceMode === 'expert'
+                          ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                          : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
+                      )}
+                      role="tab"
+                      aria-selected={advancedWorkspaceMode === 'expert'}
+                    >
+                      <Settings2 className={cn("size-3.5 transition-transform group-hover:scale-110", advancedWorkspaceMode === 'expert' ? "fill-white/20" : "opacity-70")} />
+                      {t('common.reportBuilder.advancedWorkspaceModes.expert')}
+                    </button>
+                  </div>
+                ) : null}
+              </div>
               <div className="h-5 w-px bg-border" aria-hidden="true" />
               {builderMode === 'advanced' && isEdit ? (
                 <Button variant="outline" size="sm" asChild>
@@ -1632,7 +1681,12 @@ export function ReportBuilderPage(): ReactElement {
                   {t('common.cancel')}
                 </Button>
               ) : null}
-              <Button size="sm" onClick={handleSave} disabled={ui.saveLoading} className="min-w-[120px]">
+              <Button
+                size="sm"
+                onClick={handleSave}
+                disabled={ui.saveLoading}
+                className="h-9 min-w-[120px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              >
                 {ui.saveLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
                 {builderMode === 'basic'
                   ? (isEdit ? t('common.reportBuilder.simpleUpdateAction') : t('common.reportBuilder.simpleSaveAction'))
@@ -1729,7 +1783,13 @@ export function ReportBuilderPage(): ReactElement {
                       </ul>
                     </div>
                     <div className="flex shrink-0 gap-2">
-                      <Button type="button" variant="outline" size="sm" onClick={handleSmartComplete}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleSmartComplete}
+                        className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                      >
+                        <Sparkles className="mr-2 size-3.5" />
                         {t('common.reportBuilder.smartComplete')}
                       </Button>
                     </div>
@@ -1773,6 +1833,9 @@ export function ReportBuilderPage(): ReactElement {
           );
         })()}
         <TopBarSelector
+          className={cn(
+            builderMode === 'advanced' && advancedWorkspaceMode === 'expert' && "transition-opacity hover:opacity-100"
+          )}
           mode={builderMode}
           connections={connections}
           dataSources={dataSources}
@@ -1840,9 +1903,9 @@ export function ReportBuilderPage(): ReactElement {
             summary={
               config.filters.length > 0
                 ? t('common.reportBuilder.dashboardFiltersSummary', {
-                    count: config.filters.length,
-                    fields: config.filters.slice(0, 3).map((f) => getFieldLabel(f.field)).join(', '),
-                  })
+                  count: config.filters.length,
+                  fields: config.filters.slice(0, 3).map((f) => getFieldLabel(f.field)).join(', '),
+                })
                 : t('common.reportBuilder.dashboardFiltersEmptyShort')
             }
             defaultOpen={config.filters.length > 0}
@@ -1970,23 +2033,57 @@ export function ReportBuilderPage(): ReactElement {
         ) : null}
 
         {saveBlocked && builderMode === 'advanced' && advancedWorkspaceMode === 'guided' ? (
-          <div className="rounded-2xl border bg-card p-4">
-            <div className="mb-3">
-              <h2 className="text-sm font-semibold">{t('common.reportBuilder.guidedReadinessTitle')}</h2>
-              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.guidedReadinessDescription')}</p>
-            </div>
-            <div className="grid gap-3 md:grid-cols-3">
-              <div className={`rounded-xl border px-3 py-3 text-sm ${meta.name?.trim() ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
-                <div className="font-medium">{t('common.reportBuilder.reportName')}</div>
-                <div className="mt-1 text-xs">{meta.name?.trim() || t('common.reportBuilder.simpleChecklistNamePending')}</div>
+          <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-4 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+            <div className="relative z-10">
+              <div className="mb-4 flex items-start gap-3">
+                <div className="mt-0.5 shrink-0 text-primary">
+                  <CheckCircle2 className="size-4" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h2 className="text-sm font-semibold leading-none">{t('common.reportBuilder.guidedReadinessTitle')}</h2>
+                  <p className="text-muted-foreground text-xs">{t('common.reportBuilder.guidedReadinessDescription')}</p>
+                </div>
               </div>
-              <div className={`rounded-xl border px-3 py-3 text-sm ${datasetReady ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
-                <div className="font-medium">{t('common.reportBuilder.datasetHealth')}</div>
-                <div className="mt-1 text-xs">{datasetReady ? t('common.reportBuilder.datasetChecked') : t('common.reportBuilder.datasetPending')}</div>
-              </div>
-              <div className={`rounded-xl border px-3 py-3 text-sm ${hasValue ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background text-muted-foreground'}`}>
-                <div className="font-medium">{t('common.reportBuilder.values')}</div>
-                <div className="mt-1 text-xs">{hasValue ? t('common.reportBuilder.guidedReadinessReady') : t('common.reportBuilder.simpleChecklistFieldsPending')}</div>
+              <div className="grid gap-3 md:grid-cols-3">
+                <div className={cn(
+                  "flex flex-col gap-1.5 rounded-xl border p-3 text-sm transition-all duration-300",
+                  meta.name?.trim()
+                    ? "border-emerald-300/50 bg-emerald-500/10 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
+                    : "border-slate-200 bg-slate-50/50 text-slate-500 dark:border-white/5 dark:bg-white/5"
+                )}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider opacity-70">{t('common.reportBuilder.reportName')}</span>
+                    {meta.name?.trim() ? <Check className="size-3 text-emerald-500" /> : <div className="size-3 rounded-full border-2 border-slate-300 dark:border-slate-700" />}
+                  </div>
+                  <div className="truncate font-medium">{meta.name?.trim() || t('common.reportBuilder.simpleChecklistNamePending')}</div>
+                </div>
+
+                <div className={cn(
+                  "flex flex-col gap-1.5 rounded-xl border p-3 text-sm transition-all duration-300",
+                  datasetReady
+                    ? "border-emerald-300/50 bg-emerald-500/10 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
+                    : "border-slate-200 bg-slate-50/50 text-slate-500 dark:border-white/5 dark:bg-white/5"
+                )}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider opacity-70">{t('common.reportBuilder.datasetHealth')}</span>
+                    {datasetReady ? <Check className="size-3 text-emerald-500" /> : <div className="size-3 rounded-full border-2 border-slate-300 dark:border-slate-700" />}
+                  </div>
+                  <div className="truncate font-medium">{datasetReady ? t('common.reportBuilder.datasetChecked') : t('common.reportBuilder.datasetPending')}</div>
+                </div>
+
+                <div className={cn(
+                  "flex flex-col gap-1.5 rounded-xl border p-3 text-sm transition-all duration-300",
+                  hasValue
+                    ? "border-emerald-300/50 bg-emerald-500/10 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
+                    : "border-slate-200 bg-slate-50/50 text-slate-500 dark:border-white/5 dark:bg-white/5"
+                )}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider opacity-70">{t('common.reportBuilder.values')}</span>
+                    {hasValue ? <Check className="size-3 text-emerald-500" /> : <div className="size-3 rounded-full border-2 border-slate-300 dark:border-slate-700" />}
+                  </div>
+                  <div className="truncate font-medium">{hasValue ? t('common.reportBuilder.guidedReadinessReady') : t('common.reportBuilder.simpleChecklistFieldsPending')}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -2096,17 +2193,17 @@ export function ReportBuilderPage(): ReactElement {
             summary={
               guidedGoal && guidedVisualIntent
                 ? t('common.reportBuilder.guidedTemplateSummaryReady', {
-                    goal: t(`common.reportBuilder.wizardGoals.${guidedGoal}.title`),
-                    visual: t(`common.reportBuilder.widgetTaskCards.${guidedVisualIntent}.title`),
-                  })
+                  goal: t(`common.reportBuilder.wizardGoals.${guidedGoal}.title`),
+                  visual: t(`common.reportBuilder.widgetTaskCards.${guidedVisualIntent}.title`),
+                })
                 : t('common.reportBuilder.guidedTemplateSummaryPending')
             }
             defaultOpen={!guidedGoal || !guidedVisualIntent}
             action={
               <Button
                 type="button"
-                variant="outline"
                 size="sm"
+                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 onClick={(event) => {
                   event.stopPropagation();
                   handleSmartComplete();
@@ -2316,7 +2413,12 @@ export function ReportBuilderPage(): ReactElement {
                 <div className="mt-0.5 text-sm font-semibold">{nextStep.title}</div>
                 <div className="text-muted-foreground text-xs">{nextStep.description}</div>
               </div>
-              <Button type="button" size="sm" onClick={nextStep.action}>
+              <Button
+                type="button"
+                size="sm"
+                onClick={nextStep.action}
+                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              >
                 {nextStep.actionLabel}
               </Button>
             </div>
@@ -2336,8 +2438,8 @@ export function ReportBuilderPage(): ReactElement {
             action={
               <Button
                 type="button"
-                variant="outline"
                 size="sm"
+                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 onClick={(event) => {
                   event.stopPropagation();
                   addWidget();
@@ -2349,211 +2451,214 @@ export function ReportBuilderPage(): ReactElement {
             }
           >
             <div className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-3">
-            {(config.widgets ?? []).map((widget) => {
-              const isActive = widget.id === config.activeWidgetId;
-              const widgetIndex = (config.widgets ?? []).findIndex((item) => item.id === widget.id);
-              const canMoveLeft = widgetIndex > 0;
-              const canMoveRight = widgetIndex >= 0 && widgetIndex < (config.widgets?.length ?? 0) - 1;
-              return (
-                <div
-                  key={widget.id}
-                  className={`rounded-2xl border p-4 ${isActive ? 'border-primary bg-primary/5' : 'border-border bg-background'}`}
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-[220px] flex-1 space-y-2">
-                      <Input
-                        value={widget.title}
-                        onChange={(e) => renameWidget(widget.id, e.target.value)}
-                        onFocus={() => setActiveWidget(widget.id)}
-                        className="h-9"
-                      />
+              {(config.widgets ?? []).map((widget) => {
+                const isActive = widget.id === config.activeWidgetId;
+                const widgetIndex = (config.widgets ?? []).findIndex((item) => item.id === widget.id);
+                const canMoveLeft = widgetIndex > 0;
+                const canMoveRight = widgetIndex >= 0 && widgetIndex < (config.widgets?.length ?? 0) - 1;
+                return (
+                  <div
+                    key={widget.id}
+                    className={`rounded-2xl border p-4 ${isActive ? 'border-primary bg-primary/5' : 'border-border bg-background'}`}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-[220px] flex-1 space-y-2">
+                        <Input
+                          value={widget.title}
+                          onChange={(e) => renameWidget(widget.id, e.target.value)}
+                          onFocus={() => setActiveWidget(widget.id)}
+                          className="h-9"
+                        />
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant={isActive ? 'default' : 'outline'}>
+                            {isActive ? t('common.reportBuilder.widgetCardActive') : t('common.reportBuilder.widgetCardInactive')}
+                          </Badge>
+                          <Badge variant="outline">{t(`common.reportBuilder.chartTypes.${widget.chartType}`)}</Badge>
+                          <Badge variant="outline">{widgetSizeLabel(widget.size)}</Badge>
+                          <Badge variant="outline">{widgetHeightLabel(widget.height)}</Badge>
+                        </div>
+                      </div>
                       <div className="flex flex-wrap gap-2">
-                        <Badge variant={isActive ? 'default' : 'outline'}>
-                          {isActive ? t('common.reportBuilder.widgetCardActive') : t('common.reportBuilder.widgetCardInactive')}
-                        </Badge>
-                        <Badge variant="outline">{t(`common.reportBuilder.chartTypes.${widget.chartType}`)}</Badge>
-                        <Badge variant="outline">{widgetSizeLabel(widget.size)}</Badge>
-                        <Badge variant="outline">{widgetHeightLabel(widget.height)}</Badge>
+                        <Button type="button" variant={isActive ? 'default' : 'outline'} size="sm" onClick={() => setActiveWidget(widget.id)}>
+                          {t('common.reportBuilder.widgetCardSelect')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => canMoveLeft && reorderWidgets(widgetIndex, widgetIndex - 1)}
+                          disabled={!canMoveLeft}
+                        >
+                          <ArrowLeft className="mr-1 size-3.5" />
+                          {t('common.previous')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => canMoveRight && reorderWidgets(widgetIndex, widgetIndex + 1)}
+                          disabled={!canMoveRight}
+                        >
+                          {t('common.next')}
+                          <ArrowRight className="ml-1 size-3.5" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setWidgetSize(
+                              widget.id,
+                              widget.size === 'third' ? 'half' : widget.size === 'half' ? 'full' : 'third'
+                            )
+                          }
+                          title={widgetSizeLabel(widget.size)}
+                        >
+                          {t('common.reportBuilder.widgetCardSizeAction')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setWidgetHeight(
+                              widget.id,
+                              widget.height === 'sm' ? 'md' : widget.height === 'md' ? 'lg' : 'sm'
+                            )
+                          }
+                          title={widgetHeightLabel(widget.height)}
+                        >
+                          {t('common.reportBuilder.widgetCardHeightAction')}
+                        </Button>
+                        {(config.widgets?.length ?? 0) > 1 && (
+                          <Button type="button" variant="ghost" size="sm" onClick={() => setDeleteWidgetId(widget.id)}>
+                            <Trash2 className="mr-1 size-3.5" />
+                            {t('common.remove')}
+                          </Button>
+                        )}
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button type="button" variant={isActive ? 'default' : 'outline'} size="sm" onClick={() => setActiveWidget(widget.id)}>
-                        {t('common.reportBuilder.widgetCardSelect')}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => canMoveLeft && reorderWidgets(widgetIndex, widgetIndex - 1)}
-                        disabled={!canMoveLeft}
-                      >
-                        <ArrowLeft className="mr-1 size-3.5" />
-                        {t('common.previous')}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => canMoveRight && reorderWidgets(widgetIndex, widgetIndex + 1)}
-                        disabled={!canMoveRight}
-                      >
-                        {t('common.next')}
-                        <ArrowRight className="ml-1 size-3.5" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setWidgetSize(
-                            widget.id,
-                            widget.size === 'third' ? 'half' : widget.size === 'half' ? 'full' : 'third'
-                          )
-                        }
-                        title={widgetSizeLabel(widget.size)}
-                      >
-                        {t('common.reportBuilder.widgetCardSizeAction')}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setWidgetHeight(
-                            widget.id,
-                            widget.height === 'sm' ? 'md' : widget.height === 'md' ? 'lg' : 'sm'
-                          )
-                        }
-                        title={widgetHeightLabel(widget.height)}
-                      >
-                        {t('common.reportBuilder.widgetCardHeightAction')}
-                      </Button>
-                      {(config.widgets?.length ?? 0) > 1 && (
-                        <Button type="button" variant="ghost" size="sm" onClick={() => setDeleteWidgetId(widget.id)}>
-                          <Trash2 className="mr-1 size-3.5" />
-                          {t('common.remove')}
-                        </Button>
-                      )}
-                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
             </div>
           </CollapsibleCard>
         ) : null}
 
         {datasetReady && builderMode === 'basic' ? (
-          <div className="rounded-2xl border bg-card p-4">
-            <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
-              <div className="min-w-[280px] flex-1">
-                <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  {t('common.reportBuilder.simpleStepChooseFieldsBadge')}
+          <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+            <div className="relative z-10">
+              <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-[280px] flex-1">
+                  <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t('common.reportBuilder.simpleStepChooseFieldsBadge')}
+                  </div>
+                  <h2 className="text-sm font-semibold">{t('common.reportBuilder.simpleTableTitle')}</h2>
+                  <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleTableDescription')}</p>
                 </div>
-                <h2 className="text-sm font-semibold">{t('common.reportBuilder.simpleTableTitle')}</h2>
-                <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleTableDescription')}</p>
+                <Button type="button" variant="outline" onClick={handleSimpleSelectFirstFields}>
+                  {t('common.reportBuilder.simpleTableAutoSelect')}
+                </Button>
               </div>
-              <Button type="button" variant="outline" onClick={handleSimpleSelectFirstFields}>
-                {t('common.reportBuilder.simpleTableAutoSelect')}
-              </Button>
-            </div>
-            <div className="space-y-4">
-              <div className="rounded-2xl border bg-muted/20 p-4">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleAvailableFieldsTitle')}</h3>
-                    <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleAvailableFieldsDescription')}</p>
+              <div className="space-y-4">
+                <div className="rounded-2xl border bg-muted/20 p-4">
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleAvailableFieldsTitle')}</h3>
+                      <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleAvailableFieldsDescription')}</p>
+                    </div>
+                    <Badge variant="secondary">{simpleAvailableFields.length}</Badge>
                   </div>
-                  <Badge variant="secondary">{simpleAvailableFields.length}</Badge>
-                </div>
-                <Input
-                  value={fieldsSearch}
-                  onChange={(event) => setFieldsSearch(event.target.value)}
-                  placeholder={t('common.reportBuilder.simpleFieldSearchPlaceholder')}
-                  className="mb-3"
-                />
-                <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
-                  {simpleAvailableFields.map((field) => {
-                    const selected = config.values.some((value) => value.field === field.name);
-                    const samples = previewSampleMap[field.name] ?? [];
+                  <Input
+                    value={fieldsSearch}
+                    onChange={(event) => setFieldsSearch(event.target.value)}
+                    placeholder={t('common.reportBuilder.simpleFieldSearchPlaceholder')}
+                    className="mb-3"
+                  />
+                  <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
+                    {simpleAvailableFields.map((field) => {
+                      const selected = config.values.some((value) => value.field === field.name);
+                      const samples = previewSampleMap[field.name] ?? [];
 
-                    return (
-                      <button
-                        key={field.name}
-                        type="button"
-                        onClick={() => handleSimpleToggleField(field.name)}
-                        className={`w-full rounded-xl border px-3 py-3 text-left transition-colors ${selected ? 'border-primary bg-primary/5' : 'bg-background hover:border-primary/40'}`}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0 flex-1">
-                            <div className="truncate text-sm font-medium">{field.label}</div>
-                            <div className="text-muted-foreground mt-1 text-xs">{field.name}</div>
-                            {samples.length > 0 ? (
-                              <div className="text-muted-foreground mt-2 line-clamp-2 text-[11px]">{samples.join(' • ')}</div>
-                            ) : null}
+                      return (
+                        <button
+                          key={field.name}
+                          type="button"
+                          onClick={() => handleSimpleToggleField(field.name)}
+                          className={`w-full rounded-xl border px-3 py-3 text-left transition-colors ${selected ? 'border-primary bg-primary/5' : 'bg-background hover:border-primary/40'}`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate text-sm font-medium">{field.label}</div>
+                              <div className="text-muted-foreground mt-1 text-xs">{field.name}</div>
+                              {samples.length > 0 ? (
+                                <div className="text-muted-foreground mt-2 line-clamp-2 text-[11px]">{samples.join(' • ')}</div>
+                              ) : null}
+                            </div>
+                            <Badge variant={selected ? 'default' : 'outline'}>
+                              {selected ? t('common.selected') : t('common.add')}
+                            </Badge>
                           </div>
-                          <Badge variant={selected ? 'default' : 'outline'}>
-                            {selected ? t('common.selected') : t('common.add')}
-                          </Badge>
-                        </div>
-                      </button>
-                    );
-                  })}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
 
-              <div className="rounded-2xl border bg-muted/20 p-4">
-                <div className="mb-2 inline-flex rounded-full border bg-background px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  {t('common.reportBuilder.simpleStepRenameBadge')}
-                </div>
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleSelectedFieldsTitle')}</h3>
-                    <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleSelectedFieldsDescription')}</p>
+                <div className="rounded-2xl border bg-muted/20 p-4">
+                  <div className="mb-2 inline-flex rounded-full border bg-background px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t('common.reportBuilder.simpleStepRenameBadge')}
                   </div>
-                  <Badge variant="secondary">
-                    {t('common.reportBuilder.simpleSelectedFieldsCount', { count: simpleTableFields.length })}
-                  </Badge>
-                </div>
-                {simpleTableFields.length === 0 ? (
-                  <div className="rounded-xl border border-dashed bg-background px-4 py-8 text-center">
-                    <div className="text-sm font-medium">{t('common.reportBuilder.simpleNoFieldsSelectedTitle')}</div>
-                    <div className="text-muted-foreground mt-2 text-xs">{t('common.reportBuilder.simpleNoFieldsSelectedDescription')}</div>
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleSelectedFieldsTitle')}</h3>
+                      <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleSelectedFieldsDescription')}</p>
+                    </div>
+                    <Badge variant="secondary">
+                      {t('common.reportBuilder.simpleSelectedFieldsCount', { count: simpleTableFields.length })}
+                    </Badge>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    {simpleTableFields.map((item) => (
-                      <div key={item.field} className="rounded-xl border bg-background p-3">
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div className="min-w-[220px] flex-1">
-                            <div className="text-sm font-medium">{getFieldLabel(item.field)}</div>
-                            <div className="text-muted-foreground mt-1 text-xs">{item.field}</div>
+                  {simpleTableFields.length === 0 ? (
+                    <div className="rounded-xl border border-dashed bg-background px-4 py-8 text-center">
+                      <div className="text-sm font-medium">{t('common.reportBuilder.simpleNoFieldsSelectedTitle')}</div>
+                      <div className="text-muted-foreground mt-2 text-xs">{t('common.reportBuilder.simpleNoFieldsSelectedDescription')}</div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {simpleTableFields.map((item) => (
+                        <div key={item.field} className="rounded-xl border bg-background p-3">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div className="min-w-[220px] flex-1">
+                              <div className="text-sm font-medium">{getFieldLabel(item.field)}</div>
+                              <div className="text-muted-foreground mt-1 text-xs">{item.field}</div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleMoveField(item.index, -1)} disabled={item.index === 0}>
+                                {t('common.previous')}
+                              </Button>
+                              <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleMoveField(item.index, 1)} disabled={item.index === simpleTableFields.length - 1}>
+                                {t('common.next')}
+                              </Button>
+                              <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleToggleField(item.field)}>
+                                {t('common.remove')}
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleMoveField(item.index, -1)} disabled={item.index === 0}>
-                              {t('common.previous')}
-                            </Button>
-                            <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleMoveField(item.index, 1)} disabled={item.index === simpleTableFields.length - 1}>
-                              {t('common.next')}
-                            </Button>
-                            <Button type="button" variant="outline" size="sm" onClick={() => handleSimpleToggleField(item.field)}>
-                              {t('common.remove')}
-                            </Button>
+                          <div className="mt-3 space-y-2">
+                            <Label htmlFor={`simple-field-label-${item.field}`}>{t('common.reportBuilder.simpleColumnTitleLabel')}</Label>
+                            <Input
+                              id={`simple-field-label-${item.field}`}
+                              value={config.values[item.index]?.label ?? ''}
+                              onChange={(event) => useReportBuilderStore.getState().setValueLabel(item.index, event.target.value)}
+                              placeholder={t('common.reportBuilder.simpleColumnTitlePlaceholder', { defaultTitle: getFieldLabel(item.field) })}
+                            />
                           </div>
                         </div>
-                        <div className="mt-3 space-y-2">
-                          <Label htmlFor={`simple-field-label-${item.field}`}>{t('common.reportBuilder.simpleColumnTitleLabel')}</Label>
-                          <Input
-                            id={`simple-field-label-${item.field}`}
-                            value={config.values[item.index]?.label ?? ''}
-                            onChange={(event) => useReportBuilderStore.getState().setValueLabel(item.index, event.target.value)}
-                            placeholder={t('common.reportBuilder.simpleColumnTitlePlaceholder', { defaultTitle: getFieldLabel(item.field) })}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -2571,164 +2676,195 @@ export function ReportBuilderPage(): ReactElement {
 
         {builderMode === 'advanced' ? (
           advancedWorkspaceMode === 'expert' ? (
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden xl:grid-cols-[320px_1fr]">
-              <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-1">
-                <div className="rounded-2xl border bg-card p-4">
-                  <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardFieldsTitle')}</h3>
-                  <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardFieldsDescription')}</p>
-                  <div className="mt-4">
-                    <FieldsPanel
-                      schema={schema}
-                      calculatedFields={config.calculatedFields}
-                      sampleValues={previewSampleMap}
-                      search={fieldsSearch}
-                      onSearchChange={setFieldsSearch}
-                      onUseAsAxis={handleQuickUseAxis}
-                      onUseAsValue={handleQuickUseValue}
-                      onUseAsLegend={handleQuickUseLegend}
-                      onUseAsFilter={handleQuickUseFilter}
-                      disabled={!dataSourceChecked}
-                      mode={builderMode}
-                    />
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[320px_1fr]">
+              <div className="flex flex-col gap-4 pr-1">
+                <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="relative z-10">
+                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardFieldsTitle')}</h3>
+                    <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardFieldsDescription')}</p>
+                    <div className="mt-4">
+                      <FieldsPanel
+                        schema={schema}
+                        calculatedFields={config.calculatedFields}
+                        sampleValues={previewSampleMap}
+                        search={fieldsSearch}
+                        onSearchChange={setFieldsSearch}
+                        onUseAsAxis={handleQuickUseAxis}
+                        onUseAsValue={handleQuickUseValue}
+                        onUseAsLegend={handleQuickUseLegend}
+                        onUseAsFilter={handleQuickUseFilter}
+                        disabled={!dataSourceChecked}
+                        mode={builderMode}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="rounded-2xl border bg-card p-4">
-                  <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardStructureTitle')}</h3>
-                  <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardStructureDescription')}</p>
-                  {ui.slotError ? (
-                    <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm">
-                      <div className="font-semibold text-destructive">{t('common.reportBuilder.needAttentionTitle')}</div>
-                      <div className="mt-1 text-muted-foreground">{ui.slotError}</div>
+
+                <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="relative z-10">
+                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardStructureTitle')}</h3>
+                    <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardStructureDescription')}</p>
+                    {ui.slotError ? (
+                      <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm">
+                        <div className="font-semibold text-destructive">{t('common.reportBuilder.needAttentionTitle')}</div>
+                        <div className="mt-1 text-muted-foreground">{ui.slotError}</div>
+                      </div>
+                    ) : null}
+                    <div className="mt-4">
+                      <SlotsPanel
+                        axis={config.axis}
+                        values={config.values}
+                        legend={config.legend}
+                        filters={config.filters}
+                        slotError={ui.slotError}
+                        onRemoveAxis={() => useReportBuilderStore.getState().removeFromSlot('axis', 0)}
+                        onRemoveValue={(i) => useReportBuilderStore.getState().removeFromSlot('values', i)}
+                        onRemoveLegend={() => useReportBuilderStore.getState().removeFromSlot('legend', 0)}
+                        onRemoveFilter={(i) => useReportBuilderStore.getState().removeFilter(i)}
+                        disabled={!dataSourceChecked}
+                      />
                     </div>
-                  ) : null}
-                  <div className="mt-4">
-                    <SlotsPanel
-                      axis={config.axis}
-                      values={config.values}
-                      legend={config.legend}
-                      filters={config.filters}
-                      slotError={ui.slotError}
-                      onRemoveAxis={() => useReportBuilderStore.getState().removeFromSlot('axis', 0)}
-                      onRemoveValue={(i) => useReportBuilderStore.getState().removeFromSlot('values', i)}
-                      onRemoveLegend={() => useReportBuilderStore.getState().removeFromSlot('legend', 0)}
-                      onRemoveFilter={(i) => useReportBuilderStore.getState().removeFilter(i)}
-                      disabled={!dataSourceChecked}
-                    />
                   </div>
                 </div>
               </div>
 
-              <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-1">
-                <DeferOnView fallback={<PreviewPanelSkeleton className="border bg-card p-4" />}>
-                  <div className="rounded-2xl border bg-card p-4">
-                    <Suspense fallback={<PreviewPanelSkeleton />}>
-                      <PreviewPanel
-                        title={t('common.reportBuilder.activeWidgetPreview')}
-                        subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
-                        columns={preview.columns}
-                        rows={preview.rows}
-                        chartType={config.chartType}
-                        appearance={activeWidget?.appearance}
-                        labelOverrides={buildWidgetLabelOverrides(activeWidget)}
-                        loading={ui.previewLoading}
-                        error={ui.error}
-                        empty={!dataSourceChecked}
-                      />
-                    </Suspense>
+              <div className="flex flex-col gap-4 pr-1">
+                <DeferOnView fallback={<PreviewPanelSkeleton className="border-slate-300/80 bg-stone-50/95 p-5 ring-1 ring-slate-200/70 dark:border-white/10 dark:bg-[#1a1025]/60" />}>
+                  <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                    <div className="relative z-10">
+                      <Suspense fallback={<PreviewPanelSkeleton />}>
+                        <PreviewPanel
+                          title={t('common.reportBuilder.activeWidgetPreview')}
+                          subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
+                          columns={preview.columns}
+                          rows={preview.rows}
+                          chartType={config.chartType}
+                          appearance={activeWidget?.appearance}
+                          labelOverrides={buildWidgetLabelOverrides(activeWidget)}
+                          loading={ui.previewLoading}
+                          error={ui.error}
+                          empty={!dataSourceChecked}
+                        />
+                      </Suspense>
+                    </div>
                   </div>
                 </DeferOnView>
-                <div className="rounded-2xl border bg-card p-4">
-                  <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardLayoutTitle')}</h3>
-                  <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardLayoutDescription')}</p>
-                  <div className="mt-4">
-                    <DashboardLayoutPreview
-                      widgets={config.widgets ?? []}
-                      activeWidgetId={config.activeWidgetId}
-                      onSelect={setActiveWidget}
-                      onReorder={reorderWidgets}
-                    />
+
+                <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="relative z-10">
+                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardLayoutTitle')}</h3>
+                    <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardLayoutDescription')}</p>
+                    <div className="mt-4">
+                      <DashboardLayoutPreview
+                        widgets={config.widgets ?? []}
+                        activeWidgetId={config.activeWidgetId}
+                        onSelect={setActiveWidget}
+                        onReorder={reorderWidgets}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="rounded-2xl border bg-card p-4">
-                  <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardSettingsTitle')}</h3>
-                  <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardSettingsDescription')}</p>
-                  <div className="mt-4">
-                    <PropertiesPanel schema={schema} slotError={ui.slotError} disabled={!dataSourceChecked} mode={builderMode} />
+
+                <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="relative z-10">
+                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardSettingsTitle')}</h3>
+                    <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardSettingsDescription')}</p>
+                    <div className="mt-4">
+                      <PropertiesPanel schema={schema} slotError={ui.slotError} disabled={!dataSourceChecked} mode={builderMode} />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]">
-              <div className="flex min-h-0 flex-col overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]">
+              <div className="flex flex-col pr-1">
                 <DeferOnView fallback={<PreviewPanelSkeleton className="shrink-0" />}>
-                  <div className="shrink-0">
-                    <Suspense fallback={<PreviewPanelSkeleton />}>
-                      <PreviewPanel
-                        title={t('common.reportBuilder.activeWidgetPreview')}
-                        subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
-                        columns={preview.columns}
-                        rows={preview.rows}
-                        chartType={config.chartType}
-                        appearance={activeWidget?.appearance}
-                        labelOverrides={buildWidgetLabelOverrides(activeWidget)}
-                        loading={ui.previewLoading}
-                        error={ui.error}
-                        empty={!dataSourceChecked}
-                      />
-                    </Suspense>
+                  <div className="shrink-0 relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                    <div className="relative z-10">
+                      <Suspense fallback={<PreviewPanelSkeleton />}>
+                        <PreviewPanel
+                          title={t('common.reportBuilder.activeWidgetPreview')}
+                          subtitle={activeWidget?.appearance?.subtitle || t('common.reportBuilder.activeWidgetPreviewDescription')}
+                          columns={preview.columns}
+                          rows={preview.rows}
+                          chartType={config.chartType}
+                          appearance={activeWidget?.appearance}
+                          labelOverrides={buildWidgetLabelOverrides(activeWidget)}
+                          loading={ui.previewLoading}
+                          error={ui.error}
+                          empty={!dataSourceChecked}
+                        />
+                      </Suspense>
+                    </div>
                   </div>
                 </DeferOnView>
                 {(config.widgets?.length ?? 0) > 1 ? (
-                  <div className="mt-4 rounded-2xl border bg-card p-4">
-                    <div className="mb-3 flex items-center gap-2">
-                      <LayoutGrid className="size-4 text-primary" />
-                      <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardLayoutTitle')}</h3>
+                  <div className="mt-4 relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                    <div className="relative z-10">
+                      <div className="mb-3 flex items-center gap-2">
+                        <LayoutGrid className="size-4 text-primary" />
+                        <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardLayoutTitle')}</h3>
+                      </div>
+                      <DashboardLayoutPreview
+                        widgets={config.widgets ?? []}
+                        activeWidgetId={config.activeWidgetId}
+                        onSelect={setActiveWidget}
+                        onReorder={reorderWidgets}
+                      />
                     </div>
-                    <DashboardLayoutPreview
-                      widgets={config.widgets ?? []}
-                      activeWidgetId={config.activeWidgetId}
-                      onSelect={setActiveWidget}
-                      onReorder={reorderWidgets}
-                    />
                   </div>
                 ) : null}
               </div>
 
               <aside className="space-y-3">
-                <div className="rounded-2xl border bg-card p-4">
-                  <div className="mb-3 flex items-center gap-2">
-                    <Sparkles className="size-4 text-primary" />
-                    <h3 className="text-sm font-semibold">{t('common.reportBuilder.guidedSidebarTitle')}</h3>
-                  </div>
-                  <p className="text-muted-foreground mb-4 text-xs">{t('common.reportBuilder.guidedSidebarDescription')}</p>
-                  <div className="flex flex-col gap-2">
-                    <Button type="button" onClick={handleSmartComplete} className="justify-start">
-                      <Sparkles className="mr-2 size-4" />
-                      {t('common.reportBuilder.smartComplete')}
-                    </Button>
-                    {!hasValue && firstValueField ? (
+                <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="relative z-10">
+                    <div className="mb-3 flex items-center gap-2">
+                      <Sparkles className="size-4 text-primary" />
+                      <h3 className="text-sm font-semibold">{t('common.reportBuilder.guidedSidebarTitle')}</h3>
+                    </div>
+                    <p className="text-muted-foreground mb-4 text-xs">{t('common.reportBuilder.guidedSidebarDescription')}</p>
+                    <div className="flex flex-col gap-2">
                       <Button
                         type="button"
-                        variant="secondary"
-                        onClick={() => handleQuickUseValue(firstValueField)}
-                        className="justify-start"
+                        onClick={handleSmartComplete}
+                        className="justify-start bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                       >
-                        <Plus className="mr-2 size-4" />
-                        {t('common.reportBuilder.addRecommendedValue', { field: firstValueField.displayName || firstValueField.name })}
+                        <Sparkles className="mr-2 size-4" />
+                        {t('common.reportBuilder.smartComplete')}
                       </Button>
-                    ) : null}
-                    {!hasAxis && firstAxisField ? (
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => handleQuickUseAxis(firstAxisField)}
-                        className="justify-start"
-                      >
-                        <Plus className="mr-2 size-4" />
-                        {t('common.reportBuilder.addRecommendedAxis', { field: firstAxisField.displayName || firstAxisField.name })}
-                      </Button>
-                    ) : null}
+                      {!hasValue && firstValueField ? (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => handleQuickUseValue(firstValueField)}
+                          className="justify-start"
+                        >
+                          <Plus className="mr-2 size-4" />
+                          {t('common.reportBuilder.addRecommendedValue', { field: firstValueField.displayName || firstValueField.name })}
+                        </Button>
+                      ) : null}
+                      {!hasAxis && firstAxisField ? (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => handleQuickUseAxis(firstAxisField)}
+                          className="justify-start"
+                        >
+                          <Plus className="mr-2 size-4" />
+                          {t('common.reportBuilder.addRecommendedAxis', { field: firstAxisField.displayName || firstAxisField.name })}
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
 
@@ -2736,19 +2872,19 @@ export function ReportBuilderPage(): ReactElement {
                   title={t('common.reportBuilder.widgetAssistantCurrentTitle')}
                   description={t('common.reportBuilder.guidedWorkspaceDescription')}
                   summary={t('common.reportBuilder.guidedActiveSummary', {
-                    axis: getFieldLabel(activeWidget?.axis?.field) || '—',
-                    value: getFieldLabel(activeWidget?.values?.[0]?.field) || '—',
+                    axis: getFieldLabel(activeWidget?.axis?.field) || '-',
+                    value: getFieldLabel(activeWidget?.values?.[0]?.field) || '-',
                   })}
                   defaultOpen={false}
                 >
                   <div className="space-y-2">
                     <div className={`rounded-xl border px-3 py-2 text-sm ${activeWidget?.axis?.field ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background'}`}>
                       <div className="text-xs font-medium text-muted-foreground">{t('common.reportBuilder.widgetAssistantDimension')}</div>
-                      <div className="mt-0.5 text-sm">{getFieldLabel(activeWidget?.axis?.field) || '—'}</div>
+                      <div className="mt-0.5 text-sm">{getFieldLabel(activeWidget?.axis?.field) || '-'}</div>
                     </div>
                     <div className={`rounded-xl border px-3 py-2 text-sm ${activeWidget?.values?.[0]?.field ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background'}`}>
                       <div className="text-xs font-medium text-muted-foreground">{t('common.reportBuilder.widgetAssistantMetric')}</div>
-                      <div className="mt-0.5 text-sm">{getFieldLabel(activeWidget?.values?.[0]?.field) || '—'}</div>
+                      <div className="mt-0.5 text-sm">{getFieldLabel(activeWidget?.values?.[0]?.field) || '-'}</div>
                     </div>
                     <div className={`rounded-xl border px-3 py-2 text-sm ${activeWidget?.legend?.field ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-background'}`}>
                       <div className="text-xs font-medium text-muted-foreground">{t('common.reportBuilder.widgetAssistantBreakdown')}</div>
@@ -2774,66 +2910,72 @@ export function ReportBuilderPage(): ReactElement {
           )
         ) : (
           <div className="space-y-4">
-            <div className="rounded-2xl border bg-card p-4">
-              <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {t('common.reportBuilder.simpleStepSaveBadge')}
-              </div>
-              <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleFinalStepTitle')}</h3>
-              <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleFinalStepDescription')}</p>
-              <div className="mt-4 grid gap-3 md:grid-cols-3">
-                <div className={`rounded-xl border px-3 py-3 text-sm ${datasetReady ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
-                  <div className="font-medium">{t('common.reportBuilder.simpleChecklistDatasetTitle')}</div>
-                  <div className="text-muted-foreground mt-1 text-xs">{meta.dataSourceName || t('common.reportBuilder.notConnected')}</div>
+            <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+              <div className="relative z-10">
+                <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('common.reportBuilder.simpleStepSaveBadge')}
                 </div>
-                <div className={`rounded-xl border px-3 py-3 text-sm ${simpleTableFields.length > 0 ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
-                  <div className="font-medium">{t('common.reportBuilder.simpleChecklistFieldsTitle')}</div>
-                  <div className="text-muted-foreground mt-1 text-xs">
+                <h3 className="text-sm font-semibold">{t('common.reportBuilder.simpleFinalStepTitle')}</h3>
+                <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleFinalStepDescription')}</p>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  <div className={`rounded-xl border px-3 py-3 text-sm ${datasetReady ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
+                    <div className="font-medium">{t('common.reportBuilder.simpleChecklistDatasetTitle')}</div>
+                    <div className="text-muted-foreground mt-1 text-xs">{meta.dataSourceName || t('common.reportBuilder.notConnected')}</div>
+                  </div>
+                  <div className={`rounded-xl border px-3 py-3 text-sm ${simpleTableFields.length > 0 ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
+                    <div className="font-medium">{t('common.reportBuilder.simpleChecklistFieldsTitle')}</div>
+                    <div className="text-muted-foreground mt-1 text-xs">
+                      {simpleTableFields.length > 0
+                        ? t('common.reportBuilder.simpleSelectedFieldsCount', { count: simpleTableFields.length })
+                        : t('common.reportBuilder.simpleChecklistFieldsPending')}
+                    </div>
+                  </div>
+                  <div className={`rounded-xl border px-3 py-3 text-sm ${meta.name?.trim() ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
+                    <div className="font-medium">{t('common.reportBuilder.simpleChecklistNameTitle')}</div>
+                    <div className="text-muted-foreground mt-1 text-xs">
+                      {meta.name?.trim() || t('common.reportBuilder.simpleChecklistNamePending')}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 rounded-xl border bg-background p-3">
+                  <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.simpleSummaryColumns')}</div>
+                  <div className="mt-2 text-sm font-medium">
                     {simpleTableFields.length > 0
-                      ? t('common.reportBuilder.simpleSelectedFieldsCount', { count: simpleTableFields.length })
-                      : t('common.reportBuilder.simpleChecklistFieldsPending')}
+                      ? simpleTableFields.map((item) => item.label).join(', ')
+                      : t('common.reportBuilder.basicNoneSelected')}
                   </div>
                 </div>
-                <div className={`rounded-xl border px-3 py-3 text-sm ${meta.name?.trim() ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30' : 'bg-muted/20'}`}>
-                  <div className="font-medium">{t('common.reportBuilder.simpleChecklistNameTitle')}</div>
-                  <div className="text-muted-foreground mt-1 text-xs">
-                    {meta.name?.trim() || t('common.reportBuilder.simpleChecklistNamePending')}
-                  </div>
+                <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
+                  <div className="font-medium">{t('common.reportBuilder.simpleSaveHintTitle')}</div>
+                  <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleSaveHintDescription')}</div>
                 </div>
-              </div>
-              <div className="mt-4 rounded-xl border bg-background p-3">
-                <div className="text-muted-foreground text-[11px] uppercase tracking-wide">{t('common.reportBuilder.simpleSummaryColumns')}</div>
-                <div className="mt-2 text-sm font-medium">
-                  {simpleTableFields.length > 0
-                    ? simpleTableFields.map((item) => item.label).join(', ')
-                    : t('common.reportBuilder.basicNoneSelected')}
-                </div>
-              </div>
-              <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
-                <div className="font-medium">{t('common.reportBuilder.simpleSaveHintTitle')}</div>
-                <div className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.simpleSaveHintDescription')}</div>
               </div>
             </div>
 
-            <div className="rounded-2xl border bg-card p-4">
-              <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {t('common.reportBuilder.simplePreviewBadge')}
+            <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+              <div className="relative z-10">
+                <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('common.reportBuilder.simplePreviewBadge')}
+                </div>
+                <DeferOnView fallback={<PreviewPanelSkeleton />}>
+                  <Suspense fallback={<PreviewPanelSkeleton />}>
+                    <PreviewPanel
+                      title={t('common.reportBuilder.simplePreviewTitle')}
+                      subtitle={t('common.reportBuilder.simplePreviewDescription')}
+                      columns={preview.columns}
+                      rows={preview.rows}
+                      chartType={config.chartType}
+                      appearance={activeWidget?.appearance}
+                      labelOverrides={buildWidgetLabelOverrides(activeWidget)}
+                      loading={ui.previewLoading}
+                      error={ui.error}
+                      empty={!dataSourceChecked}
+                    />
+                  </Suspense>
+                </DeferOnView>
               </div>
-              <DeferOnView fallback={<PreviewPanelSkeleton />}>
-                <Suspense fallback={<PreviewPanelSkeleton />}>
-                  <PreviewPanel
-                    title={t('common.reportBuilder.simplePreviewTitle')}
-                    subtitle={t('common.reportBuilder.simplePreviewDescription')}
-                    columns={preview.columns}
-                    rows={preview.rows}
-                    chartType={config.chartType}
-                    appearance={activeWidget?.appearance}
-                    labelOverrides={buildWidgetLabelOverrides(activeWidget)}
-                    loading={ui.previewLoading}
-                    error={ui.error}
-                    empty={!dataSourceChecked}
-                  />
-                </Suspense>
-              </DeferOnView>
             </div>
           </div>
         )}

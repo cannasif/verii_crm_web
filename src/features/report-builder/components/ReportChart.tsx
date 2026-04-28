@@ -14,6 +14,7 @@ import type { ChartType, ReportWidgetAppearance, ReportWidgetTableColumnSetting 
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { Button } from '@/components/ui/button';
 import { formatSystemCurrency, formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
+import { TrendingUp } from 'lucide-react';
 
 type ColumnItem = string | { name: string; sqlType?: string; dotNetType?: string; isNullable?: boolean };
 
@@ -24,6 +25,7 @@ interface ReportChartProps {
   className?: string;
   appearance?: ReportWidgetAppearance;
   labelOverrides?: Record<string, string>;
+  isExpanded?: boolean;
 }
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1', '#a4de6c'];
@@ -110,7 +112,8 @@ function getColumnWidthClass(width?: ReportWidgetTableColumnSetting['width']): s
   return '';
 }
 
-function getColumnAlignClass(align?: ReportWidgetTableColumnSetting['align']): string {
+function getColumnAlignClass(align?: ReportWidgetTableColumnSetting['align'], columnLabel?: string): string {
+  if (columnLabel?.toLowerCase().includes('öncelik') || columnLabel?.toLowerCase().includes('priority')) return 'text-left';
   if (align === 'center') return 'text-center';
   if (align === 'right') return 'text-right';
   return 'text-left';
@@ -125,7 +128,7 @@ function formatAxisTooltipLabel(value: unknown): string {
   return value;
 }
 
-export function ReportChart({ columns, rows, chartType, className, appearance, labelOverrides }: ReportChartProps): ReactElement {
+export function ReportChart({ columns, rows, chartType, className, appearance, labelOverrides, isExpanded }: ReportChartProps): ReactElement {
   const { t } = useTranslation('common');
   const [showAllSeries, setShowAllSeries] = useState(false);
   const needsRecharts =
@@ -380,7 +383,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
 
   if (columnLabels.length === 0 || normalizedRows.length === 0) {
     return (
-        <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
+      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
         {t('common.noData')}
       </div>
     );
@@ -388,22 +391,20 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
 
   if (chartType === 'table') {
     return (
-      <div className={cn('max-h-[400px] space-y-2', className)}>
-        <div
-          className="max-h-[360px] overflow-x-auto overflow-y-auto pb-2"
-          style={{ scrollbarGutter: 'stable both-edges' }}
-        >
-          <Table className={cn('w-full table-fixed', tableDensity === 'compact' ? 'text-[11px]' : 'text-xs')}>
+      <div className={cn(isExpanded ? 'h-full w-full space-y-2 flex flex-col' : 'max-h-[400px] space-y-2', className)}>
+        {/* Header Table */}
+        <div className="shrink-0 overflow-hidden rounded-t-xl border-x border-t border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-white/[0.05]">
+          <Table className={cn('w-full table-fixed border-collapse', tableDensity === 'compact' ? 'text-[11px]' : 'text-xs')}>
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent border-b-0">
                 {orderedColumnLabels.map((col, i) => (
                   <TableHead
                     key={col || i}
                     className={cn(
-                      'whitespace-normal wrap-break-word align-top',
-                      tableDensity === 'compact' ? 'py-2' : 'py-3',
+                      'whitespace-normal wrap-break-word align-middle font-black uppercase tracking-widest text-[10px] text-slate-500 dark:text-slate-400',
+                      tableDensity === 'compact' ? 'py-3' : 'py-4',
                       getColumnWidthClass(orderedColumnSettings[i]?.width),
-                      getColumnAlignClass(orderedColumnSettings[i]?.align),
+                      getColumnAlignClass(orderedColumnSettings[i]?.align, col),
                     )}
                   >
                     {col}
@@ -411,17 +412,26 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
                 ))}
               </TableRow>
             </TableHeader>
+          </Table>
+        </div>
+
+        {/* Body Table */}
+        <div
+          className={cn('overflow-x-auto overflow-y-auto rounded-b-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02]', isExpanded ? 'flex-1 h-full' : 'max-h-[300px]')}
+          style={{ scrollbarGutter: 'stable both-edges' }}
+        >
+          <Table className={cn('w-full table-fixed border-collapse', tableDensity === 'compact' ? 'text-[11px]' : 'text-xs')}>
             <TableBody>
               {orderedRows.slice(0, 5000).map((row, ri) => (
-                <TableRow key={ri} className={cn(ri % 2 === 1 && 'bg-muted/30')}>
+                <TableRow key={ri} className={cn('border-b border-slate-100 dark:border-white/5', ri % 2 === 1 ? 'bg-slate-50/30 dark:bg-white/[0.01] hover:bg-slate-50/30 dark:hover:bg-white/[0.01]' : 'hover:bg-transparent')}>
                   {row.map((cell, ci) => (
                     <TableCell
                       key={ci}
                       className={cn(
-                        'whitespace-normal wrap-break-word align-top',
-                        tableDensity === 'compact' ? 'py-2' : 'py-3',
+                        'whitespace-normal wrap-break-word align-top font-medium text-slate-700 dark:text-slate-300',
+                        tableDensity === 'compact' ? 'py-2.5' : 'py-3.5',
                         getColumnWidthClass(orderedColumnSettings[ci]?.width),
-                        getColumnAlignClass(orderedColumnSettings[ci]?.align),
+                        getColumnAlignClass(orderedColumnSettings[ci]?.align, orderedColumnLabels[ci]),
                       )}
                     >
                       {renderCellValueWithSetting(cell, appearance, orderedColumnSettings[ci])}
@@ -438,30 +448,37 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
 
   if (chartType === 'matrix' && matrixData) {
     return (
-      <div className={cn('max-h-[400px] space-y-2', className)}>
-        <div
-          className="max-h-[360px] overflow-x-auto overflow-y-auto pb-2"
-          style={{ scrollbarGutter: 'stable both-edges' }}
-        >
-          <Table className="w-full table-fixed text-xs">
+      <div className={cn(isExpanded ? 'h-full w-full space-y-2 flex flex-col' : 'max-h-[400px] space-y-2', className)}>
+        {/* Header Table */}
+        <div className="shrink-0 overflow-hidden rounded-t-xl border-x border-t border-slate-200 dark:border-white/10 bg-indigo-50/30 dark:bg-indigo-500/5">
+          <Table className="w-full table-fixed border-collapse text-xs">
             <TableHeader>
-              <TableRow>
-                <TableHead className="whitespace-normal wrap-break-word align-top">{matrixData.rowKey}</TableHead>
+              <TableRow className="hover:bg-transparent border-b-0">
+                <TableHead className="whitespace-normal wrap-break-word align-middle font-black uppercase tracking-widest text-[10px] text-slate-500 dark:text-slate-400 py-4">{matrixData.rowKey}</TableHead>
                 {matrixData.columnHeaders.map((header) => (
-                  <TableHead key={header} className="whitespace-normal wrap-break-word align-top">
+                  <TableHead key={header} className="whitespace-normal wrap-break-word align-middle font-black uppercase tracking-widest text-[10px] text-slate-500 dark:text-slate-400 py-4">
                     {header}
                   </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
+          </Table>
+        </div>
+
+        {/* Body Table */}
+        <div
+          className={cn('overflow-x-auto overflow-y-auto rounded-b-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02]', isExpanded ? 'flex-1 h-full' : 'max-h-[300px]')}
+          style={{ scrollbarGutter: 'stable both-edges' }}
+        >
+          <Table className="w-full table-fixed border-collapse text-xs">
             <TableBody>
-              {matrixData.rowLabels.map((rowLabel) => {
+              {matrixData.rowLabels.map((rowLabel, ri) => {
                 const cells = matrixData.grid.get(rowLabel) ?? {};
                 return (
-                  <TableRow key={rowLabel}>
-                    <TableCell className="font-medium whitespace-normal wrap-break-word align-top">{rowLabel}</TableCell>
+                  <TableRow key={rowLabel} className={cn('border-b border-slate-100 dark:border-white/5', ri % 2 === 1 ? 'bg-slate-50/30 dark:bg-white/[0.01] hover:bg-slate-50/30 dark:hover:bg-white/[0.01]' : 'hover:bg-transparent')}>
+                    <TableCell className="font-bold text-slate-900 dark:text-white whitespace-normal wrap-break-word align-top py-3.5 bg-slate-50/20 dark:bg-white/5">{rowLabel}</TableCell>
                     {matrixData.columnHeaders.map((header) => (
-                      <TableCell key={`${rowLabel}-${header}`} className="whitespace-normal wrap-break-word align-top">
+                      <TableCell key={`${rowLabel}-${header}`} className="whitespace-normal wrap-break-word align-top py-3.5 text-slate-600 dark:text-slate-400">
                         {renderCellValue(cells[header] ?? '', appearance)}
                       </TableCell>
                     ))}
@@ -477,7 +494,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
 
   if (!Recharts) {
     return (
-        <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
+      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
         {t('common.reportBuilder.loadingChart')}
       </div>
     );
@@ -487,33 +504,47 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     const numericCells = normalizedRows.flat().filter((value) => typeof value === 'number' || (typeof value === 'string' && !Number.isNaN(Number(value))));
     const primaryValue = numericCells.length > 0 ? Number(numericCells[0]) : 0;
     const secondaryValue = numericCells.length > 1 ? Number(numericCells[1]) : null;
+    const isPositive = secondaryValue != null ? primaryValue >= secondaryValue : true;
     const secondaryDiff = secondaryValue != null && secondaryValue !== 0
       ? (((primaryValue - secondaryValue) / Math.abs(secondaryValue)) * 100).toFixed(1)
       : null;
 
-    const primaryCardClassName =
+    const primaryCardGradient =
       themePreset === 'performance'
-        ? 'from-emerald-500/15 to-background'
+        ? 'from-emerald-500/10 to-transparent'
         : themePreset === 'operations'
-          ? 'from-amber-500/15 to-background'
-          : 'from-primary/10 to-background';
+          ? 'from-amber-500/10 to-transparent'
+          : 'from-indigo-500/10 to-transparent';
+
     const deltaClassName =
       themePreset === 'performance'
         ? 'text-emerald-600'
         : themePreset === 'operations'
-          ? 'text-amber-600'
-          : 'text-primary';
+          ? 'from-amber-500/10 to-transparent'
+          : 'from-indigo-500/10 to-transparent';
+
+    const valueColor =
+      themePreset === 'performance' ? 'text-emerald-600 dark:text-emerald-400' :
+        themePreset === 'operations' ? 'text-amber-600 dark:text-amber-400' :
+          'text-slate-900 dark:text-white';
+
+    const deltaBg = isPositive ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20' : 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-100 dark:border-red-500/20';
 
     if (kpiLayout === 'spotlight') {
       return (
-        <div className={cn('flex h-full min-h-[220px] items-center justify-center', className)}>
-          <div className={cn('w-full rounded-2xl border bg-linear-to-br p-8 text-center', primaryCardClassName)}>
-            <div className="text-muted-foreground text-xs uppercase tracking-[0.24em]">{t('common.reportBuilder.primaryKpi')}</div>
-            <div className="mt-5 text-5xl font-bold tracking-tight">{formatKpiValue(primaryValue, kpiFormat)}</div>
-            <div className="text-muted-foreground mt-2 text-sm">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
-            <div className={cn('mt-6 inline-flex rounded-full px-3 py-1 text-sm font-medium', deltaClassName, 'bg-muted')}>
-              {secondaryDiff != null ? t('common.reportBuilder.deltaSuffix', { value: secondaryDiff }) : t('common.reportBuilder.noComparisonValue')}
+        <div className={cn('flex h-full min-h-[220px] items-center justify-center p-2', className)}>
+          <div className={cn('w-full rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] bg-linear-to-br p-10 text-center shadow-xl shadow-slate-200/50 dark:shadow-none relative overflow-hidden group', primaryCardGradient)}>
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-indigo-500 to-pink-500 opacity-60" />
+            <div className="text-slate-400 dark:text-slate-500 text-xs font-black uppercase tracking-[0.3em] mb-4">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
+            <div className={cn('text-6xl font-black tracking-tighter mb-4 tabular-nums', valueColor)}>
+              {formatKpiValue(primaryValue, kpiFormat)}
             </div>
+            {secondaryDiff != null && (
+              <div className={cn('inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-black uppercase tracking-widest transition-transform group-hover:scale-105', deltaBg)}>
+                {isPositive ? <TrendingUp className="size-3.5" /> : <TrendingUp className="size-3.5 rotate-180" />}
+                {secondaryDiff}% {isPositive ? t('common.increase') || 'ARTIŞ' : t('common.decrease') || 'AZALIŞ'}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -521,22 +552,23 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
 
     if (kpiLayout === 'compact') {
       return (
-        <div className={cn('grid h-full min-h-[220px] gap-3', className)}>
-          <div className={cn('rounded-xl border bg-linear-to-br p-4', primaryCardClassName)}>
-            <div className="text-muted-foreground text-[11px] uppercase tracking-[0.18em]">{t('common.reportBuilder.primaryKpi')}</div>
-            <div className="mt-3 text-3xl font-bold tracking-tight">{formatKpiValue(primaryValue, kpiFormat)}</div>
+        <div className={cn('grid h-full min-h-[200px] gap-4', className)}>
+          <div className={cn('rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] bg-linear-to-br p-6 shadow-sm relative overflow-hidden', primaryCardGradient)}>
+            <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-indigo-500 to-pink-500 opacity-60" />
+            <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">{t('common.reportBuilder.primaryKpi')}</div>
+            <div className={cn('text-4xl font-black tracking-tight tabular-nums', valueColor)}>{formatKpiValue(primaryValue, kpiFormat)}</div>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-xl border bg-card p-4">
-              <div className="text-muted-foreground text-[11px] uppercase tracking-[0.18em]">{t('common.reportBuilder.comparison')}</div>
-              <div className="mt-2 text-xl font-semibold">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] p-5 shadow-inner">
+              <div className="text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">{t('common.reportBuilder.comparison')}</div>
+              <div className="text-xl font-black text-slate-700 dark:text-slate-300 tabular-nums">
                 {secondaryValue != null ? formatKpiValue(secondaryValue, kpiFormat) : t('common.reportBuilder.emptyDash')}
               </div>
             </div>
-            <div className="rounded-xl border bg-card p-4">
-              <div className="text-muted-foreground text-[11px] uppercase tracking-[0.18em]">{t('common.reportBuilder.delta')}</div>
-              <div className={cn('mt-2 text-xl font-semibold', deltaClassName)}>
-                {secondaryDiff != null ? `${secondaryDiff}%` : t('common.reportBuilder.emptyDash')}
+            <div className={cn('rounded-2xl border p-5 flex flex-col justify-center', deltaBg)}>
+              <div className="opacity-70 text-[9px] font-black uppercase tracking-widest mb-1">{t('common.reportBuilder.delta')}</div>
+              <div className="text-xl font-black tabular-nums">
+                {secondaryDiff != null ? `${isPositive ? '+' : ''}${secondaryDiff}%` : t('common.reportBuilder.emptyDash')}
               </div>
             </div>
           </div>
@@ -545,15 +577,16 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     }
 
     return (
-      <div className={cn('grid h-full min-h-[220px] gap-4 md:grid-cols-2', className)}>
-        <div className={cn('rounded-xl border bg-linear-to-br p-6', primaryCardClassName)}>
-          <div className="text-muted-foreground text-xs uppercase tracking-[0.2em]">{t('common.reportBuilder.primaryKpi')}</div>
-          <div className="mt-4 text-4xl font-bold tracking-tight">{formatKpiValue(primaryValue, kpiFormat)}</div>
-          <div className="text-muted-foreground mt-2 text-sm">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
+      <div className={cn('grid h-full min-h-[220px] gap-6 md:grid-cols-2', className)}>
+        <div className={cn('rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] bg-linear-to-br p-8 shadow-sm relative overflow-hidden group', primaryCardGradient)}>
+          <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">{t('common.reportBuilder.primaryKpi')}</div>
+          <div className={cn('text-5xl font-black tracking-tighter tabular-nums mb-2', valueColor)}>{formatKpiValue(primaryValue, kpiFormat)}</div>
+          <div className="text-slate-500 dark:text-slate-400 text-xs font-bold">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
         </div>
-        <div className="rounded-xl border bg-card p-6">
-          <div className="text-muted-foreground text-xs uppercase tracking-[0.2em]">{t('common.reportBuilder.comparison')}</div>
-          <div className="mt-4 text-2xl font-semibold">
+
+        <div className="flex-1 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] p-6 shadow-inner">
+          <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">{t('common.reportBuilder.comparison')}</div>
+          <div className="tmt-4 text-2xl font-semibold">
             {secondaryValue != null ? formatKpiValue(secondaryValue, kpiFormat) : t('common.reportBuilder.emptyDash')}
           </div>
           <div className={cn('mt-2 text-sm font-medium', deltaClassName)}>
@@ -686,7 +719,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
   }
 
   return (
-      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
+    <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
       {t('common.noData')}
     </div>
   );

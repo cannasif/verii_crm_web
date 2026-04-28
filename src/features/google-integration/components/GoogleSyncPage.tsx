@@ -2,7 +2,6 @@ import { type ReactElement, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { useGoogleStatusQuery } from '../hooks/useGoogleStatusQuery';
 
@@ -17,41 +16,41 @@ export function GoogleSyncPage(): ReactElement {
   }, [setPageTitle, t]);
 
   return (
-    <div className="w-full max-w-3xl space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">{t('page.syncTitle')}</h1>
         <p className="text-muted-foreground mt-1">{t('page.syncDescription')}</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('sync.scopeCardTitle')}</CardTitle>
+      <Card className="bg-white/70 dark:bg-[#190b20]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+        <CardHeader className="flex flex-row items-center space-y-0 pb-4">
+          <CardTitle className="flex items-center gap-2">
+            {t('sync.scopeCardTitle')}:
+            {isLoading ? (
+              <span className="flex items-center gap-2 text-sm text-muted-foreground ml-2 font-normal">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t('sync.loading')}
+              </span>
+            ) : (
+              <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#26122b] px-2 py-1 text-sm font-medium ml-1 text-foreground">
+                {status?.isConnected ? t('sync.connected') : t('sync.notConnected')}
+              </div>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {isLoading ? (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>{t('sync.loading')}</span>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-3">
-                <span className="font-medium">{t('sync.statusLabel')}</span>
-                <Badge variant={status?.isConnected ? 'default' : 'secondary'}>
-                  {status?.isConnected ? t('sync.connected') : t('sync.notConnected')}
-                </Badge>
-              </div>
-
-              <div>
-                <p className="text-muted-foreground">{t('sync.scopeLabel')}</p>
+          {!isLoading && (
+            <div>
+              <p className="text-muted-foreground mb-1.5">{t('sync.scopeLabel')}</p>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2">
                 <p className="font-medium break-words">{status?.scopes || '-'}</p>
               </div>
-            </>
+            </div>
           )}
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-white/70 dark:bg-[#190b20]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader>
           <CardTitle>{t('sync.flowCardTitle')}</CardTitle>
         </CardHeader>

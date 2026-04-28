@@ -161,22 +161,7 @@ export function PermissionDefinitionMultiSelect({
     }
   };
 
-  const handleSelectAll = (checked: boolean): void => {
-    if (checked) {
-      const ids = new Set<number>(value);
-      for (const item of filteredItems) ids.add(item.id);
-      onChange(Array.from(ids));
-    } else {
-      const filteredIds = new Set<number>(filteredItems.map((i) => i.id));
-      onChange(value.filter((id) => !filteredIds.has(id)));
-    }
-  };
 
-  const allFilteredSelected = useMemo(() => {
-    if (filteredItems.length === 0) return false;
-    const selected = new Set<number>(value);
-    return filteredItems.every((i) => selected.has(i.id));
-  }, [filteredItems, value]);
 
   if (isLoading) {
     return <div className="text-sm text-slate-500 py-4">{t('common.loading')}</div>;
@@ -190,17 +175,7 @@ export function PermissionDefinitionMultiSelect({
         placeholder={t('permissionGroups.search')}
         disabled={disabled}
       />
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="select-all-permissions"
-          checked={allFilteredSelected}
-          onCheckedChange={(c) => handleSelectAll(!!c)}
-          disabled={disabled || filteredItems.length === 0}
-        />
-        <label htmlFor="select-all-permissions" className="text-sm font-medium cursor-pointer">
-          {t('permissionGroups.selectAll')}
-        </label>
-      </div>
+
       <div className="max-h-[420px] overflow-y-auto rounded-2xl border border-slate-200 bg-white/80 p-2 dark:border-white/10 dark:bg-white/[0.03]">
         {filteredItems.length === 0 ? (
           <p className="text-sm text-slate-500 py-2">{t('permissionGroups.noDefinitions')}</p>
@@ -244,70 +219,81 @@ export function PermissionDefinitionMultiSelect({
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-4 pb-4">
-                    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#130822]">
-                      <div className="grid grid-cols-[minmax(180px,2fr)_repeat(5,minmax(88px,1fr))] gap-px bg-slate-200 text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:bg-white/10 dark:text-slate-400">
-                        <div className="bg-slate-50 px-3 py-2 dark:bg-white/[0.03]">
-                          {t('permissionGroups.permissionsPanel.screen')}
-                        </div>
-                        {(['create', 'read', 'update', 'delete', 'other'] as const).map((actionKey) => (
-                          <div key={actionKey} className="bg-slate-50 px-2 py-2 text-center dark:bg-white/[0.03]">
-                            {actionMeta[actionKey].label}
+                    <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 custom-scrollbar">
+                      <div className="max-h-[300px] overflow-y-auto bg-slate-200 dark:bg-white/10 min-w-[700px]">
+                        <div className="sticky top-0 z-20 grid grid-cols-[minmax(180px,2fr)_repeat(5,minmax(88px,1fr))] border-b border-slate-200 dark:border-white/10 bg-slate-200 text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:bg-white/10 dark:text-slate-400">
+                          <div className="bg-slate-50 px-3 py-3 dark:bg-[#1E1627] border-r border-slate-200 dark:border-white/10">
+                            {t('permissionGroups.permissionsPanel.screen')}
                           </div>
-                        ))}
-                      </div>
-                      {rows.map((row) => (
-                        <div
-                          key={row.key}
-                          className="grid grid-cols-[minmax(180px,2fr)_repeat(5,minmax(88px,1fr))] gap-px border-t border-slate-200 bg-slate-200 first:border-t-0 dark:border-white/10 dark:bg-white/10"
-                        >
-                          <div className="bg-white px-3 py-3 dark:bg-[#130822]">
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{row.label}</p>
-                              <div className="mt-1 flex flex-wrap gap-1">
-                                {row.allIds.length > 1 ? (
-                                  <Badge variant="secondary" className="rounded-full">
-                                    {row.allIds.length} {t('permissionGroups.permissionsPanel.actionsMapped')}
-                                  </Badge>
-                                ) : null}
-                              </div>
+                          {(['create', 'read', 'update', 'delete', 'other'] as const).map((actionKey, idx) => (
+                            <div
+                              key={actionKey}
+                              className={cn(
+                                "bg-slate-50 px-2 py-3 text-center dark:bg-[#1E1627]",
+                                idx < 4 && "border-r border-slate-200 dark:border-white/10"
+                              )}
+                            >
+                              {actionMeta[actionKey].label}
                             </div>
-                          </div>
-                          {(['create', 'read', 'update', 'delete', 'other'] as const).map((actionKey) => {
-                            const actionItem = row.actions[actionKey];
-                            return (
-                              <div
-                                key={`${row.key}-${actionKey}`}
-                                className={cn(
-                                  'flex min-h-16 items-center justify-center bg-white px-2 py-3 dark:bg-[#130822]',
-                                  !actionItem && 'bg-slate-50/80 dark:bg-white/[0.02]'
-                                )}
-                              >
-                                {actionItem ? (
-                                  <label
-                                    htmlFor={`perm-${actionItem.id}`}
-                                    className="flex w-full cursor-pointer flex-col items-center gap-2 text-center"
-                                  >
-                                    <Checkbox
-                                      id={`perm-${actionItem.id}`}
-                                      checked={value.includes(actionItem.id)}
-                                      onCheckedChange={() => handleToggle(actionItem.id)}
-                                      disabled={disabled}
-                                    />
-                                    <span className="line-clamp-2 text-[11px] font-medium leading-4 text-slate-600 dark:text-slate-300">
-                                      {actionItem.display}
-                                    </span>
-                                    <span className="line-clamp-1 font-mono text-[10px] text-slate-400 dark:text-slate-500">
-                                      {actionItem.code}
-                                    </span>
-                                  </label>
-                                ) : (
-                                  <span className="text-xs text-slate-300 dark:text-slate-600">-</span>
-                                )}
-                              </div>
-                            );
-                          })}
+                          ))}
                         </div>
-                      ))}
+                        <div className="flex flex-col gap-px">
+                          {rows.map((row) => (
+                            <div
+                              key={row.key}
+                              className="grid grid-cols-[minmax(180px,2fr)_repeat(5,minmax(88px,1fr))] border-t border-slate-200 first:border-t-0 dark:border-white/10"
+                            >
+                              <div className="bg-white px-3 py-8 dark:bg-[#130822] border-r border-slate-200 dark:border-white/10">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{row.label}</p>
+                                  <div className="mt-1 flex flex-wrap gap-1">
+                                    {row.allIds.length > 1 ? (
+                                      <Badge variant="secondary" className="rounded-full">
+                                        {row.allIds.length} {t('permissionGroups.permissionsPanel.actionsMapped')}
+                                      </Badge>
+                                    ) : null}
+                                  </div>
+                                </div>
+                              </div>
+                              {(['create', 'read', 'update', 'delete', 'other'] as const).map((actionKey, idx) => {
+                                const actionItem = row.actions[actionKey];
+                                return (
+                                  <div
+                                    key={`${row.key}-${actionKey}`}
+                                    className={cn(
+                                      'flex min-h-16 items-center justify-center bg-white px-2 py-3 dark:bg-[#130822]',
+                                      !actionItem && 'bg-slate-50/80 dark:bg-white/[0.02]',
+                                      idx < 4 && "border-r border-slate-200 dark:border-white/10"
+                                    )}
+                                  >
+                                    {actionItem ? (
+                                      <label
+                                        htmlFor={`perm-${actionItem.id}`}
+                                        className="flex w-full cursor-pointer flex-col items-center gap-2 text-center"
+                                      >
+                                        <Checkbox
+                                          id={`perm-${actionItem.id}`}
+                                          checked={value.includes(actionItem.id)}
+                                          onCheckedChange={() => handleToggle(actionItem.id)}
+                                          disabled={disabled}
+                                        />
+                                        <span className="line-clamp-2 text-[11px] font-medium leading-4 text-slate-600 dark:text-slate-300">
+                                          {actionItem.display}
+                                        </span>
+                                        <span className="line-clamp-1 font-mono text-[10px] text-slate-400 dark:text-slate-500">
+                                          {actionItem.code}
+                                        </span>
+                                      </label>
+                                    ) : (
+                                      <span className="text-xs text-slate-300 dark:text-slate-600">-</span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>

@@ -34,7 +34,6 @@ interface ActivityTypeFormProps {
   isLoading?: boolean;
 }
 
-// ContactForm ile BİREBİR AYNI Input Stili
 const INPUT_STYLE = `
   h-12 rounded-xl
   bg-slate-50 dark:bg-[#0f0a18] 
@@ -97,42 +96,43 @@ export function ActivityTypeForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
-        
-        {/* HEADER: ContactForm ile Birebir Aynı Tasarım */}
+      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(50vw-2rem)] !max-w-[700px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl rounded-[2.5rem]">
+
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
           <div className="flex items-center gap-4">
-             {/* Gradient İkon Kutusu */}
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                 <ListTodo size={24} className="text-pink-600 dark:text-pink-500" />
-               </div>
-             </div>
-             <div className="space-y-1">
-                <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {activityType
-                    ? t('activityType.form.editTitle')
-                    : t('activityType.form.addTitle')}
-                </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
-                  {activityType
-                    ? t('activityType.form.editDescription')
-                    : t('activityType.form.addDescription')}
-                </DialogDescription>
-             </div>
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
+                <ListTodo size={24} className="text-pink-600 dark:text-pink-500" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {activityType
+                  ? t('activityType.form.editTitle')
+                  : t('activityType.form.addTitle')}
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
+                {activityType
+                  ? t('activityType.form.editDescription')
+                  : t('activityType.form.addDescription')}
+              </DialogDescription>
+            </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full">
-            <X size={20} />
-          </Button>
+          <button
+            onClick={() => onOpenChange(false)}
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
+          >
+            <X size={20} className="relative z-10" />
+            <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
         </DialogHeader>
 
-        {/* BODY */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
             <form id="activity-type-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-              
+
               <div className="grid grid-cols-1 gap-5">
-                
+
                 <FormField
                   control={form.control}
                   name="name"
@@ -143,11 +143,11 @@ export function ActivityTypeForm({
                         {t('activityType.form.name')}
                       </FormLabel>
                       <FormControl>
-                        <Input 
-                            {...field} 
-                            className={INPUT_STYLE} 
-                            placeholder={t('activityType.form.namePlaceholder')} 
-                            maxLength={100}
+                        <Input
+                          {...field}
+                          className={INPUT_STYLE}
+                          placeholder={t('activityType.form.namePlaceholder')}
+                          maxLength={100}
                         />
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -184,7 +184,6 @@ export function ActivityTypeForm({
           </Form>
         </div>
 
-        {/* FOOTER: ContactForm ile Birebir Aynı Tasarım */}
         <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex-col sm:flex-row gap-3 sticky bottom-0 z-10 backdrop-blur-sm">
           <Button
             type="button"
@@ -195,11 +194,12 @@ export function ActivityTypeForm({
           >
             {t('activityType.cancel')}
           </Button>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             form="activity-type-form"
             disabled={isLoading || !isFormValid}
             className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+
           >
             {isLoading
               ? t('activityType.saving')

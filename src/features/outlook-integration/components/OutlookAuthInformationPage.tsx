@@ -15,13 +15,13 @@ export function OutlookAuthInformationPage(): ReactElement {
   const callbackUrl = `${window.location.origin.replace(':5173', ':5001')}/api/integrations/outlook/callback`;
 
   return (
-    <div className="w-full max-w-3xl space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">{t('page.authInformationTitle')}</h1>
         <p className="text-muted-foreground mt-1">{t('page.authInformationDescription')}</p>
       </div>
 
-      <Card>
+      <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader>
           <CardTitle>{t('authInformation.currentStatusTitle')}</CardTitle>
         </CardHeader>
@@ -31,7 +31,7 @@ export function OutlookAuthInformationPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader>
           <CardTitle>{t('authInformation.setupGuideTitle')}</CardTitle>
         </CardHeader>
@@ -44,9 +44,9 @@ export function OutlookAuthInformationPage(): ReactElement {
             <li>{t('authInformation.setupStep4')}</li>
             <li>{t('authInformation.setupStep5')}</li>
           </ol>
-          <div className="rounded-md border bg-muted/40 px-3 py-2">
-            <p className="text-xs font-medium text-foreground">{t('authInformation.callbackLabel')}</p>
-            <p className="text-xs break-all">{callbackUrl}</p>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2">
+            <p className="text-xs font-medium text-muted-foreground mb-1.5">{t('authInformation.callbackLabel')}</p>
+            <p className="text-sm font-medium break-all text-foreground">{callbackUrl}</p>
           </div>
           <a
             href="https://entra.microsoft.com"
@@ -56,7 +56,7 @@ export function OutlookAuthInformationPage(): ReactElement {
           >
             {t('authInformation.consoleLinkLabel')}
           </a>
-          <div className="rounded-md border bg-muted/40 px-3 py-2 text-xs text-muted-foreground space-y-1">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2 text-sm text-muted-foreground space-y-2">
             <p className="font-medium text-foreground">{t('authInformation.permissionTitle')}</p>
             <p>{t('authInformation.permissionHint')}</p>
           </div>

@@ -43,6 +43,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DataTableActionBar,
@@ -391,20 +392,31 @@ export function PdfReportDesignerListPage(): ReactElement {
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
             {t('pdfReportDesigner.listDescription')}
           </p>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-            <Badge variant="outline">{summaryText}</Badge>
-            <Badge variant="outline">{t('pdfReportDesigner.detailLoadedOnDemand')}</Badge>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+            <Badge variant="secondary" className="bg-white/50 text-slate-500 ring-1 ring-slate-200/60 backdrop-blur-xs dark:bg-white/5 dark:text-slate-400 dark:ring-white/10">
+              {summaryText}
+            </Badge>
+            <Badge variant="secondary" className="bg-pink-500/5 text-pink-600 ring-1 ring-pink-500/20 backdrop-blur-xs dark:bg-pink-500/10 dark:text-pink-400">
+              {t('pdfReportDesigner.detailLoadedOnDemand')}
+            </Badge>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" asChild>
+          <Button
+            variant="outline"
+            asChild
+            className="h-10 border-slate-200/60 bg-white/50 px-4 font-bold text-slate-600 transition-all duration-300 hover:bg-white hover:text-slate-900 dark:border-white/5 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+          >
             <Link to="/pdf-report-designer/table-presets" className="inline-flex items-center gap-2">
-              <TableProperties className="size-4" />
+              <TableProperties className="size-4 opacity-70" />
               Table Presets
             </Link>
           </Button>
           {canCreate ? (
-            <Button asChild>
+            <Button
+              asChild
+              className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-5 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            >
               <Link to="/pdf-report-designer/create" className="inline-flex items-center gap-2">
                 <Plus className="size-4" />
                 {t('pdfReportDesigner.createNew')}
@@ -447,7 +459,7 @@ export function PdfReportDesignerListPage(): ReactElement {
             leftSlot={
               <>
                 <Select value={selectedRuleType} onValueChange={setSelectedRuleType}>
-                  <SelectTrigger className="h-9 w-[220px] border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent dark:shadow-none">
+                  <SelectTrigger className="h-9 w-[220px] border-slate-200/60 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
                     <SelectValue placeholder={t('pdfReportDesigner.filterAllDocumentTypes')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -460,7 +472,7 @@ export function PdfReportDesignerListPage(): ReactElement {
                   </SelectContent>
                 </Select>
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                  <SelectTrigger className="h-9 w-[200px] border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent dark:shadow-none">
+                  <SelectTrigger className="h-9 w-[200px] border-slate-200/60 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
                     <SelectValue placeholder={t('pdfReportDesigner.filterAllStatuses')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -472,14 +484,17 @@ export function PdfReportDesignerListPage(): ReactElement {
                 <Button
                   variant="outline"
                   size="sm"
-                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
+                  className={cn(
+                    MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+                    "border-slate-200/60 bg-white/50 font-semibold text-slate-600 transition-all duration-300 hover:bg-white hover:text-slate-900 dark:border-white/5 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+                  )}
                   onClick={() => void handleRefresh()}
                   disabled={isLoading || isFetching}
                 >
                   {isLoading || isFetching ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 size-3.5 animate-spin" />
                   ) : (
-                    <RefreshCw className="mr-2 h-4 w-4" />
+                    <RefreshCw className="mr-2 size-3.5 opacity-70" />
                   )}
                   {t('common.refresh')}
                 </Button>

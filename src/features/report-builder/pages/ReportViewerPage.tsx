@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useReportBuilderStore } from '../store';
 import { reportsApi } from '../api';
 import { Badge } from '@/components/ui/badge';
-import { Download, FileJson, Loader2, Pencil, RefreshCw } from 'lucide-react';
+import { Download, FileJson, Loader2, Pencil, RefreshCw, ChevronLeft, LayoutGrid, FileText, Settings2, BarChart3, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
@@ -156,7 +156,7 @@ function buildWidgetLabelOverrides(widget?: {
 }
 
 export function ReportViewerPage(): ReactElement {
-  const { t, i18n } = useTranslation('common');
+  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -181,9 +181,7 @@ export function ReportViewerPage(): ReactElement {
   const widgetCount = config.widgets?.length ?? 1;
   const saveState = (location.state as { justSaved?: boolean; fromBuilder?: boolean; isEdit?: boolean } | null) ?? null;
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
-  const accessLevelLabel = meta.accessLevel && meta.accessLevel !== 'none'
-    ? t(`common.reportBuilder.accessLevels.${meta.accessLevel}`)
-    : null;
+
   const governance = config.governance ?? {
     audience: 'private' as const,
     refreshCadence: 'manual' as const,
@@ -421,74 +419,102 @@ export function ReportViewerPage(): ReactElement {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      {saveState?.justSaved ? (
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4">
-            <div>
-              <h2 className="text-sm font-semibold">{t('common.reportBuilder.saveSuccessTitle')}</h2>
-              <p className="text-muted-foreground mt-1 text-sm">
-                {saveState.isEdit
-                  ? t('common.reportBuilder.saveSuccessUpdatedDescription')
-                  : t('common.reportBuilder.saveSuccessCreatedDescription')}
-              </p>
-            </div>
-            <Button variant="outline" onClick={() => navigate(`/reports/${reportId}/edit`)}>
-              <Pencil className="mr-2 size-4" />
-              {t('common.reportBuilder.continueEditing')}
-            </Button>
-          </CardContent>
-        </Card>
-      ) : null}
+    <div className="w-full px-6 pt-0 pb-8 space-y-6 animate-in fade-in duration-500">
+      <div className="flex items-center justify-between pt-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(listPath)}
+          className="rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 font-bold text-slate-500 dark:text-slate-400 h-10 pr-4"
+        >
+          <ChevronLeft className="mr-1 size-4" />
+          {t('common.reportBuilder.backToList')}
+        </Button>
 
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">{meta.name}</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {meta.connectionKey} / {dataSourceTypeLabel} / {meta.dataSourceName}
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {governance.favorite && <Badge variant="default">{t('common.reportBuilder.favorite')}</Badge>}
-            {governance.certified && <Badge variant="default">{t('common.reportBuilder.certified')}</Badge>}
-            {accessLevelLabel && meta.accessLevel !== 'owner' && <Badge variant="outline">{accessLevelLabel}</Badge>}
-            <Badge variant={lifecycle.status === 'published' ? 'default' : lifecycle.status === 'archived' ? 'destructive' : 'secondary'}>
-              {statusLabel}
-            </Badge>
-            <Badge variant="outline">v{lifecycle.version}</Badge>
-            {governance.category && <Badge variant="outline">{governance.category}</Badge>}
-            {governance.owner && <Badge variant="outline">{governance.owner}</Badge>}
-            {governance.audience && <Badge variant="outline">{audienceLabel}</Badge>}
-            {governance.refreshCadence && <Badge variant="outline">{refreshCadenceLabel}</Badge>}
-            {governance.subscriptionEnabled && governance.subscriptionFrequency && (
-              <Badge variant="outline">{t('common.reportBuilder.subscriptionShort', { value: subscriptionFrequencyLabel })}</Badge>
-            )}
-            {governance.sharedWith?.length ? (
-              <Badge variant="outline">{t('common.reportBuilder.sharedShort', { count: governance.sharedWith.length })}</Badge>
-            ) : null}
-            {(governance.tags ?? []).map((tag) => (
-              <Badge key={tag} variant="secondary">#{tag}</Badge>
-            ))}
+        {saveState?.justSaved && (
+          <div className="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 px-4 py-2 rounded-xl animate-in slide-in-from-top-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white">
+              <Zap className="size-3 stroke-[3]" />
+            </div>
+            <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+              {saveState.isEdit
+                ? t('common.reportBuilder.saveSuccessUpdatedDescription')
+                : t('common.reportBuilder.saveSuccessCreatedDescription')}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-indigo-100 dark:bg-white/5 shadow-inner border border-indigo-200 dark:border-white/10 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-linear-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <LayoutGrid className="size-8 text-indigo-600 dark:text-indigo-400 relative z-10" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+              {meta.name}
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mt-1">
+              {meta.connectionKey} <span className="mx-1 text-slate-300">/</span> {dataSourceTypeLabel} <span className="mx-1 text-slate-300">/</span> {meta.dataSourceName}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Badge variant="secondary" className="rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-100 dark:border-pink-500/20 font-bold px-2 py-0.5 text-[10px] uppercase">
+                {statusLabel}
+              </Badge>
+              <Badge variant="outline" className="rounded-md border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                v{lifecycle.version}
+              </Badge>
+              {governance.certified && (
+                <Badge variant="secondary" className="rounded-md bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                  {t('common.reportBuilder.certified')}
+                </Badge>
+              )}
+              {governance.category && (
+                <Badge variant="outline" className="rounded-md border-indigo-100 dark:border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                  {governance.category}
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => runPreview(viewerParameterValues)} disabled={ui.previewLoading}>
-            <RefreshCw className={cn('mr-2 size-4', ui.previewLoading && 'animate-spin')} />
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => runPreview(viewerParameterValues)}
+            disabled={ui.previewLoading}
+            className="rounded-xl h-10 border-slate-200 dark:border-white/10 font-bold hover:bg-slate-50 dark:hover:bg-white/5"
+          >
+            <RefreshCw className={cn('mr-2 size-4 text-indigo-500', ui.previewLoading && 'animate-spin')} />
             {t('common.refresh')}
           </Button>
-          <Button variant="outline" size="sm" onClick={exportCurrentWidgetCsv} disabled={!preview.columns.length}>
-              <Download className="mr-2 size-4" />
-            {t('common.reportBuilder.exportCurrentCsv')}
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportAllWidgetsCsv} disabled={widgetCount === 0}>
-            <Download className="mr-2 size-4" />
-            {t('common.reportBuilder.exportAllCsv')}
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportDefinitionJson}>
-            <FileJson className="mr-2 size-4" />
-            {t('common.reportBuilder.exportDefinition')}
-          </Button>
+
+          <div className="flex items-center gap-2 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/10">
+            <Button variant="ghost" size="sm" onClick={exportCurrentWidgetCsv} disabled={!preview.columns.length} className="rounded-lg h-8 px-3 font-bold text-xs uppercase">
+              <Download className="mr-2 size-3.5 text-slate-500" />
+              {t('common.reportBuilder.exportCurrentCsv')}
+            </Button>
+            <div className="w-px h-4 bg-slate-200 dark:bg-white/10" />
+            <Button variant="ghost" size="sm" onClick={exportAllWidgetsCsv} disabled={widgetCount === 0} className="rounded-lg h-8 px-3 font-bold text-xs uppercase">
+              <Download className="mr-2 size-3.5 text-slate-500" />
+              {t('common.reportBuilder.exportAllCsv')}
+            </Button>
+            <div className="w-px h-4 bg-slate-200 dark:bg-white/10" />
+            <Button variant="ghost" size="sm" onClick={exportDefinitionJson} className="rounded-lg h-8 px-3 font-bold text-xs uppercase">
+              <FileJson className="mr-2 size-3.5 text-slate-500" />
+              {t('common.reportBuilder.exportDefinition')}
+            </Button>
+          </div>
+
           {!isMyReportsView && meta.canManage !== false && (
-            <Button size="sm" onClick={() => navigate(`/reports/${reportId}/edit`)}>
+            <Button
+              size="sm"
+              onClick={() => navigate(`/reports/${reportId}/edit`)}
+              className="rounded-xl text-white h-10 px-6 font-bold bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 border-0 shadow-lg shadow-pink-500/20 transition-all hover:scale-105
+              opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            >
               <Pencil className="mr-2 size-4" />
               {t('common.edit')}
             </Button>
@@ -499,16 +525,20 @@ export function ReportViewerPage(): ReactElement {
       <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
         <div className="space-y-4">
           {viewerEditableParameters.length > 0 && (
-            <Card>
-              <CardContent className="space-y-3 p-4">
-                <div>
-                  <h3 className="text-sm font-semibold">{t('common.reportBuilder.viewerParametersTitle')}</h3>
-                  <p className="text-muted-foreground text-xs">{t('common.reportBuilder.viewerParametersDescription')}</p>
+            <Card className="rounded-2xl border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] shadow-sm overflow-hidden">
+              <div className="px-5 pt-3 pb-2.5 border-b border-slate-100 dark:border-white/5 flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 shadow-sm transition-transform group-hover:scale-105">
+                  <Settings2 className="size-4 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <div className="space-y-3">
+                <span className="text-base font-bold text-slate-800 dark:text-white">
+                  {t('common.reportBuilder.viewerParametersTitle')}
+                </span>
+              </div>
+              <CardContent className="space-y-4 p-5">
+                <div className="space-y-4">
                   {viewerEditableParameters.map((parameter) => (
                     <div key={parameter.name} className="grid gap-2">
-                      <Label>{parameter.viewerLabel || parameter.name}</Label>
+                      <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{parameter.viewerLabel || parameter.name}</Label>
                       <Input
                         value={viewerParameterValues[parameter.name] ?? ''}
                         onChange={(e) =>
@@ -517,34 +547,39 @@ export function ReportViewerPage(): ReactElement {
                             [parameter.name]: e.target.value,
                           }))
                         }
+                        className="rounded-xl bg-slate-50/50 dark:bg-white/5 border-slate-200 dark:border-white/10 focus-visible:ring-indigo-500/30"
                       />
                     </div>
                   ))}
                 </div>
-                <Button
-                  type="button"
-                  variant={hasViewerParameterChanges ? 'default' : 'outline'}
-                  disabled={!hasViewerParameterChanges}
-                  onClick={async () => {
-                    await runPreview(viewerParameterValues);
-                    await runAllWidgetPreviews(viewerParameterValues);
-                  }}
-                >
-                  {t('common.reportBuilder.applyViewerParameters')}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={!hasViewerParameterChanges}
-                  onClick={() => setViewerParameterValues(initialViewerParameterValues)}
-                >
-                  {t('common.reset')}
-                </Button>
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant={hasViewerParameterChanges ? 'default' : 'outline'}
+                    disabled={!hasViewerParameterChanges}
+                    className="rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white border-0 shadow-lg shadow-indigo-500/20 disabled:opacity-50"
+                    onClick={async () => {
+                      await runPreview(viewerParameterValues);
+                      await runAllWidgetPreviews(viewerParameterValues);
+                    }}
+                  >
+                    {t('common.reportBuilder.applyViewerParameters')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={!hasViewerParameterChanges}
+                    className="rounded-xl font-bold border-slate-200 dark:border-white/10"
+                    onClick={() => setViewerParameterValues(initialViewerParameterValues)}
+                  >
+                    {t('common.reset')}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
 
-          <Suspense fallback={<Skeleton className="h-40 w-full rounded-lg" />}>
+          <Suspense fallback={<Skeleton className="h-40 w-full rounded-2xl" />}>
             <RuntimeFiltersPanel
               schema={schema}
               loading={ui.previewLoading}
@@ -556,89 +591,54 @@ export function ReportViewerPage(): ReactElement {
             />
           </Suspense>
 
-          <Card>
-            <CardContent className="space-y-3 p-4">
-              <div>
-                <h3 className="text-sm font-semibold">{t('common.reportBuilder.reportSummary')}</h3>
-                <p className="text-muted-foreground text-xs">{t('common.reportBuilder.reportSummaryDescription')}</p>
+          <Card className="rounded-2xl border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] shadow-sm overflow-hidden">
+            <div className="px-5 pt-3 pb-2.5 border-b border-slate-100 dark:border-white/5 flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-50 dark:bg-pink-500/10 border border-pink-100 dark:border-pink-500/20 shadow-sm transition-transform group-hover:scale-105">
+                <FileText className="size-4 text-pink-600 dark:text-pink-400" />
               </div>
+              <span className="text-base font-bold text-slate-800 dark:text-white">
+                {t('common.reportBuilder.reportSummary')}
+              </span>
+            </div>
+            <CardContent className="space-y-5 p-5">
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline">{t(`common.reportBuilder.chartTypes.${config.chartType}`)}</Badge>
-                <Badge variant="secondary">{t('common.reportBuilder.widgetCountBadge', { count: widgetCount })}</Badge>
-                <Badge variant="outline">{t('common.reportBuilder.fieldCountBadge', { count: schema.length })}</Badge>
+                <Badge variant="secondary" className="rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-500/20 font-bold px-2 py-0.5 text-[10px] uppercase">
+                  {t(`common.reportBuilder.chartTypes.${config.chartType}`)}
+                </Badge>
+                <Badge variant="secondary" className="rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-100 dark:border-pink-500/20 font-bold px-2 py-0.5 text-[10px] uppercase">
+                  {t('common.reportBuilder.widgetCountBadge', { count: widgetCount })}
+                </Badge>
               </div>
-              <div className="grid gap-2 text-sm">
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.status')}</span>
-                  <span className="font-medium uppercase">{statusLabel}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.version')}</span>
-                  <span className="font-medium">v{lifecycle.version}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.owner')}</span>
-                  <span className="font-medium">{governance.owner ?? '-'}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.audience')}</span>
-                  <span className="font-medium">{audienceLabel}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.refresh')}</span>
-                  <span className="font-medium">{refreshCadenceLabel}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.subscription')}</span>
-                  <span className="font-medium">
-                    {governance.subscriptionEnabled ? `${subscriptionFrequencyLabel} / ${subscriptionChannelLabel}` : t('common.reportBuilder.off')}
-                  </span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.sharedWith')}</span>
-                  <span className="font-medium">{governance.sharedWith?.length ?? 0}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.publishedAt')}</span>
-                  <span className="font-medium">{lifecycle.publishedAt ? new Date(lifecycle.publishedAt).toLocaleString(i18n.language) : '-'}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.lastReview')}</span>
-                  <span className="font-medium">{governance.lastReviewedAt ? new Date(governance.lastReviewedAt).toLocaleDateString(i18n.language) : '-'}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.chartType')}</span>
-                  <span className="font-medium uppercase">{t(`common.reportBuilder.chartTypes.${config.chartType}`)}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.axis')}</span>
-                  <span className="font-medium">{config.axis?.field ?? '-'}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.values')}</span>
-                  <span className="font-medium">{config.values.length}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.filters')}</span>
-                  <span className="font-medium">{config.filters.length}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">{t('common.reportBuilder.widgets')}</span>
-                  <span className="font-medium">{config.widgets?.length ?? 1}</span>
-                </div>
+
+              <div className="space-y-2.5">
+                {[
+                  { label: t('common.status'), value: statusLabel, color: 'text-slate-900 dark:text-white font-black uppercase' },
+                  { label: t('common.reportBuilder.version'), value: `v${lifecycle.version}`, color: 'text-slate-700 dark:text-slate-300 font-bold' },
+                  { label: t('common.reportBuilder.owner'), value: governance.owner ?? '-', color: 'text-slate-700 dark:text-slate-300 font-bold' },
+                  { label: t('common.reportBuilder.audience'), value: audienceLabel, color: 'text-slate-700 dark:text-slate-300 font-bold' },
+                  { label: t('common.refresh'), value: refreshCadenceLabel, color: 'text-slate-700 dark:text-slate-300 font-bold' },
+                  { label: t('common.reportBuilder.subscription'), value: governance.subscriptionEnabled ? `${subscriptionFrequencyLabel} / ${subscriptionChannelLabel}` : t('common.reportBuilder.off'), color: 'text-slate-700 dark:text-slate-300 font-bold text-xs' },
+                ].map((row, idx) => (
+                  <div key={idx} className="flex justify-between items-center text-[11px]">
+                    <span className="font-bold text-slate-400 uppercase tracking-widest">{row.label}</span>
+                    <span className={cn("text-right", row.color)}>{row.value}</span>
+                  </div>
+                ))}
               </div>
+
               {lifecycle.releaseNote && (
-                <div className="rounded-md border bg-muted/40 p-3 text-sm">
-                  <div className="mb-1 font-medium">{t('common.reportBuilder.releaseNote')}</div>
-                  <div className="text-muted-foreground">{lifecycle.releaseNote}</div>
+                <div className="rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 p-3 text-[11px]">
+                  <div className="mb-1 font-black text-slate-400 uppercase tracking-widest">{t('common.reportBuilder.releaseNote')}</div>
+                  <div className="text-slate-600 dark:text-slate-400 font-bold ">"{lifecycle.releaseNote}"</div>
                 </div>
               )}
+
               {governance.sharedWith && governance.sharedWith.length > 0 && (
-                <div className="rounded-md border bg-muted/40 p-3 text-sm">
-                  <div className="mb-1 font-medium">{t('common.reportBuilder.sharedWith')}</div>
-                  <div className="text-muted-foreground flex flex-wrap gap-2">
+                <div className="rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 p-3 text-[11px]">
+                  <div className="mb-2 font-black text-slate-400 uppercase tracking-widest">{t('common.reportBuilder.sharedWith')}</div>
+                  <div className="flex flex-wrap gap-1.5">
                     {governance.sharedWith.map((item) => (
-                      <Badge key={item} variant="secondary">{item}</Badge>
+                      <Badge key={item} variant="outline" className="rounded-md border-slate-200 dark:border-white/10 text-slate-500 px-1.5 py-0.5 text-[9px] font-bold uppercase">{item}</Badge>
                     ))}
                   </div>
                 </div>
@@ -648,19 +648,19 @@ export function ReportViewerPage(): ReactElement {
         </div>
         <div className="space-y-6">
           {groupedWidgets.map((section, sectionIndex) => (
-            <div key={section.label || `section-${sectionIndex}`} className="space-y-3">
+            <div key={section.label || `section-${sectionIndex}`} className="space-y-4">
               {section.label ? (
-                <div className="rounded-2xl border bg-card px-4 py-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <div className="text-sm font-semibold tracking-tight">{section.label}</div>
-                      <div className="text-muted-foreground text-xs">{t('common.reportBuilder.sectionWidgetCount', { count: section.widgets.length })}</div>
-                      {section.description ? (
-                        <div className="text-muted-foreground mt-1 max-w-2xl text-xs">{section.description}</div>
-                      ) : null}
+                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] px-5 py-3 shadow-sm flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm">
+                      <BarChart3 className="size-4 text-slate-500" />
                     </div>
-                    <Badge variant="outline">{t('common.reportBuilder.sectionBadge')}</Badge>
+                    <div>
+                      <div className="text-sm font-black text-slate-800 dark:text-white tracking-wide">{section.label}</div>
+                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('common.reportBuilder.sectionWidgetCount', { count: section.widgets.length })}</div>
+                    </div>
                   </div>
+                  <Badge variant="outline" className="rounded-md border-slate-200 dark:border-white/10 text-slate-400 font-bold px-2 py-0.5 text-[9px] uppercase tracking-wider">{t('common.reportBuilder.sectionBadge')}</Badge>
                 </div>
               ) : null}
               <div className="grid gap-4 xl:grid-cols-3">
