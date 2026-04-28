@@ -42,17 +42,17 @@ export function ActivityPriorityBadge({
 
   const config: Record<string, { label: string; icon: typeof ArrowDown; className: string }> = {
     low: {
-      label: t('activityManagement.priorityLow'),
+      label: t('priorityLow'),
       icon: ArrowDown,
       className: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20',
     },
     medium: {
-      label: t('activityManagement.priorityMedium'),
+      label: t('priorityMedium'),
       icon: ArrowRight,
       className: 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/20 hover:bg-orange-100 dark:hover:bg-orange-500/20',
     },
     high: {
-      label: t('activityManagement.priorityHigh'),
+      label: t('priorityHigh'),
       icon: ArrowUp,
       className: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20 hover:bg-red-100 dark:hover:bg-red-500/20',
     },

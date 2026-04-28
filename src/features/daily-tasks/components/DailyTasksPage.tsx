@@ -89,6 +89,8 @@ import {
   RefreshCw,
   AlertTriangle,
   GripVertical,
+  Check,
+  Ban,
 } from 'lucide-react';
 
 const EMPTY_ACTIVITIES: ActivityDto[] = [];
@@ -302,6 +304,28 @@ export function DailyTasksPage(): ReactElement {
   const [editingActivity, setEditingActivity] = useState<ActivityDto | null>(null);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [calendarViewMode, setCalendarViewMode] = useState<'weekly' | 'monthly'>('monthly');
+  const [kpiScopeMode, setKpiScopeMode] = useState<'all' | 'daily' | 'weekly' | 'monthly' | 'custom'>('all');
+  const [kpiDay, setKpiDay] = useState<string>(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
+  const [kpiWeekStart, setKpiWeekStart] = useState<Date>(() => {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+    const mon = new Date(d.setDate(diff));
+    mon.setHours(0, 0, 0, 0);
+    return mon;
+  });
+  const [kpiMonth, setKpiMonth] = useState<string>(() => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  });
+  const [kpiCustomStart, setKpiCustomStart] = useState<string>('');
+  const [kpiCustomEnd, setKpiCustomEnd] = useState<string>('');
   const [tasksWeekStart, setTasksWeekStart] = useState<Date>(() => {
     const d = new Date();
     const day = d.getDay();
@@ -344,6 +368,12 @@ export function DailyTasksPage(): ReactElement {
     description?: string;
     activities: ActivityDto[];
   } | null>(null);
+  const [openTasksModalOpen, setOpenTasksModalOpen] = useState(false);
+  const [openTasksViewMode, setOpenTasksViewMode] = useState<'cards' | 'list'>('cards');
+  const [openTaskActionConfirm, setOpenTaskActionConfirm] = useState<{
+    activity: ActivityDto;
+    action: 'complete' | 'cancel';
+  } | null>(null);
   const [agendaSheetOpen, setAgendaSheetOpen] = useState(false);
   const [sheetActivities, setSheetActivities] = useState<ActivityDto[]>([]);
   const [dragConfirm, setDragConfirm] = useState<{
@@ -364,6 +394,7 @@ export function DailyTasksPage(): ReactElement {
   const contentSectionRef = useRef<HTMLDivElement | null>(null);
 
   const [userFilterSearchTerm, setUserFilterSearchTerm] = useState('');
+  const [metricsNow, setMetricsNow] = useState<number>(() => Date.now());
   const hasShownContentOnce = useRef(false);
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 450);
   const { data: userOptions = [] } = useUserOptions();
@@ -386,6 +417,13 @@ export function DailyTasksPage(): ReactElement {
       setAssignedUserFilter(user.id);
     }
   }, [user, assignedUserFilter]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setMetricsNow(Date.now());
+    }, 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const dndSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -420,7 +458,9 @@ export function DailyTasksPage(): ReactElement {
     const month = calendarMonth.getMonth();
     const firstDay = new Date(year, month, 1);
     const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - startDate.getDay());
+    const day = startDate.getDay();
+    const diffToMonday = day === 0 ? 6 : day - 1;
+    startDate.setDate(startDate.getDate() - diffToMonday);
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 41);
     return { startDate: formatDateKey(startDate), endDate: formatDateKey(endDate) };
@@ -496,9 +536,83 @@ export function DailyTasksPage(): ReactElement {
     staleTime: 60 * 1000,
   });
 
+  const kpiDateRange = useMemo((): { startDate?: string; endDate?: string } => {
+    const toDateKey = (value: Date): string => {
+      const year = value.getFullYear();
+      const month = String(value.getMonth() + 1).padStart(2, '0');
+      const day = String(value.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    if (kpiScopeMode === 'all') return {};
+    if (kpiScopeMode === 'daily') {
+      if (!kpiDay) return {};
+      return { startDate: kpiDay, endDate: kpiDay };
+    }
+    if (kpiScopeMode === 'weekly') {
+      const start = new Date(kpiWeekStart);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      end.setHours(23, 59, 59, 999);
+      return { startDate: toDateKey(start), endDate: toDateKey(end) };
+    }
+    if (kpiScopeMode === 'monthly') {
+      if (!kpiMonth) return {};
+      const [year, month] = kpiMonth.split('-').map(Number);
+      if (!year || !month) return {};
+      const start = new Date(year, month - 1, 1);
+      const end = new Date(year, month, 0);
+      return { startDate: toDateKey(start), endDate: toDateKey(end) };
+    }
+    if (!kpiCustomStart && !kpiCustomEnd) return {};
+    if (kpiCustomStart && !kpiCustomEnd) return { startDate: kpiCustomStart };
+    if (!kpiCustomStart && kpiCustomEnd) return { endDate: kpiCustomEnd };
+    if (kpiCustomStart <= kpiCustomEnd) return { startDate: kpiCustomStart, endDate: kpiCustomEnd };
+    return { startDate: kpiCustomEnd, endDate: kpiCustomStart };
+  }, [kpiScopeMode, kpiDay, kpiWeekStart, kpiMonth, kpiCustomStart, kpiCustomEnd]);
+
+  const kpiFilters = useMemo(() => {
+    const list: Array<{ column: string; operator: string; value: string }> = [];
+    if (kpiDateRange.startDate) {
+      list.push({ column: 'StartDateTime', operator: 'gte', value: kpiDateRange.startDate });
+    }
+    if (kpiDateRange.endDate) {
+      list.push({ column: 'StartDateTime', operator: 'lte', value: kpiDateRange.endDate });
+    }
+    return list;
+  }, [kpiDateRange]);
+
+  const { data: kpiData, refetch: refetchKpiData } = useQuery({
+    queryKey: [
+      'daily-tasks',
+      'activities-kpi',
+      kpiScopeMode,
+      kpiDay,
+      kpiWeekStart.toISOString(),
+      kpiMonth,
+      kpiCustomStart || 'none',
+      kpiCustomEnd || 'none',
+      kpiDateRange.startDate || 'none',
+      kpiDateRange.endDate || 'none',
+    ],
+    queryFn: () =>
+      activityApi.getAllList({
+        pageNumber: 1,
+        pageSize: 250,
+        sortBy: 'StartDateTime',
+        sortDirection: 'asc',
+        filters: kpiFilters.length > 0 ? kpiFilters : undefined,
+      }),
+    staleTime: 45 * 1000,
+  });
+
   const updateActivity = useUpdateActivity();
   const deleteActivity = useDeleteActivity();
   const createActivity = useCreateActivity();
+  const refreshDashboardData = async (): Promise<void> => {
+    await Promise.all([refetch(), refetchKpiData()]);
+  };
 
   const activities = useMemo<ActivityDto[]>(
     () =>
@@ -512,16 +626,31 @@ export function DailyTasksPage(): ReactElement {
     [data?.data]
   );
 
+  const kpiActivities = useMemo<ActivityDto[]>(
+    () =>
+      (kpiData?.data ?? EMPTY_ACTIVITIES).map((activity) => ({
+        ...activity,
+        activityDate: activity.activityDate ?? activity.startDateTime,
+        isCompleted:
+          activity.isCompleted ??
+          Number(activity.status) === ActivityStatus.Completed,
+      })),
+    [kpiData?.data]
+  );
+
   const filteredActivities = useMemo(() => {
     let filtered = activities;
     if (statusFilter !== 'all') filtered = filtered.filter((activity) => String(activity.status) === statusFilter);
     if (assignedUserFilter) filtered = filtered.filter((activity) => activity.assignedUserId === assignedUserFilter);
 
+    const rangeStart = parseDateKey(activeDateRange.startDate).getTime();
+    const rangeEnd = parseDateKey(activeDateRange.endDate).getTime() + (24 * 60 * 60 * 1000 - 1);
+
     filtered = filtered.filter((activity) => {
       const rawDate = activity.activityDate ?? activity.startDateTime;
       if (!rawDate) return false;
-      const activityDateKey = formatDateKey(new Date(rawDate));
-      return activityDateKey >= activeDateRange.startDate && activityDateKey <= activeDateRange.endDate;
+      const activityTs = new Date(rawDate).getTime();
+      return activityTs >= rangeStart && activityTs <= rangeEnd;
     });
 
     return filtered;
@@ -531,7 +660,7 @@ export function DailyTasksPage(): ReactElement {
     userOptions.find((option) => option.id === userId)?.fullName || t('dailyTasks.unassigned');
 
   const enterpriseMetrics = useMemo(() => {
-    const now = new Date();
+    const now = new Date(metricsNow);
     const isSameDay = (value?: string) => {
       if (!value) return false;
       const date = new Date(value);
@@ -542,8 +671,12 @@ export function DailyTasksPage(): ReactElement {
       );
     };
 
-    const activeItems = filteredActivities.filter((activity) => Number(activity.status) !== ActivityStatus.Completed);
-    const completedItems = filteredActivities.filter((activity) => Number(activity.status) === ActivityStatus.Completed);
+    const activeItems = kpiActivities.filter(
+      (activity) =>
+        Number(activity.status) !== ActivityStatus.Completed &&
+        Number(activity.status) !== ActivityStatus.Cancelled
+    );
+    const completedItems = kpiActivities.filter((activity) => Number(activity.status) === ActivityStatus.Completed);
     const overdueItems = activeItems.filter((activity) => {
       const dueDate = activity.endDateTime ?? activity.startDateTime ?? activity.activityDate;
       if (!dueDate) return false;
@@ -584,13 +717,13 @@ export function DailyTasksPage(): ReactElement {
       dueTodayCount: dueTodayItems.length,
       highPriorityCount: highPriorityItems.length,
       completionRate:
-        filteredActivities.length > 0
-          ? Math.round((completedItems.length / filteredActivities.length) * 100)
+        kpiActivities.length > 0
+          ? Math.round((completedItems.length / kpiActivities.length) * 100)
           : 0,
       upcomingItems,
       workload,
     };
-  }, [filteredActivities]);
+  }, [kpiActivities, metricsNow]);
 
   // --- Handlers ---
   const handleToggleComplete = async (activity: ActivityDto) => {
@@ -600,13 +733,13 @@ export function DailyTasksPage(): ReactElement {
         status: activity.isCompleted ? ActivityStatus.Scheduled : ActivityStatus.Completed,
       }),
     });
-    void refetch();
+    void refreshDashboardData();
   };
   const handleDelete = async () => {
     if (!activityPendingDelete) return;
     await deleteActivity.mutateAsync(activityPendingDelete.id);
     setActivityPendingDelete(null);
-    void refetch();
+    void refreshDashboardData();
   };
   const handleNewTask = () => {
     setEditingActivity(null);
@@ -636,11 +769,11 @@ export function DailyTasksPage(): ReactElement {
     }
     setFormOpen(false);
     setEditingActivity(null);
-    void refetch();
+    void refreshDashboardData();
   };
-  const handleStartTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Scheduled }) }); void refetch(); };
-  const handleCompleteTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Completed }) }); void refetch(); };
-  const handlePutOnHold = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Cancelled }) }); void refetch(); };
+  const handleStartTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Scheduled }) }); void refreshDashboardData(); };
+  const handleCompleteTask = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Completed }) }); void refreshDashboardData(); };
+  const handlePutOnHold = async (activity: ActivityDto) => { await updateActivity.mutateAsync({ id: activity.id, data: toUpdateActivityDto(activity, { status: ActivityStatus.Cancelled }) }); void refreshDashboardData(); };
   const handlePreviousMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1));
   const handleNextMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1));
   const handleToday = () => setCalendarMonth(new Date());
@@ -672,11 +805,21 @@ export function DailyTasksPage(): ReactElement {
   };
 
   const handleReviewOpenTasks = () => {
-    setActiveTab('list');
-    setStatusFilter(String(ActivityStatus.Scheduled));
-    window.requestAnimationFrame(() => {
-      contentSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+    setOpenTasksModalOpen(true);
+  };
+
+  const handleOpenTaskActionConfirm = (activity: ActivityDto, action: 'complete' | 'cancel') => {
+    setOpenTaskActionConfirm({ activity, action });
+  };
+
+  const handleConfirmOpenTaskAction = async () => {
+    if (!openTaskActionConfirm) return;
+    if (openTaskActionConfirm.action === 'complete') {
+      await handleCompleteTask(openTaskActionConfirm.activity);
+    } else {
+      await handlePutOnHold(openTaskActionConfirm.activity);
+    }
+    setOpenTaskActionConfirm(null);
   };
 
   const formatSlotStart = (day: Date, hour: number): string => {
@@ -781,7 +924,9 @@ export function DailyTasksPage(): ReactElement {
     const month = calendarMonth.getMonth();
     const firstDay = new Date(year, month, 1);
     const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - startDate.getDay());
+    const day = startDate.getDay();
+    const diffToMonday = day === 0 ? 6 : day - 1;
+    startDate.setDate(startDate.getDate() - diffToMonday);
     const days = [];
     const activitiesByDate = getActivitiesByDate();
     for (let i = 0; i < 42; i++) {
@@ -1040,6 +1185,16 @@ export function DailyTasksPage(): ReactElement {
     });
   };
 
+  const openTasksModalItems = useMemo(() => {
+    return enterpriseMetrics.overdueItems
+      .slice()
+      .sort(
+        (left, right) =>
+          new Date(left.endDateTime ?? left.startDateTime ?? left.activityDate ?? left.createdDate).getTime() -
+          new Date(right.endDateTime ?? right.startDateTime ?? right.activityDate ?? right.createdDate).getTime()
+      );
+  }, [enterpriseMetrics.overdueItems]);
+
   const backgroundBlobs = (
     <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
       <div className="absolute top-0 left-1/4 w-[200px] md:w-[500px] h-[200px] md:h-[500px] bg-purple-500/10 dark:bg-purple-900/20 rounded-full blur-[60px] md:blur-[100px] animate-pulse" />
@@ -1150,6 +1305,114 @@ export function DailyTasksPage(): ReactElement {
         ))}
       </div>
 
+      <div className="rounded-2xl border border-slate-300/80 bg-white/80 p-3 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#130c1f]/70">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('dailyTasks.scopeLabel', { defaultValue: 'KPI kapsamı' })}
+            </span>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setKpiScopeMode('all')} className={filterButtonStyle(kpiScopeMode === 'all')}>
+              {t('dailyTasks.scopeAll', { defaultValue: 'Tümü' })}
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setKpiScopeMode('daily')} className={filterButtonStyle(kpiScopeMode === 'daily')}>
+              {t('dailyTasks.scopeDaily', { defaultValue: 'Günlük' })}
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setKpiScopeMode('weekly')} className={filterButtonStyle(kpiScopeMode === 'weekly')}>
+              {t('dailyTasks.scopeWeekly', { defaultValue: 'Haftalık' })}
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setKpiScopeMode('monthly')} className={filterButtonStyle(kpiScopeMode === 'monthly')}>
+              {t('dailyTasks.scopeMonthly', { defaultValue: 'Aylık' })}
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setKpiScopeMode('custom')} className={filterButtonStyle(kpiScopeMode === 'custom')}>
+              {t('dailyTasks.scopeCustom', { defaultValue: 'Özel' })}
+            </Button>
+          </div>
+
+          {kpiScopeMode === 'daily' ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                type="date"
+                value={kpiDay}
+                onChange={(event) => setKpiDay(event.target.value)}
+                className="h-8 w-full max-w-[220px] rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 rounded-lg text-xs"
+                onClick={() => setKpiDay(formatDateKey(new Date()))}
+              >
+                {t('dailyTasks.today', { defaultValue: 'Bugün' })}
+              </Button>
+            </div>
+          ) : null}
+
+          {kpiScopeMode === 'weekly' ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                type="date"
+                value={formatDateKey(kpiWeekStart)}
+                onChange={(event) => {
+                  if (!event.target.value) return;
+                  setKpiWeekStart(normalizeToMonday(parseDateKey(event.target.value)));
+                }}
+                className="h-8 w-full max-w-[220px] rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 rounded-lg text-xs"
+                onClick={() => setKpiWeekStart(normalizeToMonday(new Date()))}
+              >
+                {t('dailyTasks.thisWeek', { defaultValue: 'Bu Hafta' })}
+              </Button>
+            </div>
+          ) : null}
+
+          {kpiScopeMode === 'monthly' ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                type="month"
+                value={kpiMonth}
+                onChange={(event) => setKpiMonth(event.target.value)}
+                className="h-8 w-full max-w-[220px] rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 rounded-lg text-xs"
+                onClick={() => {
+                  const today = new Date();
+                  setKpiMonth(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`);
+                }}
+              >
+                {t('dailyTasks.thisMonth', { defaultValue: 'Bu Ay' })}
+              </Button>
+            </div>
+          ) : null}
+
+          {kpiScopeMode === 'custom' ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                type="date"
+                value={kpiCustomStart}
+                onChange={(event) => setKpiCustomStart(event.target.value)}
+                className="h-8 w-full max-w-[220px] rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+              />
+              <Input
+                type="date"
+                value={kpiCustomEnd}
+                onChange={(event) => setKpiCustomEnd(event.target.value)}
+                className="h-8 w-full max-w-[220px] rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+              />
+            </div>
+          ) : null}
+        </div>
+      </div>
+
       {enterpriseMetrics.overdueItems.length > 0 ? (
         <div className="rounded-2xl border border-rose-300/30 bg-rose-50/80 px-4 py-3 text-sm text-rose-900 shadow-sm backdrop-blur-xl dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-100">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -1196,7 +1459,7 @@ export function DailyTasksPage(): ReactElement {
             <Button
               variant="outline"
               className="rounded-xl"
-              onClick={() => void refetch()}
+              onClick={() => void refreshDashboardData()}
             >
               <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
               {t('dailyTasks.refresh', { defaultValue: 'Yenile' })}
@@ -1294,132 +1557,121 @@ export function DailyTasksPage(): ReactElement {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         
         {/* 2. KONTROL PANELİ: Responsive Layout */}
-        <div className="sticky top-2 z-30 bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg rounded-2xl p-3 md:p-4 transition-all duration-300">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                
-                {/* Sol: Tablar (Mobilde Grid) */}
-                <TabsList className="bg-white dark:bg-white/5 border border-slate-300/80 dark:border-white/10 shadow-sm p-1 rounded-xl h-auto w-full xl:w-auto grid grid-cols-3 xl:flex gap-1">
-                    <TabsTrigger value="tasks" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-[#2d1b4e] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md py-2 px-2 md:px-4 text-[10px] md:text-xs font-medium transition-all duration-300">
-                        <LayoutGrid size={14} className="mr-1 md:mr-2 md:w-4 md:h-4" />
-                        <span className="truncate">{t('dailyTasks.weeklyTasks')}</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="list" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-[#2d1b4e] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md py-2 px-2 md:px-4 text-[10px] md:text-xs font-medium transition-all duration-300">
-                        <ListTodo size={14} className="mr-1 md:mr-2 md:w-4 md:h-4" />
-                        <span className="truncate">{t('dailyTasks.dailyList')}</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="calendar" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-[#2d1b4e] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md py-2 px-2 md:px-4 text-[10px] md:text-xs font-medium transition-all duration-300">
-                        <CalendarIcon size={14} className="mr-1 md:mr-2 md:w-4 md:h-4" />
-                        <span className="truncate">{t('dailyTasks.calendar')}</span>
-                    </TabsTrigger>
-                </TabsList>
-
-                {/* Sağ: Filtreler (Mobilde Stack) */}
-                <div className="grid w-full grid-cols-1 gap-3 xl:w-auto xl:grid-cols-[minmax(220px,260px)_auto_minmax(170px,220px)_auto] xl:items-start">
-                    <div className="relative w-full min-w-0">
-                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                      <Input
-                        value={searchTerm}
-                        onChange={(event) => setSearchTerm(event.target.value)}
-                        placeholder={t('dailyTasks.searchPlaceholder')}
-                        className="h-10 rounded-xl border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm pl-9 pr-10 focus-visible:ring-pink-500"
-                      />
-                      {isFetching ? (
-                        <RefreshCw className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-pink-500" />
-                      ) : null}
-                    </div>
-                    
-                    {/* Status Pill Group (Scrollable on mobile) */}
-                    <div className="flex w-full items-center overflow-x-auto rounded-xl border border-slate-300/80 bg-white p-1 shadow-sm no-scrollbar dark:border-white/5 dark:bg-white/5 xl:max-w-[380px]">
-                        <div className="flex gap-1 min-w-max">
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className={filterButtonStyle(statusFilter === 'all')}>
-                                {t('dailyTasks.all')}
-                            </Button>
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Scheduled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Scheduled))}>
-                                <Clock size={12} className="mr-1" /> {t('dailyTasks.pending')}
-                            </Button>
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Cancelled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Cancelled))}>
-                                <PauseCircle size={12} className="mr-1" /> {t('statusCanceled', { ns: 'activity-management' })}
-                            </Button>
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Completed))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Completed))}>
-                                <CheckCircle2 size={12} className="mr-1" /> {t('dailyTasks.completed')}
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Personel Seçimi */}
-                    <div className="flex w-full min-w-0 items-center gap-2 rounded-xl border border-slate-300/80 bg-white px-2 py-1 shadow-sm dark:border-white/10 dark:bg-white/5 xl:w-[220px]">
-                      <User size={14} className="shrink-0 text-pink-500" />
-                      <VoiceSearchCombobox
-                        options={userFilterOptions}
-                        value={assignedUserFilter?.toString() || 'all'}
-                        onSelect={(v) => setAssignedUserFilter(v === 'all' || !v ? undefined : parseInt(v, 10))}
-                        onDebouncedSearchChange={setUserFilterSearchTerm}
-                        onFetchNextPage={userDropdown.fetchNextPage}
-                        hasNextPage={userDropdown.hasNextPage}
-                        isLoading={userDropdown.isLoading}
-                        isFetchingNextPage={userDropdown.isFetchingNextPage}
-                        placeholder={t('dailyTasks.allEmployees')}
-                        className="h-9 rounded-lg border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 focus:ring-pink-500 flex-1 min-w-0"
-                      />
-                    </div>
-
-                    {activeTab === 'tasks' ? (
-                      <div className="flex w-full min-w-0 flex-col gap-2 rounded-xl border border-slate-300/80 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-white/5 xl:min-w-[290px]">
-                        <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                          {t('dailyTasks.weeklyTasks', { defaultValue: 'Haftalık görevler' })}
-                        </div>
-                        <div className="flex w-full flex-wrap items-center gap-2">
-                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-md" onClick={handlePreviousTasksWeek}>
-                            <ChevronLeft size={14} />
-                          </Button>
-                          <Input
-                            type="date"
-                            value={formatDateKey(tasksWeekStart)}
-                            onChange={(e) => {
-                              if (!e.target.value) return;
-                              setTasksWeekStart(normalizeToMonday(parseDateKey(e.target.value)));
-                            }}
-                            className="h-8 min-w-[150px] flex-1 rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
-                          />
-                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-md" onClick={handleNextTasksWeek}>
-                            <ChevronRight size={14} />
-                          </Button>
-                          <Button type="button" variant="outline" size="sm" className="h-8 rounded-lg text-xs sm:ml-auto" onClick={handleCurrentTasksWeek}>
-                            {t('dailyTasks.thisWeek', { defaultValue: 'Bu Hafta' })}
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null}
-
-                    {activeTab === 'list' ? (
-                      <div className="flex w-full min-w-0 flex-col gap-2 rounded-xl border border-slate-300/80 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-white/5 xl:min-w-[260px]">
-                        <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                          {t('dailyTasks.dailyList', { defaultValue: 'Günlük liste' })}
-                        </div>
-                        <div className="flex w-full flex-wrap items-center gap-2">
-                          <Input
-                            type="date"
-                            value={listSelectedDate}
-                            onChange={(e) => {
-                              if (!e.target.value) return;
-                              setListSelectedDate(e.target.value);
-                            }}
-                            className="h-8 min-w-[150px] flex-1 rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="h-8 rounded-lg text-xs sm:ml-auto"
-                            onClick={() => setListSelectedDate(formatDateKey(new Date()))}
-                          >
-                            {t('dailyTasks.today', { defaultValue: 'Bugün' })}
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null}
-                </div>
+        <div className="sticky top-2 z-30 rounded-2xl border border-white/20 bg-white/80 p-3 shadow-lg backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#0c0516]/80 md:p-4">
+          <div className="my-1 grid grid-cols-1 gap-3 py-1 lg:grid-cols-[minmax(220px,320px)_auto_minmax(220px,300px)_minmax(320px,1fr)] lg:items-stretch">
+            <div className="my-1 relative h-10 w-full min-w-0">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder={t('dailyTasks.searchPlaceholder')}
+                className="h-10 rounded-xl border-slate-300 bg-white pl-9 pr-10 shadow-sm focus-visible:ring-pink-500 dark:border-white/10 dark:bg-white/5"
+              />
+              {isFetching ? (
+                <RefreshCw className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-pink-500" />
+              ) : null}
             </div>
+
+            <div className="my-1 flex h-10 w-fit max-w-full items-center rounded-xl border border-slate-300/80 bg-white px-2 py-1.5 shadow-sm dark:border-white/5 dark:bg-white/5">
+              <div className="flex items-center gap-1 whitespace-nowrap">
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className={filterButtonStyle(statusFilter === 'all')}>
+                  {t('dailyTasks.all')}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Scheduled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Scheduled))}>
+                  <Clock size={12} className="mr-1" /> {t('dailyTasks.pending')}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Cancelled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Cancelled))}>
+                  <PauseCircle size={12} className="mr-1" /> {t('statusCanceled', { ns: 'activity-management' })}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Completed))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Completed))}>
+                  <CheckCircle2 size={12} className="mr-1" /> {t('dailyTasks.completed')}
+                </Button>
+              </div>
+            </div>
+
+            <div className="my-1 flex h-10 w-full min-w-0 items-center gap-2 rounded-xl border border-slate-300/80 bg-white px-2 py-1.5 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <User size={14} className="shrink-0 text-pink-500" />
+              <VoiceSearchCombobox
+                options={userFilterOptions}
+                value={assignedUserFilter?.toString() || 'all'}
+                onSelect={(v) => setAssignedUserFilter(v === 'all' || !v ? undefined : parseInt(v, 10))}
+                onDebouncedSearchChange={setUserFilterSearchTerm}
+                onFetchNextPage={userDropdown.fetchNextPage}
+                hasNextPage={userDropdown.hasNextPage}
+                isLoading={userDropdown.isLoading}
+                isFetchingNextPage={userDropdown.isFetchingNextPage}
+                placeholder={t('dailyTasks.allEmployees')}
+                className="h-9 min-w-0 flex-1 rounded-lg border-slate-300 bg-white focus:ring-pink-500 dark:border-white/10 dark:bg-white/5"
+              />
+            </div>
+
+            {activeTab === 'tasks' ? (
+              <div className="my-1 flex h-10 w-full min-w-0 items-center gap-2 rounded-xl border border-slate-300/80 bg-white px-2 py-1.5 shadow-sm dark:border-white/10 dark:bg-white/5">
+                <div className="flex w-full flex-wrap items-center gap-2">
+                  <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-md" onClick={handlePreviousTasksWeek}>
+                    <ChevronLeft size={14} />
+                  </Button>
+                  <Input
+                    type="date"
+                    value={formatDateKey(tasksWeekStart)}
+                    onChange={(e) => {
+                      if (!e.target.value) return;
+                      setTasksWeekStart(normalizeToMonday(parseDateKey(e.target.value)));
+                    }}
+                    className="h-8 min-w-[180px] flex-1 rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+                  />
+                  <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-md" onClick={handleNextTasksWeek}>
+                    <ChevronRight size={14} />
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" className="h-8 rounded-lg text-xs sm:ml-auto" onClick={handleCurrentTasksWeek}>
+                    {t('dailyTasks.thisWeek', { defaultValue: 'Bu Hafta' })}
+                  </Button>
+                </div>
+              </div>
+            ) : activeTab === 'list' ? (
+              <div className="my-1 flex h-10 w-full min-w-0 items-center gap-2 rounded-xl border border-slate-300/80 bg-white px-2 py-1.5 shadow-sm dark:border-white/10 dark:bg-white/5">
+                <div className="flex w-full flex-wrap items-center gap-2">
+                  <Input
+                    type="date"
+                    value={listSelectedDate}
+                    onChange={(e) => {
+                      if (!e.target.value) return;
+                      setListSelectedDate(e.target.value);
+                    }}
+                    className="h-8 min-w-[180px] flex-1 rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 rounded-lg text-xs sm:ml-auto"
+                    onClick={() => setListSelectedDate(formatDateKey(new Date()))}
+                  >
+                    {t('dailyTasks.today', { defaultValue: 'Bugün' })}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="hidden lg:block" />
+            )}
+          </div>
+
+          <div className="mt-3">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-xl border border-slate-300/80 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <TabsTrigger value="tasks" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-pink-400 md:px-4 md:text-xs">
+                <LayoutGrid size={14} className="mr-1 md:mr-2 md:h-4 md:w-4" />
+                <span className="truncate">{t('dailyTasks.weeklyTasks')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="list" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-pink-400 md:px-4 md:text-xs">
+                <ListTodo size={14} className="mr-1 md:mr-2 md:h-4 md:w-4" />
+                <span className="truncate">{t('dailyTasks.dailyList')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="calendar" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-pink-400 md:px-4 md:text-xs">
+                <CalendarIcon size={14} className="mr-1 md:mr-2 md:h-4 md:w-4" />
+                <span className="truncate">{t('dailyTasks.calendar')}</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
         </div>
 
         {/* 3. İÇERİK ALANI */}
@@ -1437,7 +1689,7 @@ export function DailyTasksPage(): ReactElement {
                     {t('dailyTasks.loadErrorDescription')}
                   </p>
                 </div>
-                <Button onClick={() => void refetch()} className="rounded-xl">
+                <Button onClick={() => void refreshDashboardData()} className="rounded-xl">
                   <RefreshCw size={16} className="mr-2" />
                   {t('dailyTasks.retry')}
                 </Button>
@@ -1515,7 +1767,7 @@ export function DailyTasksPage(): ReactElement {
                                 const display = getActivityTypeDisplay(activity.activityType);
                                 return display ? (
                                   <div className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border border-current ${getCategoryColor(display)}`}>
-                                    {t(`activityManagement.activityType${display}`, display)}
+                                    {t(`activityType${display}`, { ns: 'activity-management', defaultValue: display })}
                                   </div>
                                 ) : null;
                             })()}
@@ -2173,6 +2425,254 @@ export function DailyTasksPage(): ReactElement {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={openTasksModalOpen} onOpenChange={setOpenTasksModalOpen}>
+        <DialogContent className="w-[95vw] max-w-[95vw] rounded-2xl border-white/10 bg-white/95 p-0 backdrop-blur-2xl dark:bg-[#140d20]/95 sm:max-w-3xl md:max-w-4xl lg:max-w-5xl">
+          <DialogHeader className="border-b border-slate-200/70 px-4 py-4 dark:border-white/10 sm:px-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
+                  {t('dailyTasks.openTasksModalTitle', { defaultValue: 'Açık işler' })}
+                </DialogTitle>
+                <DialogDescription className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                  {t('dailyTasks.openTasksModalDescription', {
+                    defaultValue: 'KPI kapsamına göre geciken açık işleri buradan yönetebilirsiniz.',
+                  })}
+                </DialogDescription>
+              </div>
+              <div className="flex items-center gap-2 self-start md:self-auto">
+                <div className="rounded-lg border border-slate-200 bg-white p-1 dark:border-white/10 dark:bg-white/5">
+                  <Button
+                    type="button"
+                    variant={openTasksViewMode === 'cards' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-8 rounded-md px-2 text-xs"
+                    onClick={() => setOpenTasksViewMode('cards')}
+                  >
+                    <LayoutGrid className="mr-1 h-3.5 w-3.5" />
+                    {t('dailyTasks.openTasksCards', { defaultValue: 'Kart' })}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={openTasksViewMode === 'list' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-8 rounded-md px-2 text-xs"
+                    onClick={() => setOpenTasksViewMode('list')}
+                  >
+                    <ListTodo className="mr-1 h-3.5 w-3.5" />
+                    {t('dailyTasks.openTasksList', { defaultValue: 'Liste' })}
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 inline-flex w-fit rounded-full border border-pink-200 bg-pink-50 px-3 py-1 text-xs font-semibold text-pink-700 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-200">
+              {t('dailyTasks.openTasksCount', {
+                defaultValue: '{{count}} açık iş',
+                count: openTasksModalItems.length,
+              })}
+            </div>
+          </DialogHeader>
+
+          <div className="max-h-[70vh] overflow-y-auto px-4 py-4 sm:px-6">
+            {openTasksModalItems.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-10 text-center text-sm text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-400">
+                {t('dailyTasks.openTasksEmpty', {
+                  defaultValue: 'Seçili kapsamda açık iş bulunmuyor.',
+                })}
+              </div>
+            ) : openTasksViewMode === 'cards' ? (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {openTasksModalItems.map((activity) => (
+                  <div
+                    key={`open-task-card-${activity.id}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      setOpenTasksModalOpen(false);
+                      handleEdit(activity);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        setOpenTasksModalOpen(false);
+                        handleEdit(activity);
+                      }
+                    }}
+                    className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/5 cursor-pointer"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                          {activity.subject}
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                          <span>{formatActivityTimeRange(activity)}</span>
+                          <span>•</span>
+                          <span>{getAssignedUserName(activity.assignedUserId)}</span>
+                        </div>
+                      </div>
+                      <ActivityPriorityBadge priority={activity.priority} />
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <ActivityStatusBadge status={activity.status} />
+                      <div className="ml-auto flex items-center gap-1">
+                        <Button
+                          type="button"
+                          size="icon"
+                          title={t('dailyTasks.openTasksMarkComplete', { defaultValue: 'Tamamla' })}
+                          aria-label={t('dailyTasks.openTasksMarkComplete', { defaultValue: 'Tamamla' })}
+                          className="h-8 w-8 rounded-lg bg-green-600 text-white hover:bg-green-700 dark:bg-green-500"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleOpenTaskActionConfirm(activity, 'complete');
+                          }}
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          title={t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
+                          aria-label={t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
+                          className="h-8 w-8 rounded-lg border-rose-300 text-rose-700 hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleOpenTaskActionConfirm(activity, 'cancel');
+                          }}
+                        >
+                          <Ban className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {openTasksModalItems.map((activity) => (
+                  <div
+                    key={`open-task-row-${activity.id}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      setOpenTasksModalOpen(false);
+                      handleEdit(activity);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        setOpenTasksModalOpen(false);
+                        handleEdit(activity);
+                      }
+                    }}
+                    className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-white/5 md:flex-row md:items-center md:justify-between cursor-pointer"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                          {activity.subject}
+                        </span>
+                        <ActivityStatusBadge status={activity.status} />
+                        <ActivityPriorityBadge priority={activity.priority} />
+                      </div>
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                        <span>{formatActivityTimeRange(activity)}</span>
+                        <span>•</span>
+                        <span>{getAssignedUserName(activity.assignedUserId)}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        size="icon"
+                        title={t('dailyTasks.openTasksMarkComplete', { defaultValue: 'Tamamla' })}
+                        aria-label={t('dailyTasks.openTasksMarkComplete', { defaultValue: 'Tamamla' })}
+                        className="h-8 w-8 rounded-lg bg-green-600 text-white hover:bg-green-700 dark:bg-green-500"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleOpenTaskActionConfirm(activity, 'complete');
+                        }}
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        title={t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
+                        aria-label={t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
+                        className="h-8 w-8 rounded-lg border-rose-300 text-rose-700 hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleOpenTaskActionConfirm(activity, 'cancel');
+                        }}
+                      >
+                        <Ban className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={openTaskActionConfirm !== null}
+        onOpenChange={(open) => {
+          if (!open) setOpenTaskActionConfirm(null);
+        }}
+      >
+        <AlertDialogContent className="overflow-hidden border-white/10 bg-white/90 p-0 backdrop-blur-2xl dark:bg-[#120a1d]/95">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="px-6 pt-5 text-slate-900 dark:text-white">
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className={`inline-flex h-7 w-7 items-center justify-center rounded-lg ${
+                    openTaskActionConfirm?.action === 'complete'
+                      ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
+                      : 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300'
+                  }`}
+                >
+                  {openTaskActionConfirm?.action === 'complete' ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Ban className="h-4 w-4" />
+                  )}
+                </span>
+                <span>
+                  {openTaskActionConfirm?.action === 'complete'
+                    ? t('dailyTasks.openTasksConfirmCompleteTitle', { defaultValue: 'İş tamamlandı olarak işaretlensin mi?' })
+                    : t('dailyTasks.openTasksConfirmCancelTitle', { defaultValue: 'İş iptal edilsin mi?' })}
+                </span>
+              </span>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="px-6 pb-2 text-slate-600 dark:text-slate-300">
+              {t('dailyTasks.openTasksConfirmDescription', {
+                defaultValue: '"{{subject}}" için bu işlemi onaylıyor musunuz?',
+                subject: openTaskActionConfirm?.activity.subject ?? '',
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="border-t border-slate-200/70 px-6 py-4 dark:border-white/10">
+            <AlertDialogCancel className="rounded-lg border-slate-300 bg-linear-to-r from-slate-100 to-slate-200 text-slate-700 hover:from-slate-200 hover:to-slate-300 dark:border-white/15 dark:from-white/10 dark:to-white/5 dark:text-slate-200 dark:hover:from-white/15 dark:hover:to-white/10">
+              {t('dailyTasks.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void handleConfirmOpenTaskAction()}
+              className={`rounded-lg text-white ${
+                openTaskActionConfirm?.action === 'complete'
+                  ? 'bg-linear-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 dark:from-emerald-500 dark:to-green-500 dark:hover:from-emerald-400 dark:hover:to-green-400'
+                  : 'bg-linear-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 dark:from-rose-500 dark:to-red-500 dark:hover:from-rose-400 dark:hover:to-red-400'
+              }`}
+            >
+              {openTaskActionConfirm?.action === 'complete'
+                ? t('dailyTasks.openTasksMarkComplete', { defaultValue: 'Tamamla' })
+                : t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
