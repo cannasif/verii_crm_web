@@ -710,12 +710,12 @@ export function AssignedReportsDashboardSection(): ReactElement {
       </Card>
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="w-[calc(100vw-0.75rem)] max-w-[calc(100vw-0.75rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-1.5rem)] sm:max-w-[calc(100vw-1.5rem)] md:max-w-5xl lg:max-w-6xl">
           <DialogHeader>
-            <DialogTitle>{t('common.reportBuilder.addReportsToDashboard')}</DialogTitle>
-            <DialogDescription>{t('common.reportBuilder.dashboardPickerDescription')}</DialogDescription>
+            <DialogTitle className="px-4 pt-4 sm:px-6 sm:pt-5">{t('common.reportBuilder.addReportsToDashboard')}</DialogTitle>
+            <DialogDescription className="px-4 pb-3 sm:px-6 sm:pb-4">{t('common.reportBuilder.dashboardPickerDescription')}</DialogDescription>
           </DialogHeader>
-          <div className="max-h-[72vh] space-y-4 overflow-y-auto pr-1">
+          <div className="max-h-[82dvh] space-y-3 overflow-y-auto px-4 pb-4 sm:max-h-[78vh] sm:space-y-4 sm:px-6 sm:pb-6">
             {choices.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border/80 bg-muted/10 p-6 text-center text-sm text-muted-foreground">
                 {t('common.reportBuilder.availableReportsEmpty')}
@@ -728,13 +728,13 @@ export function AssignedReportsDashboardSection(): ReactElement {
                   return map;
                 }, new Map()),
               ).map(([reportId, group]) => (
-                <div key={reportId} className="rounded-2xl border border-border/70 bg-background/90 p-5 shadow-sm">
-                  <div className="mb-4">
+                <div key={reportId} className="rounded-2xl border-2 border-slate-300/80 bg-background/90 p-4 shadow-sm dark:border-white/20 sm:p-5">
+                  <div className="mb-3 sm:mb-4">
                     <p className="text-base font-semibold">{group[0]?.reportName}</p>
                     <p className="text-muted-foreground mt-1 text-xs">{group[0]?.reportSubtitle || reportMap.get(reportId)?.dataSourceName}</p>
                   </div>
-                  <div className="grid gap-4 lg:grid-cols-2">
-                    <div className="rounded-xl border border-border/70 bg-muted/10 p-3.5">
+                  <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
+                    <div className="rounded-xl border-2 border-slate-300/80 bg-muted/10 p-3.5 dark:border-white/20">
                       <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         {t('common.reportBuilder.dashboardPickerReportSection')}
                       </p>
@@ -745,7 +745,7 @@ export function AssignedReportsDashboardSection(): ReactElement {
                               key={`${choice.reportId}:${choice.widgetId ?? '__report__'}`}
                               type="button"
                               onClick={() => handleAddChoice(choice)}
-                              className="rounded-xl border border-border/70 bg-background p-4 text-left transition hover:border-pink-400/50 hover:bg-pink-50/40 dark:hover:bg-pink-500/10"
+                              className="rounded-xl border-2 border-slate-300/80 bg-background p-4 text-left transition hover:border-pink-400/60 hover:bg-pink-50/40 dark:border-white/20 dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10"
                             >
                               <div className="mb-2 flex flex-wrap gap-2">
                                 <Badge variant="secondary">{choice.kind === 'dashboard' ? t('common.reportBuilder.dashboardItemTypes.dashboard') : t('common.reportBuilder.dashboardItemTypes.report')}</Badge>
@@ -766,7 +766,7 @@ export function AssignedReportsDashboardSection(): ReactElement {
                         </div>
                       ) : null}
                     </div>
-                    <div className="rounded-xl border border-border/70 bg-muted/10 p-3.5">
+                    <div className="rounded-xl border-2 border-slate-300/80 bg-muted/10 p-3.5 dark:border-white/20">
                       <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         {t('common.reportBuilder.dashboardPickerWidgetSection')}
                       </p>
@@ -777,7 +777,7 @@ export function AssignedReportsDashboardSection(): ReactElement {
                               key={`${choice.reportId}:${choice.widgetId ?? '__report__'}`}
                               type="button"
                               onClick={() => handleAddChoice(choice)}
-                              className="rounded-xl border border-border/70 bg-background p-4 text-left transition hover:border-pink-400/50 hover:bg-pink-50/40 dark:hover:bg-pink-500/10"
+                              className="rounded-xl border-2 border-slate-300/80 bg-background p-4 text-left transition hover:border-pink-400/60 hover:bg-pink-50/40 dark:border-white/20 dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10"
                             >
                               <div className="mb-2 flex flex-wrap gap-2">
                                 <Badge variant="secondary">{t('common.reportBuilder.dashboardItemTypes.widget')}</Badge>
