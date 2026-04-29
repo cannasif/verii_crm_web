@@ -15,11 +15,16 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import type { StockRelationDto } from '@/features/stock/types';
 
+export interface RelatedStockSelectionConfirmItem {
+  relatedStockId: number;
+  quantityPerMain: number;
+}
+
 interface RelatedStocksSelectionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   relatedStocks: StockRelationDto[];
-  onConfirm: (selectedStockIds: number[]) => void | Promise<void>;
+  onConfirm: (selection: RelatedStockSelectionConfirmItem[]) => void | Promise<void>;
 }
 
 export function RelatedStocksSelectionDialog({
@@ -58,7 +63,14 @@ export function RelatedStocksSelectionDialog({
   const handleConfirm = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      await onConfirm(Array.from(selectedStockIds));
+      const selection: RelatedStockSelectionConfirmItem[] = Array.from(selectedStockIds).map((id) => {
+        const rel = relatedStocks.find((r) => r.relatedStockId === id);
+        const raw = rel?.quantity;
+        const quantityPerMain =
+          raw != null && Number.isFinite(raw) && raw > 0 ? raw : 1;
+        return { relatedStockId: id, quantityPerMain };
+      });
+      await onConfirm(selection);
       onOpenChange(false);
     } catch (error) {
       console.error('Error confirming related stocks:', error);
