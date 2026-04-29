@@ -262,7 +262,7 @@ export function PermissionGroupsPage(): ReactElement {
             <div className="flex shrink-0">
               <Button
                 onClick={handleAddClick}
-                className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25"
+                className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25 opacity-60 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Plus size={20} className="mr-2" />
                 {t('permissionGroups.add')}

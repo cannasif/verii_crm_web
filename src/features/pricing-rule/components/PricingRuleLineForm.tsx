@@ -16,16 +16,31 @@ import { pricingRuleLineSchema } from '../schemas/pricing-rule-schema';
 import type { PricingRuleLineFormState } from '../types/pricing-rule-types';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
-import type { KurDto } from '@/services/erp-types';
-import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 // İkonlar
-import { 
-  Search, 
-  X, 
-  Box, 
-  Hash, 
-  Coins, 
-  Percent, 
+import {
+  Search,
+  X,
+  Box,
+  Hash,
+  Check,
+  ChevronDown,
+  Coins,
+  Percent,
   DollarSign,
   ArrowRight
 } from 'lucide-react';
@@ -37,31 +52,9 @@ interface PricingRuleLineFormProps {
 }
 
 // --- TASARIM SABİTLERİ ---
-const INPUT_STYLE = `
-  h-12 rounded-xl
-  bg-slate-50 dark:bg-[#0f0a18] 
-  border border-slate-200 dark:border-white/10 
-  text-slate-900 dark:text-white text-sm
-  placeholder:text-slate-400 dark:placeholder:text-slate-600 
-  
-  focus-visible:bg-white dark:focus-visible:bg-[#1a1025]
-  focus-visible:border-pink-500 dark:focus-visible:border-pink-500/70
-  focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
-  
-  focus:ring-2 focus:ring-pink-500/10 focus:ring-offset-0 focus:border-pink-500
-  
-  transition-all duration-200
-`;
-
-const READONLY_INPUT_STYLE = `
-  h-12 rounded-xl
-  bg-slate-100 dark:bg-white/5 
-  border border-slate-200 dark:border-white/5 
-  text-slate-500 dark:text-slate-400 text-sm
-  cursor-not-allowed
-`;
-
-const LABEL_STYLE = "text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide ml-1 mb-2 flex items-center gap-2";
+const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all duration-200 text-sm font-medium";
+const READONLY_INPUT_STYLE = "h-11 rounded-xl bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 text-slate-500 dark:text-slate-400 text-sm cursor-not-allowed font-medium";
+const LABEL_STYLE = "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-2";
 
 export function PricingRuleLineForm({
   line,
@@ -71,6 +64,7 @@ export function PricingRuleLineForm({
   const { t } = useTranslation();
   const { data: exchangeRates = [], isLoading: isLoadingRates } = useExchangeRate();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [currencyPopoverOpen, setCurrencyPopoverOpen] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(pricingRuleLineSchema),
@@ -98,18 +92,18 @@ export function PricingRuleLineForm({
 
   useEffect(() => {
     const baseAmount = (watchedFixedUnitPrice ?? 0) * (watchedMinQuantity ?? 0);
-    
+
     if (baseAmount > 0) {
       let currentAmount = baseAmount;
-      
+
       const discountAmount1 = currentAmount * ((watchedDiscountRate1 ?? 0) / 100);
       currentAmount = currentAmount - discountAmount1;
-      
+
       const discountAmount2 = currentAmount * ((watchedDiscountRate2 ?? 0) / 100);
       currentAmount = currentAmount - discountAmount2;
-      
+
       const discountAmount3 = currentAmount * ((watchedDiscountRate3 ?? 0) / 100);
-      
+
       form.setValue('discountAmount1', discountAmount1, { shouldValidate: false });
       form.setValue('discountAmount2', discountAmount2, { shouldValidate: false });
       form.setValue('discountAmount3', discountAmount3, { shouldValidate: false });
@@ -259,24 +253,68 @@ export function PricingRuleLineForm({
             control={form.control}
             name="currencyCode"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col">
                 <FormLabel className={LABEL_STYLE}>
                   <Coins size={12} className="text-pink-500" />
                   {t('pricingRule.lines.currencyCode')} *
                 </FormLabel>
-                <VoiceSearchCombobox
-                  options={exchangeRates.map((currency: KurDto) => ({
-                    value: String(currency.dovizTipi),
-                    label: currency.dovizIsmi ? `${currency.dovizIsmi} (${currency.dovizTipi})` : `Döviz (${currency.dovizTipi})`
-                  }))}
-                  value={field.value !== undefined && field.value !== null ? String(field.value) : ''}
-                  onSelect={(value) => field.onChange(value ? Number(value) : undefined)}
-                  placeholder={isLoadingRates ? t('pricingRule.loading') : t('pricingRule.lines.selectCurrency')}
-                  searchPlaceholder={t('pricingRule.lines.searchCurrency')}
-                  className={INPUT_STYLE}
-                  disabled={isLoadingRates}
-                  modal={true}
-                />
+                <Popover open={currencyPopoverOpen} onOpenChange={setCurrencyPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        disabled={isLoadingRates}
+                        className={cn(
+                          INPUT_STYLE,
+                          "w-full justify-between px-3",
+                          !field.value && "text-slate-400 dark:text-slate-600"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          {field.value ? (
+                            <span className="font-bold">
+                              {exchangeRates.find(
+                                (c) => String(c.dovizTipi) === String(field.value)
+                              )?.dovizIsmi || field.value}
+                            </span>
+                          ) : (
+                            <span>{isLoadingRates ? t('pricingRule.loading') : t('pricingRule.lines.selectCurrency')}</span>
+                          )}
+                        </div>
+                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1025] shadow-2xl backdrop-blur-xl">
+                    <Command className="bg-transparent">
+                      <CommandInput placeholder={t('common.search')} className="h-11" />
+                      <CommandList className="custom-scrollbar">
+                        <CommandEmpty>{t('common.noData')}</CommandEmpty>
+                        <CommandGroup>
+                          {exchangeRates.map((curr) => (
+                            <CommandItem
+                              key={curr.dovizTipi}
+                              onSelect={() => {
+                                form.setValue("currencyCode", Number(curr.dovizTipi), { shouldValidate: true });
+                                setCurrencyPopoverOpen(false);
+                              }}
+                              className="h-10 px-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 cursor-pointer transition-colors"
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4 text-pink-500",
+                                  String(curr.dovizTipi) === String(field.value) ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {curr.dovizIsmi}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <FormMessage className="text-red-500 text-[10px] mt-1" />
               </FormItem>
             )}
@@ -291,143 +329,143 @@ export function PricingRuleLineForm({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField
-                control={form.control}
-                name="fixedUnitPrice"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel className={LABEL_STYLE}>
-                    <DollarSign size={12} className="text-pink-500" />
-                    {t('pricingRule.lines.fixedUnitPrice')} *
-                    </FormLabel>
-                    <FormControl>
-                    <Input
-                        type="number"
-                        step="0.000001"
-                        min="0.01"
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value === '' ? null : parseFloat(e.target.value))}
-                        className={INPUT_STYLE}
-                    />
-                    </FormControl>
-                    <FormMessage className="text-red-500 text-[10px] mt-1" />
-                </FormItem>
-                )}
-            />
+          <FormField
+            control={form.control}
+            name="fixedUnitPrice"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={LABEL_STYLE}>
+                  <DollarSign size={12} className="text-pink-500" />
+                  {t('pricingRule.lines.fixedUnitPrice')} *
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.000001"
+                    min="0.01"
+                    {...field}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value === '' ? null : parseFloat(e.target.value))}
+                    className={INPUT_STYLE}
+                  />
+                </FormControl>
+                <FormMessage className="text-red-500 text-[10px] mt-1" />
+              </FormItem>
+            )}
+          />
 
-            {/* İndirim 1 */}
-            <div className="space-y-3">
-                <FormField
-                    control={form.control}
-                    name="discountRate1"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
-                        <Percent size={12} className="text-blue-500" />
-                        {t('pricingRule.lines.discount1Rate')}
-                        </FormLabel>
-                        <FormControl>
-                        <Input
-                            type="number"
-                            step="0.000001"
-                            min="0"
-                            max="100"
-                            {...field}
-                            value={field.value ?? ''}
-                            onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
-                            className={INPUT_STYLE}
-                        />
-                        </FormControl>
-                    </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="discountAmount1"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
-                        <ArrowRight size={12} className="text-slate-400" />
-                        {t('pricingRule.lines.discount1Amount')}
-                        </FormLabel>
-                        <FormControl>
-                        <Input
-                            type="number"
-                            {...field}
-                            value={field.value ?? ''}
-                            className={READONLY_INPUT_STYLE}
-                            readOnly
-                        />
-                        </FormControl>
-                    </FormItem>
-                    )}
-                />
-            </div>
+          {/* İndirim 1 */}
+          <div className="space-y-3">
+            <FormField
+              control={form.control}
+              name="discountRate1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={LABEL_STYLE}>
+                    <Percent size={12} className="text-blue-500" />
+                    {t('pricingRule.lines.discount1Rate')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      step="0.000001"
+                      min="0"
+                      max="100"
+                      {...field}
+                      value={field.value ?? ''}
+                      onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
+                      className={INPUT_STYLE}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="discountAmount1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={LABEL_STYLE}>
+                    <ArrowRight size={12} className="text-slate-400" />
+                    {t('pricingRule.lines.discount1Amount')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      value={field.value ?? ''}
+                      className={READONLY_INPUT_STYLE}
+                      readOnly
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
 
-            {/* İndirim 2 */}
-            <FormField
-                control={form.control}
-                name="discountRate2"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel className={LABEL_STYLE}>
-                    <Percent size={12} className="text-indigo-500" />
-                    {t('pricingRule.lines.discount2Rate')}
-                    </FormLabel>
-                    <FormControl>
-                    <Input
-                        type="number"
-                        step="0.000001"
-                        min="0"
-                        max="100"
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
-                        className={INPUT_STYLE}
-                    />
-                    </FormControl>
-                </FormItem>
-                )}
-            />
-            
-            {/* İndirim 3 */}
-            <FormField
-                control={form.control}
-                name="discountRate3"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel className={LABEL_STYLE}>
-                    <Percent size={12} className="text-purple-500" />
-                    {t('pricingRule.lines.discount3Rate')}
-                    </FormLabel>
-                    <FormControl>
-                    <Input
-                        type="number"
-                        step="0.000001"
-                        min="0"
-                        max="100"
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
-                        className={INPUT_STYLE}
-                    />
-                    </FormControl>
-                </FormItem>
-                )}
-            />
+          {/* İndirim 2 */}
+          <FormField
+            control={form.control}
+            name="discountRate2"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={LABEL_STYLE}>
+                  <Percent size={12} className="text-indigo-500" />
+                  {t('pricingRule.lines.discount2Rate')}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.000001"
+                    min="0"
+                    max="100"
+                    {...field}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
+                    className={INPUT_STYLE}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/* İndirim 3 */}
+          <FormField
+            control={form.control}
+            name="discountRate3"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={LABEL_STYLE}>
+                  <Percent size={12} className="text-purple-500" />
+                  {t('pricingRule.lines.discount3Rate')}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.000001"
+                    min="0"
+                    max="100"
+                    {...field}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
+                    className={INPUT_STYLE}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
         </div>
 
         <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/5">
-          <Button 
-            type="button" 
-            variant="outline" 
+          <Button
+            type="button"
+            variant="outline"
             onClick={onCancel}
             className="w-full sm:w-auto bg-white dark:bg-transparent border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
           >
             {t('pricingRule.form.cancel')}
           </Button>
-          <Button 
+          <Button
             type="submit"
             disabled={!isFormValid}
             className="w-full sm:w-auto bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"

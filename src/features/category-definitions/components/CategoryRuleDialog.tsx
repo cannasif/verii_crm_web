@@ -176,7 +176,7 @@ export function CategoryRuleDialog({
         <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
           <X size={20} strokeWidth={2.5} />
         </DialogPrimitive.Close>
-        <DialogHeader className="p-6 pb-4 border-b border-slate-100 dark:border-white/5 text-left shrink-0">
+        <DialogHeader className="p-8 pb-4 border-b border-slate-100 dark:border-white/5 text-left shrink-0">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
               <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -195,194 +195,197 @@ export function CategoryRuleDialog({
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto space-y-5 px-6 py-6">
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleName')}{requiredMark}</label>
-              <Input
-                required
-                aria-required="true"
-                value={form.ruleName}
-                onChange={(e) => setForm((p) => ({ ...p, ruleName: e.target.value }))}
-                className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
-              />
+        <div className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar">
+          <div className="space-y-6">
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleName')}{requiredMark}</label>
+                <Input
+                  required
+                  aria-required="true"
+                  value={form.ruleName}
+                  onChange={(e) => setForm((p) => ({ ...p, ruleName: e.target.value }))}
+                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleCode')}</label>
+                <Input
+                  value={form.ruleCode ?? ''}
+                  onChange={(e) => setForm((p) => ({ ...p, ruleCode: e.target.value.toUpperCase() }))}
+                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono uppercase tracking-wider font-semibold"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleCode')}</label>
-              <Input
-                value={form.ruleCode ?? ''}
-                onChange={(e) => setForm((p) => ({ ...p, ruleCode: e.target.value.toUpperCase() }))}
-                className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono uppercase tracking-wider font-semibold"
-              />
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.stockAttribute')}{requiredMark}</label>
+                <Select value={String(form.stockAttributeType)} onValueChange={(value) => setForm((p) => ({ ...p, stockAttributeType: Number(value) }))}>
+                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1627] shadow-xl">
+                    {STOCK_ATTRIBUTE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
+                        {t(`categoryDefinitions.ruleAttributes.${option.labelKey}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.operator')}{requiredMark}</label>
+                <Select value={String(form.operatorType)} onValueChange={(value) => setForm((p) => ({ ...p, operatorType: Number(value) }))}>
+                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1627] shadow-xl">
+                    {OPERATOR_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
+                        {t(`categoryDefinitions.ruleOperators.${option.labelKey}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.stockAttribute')}{requiredMark}</label>
-              <Select value={String(form.stockAttributeType)} onValueChange={(value) => setForm((p) => ({ ...p, stockAttributeType: Number(value) }))}>
-                <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium"><SelectValue /></SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1627] shadow-xl">
-                  {STOCK_ATTRIBUTE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
-                      {t(`categoryDefinitions.ruleAttributes.${option.labelKey}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.operator')}{requiredMark}</label>
-              <Select value={String(form.operatorType)} onValueChange={(value) => setForm((p) => ({ ...p, operatorType: Number(value) }))}>
-                <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium"><SelectValue /></SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1627] shadow-xl">
-                  {OPERATOR_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
-                      {t(`categoryDefinitions.ruleOperators.${option.labelKey}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+            <div className="grid gap-5 md:grid-cols-[1fr_120px]">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleValue')}{requiredMark}</label>
+                {supportsSuggestedValues ? (
+                  <div className="space-y-3">
+                    <Combobox
+                      options={comboboxOptions}
+                      value={isListOperator ? '' : form.value}
+                      onValueChange={(value) => {
+                        if (isListOperator) {
+                          addListValue(value);
+                          setValueSearch('');
+                          return;
+                        }
+                        setForm((p) => ({ ...p, value }));
+                      }}
+                      placeholder={t('categoryDefinitions.form.ruleValueDropdownPlaceholder')}
+                      searchPlaceholder={t('categoryDefinitions.form.ruleValueSearchPlaceholder')}
+                      emptyText={valueOptionsQuery.isLoading
+                        ? t('categoryDefinitions.form.ruleValueLoading')
+                        : t('categoryDefinitions.form.ruleValueEmpty')}
+                      disabled={valueOptionsQuery.isLoading}
+                    />
 
-          <div className="grid gap-5 md:grid-cols-[1fr_120px]">
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.ruleValue')}{requiredMark}</label>
-              {supportsSuggestedValues ? (
-                <div className="space-y-3">
-                  <Combobox
-                    options={comboboxOptions}
-                    value={isListOperator ? '' : form.value}
-                    onValueChange={(value) => {
-                      if (isListOperator) {
-                        addListValue(value);
-                        setValueSearch('');
-                        return;
-                      }
-                      setForm((p) => ({ ...p, value }));
-                    }}
-                    placeholder={t('categoryDefinitions.form.ruleValueDropdownPlaceholder')}
-                    searchPlaceholder={t('categoryDefinitions.form.ruleValueSearchPlaceholder')}
-                    emptyText={valueOptionsQuery.isLoading
-                      ? t('categoryDefinitions.form.ruleValueLoading')
-                      : t('categoryDefinitions.form.ruleValueEmpty')}
-                    disabled={valueOptionsQuery.isLoading}
-                  />
+                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                      {isListOperator
+                        ? t('categoryDefinitions.form.ruleValueInListHelp')
+                        : t('categoryDefinitions.form.ruleValueDropdownHelp')}
+                    </p>
 
-                  <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                    {isListOperator
-                      ? t('categoryDefinitions.form.ruleValueInListHelp')
-                      : t('categoryDefinitions.form.ruleValueDropdownHelp')}
-                  </p>
-
-                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] p-4 shadow-sm">
-                    <div className="mb-3 flex items-center justify-between gap-2">
-                      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                        {t('categoryDefinitions.form.ruleValueTopMatchesTitle')}
-                      </p>
-                      <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                        {t('categoryDefinitions.form.ruleValueTopMatchesSubtitle')}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {topUsageOptions.length > 0 ? topUsageOptions.map((option) => (
-                        <Badge
-                          key={`${form.stockAttributeType}-${option.value}`}
-                          variant="outline"
-                          className="cursor-pointer rounded-full px-3 py-1 text-xs border-pink-200 dark:border-pink-500/30 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-colors font-semibold"
-                          onClick={() => {
-                            if (isListOperator) {
-                              addListValue(option.value);
-                              return;
-                            }
-                            setForm((prev) => ({ ...prev, value: option.value }));
-                          }}
-                        >
-                          {option.value} ({option.usageCount})
-                        </Badge>
-                      )) : (
-                        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                          {t('categoryDefinitions.form.ruleValueTopMatchesEmpty')}
+                    <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] p-4 shadow-sm">
+                      <div className="mb-3 flex items-center justify-between gap-2">
+                        <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                          {t('categoryDefinitions.form.ruleValueTopMatchesTitle')}
+                        </p>
+                        <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                          {t('categoryDefinitions.form.ruleValueTopMatchesSubtitle')}
                         </span>
-                      )}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {topUsageOptions.length > 0 ? topUsageOptions.map((option) => (
+                          <Badge
+                            key={`${form.stockAttributeType}-${option.value}`}
+                            variant="outline"
+                            className="cursor-pointer rounded-full px-3 py-1 text-xs border-pink-200 dark:border-pink-500/30 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-colors font-semibold"
+                            onClick={() => {
+                              if (isListOperator) {
+                                addListValue(option.value);
+                                return;
+                              }
+                              setForm((prev) => ({ ...prev, value: option.value }));
+                            }}
+                          >
+                            {option.value} ({option.usageCount})
+                          </Badge>
+                        )) : (
+                          <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                            {t('categoryDefinitions.form.ruleValueTopMatchesEmpty')}
+                          </span>
+                        )}
+                      </div>
                     </div>
+
+                    {isListOperator ? (
+                      <div className="flex flex-wrap gap-2 rounded-2xl border border-dashed border-pink-200 dark:border-pink-500/30 bg-pink-50/50 dark:bg-pink-500/5 p-4">
+                        {selectedListValues.length > 0 ? selectedListValues.map((value) => (
+                          <Badge
+                            key={value}
+                            variant="secondary"
+                            className="cursor-pointer rounded-full font-semibold hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-500/20 dark:hover:text-red-400 transition-colors"
+                            onClick={() => removeListValue(value)}
+                          >
+                            {value} ×
+                          </Badge>
+                        )) : (
+                          <span className="text-xs font-medium text-pink-500 dark:text-pink-400">
+                            {t('categoryDefinitions.form.ruleValueInListEmpty')}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <Input
+                        value={form.value}
+                        onChange={(e) => setForm((p) => ({ ...p, value: e.target.value }))}
+                        placeholder={t('categoryDefinitions.form.ruleValueDropdownPlaceholder')}
+                        className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                      />
+                    )}
                   </div>
-
-                  {isListOperator ? (
-                    <div className="flex flex-wrap gap-2 rounded-2xl border border-dashed border-pink-200 dark:border-pink-500/30 bg-pink-50/50 dark:bg-pink-500/5 p-4">
-                      {selectedListValues.length > 0 ? selectedListValues.map((value) => (
-                        <Badge
-                          key={value}
-                          variant="secondary"
-                          className="cursor-pointer rounded-full font-semibold hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-500/20 dark:hover:text-red-400 transition-colors"
-                          onClick={() => removeListValue(value)}
-                        >
-                          {value} ×
-                        </Badge>
-                      )) : (
-                        <span className="text-xs font-medium text-pink-500 dark:text-pink-400">
-                          {t('categoryDefinitions.form.ruleValueInListEmpty')}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <Input
+                ) : (
+                  <div className="space-y-2">
+                    <Textarea
+                      rows={3}
                       value={form.value}
                       onChange={(e) => setForm((p) => ({ ...p, value: e.target.value }))}
-                      placeholder={t('categoryDefinitions.form.ruleValueDropdownPlaceholder')}
-                      className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                      placeholder={t('categoryDefinitions.form.ruleValuePlaceholder')}
+                      className="rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium resize-none"
                     />
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Textarea
-                    rows={3}
-                    value={form.value}
-                    onChange={(e) => setForm((p) => ({ ...p, value: e.target.value }))}
-                    placeholder={t('categoryDefinitions.form.ruleValuePlaceholder')}
-                    className="rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium resize-none"
-                  />
-                  <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                    {t('categoryDefinitions.form.ruleValueManualHelp')}
-                  </p>
-                </div>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.priority')}</label>
-              <Input
-                type="number"
-                value={form.priority}
-                onChange={(e) => setForm((p) => ({ ...p, priority: Number(e.target.value) }))}
-                className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
-              />
+                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                      {t('categoryDefinitions.form.ruleValueManualHelp')}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.priority')}</label>
+                <Input
+                  type="number"
+                  value={form.priority}
+                  onChange={(e) => setForm((p) => ({ ...p, priority: Number(e.target.value) }))}
+                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-6 py-4 flex-col sm:flex-row gap-3 shrink-0">
-          <div className="flex-1 flex items-center text-xs font-semibold text-slate-400">
-            <span className="text-pink-500 mr-1">*</span> {t('common.required')}
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isLoading}
-            className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 font-bold px-6 h-11"
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button
-            onClick={() => void handleSubmit()}
-            disabled={isDisabled}
-            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11"
-          >
-            {isLoading ? t('common.saving') : initialData ? t('common.update') : t('categoryDefinitions.actions.createRule')}
-          </Button>
-        </DialogFooter>
+          <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-8 py-4 flex-col sm:flex-row gap-3 shrink-0">
+            <div className="flex-1 flex items-center text-xs font-semibold text-slate-400">
+              <span className="text-pink-500 mr-1">*</span> {t('common.required')}
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isLoading}
+              className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 font-bold px-6 h-11"
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={() => void handleSubmit()}
+              disabled={isDisabled}
+              className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11"
+            >
+              {isLoading ? t('common.saving') : initialData ? t('common.update') : t('categoryDefinitions.actions.createRule')}
+            </Button>
+          </DialogFooter>
       </DialogContent>
+
     </Dialog>
   );
 }

@@ -14,11 +14,11 @@ import {
 import { PricingRuleLineForm } from './PricingRuleLineForm';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared';
 // İkonlar
-import { 
-  Trash2, 
-  Edit2, 
-  Package, 
-  Loader2, 
+import {
+  Trash2,
+  Edit2,
+  Package,
+  Loader2,
   AlertCircle,
   Plus,
   Box,
@@ -118,7 +118,7 @@ export function PricingRuleLineTable({
     setLineDialogOpen(true);
     const index = lines.findIndex(l => l.id === id);
     if (index !== -1) {
-        update(index, { ...lines[index], isEditing: true });
+      update(index, { ...lines[index], isEditing: true });
     }
   };
 
@@ -204,8 +204,8 @@ export function PricingRuleLineTable({
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!selectedLineToDelete?.dbId) {
       if (selectedLineToDelete) {
-          const index = lines.findIndex((line) => line.id === selectedLineToDelete.id);
-          if (index !== -1) remove(index);
+        const index = lines.findIndex((line) => line.id === selectedLineToDelete.id);
+        if (index !== -1) remove(index);
       }
       setDeleteConfirmOpen(false);
       setSelectedLineToDelete(null);
@@ -263,10 +263,10 @@ export function PricingRuleLineTable({
           type="button"
           onClick={() => setProductDialogOpen(true)}
           size="sm"
-          className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"
+          className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           disabled={isLoadingAction}
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4 mr-2 stroke-[3px]" />
           {t('pricingRule.lines.selectStock')}
         </Button>
       </div>
@@ -299,131 +299,131 @@ export function PricingRuleLineTable({
             </div>
           ) : (
             lines.map((line) => (
-                <div
-                  key={line.id}
-                  className="group rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#130822] shadow-sm hover:shadow-md transition-all duration-200 p-4 flex flex-col gap-3"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
-                        <Box size={16} />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                          {line.stokCode || (
-                            <span className="text-red-500 text-xs italic">
-                              {t('pricingRule.lines.stokCodeRequired')}
-                            </span>
-                          )}
-                        </span>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                          {getCurrencyDisplayName(line.currencyCode)}
-                        </span>
-                      </div>
+              <div
+                key={line.id}
+                className="group rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#130822] shadow-sm hover:shadow-md transition-all duration-200 p-4 flex flex-col gap-3"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
+                      <Box size={16} />
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleEditLine(line.id)}
-                      >
-                        <Edit2 size={14} />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleDeleteLine(line.id)}
-                        disabled={isLoadingAction}
-                      >
-                        {isLoadingAction && selectedLineToDelete?.id === line.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 size={14} />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                        {t('pricingRule.lines.minQuantity')}
-                      </span>
-                      <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                        {line.minQuantity ?? 0}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                        {t('pricingRule.lines.maxQuantity')}
-                      </span>
-                      <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                        {line.maxQuantity ?? '-'}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                        {t('pricingRule.lines.fixedUnitPrice')}
-                      </span>
+                    <div className="flex flex-col">
                       <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                        {formatCurrency(line.fixedUnitPrice, line.currencyCode)}
+                        {line.stokCode || (
+                          <span className="text-red-500 text-xs italic">
+                            {t('pricingRule.lines.stokCodeRequired')}
+                          </span>
+                        )}
                       </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                        {t('pricingRule.lines.currencyCode')}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
-                        <Coins size={12} />
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
                         {getCurrencyDisplayName(line.currencyCode)}
                       </span>
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-3 gap-3 border-t border-dashed border-slate-200 dark:border-white/10 pt-3 mt-1 text-xs">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                        {t('pricingRule.lines.discount1')}
-                      </span>
-                      <span className="text-sm font-medium">
-                        {line.discountRate1 > 0 ? (
-                          <span className="text-green-600 dark:text-green-400">{line.discountRate1}%</span>
-                        ) : (
-                          '-'
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                        {t('pricingRule.lines.discount2')}
-                      </span>
-                      <span className="text-sm font-medium">
-                        {line.discountRate2 > 0 ? (
-                          <span className="text-green-600 dark:text-green-400">{line.discountRate2}%</span>
-                        ) : (
-                          '-'
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                        {t('pricingRule.lines.discount3')}
-                      </span>
-                      <span className="text-sm font-medium">
-                        {line.discountRate3 > 0 ? (
-                          <span className="text-green-600 dark:text-green-400">{line.discountRate3}%</span>
-                        ) : (
-                          '-'
-                        )}
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleEditLine(line.id)}
+                    >
+                      <Edit2 size={14} />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleDeleteLine(line.id)}
+                      disabled={isLoadingAction}
+                    >
+                      {isLoadingAction && selectedLineToDelete?.id === line.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 size={14} />
+                      )}
+                    </Button>
                   </div>
                 </div>
-              ))
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                      {t('pricingRule.lines.minQuantity')}
+                    </span>
+                    <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                      {line.minQuantity ?? 0}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                      {t('pricingRule.lines.maxQuantity')}
+                    </span>
+                    <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                      {line.maxQuantity ?? '-'}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                      {t('pricingRule.lines.fixedUnitPrice')}
+                    </span>
+                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {formatCurrency(line.fixedUnitPrice, line.currencyCode)}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                      {t('pricingRule.lines.currencyCode')}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
+                      <Coins size={12} />
+                      {getCurrencyDisplayName(line.currencyCode)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 border-t border-dashed border-slate-200 dark:border-white/10 pt-3 mt-1 text-xs">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                      {t('pricingRule.lines.discount1')}
+                    </span>
+                    <span className="text-sm font-medium">
+                      {line.discountRate1 > 0 ? (
+                        <span className="text-green-600 dark:text-green-400">{line.discountRate1}%</span>
+                      ) : (
+                        '-'
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                      {t('pricingRule.lines.discount2')}
+                    </span>
+                    <span className="text-sm font-medium">
+                      {line.discountRate2 > 0 ? (
+                        <span className="text-green-600 dark:text-green-400">{line.discountRate2}%</span>
+                      ) : (
+                        '-'
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                      {t('pricingRule.lines.discount3')}
+                    </span>
+                    <span className="text-sm font-medium">
+                      {line.discountRate3 > 0 ? (
+                        <span className="text-green-600 dark:text-green-400">{line.discountRate3}%</span>
+                      ) : (
+                        '-'
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
           )}
         </div>
       </div>
@@ -441,18 +441,18 @@ export function PricingRuleLineTable({
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
           <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
             <div className="h-20 w-20 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300">
-               <AlertCircle size={36} className="text-blue-600 dark:text-blue-500" />
+              <AlertCircle size={36} className="text-blue-600 dark:text-blue-500" />
             </div>
-            
+
             <div className="space-y-2">
-                <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
+              <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
                 {t('pricingRule.lines.addConfirmTitle')}
-                </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                  {t('pricingRule.lines.addConfirmMessage', {
-                    code: selectedProduct?.code || '',
-                  })}
-                </DialogDescription>
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
+                {t('pricingRule.lines.addConfirmMessage', {
+                  code: selectedProduct?.code || '',
+                })}
+              </DialogDescription>
             </div>
           </DialogHeader>
 
@@ -469,7 +469,7 @@ export function PricingRuleLineTable({
             >
               {t('pricingRule.form.cancel')}
             </Button>
-            
+
             <Button
               type="button"
               onClick={handleAddConfirm}
@@ -485,21 +485,21 @@ export function PricingRuleLineTable({
       {/* Silme Onay Dialog */}
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen} modal={true}>
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
-          
+
           <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
             <div className="h-20 w-20 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300">
-               <Alert02Icon size={36} className="text-red-600 dark:text-red-500" />
+              <Alert02Icon size={36} className="text-red-600 dark:text-red-500" />
             </div>
-            
+
             <div className="space-y-2">
-                <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
+              <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
                 {t('pricingRule.lines.deleteConfirmTitle')}
-                </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
                 {t('pricingRule.lines.deleteConfirmMessage', {
-                    code: lineToDelete?.stokCode || '',
+                  code: lineToDelete?.stokCode || '',
                 })}
-                </DialogDescription>
+              </DialogDescription>
             </div>
           </DialogHeader>
 
@@ -516,7 +516,7 @@ export function PricingRuleLineTable({
             >
               {t('pricingRule.form.cancel')}
             </Button>
-            
+
             <Button
               type="button"
               variant="destructive"

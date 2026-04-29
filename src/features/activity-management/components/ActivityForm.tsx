@@ -417,8 +417,14 @@ export function ActivityForm({
               </DialogDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="shrink-0 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white" aria-label={t('close', { ns: 'common' })}>
-            <X size={20} />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onOpenChange(false)}
+            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+            aria-label={t('close', { ns: 'common' })}
+          >
+            <X size={20} className="relative z-10" />
           </Button>
         </DialogHeader>
 
@@ -438,407 +444,407 @@ export function ActivityForm({
             <TabsContent value="details" className="mt-0">
               <Form {...form}>
                 <form id="activity-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-8">
-              <FormSection title={t('activityManagement.basicInfo')}>
-                <FormField control={form.control} name="subject" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'subject')}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.subject')}</FormLabel>
-                    <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('activityManagement.enterSubject')} /></FormControl>
-                    <FormMessage className="text-xs text-red-500" />
-                  </FormItem>
-                )} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="activityType" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'activityType')}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType')}</FormLabel>
-                      <FormControl>
-                        <VoiceSearchCombobox
-                          options={activityTypeDropdown.options}
-                          value={field.value ? String(field.value) : ''}
-                          onSelect={(v) => {
-                            field.onChange(v ?? '');
-                            form.setValue('activityTypeId', v ? Number(v) : undefined);
-                          }}
-                          onDebouncedSearchChange={setActivityTypeSearchTerm}
-                          onFetchNextPage={activityTypeDropdown.fetchNextPage}
-                          hasNextPage={activityTypeDropdown.hasNextPage}
-                          isLoading={activityTypeDropdown.isLoading}
-                          isFetchingNextPage={activityTypeDropdown.isFetchingNextPage}
-                          placeholder={t('activityManagement.select')}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="status" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'status')}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.status')}</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          options={ACTIVITY_STATUSES.map((statusOption) => ({ value: String(statusOption.value), label: t(statusOption.labelKey, statusOption.label) }))}
-                          value={String(field.value)}
-                          onValueChange={(value) => field.onChange(Number(value))}
-                          placeholder={t('activityManagement.select')}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="isAllDay" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.allDay')}</FormLabel>
-                      <FormControl>
-                        <div className="h-11 px-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center gap-3">
-                          <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
-                          <span className="text-sm text-slate-700 dark:text-slate-300">{t('activityManagement.allDay')}</span>
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="priority" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.priority')}</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          options={ACTIVITY_PRIORITIES.map((priorityOption) => ({ value: String(priorityOption.value), label: t(priorityOption.labelKey, priorityOption.label) }))}
-                          value={String(field.value ?? ActivityPriority.Medium)}
-                          onValueChange={(value) => field.onChange(Number(value))}
-                          placeholder={t('activityManagement.select')}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                </div>
-                {watchedIsAllDay ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="startDateTime" render={({ field }) => (
+                  <FormSection title={t('activityManagement.basicInfo')}>
+                    <FormField control={form.control} name="subject" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="date"
-                            className={INPUT_STYLE}
-                            value={toDateInputValue(field.value) || ''}
-                            onChange={(e) => {
-                              const date = e.target.value;
-                              if (date) {
-                                field.onChange(`${date}T00:00`);
-                                const endVal = form.getValues('endDateTime');
-                                const endDate = toDateInputValue(endVal);
-                                if (!endDate || endDate < date) form.setValue('endDateTime', `${date}T23:59`);
-                              }
-                            }}
-                          />
-                        </FormControl>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'subject')}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.subject')}</FormLabel>
+                        <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('activityManagement.enterSubject')} /></FormControl>
                         <FormMessage className="text-xs text-red-500" />
                       </FormItem>
                     )} />
-                    <FormField control={form.control} name="endDateTime" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="date"
-                            className={INPUT_STYLE}
-                            value={toDateInputValue(field.value) || ''}
-                            onChange={(e) => {
-                              const date = e.target.value;
-                              if (date) field.onChange(`${date}T23:59`);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-xs text-red-500" />
-                      </FormItem>
-                    )} />
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="startDateTime" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
-                        <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
-                        <FormMessage className="text-xs text-red-500" />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="endDateTime" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
-                        <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || '')} /></FormControl>
-                        <FormMessage className="text-xs text-red-500" />
-                      </FormItem>
-                    )} />
-                  </div>
-                )}
-              </FormSection>
-
-              <FormSection title={t('activityManagement.relations')}>
-                <FormField
-                  control={form.control}
-                  name="potentialCustomerId"
-                  render={({ field }) => {
-                    const watchedErpCode = form.watch('erpCustomerCode');
-                    const selectedCustomer = customerOptions.find((customer) => customer.id === field.value);
-                    const displayValue = selectedCustomer
-                      ? selectedCustomer.name || selectedCustomer.customerCode || String(field.value)
-                      : field.value && selectedCustomerDisplayName
-                        ? selectedCustomerDisplayName
-                      : watchedErpCode
-                        ? selectedCustomerDisplayName
-                          ? `${selectedCustomerDisplayName} (${t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })})`
-                          : t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })
-                        : '';
-
-                    return (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.customer')}</FormLabel>
-                        <div className="flex w-full items-center gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="activityType" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'activityType')}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType')}</FormLabel>
                           <FormControl>
-                            <Input
-                              readOnly
-                              value={displayValue}
-                              placeholder={t('activityManagement.selectCustomer')}
-                              className={`${INPUT_STYLE} flex-1 cursor-pointer`}
-                              onClick={() => setCustomerSelectDialogOpen(true)}
+                            <VoiceSearchCombobox
+                              options={activityTypeDropdown.options}
+                              value={field.value ? String(field.value) : ''}
+                              onSelect={(v) => {
+                                field.onChange(v ?? '');
+                                form.setValue('activityTypeId', v ? Number(v) : undefined);
+                              }}
+                              onDebouncedSearchChange={setActivityTypeSearchTerm}
+                              onFetchNextPage={activityTypeDropdown.fetchNextPage}
+                              hasNextPage={activityTypeDropdown.hasNextPage}
+                              isLoading={activityTypeDropdown.isLoading}
+                              isFetchingNextPage={activityTypeDropdown.isFetchingNextPage}
+                              placeholder={t('activityManagement.select')}
+                              className={INPUT_STYLE}
                             />
                           </FormControl>
-                          <Button type="button" variant="outline" onClick={() => setCustomerSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10" aria-label={t('activityManagement.selectCustomer')}>
-                            <Search size={18} />
-                          </Button>
-                          {(field.value != null || watchedErpCode) && (
-                            <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(event) => { event.stopPropagation(); field.onChange(undefined); form.setValue('erpCustomerCode', ''); setSelectedCustomerDisplayName(null); }} aria-label={t('clear', { ns: 'common' })}>
-                              <X size={18} />
-                            </Button>
-                          )}
-                        </div>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="status" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'status')}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.status')}</FormLabel>
+                          <FormControl>
+                            <Combobox
+                              options={ACTIVITY_STATUSES.map((statusOption) => ({ value: String(statusOption.value), label: t(statusOption.labelKey, statusOption.label) }))}
+                              value={String(field.value)}
+                              onValueChange={(value) => field.onChange(Number(value))}
+                              placeholder={t('activityManagement.select')}
+                              className={INPUT_STYLE}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="isAllDay" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.allDay')}</FormLabel>
+                          <FormControl>
+                            <div className="h-11 px-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center gap-3">
+                              <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                              <span className="text-sm text-slate-700 dark:text-slate-300">{t('activityManagement.allDay')}</span>
+                            </div>
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="priority" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.priority')}</FormLabel>
+                          <FormControl>
+                            <Combobox
+                              options={ACTIVITY_PRIORITIES.map((priorityOption) => ({ value: String(priorityOption.value), label: t(priorityOption.labelKey, priorityOption.label) }))}
+                              value={String(field.value ?? ActivityPriority.Medium)}
+                              onValueChange={(value) => field.onChange(Number(value))}
+                              placeholder={t('activityManagement.select')}
+                              className={INPUT_STYLE}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                    </div>
+                    {watchedIsAllDay ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField control={form.control} name="startDateTime" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="date"
+                                className={INPUT_STYLE}
+                                value={toDateInputValue(field.value) || ''}
+                                onChange={(e) => {
+                                  const date = e.target.value;
+                                  if (date) {
+                                    field.onChange(`${date}T00:00`);
+                                    const endVal = form.getValues('endDateTime');
+                                    const endDate = toDateInputValue(endVal);
+                                    if (!endDate || endDate < date) form.setValue('endDateTime', `${date}T23:59`);
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage className="text-xs text-red-500" />
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="endDateTime" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="date"
+                                className={INPUT_STYLE}
+                                value={toDateInputValue(field.value) || ''}
+                                onChange={(e) => {
+                                  const date = e.target.value;
+                                  if (date) field.onChange(`${date}T23:59`);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage className="text-xs text-red-500" />
+                          </FormItem>
+                        )} />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField control={form.control} name="startDateTime" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
+                            <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
+                            <FormMessage className="text-xs text-red-500" />
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="endDateTime" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
+                            <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || '')} /></FormControl>
+                            <FormMessage className="text-xs text-red-500" />
+                          </FormItem>
+                        )} />
+                      </div>
+                    )}
+                  </FormSection>
+
+                  <FormSection title={t('activityManagement.relations')}>
+                    <FormField
+                      control={form.control}
+                      name="potentialCustomerId"
+                      render={({ field }) => {
+                        const watchedErpCode = form.watch('erpCustomerCode');
+                        const selectedCustomer = customerOptions.find((customer) => customer.id === field.value);
+                        const displayValue = selectedCustomer
+                          ? selectedCustomer.name || selectedCustomer.customerCode || String(field.value)
+                          : field.value && selectedCustomerDisplayName
+                            ? selectedCustomerDisplayName
+                            : watchedErpCode
+                              ? selectedCustomerDisplayName
+                                ? `${selectedCustomerDisplayName} (${t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })})`
+                                : t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })
+                              : '';
+
+                        return (
+                          <FormItem>
+                            <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.customer')}</FormLabel>
+                            <div className="flex w-full items-center gap-2">
+                              <FormControl>
+                                <Input
+                                  readOnly
+                                  value={displayValue}
+                                  placeholder={t('activityManagement.selectCustomer')}
+                                  className={`${INPUT_STYLE} flex-1 cursor-pointer`}
+                                  onClick={() => setCustomerSelectDialogOpen(true)}
+                                />
+                              </FormControl>
+                              <Button type="button" variant="outline" onClick={() => setCustomerSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10" aria-label={t('activityManagement.selectCustomer')}>
+                                <Search size={18} />
+                              </Button>
+                              {(field.value != null || watchedErpCode) && (
+                                <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(event) => { event.stopPropagation(); field.onChange(undefined); form.setValue('erpCustomerCode', ''); setSelectedCustomerDisplayName(null); }} aria-label={t('clear', { ns: 'common' })}>
+                                  <X size={18} />
+                                </Button>
+                              )}
+                            </div>
+                            <FormMessage className="text-xs text-red-500" />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="contactId" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.contactId')}</FormLabel>
+                          <FormControl>
+                            <Combobox
+                              options={[{ value: 'none', label: t('activityManagement.noContactSelected') }, ...contactOptions.map((contact) => ({ value: contact.id.toString(), label: contact.fullName }))]}
+                              value={field.value && field.value !== 0 ? field.value.toString() : 'none'}
+                              onValueChange={(value) => field.onChange(value && value !== 'none' ? Number(value) : undefined)}
+                              placeholder={watchedCustomerId ? t('activityManagement.select') : t('activityManagement.selectCustomerFirst')}
+                              disabled={!watchedCustomerId}
+                              className={INPUT_STYLE}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="assignedUserId" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'assignedUserId')}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser')}</FormLabel>
+                          <FormControl>
+                            <VoiceSearchCombobox
+                              options={assignedUserDropdown.options}
+                              value={field.value && field.value !== 0 ? field.value.toString() : ''}
+                              onSelect={(v) => field.onChange(v ? Number(v) : 0)}
+                              onDebouncedSearchChange={setAssignedUserSearchTerm}
+                              onFetchNextPage={assignedUserDropdown.fetchNextPage}
+                              hasNextPage={assignedUserDropdown.hasNextPage}
+                              isLoading={assignedUserDropdown.isLoading}
+                              isFetchingNextPage={assignedUserDropdown.isFetchingNextPage}
+                              placeholder={t('activityManagement.select')}
+                              className={INPUT_STYLE}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="paymentTypeId" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE}>{t('activityManagement.paymentType')}</FormLabel>
+                          <FormControl>
+                            <VoiceSearchCombobox
+                              options={paymentTypeDropdown.options}
+                              value={field.value ? String(field.value) : ''}
+                              onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
+                              onDebouncedSearchChange={setPaymentTypeSearchTerm}
+                              onFetchNextPage={paymentTypeDropdown.fetchNextPage}
+                              hasNextPage={paymentTypeDropdown.hasNextPage}
+                              isLoading={paymentTypeDropdown.isLoading}
+                              isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
+                              placeholder={t('activityManagement.select')}
+                              className={INPUT_STYLE}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="activityMeetingTypeId" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityMeetingType')}</FormLabel>
+                          <FormControl>
+                            <VoiceSearchCombobox
+                              options={meetingTypeDropdown.options}
+                              value={field.value ? String(field.value) : ''}
+                              onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
+                              onDebouncedSearchChange={setMeetingTypeSearchTerm}
+                              onFetchNextPage={meetingTypeDropdown.fetchNextPage}
+                              hasNextPage={meetingTypeDropdown.hasNextPage}
+                              isLoading={meetingTypeDropdown.isLoading}
+                              isFetchingNextPage={meetingTypeDropdown.isFetchingNextPage}
+                              placeholder={t('activityManagement.select')}
+                              className={INPUT_STYLE}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="activityTopicPurposeId" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityTopicPurpose')}</FormLabel>
+                          <FormControl>
+                            <VoiceSearchCombobox
+                              options={topicPurposeDropdown.options}
+                              value={field.value ? String(field.value) : ''}
+                              onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
+                              onDebouncedSearchChange={setTopicPurposeSearchTerm}
+                              onFetchNextPage={topicPurposeDropdown.fetchNextPage}
+                              hasNextPage={topicPurposeDropdown.hasNextPage}
+                              isLoading={topicPurposeDropdown.isLoading}
+                              isFetchingNextPage={topicPurposeDropdown.isFetchingNextPage}
+                              placeholder={t('activityManagement.select')}
+                              className={INPUT_STYLE}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="activityShippingId" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityShipping')}</FormLabel>
+                          <FormControl>
+                            <VoiceSearchCombobox
+                              options={shippingDropdown.options}
+                              value={field.value ? String(field.value) : ''}
+                              onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
+                              onDebouncedSearchChange={setShippingSearchTerm}
+                              onFetchNextPage={shippingDropdown.fetchNextPage}
+                              hasNextPage={shippingDropdown.hasNextPage}
+                              isLoading={shippingDropdown.isLoading}
+                              isFetchingNextPage={shippingDropdown.isFetchingNextPage}
+                              placeholder={t('activityManagement.select')}
+                              className={INPUT_STYLE}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs text-red-500" />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </FormSection>
+
+                  <FormSection title={t('activityManagement.details')}>
+                    <FormField control={form.control} name="description" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.descriptionLabel')}</FormLabel>
+                        <FormControl><Textarea {...field} maxLength={2000} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('activityManagement.enterDescription')} /></FormControl>
                         <FormMessage className="text-xs text-red-500" />
                       </FormItem>
-                    );
-                  }}
-                />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="contactId" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.contactId')}</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          options={[{ value: 'none', label: t('activityManagement.noContactSelected') }, ...contactOptions.map((contact) => ({ value: contact.id.toString(), label: contact.fullName }))]}
-                          value={field.value && field.value !== 0 ? field.value.toString() : 'none'}
-                          onValueChange={(value) => field.onChange(value && value !== 'none' ? Number(value) : undefined)}
-                          placeholder={watchedCustomerId ? t('activityManagement.select') : t('activityManagement.selectCustomerFirst')}
-                          disabled={!watchedCustomerId}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="assignedUserId" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'assignedUserId')}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser')}</FormLabel>
-                      <FormControl>
-                        <VoiceSearchCombobox
-                          options={assignedUserDropdown.options}
-                          value={field.value && field.value !== 0 ? field.value.toString() : ''}
-                          onSelect={(v) => field.onChange(v ? Number(v) : 0)}
-                          onDebouncedSearchChange={setAssignedUserSearchTerm}
-                          onFetchNextPage={assignedUserDropdown.fetchNextPage}
-                          hasNextPage={assignedUserDropdown.hasNextPage}
-                          isLoading={assignedUserDropdown.isLoading}
-                          isFetchingNextPage={assignedUserDropdown.isFetchingNextPage}
-                          placeholder={t('activityManagement.select')}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="paymentTypeId" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}>{t('activityManagement.paymentType')}</FormLabel>
-                      <FormControl>
-                        <VoiceSearchCombobox
-                          options={paymentTypeDropdown.options}
-                          value={field.value ? String(field.value) : ''}
-                          onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
-                          onDebouncedSearchChange={setPaymentTypeSearchTerm}
-                          onFetchNextPage={paymentTypeDropdown.fetchNextPage}
-                          hasNextPage={paymentTypeDropdown.hasNextPage}
-                          isLoading={paymentTypeDropdown.isLoading}
-                          isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
-                          placeholder={t('activityManagement.select')}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="activityMeetingTypeId" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityMeetingType')}</FormLabel>
-                      <FormControl>
-                        <VoiceSearchCombobox
-                          options={meetingTypeDropdown.options}
-                          value={field.value ? String(field.value) : ''}
-                          onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
-                          onDebouncedSearchChange={setMeetingTypeSearchTerm}
-                          onFetchNextPage={meetingTypeDropdown.fetchNextPage}
-                          hasNextPage={meetingTypeDropdown.hasNextPage}
-                          isLoading={meetingTypeDropdown.isLoading}
-                          isFetchingNextPage={meetingTypeDropdown.isFetchingNextPage}
-                          placeholder={t('activityManagement.select')}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="activityTopicPurposeId" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityTopicPurpose')}</FormLabel>
-                      <FormControl>
-                        <VoiceSearchCombobox
-                          options={topicPurposeDropdown.options}
-                          value={field.value ? String(field.value) : ''}
-                          onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
-                          onDebouncedSearchChange={setTopicPurposeSearchTerm}
-                          onFetchNextPage={topicPurposeDropdown.fetchNextPage}
-                          hasNextPage={topicPurposeDropdown.hasNextPage}
-                          isLoading={topicPurposeDropdown.isLoading}
-                          isFetchingNextPage={topicPurposeDropdown.isFetchingNextPage}
-                          placeholder={t('activityManagement.select')}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="activityShippingId" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityShipping')}</FormLabel>
-                      <FormControl>
-                        <VoiceSearchCombobox
-                          options={shippingDropdown.options}
-                          value={field.value ? String(field.value) : ''}
-                          onSelect={(v) => field.onChange(v ? Number(v) : undefined)}
-                          onDebouncedSearchChange={setShippingSearchTerm}
-                          onFetchNextPage={shippingDropdown.fetchNextPage}
-                          hasNextPage={shippingDropdown.hasNextPage}
-                          isLoading={shippingDropdown.isLoading}
-                          isFetchingNextPage={shippingDropdown.isFetchingNextPage}
-                          placeholder={t('activityManagement.select')}
-                          className={INPUT_STYLE}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500" />
-                    </FormItem>
-                  )} />
-                </div>
-              </FormSection>
+                    )} />
 
-              <FormSection title={t('activityManagement.details')}>
-                <FormField control={form.control} name="description" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.descriptionLabel')}</FormLabel>
-                    <FormControl><Textarea {...field} maxLength={2000} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('activityManagement.enterDescription')} /></FormControl>
-                    <FormMessage className="text-xs text-red-500" />
-                  </FormItem>
-                )} />
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders')}</FormLabel>
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendReminder({ offsetMinutes: 15, channel: ReminderChannel.InApp })}>
-                      <Plus size={14} className="mr-1" /> {t('add', { ns: 'common' })}
-                    </Button>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {REMINDER_MINUTE_PRESETS.map((offset) => (
-                      <Button key={offset} type="button" variant="ghost" size="sm" className="border border-slate-200 dark:border-white/10" onClick={() => addPresetReminder(offset)}>
-                        {offset >= 1440
-                          ? t('activityManagement.reminderPresetDays', { count: Math.floor(offset / 1440) })
-                          : t('activityManagement.reminderPresetMinutes', { count: offset })}
-                      </Button>
-                    ))}
-                  </div>
-
-                  {reminderFields.length === 0 && (
-                    <div className="text-xs text-slate-500 dark:text-slate-400 rounded-lg border border-dashed border-slate-200 dark:border-white/10 p-3">
-                      {t('activityManagement.noReminder')}
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    {reminderFields.map((field, index) => (
-                      <div key={field.id} className="grid grid-cols-12 gap-2 items-center rounded-lg border border-slate-200 dark:border-white/10 p-2">
-                        <div className="col-span-5">
-                          <FormField
-                            control={form.control}
-                            name={`reminders.${index}.offsetMinutes`}
-                            render={({ field: reminderOffsetField }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    min={0}
-                                    max={525600}
-                                    value={String(reminderOffsetField.value ?? 0)}
-                                    onChange={(event) => reminderOffsetField.onChange(Number(event.target.value || 0))}
-                                    className={INPUT_STYLE}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="col-span-5">
-                          <FormField
-                            control={form.control}
-                            name={`reminders.${index}.channel`}
-                            render={({ field: reminderChannelField }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Combobox
-                                  options={reminderChannelOptions.map((option) => ({
-                                    value: option.value,
-                                    label: option.label,
-                                  }))}
-                                    value={String(reminderChannelField.value ?? ReminderChannel.InApp)}
-                                    onValueChange={(value) => reminderChannelField.onChange(Number(value))}
-                                    placeholder={t('activityManagement.select')}
-                                    className={INPUT_STYLE}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="col-span-2 flex justify-end">
-                          <Button type="button" variant="ghost" size="icon" className="text-red-500" onClick={() => removeReminder(index)}>
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders')}</FormLabel>
+                        <Button type="button" variant="outline" size="sm" onClick={() => appendReminder({ offsetMinutes: 15, channel: ReminderChannel.InApp })}>
+                          <Plus size={14} className="mr-1" /> {t('add', { ns: 'common' })}
+                        </Button>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </FormSection>
+
+                      <div className="flex flex-wrap gap-2">
+                        {REMINDER_MINUTE_PRESETS.map((offset) => (
+                          <Button key={offset} type="button" variant="ghost" size="sm" className="border border-slate-200 dark:border-white/10" onClick={() => addPresetReminder(offset)}>
+                            {offset >= 1440
+                              ? t('activityManagement.reminderPresetDays', { count: Math.floor(offset / 1440) })
+                              : t('activityManagement.reminderPresetMinutes', { count: offset })}
+                          </Button>
+                        ))}
+                      </div>
+
+                      {reminderFields.length === 0 && (
+                        <div className="text-xs text-slate-500 dark:text-slate-400 rounded-lg border border-dashed border-slate-200 dark:border-white/10 p-3">
+                          {t('activityManagement.noReminder')}
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        {reminderFields.map((field, index) => (
+                          <div key={field.id} className="grid grid-cols-12 gap-2 items-center rounded-lg border border-slate-200 dark:border-white/10 p-2">
+                            <div className="col-span-5">
+                              <FormField
+                                control={form.control}
+                                name={`reminders.${index}.offsetMinutes`}
+                                render={({ field: reminderOffsetField }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        min={0}
+                                        max={525600}
+                                        value={String(reminderOffsetField.value ?? 0)}
+                                        onChange={(event) => reminderOffsetField.onChange(Number(event.target.value || 0))}
+                                        className={INPUT_STYLE}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <div className="col-span-5">
+                              <FormField
+                                control={form.control}
+                                name={`reminders.${index}.channel`}
+                                render={({ field: reminderChannelField }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Combobox
+                                        options={reminderChannelOptions.map((option) => ({
+                                          value: option.value,
+                                          label: option.label,
+                                        }))}
+                                        value={String(reminderChannelField.value ?? ReminderChannel.InApp)}
+                                        onValueChange={(value) => reminderChannelField.onChange(Number(value))}
+                                        placeholder={t('activityManagement.select')}
+                                        className={INPUT_STYLE}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <div className="col-span-2 flex justify-end">
+                              <Button type="button" variant="ghost" size="icon" className="text-red-500" onClick={() => removeReminder(index)}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </FormSection>
 
                   <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2 border-t border-slate-100 dark:border-white/5">
                     <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="h-11 px-5 rounded-lg font-medium">
                       {t('cancel', { ns: 'common' })}
                     </Button>
-                    <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none">
+                    <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none ">
                       {isSubmitting ? t('saving', { ns: 'common' }) : activity ? t('update', { ns: 'common' }) : t('save', { ns: 'common' })}
                     </Button>
                   </div>
@@ -847,7 +853,7 @@ export function ActivityForm({
             </TabsContent>
 
             <TabsContent value="images" className="mt-0">
-              <ActivityImageTab 
+              <ActivityImageTab
                 activityId={activity?.id}
                 onCreateActivity={async () => {
                   const isValid = await form.trigger();

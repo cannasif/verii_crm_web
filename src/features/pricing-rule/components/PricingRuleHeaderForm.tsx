@@ -13,41 +13,42 @@ import { useCustomersForPricingRule } from '../hooks/useCustomersForPricingRule'
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
 import { PricingRuleType, type PricingRuleFormSchema } from '../types/pricing-rule-types';
 import { Button } from '@/components/ui/button';
-import { VoiceSearchCombobox, type ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
-// İkonlar
-import { 
-  Search, 
-  List, 
-  Hash, 
-  Type, 
-  Calendar, 
-  Building2, 
+import { type ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { cn } from '@/lib/utils';
+
+import {
+  Check,
+  ChevronDown,
+  Search,
+  List,
+  Hash,
+  Type,
+  Calendar,
+  Building2,
 } from 'lucide-react';
 
-// --- TASARIM SABİTLERİ (Diğer formlarla uyumlu) ---
-const INPUT_STYLE = `
-  h-12 rounded-xl
-  bg-slate-50 dark:bg-[#0f0a18] 
-  border border-slate-200 dark:border-white/10 
-  text-slate-900 dark:text-white text-sm
-  placeholder:text-slate-400 dark:placeholder:text-slate-600 
-  
-  focus-visible:bg-white dark:focus-visible:bg-[#1a1025]
-  focus-visible:border-pink-500 dark:focus-visible:border-pink-500/70
-  focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
-  
-  focus:ring-2 focus:ring-pink-500/10 focus:ring-offset-0 focus:border-pink-500
-  
-  transition-all duration-200
-`;
-
-const LABEL_STYLE = "text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide ml-1 mb-2 flex items-center gap-2";
+const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all duration-200 text-sm font-medium";
+const LABEL_STYLE = "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-2";
 
 export function PricingRuleHeaderForm(): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<PricingRuleFormSchema>();
   const { data: customers } = useCustomersForPricingRule();
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
+  const [ruleTypePopoverOpen, setRuleTypePopoverOpen] = useState(false);
 
   const handleCustomerSelect = (result: CustomerSelectionResult): void => {
     form.setValue('customerId', result.customerId ?? null);
@@ -60,8 +61,8 @@ export function PricingRuleHeaderForm(): ReactElement {
   const selectedCustomer = customers?.find((c) => c.id === customerId);
   const displayValue = selectedCustomer
     ? (selectedCustomer.customerCode?.trim()
-        ? `ERP: ${selectedCustomer.customerCode} - ${selectedCustomer.name}`
-        : `CRM: ${selectedCustomer.name}`)
+      ? `ERP: ${selectedCustomer.customerCode} - ${selectedCustomer.name}`
+      : `CRM: ${selectedCustomer.name}`)
     : erpCustomerCode
       ? `ERP: ${erpCustomerCode}`
       : '';
@@ -74,7 +75,7 @@ export function PricingRuleHeaderForm(): ReactElement {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
+
       {/* 1. Kural Temel Bilgileri */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <FormField
@@ -86,17 +87,60 @@ export function PricingRuleHeaderForm(): ReactElement {
                 <List size={12} className="text-pink-500" />
                 {t('pricingRule.header.ruleType')} *
               </FormLabel>
-              <FormControl>
-                <VoiceSearchCombobox
-                  options={ruleTypeOptions}
-                  value={field.value?.toString()}
-                  onSelect={(value) => field.onChange(value ? parseInt(value) as PricingRuleType : null)}
-                  placeholder={t('pricingRule.header.ruleTypePlaceholder')}
-                  searchPlaceholder={t('pricingRule.header.searchRuleType')}
-                  className={INPUT_STYLE}
-                  modal={true}
-                />
-              </FormControl>
+              <Popover open={ruleTypePopoverOpen} onOpenChange={setRuleTypePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        INPUT_STYLE,
+                        "w-full justify-between px-3",
+                        !field.value && "text-slate-400 dark:text-slate-600"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        {field.value ? (
+                          <span className="font-bold">
+                            {ruleTypeOptions.find((o) => o.value === field.value.toString())?.label}
+                          </span>
+                        ) : (
+                          t('pricingRule.header.ruleTypePlaceholder')
+                        )}
+                      </div>
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1025] shadow-2xl backdrop-blur-xl">
+                  <Command className="bg-transparent">
+                    <CommandInput placeholder={t('common.search')} className="h-11" />
+                    <CommandList className="custom-scrollbar">
+                      <CommandEmpty>{t('common.noData')}</CommandEmpty>
+                      <CommandGroup>
+                        {ruleTypeOptions.map((option) => (
+                          <CommandItem
+                            key={option.value}
+                            onSelect={() => {
+                              field.onChange(parseInt(option.value));
+                              setRuleTypePopoverOpen(false);
+                            }}
+                            className="h-10 px-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 cursor-pointer transition-colors"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4 text-pink-500",
+                                option.value === field.value?.toString() ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}

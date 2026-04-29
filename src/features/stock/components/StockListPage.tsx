@@ -18,6 +18,15 @@ import { STOCK_QUERY_KEYS } from '../utils/query-keys';
 import type { StockGetDto } from '../types';
 import type { PagedFilter } from '@/types/api';
 import { StockBulkImageImportDialog } from './StockBulkImageImportDialog';
+import {
+  MANAGEMENT_DATA_GRID_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME
+} from '@/lib/management-list-layout';
+
+const idColumnSurface = 'bg-slate-200/70 dark:bg-white/[0.07] border-r border-slate-300/90 dark:border-white/10';
+import { Package } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const PAGE_KEY = 'stock-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -78,20 +87,23 @@ export function StockListPage(): ReactElement {
     () =>
       baseColumns.map((col) => ({
         ...col,
-        headClassName:
-          col.key === 'unit'
-            ? 'py-4 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-center w-[100px]'
-            : 'group cursor-pointer select-none py-4 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors',
-        cellClassName:
+        headClassName: cn(
+          'py-5 text-[11px] font-bold uppercase tracking-[0.1em]',
+          col.key === 'Id' ? idColumnSurface : '',
+          col.key === 'unit' ? 'text-center w-[120px]' : 'px-4'
+        ),
+        cellClassName: cn(
+          'py-4 transition-all duration-300',
           col.key === 'Id'
-            ? 'font-mono text-xs text-zinc-400 group-hover:text-zinc-500'
+            ? cn('font-mono text-[11px] text-zinc-400 group-hover:text-pink-500/70 px-4 text-center w-[60px]', 'bg-slate-100/80 dark:bg-white/[0.04] border-r border-slate-200/90 dark:border-white/[0.08]')
             : col.key === 'ErpStockCode'
-              ? 'font-semibold text-sm text-zinc-700 dark:text-zinc-200 group-hover:text-pink-700 dark:group-hover:text-pink-400 transition-colors'
+              ? 'font-bold text-sm text-zinc-700 dark:text-zinc-200 group-hover:text-pink-600 dark:group-hover:text-pink-400 px-4'
               : col.key === 'StockName'
-                ? 'text-sm text-zinc-600 dark:text-zinc-300 font-medium'
+                ? 'text-sm text-zinc-600 dark:text-zinc-300 font-medium px-4'
                 : col.key === 'unit'
                   ? 'text-center'
-                  : undefined,
+                  : 'px-4'
+        ),
         sortable: col.key !== 'unit',
       })),
     [baseColumns]
@@ -221,7 +233,7 @@ export function StockListPage(): ReactElement {
       return (
         <Badge
           variant="secondary"
-          className="bg-zinc-100 dark:bg-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 border-zinc-200 dark:border-white/10"
+          className="h-7 px-3 rounded-lg bg-zinc-100/80 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 font-bold text-[10px] uppercase tracking-wider border-zinc-200/50 dark:border-white/5 transition-all group-hover:bg-pink-500 group-hover:text-white group-hover:border-pink-400/50 shadow-xs"
         >
           {stock.unit || '-'}
         </Badge>
@@ -254,119 +266,131 @@ export function StockListPage(): ReactElement {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
-      <div className="relative z-10 space-y-1 pb-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-foreground">
-          {t('stock.list.title')}
-        </h1>
-        <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-          <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-          {t('stock.list.description')}
-        </p>
+      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-foreground transition-colors">
+            {t('stock.list.title')}
+          </h1>
+          <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
+            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+            {t('stock.list.description')}
+          </p>
+        </div>
+        <StockBulkImageImportDialog />
       </div>
-
-      <div className="relative z-10 bg-white/50 dark:bg-card/30 backdrop-blur-xl border border-white/20 dark:border-border/50 rounded-2xl shadow-sm dark:shadow-2xl overflow-hidden">
-          <Card className="border-0 bg-transparent shadow-none">
-            <CardHeader className="space-y-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <CardTitle>{t('stock.list.cardTitle', { defaultValue: 'Stok listesi' })}</CardTitle>
-                <StockBulkImageImportDialog />
+      <div className={cn("relative z-10", MANAGEMENT_LIST_CARD_CLASSNAME)}>
+        <Card className="border-2 bg-transparent shadow-none">
+          <CardHeader>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <CardTitle className={cn("text-xl font-bold flex items-center gap-3", MANAGEMENT_LIST_CARD_TITLE_CLASSNAME)}>
+                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-pink-500/10 to-orange-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
+                    <Package size={20} />
+                  </div>
+                  {t('stock.list.cardTitle', { defaultValue: 'Stok Yönetimi' })}
+                </CardTitle>
               </div>
-            </CardHeader>
-          <CardContent>
-            <DataTableGrid<StockGetDto, StockColumnKey>
-              actionBar={{
-                pageKey: PAGE_KEY,
-                userId: user?.id,
-                columns: baseColumns,
-                visibleColumns,
-                columnOrder,
-                onVisibleColumnsChange: setVisibleColumns,
-                onColumnOrderChange: setColumnOrder,
-                exportFileName: 'stock-list',
-                exportColumns,
-                exportRows,
-                getExportData,
-                filterColumns,
-                defaultFilterColumn: 'StockName',
-                draftFilterRows,
-                onDraftFilterRowsChange: setDraftFilterRows,
-                filterLogic,
-                onFilterLogicChange: setFilterLogic,
-                onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
-                onClearFilters: () => {
-                  setDraftFilterRows([]);
-                  setAppliedFilterRows([]);
-                  setFilterLogic('and');
-                },
-                translationNamespace: 'stock',
-                appliedFilterCount: appliedFilters.length,
-                search: {
-                  onSearchChange: setSearchTerm,
-                  placeholder: t('common.search'),
-                  minLength: 1,
-                  resetKey: searchResetKey,
-                },
-                refresh: {
-                  onRefresh: () => {
-                    void handleGridRefresh();
+            </div>
+          </CardHeader>
+          <CardContent className="px-6 pb-6 pt-2">
+            <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
+              <DataTableGrid<StockGetDto, StockColumnKey>
+                actionBar={{
+                  pageKey: PAGE_KEY,
+                  userId: user?.id,
+                  columns: baseColumns,
+                  visibleColumns,
+                  columnOrder,
+                  onVisibleColumnsChange: setVisibleColumns,
+                  onColumnOrderChange: setColumnOrder,
+                  exportFileName: 'stock-list',
+                  exportColumns,
+                  exportRows,
+                  getExportData,
+                  filterColumns,
+                  defaultFilterColumn: 'StockName',
+                  draftFilterRows,
+                  onDraftFilterRowsChange: setDraftFilterRows,
+                  filterLogic,
+                  onFilterLogicChange: setFilterLogic,
+                  onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
+                  onClearFilters: () => {
+                    setDraftFilterRows([]);
+                    setAppliedFilterRows([]);
+                    setFilterLogic('and');
                   },
-                  isLoading: stockQuery.isFetching,
-                  cooldownSeconds: 60,
-                  label: t('stock.list.refresh', { defaultValue: 'Yenile' }),
-                },
-              } satisfies DataTableActionBarProps}
-              columns={columns}
-              visibleColumnKeys={orderedVisibleColumns}
-              rows={currentPageRows}
-              rowKey={(row) => row.id}
-              renderCell={renderCell}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-              onSort={onSort}
-              renderSortIcon={renderSortIcon}
-              isLoading={stockQuery.isLoading || stockQuery.isFetching}
-              isError={stockQuery.isError}
-              loadingText={t('stock.list.loading', { defaultValue: 'Yükleniyor...' })}
-              errorText={t('stock.list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-              emptyText={t('stock.list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
-              minTableWidthClassName="min-w-[900px]"
-              showActionsColumn
-              actionsHeaderLabel={t('stock.list.actions')}
-              renderActionsCell={(stock) => (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-zinc-400 hover:text-pink-600 hover:bg-pink-100/50 dark:hover:bg-pink-900/30 opacity-70 group-hover:opacity-100 transition-all"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRowClick(stock.id);
-                  }}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-              )}
-              rowClassName="group cursor-pointer border-b border-zinc-100 dark:border-white/5 last:border-0 hover:bg-pink-50/60 dark:hover:bg-pink-900/10 transition-colors duration-200"
-              onRowClick={(stock) => handleRowClick(stock.id)}
-              onRowDoubleClick={(stock) => handleRowClick(stock.id)}
-              pageSize={pageSize}
-              pageSizeOptions={PAGE_SIZE_OPTIONS}
-              onPageSizeChange={setPageSize}
-              pageNumber={pageNumber}
-              totalPages={totalPages}
-              hasPreviousPage={hasPreviousPage}
-              hasNextPage={hasNextPage}
-              onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-              onNextPage={() => setPageNumber((prev) => prev + 1)}
-              previousLabel={t('stock.list.previous')}
-              nextLabel={t('stock.list.next')}
-              paginationInfoText={t('common.paginationInfo', {
-                start: startRow,
-                end: endRow,
-                total: totalCount,
-                ns: 'common',
-              })}
-              disablePaginationButtons={stockQuery.isFetching}
-            />
+                  translationNamespace: 'stock',
+                  appliedFilterCount: appliedFilters.length,
+                  search: {
+                    onSearchChange: setSearchTerm,
+                    placeholder: t('common.search'),
+                    minLength: 1,
+                    resetKey: searchResetKey,
+                  },
+                  refresh: {
+                    onRefresh: () => {
+                      void handleGridRefresh();
+                    },
+                    isLoading: stockQuery.isFetching,
+                    cooldownSeconds: 60,
+                    label: t('stock.list.refresh', { defaultValue: 'Yenile' }),
+                  },
+                } satisfies DataTableActionBarProps}
+                columns={columns}
+                visibleColumnKeys={orderedVisibleColumns}
+                rows={currentPageRows}
+                rowKey={(row) => row.id}
+                renderCell={renderCell}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={onSort}
+                renderSortIcon={renderSortIcon}
+                isLoading={stockQuery.isLoading || stockQuery.isFetching}
+                isError={stockQuery.isError}
+                loadingText={t('stock.list.loading', { defaultValue: 'Yükleniyor...' })}
+                errorText={t('stock.list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                emptyText={t('stock.list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
+                minTableWidthClassName="min-w-[900px]"
+                showActionsColumn
+                actionsHeaderLabel={t('stock.list.actions')}
+                renderActionsCell={(stock) => (
+                  <div className="flex justify-end pr-4">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 rounded-xl text-zinc-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-all duration-300 active:scale-95"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRowClick(stock.id);
+                      }}
+                    >
+                      <Eye className="h-5 w-5" />
+                    </Button>
+                  </div>
+                )}
+                rowClassName="group cursor-pointer border-b border-zinc-50 dark:border-white/5 last:border-0 hover:bg-zinc-50/50 dark:hover:bg-white/[0.02] transition-all duration-300"
+                onRowClick={(stock) => handleRowClick(stock.id)}
+                onRowDoubleClick={(stock) => handleRowClick(stock.id)}
+                pageSize={pageSize}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                onPageSizeChange={setPageSize}
+                pageNumber={pageNumber}
+                totalPages={totalPages}
+                hasPreviousPage={hasPreviousPage}
+                hasNextPage={hasNextPage}
+                onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                onNextPage={() => setPageNumber((prev) => prev + 1)}
+                previousLabel={t('stock.list.previous')}
+                nextLabel={t('stock.list.next')}
+                paginationInfoText={t('common.paginationInfo', {
+                  start: startRow,
+                  end: endRow,
+                  total: totalCount,
+                  ns: 'common',
+                })}
+                disablePaginationButtons={stockQuery.isFetching}
+              />
+            </div>
           </CardContent>
         </Card>
       </div>

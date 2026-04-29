@@ -415,22 +415,22 @@ export function DemandListPage(): ReactElement {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
-      <div className="relative z-10 space-y-8 max-w-[1600px] mx-auto">
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-2">
+      <div className="relative z-10 space-y-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-4">
           <div className="space-y-1">
-            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
               {t('demand.list.title')}
             </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
+            <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
               <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
               {t('demand.list.description')}
             </p>
           </div>
           <Button
             onClick={() => navigate('/demands/create')}
-            className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group"
+            className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-60 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
-            <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+            <Plus size={20} className="mr-2 stroke-[3px]" />
             {t('demand.list.createNew')}
           </Button>
         </div>
@@ -444,105 +444,105 @@ export function DemandListPage(): ReactElement {
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
               <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-              <ManagementDataTableChrome>
-              <DataTableGrid<DemandGetDto, DemandColumnKey>
-                actionBar={{
-                  pageKey: PAGE_KEY,
-                  userId: user?.id,
-                  columns: baseColumns,
-                  visibleColumns,
-                  columnOrder,
-                  onVisibleColumnsChange: setVisibleColumns,
-                  onColumnOrderChange: setColumnOrder,
-                  exportFileName: 'demand-list',
-                  exportColumns,
-                  exportRows,
-                  getExportData,
-                  filterColumns,
-                  defaultFilterColumn: 'OfferNo',
-                  draftFilterRows,
-                  onDraftFilterRowsChange: setDraftFilterRows,
-                  onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
-                  onClearFilters: () => {
-                    setDraftFilterRows([]);
-                    setAppliedFilterRows([]);
-                  },
-                  translationNamespace: 'demand',
-                  appliedFilterCount: appliedFilters.length,
-                  search: {
-                    onSearchChange: setSearchTerm,
-                    placeholder: t('common.search'),
-                    minLength: 1,
-                    resetKey: searchResetKey,
-                  },
-                  refresh: {
-                    onRefresh: () => {
-                      void handleGridRefresh();
-                    },
-                    isLoading: demandQuery.isFetching,
-                    cooldownSeconds: 60,
-                    label: t('demand.list.refresh', { defaultValue: 'Yenile' }),
-                  },
-                  leftSlot: (
-                    <>
-                      <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-                        <SelectTrigger className="w-[180px] h-9">
-                          <SelectValue placeholder={t('approval.statusFilterLabel')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{t('common.all')}</SelectItem>
-                          <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
-                          <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-                          <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-                          <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-                          <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </>
-                  ),
-                } satisfies DataTableActionBarProps}
-                columns={columns}
-                visibleColumnKeys={orderedVisibleColumns}
-                rows={currentPageRows}
-                rowKey={(row: DemandGetDto) => String(row.id)}
-                renderCell={renderCell}
-                sortBy={sortBy}
-                sortDirection={sortDirection}
-                onSort={onSort}
-                renderSortIcon={renderSortIcon}
-                isLoading={demandQuery.isLoading || demandQuery.isFetching}
-                isError={demandQuery.isError}
-                loadingText={t('demand.loading')}
-                errorText={t('demand.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                emptyText={t('demand.noData')}
-                minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
-                showActionsColumn
-                actionsHeaderLabel={t('demand.list.actions')}
-                renderActionsCell={renderActionsCell}
-                rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
-                onRowClick={(order: DemandGetDto) => handleRowClick(order.id)}
-                onRowDoubleClick={(order: DemandGetDto) => handleRowClick(order.id)}
-                pageSize={pageSize}
-                pageSizeOptions={PAGE_SIZE_OPTIONS}
-                onPageSizeChange={setPageSize}
-                pageNumber={pageNumber}
-                totalPages={totalPages}
-                hasPreviousPage={hasPreviousPage}
-                hasNextPage={hasNextPage}
-                onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                onNextPage={() => setPageNumber((prev) => prev + 1)}
-                previousLabel={t('demand.previous')}
-                nextLabel={t('demand.next')}
-                paginationInfoText={t('common.paginationInfo', {
-                  start: startRow,
-                  end: endRow,
-                  total: totalCount,
-                  ns: 'common',
-                })}
-                disablePaginationButtons={demandQuery.isFetching}
-                centerColumnHeaders
-              />
-              </ManagementDataTableChrome>
+                <ManagementDataTableChrome>
+                  <DataTableGrid<DemandGetDto, DemandColumnKey>
+                    actionBar={{
+                      pageKey: PAGE_KEY,
+                      userId: user?.id,
+                      columns: baseColumns,
+                      visibleColumns,
+                      columnOrder,
+                      onVisibleColumnsChange: setVisibleColumns,
+                      onColumnOrderChange: setColumnOrder,
+                      exportFileName: 'demand-list',
+                      exportColumns,
+                      exportRows,
+                      getExportData,
+                      filterColumns,
+                      defaultFilterColumn: 'OfferNo',
+                      draftFilterRows,
+                      onDraftFilterRowsChange: setDraftFilterRows,
+                      onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
+                      onClearFilters: () => {
+                        setDraftFilterRows([]);
+                        setAppliedFilterRows([]);
+                      },
+                      translationNamespace: 'demand',
+                      appliedFilterCount: appliedFilters.length,
+                      search: {
+                        onSearchChange: setSearchTerm,
+                        placeholder: t('common.search'),
+                        minLength: 1,
+                        resetKey: searchResetKey,
+                      },
+                      refresh: {
+                        onRefresh: () => {
+                          void handleGridRefresh();
+                        },
+                        isLoading: demandQuery.isFetching,
+                        cooldownSeconds: 60,
+                        label: t('demand.list.refresh', { defaultValue: 'Yenile' }),
+                      },
+                      leftSlot: (
+                        <>
+                          <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
+                            <SelectTrigger className="w-[180px] h-9">
+                              <SelectValue placeholder={t('approval.statusFilterLabel')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">{t('common.all')}</SelectItem>
+                              <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                              <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+                              <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+                              <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+                              <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </>
+                      ),
+                    } satisfies DataTableActionBarProps}
+                    columns={columns}
+                    visibleColumnKeys={orderedVisibleColumns}
+                    rows={currentPageRows}
+                    rowKey={(row: DemandGetDto) => String(row.id)}
+                    renderCell={renderCell}
+                    sortBy={sortBy}
+                    sortDirection={sortDirection}
+                    onSort={onSort}
+                    renderSortIcon={renderSortIcon}
+                    isLoading={demandQuery.isLoading || demandQuery.isFetching}
+                    isError={demandQuery.isError}
+                    loadingText={t('demand.loading')}
+                    errorText={t('demand.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                    emptyText={t('demand.noData')}
+                    minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
+                    showActionsColumn
+                    actionsHeaderLabel={t('demand.list.actions')}
+                    renderActionsCell={renderActionsCell}
+                    rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onRowClick={(order: DemandGetDto) => handleRowClick(order.id)}
+                    onRowDoubleClick={(order: DemandGetDto) => handleRowClick(order.id)}
+                    pageSize={pageSize}
+                    pageSizeOptions={PAGE_SIZE_OPTIONS}
+                    onPageSizeChange={setPageSize}
+                    pageNumber={pageNumber}
+                    totalPages={totalPages}
+                    hasPreviousPage={hasPreviousPage}
+                    hasNextPage={hasNextPage}
+                    onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                    onNextPage={() => setPageNumber((prev) => prev + 1)}
+                    previousLabel={t('demand.previous')}
+                    nextLabel={t('demand.next')}
+                    paginationInfoText={t('common.paginationInfo', {
+                      start: startRow,
+                      end: endRow,
+                      total: totalCount,
+                      ns: 'common',
+                    })}
+                    disablePaginationButtons={demandQuery.isFetching}
+                    centerColumnHeaders
+                  />
+                </ManagementDataTableChrome>
               </div>
             </CardContent>
           </Card>

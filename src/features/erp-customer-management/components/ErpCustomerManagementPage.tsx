@@ -8,6 +8,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { ErpCustomerTable, getColumnsConfig } from './ErpCustomerTable';
 import { ErpCustomerDetailModal } from './ErpCustomerDetailModal';
 import { useErpCustomers } from '../hooks/useErpCustomers';
@@ -214,20 +222,23 @@ export function ErpCustomerManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
             {t('menu')}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
+          <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
+            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
             {t('description')}
           </p>
         </div>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm">
-        <CardHeader className="space-y-4">
-          <CardTitle>{t('table.title')}</CardTitle>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+            {t('table.title')}
+          </CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -259,6 +270,7 @@ export function ErpCustomerManagementPage(): ReactElement {
                 <Button
                   variant="outline"
                   size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
                   onClick={() => handleRefresh()}
                   disabled={isLoading}
                 >
@@ -273,70 +285,72 @@ export function ErpCustomerManagementPage(): ReactElement {
             }
           />
         </CardHeader>
-        <CardContent>
-          <ErpCustomerTable
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={currentPageRows}
-            rowKey={(r) => r.customerCode}
-            renderCell={(row, key) => {
-              const val = row[key];
-              if (val == null && val !== 0) return '-';
-              if (key === 'website' && val) {
-                return (
-                  <a href={String(val)} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
-                    {String(val)}
-                  </a>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+            <ErpCustomerTable
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={currentPageRows}
+              rowKey={(r) => r.customerCode}
+              renderCell={(row, key) => {
+                const val = row[key];
+                if (val == null && val !== 0) return '-';
+                if (key === 'website' && val) {
+                  return (
+                    <a href={String(val)} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
+                      {String(val)}
+                    </a>
+                  );
+                }
+                return String(val);
+              }}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={(k) => {
+                if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+                else {
+                  setSortBy(k);
+                  setSortDirection('asc');
+                }
+              }}
+              renderSortIcon={(k) => {
+                if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
                 );
-              }
-              return String(val);
-            }}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={(k) => {
-              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-              else {
-                setSortBy(k);
-                setSortDirection('asc');
-              }
-            }}
-            renderSortIcon={(k) => {
-              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading}
-            loadingText={t('loading')}
-            errorText={t('noData')}
-            emptyText={t('noData')}
-            minTableWidthClassName="min-w-[800px] lg:min-w-[1100px]"
-            showActionsColumn={false}
-            onRowClick={handleRowClick}
-            rowClassName="group cursor-pointer"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous', { ns: 'common' })}
-            nextLabel={t('common.next', { ns: 'common' })}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+              }}
+              isLoading={isLoading}
+              loadingText={t('loading')}
+              errorText={t('noData')}
+              emptyText={t('noData')}
+              minTableWidthClassName="min-w-[800px] lg:min-w-[1100px]"
+              showActionsColumn={false}
+              onRowClick={handleRowClick}
+              rowClassName="group cursor-pointer"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('common.previous', { ns: 'common' })}
+              nextLabel={t('common.next', { ns: 'common' })}
+              paginationInfoText={t('common.table.showing', {
+                from: startRow,
+                to: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -348,3 +362,4 @@ export function ErpCustomerManagementPage(): ReactElement {
     </div>
   );
 }
+
