@@ -100,7 +100,7 @@ function CustomerCard({
   viewMode,
   showKindBadge = false,
 }: CustomerCardProps): ReactElement {
-  const { t } = useTranslation('customer-select-dialog');
+  const { t } = useTranslation('common');
   const locationLabel = [city, district].filter((v): v is string => Boolean(v && v.trim())).join(', ');
   const shortAddress = (address ?? '').trim();
   const trimmedAddress = shortAddress.length > 52 ? `${shortAddress.slice(0, 52)}...` : shortAddress;
@@ -114,7 +114,7 @@ function CustomerCard({
             : 'bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-200'
         )}
       >
-        {type === 'erp' ? t('erp') : t('crm')}
+        {type === 'erp' ? t('customerSelectDialog.badgeKindErp') : t('customerSelectDialog.badgeKindPotential')}
       </span>
     ) : null;
 

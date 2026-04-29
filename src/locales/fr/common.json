@@ -2533,7 +2533,9 @@
     "searchPlaceholder": "Recherche par nom, code ou téléphone...",
     "erpCustomers": "Clients ERP",
     "potentialCustomers": "Potential",
-    "allCustomers": "Toutes"
+    "allCustomers": "Toutes",
+    "badgeKindErp": "ERP",
+    "badgeKindPotential": "Potentiel"
   },
   "menu": "Surveillance du feu suspendu",
   "roles": {
@@ -4465,6 +4467,9 @@
     "currentPathLabel": "Chemin actuel",
     "levelBadge": "Niveau {{level}}",
     "browseChildrenButton": "Sous-niveaux",
+    "childBranchPreviewLabel": "Niveau suivant",
+    "expandNestedPreview": "Afficher les sous-branches",
+    "collapseNestedPreview": "Masquer les sous-branches",
     "listDescendantsButton": "Lister",
     "directCategoryModeBadge": "Catégorie directe",
     "listDescendantsModeBadge": "Liste sous-arbre",
