@@ -299,7 +299,7 @@ export function OrderLineTable({
       discountAmount2: 0,
       discountRate3: 0,
       discountAmount3: 0,
-      vatRate: 18,
+      vatRate: 20,
       vatAmount: 0,
       lineTotal: 0,
       lineGrandTotal: 0,
