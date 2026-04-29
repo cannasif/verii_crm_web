@@ -76,6 +76,8 @@ export interface PermissionDefinitionDto {
   name: string;
   description?: string;
   isActive: boolean;
+  availableOnWeb: boolean;
+  availableOnMobile: boolean;
 }
 
 export interface CreatePermissionDefinitionDto {
@@ -83,6 +85,8 @@ export interface CreatePermissionDefinitionDto {
   name: string;
   description?: string;
   isActive: boolean;
+  availableOnWeb: boolean;
+  availableOnMobile: boolean;
 }
 
 export interface UpdatePermissionDefinitionDto {
@@ -90,6 +94,8 @@ export interface UpdatePermissionDefinitionDto {
   name?: string;
   description?: string;
   isActive?: boolean;
+  availableOnWeb?: boolean;
+  availableOnMobile?: boolean;
 
 }
 
@@ -98,6 +104,8 @@ export interface SyncPermissionDefinitionItemDto {
   name?: string | null;
   description?: string | null;
   isActive: boolean;
+  availableOnWeb: boolean;
+  availableOnMobile: boolean;
 }
 
 export interface SyncPermissionDefinitionsDto {

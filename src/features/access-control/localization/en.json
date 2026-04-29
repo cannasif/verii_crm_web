@@ -36,6 +36,10 @@
       "affectedRoutesNone": "No matching route found for this code",
       "name": "Name",
       "namePlaceholder": "Display name",
+      "availableOnWeb": "Available on web",
+      "availableOnWebHint": "This permission can be used for menus, pages, and actions in the web app.",
+      "availableOnMobile": "Available on mobile",
+      "availableOnMobileHint": "This permission can be used for menus, screens, and actions in the mobile app.",
       "description": "Description",
       "descriptionPlaceholder": "Optional description",
       "isActive": "Active",
@@ -46,9 +50,15 @@
       "title": "Permission definitions",
       "code": "Code",
       "name": "Name",
+      "platform": "Platform",
       "isActive": "Active",
       "updatedDate": "Updated",
       "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "platform": {
+      "web": "Web",
+      "mobile": "Mobile",
+      "both": "Web + Mobile"
     },
     "delete": {
       "confirmTitle": "Delete permission definition",

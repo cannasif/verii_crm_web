@@ -36,6 +36,10 @@
       "affectedRoutesNone": "Bu kod için eşleşen rota bulunamadı",
       "name": "Ad",
       "namePlaceholder": "Görünen ad",
+      "availableOnWeb": "Web'de kullanılabilir",
+      "availableOnWebHint": "Bu izin web uygulamasında menü, sayfa ve işlem kontrolünde kullanılabilir.",
+      "availableOnMobile": "Mobile'da kullanılabilir",
+      "availableOnMobileHint": "Bu izin mobile uygulamada menü, ekran ve aksiyon kontrolünde kullanılabilir.",
       "description": "Açıklama",
       "descriptionPlaceholder": "İsteğe bağlı açıklama",
       "isActive": "Aktif",
@@ -46,9 +50,15 @@
       "title": "İzin Tanımları",
       "code": "Kod",
       "name": "Ad",
+      "platform": "Platform",
       "isActive": "Aktif",
       "updatedDate": "Güncellenen",
       "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "platform": {
+      "web": "Web",
+      "mobile": "Mobile",
+      "both": "Web + Mobile"
     },
     "delete": {
       "confirmTitle": "İzin Tanımını Sil",

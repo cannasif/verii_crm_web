@@ -28,6 +28,7 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
+import { Badge } from '@/components/ui/badge';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
 import { useSyncPermissionDefinitionsMutation } from '../hooks/useSyncPermissionDefinitionsMutation';
 import { useCreatePermissionDefinitionMutation } from '../hooks/useCreatePermissionDefinitionMutation';
@@ -37,13 +38,13 @@ import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
-import { getPermissionDisplayLabel, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
+import { getPermissionDisplayLabel, getPermissionPlatform, inferPermissionPlatforms, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
 
 const EMPTY_PERMISSION_DEFINITIONS: PermissionDefinitionDto[] = [];
 const PAGE_KEY = 'permission-definitions';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
-type PermissionDefinitionColumnKey = keyof PermissionDefinitionDto;
+type PermissionDefinitionColumnKey = keyof PermissionDefinitionDto | 'platform';
 
 function resolveLabel(t: (key: string) => string, key: string, fallback: string): string {
   const translated = t(key);
@@ -63,8 +64,8 @@ export function PermissionDefinitionsPage(): ReactElement {
   const [pageSize, setPageSize] = useState(20);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionDefinitionDto | null>(null);
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(['code', 'name', 'isActive', 'updatedDate']);
-  const [columnOrder, setColumnOrder] = useState<string[]>(['code', 'name', 'isActive', 'updatedDate']);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(['code', 'name', 'platform', 'isActive', 'updatedDate']);
+  const [columnOrder, setColumnOrder] = useState<string[]>(['code', 'name', 'platform', 'isActive', 'updatedDate']);
 
   const { data, isLoading } = usePermissionDefinitionsQuery({
     pageNumber,
@@ -111,7 +112,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const handleSyncFromRoutes = async (): Promise<void> => {
     const syncItems = PERMISSION_CODE_CATALOG.map((code) => {
       const name = getPermissionDisplayLabel(code, (key, fallback) => t(key, fallback));
-      return { code, name, isActive: true };
+      return { code, name, isActive: true, ...inferPermissionPlatforms(code) };
     });
     await syncMutation.mutateAsync({
       items: syncItems,
@@ -164,6 +165,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const baseColumns = [
     { key: 'code', label: t('permissionDefinitions.table.code') },
     { key: 'name', label: t('permissionDefinitions.table.name') },
+    { key: 'platform', label: t('permissionDefinitions.table.platform') },
     { key: 'isActive', label: t('permissionDefinitions.table.isActive') },
     { key: 'updatedDate', label: t('permissionDefinitions.table.updatedDate') },
   ];
@@ -175,6 +177,7 @@ export function PermissionDefinitionsPage(): ReactElement {
       filteredItems.map((item) => ({
         code: item.code,
         name: getPermissionDisplayLabel(item.code, (key, fallback) => t(key, fallback)),
+        platform: t(`permissionDefinitions.platform.${getPermissionPlatform(item.code, item.availableOnWeb, item.availableOnMobile)}`),
         isActive: item.isActive ? t('common.yes') : t('common.no'),
         updatedDate: item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-',
       })),
@@ -185,6 +188,7 @@ export function PermissionDefinitionsPage(): ReactElement {
     () => [
       { key: 'code', label: t('permissionDefinitions.table.code'), cellClassName: 'font-mono text-sm' },
       { key: 'name', label: t('permissionDefinitions.table.name') },
+      { key: 'platform', label: t('permissionDefinitions.table.platform') },
       { key: 'isActive', label: t('permissionDefinitions.table.isActive') },
       { key: 'updatedDate', label: t('permissionDefinitions.table.updatedDate'), cellClassName: 'text-slate-500 text-sm' },
     ],
@@ -387,6 +391,22 @@ export function PermissionDefinitionsPage(): ReactElement {
                           );
                         })()}
                       </div>
+                    );
+                  }
+                  if (key === 'platform') {
+                    const platform = getPermissionPlatform(row.code, row.availableOnWeb, row.availableOnMobile);
+                    const label = t(`permissionDefinitions.platform.${platform}`);
+                    const className =
+                      platform === 'both'
+                        ? 'bg-linear-to-r from-fuchsia-500/15 to-cyan-500/15 text-fuchsia-700 dark:text-fuchsia-200 border-fuchsia-300/40 dark:border-fuchsia-500/30'
+                        : platform === 'mobile'
+                          ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-200 border-emerald-300/40 dark:border-emerald-500/30'
+                          : 'bg-blue-500/10 text-blue-700 dark:text-blue-200 border-blue-300/40 dark:border-blue-500/30';
+
+                    return (
+                      <Badge variant="outline" className={`rounded-full px-3 py-1 font-bold ${className}`}>
+                        {label}
+                      </Badge>
                     );
                   }
                   if (key === 'isActive') {

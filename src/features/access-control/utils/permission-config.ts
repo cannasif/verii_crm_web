@@ -398,6 +398,30 @@ export const PERMISSION_MODULE_DISPLAY: Record<string, { key: string; fallback: 
 export function getPermissionModuleDisplayMeta(prefix: string): { key: string; fallback: string } | null {
   return PERMISSION_MODULE_DISPLAY[prefix] ?? null;
 }
+
+export type PermissionPlatform = 'web' | 'mobile' | 'both';
+
+const MOBILE_PERMISSION_PATTERNS: RegExp[] = [
+  /^dashboard\.view$/,
+  /^customers\.customer-management\./,
+  /^sales\.(demands|quotations|orders)\./,
+  /^activity\.(daily-tasks|activity-management)\./,
+  /^stock\.stocks\./,
+];
+
+export function inferPermissionPlatforms(code: string): { availableOnWeb: boolean; availableOnMobile: boolean } {
+  const availableOnMobile = MOBILE_PERMISSION_PATTERNS.some((pattern) => pattern.test(code));
+  return {
+    availableOnWeb: true,
+    availableOnMobile,
+  };
+}
+
+export function getPermissionPlatform(_code: string, availableOnWeb: boolean, availableOnMobile: boolean): PermissionPlatform {
+  if (availableOnWeb && availableOnMobile) return 'both';
+  if (availableOnMobile) return 'mobile';
+  return 'web';
+}
 export const PERMISSION_CODE_CATALOG: string[] = Array.from(
   new Set(
     Object.values(ROUTE_PERMISSION_MAP)

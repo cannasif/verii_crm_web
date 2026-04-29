@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
-import { getPermissionDisplayLabel, getPermissionModuleDisplayMeta, isLeafPermissionCode } from '../utils/permission-config';
+import { getPermissionDisplayLabel, getPermissionModuleDisplayMeta, getPermissionPlatform, isLeafPermissionCode } from '../utils/permission-config';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -46,6 +46,14 @@ export function PermissionDefinitionMultiSelect({
       const trimmedName = (name ?? '').trim();
       if (trimmedName) return trimmedName;
       return getPermissionDisplayLabel(code, (key, fallback) => t(key, fallback));
+    },
+    [t]
+  );
+
+  const getPlatformLabel = useCallback(
+    (code: string, availableOnWeb: boolean, availableOnMobile: boolean): string => {
+      const platform = getPermissionPlatform(code, availableOnWeb, availableOnMobile);
+      return t(`permissionDefinitions.platforms.${platform}`);
     },
     [t]
   );
@@ -93,7 +101,7 @@ export function PermissionDefinitionMultiSelect({
     type PermissionMatrixRow = {
       key: string;
       label: string;
-      actions: Partial<Record<keyof typeof actionMeta, { id: number; code: string; display: string }>>;
+      actions: Partial<Record<keyof typeof actionMeta, { id: number; code: string; display: string; platformLabel: string }>>;
       allIds: number[];
     };
 
@@ -112,6 +120,7 @@ export function PermissionDefinitionMultiSelect({
       const subjectLabel = getSubjectLabel(item.code);
       const actionKey = getActionKey(item.code);
       const display = getDisplayLabel(item.code, item.name);
+      const platformLabel = getPlatformLabel(item.code, item.availableOnWeb, item.availableOnMobile);
 
       const moduleEntry = moduleBuckets.get(moduleLabel) ?? {
         moduleLabel,
@@ -126,7 +135,7 @@ export function PermissionDefinitionMultiSelect({
         allIds: [],
       };
 
-      currentRow.actions[actionKey] = { id: item.id, code: item.code, display };
+      currentRow.actions[actionKey] = { id: item.id, code: item.code, display, platformLabel };
       currentRow.allIds = Array.from(new Set([...currentRow.allIds, item.id]));
       moduleEntry.rows.set(rowKey, currentRow);
       moduleBuckets.set(moduleLabel, moduleEntry);
@@ -280,6 +289,9 @@ export function PermissionDefinitionMultiSelect({
                                         <span className="line-clamp-2 text-[11px] font-medium leading-4 text-slate-600 dark:text-slate-300">
                                           {actionItem.display}
                                         </span>
+                                        <Badge variant="outline" className="rounded-full text-[10px]">
+                                          {actionItem.platformLabel}
+                                        </Badge>
                                         <span className="line-clamp-1 font-mono text-[10px] text-slate-400 dark:text-slate-500">
                                           {actionItem.code}
                                         </span>

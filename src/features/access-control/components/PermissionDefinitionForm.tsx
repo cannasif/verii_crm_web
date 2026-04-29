@@ -14,6 +14,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -29,7 +30,7 @@ import {
 } from '../schemas/permission-definition-schema';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
-import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayLabel } from '../utils/permission-config';
+import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayLabel, inferPermissionPlatforms } from '../utils/permission-config';
 import { Badge } from '@/components/ui/badge';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { KeyRound, X, FileText, Info } from 'lucide-react';
@@ -76,6 +77,8 @@ export function PermissionDefinitionForm({
       name: '',
       description: '',
       isActive: true,
+      availableOnWeb: true,
+      availableOnMobile: false,
     },
   });
   const isFormValid = form.formState.isValid;
@@ -87,6 +90,8 @@ export function PermissionDefinitionForm({
         name: item.name,
         description: item.description ?? '',
         isActive: item.isActive,
+        availableOnWeb: item.availableOnWeb,
+        availableOnMobile: item.availableOnMobile,
       });
     } else {
       form.reset({
@@ -94,6 +99,8 @@ export function PermissionDefinitionForm({
         name: '',
         description: '',
         isActive: true,
+        availableOnWeb: true,
+        availableOnMobile: false,
       });
     }
   }, [item, form, open]);
@@ -170,9 +177,12 @@ export function PermissionDefinitionForm({
                           onValueChange={(value) => {
                             field.onChange(value);
                             const title = getPermissionDisplayLabel(value, (key, fallback) => t(key, fallback));
+                            const platforms = inferPermissionPlatforms(value);
                             if (!form.getValues('name') && title) {
                               form.setValue('name', title, { shouldDirty: true });
                             }
+                            form.setValue('availableOnWeb', platforms.availableOnWeb, { shouldDirty: true });
+                            form.setValue('availableOnMobile', platforms.availableOnMobile, { shouldDirty: true });
                           }}
                           placeholder={t('permissionDefinitions.form.codePlaceholder')}
                           searchPlaceholder={t('permissionDefinitions.form.codeSearchPlaceholder')}
@@ -221,6 +231,52 @@ export function PermissionDefinitionForm({
                         <FormControl>
                           <Input {...field} className={INPUT_STYLE} placeholder={t('permissionDefinitions.form.namePlaceholder')} maxLength={150} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="availableOnWeb"
+                    render={({ field }) => (
+                      <FormItem className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
+                        <div className="flex items-start gap-3">
+                          <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                          </FormControl>
+                          <div className="space-y-1">
+                            <FormLabel className={LABEL_STYLE}>
+                              {t('permissionDefinitions.form.availableOnWeb')}
+                            </FormLabel>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                              {t('permissionDefinitions.form.availableOnWebHint')}
+                            </p>
+                          </div>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="availableOnMobile"
+                    render={({ field }) => (
+                      <FormItem className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
+                        <div className="flex items-start gap-3">
+                          <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                          </FormControl>
+                          <div className="space-y-1">
+                            <FormLabel className={LABEL_STYLE}>
+                              {t('permissionDefinitions.form.availableOnMobile')}
+                            </FormLabel>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                              {t('permissionDefinitions.form.availableOnMobileHint')}
+                            </p>
+                          </div>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
