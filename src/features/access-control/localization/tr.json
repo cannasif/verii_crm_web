@@ -19,6 +19,16 @@
       "groups": "Kullanıcı seçilen tüm gruplardan birleşik izinleri alır.",
       "save": "Atamalar bir sonraki yetkilendirme kontrolleri için hemen uygulanır. Kullanıcılar oturumlarını yenileyebilir.",
       "systemAdminNote": "Kullanıcının sistem yöneticisi grubu varsa, ayrıntılı izinler atlanır."
+    },
+    "visibilityPolicy": {
+      "code": "Politikayı entegrasyon, raporlama ve atama ekranlarında ayırt etmek için benzersiz kod kullanın.",
+      "name": "Yöneticilerin politikayı tanıyacağı görünen ad.",
+      "includeSelf": "Aktifse kullanıcı kendi kayıtlarını da scope içine dahil eder.",
+      "isActive": "Pasif politikalar atama listesinde görünmez ve yeni kararlarda kullanılmaz."
+    },
+    "userVisibilityAssignment": {
+      "user": "Görünürlük kapsamını düzenlemek istediğiniz kullanıcıyı seçin.",
+      "policy": "Her entity için tek bir aktif görünürlük politikası seçin. İsterseniz boş bırakabilirsiniz."
     }
   },
   "permissionDefinitions": {
@@ -127,6 +137,118 @@
     "noGroups": "Kullanılabilir izin grubu yok",
     "selectAll": "Tümünü seç"
   },
+  "visibilityPolicies": {
+    "title": "Görünürlük Politikaları",
+    "description": "Kimin hangi kayıtları görebileceğini tanımlayan policy setlerini yönetin",
+    "add": "Policy Ekle",
+    "search": "Policy ara...",
+    "table": {
+      "title": "Görünürlük Policy Listesi",
+      "code": "Kod",
+      "name": "Ad",
+      "entityType": "Varlık",
+      "scopeType": "Kapsam",
+      "includeSelf": "Kendisi dahil",
+      "isActive": "Aktif",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "stats": {
+      "total": "Toplam Policy",
+      "active": "Aktif Policy",
+      "entities": "Varlık Türü"
+    },
+    "form": {
+      "addTitle": "Görünürlük Policy Ekle",
+      "editTitle": "Görünürlük Policy Düzenle",
+      "addDescription": "Yeni bir görünürlük policy tanımı oluşturun",
+      "editDescription": "Mevcut görünürlük policy ayarlarını güncelleyin",
+      "code": "Kod",
+      "codePlaceholder": "ornek.quotation.team",
+      "name": "Ad",
+      "namePlaceholder": "Takım Teklif Görünürlüğü",
+      "entityType": "Varlık",
+      "entityTypePlaceholder": "Varlık seçin",
+      "scopeType": "Kapsam",
+      "scopeTypePlaceholder": "Kapsam seçin",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "İsteğe bağlı kısa açıklama",
+      "includeSelf": "Kullanıcının kendi kayıtlarını dahil et",
+      "isActive": "Aktif",
+      "summaryTitle": "Policy özeti",
+      "summary": "{{entity}} kayıtları için {{scope}} kapsamı uygulanır."
+    },
+    "scope": {
+      "self": "Sadece kendisi",
+      "managerHierarchy": "Yönetici hiyerarşisi",
+      "permissionGroup": "İzin grubu",
+      "company": "Şirket geneli"
+    },
+    "entity": {
+      "activity": "Aktivite",
+      "quotation": "Teklif",
+      "demand": "Talep",
+      "order": "Sipariş"
+    }
+  },
+  "userVisibilityAssignments": {
+    "title": "Kullanıcı Görünürlük Atamaları",
+    "description": "Kullanıcı bazında entity görünürlük policy atamalarını yönetin",
+    "selectUser": "Kullanıcı Seç",
+    "selectedUser": "Seçilen Kullanıcı",
+    "selectUserPlaceholder": "Ara ve kullanıcı seç...",
+    "selectUserHint": "Görünürlük atamalarını düzenlemek için bir kullanıcı seçin",
+    "assignedPolicies": "Atanan Policy",
+    "status": "Durum",
+    "ready": "Güncel",
+    "unassigned": "Atama yok",
+    "cardDescription": "{{entity}} kayıtları için bu kullanıcıya uygulanacak görünürlük policy'sini seçin.",
+    "selectPolicyPlaceholder": "Policy seçin",
+    "noPolicy": "Policy yok"
+  },
+  "visibilitySimulator": {
+    "title": "Görünürlük Simülatörü",
+    "description": "Bir kullanıcının seçilen varlık türünde hangi kullanıcı kayıtlarını ve aktif onay override kayıtlarını görebildiğini test edin.",
+    "selectUser": "Kullanıcı",
+    "helpUser": "Görünürlüğünü test etmek istediğiniz kullanıcıyı seçin.",
+    "selectUserPlaceholder": "Kullanıcı seçin...",
+    "selectEntity": "Varlık",
+    "helpEntity": "Görünürlük kuralını simüle etmek istediğiniz modülü seçin.",
+    "selectEntityPlaceholder": "Varlık seçin",
+    "recordId": "Kayıt ID",
+    "recordIdPlaceholder": "Örn. 125",
+    "helpRecordId": "Belirli bir kayıtta görüntüleme, güncelleme, silme ve onay yetkisini simüle etmek için kayıt ID girin.",
+    "selectedUser": "Seçilen kullanıcı",
+    "entity": "Varlık",
+    "visibleUsers": "Görünen kullanıcılar",
+    "approvalOverrides": "Onay override kayıtları",
+    "visibleUsersTitle": "Kapsama giren kullanıcılar",
+    "policyDefined": "Policy tanımlı",
+    "noPolicy": "Policy tanımsız",
+    "companyWide": "Şirket geneli erişim",
+    "policyActive": "Aktif görünürlük policy'si uygulanıyor",
+    "includeSelf": "kendisi dahil",
+    "awaitingSelection": "Önce kullanıcı ve varlık seçin",
+    "overrideTitle": "Aktif onay override kayıtları",
+    "noOverrides": "Aktif onay override kaydı bulunmuyor",
+    "overrideRecord": "Kayıt #{{id}}",
+    "auditTitle": "Approval override audit",
+    "noAudit": "Aktif approval override audit kaydı bulunmuyor",
+    "auditActionId": "Approval action",
+    "auditRequestId": "Approval request",
+    "auditFlow": "Akış",
+    "auditApprover": "Onaycı",
+    "auditStepValue": "Adım {{step}} / aktif {{currentStep}}",
+    "actionPanelTitle": "Kayıt bazlı aksiyon simülasyonu",
+    "noRecordSimulation": "Kayıt ID girildiğinde view / update / delete / approve kararı burada gösterilir.",
+    "actionAllowed": "İzin verildi",
+    "actionDenied": "İzin verilmedi",
+    "action": {
+      "view": "Görüntüleme",
+      "update": "Güncelleme",
+      "delete": "Silme",
+      "approve": "Onay"
+    }
+  },
   "common": {
     "cancel": "Vazgeç",
     "saving": "Kaydediliyor...",
@@ -147,6 +269,8 @@
     "accessControl": "Erişim Kontrolü",
     "permissionDefinitions": "İzin Tanımları",
     "permissionGroups": "İzin Grupları",
-    "userGroupAssignments": "Kullanıcı Grup Atamaları"
+    "userGroupAssignments": "Kullanıcı Grup Atamaları",
+    "visibilityPolicies": "Görünürlük Politikaları",
+    "userVisibilityAssignments": "Kullanıcı Görünürlük Atamaları"
   }
 }

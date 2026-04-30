@@ -63,6 +63,14 @@ export interface FullUserDto {
   email?: string;
 }
 
+export interface VisibilityPreviewPolicy {
+  policyId: number;
+  code: string;
+  name: string;
+  scopeType: number;
+  includeSelf: boolean;
+}
+
 export interface PermissionDefinitionDto {
   id: number;
   createdDate: string;
@@ -168,4 +176,115 @@ export interface UserPermissionGroupDto {
 
 export interface SetUserPermissionGroupsDto {
   permissionGroupIds: number[];
+}
+
+export interface VisibilityPolicyDto {
+  id: number;
+  createdDate: string;
+  updatedDate?: string;
+  deletedDate?: string;
+  isDeleted: boolean;
+  createdByFullUser?: FullUserDto;
+  updatedByFullUser?: FullUserDto;
+  deletedByFullUser?: FullUserDto;
+  code: string;
+  name: string;
+  entityType: string;
+  description?: string;
+  scopeType: number;
+  includeSelf: boolean;
+  isActive: boolean;
+}
+
+export interface CreateVisibilityPolicyDto {
+  code: string;
+  name: string;
+  entityType: string;
+  description?: string;
+  scopeType: number;
+  includeSelf: boolean;
+  isActive: boolean;
+}
+
+export interface UpdateVisibilityPolicyDto {
+  code?: string;
+  name?: string;
+  entityType?: string;
+  description?: string;
+  scopeType?: number;
+  includeSelf?: boolean;
+  isActive?: boolean;
+}
+
+export interface VisibilityPreviewUser {
+  userId: number;
+  fullName: string;
+  email?: string | null;
+}
+
+export interface VisibilityPreviewResult {
+  userId: number;
+  entityType: string;
+  hasExplicitPolicy: boolean;
+  isUnrestricted: boolean;
+  visibleUserIds: number[];
+  visibleUsers: VisibilityPreviewUser[];
+  policies: VisibilityPreviewPolicy[];
+  approvalOverrideEntityIds: number[];
+  approvalOverrideAuditEntries: ApprovalOverrideAuditEntry[];
+}
+
+export interface ApprovalOverrideAuditEntry {
+  entityId: number;
+  approvalRequestId: number;
+  approvalActionId: number;
+  stepOrder: number;
+  currentStep: number;
+  approvalStatus: number;
+  approvalStatusName: string;
+  documentType: string;
+  flowDescription?: string | null;
+  approvedByUserId: number;
+  approvedByUserName?: string | null;
+  reason: string;
+}
+
+export interface ActionSimulationResult {
+  action: string;
+  allowed: boolean;
+  reason: string;
+}
+
+export interface VisibilityActionSimulationResult {
+  userId: number;
+  entityType: string;
+  entityId: number;
+  actions: ActionSimulationResult[];
+}
+
+export interface UserVisibilityPolicyDto {
+  id: number;
+  createdDate: string;
+  updatedDate?: string;
+  deletedDate?: string;
+  isDeleted: boolean;
+  createdByFullUser?: FullUserDto;
+  updatedByFullUser?: FullUserDto;
+  deletedByFullUser?: FullUserDto;
+  userId: number;
+  userDisplayName: string;
+  visibilityPolicyId: number;
+  visibilityPolicyName: string;
+  entityType: string;
+  scopeType: number;
+}
+
+export interface CreateUserVisibilityPolicyDto {
+  userId: number;
+  visibilityPolicyId: number;
+}
+
+export interface UpdateUserVisibilityPolicyDto {
+  userId?: number;
+  visibilityPolicyId?: number;
 }

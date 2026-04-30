@@ -193,6 +193,12 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             title: t('sidebar.productDefinitions'),
             children: [
               { title: t('sidebar.categoryDefinitions'), href: '/definitions/category-definitions' },
+              {
+                title: t('sidebar.windoProfilDemirVidaDefinitions', {
+                  defaultValue: 'Windo Profil / Demir / Vida Tanımlama',
+                }),
+                href: '/definitions/windo-profil-demir-vida-tanimlama',
+              },
             ],
           },
         ],
@@ -206,6 +212,9 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             children: [
               { title: t('sidebar.userManagement'), href: '/user-management' },
               { title: t('sidebar.userGroupAssignments'), href: '/access-control/user-group-assignments' },
+              { title: t('sidebar.userVisibilityAssignments'), href: '/access-control/user-visibility-assignments' },
+              { title: t('sidebar.visibilityPolicies'), href: '/access-control/visibility-policies' },
+              { title: t('sidebar.visibilitySimulator'), href: '/access-control/visibility-simulator' },
               { title: t('sidebar.permissionGroups'), href: '/access-control/permission-groups' },
               { title: t('sidebar.permissionDefinitions'), href: '/access-control/permission-definitions' },
             ],

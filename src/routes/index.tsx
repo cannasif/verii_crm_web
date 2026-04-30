@@ -66,6 +66,7 @@ const StockListPage = lazyImport(() => import('@/features/stock'), 'StockListPag
 const StockDetailPage = lazyImport(() => import('@/features/stock'), 'StockDetailPage');
 const DocumentSerialTypeManagementPage = lazyImport(() => import('@/features/document-serial-type-management'), 'DocumentSerialTypeManagementPage');
 const SalesTypeManagementPage = lazyImport(() => import('@/features/sales-type-management'), 'SalesTypeManagementPage');
+const WindoProfilDemirVidaTanimlamaPage = lazyImport(() => import('@/features/windo-profil-demir-vida-management'), 'WindoProfilDemirVidaTanimlamaPage');
 const SalesRepManagementPage = lazyImport(() => import('@/features/sales-rep-management'), 'SalesRepManagementPage');
 const SalesRepMatchManagementPage = lazyImport(() => import('@/features/sales-rep-match-management'), 'SalesRepMatchManagementPage');
 const CategoryDefinitionsPage = lazyImport(() => import('@/features/category-definitions'), 'CategoryDefinitionsPage');
@@ -90,6 +91,9 @@ const PowerbiRlsPage = lazyImport(() => import('@/features/powerbi-rls'), 'Power
 const PermissionDefinitionsPage = lazyImport(() => import('@/features/access-control'), 'PermissionDefinitionsPage');
 const PermissionGroupsPage = lazyImport(() => import('@/features/access-control'), 'PermissionGroupsPage');
 const UserGroupAssignmentsPage = lazyImport(() => import('@/features/access-control'), 'UserGroupAssignmentsPage');
+const VisibilityPoliciesPage = lazyImport(() => import('@/features/access-control'), 'VisibilityPoliciesPage');
+const UserVisibilityAssignmentsPage = lazyImport(() => import('@/features/access-control'), 'UserVisibilityAssignmentsPage');
+const VisibilitySimulatorPage = lazyImport(() => import('@/features/access-control'), 'VisibilitySimulatorPage');
 const HangfireMonitoringPage = lazyImport(() => import('@/features/hangfire-monitoring'), 'HangfireMonitoringPage');
 const ProfilePage = lazyImport(() => import('@/features/user-detail-management'), 'ProfilePage');
 const GoogleConnectionPage = lazyImport(() => import('@/features/google-integration'), 'GoogleConnectionPage');
@@ -184,12 +188,16 @@ export function createAppRouter() {
         { path: 'stocks/:id', element: <StockDetailPage /> },
         { path: 'document-serial-type-management', element: <DocumentSerialTypeManagementPage /> },
         { path: 'definitions/sales-type-management', element: <SalesTypeManagementPage /> },
+        { path: 'definitions/windo-profil-demir-vida-tanimlama', element: <WindoProfilDemirVidaTanimlamaPage /> },
         { path: 'definitions/sales-rep-management', element: <SalesRepManagementPage /> },
         { path: 'definitions/sales-rep-match-management', element: <SalesRepMatchManagementPage /> },
         { path: 'definitions/category-definitions', element: <CategoryDefinitionsPage /> },
         { path: 'access-control/permission-definitions', element: <PermissionDefinitionsPage /> },
         { path: 'access-control/permission-groups', element: <PermissionGroupsPage /> },
         { path: 'access-control/user-group-assignments', element: <UserGroupAssignmentsPage /> },
+        { path: 'access-control/visibility-policies', element: <VisibilityPoliciesPage /> },
+        { path: 'access-control/user-visibility-assignments', element: <UserVisibilityAssignmentsPage /> },
+        { path: 'access-control/visibility-simulator', element: <VisibilitySimulatorPage /> },
         { path: 'hangfire-monitoring', element: <HangfireMonitoringPage /> },
         { path: 'settings/integrations/google', element: <GoogleConnectionPage /> },
         { path: 'settings/integrations/google/sync', element: <GoogleSyncPage /> },

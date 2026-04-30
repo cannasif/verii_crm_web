@@ -41,6 +41,7 @@ const ROUTE_NAMESPACE_ENTRIES: Array<{ match: (pathname: string) => boolean; nam
   { match: (pathname) => pathname.startsWith('/stocks'), namespaces: ['stock'] },
   { match: (pathname) => pathname.startsWith('/document-serial-type-management'), namespaces: ['document-serial-type-management'] },
   { match: (pathname) => pathname.startsWith('/definitions/sales-type-management'), namespaces: ['sales-type-management'] },
+  { match: (pathname) => pathname.startsWith('/definitions/windo-profil-demir-vida-tanimlama'), namespaces: ['common'] },
   { match: (pathname) => pathname.startsWith('/definitions/sales-rep-management'), namespaces: ['sales-rep-management'] },
   { match: (pathname) => pathname.startsWith('/definitions/sales-rep-match-management'), namespaces: ['sales-rep-match-management'] },
   { match: (pathname) => pathname.startsWith('/definitions/category-definitions'), namespaces: ['category-definitions'] },

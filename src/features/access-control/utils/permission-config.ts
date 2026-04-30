@@ -78,6 +78,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/definitions/activity-shipping-management': 'definitions.activity-shipping-management.view',
   '/document-serial-type-management': 'definitions.document-serial-type-management.view',
   '/definitions/sales-type-management': 'definitions.sales-type-management.view',
+  '/definitions/windo-profil-demir-vida-tanimlama': 'definitions.category-definitions.view',
   '/definitions/sales-rep-management': 'definitions.sales-rep-management.view',
   '/definitions/sales-rep-match-management': 'definitions.sales-rep-match-management.view',
   '/definitions/category-definitions': 'definitions.category-definitions.view',
@@ -99,6 +100,9 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/access-control/permission-definitions': 'access-control.permission-definitions.view',
   '/access-control/permission-groups': 'access-control.permission-groups.view',
   '/access-control/user-group-assignments': 'access-control.user-group-assignments.view',
+  '/access-control/visibility-policies': 'access-control.permission-groups.view',
+  '/access-control/user-visibility-assignments': 'access-control.user-group-assignments.view',
+  '/access-control/visibility-simulator': 'access-control.permission-groups.view',
 };
 
 export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: string }> = [
@@ -178,6 +182,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/definitions\/activity-shipping-management(\/|$)/, permission: 'definitions.activity-shipping-management.view' },
   { pattern: /^\/document-serial-type-management(\/|$)/, permission: 'definitions.document-serial-type-management.view' },
   { pattern: /^\/definitions\/sales-type-management(\/|$)/, permission: 'definitions.sales-type-management.view' },
+  { pattern: /^\/definitions\/windo-profil-demir-vida-tanimlama(\/|$)/, permission: 'definitions.category-definitions.view' },
   { pattern: /^\/definitions\/sales-rep-management(\/|$)/, permission: 'definitions.sales-rep-management.view' },
   { pattern: /^\/definitions\/sales-rep-match-management(\/|$)/, permission: 'definitions.sales-rep-match-management.view' },
   { pattern: /^\/definitions\/category-definitions(\/|$)/, permission: 'definitions.category-definitions.view' },
@@ -193,6 +198,9 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/access-control\/permission-definitions(\/|$)/, permission: 'access-control.permission-definitions.view' },
   { pattern: /^\/access-control\/permission-groups(\/|$)/, permission: 'access-control.permission-groups.view' },
   { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
+  { pattern: /^\/access-control\/visibility-policies(\/|$)/, permission: 'access-control.permission-groups.view' },
+  { pattern: /^\/access-control\/user-visibility-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
+  { pattern: /^\/access-control\/visibility-simulator(\/|$)/, permission: 'access-control.permission-groups.view' },
 ];
 
 export function isLeafPermissionCode(code: string): boolean {

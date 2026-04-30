@@ -19,6 +19,16 @@
       "groups": "The user receives the combined permissions from all selected groups.",
       "save": "Assignments take effect immediately for the next authorization checks. Users may need to refresh their session.",
       "systemAdminNote": "If the user belongs to a system administrator group, detailed permissions are skipped."
+    },
+    "visibilityPolicy": {
+      "code": "Use a unique code so the policy can be recognized in assignment and audit flows.",
+      "name": "Display name that administrators will see while managing the policy.",
+      "includeSelf": "When enabled, the user's own records remain visible within this scope.",
+      "isActive": "Inactive policies stay out of new assignments and access decisions."
+    },
+    "userVisibilityAssignment": {
+      "user": "Select the user whose entity visibility you want to manage.",
+      "policy": "Choose one active visibility policy per entity or leave it empty."
     }
   },
   "permissionDefinitions": {
@@ -127,6 +137,118 @@
     "noGroups": "No permission groups available",
     "selectAll": "Select all"
   },
+  "visibilityPolicies": {
+    "title": "Visibility policies",
+    "description": "Manage policy sets that define who can see which records",
+    "add": "Add policy",
+    "search": "Search policies...",
+    "table": {
+      "title": "Visibility policy list",
+      "code": "Code",
+      "name": "Name",
+      "entityType": "Entity",
+      "scopeType": "Scope",
+      "includeSelf": "Include self",
+      "isActive": "Active",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "stats": {
+      "total": "Total policies",
+      "active": "Active policies",
+      "entities": "Entity types"
+    },
+    "form": {
+      "addTitle": "Add visibility policy",
+      "editTitle": "Edit visibility policy",
+      "addDescription": "Create a new visibility policy definition",
+      "editDescription": "Update the selected visibility policy settings",
+      "code": "Code",
+      "codePlaceholder": "example.quotation.team",
+      "name": "Name",
+      "namePlaceholder": "Team quotation visibility",
+      "entityType": "Entity",
+      "entityTypePlaceholder": "Select entity",
+      "scopeType": "Scope",
+      "scopeTypePlaceholder": "Select scope",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional short description",
+      "includeSelf": "Include the user's own records",
+      "isActive": "Active",
+      "summaryTitle": "Policy summary",
+      "summary": "{{scope}} scope will be applied for {{entity}} records."
+    },
+    "scope": {
+      "self": "Self only",
+      "managerHierarchy": "Manager hierarchy",
+      "permissionGroup": "Permission group",
+      "company": "Company-wide"
+    },
+    "entity": {
+      "activity": "Activity",
+      "quotation": "Quotation",
+      "demand": "Demand",
+      "order": "Order"
+    }
+  },
+  "userVisibilityAssignments": {
+    "title": "User visibility assignments",
+    "description": "Manage entity visibility policy assignments per user",
+    "selectUser": "Select user",
+    "selectedUser": "Selected user",
+    "selectUserPlaceholder": "Search and select a user...",
+    "selectUserHint": "Select a user to manage visibility assignments",
+    "assignedPolicies": "Assigned policies",
+    "status": "Status",
+    "ready": "Up to date",
+    "unassigned": "Unassigned",
+    "cardDescription": "Choose the visibility policy that will be applied to {{entity}} records for this user.",
+    "selectPolicyPlaceholder": "Select policy",
+    "noPolicy": "No policy"
+  },
+  "visibilitySimulator": {
+    "title": "Visibility simulator",
+    "description": "Test which users' records and active approval override records are visible to the selected user for the selected entity type.",
+    "selectUser": "User",
+    "helpUser": "Select the user whose visibility you want to simulate.",
+    "selectUserPlaceholder": "Select a user...",
+    "selectEntity": "Entity",
+    "helpEntity": "Select the module for which you want to simulate record visibility.",
+    "selectEntityPlaceholder": "Select entity",
+    "recordId": "Record ID",
+    "recordIdPlaceholder": "e.g. 125",
+    "helpRecordId": "Enter a specific record ID to simulate whether view, update, delete, and approve actions are allowed.",
+    "selectedUser": "Selected user",
+    "entity": "Entity",
+    "visibleUsers": "Visible users",
+    "approvalOverrides": "Approval override records",
+    "visibleUsersTitle": "Users inside scope",
+    "policyDefined": "Policy defined",
+    "noPolicy": "No policy",
+    "companyWide": "Company-wide access",
+    "policyActive": "An active visibility policy is applied",
+    "includeSelf": "includes self",
+    "awaitingSelection": "Select a user and entity first",
+    "overrideTitle": "Active approval override records",
+    "noOverrides": "No active approval override records found",
+    "overrideRecord": "Record #{{id}}",
+    "auditTitle": "Approval override audit",
+    "noAudit": "No active approval override audit entries found",
+    "auditActionId": "Approval action",
+    "auditRequestId": "Approval request",
+    "auditFlow": "Flow",
+    "auditApprover": "Approver",
+    "auditStepValue": "Step {{step}} / current {{currentStep}}",
+    "actionPanelTitle": "Record-level action simulation",
+    "noRecordSimulation": "When you enter a record ID, the view / update / delete / approve result will appear here.",
+    "actionAllowed": "Allowed",
+    "actionDenied": "Denied",
+    "action": {
+      "view": "View",
+      "update": "Update",
+      "delete": "Delete",
+      "approve": "Approve"
+    }
+  },
   "common": {
     "cancel": "Cancel",
     "saving": "Saving...",
@@ -147,6 +269,8 @@
     "accessControl": "Access control",
     "permissionDefinitions": "Permission definitions",
     "permissionGroups": "Permission groups",
-    "userGroupAssignments": "User group assignments"
+    "userGroupAssignments": "User group assignments",
+    "visibilityPolicies": "Visibility policies",
+    "userVisibilityAssignments": "User visibility assignments"
   }
 }
