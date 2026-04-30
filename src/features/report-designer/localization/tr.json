@@ -24,7 +24,9 @@
       "subtitle": "Öğeleri sayfaya sürükleyerek yerleştirin.",
       "basicBlocks": "Temel bloklar",
       "searchPlaceholder": "Alan ara…",
-      "noSearchResults": "Sonuç bulunamadı"
+      "noSearchResults": "Sonuç bulunamadı",
+      "headerFields": "Üst bilgi alanları",
+      "lineFields": "Satır alanları"
     },
     "sections": {
       "page": "Tam sayfa",

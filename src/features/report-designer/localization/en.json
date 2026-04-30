@@ -24,7 +24,9 @@
       "subtitle": "Drag items onto the page to place them.",
       "basicBlocks": "Basic blocks",
       "searchPlaceholder": "Search fields…",
-      "noSearchResults": "No results"
+      "noSearchResults": "No results",
+      "headerFields": "Header fields",
+      "lineFields": "Line fields"
     },
     "sections": {
       "page": "Full page",
