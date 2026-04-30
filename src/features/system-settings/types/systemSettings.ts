@@ -19,11 +19,6 @@ export const systemSettingsFormSchema = z.object({
   numberFormat: z.string().min(1, 'common.required'),
   decimalPlaces: z.coerce.number().int().min(0).max(6),
   restrictCustomersBySalesRepMatch: z.boolean(),
-  /** Cihazda saklanır; API payload’ına dahil edilmez. */
-  showDescriptionFieldsSection: z.boolean(),
-  customDescriptionLabel1: z.string().max(100),
-  customDescriptionLabel2: z.string().max(100),
-  customDescriptionLabel3: z.string().max(100),
 });
 
 export type SystemSettingsFormSchema = z.infer<typeof systemSettingsFormSchema>;

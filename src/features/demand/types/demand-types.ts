@@ -95,6 +95,9 @@ export interface CreateDemandLineDto {
   description1?: string | null;
   description2?: string | null;
   description3?: string | null;
+  profilDefinitionId?: number | null;
+  demirDefinitionId?: number | null;
+  vidaDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -126,6 +129,9 @@ export interface UpdateDemandLineDto {
   description1?: string | null;
   description2?: string | null;
   description3?: string | null;
+  profilDefinitionId?: number | null;
+  demirDefinitionId?: number | null;
+  vidaDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -160,6 +166,9 @@ export interface DemandLineGetDto {
   description1?: string | null;
   description2?: string | null;
   description3?: string | null;
+  profilDefinitionId?: number | null;
+  demirDefinitionId?: number | null;
+  vidaDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;

@@ -5,7 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -26,9 +32,8 @@ import type { UploadPdfAssetOptions } from '@/features/pdf-report/api/pdf-report
 import { getImageUrl } from '@/lib/image-url';
 import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X, LayoutGrid, ImagePlus, Trash2 } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { useLineFormUiPreferencesStore } from '@/stores/line-form-ui-preferences-store';
-import { applyLineDescriptionSavePolicy } from '@/lib/apply-line-description-save-policy';
 import { isIntegerQuantityUnit } from '@/lib/system-settings';
+import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 
 interface TemporaryStockData {
   productCode: string;
@@ -114,11 +119,8 @@ export function QuotationLineForm({
   imageUploadExtras,
 }: QuotationLineFormProps): ReactElement {
   const { t } = useTranslation(['quotation', 'common']);
-  const showDescriptionSectionPref = useLineFormUiPreferencesStore((s) => s.showDescriptionFieldsSection);
-  const customDescLabel1 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel1);
-  const customDescLabel2 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel2);
-  const customDescLabel3 = useLineFormUiPreferencesStore((s) => s.customDescriptionLabel3);
   const { calculateLineTotals } = useQuotationCalculations();
+  const { profilOptions, demirOptions, vidaOptions, isLoading: isDefinitionOptionsLoading } = useWindoDefinitionOptions();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
@@ -160,22 +162,6 @@ export function QuotationLineForm({
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const persistedLineId = imageUploadExtras?.quotationLineId;
-
-  const [descriptionSlotsEnabled, setDescriptionSlotsEnabled] = useState<[boolean, boolean, boolean]>([true, true, true]);
-
-  useEffect(() => {
-    setDescriptionSlotsEnabled([true, true, true]);
-  }, [line.id]);
-
-  const descriptionSlotLabels = useMemo(
-    () =>
-      [
-        customDescLabel1.trim() || t('quotation.lines.descriptionField1Label'),
-        customDescLabel2.trim() || t('quotation.lines.descriptionField2Label'),
-        customDescLabel3.trim() || t('quotation.lines.descriptionField3Label'),
-      ] as const,
-    [customDescLabel1, customDescLabel2, customDescLabel3, t]
-  );
 
   type DiscountField = 'discountRate1' | 'discountRate2' | 'discountRate3';
   const discountInputs = useMemo<
@@ -781,16 +767,8 @@ export function QuotationLineForm({
       const nested = (lineItem as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines ?? [];
       return [lineItem, ...nested];
     });
-
-    const prefs = useLineFormUiPreferencesStore.getState();
-    const policy = {
-      showDescriptionFieldsSection: prefs.showDescriptionFieldsSection,
-      slotEnabled: descriptionSlotsEnabled,
-    };
-    const linesWithDescriptionPolicy = flattenedLines.map((l) => applyLineDescriptionSavePolicy(l, policy));
-
     if (onSaveMultiple) {
-      onSaveMultiple(linesWithDescriptionPolicy);
+      onSaveMultiple(flattenedLines);
     } else {
       const firstLine = bulkDraftLines[0];
       if (firstLine) {
@@ -989,19 +967,11 @@ export function QuotationLineForm({
   };
 
   const handleSave = (): void => {
-    const prefs = useLineFormUiPreferencesStore.getState();
-    const policy = {
-      showDescriptionFieldsSection: prefs.showDescriptionFieldsSection,
-      slotEnabled: descriptionSlotsEnabled,
-    };
     if (onSaveMultiple && relatedLines.length > 0) {
-      const linesToSave = [
-        applyLineDescriptionSavePolicy(formData, policy),
-        ...relatedLines.map((rl) => applyLineDescriptionSavePolicy(rl, policy)),
-      ];
+      const linesToSave = [formData, ...relatedLines];
       onSaveMultiple(linesToSave);
     } else if (onSave) {
-      onSave(applyLineDescriptionSavePolicy(formData, policy));
+      onSave(formData);
     }
   };
 
@@ -1341,92 +1311,108 @@ export function QuotationLineForm({
             </div>
           )}
 
-          {showDescriptionSectionPref ? (
-            <div className="space-y-3">
-              <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                {t('quotation.lines.descriptionFieldsTitle')}
-              </h5>
-              <p className="text-xs text-muted-foreground">{t('lineFormPreferences.slotToggleHint', { ns: 'common' })}</p>
-              <div className="flex flex-wrap items-center gap-4">
-                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
-                  <Checkbox
-                    checked={descriptionSlotsEnabled[0]}
-                    onCheckedChange={(v) => {
-                      const on = v === true;
-                      setDescriptionSlotsEnabled((prev) => [on, prev[1], prev[2]]);
-                      if (!on) handleFieldChange('description1', null);
-                    }}
-                  />
-                  {descriptionSlotLabels[0]}
+          <div className="space-y-3">
+            <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              {t('quotation.lines.descriptionFieldsTitle')}
+            </h5>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                  {t('quotation.lines.descriptionField1Label')}
                 </label>
-                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
-                  <Checkbox
-                    checked={descriptionSlotsEnabled[1]}
-                    onCheckedChange={(v) => {
-                      const on = v === true;
-                      setDescriptionSlotsEnabled((prev) => [prev[0], on, prev[2]]);
-                      if (!on) handleFieldChange('description2', null);
-                    }}
-                  />
-                  {descriptionSlotLabels[1]}
-                </label>
-                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
-                  <Checkbox
-                    checked={descriptionSlotsEnabled[2]}
-                    onCheckedChange={(v) => {
-                      const on = v === true;
-                      setDescriptionSlotsEnabled((prev) => [prev[0], prev[1], on]);
-                      if (!on) handleFieldChange('description3', null);
-                    }}
-                  />
-                  {descriptionSlotLabels[2]}
-                </label>
+                <Input
+                  value={formData.description1 ?? ''}
+                  onChange={(e) => handleFieldChange('description1', e.target.value || null)}
+                  maxLength={200}
+                  placeholder={t('quotation.lines.max200Chars')}
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                />
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                    {descriptionSlotLabels[0]}
-                  </label>
-                  <Input
-                    value={formData.description1 ?? ''}
-                    onChange={(e) => handleFieldChange('description1', e.target.value || null)}
-                    maxLength={200}
-                    placeholder={t('quotation.lines.max200Chars')}
-                    disabled={!descriptionSlotsEnabled[0]}
-                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                    {descriptionSlotLabels[1]}
-                  </label>
-                  <Input
-                    value={formData.description2 ?? ''}
-                    onChange={(e) => handleFieldChange('description2', e.target.value || null)}
-                    maxLength={200}
-                    placeholder={t('quotation.lines.max200Chars')}
-                    disabled={!descriptionSlotsEnabled[1]}
-                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                    {descriptionSlotLabels[2]}
-                  </label>
-                  <Input
-                    value={formData.description3 ?? ''}
-                    onChange={(e) => handleFieldChange('description3', e.target.value || null)}
-                    maxLength={200}
-                    placeholder={t('quotation.lines.max200Chars')}
-                    disabled={!descriptionSlotsEnabled[2]}
-                    className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                  {t('quotation.lines.descriptionField2Label')}
+                </label>
+                <Input
+                  value={formData.description2 ?? ''}
+                  onChange={(e) => handleFieldChange('description2', e.target.value || null)}
+                  maxLength={200}
+                  placeholder={t('quotation.lines.max200Chars')}
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                  {t('quotation.lines.descriptionField3Label')}
+                </label>
+                <Input
+                  value={formData.description3 ?? ''}
+                  onChange={(e) => handleFieldChange('description3', e.target.value || null)}
+                  maxLength={200}
+                  placeholder={t('quotation.lines.max200Chars')}
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                />
               </div>
             </div>
-          ) : null}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Profil</label>
+                <Select
+                  value={formData.profilDefinitionId ? String(formData.profilDefinitionId) : 'none'}
+                  onValueChange={(value) => handleFieldChange('profilDefinitionId', value === 'none' ? null : Number(value))}
+                >
+                  <SelectTrigger className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] ${pinkFocusClass}`}>
+                    <SelectValue placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Profil seç'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Seçim yok</SelectItem>
+                    {profilOptions.map((option) => (
+                      <SelectItem key={option.id} value={String(option.id)}>
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Demir</label>
+                <Select
+                  value={formData.demirDefinitionId ? String(formData.demirDefinitionId) : 'none'}
+                  onValueChange={(value) => handleFieldChange('demirDefinitionId', value === 'none' ? null : Number(value))}
+                >
+                  <SelectTrigger className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] ${pinkFocusClass}`}>
+                    <SelectValue placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Demir seç'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Seçim yok</SelectItem>
+                    {demirOptions.map((option) => (
+                      <SelectItem key={option.id} value={String(option.id)}>
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Vida</label>
+                <Select
+                  value={formData.vidaDefinitionId ? String(formData.vidaDefinitionId) : 'none'}
+                  onValueChange={(value) => handleFieldChange('vidaDefinitionId', value === 'none' ? null : Number(value))}
+                >
+                  <SelectTrigger className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] ${pinkFocusClass}`}>
+                    <SelectValue placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Vida seç'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Seçim yok</SelectItem>
+                    {vidaOptions.map((option) => (
+                      <SelectItem key={option.id} value={String(option.id)}>
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="xl:col-span-5 flex flex-col gap-4">

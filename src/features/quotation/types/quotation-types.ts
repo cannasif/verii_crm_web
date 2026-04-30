@@ -133,6 +133,9 @@ export interface CreateQuotationLineDto {
   description1?: string | null;
   description2?: string | null;
   description3?: string | null;
+  profilDefinitionId?: number | null;
+  demirDefinitionId?: number | null;
+  vidaDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -164,6 +167,9 @@ export interface UpdateQuotationLineDto {
   description1?: string | null;
   description2?: string | null;
   description3?: string | null;
+  profilDefinitionId?: number | null;
+  demirDefinitionId?: number | null;
+  vidaDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -198,6 +204,9 @@ export interface QuotationLineGetDto {
   description1?: string | null;
   description2?: string | null;
   description3?: string | null;
+  profilDefinitionId?: number | null;
+  demirDefinitionId?: number | null;
+  vidaDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;

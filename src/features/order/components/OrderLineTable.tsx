@@ -60,6 +60,7 @@ import {
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
+import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 
 function toCreateDto(line: OrderLineFormState, orderId: number): CreateOrderLineDto {
   const { id, isEditing, relatedLines, unit, ...rest } = line;
@@ -116,6 +117,9 @@ function dtoToFormState(dto: OrderLineGetDto, index: number): OrderLineFormState
     description1: dto.description1 ?? null,
     description2: dto.description2 ?? null,
     description3: dto.description3 ?? null,
+    profilDefinitionId: dto.profilDefinitionId ?? null,
+    demirDefinitionId: dto.demirDefinitionId ?? null,
+    vidaDefinitionId: dto.vidaDefinitionId ?? null,
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
     projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
     imagePath: dto.imagePath ?? null,
@@ -151,6 +155,9 @@ function toUpdateDto(line: OrderLineFormState, orderId: number): OrderLineGetDto
     description1: line.description1 ?? null,
     description2: line.description2 ?? null,
     description3: line.description3 ?? null,
+    profilDefinitionId: line.profilDefinitionId ?? null,
+    demirDefinitionId: line.demirDefinitionId ?? null,
+    vidaDefinitionId: line.vidaDefinitionId ?? null,
     pricingRuleHeaderId: line.pricingRuleHeaderId ?? null,
     projectCode: line.projectCode ?? null,
     erpProjectCode: line.projectCode ?? null,
@@ -192,6 +199,7 @@ export function OrderLineTable({
 }: OrderLineTableProps): ReactElement {
   const linesEditable = enabled;
   const { t } = useTranslation();
+  const { profilMap, demirMap, vidaMap } = useWindoDefinitionOptions();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -968,11 +976,14 @@ export function OrderLineTable({
                                 </div>
                               )}
 
-                              {(line.description1 || line.description2 || line.description3) && (
+                              {(line.description1 || line.description2 || line.description3 || line.profilDefinitionId || line.demirDefinitionId || line.vidaDefinitionId) && (
                                 <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                                  {line.description1 && <div className="line-clamp-1">Profile: {line.description1}</div>}
-                                  {line.description2 && <div className="line-clamp-1">Demir: {line.description2}</div>}
-                                  {line.description3 && <div className="line-clamp-1">Vida: {line.description3}</div>}
+                                  {line.description1 && <div className="line-clamp-1">Açıklama 1: {line.description1}</div>}
+                                  {line.description2 && <div className="line-clamp-1">Açıklama 2: {line.description2}</div>}
+                                  {line.description3 && <div className="line-clamp-1">Açıklama 3: {line.description3}</div>}
+                                  {line.profilDefinitionId && <div className="line-clamp-1">Profil: {profilMap[line.profilDefinitionId] ?? `#${line.profilDefinitionId}`}</div>}
+                                  {line.demirDefinitionId && <div className="line-clamp-1">Demir: {demirMap[line.demirDefinitionId] ?? `#${line.demirDefinitionId}`}</div>}
+                                  {line.vidaDefinitionId && <div className="line-clamp-1">Vida: {vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`}</div>}
                                 </div>
                               )}
                             </div>

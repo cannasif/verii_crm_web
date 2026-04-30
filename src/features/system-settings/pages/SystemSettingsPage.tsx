@@ -5,7 +5,6 @@ import { SystemSettingsForm } from '../components/SystemSettingsForm';
 import { useSystemSettingsQuery } from '../hooks/useSystemSettingsQuery';
 import { useUpdateSystemSettingsMutation } from '../hooks/useUpdateSystemSettingsMutation';
 import type { SystemSettingsFormSchema, UpdateSystemSettingsDto } from '../types/systemSettings';
-import { useLineFormUiPreferencesStore } from '@/stores/line-form-ui-preferences-store';
 
 export function SystemSettingsPage(): ReactElement {
   const { t } = useTranslation();
@@ -26,13 +25,6 @@ export function SystemSettingsPage(): ReactElement {
     };
 
     await updateMutation.mutateAsync(payload);
-
-    const { setShowDescriptionFieldsSection, setCustomDescriptionLabel1, setCustomDescriptionLabel2, setCustomDescriptionLabel3 } =
-      useLineFormUiPreferencesStore.getState();
-    setShowDescriptionFieldsSection(values.showDescriptionFieldsSection);
-    setCustomDescriptionLabel1(values.customDescriptionLabel1);
-    setCustomDescriptionLabel2(values.customDescriptionLabel2);
-    setCustomDescriptionLabel3(values.customDescriptionLabel3);
   };
 
   return (

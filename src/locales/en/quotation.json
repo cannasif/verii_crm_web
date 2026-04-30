@@ -167,9 +167,9 @@
     "deleteSuccess": "Quotation line deleted.",
     "deleteError": "Quotation line could not be deleted.",
     "descriptionFieldsTitle": "Profile, rebar, screw",
-    "descriptionField1Label": "Profile",
-    "descriptionField2Label": "Rebar",
-    "descriptionField3Label": "Screw"
+    "descriptionField1Label": "Description 1",
+    "descriptionField2Label": "Description 2",
+    "descriptionField3Label": "Description 3"
   },
   "exchangeRates": {
     "title": "Exchange Rates",
