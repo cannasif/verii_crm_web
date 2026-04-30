@@ -1,0 +1,53 @@
+{
+  "page": {
+    "title": "Windo profile / rebar / screw definitions",
+    "description": "Manage profile, rebar, and screw records using the same paged table pattern as other definition screens.",
+    "documentTitle": "Windo profile / rebar / screw"
+  },
+  "sections": {
+    "profil": {
+      "title": "Profile definitions",
+      "description": "Manage profile options selectable on document lines."
+    },
+    "demir": {
+      "title": "Rebar definitions",
+      "description": "Manage rebar options selectable on document lines."
+    },
+    "vida": {
+      "title": "Screw definitions",
+      "description": "Manage screw options selectable on document lines."
+    }
+  },
+  "table": {
+    "id": "ID",
+    "name": "Name",
+    "createdDate": "Created",
+    "updatedDate": "Updated",
+    "newRecord": "New record",
+    "searchPlaceholder": "Search definitions...",
+    "refresh": "Refresh",
+    "loading": "Loading definitions...",
+    "empty": "No records found.",
+    "actions": "Actions",
+    "previous": "Previous",
+    "next": "Next",
+    "pagination": "Showing {{from}}-{{to}} of {{total}} records",
+    "filterName": "Name",
+    "dateDash": "-"
+  },
+  "dialog": {
+    "editTitle": "Edit {{section}}",
+    "addTitle": "Add {{section}}",
+    "nameLabel": "Name",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "validation": {
+    "nameRequired": "Name is required"
+  },
+  "toasts": {
+    "created": "{{section}} record created",
+    "updated": "{{section}} record updated",
+    "deleted": "{{section}} record deleted"
+  }
+}

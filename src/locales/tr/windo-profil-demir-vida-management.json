@@ -1,0 +1,53 @@
+{
+  "page": {
+    "title": "Windo Profil / Demir / Vida Tanımlama",
+    "description": "Profil, demir ve vida kayıtlarını proje genelindeki yönetim sayfalarıyla uyumlu, sayfalı tablo yapısında yönetin.",
+    "documentTitle": "Windo Profil / Demir / Vida"
+  },
+  "sections": {
+    "profil": {
+      "title": "Profil Tanımla",
+      "description": "Satır bazında seçilecek profil tanımlarını yönetin."
+    },
+    "demir": {
+      "title": "Demir Tanımla",
+      "description": "Satır bazında seçilecek demir tanımlarını yönetin."
+    },
+    "vida": {
+      "title": "Vida Tanımla",
+      "description": "Satır bazında seçilecek vida tanımlarını yönetin."
+    }
+  },
+  "table": {
+    "id": "ID",
+    "name": "Ad",
+    "createdDate": "Oluşturulma",
+    "updatedDate": "Güncellenme",
+    "newRecord": "Yeni Kayıt",
+    "searchPlaceholder": "Tanım ara...",
+    "refresh": "Yenile",
+    "loading": "Tanımlar yükleniyor...",
+    "empty": "Kayıt bulunamadı.",
+    "actions": "İşlem",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "pagination": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor",
+    "filterName": "Ad",
+    "dateDash": "-"
+  },
+  "dialog": {
+    "editTitle": "{{section}} güncelle",
+    "addTitle": "{{section}} ekle",
+    "nameLabel": "Ad",
+    "cancel": "İptal",
+    "save": "Kaydet"
+  },
+  "validation": {
+    "nameRequired": "Ad alanı zorunludur"
+  },
+  "toasts": {
+    "created": "{{section}} kaydı oluşturuldu",
+    "updated": "{{section}} kaydı güncellendi",
+    "deleted": "{{section}} kaydı silindi"
+  }
+}

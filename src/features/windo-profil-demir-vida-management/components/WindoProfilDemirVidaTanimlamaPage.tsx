@@ -1,5 +1,6 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
@@ -22,6 +23,8 @@ import type { FilterRow } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { windoDefinitionApi } from '../api/windo-definition-api';
 import type { WindoDefinitionCreateDto, WindoDefinitionGetDto } from '../types/windo-definition-types';
+
+const WINDO_I18N_NS = 'windo-profil-demir-vida-management' as const;
 
 type DefinitionKind = 'profil' | 'demir' | 'vida';
 type SortKey = 'id' | 'name' | 'createdDate' | 'updatedDate';
@@ -51,15 +54,16 @@ interface DefinitionSectionConfig {
 
 const PAGE_KEY = 'windo-profil-demir-vida-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+const EMPTY_DEFINITION_ROWS: WindoDefinitionGetDto[] = [];
 const SORT_MAP: Record<SortKey, string> = {
   id: 'Id',
   name: 'Name',
   createdDate: 'CreatedDate',
   updatedDate: 'UpdatedDate',
 };
-const FILTER_COLUMNS = [{ value: 'name', type: 'string', labelKey: 'name' }] as const;
 
 function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig }): ReactElement {
+  const { t, i18n } = useTranslation(WINDO_I18N_NS);
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
@@ -74,6 +78,13 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   const [editingItem, setEditingItem] = useState<WindoDefinitionGetDto | null>(null);
   const [columnOrder, setColumnOrder] = useState<string[]>(['id', 'name', 'createdDate', 'updatedDate']);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['id', 'name', 'createdDate', 'updatedDate']);
+
+  const dateLocale = i18n.language.startsWith('tr') ? 'tr-TR' : 'en-US';
+
+  const filterColumns = useMemo(
+    () => [{ value: 'name', type: 'string' as const, labelKey: 'table.filterName' }],
+    []
+  );
 
   useEffect(() => {
     const defaults = ['id', 'name', 'createdDate', 'updatedDate'];
@@ -99,7 +110,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       }),
   });
 
-  const data = apiResponse?.data ?? [];
+  const data = apiResponse?.data ?? EMPTY_DEFINITION_ROWS;
   const totalCount = apiResponse?.totalCount ?? 0;
   const totalPages = apiResponse?.totalPages ?? 1;
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
@@ -112,12 +123,12 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
 
   const columns = useMemo<DataTableGridColumn<SortKey>[]>(
     () => [
-      { key: 'id', label: 'ID', cellClassName: 'whitespace-nowrap text-slate-500' },
-      { key: 'name', label: 'Ad' },
-      { key: 'createdDate', label: 'Oluşturulma' },
-      { key: 'updatedDate', label: 'Güncellenme' },
+      { key: 'id', label: t('table.id'), cellClassName: 'whitespace-nowrap text-slate-500' },
+      { key: 'name', label: t('table.name') },
+      { key: 'createdDate', label: t('table.createdDate') },
+      { key: 'updatedDate', label: t('table.updatedDate') },
     ],
-    []
+    [t]
   );
 
   const exportColumns = useMemo(
@@ -129,18 +140,26 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
     [columns, orderedVisibleColumns]
   );
 
+  const formatDateCell = useCallback(
+    (value: string | null | undefined): string => {
+      if (!value) return t('table.dateDash');
+      return new Date(value).toLocaleDateString(dateLocale);
+    },
+    [dateLocale, t]
+  );
+
   const exportRows = useMemo(
     () =>
       data.map((row) => ({
         id: row.id,
         name: row.name,
-        createdDate: row.createdDate ? new Date(row.createdDate).toLocaleDateString('tr-TR') : '',
-        updatedDate: row.updatedDate ? new Date(row.updatedDate).toLocaleDateString('tr-TR') : '',
+        createdDate: row.createdDate ? new Date(row.createdDate).toLocaleDateString(dateLocale) : '',
+        updatedDate: row.updatedDate ? new Date(row.updatedDate).toLocaleDateString(dateLocale) : '',
       })),
-    [data]
+    [data, dateLocale]
   );
 
-  const invalidate = async () => {
+  const invalidate = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: ['windo-definition-management', config.queryKey] });
     await queryClient.invalidateQueries({ queryKey: ['windo-definition', config.kind] });
   };
@@ -148,7 +167,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   const createMutation = useMutation({
     mutationFn: config.create,
     onSuccess: async () => {
-      toast.success(`${config.title} kaydı oluşturuldu`);
+      toast.success(t('toasts.created', { section: config.title }));
       await invalidate();
       setDialogOpen(false);
       setDraftName('');
@@ -158,7 +177,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: WindoDefinitionCreateDto }) => config.update(id, data),
     onSuccess: async () => {
-      toast.success(`${config.title} kaydı güncellendi`);
+      toast.success(t('toasts.updated', { section: config.title }));
       await invalidate();
       setDialogOpen(false);
       setEditingItem(null);
@@ -169,15 +188,15 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   const deleteMutation = useMutation({
     mutationFn: config.remove,
     onSuccess: async () => {
-      toast.success(`${config.title} kaydı silindi`);
+      toast.success(t('toasts.deleted', { section: config.title }));
       await invalidate();
     },
   });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     const name = draftName.trim();
     if (!name) {
-      toast.error('Ad alanı zorunludur');
+      toast.error(t('validation.nameRequired'));
       return;
     }
 
@@ -192,6 +211,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   useEffect(() => {
     setPageNumber(1);
   }, [pageSize, serverSearchTerm, sortBy, sortDirection]);
+
+  const paginationInfoText = t('table.pagination', { total: totalCount, from: startRow, to: endRow });
 
   return (
     <>
@@ -212,7 +233,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               }}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Yeni Kayıt
+              {t('table.newRecord')}
             </Button>
           </div>
           <DataTableActionBar
@@ -226,7 +247,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
             exportFileName={`windo-${config.kind}`}
             exportColumns={exportColumns}
             exportRows={exportRows}
-            filterColumns={FILTER_COLUMNS}
+            filterColumns={filterColumns}
             defaultFilterColumn="name"
             draftFilterRows={draftFilterRows}
             onDraftFilterRowsChange={setDraftFilterRows}
@@ -235,10 +256,10 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               setDraftFilterRows([]);
               setAppliedFilterRows([]);
             }}
-            translationNamespace="common"
+            translationNamespace={WINDO_I18N_NS}
             appliedFilterCount={appliedFilterCount}
             searchValue={searchTerm}
-            searchPlaceholder="Tanım ara..."
+            searchPlaceholder={t('table.searchPlaceholder')}
             onSearchChange={setSearchTerm}
             leftSlot={
               <Button
@@ -249,7 +270,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                 disabled={isFetching}
               >
                 {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-                Yenile
+                {t('table.refresh')}
               </Button>
             }
           />
@@ -263,8 +284,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               rowKey={(row) => row.id}
               renderCell={(row, key) => {
                 if (key === 'id') return `#${row.id}`;
-                if (key === 'createdDate') return row.createdDate ? new Date(row.createdDate).toLocaleDateString('tr-TR') : '-';
-                if (key === 'updatedDate') return row.updatedDate ? new Date(row.updatedDate).toLocaleDateString('tr-TR') : '-';
+                if (key === 'createdDate') return formatDateCell(row.createdDate);
+                if (key === 'updatedDate') return formatDateCell(row.updatedDate);
                 return row.name;
               }}
               sortBy={sortBy}
@@ -286,11 +307,11 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                 );
               }}
               isLoading={isLoading}
-              loadingText="Tanımlar yükleniyor..."
-              emptyText="Kayıt bulunamadı."
+              loadingText={t('table.loading')}
+              emptyText={t('table.empty')}
               minTableWidthClassName="min-w-[720px]"
               showActionsColumn
-              actionsHeaderLabel="İşlem"
+              actionsHeaderLabel={t('table.actions')}
               renderActionsCell={(item) => (
                 <div className="flex justify-end gap-2">
                   <Button
@@ -331,9 +352,9 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               hasNextPage={apiResponse?.hasNextPage ?? pageNumber < totalPages}
               onPreviousPage={() => setPageNumber((current) => Math.max(1, current - 1))}
               onNextPage={() => setPageNumber((current) => Math.min(totalPages, current + 1))}
-              previousLabel="Önceki"
-              nextLabel="Sonraki"
-              paginationInfoText={`Toplam ${totalCount} kayıttan ${startRow}-${endRow} arası gösteriliyor`}
+              previousLabel={t('table.previous')}
+              nextLabel={t('table.next')}
+              paginationInfoText={paginationInfoText}
               disablePaginationButtons={isFetching}
             />
           </div>
@@ -343,16 +364,20 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editingItem ? `${config.title} güncelle` : `${config.title} ekle`}</DialogTitle>
+            <DialogTitle>
+              {editingItem
+                ? t('dialog.editTitle', { section: config.title })
+                : t('dialog.addTitle', { section: config.title })}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Ad</Label>
+              <Label>{t('dialog.nameLabel')}</Label>
               <Input value={draftName} onChange={(e) => setDraftName(e.target.value)} maxLength={150} />
             </div>
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                İptal
+                {t('dialog.cancel')}
               </Button>
               <Button
                 type="button"
@@ -360,7 +385,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                 onClick={() => void handleSubmit()}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
-                Kaydet
+                {t('dialog.save')}
               </Button>
             </div>
           </div>
@@ -371,56 +396,58 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
 }
 
 export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
+  const { t } = useTranslation(WINDO_I18N_NS);
   const { setPageTitle } = useUIStore();
   const [activeKind, setActiveKind] = useState<DefinitionKind>('profil');
 
   useEffect(() => {
-    setPageTitle('Windo Profil / Demir / Vida');
+    setPageTitle(t('page.documentTitle'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
-  const sections: DefinitionSectionConfig[] = [
-    {
-      kind: 'profil',
-      title: 'Profil Tanımla',
-      description: 'Satır bazında seçilecek profil tanımlarını yönetin.',
-      queryKey: 'profil',
-      getList: windoDefinitionApi.getProfilPagedList,
-      create: windoDefinitionApi.createProfil,
-      update: windoDefinitionApi.updateProfil,
-      remove: windoDefinitionApi.deleteProfil,
-    },
-    {
-      kind: 'demir',
-      title: 'Demir Tanımla',
-      description: 'Satır bazında seçilecek demir tanımlarını yönetin.',
-      queryKey: 'demir',
-      getList: windoDefinitionApi.getDemirPagedList,
-      create: windoDefinitionApi.createDemir,
-      update: windoDefinitionApi.updateDemir,
-      remove: windoDefinitionApi.deleteDemir,
-    },
-    {
-      kind: 'vida',
-      title: 'Vida Tanımla',
-      description: 'Satır bazında seçilecek vida tanımlarını yönetin.',
-      queryKey: 'vida',
-      getList: windoDefinitionApi.getVidaPagedList,
-      create: windoDefinitionApi.createVida,
-      update: windoDefinitionApi.updateVida,
-      remove: windoDefinitionApi.deleteVida,
-    },
-  ];
+  const sections = useMemo<DefinitionSectionConfig[]>(
+    () => [
+      {
+        kind: 'profil',
+        title: t('sections.profil.title'),
+        description: t('sections.profil.description'),
+        queryKey: 'profil',
+        getList: windoDefinitionApi.getProfilPagedList,
+        create: windoDefinitionApi.createProfil,
+        update: windoDefinitionApi.updateProfil,
+        remove: windoDefinitionApi.deleteProfil,
+      },
+      {
+        kind: 'demir',
+        title: t('sections.demir.title'),
+        description: t('sections.demir.description'),
+        queryKey: 'demir',
+        getList: windoDefinitionApi.getDemirPagedList,
+        create: windoDefinitionApi.createDemir,
+        update: windoDefinitionApi.updateDemir,
+        remove: windoDefinitionApi.deleteDemir,
+      },
+      {
+        kind: 'vida',
+        title: t('sections.vida.title'),
+        description: t('sections.vida.description'),
+        queryKey: 'vida',
+        getList: windoDefinitionApi.getVidaPagedList,
+        create: windoDefinitionApi.createVida,
+        update: windoDefinitionApi.updateVida,
+        remove: windoDefinitionApi.deleteVida,
+      },
+    ],
+    [t]
+  );
 
   const activeSection = sections.find((section) => section.kind === activeKind) ?? sections[0];
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[2rem] border border-slate-200 bg-white px-6 py-8 shadow-sm dark:border-white/10 dark:bg-[#180F22]">
-        <h1 className="text-3xl font-bold tracking-tight">Windo Profil / Demir / Vida Tanımlama</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Profil, demir ve vida kayıtlarını proje genelindeki yönetim sayfalarıyla uyumlu, sayfalı tablo yapısında yönetin.
-        </p>
+      <div className="rounded-4xl border border-slate-200 bg-white px-6 py-8 shadow-sm dark:border-white/10 dark:bg-[#180F22]">
+        <h1 className="text-3xl font-bold tracking-tight">{t('page.title')}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t('page.description')}</p>
       </div>
 
       <div className="flex flex-wrap gap-3">
