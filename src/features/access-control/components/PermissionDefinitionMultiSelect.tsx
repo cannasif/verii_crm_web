@@ -7,6 +7,7 @@ import {
   getPermissionDisplayLabel,
   getPermissionModuleDisplayMeta,
   getPermissionPlatform,
+  getPermissionSubjectDisplayLabel,
   isLeafPermissionCode,
   translatePermissionLabel,
 } from '../utils/permission-config';
@@ -65,9 +66,11 @@ export function PermissionDefinitionMultiSelect({
 
   const getDisplayLabel = useCallback(
     (code: string, name: string | null | undefined): string => {
+      const catalog = getPermissionDisplayLabel(code, (key, fallback) => translatePermissionLabel(t, key, fallback));
+      if (catalog !== code) return catalog;
       const trimmedName = (name ?? '').trim();
       if (trimmedName) return trimmedName;
-      return getPermissionDisplayLabel(code, (key, fallback) => translatePermissionLabel(t, key, fallback));
+      return code;
     },
     [t]
   );
@@ -81,21 +84,9 @@ export function PermissionDefinitionMultiSelect({
   );
 
   const getSubjectLabel = useCallback(
-    (code: string): string => {
-      const parts = code.split('.').filter(Boolean);
-      if (parts.length <= 1) return code;
-      const subjectParts = parts.slice(1, -1);
-      const subject = (subjectParts.join(' ') || parts[parts.length - 2] || code)
-        .replace(/[-_]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-      if (!subject) return code;
-      return subject
-        .split(' ')
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' ');
-    },
-    []
+    (code: string): string =>
+      getPermissionSubjectDisplayLabel(code, (key, fallback) => translatePermissionLabel(t, key, fallback)),
+    [t]
   );
 
   const getActionKey = useCallback(
