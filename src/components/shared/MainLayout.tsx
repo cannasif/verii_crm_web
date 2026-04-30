@@ -194,9 +194,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             children: [
               { title: t('sidebar.categoryDefinitions'), href: '/definitions/category-definitions' },
               {
-                title: t('sidebar.windoProfilDemirVidaDefinitions', {
-                  defaultValue: 'Windo Profil / Demir / Vida Tanımlama',
-                }),
+                title: t('sidebar.windoProfilDemirVidaDefinitions'),
                 href: '/definitions/windo-profil-demir-vida-tanimlama',
               },
             ],
