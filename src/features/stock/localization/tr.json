@@ -134,6 +134,8 @@
     "fileRequired": "Önce bir ZIP dosyası seç.",
     "submitting": "Sıraya alınıyor...",
     "submit": "ZIP yükle ve kuyruğa al",
-    "queued": "Toplu görsel içe aktarma kuyruğa alındı. Job: {{jobId}}"
+    "queued": "Toplu görsel içe aktarma kuyruğa alındı. Job: {{jobId}}",
+    "uploadHint": "ZIP dosyasını buraya sürükleyin veya seçin",
+    "uploadLimit": "Maksimum 500 MB (arka planda işlenir)"
   }
 }

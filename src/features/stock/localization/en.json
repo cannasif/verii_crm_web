@@ -134,6 +134,8 @@
     "fileRequired": "Select a ZIP file first.",
     "submitting": "Queueing...",
     "submit": "Upload ZIP and queue import",
-    "queued": "Bulk image import queued. Job: {{jobId}}"
+    "queued": "Bulk image import queued. Job: {{jobId}}",
+    "uploadHint": "Drag and drop the ZIP file here or choose a file",
+    "uploadLimit": "Maximum 500 MB (processed in the background)"
   }
 }
