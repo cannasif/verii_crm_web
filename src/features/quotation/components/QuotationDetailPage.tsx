@@ -43,6 +43,7 @@ import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { useCanEditQuotation } from '../hooks/useCanEditQuotation';
 
 function addDaysToDateOnly(dateValue: string, days: number): string {
   const date = new Date(`${dateValue}T12:00:00`);
@@ -88,6 +89,7 @@ export function QuotationDetailPage(): ReactElement {
   const quotationId = quotationIdFromPath > 0 ? quotationIdFromPath : (paramId ? parseInt(paramId, 10) : 0) || 0;
 
   const { data: quotation, isLoading } = useQuotation(quotationId);
+  const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditQuotation(quotationId);
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useQuotationExchangeRates(quotationId);
   const { data: linesData = [], isLoading: isLoadingLines } = useQuotationLines(quotationId);
   const { data: notesData, isLoading: isLoadingNotes } = useQuotationNotes(quotationId);
@@ -108,7 +110,10 @@ export function QuotationDetailPage(): ReactElement {
   const formInitializedRef = useRef(false);
   const [activeTab, setActiveTab] = useState('detail');
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
-  const isReadOnly = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4;
+  const isApprovalWaiting = quotationStatus === 1;
+  const isReadOnlyByStatus = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4;
+  const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
+  const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
   const isClosed = quotationStatus === 4;
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
@@ -589,7 +594,7 @@ export function QuotationDetailPage(): ReactElement {
     });
   };
 
-  if (isLoading || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
+  if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
@@ -676,6 +681,16 @@ export function QuotationDetailPage(): ReactElement {
         </TabsList>
 
         <TabsContent value="detail" className="mt-6 focus-visible:outline-none">
+          {isApprovalLockedForCurrentUser && (
+            <Alert className="mb-4 border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800/80 dark:bg-amber-950/30 dark:text-amber-100">
+              <AlertDescription>
+                {t('approval.lockedForNonApprover', {
+                  defaultValue:
+                    'Bu kayıt onay sürecinde. Sadece aktif onay kullanıcısı değişiklik yapabilir. Senin için ekran salt okunur modda açıldı.',
+                })}
+              </AlertDescription>
+            </Alert>
+          )}
           {isClosed && (
             <Alert className="mb-4 border-zinc-300 bg-zinc-100 dark:bg-zinc-800/50 dark:border-zinc-600">
               <AlertDescription>{t('approval.closedReason')}</AlertDescription>

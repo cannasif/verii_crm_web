@@ -37,6 +37,7 @@ import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { useCanEditDemand } from '../hooks/useCanEditDemand';
 
 export function DemandDetailPage(): ReactElement {
   const { t } = useTranslation(['demand', 'common']);
@@ -47,6 +48,7 @@ export function DemandDetailPage(): ReactElement {
   const demandId = id ? parseInt(id, 10) : 0;
 
   const { data: demand, isLoading } = useDemand(demandId);
+  const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditDemand(demandId);
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useDemandExchangeRates(demandId);
   const { data: linesData = [], isLoading: isLoadingLines } = useDemandLines(demandId);
   const { data: notesData, isLoading: isLoadingNotes } = useDemandNotes(demandId);
@@ -67,7 +69,10 @@ export function DemandDetailPage(): ReactElement {
   const formInitializedRef = useRef(false);
   const [activeTab, setActiveTab] = useState('detail');
   const demandStatus = Number((demand as { status?: number; Status?: number })?.status ?? (demand as { status?: number; Status?: number })?.Status);
-  const isReadOnly = demandStatus === 2 || demandStatus === 3 || demandStatus === 4;
+  const isApprovalWaiting = demandStatus === 1;
+  const isReadOnlyByStatus = demandStatus === 2 || demandStatus === 3 || demandStatus === 4;
+  const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
+  const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
   const isClosed = demandStatus === 4;
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
@@ -435,7 +440,7 @@ export function DemandDetailPage(): ReactElement {
     });
   };
 
-  if (isLoading || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
+  if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
@@ -522,6 +527,16 @@ export function DemandDetailPage(): ReactElement {
         </TabsList>
 
         <TabsContent value="detail" className="mt-6 focus-visible:outline-none">
+          {isApprovalLockedForCurrentUser && (
+            <Alert className="mb-4 border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800/80 dark:bg-amber-950/30 dark:text-amber-100">
+              <AlertDescription>
+                {t('approval.lockedForNonApprover', {
+                  defaultValue:
+                    'Bu kayıt onay sürecinde. Sadece aktif onay kullanıcısı değişiklik yapabilir. Senin için ekran salt okunur modda açıldı.',
+                })}
+              </AlertDescription>
+            </Alert>
+          )}
           {isClosed && (
             <Alert className="mb-4 border-zinc-300 bg-zinc-100 dark:bg-zinc-800/50 dark:border-zinc-600">
               <AlertDescription>{t('approval.closedReason')}</AlertDescription>
