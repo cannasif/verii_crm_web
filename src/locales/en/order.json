@@ -162,7 +162,18 @@
     "descriptionField3Label": "Description 3",
     "discountNumbered1": "1. Discount",
     "discountNumbered2": "2. Discount",
-    "discountNumbered3": "3. Discount"
+    "discountNumbered3": "3. Discount",
+    "windoProfileLabel": "Profile",
+    "windoRebarLabel": "Rebar",
+    "windoScrewLabel": "Screw",
+    "selectWindoProfile": "Select profile",
+    "selectWindoRebar": "Select rebar",
+    "selectWindoScrew": "Select screw",
+    "searchWindoProfile": "Search profile...",
+    "searchWindoRebar": "Search rebar...",
+    "searchWindoScrew": "Search screw...",
+    "windoNoneSelected": "None",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Exchange Rates",
