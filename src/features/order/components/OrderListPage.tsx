@@ -150,7 +150,7 @@ export function OrderListPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('order.list.title'));
+    setPageTitle(t('list.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -373,7 +373,7 @@ export function OrderListPage(): ReactElement {
     <div className="flex items-center justify-center gap-2">
       <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${order.id}`)}>
         <Edit2 className="h-4 w-4 mr-1" />
-        {t('order.list.detail', { defaultValue: 'Detay' })}
+        {t('list.detail', { defaultValue: 'Detay' })}
       </Button>
       <Button variant="outline" size="sm" onClick={(event) => handleOpenMailDialog(event, order)}>
         <Mail className="h-4 w-4 mr-1" />
@@ -392,7 +392,7 @@ export function OrderListPage(): ReactElement {
           }}
           disabled={createRevisionMutation.isPending}
         >
-          {createRevisionMutation.isPending ? t('order.loading') : t('order.list.revise')}
+          {createRevisionMutation.isPending ? t('loading') : t('list.revise')}
         </Button>
       )}
     </div>
@@ -407,11 +407,11 @@ export function OrderListPage(): ReactElement {
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-2">
           <div className="space-y-1">
             <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-              {t('order.list.title')}
+              {t('list.title')}
             </h1>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-              {t('order.list.description')}
+              {t('list.description')}
             </p>
           </div>
           <Button
@@ -419,7 +419,7 @@ export function OrderListPage(): ReactElement {
             className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-            {t('order.list.createNew')}
+            {t('list.createNew')}
           </Button>
         </div>
 
@@ -427,7 +427,7 @@ export function OrderListPage(): ReactElement {
           <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
             <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
               <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
-                {t('order.list.cardTitle', { defaultValue: 'Sipariş listesi' })}
+                {t('list.cardTitle', { defaultValue: 'Sipariş listesi' })}
               </CardTitle>
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
@@ -469,7 +469,7 @@ export function OrderListPage(): ReactElement {
                         },
                         isLoading: orderQuery.isFetching,
                         cooldownSeconds: 60,
-                        label: t('order.list.refresh', { defaultValue: 'Yenile' }),
+                        label: t('list.refresh', { defaultValue: 'Yenile' }),
                       },
                       leftSlot: (
                         <>
@@ -500,12 +500,12 @@ export function OrderListPage(): ReactElement {
                     renderSortIcon={renderSortIcon}
                     isLoading={orderQuery.isLoading || orderQuery.isFetching}
                     isError={orderQuery.isError}
-                    loadingText={t('order.loading')}
-                    errorText={t('order.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                    emptyText={t('order.noData')}
+                    loadingText={t('loading')}
+                    errorText={t('loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                    emptyText={t('noData')}
                     minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
                     showActionsColumn
-                    actionsHeaderLabel={t('order.list.actions')}
+                    actionsHeaderLabel={t('list.actions')}
                     renderActionsCell={renderActionsCell}
                     rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                     onRowClick={(order: OrderGetDto) => handleRowClick(order.id)}
@@ -519,8 +519,8 @@ export function OrderListPage(): ReactElement {
                     hasNextPage={hasNextPage}
                     onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
                     onNextPage={() => setPageNumber((prev) => prev + 1)}
-                    previousLabel={t('order.previous')}
-                    nextLabel={t('order.next')}
+                    previousLabel={t('previous')}
+                    nextLabel={t('next')}
                     paginationInfoText={t('common.paginationInfo', {
                       start: startRow,
                       end: endRow,
