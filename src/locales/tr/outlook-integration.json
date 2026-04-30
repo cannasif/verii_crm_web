@@ -175,6 +175,11 @@
     "addTo": "Kime ekle",
     "ccShort": "CC",
     "bccShort": "BCC",
+    "companyDefault": "Firma",
+    "companyEmails": "Firma e-postaları",
+    "contactEmails": "Kontak e-postaları",
+    "companyRecipientDirectory": "Firma ve kontak alıcı merkezi",
+    "addAllTo": "Tümünü Kime ekle",
     "noRecipientSuggestions": "Henüz önerilen alıcı bulunamadı.",
     "tabs": {
       "compose": "Düzenle",

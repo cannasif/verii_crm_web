@@ -158,6 +158,11 @@
     "addTo": "Add to To",
     "ccShort": "CC",
     "bccShort": "BCC",
+    "companyDefault": "Company",
+    "companyEmails": "Company emails",
+    "contactEmails": "Contact emails",
+    "companyRecipientDirectory": "Company and contact recipients",
+    "addAllTo": "Add all to To",
     "noRecipientSuggestions": "No recipient suggestions yet.",
     "tabs": {
       "compose": "Compose",
