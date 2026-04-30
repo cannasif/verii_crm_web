@@ -273,7 +273,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
             variant={provider === 'google' ? 'default' : 'outline'}
             onClick={() => setProvider('google')}
           >
-            {t('customer360.mail.providers.google', { defaultValue: 'Google' })}
+            {t('mail.providers.google', { defaultValue: 'Google' })}
           </Button>
           <Button
             type="button"
@@ -281,7 +281,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
             variant={provider === 'outlook' ? 'default' : 'outline'}
             onClick={() => setProvider('outlook')}
           >
-            {t('customer360.mail.providers.outlook', { defaultValue: 'Outlook' })}
+            {t('mail.providers.outlook', { defaultValue: 'Outlook' })}
           </Button>
         </div>
 

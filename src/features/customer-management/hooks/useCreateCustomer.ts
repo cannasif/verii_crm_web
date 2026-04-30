@@ -20,10 +20,10 @@ export const useCreateCustomer = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('customerManagement.messages.createSuccess'));
+      toast.success(t('messages.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('customerManagement.messages.createError'));
+      toast.error(error.message || t('messages.createError'));
     },
   });
 };

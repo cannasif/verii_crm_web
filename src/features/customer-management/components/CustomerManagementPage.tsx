@@ -126,7 +126,7 @@ export function CustomerManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('customerManagement.menu', { ns: CRM_NS }));
+    setPageTitle(t('menu', { ns: CRM_NS }));
     return () => setPageTitle(null);
   }, [t, setPageTitle, i18n.language, i18n.resolvedLanguage]);
 
@@ -341,11 +341,11 @@ export function CustomerManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
-            {t('customerManagement.menu', { ns: CRM_NS })}
+            {t('menu', { ns: CRM_NS })}
           </h1>
           <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
             <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-            {t('customerManagement.description', { ns: CRM_NS })}
+            {t('description', { ns: CRM_NS })}
           </p>
         </div>
         <Button
@@ -353,7 +353,7 @@ export function CustomerManagementPage(): ReactElement {
           className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={20} className="mr-2 stroke-[3px]" />
-          {t('customerManagement.addButton', { ns: CRM_NS })}
+          {t('addButton', { ns: CRM_NS })}
         </Button>
       </div>
 
@@ -362,7 +362,7 @@ export function CustomerManagementPage(): ReactElement {
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
-            {t('customerManagement.table.title', { ns: CRM_NS })}
+            {t('table.title', { ns: CRM_NS })}
           </CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
@@ -419,8 +419,8 @@ export function CustomerManagementPage(): ReactElement {
                     <RefreshCw className="h-4 w-4 mr-2" />
                   )}
                   {triggerCustomerSync.isPending
-                    ? t('customerManagement.syncing', { ns: CRM_NS, defaultValue: 'Sync çalışıyor' })
-                    : t('customerManagement.manualSync', { ns: CRM_NS, defaultValue: 'Manuel Sync' })}
+                    ? t('syncing', { ns: CRM_NS, defaultValue: 'Sync çalışıyor' })
+                    : t('manualSync', { ns: CRM_NS, defaultValue: 'Manuel Sync' })}
                 </Button>
               </>
             }
@@ -445,12 +445,12 @@ export function CustomerManagementPage(): ReactElement {
                 );
               }}
               isLoading={isLoading}
-              loadingText={t('customerManagement.loading', { ns: CRM_NS })}
-              errorText={t('customerManagement.error', { ns: CRM_NS, defaultValue: 'Hata oluştu' })}
-              emptyText={t('customerManagement.noData', { ns: CRM_NS })}
+              loadingText={t('loading', { ns: CRM_NS })}
+              errorText={t('error', { ns: CRM_NS, defaultValue: 'Hata oluştu' })}
+              emptyText={t('noData', { ns: CRM_NS })}
               minTableWidthClassName="min-w-[800px] lg:min-w-[1100px]"
               showActionsColumn
-              actionsHeaderLabel={t('customerManagement.actions', { ns: CRM_NS })}
+              actionsHeaderLabel={t('actions', { ns: CRM_NS })}
               onEdit={handleEdit}
               onQuickActivity={handleQuickActivity}
               rowClassName="group"

@@ -63,11 +63,11 @@ interface CustomerTypeTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerTypeDto>[] => [
-  { key: 'id', label: t('customerTypeManagement.table.id'), type: 'text', className: 'font-medium w-[50px] md:w-[70px]' },
-  { key: 'name', label: t('customerTypeManagement.table.name'), type: 'badge', className: 'font-semibold text-slate-900 dark:text-white min-w-[140px] md:min-w-[180px]' },
-  { key: 'description', label: t('customerTypeManagement.table.description'), type: 'description', className: 'min-w-[180px] md:min-w-[220px]' },
-  { key: 'createdDate', label: t('customerTypeManagement.table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
-  { key: 'createdByFullUser', label: t('customerTypeManagement.table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
+  { key: 'id', label: t('table.id'), type: 'text', className: 'font-medium w-[50px] md:w-[70px]' },
+  { key: 'name', label: t('table.name'), type: 'badge', className: 'font-semibold text-slate-900 dark:text-white min-w-[140px] md:min-w-[180px]' },
+  { key: 'description', label: t('table.description'), type: 'description', className: 'min-w-[180px] md:min-w-[220px]' },
+  { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
+  { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
 ];
 
 function renderCellContent(
@@ -165,9 +165,9 @@ export function CustomerTypeTable({
         await deleteCustomerType.mutateAsync(selectedCustomerType.id);
         setDeleteDialogOpen(false);
         setSelectedCustomerType(null);
-        toast.success(t('customerTypeManagement.messages.deleteSuccess', { defaultValue: t('customerTypeManagement.delete.success') }));
+        toast.success(t('messages.deleteSuccess', { defaultValue: t('delete.success') }));
       } catch {
-        toast.error(t('customerTypeManagement.messages.deleteError', { defaultValue: t('customerTypeManagement.delete.error') }));
+        toast.error(t('messages.deleteError', { defaultValue: t('delete.error') }));
       }
     }
   };
@@ -255,10 +255,10 @@ export function CustomerTypeTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('customerTypeManagement.delete.confirmTitle')}
+                {t('delete.confirmTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('customerTypeManagement.delete.confirmMessage', {
+                {t('delete.confirmMessage', {
                   name: selectedCustomerType?.name || '',
                 })}
               </DialogDescription>
@@ -280,8 +280,8 @@ export function CustomerTypeTable({
               disabled={deleteCustomerType.isPending}
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
-              {deleteCustomerType.isPending ? <span className="animate-pulse">{t('customerTypeManagement.loading')}</span> : null}
-              {t('customerTypeManagement.delete.action', { defaultValue: t('customerTypeManagement.delete.confirmButton') })}
+              {deleteCustomerType.isPending ? <span className="animate-pulse">{t('loading')}</span> : null}
+              {t('delete.action', { defaultValue: t('delete.confirmButton') })}
             </Button>
           </DialogFooter>
         </DialogContent>

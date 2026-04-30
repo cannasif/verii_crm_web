@@ -21,10 +21,10 @@ export const useUpdateCustomer = () => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedCustomer.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
-      toast.success(t('customerManagement.messages.updateSuccess'));
+      toast.success(t('messages.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('customerManagement.messages.updateError'));
+      toast.error(error.message || t('messages.updateError'));
     },
   });
 };

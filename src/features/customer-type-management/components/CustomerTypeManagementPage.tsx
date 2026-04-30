@@ -76,7 +76,7 @@ export function CustomerTypeManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('customerTypeManagement.menu'));
+    setPageTitle(t('menu'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -250,11 +250,11 @@ export function CustomerTypeManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
-            {t('customerTypeManagement.menu')}
+            {t('menu')}
           </h1>
           <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
             <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-            {t('customerTypeManagement.description')}
+            {t('description')}
           </p>
         </div>
         <Button
@@ -262,7 +262,7 @@ export function CustomerTypeManagementPage(): ReactElement {
           className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={20} className="mr-2 stroke-[3px]" />
-          {t('customerTypeManagement.addButton')}
+          {t('addButton')}
         </Button>
       </div>
 
@@ -271,7 +271,7 @@ export function CustomerTypeManagementPage(): ReactElement {
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
-            {t('customerTypeManagement.table.title', { defaultValue: t('table.title') })}
+            {t('table.title', { defaultValue: t('table.title') })}
           </CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
@@ -344,9 +344,9 @@ export function CustomerTypeManagementPage(): ReactElement {
                 );
               }}
               isLoading={isLoading}
-              loadingText={t('customerTypeManagement.loading')}
-              errorText={t('customerTypeManagement.error', { defaultValue: 'Hata oluştu' })}
-              emptyText={t('customerTypeManagement.noData')}
+              loadingText={t('loading')}
+              errorText={t('error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('noData')}
               minTableWidthClassName="min-w-[600px] lg:min-w-[800px]"
               showActionsColumn
               actionsHeaderLabel={t('common.actions')}

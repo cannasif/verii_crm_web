@@ -18,7 +18,7 @@ export const useTriggerCustomerSync = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
 
       toast.success(
-        t('customerManagement.messages.syncQueued', {
+        t('messages.syncQueued', {
           defaultValue: `Müşteri sync kuyruğa alındı. Job: ${result.jobId}`,
           jobId: result.jobId,
         })
@@ -27,7 +27,7 @@ export const useTriggerCustomerSync = () => {
     onError: (error: Error) => {
       toast.error(
         error.message ||
-          t('customerManagement.messages.syncError', {
+          t('messages.syncError', {
             defaultValue: 'Müşteri sync tetiklenemedi',
           })
       );
