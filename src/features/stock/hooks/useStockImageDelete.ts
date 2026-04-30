@@ -15,10 +15,10 @@ export const useStockImageDelete = (): UseMutationResult<void, Error, { id: numb
     onSuccess: (_, variables: { id: number; stockId: number }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.images(variables.stockId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(variables.stockId) });
-      toast.success(t('stock.messages.deleteSuccess'));
+      toast.success(t('messages.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('stock.messages.error'));
+      toast.error(error.message || t('messages.error'));
     },
   });
 };

@@ -114,7 +114,7 @@ export function StockListPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('stock.list.title'));
+    setPageTitle(t('list.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -269,11 +269,11 @@ export function StockListPage(): ReactElement {
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-foreground transition-colors">
-            {t('stock.list.title')}
+            {t('list.title')}
           </h1>
           <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
             <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-            {t('stock.list.description')}
+            {t('list.description')}
           </p>
         </div>
         <StockBulkImageImportDialog />
@@ -287,7 +287,7 @@ export function StockListPage(): ReactElement {
                   <div className="w-10 h-10 rounded-xl bg-linear-to-br from-pink-500/10 to-orange-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
                     <Package size={20} />
                   </div>
-                  {t('stock.list.cardTitle', { defaultValue: 'Stok Yönetimi' })}
+                  {t('list.cardTitle', { defaultValue: 'Stok Yönetimi' })}
                 </CardTitle>
               </div>
             </div>
@@ -333,7 +333,7 @@ export function StockListPage(): ReactElement {
                     },
                     isLoading: stockQuery.isFetching,
                     cooldownSeconds: 60,
-                    label: t('stock.list.refresh', { defaultValue: 'Yenile' }),
+                    label: t('list.refresh', { defaultValue: 'Yenile' }),
                   },
                 } satisfies DataTableActionBarProps}
                 columns={columns}
@@ -347,12 +347,12 @@ export function StockListPage(): ReactElement {
                 renderSortIcon={renderSortIcon}
                 isLoading={stockQuery.isLoading || stockQuery.isFetching}
                 isError={stockQuery.isError}
-                loadingText={t('stock.list.loading', { defaultValue: 'Yükleniyor...' })}
-                errorText={t('stock.list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                emptyText={t('stock.list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
+                loadingText={t('list.loading', { defaultValue: 'Yükleniyor...' })}
+                errorText={t('list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                emptyText={t('list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
                 minTableWidthClassName="min-w-[900px]"
                 showActionsColumn
-                actionsHeaderLabel={t('stock.list.actions')}
+                actionsHeaderLabel={t('list.actions')}
                 renderActionsCell={(stock) => (
                   <div className="flex justify-end pr-4">
                     <Button
@@ -380,8 +380,8 @@ export function StockListPage(): ReactElement {
                 hasNextPage={hasNextPage}
                 onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
                 onNextPage={() => setPageNumber((prev) => prev + 1)}
-                previousLabel={t('stock.list.previous')}
-                nextLabel={t('stock.list.next')}
+                previousLabel={t('list.previous')}
+                nextLabel={t('list.next')}
                 paginationInfoText={t('common.paginationInfo', {
                   start: startRow,
                   end: endRow,

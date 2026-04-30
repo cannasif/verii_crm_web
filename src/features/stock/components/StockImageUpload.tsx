@@ -126,10 +126,10 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
             </div>
             <div>
                 <p className="text-base font-semibold text-zinc-900 dark:text-white">
-                    {t('stock.images.upload')}
+                    {t('images.upload')}
                 </p>
                 <p className="text-xs text-zinc-500 mt-1">
-                    {t('stock.images.uploadHint')}
+                    {t('images.uploadHint')}
                 </p>
             </div>
         </div>
@@ -148,7 +148,7 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
           <div className="flex items-center justify-between">
             <Label className="text-sm font-medium text-zinc-500 dark:text-zinc-400 pl-1">
-              {t('stock.images.selectedFiles')} ({selectedFiles.length})
+              {t('images.selectedFiles')} ({selectedFiles.length})
             </Label>
           </div>
 
@@ -187,7 +187,7 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
                       <FileText className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" />
                       <Input
                         type="text"
-                        placeholder={t('stock.images.altText')}
+                        placeholder={t('images.altText')}
                         value={altTexts[index] || ''}
                         onChange={(e) => handleAltTextChange(index, e.target.value)}
                         className="
@@ -230,12 +230,12 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
                 {uploadImages.isPending || uploading ? (
                     <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t('stock.images.uploading')}
+                        {t('images.uploading')}
                     </>
                 ) : (
                     <>
                         <ImageIcon className="mr-2 h-4 w-4" />
-                        {t('stock.images.uploadButton')}
+                        {t('images.uploadButton')}
                     </>
                 )}
             </Button>

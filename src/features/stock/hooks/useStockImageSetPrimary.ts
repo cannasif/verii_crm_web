@@ -16,10 +16,10 @@ export const useStockImageSetPrimary = (): UseMutationResult<StockImageDto, Erro
     onSuccess: (_, variables: { id: number; stockId: number }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.images(variables.stockId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(variables.stockId) });
-      toast.success(t('stock.messages.setPrimarySuccess'));
+      toast.success(t('messages.setPrimarySuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('stock.messages.error'));
+      toast.error(error.message || t('messages.error'));
     },
   });
 };

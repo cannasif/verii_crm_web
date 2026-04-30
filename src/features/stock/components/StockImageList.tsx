@@ -84,10 +84,10 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
             <ImageIcon className="h-8 w-8 text-zinc-400" />
         </div>
         <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-1">
-            {t('stock.images.noImages')}
+            {t('images.noImages')}
         </h3>
         <p className="text-sm text-zinc-500 text-center max-w-xs">
-            {t('stock.images.noImagesDesc')}
+            {t('images.noImagesDesc')}
         </p>
       </div>
     );
@@ -113,7 +113,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                     className="absolute top-3 left-3 z-10 bg-linear-to-r from-pink-600 to-orange-600 border-0 shadow-lg shadow-pink-500/30 text-white px-2 py-1"
                   >
                     <Star className="h-3 w-3 mr-1 fill-white" />
-                    {t('stock.images.primary')}
+                    {t('images.primary')}
                   </Badge>
                 )}
                 
@@ -143,7 +143,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                         focus-visible:ring-0 focus-visible:border-zinc-300
                         text-zinc-600 dark:text-zinc-300
                     "
-                    placeholder={t('stock.images.altText')}
+                    placeholder={t('images.altText')}
                   />
               </div>
 
@@ -161,14 +161,14 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                     ) : (
                         <>
                             <Star className="h-3 w-3 mr-1.5" />
-                            {t('stock.images.setPrimary')}
+                            {t('images.setPrimary')}
                         </>
                     )}
                   </Button>
                 ) : image.isPrimary ? (
                     <div className="flex-1 flex items-center justify-center h-8 text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 rounded-md border border-emerald-100 dark:border-emerald-900/20">
                         <CheckCircle2 className="h-3 w-3 mr-1.5" />
-                        {t('stock.images.isPrimary')}
+                        {t('images.isPrimary')}
                     </div>
                 ) : (
                   <div className="flex-1" />
@@ -199,11 +199,11 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                     <Trash2 className="h-5 w-5" />
                 </div>
                 <DialogTitle className="text-xl">
-                    {t('stock.images.deleteConfirm')}
+                    {t('images.deleteConfirm')}
                 </DialogTitle>
             </div>
             <DialogDescription className="pt-2">
-              {t('stock.images.deleteConfirmMessage')}
+              {t('images.deleteConfirmMessage')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
@@ -213,7 +213,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
               disabled={deleteImage.isPending}
               className="rounded-lg"
             >
-              {t('stock.images.cancel')}
+              {t('images.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -224,10 +224,10 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
               {deleteImage.isPending ? (
                  <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('stock.images.deleting')}
+                    {t('images.deleting')}
                   </>
                 ) : (
-                 t('stock.images.confirmDelete')
+                 t('images.confirmDelete')
                 )}
             </Button>
           </DialogFooter>

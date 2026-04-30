@@ -16,10 +16,10 @@ export const useStockDetailCreate = (): UseMutationResult<StockDetailGetDto, Err
     onSuccess: (data: StockDetailGetDto) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.detailByStock(data.stockId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(data.stockId) });
-      toast.success(t('stock.messages.detailCreateSuccess'));
+      toast.success(t('messages.detailCreateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('stock.messages.error'));
+      toast.error(error.message || t('messages.error'));
     },
   });
 };

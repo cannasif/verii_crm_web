@@ -51,7 +51,7 @@ export function StockDetailPage(): ReactElement {
 
   useEffect(() => {
     if (stock) {
-      setPageTitle(t('stock.detail.title'));
+      setPageTitle(t('detail.title'));
     }
     return () => setPageTitle(null);
   }, [stock, t, setPageTitle]);
@@ -94,16 +94,16 @@ export function StockDetailPage(): ReactElement {
             </div>
         </div>
         <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('stock.detail.notFound')}</h2>
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('detail.notFound')}</h2>
             <p className="text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
-                {t('stock.detail.notFoundDesc')}
+                {t('detail.notFoundDesc')}
             </p>
         </div>
         <Button 
             onClick={() => navigate('/stocks')}
             className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-full px-8"
         >
-            {t('stock.detail.backToStockList')}
+            {t('detail.backToStockList')}
         </Button>
       </div>
     );
@@ -133,9 +133,9 @@ export function StockDetailPage(): ReactElement {
                 </h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 font-medium">
                     <Box className="w-4 h-4 text-pink-500" />
-                    <span>{stock.erpStockCode || t('stock.detail.noCode', { defaultValue: 'Kod Yok' })}</span>
+                    <span>{stock.erpStockCode || t('detail.noCode', { defaultValue: 'Kod Yok' })}</span>
                     <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                    <span>{t('stock.detail.subtitle')}</span>
+                    <span>{t('detail.subtitle')}</span>
                 </div>
             </div>
         </div>
@@ -152,9 +152,9 @@ export function StockDetailPage(): ReactElement {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <div className="border-b border-zinc-200/50 dark:border-white/5 px-6 pt-4">
                     <TabsList className="bg-transparent h-auto p-0 w-full justify-start gap-8">
-                        <TabItem value="basic" icon={Info} label={t('stock.detail.basicInfo')} active={activeTab === 'basic'} />
-                        <TabItem value="images" icon={ImageIcon} label={t('stock.detail.images')} active={activeTab === 'images'} />
-                        <TabItem value="relations" icon={Layers} label={t('stock.detail.relations')} active={activeTab === 'relations'} />
+                        <TabItem value="basic" icon={Info} label={t('detail.basicInfo')} active={activeTab === 'basic'} />
+                        <TabItem value="images" icon={ImageIcon} label={t('detail.images')} active={activeTab === 'images'} />
+                        <TabItem value="relations" icon={Layers} label={t('detail.relations')} active={activeTab === 'relations'} />
                     </TabsList>
                 </div>
 
@@ -166,13 +166,13 @@ export function StockDetailPage(): ReactElement {
                                 <div className="bg-zinc-50/80 dark:bg-white/5 rounded-xl p-6 border border-zinc-100 dark:border-white/5">
                                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                                         <Info className="w-5 h-5 text-pink-600" />
-                                        {t('stock.detail.summary')}
+                                        {t('detail.summary')}
                                     </h3>
                                     <StockBasicInfo stock={stock} />
                                 </div>
                                 <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/20 text-orange-800 dark:text-orange-200 text-sm">
-                                    <p className="font-medium">{t('stock.detail.tipTitle', { defaultValue: 'İpucu' })}</p>
-                                    <p className="opacity-90 mt-1">{t('stock.detail.tipDescription', { defaultValue: 'Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.' })}</p>
+                                    <p className="font-medium">{t('detail.tipTitle', { defaultValue: 'İpucu' })}</p>
+                                    <p className="opacity-90 mt-1">{t('detail.tipDescription', { defaultValue: 'Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.' })}</p>
                                 </div>
                             </div>
                             
@@ -200,7 +200,7 @@ export function StockDetailPage(): ReactElement {
                                             <div className="w-full border-t border-zinc-200 dark:border-white/10"></div>
                                         </div>
                                         <div className="relative flex justify-center">
-                                            <span className="px-3 bg-white/0 text-sm text-muted-foreground bg-white dark:bg-[#1a1025]">{t('stock.detail.gallery')}</span>
+                                            <span className="px-3 bg-white/0 text-sm text-muted-foreground bg-white dark:bg-[#1a1025]">{t('detail.gallery')}</span>
                                         </div>
                                     </div>
                                     <StockImageList stockId={stockId} />
@@ -215,8 +215,8 @@ export function StockDetailPage(): ReactElement {
                                 <div className="grid gap-8 lg:grid-cols-12">
                                      <div className="lg:col-span-4">
                                         <div className="bg-gradient-to-br from-white to-zinc-50 dark:from-white/5 dark:to-transparent rounded-xl p-6 border border-zinc-100 dark:border-white/5 shadow-sm sticky top-6">
-                                            <h3 className="font-semibold text-lg mb-2">{t('stock.detail.addRelation')}</h3>
-                                            <p className="text-sm text-muted-foreground mb-6">{t('stock.detail.relationHint', { defaultValue: 'Bu stoka ait alt veya üst ürün tanımlayın.' })}</p>
+                                            <h3 className="font-semibold text-lg mb-2">{t('detail.addRelation')}</h3>
+                                            <p className="text-sm text-muted-foreground mb-6">{t('detail.relationHint', { defaultValue: 'Bu stoka ait alt veya üst ürün tanımlayın.' })}</p>
                                             {canModify ? <StockRelationForm stockId={stockId} /> : null}
                                         </div>
                                      </div>

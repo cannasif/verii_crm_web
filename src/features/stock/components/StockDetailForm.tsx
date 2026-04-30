@@ -101,10 +101,10 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
               <div className="mb-3 space-y-1">
                   <FormLabel className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2" required={isZodFieldRequired(stockDetailSchema, 'htmlDescription')}>
                     <FileText className="w-4 h-4 text-pink-600 dark:text-pink-500" />
-                    {t('stock.detail.htmlDescription')}
+                    {t('detail.htmlDescription')}
                   </FormLabel>
                   <FormDescription className="text-slate-500 dark:text-slate-400 text-xs">
-                    {t('stock.detail.htmlDescriptionDesc')}
+                    {t('detail.htmlDescriptionDesc')}
                   </FormDescription>
               </div>
 
@@ -122,7 +122,7 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
                     <RichTextEditor
                       value={field.value || ''}
                       onChange={field.onChange}
-                      placeholder={t('stock.detail.htmlDescriptionPlaceholder')}
+                      placeholder={t('detail.htmlDescriptionPlaceholder')}
                       className="border-0 bg-transparent min-h-[350px]"
                     />
                 </div>
@@ -152,12 +152,12 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
             {isSaving ? (
                 <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('stock.detail.saving')}
+                    {t('detail.saving')}
                 </>
             ) : (
                 <>
                     <Save className="mr-2 h-4 w-4" />
-                    {t('stock.detail.save')}
+                    {t('detail.save')}
                 </>
             )}
           </Button>
