@@ -1361,37 +1361,43 @@ export function QuotationLineForm({
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Profil</label>
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                  {t('quotation.lines.windoProfileLabel')}
+                </label>
                 <VoiceSearchCombobox
                   options={profilComboboxOptions}
                   value={formData.profilDefinitionId ? String(formData.profilDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('profilDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Profil seç'}
-                  searchPlaceholder="Profil ara..."
+                  placeholder={isDefinitionOptionsLoading ? t('quotation.loading') : t('quotation.lines.selectWindoProfile')}
+                  searchPlaceholder={t('quotation.lines.searchWindoProfile')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Demir</label>
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                  {t('quotation.lines.windoRebarLabel')}
+                </label>
                 <VoiceSearchCombobox
                   options={demirComboboxOptions}
                   value={formData.demirDefinitionId ? String(formData.demirDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('demirDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Demir seç'}
-                  searchPlaceholder="Demir ara..."
+                  placeholder={isDefinitionOptionsLoading ? t('quotation.loading') : t('quotation.lines.selectWindoRebar')}
+                  searchPlaceholder={t('quotation.lines.searchWindoRebar')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Vida</label>
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                  {t('quotation.lines.windoScrewLabel')}
+                </label>
                 <VoiceSearchCombobox
                   options={vidaComboboxOptions}
                   value={formData.vidaDefinitionId ? String(formData.vidaDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('vidaDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Vida seç'}
-                  searchPlaceholder="Vida ara..."
+                  placeholder={isDefinitionOptionsLoading ? t('quotation.loading') : t('quotation.lines.selectWindoScrew')}
+                  searchPlaceholder={t('quotation.lines.searchWindoScrew')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />

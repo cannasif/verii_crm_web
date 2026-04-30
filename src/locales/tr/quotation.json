@@ -177,7 +177,18 @@
     "descriptionFieldsTitle": "Profil, demir, vida",
     "descriptionField1Label": "Açıklama 1",
     "descriptionField2Label": "Açıklama 2",
-    "descriptionField3Label": "Açıklama 3"
+    "descriptionField3Label": "Açıklama 3",
+    "windoProfileLabel": "Profil",
+    "windoRebarLabel": "Demir",
+    "windoScrewLabel": "Vida",
+    "selectWindoProfile": "Profil seçin",
+    "selectWindoRebar": "Demir seçin",
+    "selectWindoScrew": "Vida seçin",
+    "searchWindoProfile": "Profil ara...",
+    "searchWindoRebar": "Demir ara...",
+    "searchWindoScrew": "Vida ara...",
+    "windoNoneSelected": "Seçim yok",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Döviz Kurları",
