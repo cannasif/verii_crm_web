@@ -237,7 +237,12 @@ const initPromise = (async () => {
     defaultNS,
     resources: {},
     interpolation: { escapeValue: false },
-    parseMissingKeyHandler: () => formatMissingKey(),
+    parseMissingKeyHandler: (_key: string, defaultValue?: string) => {
+      if (defaultValue !== undefined && defaultValue !== '') {
+        return String(defaultValue);
+      }
+      return formatMissingKey();
+    },
     returnEmptyString: false,
     detection: {
       order: [],
