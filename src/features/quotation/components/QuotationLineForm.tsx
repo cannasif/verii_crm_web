@@ -5,19 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useDiscountLimitValidation } from '../hooks/useDiscountLimitValidation';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
@@ -162,6 +156,18 @@ export function QuotationLineForm({
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const persistedLineId = imageUploadExtras?.quotationLineId;
+  const profilComboboxOptions = useMemo<ComboboxOption[]>(
+    () => profilOptions.map((option) => ({ value: String(option.id), label: option.name })),
+    [profilOptions]
+  );
+  const demirComboboxOptions = useMemo<ComboboxOption[]>(
+    () => demirOptions.map((option) => ({ value: String(option.id), label: option.name })),
+    [demirOptions]
+  );
+  const vidaComboboxOptions = useMemo<ComboboxOption[]>(
+    () => vidaOptions.map((option) => ({ value: String(option.id), label: option.name })),
+    [vidaOptions]
+  );
 
   type DiscountField = 'discountRate1' | 'discountRate2' | 'discountRate3';
   const discountInputs = useMemo<
@@ -1356,60 +1362,39 @@ export function QuotationLineForm({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Profil</label>
-                <Select
-                  value={formData.profilDefinitionId ? String(formData.profilDefinitionId) : 'none'}
-                  onValueChange={(value) => handleFieldChange('profilDefinitionId', value === 'none' ? null : Number(value))}
-                >
-                  <SelectTrigger className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] ${pinkFocusClass}`}>
-                    <SelectValue placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Profil seç'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Seçim yok</SelectItem>
-                    {profilOptions.map((option) => (
-                      <SelectItem key={option.id} value={String(option.id)}>
-                        {option.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <VoiceSearchCombobox
+                  options={profilComboboxOptions}
+                  value={formData.profilDefinitionId ? String(formData.profilDefinitionId) : null}
+                  onSelect={(value) => handleFieldChange('profilDefinitionId', value ? Number(value) : null)}
+                  placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Profil seç'}
+                  searchPlaceholder="Profil ara..."
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                  disabled={isDefinitionOptionsLoading}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Demir</label>
-                <Select
-                  value={formData.demirDefinitionId ? String(formData.demirDefinitionId) : 'none'}
-                  onValueChange={(value) => handleFieldChange('demirDefinitionId', value === 'none' ? null : Number(value))}
-                >
-                  <SelectTrigger className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] ${pinkFocusClass}`}>
-                    <SelectValue placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Demir seç'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Seçim yok</SelectItem>
-                    {demirOptions.map((option) => (
-                      <SelectItem key={option.id} value={String(option.id)}>
-                        {option.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <VoiceSearchCombobox
+                  options={demirComboboxOptions}
+                  value={formData.demirDefinitionId ? String(formData.demirDefinitionId) : null}
+                  onSelect={(value) => handleFieldChange('demirDefinitionId', value ? Number(value) : null)}
+                  placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Demir seç'}
+                  searchPlaceholder="Demir ara..."
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                  disabled={isDefinitionOptionsLoading}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Vida</label>
-                <Select
-                  value={formData.vidaDefinitionId ? String(formData.vidaDefinitionId) : 'none'}
-                  onValueChange={(value) => handleFieldChange('vidaDefinitionId', value === 'none' ? null : Number(value))}
-                >
-                  <SelectTrigger className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] ${pinkFocusClass}`}>
-                    <SelectValue placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Vida seç'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Seçim yok</SelectItem>
-                    {vidaOptions.map((option) => (
-                      <SelectItem key={option.id} value={String(option.id)}>
-                        {option.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <VoiceSearchCombobox
+                  options={vidaComboboxOptions}
+                  value={formData.vidaDefinitionId ? String(formData.vidaDefinitionId) : null}
+                  onSelect={(value) => handleFieldChange('vidaDefinitionId', value ? Number(value) : null)}
+                  placeholder={isDefinitionOptionsLoading ? 'Yükleniyor...' : 'Vida seç'}
+                  searchPlaceholder="Vida ara..."
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                  disabled={isDefinitionOptionsLoading}
+                />
               </div>
             </div>
           </div>
