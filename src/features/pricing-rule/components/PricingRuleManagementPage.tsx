@@ -39,13 +39,13 @@ function resolveLabel(t: (key: string) => string, key: string, fallback: string)
 function getRuleTypeConfig(t: (key: string) => string, type: number) {
   switch (type) {
     case PricingRuleType.Demand:
-      return { label: t('pricingRule.ruleType.demand'), className: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20', icon: List };
+      return { label: t('ruleType.demand'), className: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20', icon: List };
     case PricingRuleType.Quotation:
-      return { label: t('pricingRule.ruleType.quotation'), className: 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20', icon: FileText };
+      return { label: t('ruleType.quotation'), className: 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20', icon: FileText };
     case PricingRuleType.Order:
-      return { label: t('pricingRule.ruleType.order'), className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20', icon: ShoppingCart };
+      return { label: t('ruleType.order'), className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20', icon: ShoppingCart };
     default:
-      return { label: t('pricingRule.ruleType.unknown'), className: 'bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/20', icon: TrendingUp };
+      return { label: t('ruleType.unknown'), className: 'bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/20', icon: TrendingUp };
   }
 }
 
@@ -80,7 +80,7 @@ export function PricingRuleManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('pricingRule.list.title'));
+    setPageTitle(t('list.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -178,7 +178,7 @@ export function PricingRuleManagementPage(): ReactElement {
             const from = new Date(h.validFrom);
             const to = new Date(h.validTo);
             const isRuleValid = h.isActive && from <= now && to >= now;
-            row[key] = isRuleValid ? t('pricingRule.status.active') : t('pricingRule.status.inactive');
+            row[key] = isRuleValid ? t('status.active') : t('status.inactive');
           } else if (key === 'ruleType') {
             row[key] = getRuleTypeConfig(t, h.ruleType).label;
           } else if (key === 'validFrom' || key === 'validTo') {
@@ -204,7 +204,7 @@ export function PricingRuleManagementPage(): ReactElement {
             const from = new Date(h.validFrom);
             const to = new Date(h.validTo);
             const isRuleValid = h.isActive && from <= now && to >= now;
-            row[key] = isRuleValid ? t('pricingRule.status.active') : t('pricingRule.status.inactive');
+            row[key] = isRuleValid ? t('status.active') : t('status.inactive');
           } else if (key === 'ruleType') {
             row[key] = getRuleTypeConfig(t, h.ruleType).label;
           } else if (key === 'validFrom' || key === 'validTo') {
@@ -256,11 +256,11 @@ export function PricingRuleManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
-            {t('pricingRule.list.title')}
+            {t('list.title')}
           </h1>
           <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
             <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-            {t('pricingRule.list.description')}
+            {t('list.description')}
           </p>
         </div>
         <Button
@@ -268,13 +268,13 @@ export function PricingRuleManagementPage(): ReactElement {
           className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={20} className="mr-2 stroke-[3px]" />
-          {t('pricingRule.list.add')}
+          {t('list.add')}
         </Button>
       </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
-          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('pricingRule.table.title', { defaultValue: t('pricingRule.list.title') })}</CardTitle>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title', { defaultValue: t('list.title') })}</CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -361,7 +361,7 @@ export function PricingRuleManagementPage(): ReactElement {
                         }`}
                     >
                       {isRuleValid ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                      {isRuleValid ? t('pricingRule.status.active') : t('pricingRule.status.inactive')}
+                      {isRuleValid ? t('status.active') : t('status.inactive')}
                     </Badge>
                   );
                 }
@@ -422,13 +422,13 @@ export function PricingRuleManagementPage(): ReactElement {
                 );
               }}
               isLoading={isLoading}
-              loadingText={t('pricingRule.loading')}
-              errorText={t('pricingRule.error', { defaultValue: 'Hata oluştu' })}
-              emptyText={t('pricingRule.noData')}
+              loadingText={t('loading')}
+              errorText={t('error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('noData')}
               onRowDoubleClick={handleEdit}
               minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
               showActionsColumn
-              actionsHeaderLabel={t('pricingRule.actions')}
+              actionsHeaderLabel={t('actions')}
               rowClassName="group"
               pageSize={pageSize}
               pageSizeOptions={PAGE_SIZE_OPTIONS}
