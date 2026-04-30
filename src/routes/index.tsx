@@ -88,7 +88,6 @@ const PowerbiReportsListPage = lazyImport(() => import('@/features/powerbi-viewe
 const PowerbiReportViewerPage = lazyImport(() => import('@/features/powerbi-viewer'), 'PowerbiReportViewerPage');
 const PowerbiReportSyncPage = lazyImport(() => import('@/features/powerbi-sync'), 'PowerbiReportSyncPage');
 const PowerbiRlsPage = lazyImport(() => import('@/features/powerbi-rls'), 'PowerbiRlsPage');
-const PermissionDefinitionsPage = lazyImport(() => import('@/features/access-control'), 'PermissionDefinitionsPage');
 const PermissionGroupsPage = lazyImport(() => import('@/features/access-control'), 'PermissionGroupsPage');
 const UserGroupAssignmentsPage = lazyImport(() => import('@/features/access-control'), 'UserGroupAssignmentsPage');
 const VisibilityPoliciesPage = lazyImport(() => import('@/features/access-control'), 'VisibilityPoliciesPage');
@@ -192,7 +191,6 @@ export function createAppRouter() {
         { path: 'definitions/sales-rep-management', element: <SalesRepManagementPage /> },
         { path: 'definitions/sales-rep-match-management', element: <SalesRepMatchManagementPage /> },
         { path: 'definitions/category-definitions', element: <CategoryDefinitionsPage /> },
-        { path: 'access-control/permission-definitions', element: <PermissionDefinitionsPage /> },
         { path: 'access-control/permission-groups', element: <PermissionGroupsPage /> },
         { path: 'access-control/user-group-assignments', element: <UserGroupAssignmentsPage /> },
         { path: 'access-control/visibility-policies', element: <VisibilityPoliciesPage /> },

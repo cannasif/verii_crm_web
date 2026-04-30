@@ -34,10 +34,12 @@ import { useCreatePermissionGroupMutation } from '../hooks/useCreatePermissionGr
 import { useUpdatePermissionGroupMutation } from '../hooks/useUpdatePermissionGroupMutation';
 import { useDeletePermissionGroupMutation } from '../hooks/useDeletePermissionGroupMutation';
 import { useCrudPermissions } from '../hooks/useCrudPermissions';
+import { useMyPermissionsQuery } from '../hooks/useMyPermissionsQuery';
 import { PermissionGroupForm } from './PermissionGroupForm';
 import { GroupPermissionsPanel } from './GroupPermissionsPanel';
 import type { PermissionGroupDto } from '../types/access-control.types';
 import type { CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
+import { ensurePermissionDefinitionsSynced } from '../utils/permission-definition-sync';
 
 const EMPTY_ITEMS: PermissionGroupDto[] = [];
 const PAGE_KEY = 'permission-groups';
@@ -79,6 +81,7 @@ export function PermissionGroupsPage(): ReactElement {
   const createMutation = useCreatePermissionGroupMutation();
   const updateMutation = useUpdatePermissionGroupMutation();
   const deleteMutation = useDeletePermissionGroupMutation();
+  const { data: permissions } = useMyPermissionsQuery();
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.permission-groups.view');
 
   const items = data?.data ?? EMPTY_ITEMS;
@@ -102,12 +105,22 @@ export function PermissionGroupsPage(): ReactElement {
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
+  const ensurePermissionCatalogReady = async (): Promise<void> => {
+    await ensurePermissionDefinitionsSynced({
+      userId: user?.id ?? null,
+      permissions,
+    });
+    await queryClient.invalidateQueries({ queryKey: ['permissions', 'definitions'] });
+  };
+
   const handleRefresh = async (): Promise<void> => {
+    await ensurePermissionCatalogReady();
     await queryClient.invalidateQueries({ queryKey: ['permissions', 'groups'] });
   };
 
-  const handleAddClick = (): void => {
+  const handleAddClick = async (): Promise<void> => {
     if (!canCreate) return;
+    await ensurePermissionCatalogReady();
     setEditingItem(null);
     setFormOpen(true);
   };
@@ -119,9 +132,10 @@ export function PermissionGroupsPage(): ReactElement {
     setFormOpen(true);
   };
 
-  const handlePermissionsClick = (item: PermissionGroupDto): void => {
+  const handlePermissionsClick = async (item: PermissionGroupDto): Promise<void> => {
     if (!canUpdate) return;
     if (item.isSystemAdmin) return;
+    await ensurePermissionCatalogReady();
     setPermissionsPanelGroupId(item.id);
     setPermissionsPanelOpen(true);
   };

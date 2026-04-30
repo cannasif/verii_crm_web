@@ -214,7 +214,6 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
               { title: t('sidebar.visibilityPolicies'), href: '/access-control/visibility-policies' },
               { title: t('sidebar.visibilitySimulator'), href: '/access-control/visibility-simulator' },
               { title: t('sidebar.permissionGroups'), href: '/access-control/permission-groups' },
-              { title: t('sidebar.permissionDefinitions'), href: '/access-control/permission-definitions' },
             ],
           },
           {
