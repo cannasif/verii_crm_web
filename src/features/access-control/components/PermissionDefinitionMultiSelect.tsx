@@ -3,7 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
-import { getPermissionDisplayLabel, getPermissionModuleDisplayMeta, getPermissionPlatform, isLeafPermissionCode } from '../utils/permission-config';
+import {
+  getPermissionDisplayLabel,
+  getPermissionModuleDisplayMeta,
+  getPermissionPlatform,
+  isLeafPermissionCode,
+  translatePermissionLabel,
+} from '../utils/permission-config';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -31,13 +37,29 @@ export function PermissionDefinitionMultiSelect({
   const [search, setSearch] = useState('');
 
   const actionMeta = useMemo(
-    () => ({
-      create: { label: t('permissionGroups.permissionsPanel.actions.create'), aliases: ['create', 'add', 'new', 'insert'] },
-      read: { label: t('permissionGroups.permissionsPanel.actions.read'), aliases: ['read', 'view', 'list', 'overview'] },
-      update: { label: t('permissionGroups.permissionsPanel.actions.update'), aliases: ['update', 'edit', 'write'] },
-      delete: { label: t('permissionGroups.permissionsPanel.actions.delete'), aliases: ['delete', 'remove'] },
-      other: { label: t('permissionGroups.permissionsPanel.actions.other'), aliases: [] },
-    } as const),
+    () =>
+      ({
+        create: {
+          label: translatePermissionLabel(t, 'permissionGroups.permissionsPanel.actions.create', 'Create'),
+          aliases: ['create', 'add', 'new', 'insert'],
+        },
+        read: {
+          label: translatePermissionLabel(t, 'permissionGroups.permissionsPanel.actions.read', 'Read'),
+          aliases: ['read', 'view', 'list', 'overview'],
+        },
+        update: {
+          label: translatePermissionLabel(t, 'permissionGroups.permissionsPanel.actions.update', 'Update'),
+          aliases: ['update', 'edit', 'write'],
+        },
+        delete: {
+          label: translatePermissionLabel(t, 'permissionGroups.permissionsPanel.actions.delete', 'Delete'),
+          aliases: ['delete', 'remove'],
+        },
+        other: {
+          label: translatePermissionLabel(t, 'permissionGroups.permissionsPanel.actions.other', 'Other'),
+          aliases: [],
+        },
+      }) as const,
     [t]
   );
 
@@ -45,7 +67,7 @@ export function PermissionDefinitionMultiSelect({
     (code: string, name: string | null | undefined): string => {
       const trimmedName = (name ?? '').trim();
       if (trimmedName) return trimmedName;
-      return getPermissionDisplayLabel(code, (key, fallback) => t(key, fallback));
+      return getPermissionDisplayLabel(code, (key, fallback) => translatePermissionLabel(t, key, fallback));
     },
     [t]
   );
@@ -53,7 +75,7 @@ export function PermissionDefinitionMultiSelect({
   const getPlatformLabel = useCallback(
     (code: string, availableOnWeb: boolean, availableOnMobile: boolean): string => {
       const platform = getPermissionPlatform(code, availableOnWeb, availableOnMobile);
-      return t(`permissionDefinitions.platforms.${platform}`);
+      return translatePermissionLabel(t, `permissionDefinitions.platform.${platform}`, platform);
     },
     [t]
   );
@@ -116,7 +138,7 @@ export function PermissionDefinitionMultiSelect({
     for (const item of filteredItems) {
       const prefix = (item.code ?? '').split('.').filter(Boolean)[0] ?? 'other';
       const meta = getPermissionModuleDisplayMeta(prefix);
-      const moduleLabel = meta ? t(meta.key, meta.fallback) : prefix;
+      const moduleLabel = meta ? translatePermissionLabel(t, meta.key, meta.fallback) : prefix;
       const subjectLabel = getSubjectLabel(item.code);
       const actionKey = getActionKey(item.code);
       const display = getDisplayLabel(item.code, item.name);
@@ -147,7 +169,7 @@ export function PermissionDefinitionMultiSelect({
         moduleLabel: moduleEntry.moduleLabel,
         rows: Array.from(moduleEntry.rows.values()).sort((a, b) => a.label.localeCompare(b.label)),
       }));
-  }, [filteredItems, getActionKey, getDisplayLabel, getSubjectLabel, t, actionMeta]);
+  }, [filteredItems, getActionKey, getDisplayLabel, getPlatformLabel, getSubjectLabel, t, actionMeta]);
 
   const toggleMany = useCallback(
     (ids: number[], checked: boolean): void => {
@@ -181,13 +203,15 @@ export function PermissionDefinitionMultiSelect({
       <Input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={t('permissionGroups.search')}
+        placeholder={translatePermissionLabel(t, 'permissionGroups.search', 'Search...')}
         disabled={disabled}
       />
 
       <div className="max-h-[420px] overflow-y-auto w-full min-w-0 rounded-2xl border border-slate-200 bg-white/80 p-2 dark:border-white/10 dark:bg-white/[0.03]">
         {filteredItems.length === 0 ? (
-          <p className="text-sm text-slate-500 py-2">{t('permissionGroups.noDefinitions')}</p>
+          <p className="text-sm text-slate-500 py-2">
+            {translatePermissionLabel(t, 'permissionGroups.noDefinitions', 'No permission definitions')}
+          </p>
         ) : (
           <Accordion type="multiple" className="space-y-3">
             {groupedItems.map(({ moduleLabel, rows }) => {
@@ -205,7 +229,8 @@ export function PermissionDefinitionMultiSelect({
                       <div className="min-w-0 text-left">
                         <p className="text-sm font-black text-slate-900 dark:text-white">{moduleLabel}</p>
                         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                          {rows.length} {t('permissionGroups.permissionsPanel.groupedRows')}
+                          {rows.length}{' '}
+                          {translatePermissionLabel(t, 'permissionGroups.permissionsPanel.groupedRows', 'screens')}
                         </p>
                       </div>
                       <div
@@ -222,7 +247,7 @@ export function PermissionDefinitionMultiSelect({
                           htmlFor={`module-${moduleLabel}`}
                           className="text-xs font-semibold text-slate-600 dark:text-slate-300"
                         >
-                          {t('permissionGroups.selectAll')}
+                          {translatePermissionLabel(t, 'permissionGroups.selectAll', 'Select all')}
                         </label>
                       </div>
                     </div>
@@ -232,7 +257,7 @@ export function PermissionDefinitionMultiSelect({
                       <div className="max-h-[300px] overflow-y-auto bg-slate-200 dark:bg-white/10 min-w-[700px]">
                         <div className="sticky top-0 z-20 grid grid-cols-[minmax(180px,2fr)_repeat(5,minmax(88px,1fr))] border-b border-slate-200 dark:border-white/10 bg-slate-200 text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:bg-white/10 dark:text-slate-400">
                           <div className="bg-slate-50 px-3 py-3 dark:bg-[#1E1627] border-r border-slate-200 dark:border-white/10">
-                            {t('permissionGroups.permissionsPanel.screen')}
+                            {translatePermissionLabel(t, 'permissionGroups.permissionsPanel.screen', 'Screen')}
                           </div>
                           {(['create', 'read', 'update', 'delete', 'other'] as const).map((actionKey, idx) => (
                             <div
@@ -258,7 +283,8 @@ export function PermissionDefinitionMultiSelect({
                                   <div className="mt-1 flex flex-wrap gap-1">
                                     {row.allIds.length > 1 ? (
                                       <Badge variant="secondary" className="rounded-full">
-                                        {row.allIds.length} {t('permissionGroups.permissionsPanel.actionsMapped')}
+                                        {row.allIds.length}{' '}
+                                        {translatePermissionLabel(t, 'permissionGroups.permissionsPanel.actionsMapped', 'permissions')}
                                       </Badge>
                                     ) : null}
                                   </div>
