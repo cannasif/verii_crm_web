@@ -19,9 +19,8 @@ function getTranslationNamespace(key?: string): string {
   if (!key) return 'common';
   const [prefix] = key.split('.');
   if (!prefix) return 'common';
-  if (prefix === 'sidebar') return 'common';
-  if (prefix === 'permissionGroups') return 'access-control';
-  return prefix;
+  if (prefix === 'sidebar' || prefix === 'customer360') return 'common';
+  return 'access-control';
 }
 
 function getRequiredNamespaces(): string[] {
