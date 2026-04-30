@@ -76,10 +76,6 @@ function toBaseRelativePath(fileName: string): string {
   return `${normalizedBase}${fileName}`;
 }
 
-function getRuntimeConfigFileName(): string {
-  return import.meta.env.DEV ? 'config.development.json' : 'config.json';
-}
-
 async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
   const fallbackConfig: ResolvedRuntimeConfig = {
     apiUrl: normalizeBaseUrl(DEFAULT_API_BASE_URL),
@@ -87,7 +83,7 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
   };
 
   try {
-    const response = await fetch(toBaseRelativePath(getRuntimeConfigFileName()), {
+    const response = await fetch(toBaseRelativePath('config.json'), {
       cache: import.meta.env.PROD ? 'no-cache' : 'default',
     });
     if (!response.ok) return fallbackConfig;
