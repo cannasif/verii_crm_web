@@ -28,12 +28,12 @@ export interface ColumnDef<T> {
 type CityColumnKey = keyof CityDto;
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CityDto>[] => [
-  { key: 'id', label: t('cityManagement.table.id'), type: 'id', className: 'w-[60px] md:w-[80px]' },
-  { key: 'name', label: t('cityManagement.table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
-  { key: 'erpCode', label: t('cityManagement.table.erpCode'), type: 'text', className: 'w-[100px] md:w-[140px]' },
-  { key: 'countryName', label: t('cityManagement.table.countryName'), type: 'country', className: 'min-w-[140px] md:min-w-[180px]' },
-  { key: 'createdDate', label: t('cityManagement.table.createdDate'), type: 'date', className: 'w-[140px] md:w-[160px]' },
-  { key: 'createdByFullUser', label: t('cityManagement.table.createdBy'), type: 'user', className: 'w-[140px] md:w-[160px]' },
+  { key: 'id', label: t('table.id'), type: 'id', className: 'w-[60px] md:w-[80px]' },
+  { key: 'name', label: t('table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
+  { key: 'erpCode', label: t('table.erpCode'), type: 'text', className: 'w-[100px] md:w-[140px]' },
+  { key: 'countryName', label: t('table.countryName'), type: 'country', className: 'min-w-[140px] md:min-w-[180px]' },
+  { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'w-[140px] md:w-[160px]' },
+  { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'w-[140px] md:w-[160px]' },
 ];
 
 interface CityTableProps {
@@ -123,9 +123,9 @@ export function CityTable({
         await deleteCity.mutateAsync(selectedCity.id);
         setDeleteDialogOpen(false);
         setSelectedCity(null);
-        toast.success(t('cityManagement.delete.success'));
+        toast.success(t('delete.success'));
       } catch {
-        toast.error(t('cityManagement.delete.error'));
+        toast.error(t('delete.error'));
       }
     }
   };
@@ -205,10 +205,10 @@ export function CityTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('cityManagement.delete.confirmTitle')}
+                {t('delete.confirmTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('cityManagement.delete.confirmMessage', { name: selectedCity?.name })}
+                {t('delete.confirmMessage', { name: selectedCity?.name })}
               </DialogDescription>
             </div>
           </DialogHeader>

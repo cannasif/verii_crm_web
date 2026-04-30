@@ -76,17 +76,17 @@ interface ContactTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ContactDto>[] => [
-  { key: 'id', label: t('contactManagement.table.id'), type: 'text', className: 'font-medium w-[60px] md:w-[80px]' },
-  { key: 'salutation', label: t('contactManagement.table.salutation'), type: 'salutation', className: 'w-[96px] md:w-[120px]' },
-  { key: 'fullName', label: t('contactManagement.table.fullName'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
-  { key: 'email', label: t('contactManagement.table.email'), type: 'email', className: 'min-w-[160px] md:min-w-[200px] break-all' },
-  { key: 'phone', label: t('contactManagement.table.phone'), type: 'phone', className: 'whitespace-nowrap' },
-  { key: 'mobile', label: t('contactManagement.table.mobile'), type: 'mobile', className: 'whitespace-nowrap' },
-  { key: 'customerName', label: t('contactManagement.table.customer'), type: 'customer', className: 'min-w-[160px] md:min-w-[200px]' },
-  { key: 'titleName', label: t('contactManagement.table.title'), type: 'title', className: 'min-w-[120px] md:min-w-[150px]' },
-  { key: 'createdDate', label: t('contactManagement.table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
-  { key: 'createdByFullUser', label: t('contactManagement.table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
-  { key: 'status', label: t('contactManagement.table.status'), type: 'status', className: 'w-[84px] md:w-[100px]' },
+  { key: 'id', label: t('table.id'), type: 'text', className: 'font-medium w-[60px] md:w-[80px]' },
+  { key: 'salutation', label: t('table.salutation'), type: 'salutation', className: 'w-[96px] md:w-[120px]' },
+  { key: 'fullName', label: t('table.fullName'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
+  { key: 'email', label: t('table.email'), type: 'email', className: 'min-w-[160px] md:min-w-[200px] break-all' },
+  { key: 'phone', label: t('table.phone'), type: 'phone', className: 'whitespace-nowrap' },
+  { key: 'mobile', label: t('table.mobile'), type: 'mobile', className: 'whitespace-nowrap' },
+  { key: 'customerName', label: t('table.customer'), type: 'customer', className: 'min-w-[160px] md:min-w-[200px]' },
+  { key: 'titleName', label: t('table.title'), type: 'title', className: 'min-w-[120px] md:min-w-[150px]' },
+  { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
+  { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
+  { key: 'status', label: t('table.status'), type: 'status', className: 'w-[84px] md:w-[100px]' },
 ];
 
 function renderCellContent(
@@ -163,14 +163,14 @@ function renderCellContent(
       const salutationValue = Number(value);
       const salutationText =
         salutationValue === 1
-          ? t('contactManagement.form.salutationMr')
+          ? t('form.salutationMr')
           : salutationValue === 2
-            ? t('contactManagement.form.salutationMs')
+            ? t('form.salutationMs')
             : salutationValue === 3
-              ? t('contactManagement.form.salutationMrs')
+              ? t('form.salutationMrs')
               : salutationValue === 4
-                ? t('contactManagement.form.salutationDr')
-                : t('contactManagement.form.salutationNone');
+                ? t('form.salutationDr')
+                : t('form.salutationNone');
       return (
         <Badge variant="outline" className="text-xs font-medium">
           {salutationText}
@@ -236,9 +236,9 @@ export function ContactTable({
         await deleteContact.mutateAsync(selectedContact.id);
         setDeleteDialogOpen(false);
         setSelectedContact(null);
-        toast.success(t('contactManagement.delete.success'));
+        toast.success(t('delete.success'));
       } catch {
-        toast.error(t('contactManagement.delete.error'));
+        toast.error(t('delete.error'));
       }
     }
   };
@@ -268,7 +268,7 @@ export function ContactTable({
         size="icon"
         onClick={() => onQuickActivity(contact)}
         className="h-8 w-8 text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:text-pink-400 dark:hover:bg-pink-500/10"
-        title={t('contactManagement.quickActivity')}
+        title={t('quickActivity')}
       >
         <Activity size={16} />
       </Button>
@@ -335,10 +335,10 @@ export function ContactTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('contactManagement.delete.confirmTitle')}
+                {t('delete.confirmTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('contactManagement.delete.confirmMessage', {
+                {t('delete.confirmMessage', {
                   name: selectedContact?.fullName || '',
                 })}
               </DialogDescription>
@@ -360,8 +360,8 @@ export function ContactTable({
               disabled={deleteContact.isPending}
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
-              {deleteContact.isPending ? <span className="animate-pulse">{t('contactManagement.loading')}</span> : null}
-              {t('contactManagement.delete.action')}
+              {deleteContact.isPending ? <span className="animate-pulse">{t('loading')}</span> : null}
+              {t('delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>

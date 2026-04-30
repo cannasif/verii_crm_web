@@ -63,12 +63,12 @@ interface CountryTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CountryDto>[] => [
-  { key: 'id', label: t('countryManagement.table.id'), type: 'id', className: 'w-[60px] md:w-[80px]' },
-  { key: 'name', label: t('countryManagement.table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
-  { key: 'code', label: t('countryManagement.table.code'), type: 'text', className: 'w-[100px] md:w-[140px]' },
-  { key: 'erpCode', label: t('countryManagement.table.erpCode'), type: 'text', className: 'w-[100px] md:w-[140px]' },
-  { key: 'createdDate', label: t('countryManagement.table.createdDate'), type: 'date', className: 'w-[140px] md:w-[160px]' },
-  { key: 'createdByFullUser', label: t('countryManagement.table.createdBy'), type: 'user', className: 'w-[140px] md:w-[160px]' },
+  { key: 'id', label: t('table.id'), type: 'id', className: 'w-[60px] md:w-[80px]' },
+  { key: 'name', label: t('table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
+  { key: 'code', label: t('table.code'), type: 'text', className: 'w-[100px] md:w-[140px]' },
+  { key: 'erpCode', label: t('table.erpCode'), type: 'text', className: 'w-[100px] md:w-[140px]' },
+  { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'w-[140px] md:w-[160px]' },
+  { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'w-[140px] md:w-[160px]' },
 ];
 
 export function CountryTable({
@@ -123,10 +123,10 @@ export function CountryTable({
         await deleteCountry.mutateAsync(selectedCountry.id);
         setDeleteDialogOpen(false);
         setSelectedCountry(null);
-        toast.success(t('countryManagement.messages.deleteSuccess'));
+        toast.success(t('messages.deleteSuccess'));
       } catch (error) {
         console.error(error);
-        toast.error(t('countryManagement.messages.deleteError'));
+        toast.error(t('messages.deleteError'));
       }
     }
   };
@@ -206,10 +206,10 @@ export function CountryTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('countryManagement.delete.confirmTitle')}
+                {t('delete.confirmTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('countryManagement.delete.confirmMessage', { name: selectedCountry?.name })}
+                {t('delete.confirmMessage', { name: selectedCountry?.name })}
               </DialogDescription>
             </div>
           </DialogHeader>

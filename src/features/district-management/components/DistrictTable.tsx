@@ -28,10 +28,10 @@ export interface ColumnDef<T> {
 type DistrictColumnKey = keyof DistrictDto | 'status';
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<DistrictDto>[] => [
-  { key: 'erpCode', label: t('districtManagement.table.erpCode'), type: 'code', className: 'w-[100px] md:w-[140px]' },
-  { key: 'name', label: t('districtManagement.table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
-  { key: 'cityName', label: t('districtManagement.table.city'), type: 'city', className: 'min-w-[140px] md:min-w-[160px]' },
-  { key: 'isDeleted', label: t('districtManagement.table.status'), type: 'status', className: 'w-[100px] md:w-[120px]' },
+  { key: 'erpCode', label: t('table.erpCode'), type: 'code', className: 'w-[100px] md:w-[140px]' },
+  { key: 'name', label: t('table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
+  { key: 'cityName', label: t('table.city'), type: 'city', className: 'min-w-[140px] md:min-w-[160px]' },
+  { key: 'isDeleted', label: t('table.status'), type: 'status', className: 'w-[100px] md:w-[120px]' },
 ];
 
 interface DistrictTableProps {
@@ -121,9 +121,9 @@ export function DistrictTable({
         await deleteDistrict.mutateAsync(selectedDistrict.id);
         setDeleteDialogOpen(false);
         setSelectedDistrict(null);
-        toast.success(t('districtManagement.delete.success'));
+        toast.success(t('delete.success'));
       } catch {
-        toast.error(t('districtManagement.delete.error'));
+        toast.error(t('delete.error'));
       }
     }
   };
@@ -202,10 +202,10 @@ export function DistrictTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('districtManagement.delete.confirmTitle')}
+                {t('delete.confirmTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('districtManagement.delete.confirmMessage', { name: selectedDistrict?.name })}
+                {t('delete.confirmMessage', { name: selectedDistrict?.name })}
               </DialogDescription>
             </div>
           </DialogHeader>

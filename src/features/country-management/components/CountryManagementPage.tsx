@@ -72,7 +72,7 @@ export function CountryManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('countryManagement.menu'));
+    setPageTitle(t('menu'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -227,10 +227,10 @@ export function CountryManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('countryManagement.menu')}
+            {t('menu')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('countryManagement.description')}
+            {t('description')}
           </p>
         </div>
         <Button
@@ -238,7 +238,7 @@ export function CountryManagementPage(): ReactElement {
           className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
-          {t('countryManagement.addButton')}
+          {t('addButton')}
         </Button>
       </div>
 
@@ -269,7 +269,7 @@ export function CountryManagementPage(): ReactElement {
             translationNamespace="country-management"
             appliedFilterCount={appliedFilterCount}
             searchValue={searchTerm}
-            searchPlaceholder={t('countryManagement.searchPlaceholder')}
+            searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
             leftSlot={
               <>
@@ -324,9 +324,9 @@ export function CountryManagementPage(): ReactElement {
                 );
               }}
               isLoading={isLoading}
-              loadingText={t('countryManagement.loading')}
-              errorText={t('countryManagement.error', { defaultValue: 'Hata oluştu' })}
-              emptyText={t('countryManagement.table.noData')}
+              loadingText={t('loading')}
+              errorText={t('error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('table.noData')}
               minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
               showActionsColumn
               actionsHeaderLabel={t('common.actions')}
