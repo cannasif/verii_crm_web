@@ -272,14 +272,14 @@ export function QuotationLineForm({
     const loadTemporaryStockData = async (): Promise<void> => {
       if (line.productCode && line.productName) {
         const targetCurrencyCode = currencyOptions.find((opt) => opt.dovizTipi === currency)?.code || 'TRY';
-        
+
         const existingMainStockData = temporaryStockData.find((data) => data.productCode === line.productCode);
         const hasAllRelatedStocks = lineRelatedLines.every((relatedLine) => {
           if (!relatedLine.productCode) return true;
           return temporaryStockData.some((data) => data.productCode === relatedLine.productCode);
         });
-        
-        const shouldLoadFromApi = 
+
+        const shouldLoadFromApi =
           (temporaryStockData.length === 0 || !existingMainStockData || !existingMainStockData.groupCode) &&
           lastLoadedProductCode !== line.productCode &&
           (!hasAllRelatedStocks || lineRelatedLines.some((relatedLine) => {
@@ -361,7 +361,7 @@ export function QuotationLineForm({
               discountRate3: mainDiscountRate3,
               currencyCode: targetCurrencyCode,
             };
-            
+
             setFormData((prev) => ({
               ...prev,
               groupCode: mainStockData.groupCode || null,
@@ -437,7 +437,7 @@ export function QuotationLineForm({
                 };
               })
             );
-            
+
             setTemporaryStockData((prev) => {
               const next = [mainStockData, ...relatedStocksData];
               return areTemporaryStockDataEqual(prev, next) ? prev : next;
@@ -487,7 +487,7 @@ export function QuotationLineForm({
             discountRate3: line.discountRate3,
             currencyCode: targetCurrencyCode,
           };
-          
+
           if (existingMainStockData?.groupCode) {
             setFormData((prev) => ({
               ...prev,
@@ -909,12 +909,12 @@ export function QuotationLineForm({
         const exceedsLimit1 = discountRate1 > matchingLimit.maxDiscount1;
         const exceedsLimit2 =
           matchingLimit.maxDiscount2 !== null &&
-          matchingLimit.maxDiscount2 !== undefined
+            matchingLimit.maxDiscount2 !== undefined
             ? discountRate2 > matchingLimit.maxDiscount2
             : false;
         const exceedsLimit3 =
           matchingLimit.maxDiscount3 !== null &&
-          matchingLimit.maxDiscount3 !== undefined
+            matchingLimit.maxDiscount3 !== undefined
             ? discountRate3 > matchingLimit.maxDiscount3
             : false;
 
@@ -957,8 +957,8 @@ export function QuotationLineForm({
 
         if (relatedStockData) {
           const newRelatedQuantity = relatedStockData.quantity * newQuantity;
-          const updatedRelatedLine = { 
-            ...relatedLine, 
+          const updatedRelatedLine = {
+            ...relatedLine,
             quantity: newRelatedQuantity,
             groupCode: relatedLine.groupCode || relatedStockData.groupCode || null,
           };
@@ -1000,7 +1000,7 @@ export function QuotationLineForm({
           {t('quotation.lines.stock')}
           {isZodFieldRequired(quotationLineRequiredSchema, 'productCode') ? <span className="text-pink-500">*</span> : null}
         </label>
-        
+
         <div className="flex flex-col gap-3">
           <div className="flex flex-row gap-3">
             <div className="relative flex-1">
@@ -1055,7 +1055,7 @@ export function QuotationLineForm({
               value={formData.productName || ''}
               placeholder={t('quotation.lines.productName')}
               readOnly
-                className={`bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full ${pinkFocusClass}`}
+              className={`bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full ${pinkFocusClass}`}
             />
           </div>
 
@@ -1087,21 +1087,19 @@ export function QuotationLineForm({
                 {bulkDraftLines.map((item, index) => (
                   <div
                     key={`${item.id}-${index}`}
-                    className={`inline-flex items-stretch overflow-hidden rounded-full border transition-all ${
-                      index === activeBulkIndex
-                        ? 'border-pink-500 bg-pink-600 shadow-md shadow-pink-500/30 dark:border-pink-400 dark:bg-pink-500'
-                        : 'border-pink-200/80 bg-white/80 dark:border-pink-700/40 dark:bg-pink-900/20'
-                    }`}
+                    className={`inline-flex items-stretch overflow-hidden rounded-full border transition-all ${index === activeBulkIndex
+                      ? 'border-pink-500 bg-pink-600 shadow-md shadow-pink-500/30 dark:border-pink-400 dark:bg-pink-500'
+                      : 'border-pink-200/80 bg-white/80 dark:border-pink-700/40 dark:bg-pink-900/20'
+                      }`}
                   >
                     <button
                       type="button"
                       onClick={() => handleSelectBulkLine(index)}
                       title={item.productName || item.productCode || '-'}
-                      className={`flex h-8 max-w-[180px] items-center gap-1.5 px-3 text-left text-sm transition-colors ${
-                        index === activeBulkIndex
-                          ? 'text-white hover:bg-pink-700/35 dark:hover:bg-white/10'
-                          : 'text-pink-700 hover:bg-pink-50 dark:text-pink-300 dark:hover:bg-pink-900/35'
-                      }`}
+                      className={`flex h-8 max-w-[180px] items-center gap-1.5 px-3 text-left text-sm transition-colors ${index === activeBulkIndex
+                        ? 'text-white hover:bg-pink-700/35 dark:hover:bg-white/10'
+                        : 'text-pink-700 hover:bg-pink-50 dark:text-pink-300 dark:hover:bg-pink-900/35'
+                        }`}
                     >
                       {(item.relatedLines?.length ?? 0) > 0 ? <Layers className="h-3.5 w-3.5 shrink-0" /> : null}
                       <span className="truncate font-mono">{item.productCode || '-'}</span>
@@ -1111,11 +1109,10 @@ export function QuotationLineForm({
                       aria-label={t('common.remove')}
                       title={t('common.remove')}
                       onClick={handleRemoveBulkDraftLine(index)}
-                      className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${
-                        index === activeBulkIndex
-                          ? 'border-pink-400/50 text-white/90 hover:bg-white/15 hover:text-white'
-                          : 'border-pink-200/70 text-pink-600 hover:bg-pink-100 dark:border-pink-700/50 dark:text-pink-300 dark:hover:bg-pink-900/40'
-                      }`}
+                      className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${index === activeBulkIndex
+                        ? 'border-pink-400/50 text-white/90 hover:bg-white/15 hover:text-white'
+                        : 'border-pink-200/70 text-pink-600 hover:bg-pink-100 dark:border-pink-700/50 dark:text-pink-300 dark:hover:bg-pink-900/40'
+                        }`}
                     >
                       <X className="h-3.5 w-3.5" strokeWidth={2.5} />
                     </button>
@@ -1164,7 +1161,7 @@ export function QuotationLineForm({
                 }
               }
             }}
-              className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-extrabold text-center shadow-sm ${pinkFocusClass}`}
+            className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-extrabold text-center shadow-sm ${pinkFocusClass}`}
           />
         </div>
 
@@ -1205,7 +1202,7 @@ export function QuotationLineForm({
           <Input
             value={formData.unit || '-'}
             readOnly
-              className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-semibold text-center shadow-sm ${pinkFocusClass}`}
+            className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-semibold text-center shadow-sm ${pinkFocusClass}`}
           />
         </div>
 
@@ -1258,42 +1255,42 @@ export function QuotationLineForm({
             {t('quotation.lines.discounts')}
           </h5>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-	            {discountInputs.map((item, idx) => (
-	              <div key={idx} className="space-y-1.5 p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#0f0a18]">
-                  <div className="flex items-center justify-between gap-2">
-                    <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                      {item.label}
-                    </label>
-                    <span className="text-xs font-semibold text-red-500 dark:text-red-400">
-                      {getDiscountAmount(item.field) > 0 ? '-' : ''}
-                      {formatCurrency(getDiscountAmount(item.field), currencyCode)}
-                    </span>
-                  </div>
-	                <Input
+            {discountInputs.map((item, idx) => (
+              <div key={idx} className="space-y-1.5 p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#0f0a18]">
+                <div className="flex items-center justify-between gap-2">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                    {item.label}
+                  </label>
+                  <span className="text-xs font-semibold text-red-500 dark:text-red-400">
+                    {getDiscountAmount(item.field) > 0 ? '-' : ''}
+                    {formatCurrency(getDiscountAmount(item.field), currencyCode)}
+                  </span>
+                </div>
+                <Input
                   type="number"
                   step={percentageStep}
                   min="0"
                   max="100"
-	                  value={item.val}
-	                  onChange={(e) => {
-	                    const inputValue = e.target.value;
-	                    item.setVal(inputValue);
-	                    if (inputValue === '' || inputValue === '.') {
-	                      handleFieldChange(item.field, 0);
-	                    } else {
-	                      const numValue = parseFloat(inputValue);
-	                      if (!isNaN(numValue)) {
-	                        handleFieldChange(item.field, numValue);
-	                      }
-	                    }
-	                  }}
-	                  onBlur={() => {
-	                    if (item.val === '' || item.val === '.') {
-	                      item.setVal('0');
-	                      handleFieldChange(item.field, 0);
-	                    } else {
-	                      const numValue = parseFloat(item.val);
-	                      if (!isNaN(numValue)) {
+                  value={item.val}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    item.setVal(inputValue);
+                    if (inputValue === '' || inputValue === '.') {
+                      handleFieldChange(item.field, 0);
+                    } else {
+                      const numValue = parseFloat(inputValue);
+                      if (!isNaN(numValue)) {
+                        handleFieldChange(item.field, numValue);
+                      }
+                    }
+                  }}
+                  onBlur={() => {
+                    if (item.val === '' || item.val === '.') {
+                      item.setVal('0');
+                      handleFieldChange(item.field, 0);
+                    } else {
+                      const numValue = parseFloat(item.val);
+                      if (!isNaN(numValue)) {
                         item.setVal(String(numValue));
                       }
                     }
@@ -1562,10 +1559,10 @@ export function QuotationLineForm({
           )}
 
           <div className="flex items-center justify-end gap-3 mt-auto">
-            <Button 
-              type="button" 
-              variant="ghost" 
-              onClick={onCancel} 
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onCancel}
               disabled={isSaving}
               className="h-12 px-6 w-full sm:w-auto rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium transition-all"
             >
@@ -1575,7 +1572,7 @@ export function QuotationLineForm({
               type="button"
               onClick={bulkDraftLines.length > 0 ? handleBulkDraftConfirm : handleSave}
               disabled={(bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : (!formData.productCode || !formData.productName)) || isSaving}
-              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95"
+              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               {isSaving ? (
                 <>

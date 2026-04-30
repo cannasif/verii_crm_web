@@ -274,7 +274,7 @@ export function HangfireMonitoringPage(): ReactElement {
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25
-            opacity-50 grayscale-[0] 
+            opacity-75 grayscale-[0] 
             dark:opacity-100 dark:grayscale-0"
           >
             <RefreshCw size={18} className={cn("mr-2", isRefreshing && "animate-spin")} />
@@ -366,7 +366,7 @@ export function HangfireMonitoringPage(): ReactElement {
                 onClick={() => selectedRecurringJobId && triggerRecurringJobMutation.mutate(selectedRecurringJobId)}
                 disabled={!selectedRecurringJobId || triggerRecurringJobMutation.isPending}
                 className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl 
-                opacity-50 grayscale-[0] 
+                opacity-75 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0"
               >
                 {triggerRecurringJobMutation.isPending ? (

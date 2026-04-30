@@ -85,7 +85,7 @@ export function PricingRuleHeaderForm(): ReactElement {
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
                 <List size={12} className="text-pink-500" />
-                {t('pricingRule.header.ruleType')} *
+                {t('pricingRule.header.ruleType')} <span className="text-red-500 ml-1">*</span>
               </FormLabel>
               <Popover open={ruleTypePopoverOpen} onOpenChange={setRuleTypePopoverOpen}>
                 <PopoverTrigger asChild>
@@ -153,7 +153,7 @@ export function PricingRuleHeaderForm(): ReactElement {
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
                 <Hash size={12} className="text-pink-500" />
-                {t('pricingRule.header.ruleCode')} *
+                {t('pricingRule.header.ruleCode')} <span className="text-red-500 ml-1">*</span>
               </FormLabel>
               <FormControl>
                 <Input
@@ -176,7 +176,7 @@ export function PricingRuleHeaderForm(): ReactElement {
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
                   <Type size={12} className="text-pink-500" />
-                  {t('pricingRule.header.ruleName')} *
+                  {t('pricingRule.header.ruleName')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -202,7 +202,7 @@ export function PricingRuleHeaderForm(): ReactElement {
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
                 <Calendar size={12} className="text-pink-500" />
-                {t('pricingRule.header.validFrom')} *
+                {t('pricingRule.header.validFrom')} <span className="text-red-500 ml-1">*</span>
               </FormLabel>
               <FormControl>
                 <Input
@@ -223,7 +223,7 @@ export function PricingRuleHeaderForm(): ReactElement {
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
                 <Calendar size={12} className="text-pink-500" />
-                {t('pricingRule.header.validTo')} *
+                {t('pricingRule.header.validTo')} <span className="text-red-500 ml-1">*</span>
               </FormLabel>
               <FormControl>
                 <Input

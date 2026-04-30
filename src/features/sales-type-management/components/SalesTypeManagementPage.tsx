@@ -273,9 +273,9 @@ export function SalesTypeManagementPage(): ReactElement {
             {t('description')}
           </p>
         </div>
-        <Button 
-          onClick={handleAddClick} 
-          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+        <Button
+          onClick={handleAddClick}
+          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('addButton')}
@@ -333,67 +333,67 @@ export function SalesTypeManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <SalesTypeTable
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={currentPageRows}
-            rowKey={(r) => r.id}
-            renderCell={(row, key) => {
-              const val = row[key];
-              if (key === 'salesType') {
-                return <span className="font-medium">{salesTypeLabel(val as string)}</span>;
-              }
-              if (val == null) return '-';
-              if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
-              return String(val);
-            }}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={(k) => {
-              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-              else {
-                setSortBy(k);
-                setSortDirection('asc');
-              }
-            }}
-            renderSortIcon={(k) => {
-              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading}
-            loadingText={t('common.loading', { ns: 'common' })}
-            errorText={t('error', { defaultValue: t('common.error', { ns: 'common' }) })}
-            emptyText={t('common.noData', { ns: 'common' })}
-            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
-            showActionsColumn
-            actionsHeaderLabel={t('common.actions', { ns: 'common' })}
-            onEdit={handleEdit}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous', { ns: 'common' })}
-            nextLabel={t('common.next', { ns: 'common' })}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+            <SalesTypeTable
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={currentPageRows}
+              rowKey={(r) => r.id}
+              renderCell={(row, key) => {
+                const val = row[key];
+                if (key === 'salesType') {
+                  return <span className="font-medium">{salesTypeLabel(val as string)}</span>;
+                }
+                if (val == null) return '-';
+                if (key === 'createdDate') return new Date(String(val)).toLocaleDateString(i18n.language);
+                return String(val);
+              }}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={(k) => {
+                if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+                else {
+                  setSortBy(k);
+                  setSortDirection('asc');
+                }
+              }}
+              renderSortIcon={(k) => {
+                if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+                );
+              }}
+              isLoading={isLoading}
+              loadingText={t('common.loading', { ns: 'common' })}
+              errorText={t('error', { defaultValue: t('common.error', { ns: 'common' }) })}
+              emptyText={t('common.noData', { ns: 'common' })}
+              minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+              showActionsColumn
+              actionsHeaderLabel={t('common.actions', { ns: 'common' })}
+              onEdit={handleEdit}
+              rowClassName="group"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('common.previous', { ns: 'common' })}
+              nextLabel={t('common.next', { ns: 'common' })}
+              paginationInfoText={t('common.table.showing', {
+                from: startRow,
+                to: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
           </div>
         </CardContent>
       </Card>

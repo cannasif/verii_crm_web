@@ -206,7 +206,7 @@ export function TopBarSelector({
 
         <li className="flex items-end">
           <Button
-            className="h-9 w-full bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 opacity-30 hover:opacity-100 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 hover:opacity-30 xl:w-auto"
+            className="h-9 w-full bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 opacity-75 hover:opacity-100 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 hover:opacity-30 xl:w-auto"
             onClick={onCheck}
             disabled={checkLoading || connectionsLoading || !dataSourceName}
           >

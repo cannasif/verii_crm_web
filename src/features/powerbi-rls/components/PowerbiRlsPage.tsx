@@ -37,7 +37,7 @@ export function PowerbiRlsPage(): ReactElement {
         <Button
           onClick={() => { setEditing(null); setFormOpen(true); }}
           className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] h-11 px-6 gap-2
-          opacity-50 grayscale-[0] 
+          opacity-75 grayscale-[0] 
           dark:opacity-100 dark:grayscale-0"
         >
           <Plus className="h-4 w-4" />

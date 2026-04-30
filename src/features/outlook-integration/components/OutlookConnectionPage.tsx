@@ -119,7 +119,7 @@ export function OutlookConnectionPage(): ReactElement {
                     <Button
                       onClick={() => authorizeMutation.mutate()}
                       disabled={authorizeMutation.isPending || !isOAuthConfigured}
-                      className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05]  active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl"
+                      className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05]  active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                     >
                       {authorizeMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                       {t('connection.connectButton')}
@@ -129,7 +129,7 @@ export function OutlookConnectionPage(): ReactElement {
                       variant="destructive"
                       onClick={() => disconnectMutation.mutate()}
                       disabled={disconnectMutation.isPending}
-                      className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl"
+                      className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                     >
                       {disconnectMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                       {t('connection.disconnectButton')}

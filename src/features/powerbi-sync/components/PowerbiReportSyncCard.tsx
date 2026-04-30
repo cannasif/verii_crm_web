@@ -23,11 +23,11 @@ export function PowerbiReportSyncCard(): ReactElement {
   };
 
   return (
-    <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300 ">
+    <Card className=" bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300 ">
 
       <CardContent className="space-y-5">
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-white dark:text-white-400 " htmlFor="powerbi-sync-workspace">
+          <label className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white-400 " htmlFor="powerbi-sync-workspace">
             {t('powerbiSync.workspaceId')}
           </label>
 
@@ -47,7 +47,7 @@ export function PowerbiReportSyncCard(): ReactElement {
             onClick={handleSync}
             disabled={mutation.isPending}
             className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-50 disabled:hover:scale-100 h-11 px-8 gap-2
-            opacity-50 grayscale-[0] 
+            opacity-75 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0"
           >
             {mutation.isPending

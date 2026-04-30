@@ -264,14 +264,14 @@ export function OrderLineForm({
     const loadTemporaryStockData = async (): Promise<void> => {
       if (line.productCode && line.productName) {
         const targetCurrencyCode = currencyOptions.find((opt) => opt.dovizTipi === currency)?.code || 'TRY';
-        
+
         const existingMainStockData = temporaryStockData.find((data) => data.productCode === line.productCode);
         const hasAllRelatedStocks = lineRelatedLines.every((relatedLine) => {
           if (!relatedLine.productCode) return true;
           return temporaryStockData.some((data) => data.productCode === relatedLine.productCode);
         });
-        
-        const shouldLoadFromApi = 
+
+        const shouldLoadFromApi =
           (temporaryStockData.length === 0 || !existingMainStockData || !existingMainStockData.groupCode) &&
           lastLoadedProductCode !== line.productCode &&
           (!hasAllRelatedStocks || lineRelatedLines.some((relatedLine) => {
@@ -353,7 +353,7 @@ export function OrderLineForm({
               discountRate3: mainDiscountRate3,
               currencyCode: targetCurrencyCode,
             };
-            
+
             setFormData((prev) => ({
               ...prev,
               groupCode: mainStockData.groupCode || null,
@@ -429,7 +429,7 @@ export function OrderLineForm({
                 };
               })
             );
-            
+
             setTemporaryStockData((prev) => {
               const next = [mainStockData, ...relatedStocksData];
               return areTemporaryStockDataEqual(prev, next) ? prev : next;
@@ -479,7 +479,7 @@ export function OrderLineForm({
             discountRate3: line.discountRate3,
             currencyCode: targetCurrencyCode,
           };
-          
+
           if (existingMainStockData?.groupCode) {
             setFormData((prev) => ({
               ...prev,
@@ -845,12 +845,12 @@ export function OrderLineForm({
         const exceedsLimit1 = discountRate1 > matchingLimit.maxDiscount1;
         const exceedsLimit2 =
           matchingLimit.maxDiscount2 !== null &&
-          matchingLimit.maxDiscount2 !== undefined
+            matchingLimit.maxDiscount2 !== undefined
             ? discountRate2 > matchingLimit.maxDiscount2
             : false;
         const exceedsLimit3 =
           matchingLimit.maxDiscount3 !== null &&
-          matchingLimit.maxDiscount3 !== undefined
+            matchingLimit.maxDiscount3 !== undefined
             ? discountRate3 > matchingLimit.maxDiscount3
             : false;
 
@@ -893,8 +893,8 @@ export function OrderLineForm({
 
         if (relatedStockData) {
           const newRelatedQuantity = relatedStockData.quantity * newQuantity;
-          const updatedRelatedLine = { 
-            ...relatedLine, 
+          const updatedRelatedLine = {
+            ...relatedLine,
             quantity: newRelatedQuantity,
             groupCode: relatedLine.groupCode || relatedStockData.groupCode || null,
           };
@@ -1050,21 +1050,19 @@ export function OrderLineForm({
                 {bulkDraftLines.map((item, index) => (
                   <div
                     key={`${item.id}-${index}`}
-                    className={`inline-flex items-stretch overflow-hidden rounded-full border transition-all ${
-                      index === activeBulkIndex
+                    className={`inline-flex items-stretch overflow-hidden rounded-full border transition-all ${index === activeBulkIndex
                         ? 'border-pink-500 bg-pink-600 shadow-md shadow-pink-500/30 dark:border-pink-400 dark:bg-pink-500'
                         : 'border-pink-200/80 bg-white/80 dark:border-pink-700/40 dark:bg-pink-900/20'
-                    }`}
+                      }`}
                   >
                     <button
                       type="button"
                       onClick={() => handleSelectBulkLine(index)}
                       title={item.productName || item.productCode || '-'}
-                      className={`flex h-8 max-w-[180px] items-center gap-1.5 px-3 text-left text-sm transition-colors ${
-                        index === activeBulkIndex
+                      className={`flex h-8 max-w-[180px] items-center gap-1.5 px-3 text-left text-sm transition-colors ${index === activeBulkIndex
                           ? 'text-white hover:bg-pink-700/35 dark:hover:bg-white/10'
                           : 'text-pink-700 hover:bg-pink-50 dark:text-pink-300 dark:hover:bg-pink-900/35'
-                      }`}
+                        }`}
                     >
                       {(item.relatedLines?.length ?? 0) > 0 ? <Layers className="h-3.5 w-3.5 shrink-0" /> : null}
                       <span className="truncate font-mono">{item.productCode || '-'}</span>
@@ -1074,11 +1072,10 @@ export function OrderLineForm({
                       aria-label={t('common.remove')}
                       title={t('common.remove')}
                       onClick={handleRemoveBulkDraftLine(index)}
-                      className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${
-                        index === activeBulkIndex
+                      className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${index === activeBulkIndex
                           ? 'border-pink-400/50 text-white/90 hover:bg-white/15 hover:text-white'
                           : 'border-pink-200/70 text-pink-600 hover:bg-pink-100 dark:border-pink-700/50 dark:text-pink-300 dark:hover:bg-pink-900/40'
-                      }`}
+                        }`}
                     >
                       <X className="h-3.5 w-3.5" strokeWidth={2.5} />
                     </button>
@@ -1530,7 +1527,7 @@ export function OrderLineForm({
                 (bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : !formData.productCode || !formData.productName) ||
                 isSaving
               }
-              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95"
+              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               {isSaving ? (
                 <>

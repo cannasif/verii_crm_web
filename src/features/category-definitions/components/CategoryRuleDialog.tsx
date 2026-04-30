@@ -364,26 +364,26 @@ export function CategoryRuleDialog({
           </div>
         </div>
 
-          <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-8 py-4 flex-col sm:flex-row gap-3 shrink-0">
-            <div className="flex-1 flex items-center text-xs font-semibold text-slate-400">
-              <span className="text-pink-500 mr-1">*</span> {t('common.required')}
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isLoading}
-              className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 font-bold px-6 h-11"
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              onClick={() => void handleSubmit()}
-              disabled={isDisabled}
-              className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11"
-            >
-              {isLoading ? t('common.saving') : initialData ? t('common.update') : t('categoryDefinitions.actions.createRule')}
-            </Button>
-          </DialogFooter>
+        <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-8 py-4 flex-col sm:flex-row gap-3 shrink-0">
+          <div className="flex-1 flex items-center text-xs font-semibold text-slate-400">
+            <span className="text-pink-500 mr-1">*</span> {t('common.required')}
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+            className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 font-bold px-6 h-11"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            onClick={() => void handleSubmit()}
+            disabled={isDisabled}
+            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          >
+            {isLoading ? t('common.saving') : initialData ? t('common.update') : t('categoryDefinitions.actions.createRule')}
+          </Button>
+        </DialogFooter>
       </DialogContent>
 
     </Dialog>

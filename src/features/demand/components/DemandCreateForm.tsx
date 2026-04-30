@@ -1,7 +1,7 @@
 import { type ReactElement, useState, useEffect, useMemo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslation } from 'react-i18next'; 
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCreateDemandBulk } from '../hooks/useCreateDemandBulk';
@@ -37,18 +37,18 @@ const CREATE_HEADER_FORM_SURFACE_CLASSNAME =
   '[&_label]:text-slate-800 dark:[&_label]:text-slate-200 [&_input]:border-slate-500/70 [&_input]:bg-white [&_input]:shadow-sm [&_input]:placeholder:text-slate-400 [&_input]:focus-visible:border-pink-500/85 [&_input]:focus-visible:ring-pink-200/70 dark:[&_input]:border-white/20 dark:[&_input]:bg-[#120d1d] dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus-visible:border-pink-400/60 dark:[&_input]:focus-visible:ring-pink-400/20 [&_textarea]:border-slate-500/70 [&_textarea]:bg-white [&_textarea]:shadow-sm [&_textarea]:placeholder:text-slate-400 [&_textarea]:focus-visible:border-pink-500/85 [&_textarea]:focus-visible:ring-pink-200/70 dark:[&_textarea]:border-white/20 dark:[&_textarea]:bg-[#120d1d] dark:[&_textarea]:placeholder:text-slate-500 dark:[&_textarea]:focus-visible:border-pink-400/60 dark:[&_textarea]:focus-visible:ring-pink-400/20 [&_[data-slot=select-trigger]]:border-slate-500/70 [&_[data-slot=select-trigger]]:bg-white [&_[data-slot=select-trigger]]:shadow-sm dark:[&_[data-slot=select-trigger]]:border-white/20 dark:[&_[data-slot=select-trigger]]:bg-[#120d1d]';
 
 export function DemandCreateForm(): ReactElement {
-  const { t } = useTranslation('demand'); 
-  
+  const { t } = useTranslation('demand');
+
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
-  
+
   const [lines, setLines] = useState<DemandLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<DemandExchangeRateFormState[]>([]);
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
-  
+
   const createMutation = useCreateDemandBulk();
 
   useEffect(() => {
@@ -95,7 +95,7 @@ export function DemandCreateForm(): ReactElement {
     [demandFormSlice, t],
   );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
-  
+
   const { calculateLineTotals } = useDemandCalculations();
   const { data: erpRates = [] } = useExchangeRate();
 
@@ -153,7 +153,7 @@ export function DemandCreateForm(): ReactElement {
       const linesToSend = lines.map((line) => {
         const { id, isEditing, ...lineData } = line;
         const { relatedLines, ...cleanLineData } = lineData as DemandLineFormState & { relatedLines?: unknown[] };
-        
+
         return {
           ...cleanLineData,
           demandId: 0,
@@ -174,20 +174,20 @@ export function DemandCreateForm(): ReactElement {
 
       const exchangeRatesToSend = exchangeRates.length > 0
         ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
-            const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
-            return {
-              ...rate,
-              currency: currencyValue,
-              demandId: 0,
-              isOfficial: rate.isOfficial ?? true,
-            };
-          })
+          const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
+          return {
+            ...rate,
+            currency: currencyValue,
+            demandId: 0,
+            isOfficial: rate.isOfficial ?? true,
+          };
+        })
         : [];
 
-      const currencyValue = typeof data.demand.currency === 'string' 
-        ? data.demand.currency 
+      const currencyValue = typeof data.demand.currency === 'string'
+        ? data.demand.currency
         : String(data.demand.currency);
-      
+
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
         throw new Error(t('create.invalidCurrency'));
       }
@@ -238,7 +238,7 @@ export function DemandCreateForm(): ReactElement {
     } catch (error: unknown) {
       let errorMessage = t('create.errorMessage');
       if (error instanceof Error) {
-        errorMessage = error.message; 
+        errorMessage = error.message;
       }
       toast.error(t('create.error'), {
         description: errorMessage,
@@ -276,7 +276,7 @@ export function DemandCreateForm(): ReactElement {
 
         const conversionRatio = oldRate / newRate;
         const newUnitPrice = line.unitPrice * conversionRatio;
-        
+
         const updatedLine = {
           ...line,
           unitPrice: newUnitPrice,
@@ -305,7 +305,7 @@ export function DemandCreateForm(): ReactElement {
     <div className="w-full max-w-[1600px] mx-auto relative pb-10 px-4 md:px-6">
       <FormProvider {...form}>
         <form onSubmit={handleFormSubmit} className="space-y-0">
-          
+
           <DocumentCreatePageHeader
             title={t('create.pageTitle')}
             description={t('create.pageDescription')}
@@ -324,7 +324,7 @@ export function DemandCreateForm(): ReactElement {
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start mt-6">
             {/* SOL KISIM: h-fit ekli */}
             <div className="flex flex-col gap-6 min-w-0 h-fit">
-              
+
               {/* --- 1. Bölüm: Talep Bilgileri --- */}
               <section aria-label={t('sections.header')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
@@ -334,10 +334,10 @@ export function DemandCreateForm(): ReactElement {
                       1
                     </div>
                     <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('sections.header')}
-                        </h3>
+                      <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                        {t('sections.header')}
+                      </h3>
                     </div>
                   </div>
 
@@ -366,30 +366,30 @@ export function DemandCreateForm(): ReactElement {
               {/* --- 2. Bölüm: Talep Satırları --- */}
               <section aria-label={t('lines.title')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
-                   <div className={CREATE_SECTION_HEADER_CLASSNAME}>
+                  <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
                       2
                     </div>
                     <div className="flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('sections.lines')}
-                        </h3>
+                      <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                        {t('sections.lines')}
+                      </h3>
                     </div>
                   </div>
                   {/* PADDING KALDIRILDI VE TABLE TAM OTURTULDU */}
                   <div className="w-full overflow-x-auto p-0">
-                      <DemandLineTable
-                        lines={lines}
-                        setLines={setLines}
-                        currency={watchedCurrency}
-                        exchangeRates={exchangeRates}
-                        pricingRules={pricingRules}
-                        userDiscountLimits={temporarySallerData}
-                        customerId={watchedCustomerId}
-                        erpCustomerCode={watchedErpCustomerCode}
-                        representativeId={watchedRepresentativeId}
-                      />
+                    <DemandLineTable
+                      lines={lines}
+                      setLines={setLines}
+                      currency={watchedCurrency}
+                      exchangeRates={exchangeRates}
+                      pricingRules={pricingRules}
+                      userDiscountLimits={temporarySallerData}
+                      customerId={watchedCustomerId}
+                      erpCustomerCode={watchedErpCustomerCode}
+                      representativeId={watchedRepresentativeId}
+                    />
                   </div>
                 </div>
               </section>
@@ -399,54 +399,54 @@ export function DemandCreateForm(): ReactElement {
               {/* --- 3. Bölüm: Özet & Toplamlar --- */}
               <div className={CREATE_SECTION_CARD_CLASSNAME}>
                 <div className={CREATE_SECTION_HEADER_CLASSNAME}>
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
-                      3
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('sections.summary')}
-                        </h3>
-                    </div>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
+                    3
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                      {t('sections.summary')}
+                    </h3>
+                  </div>
+                </div>
 
                 <div>
-                    <DemandSummaryCard lines={lines} currency={watchedCurrency} />
+                  <DemandSummaryCard lines={lines} currency={watchedCurrency} />
                 </div>
               </div>
             </aside>
           </div>
 
-           <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate(-1)}
-                  className="group w-full sm:w-auto h-11 px-6 rounded-xl border-zinc-200 dark:border-zinc-800 font-bold text-zinc-600 dark:text-zinc-300 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 dark:hover:border-rose-800/50 transition-all duration-300"
-                >
-                  <X className="mr-2 h-4 w-4 transition-colors" />
-                  {t('cancel')}
-                </Button>
-                <FormSubmitTooltipWrap
-                  schema={createDemandSchema}
-                  value={demandSchemaPayload}
-                  isValid={isFormValid}
-                  isPending={createMutation.isPending}
-                  manualHintLines={saveManualHintLines}
-                >
-                  <Button
-                    type="submit"
-                    disabled={createMutation.isPending || !isFormValid}
-                    className="group w-full sm:w-auto sm:min-w-[140px] h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 disabled:opacity-50 disabled:hover:scale-100"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    {createMutation.isPending
-                      ? t('saving')
-                      : t('save')
-                    }
-                  </Button>
-                </FormSubmitTooltipWrap>
-            </div>
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate(-1)}
+              className="group w-full sm:w-auto h-11 px-6 rounded-xl border-zinc-200 dark:border-zinc-800 font-bold text-zinc-600 dark:text-zinc-300 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 dark:hover:border-rose-800/50 transition-all duration-300"
+            >
+              <X className="mr-2 h-4 w-4 transition-colors" />
+              {t('cancel')}
+            </Button>
+            <FormSubmitTooltipWrap
+              schema={createDemandSchema}
+              value={demandSchemaPayload}
+              isValid={isFormValid}
+              isPending={createMutation.isPending}
+              manualHintLines={saveManualHintLines}
+            >
+              <Button
+                type="submit"
+                disabled={createMutation.isPending || !isFormValid}
+                className="group w-full sm:w-auto sm:min-w-[140px] h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 disabled:opacity-50 disabled:hover:scale-100 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                {createMutation.isPending
+                  ? t('saving')
+                  : t('save')
+                }
+              </Button>
+            </FormSubmitTooltipWrap>
+          </div>
         </form>
       </FormProvider>
     </div>
