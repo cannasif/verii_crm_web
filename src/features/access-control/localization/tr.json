@@ -67,8 +67,8 @@
     },
     "platform": {
       "web": "Web",
-      "mobile": "Mobile",
-      "both": "Web + Mobile"
+      "mobile": "Mobil",
+      "both": "Web + Mobil"
     },
     "delete": {
       "confirmTitle": "İzin Tanımını Sil",
