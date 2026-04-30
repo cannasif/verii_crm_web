@@ -126,6 +126,7 @@
     "productName": "Stock Name",
     "enterProductName": "Enter product name",
     "quantity": "Quantity",
+    "unit": "Unit",
     "unitPrice": "Unit Price",
     "discount1": "Discount 1 %",
     "discount2": "Discount 2 %",
@@ -168,7 +169,18 @@
     "max200Chars": "Up to 200 characters",
     "discountNumbered1": "1. Discount",
     "discountNumbered2": "2. Discount",
-    "discountNumbered3": "3. Discount"
+    "discountNumbered3": "3. Discount",
+    "windoProfileLabel": "Profile",
+    "windoRebarLabel": "Rebar",
+    "windoScrewLabel": "Screw",
+    "selectWindoProfile": "Select profile",
+    "selectWindoRebar": "Select rebar",
+    "selectWindoScrew": "Select screw",
+    "searchWindoProfile": "Search profile...",
+    "searchWindoRebar": "Search rebar...",
+    "searchWindoScrew": "Search screw...",
+    "windoNoneSelected": "None",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Exchange Rates",

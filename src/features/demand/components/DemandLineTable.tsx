@@ -978,12 +978,54 @@ export function DemandLineTable({
 
                               {(line.description1 || line.description2 || line.description3 || line.profilDefinitionId || line.demirDefinitionId || line.vidaDefinitionId) && (
                                 <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                                  {line.description1 && <div className="line-clamp-1">Açıklama 1: {line.description1}</div>}
-                                  {line.description2 && <div className="line-clamp-1">Açıklama 2: {line.description2}</div>}
-                                  {line.description3 && <div className="line-clamp-1">Açıklama 3: {line.description3}</div>}
-                                  {line.profilDefinitionId && <div className="line-clamp-1">Profil: {profilMap[line.profilDefinitionId] ?? `#${line.profilDefinitionId}`}</div>}
-                                  {line.demirDefinitionId && <div className="line-clamp-1">Demir: {demirMap[line.demirDefinitionId] ?? `#${line.demirDefinitionId}`}</div>}
-                                  {line.vidaDefinitionId && <div className="line-clamp-1">Vida: {vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`}</div>}
+                                  {line.description1 && (
+                                    <div className="line-clamp-1">
+                                      {t('demand.lines.lineDetailPair', {
+                                        label: t('demand.lines.descriptionField1Label'),
+                                        value: line.description1,
+                                      })}
+                                    </div>
+                                  )}
+                                  {line.description2 && (
+                                    <div className="line-clamp-1">
+                                      {t('demand.lines.lineDetailPair', {
+                                        label: t('demand.lines.descriptionField2Label'),
+                                        value: line.description2,
+                                      })}
+                                    </div>
+                                  )}
+                                  {line.description3 && (
+                                    <div className="line-clamp-1">
+                                      {t('demand.lines.lineDetailPair', {
+                                        label: t('demand.lines.descriptionField3Label'),
+                                        value: line.description3,
+                                      })}
+                                    </div>
+                                  )}
+                                  {line.profilDefinitionId && (
+                                    <div className="line-clamp-1">
+                                      {t('demand.lines.lineDetailPair', {
+                                        label: t('demand.lines.windoProfileLabel'),
+                                        value: profilMap[line.profilDefinitionId] ?? `#${line.profilDefinitionId}`,
+                                      })}
+                                    </div>
+                                  )}
+                                  {line.demirDefinitionId && (
+                                    <div className="line-clamp-1">
+                                      {t('demand.lines.lineDetailPair', {
+                                        label: t('demand.lines.windoRebarLabel'),
+                                        value: demirMap[line.demirDefinitionId] ?? `#${line.demirDefinitionId}`,
+                                      })}
+                                    </div>
+                                  )}
+                                  {line.vidaDefinitionId && (
+                                    <div className="line-clamp-1">
+                                      {t('demand.lines.lineDetailPair', {
+                                        label: t('demand.lines.windoScrewLabel'),
+                                        value: vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`,
+                                      })}
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>

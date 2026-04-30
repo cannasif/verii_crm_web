@@ -126,6 +126,7 @@
     "productName": "Stok Adı",
     "enterProductName": "Ürün adı girin",
     "quantity": "Miktar",
+    "unit": "Birim",
     "unitPrice": "Birim Fiyat",
     "discount1": "İndirim 1 %",
     "discount2": "İndirim 2 %",
@@ -168,7 +169,18 @@
     "max200Chars": "Maksimum 200 karakter",
     "discountNumbered1": "1. İndirim",
     "discountNumbered2": "2. İndirim",
-    "discountNumbered3": "3. İndirim"
+    "discountNumbered3": "3. İndirim",
+    "windoProfileLabel": "Profil",
+    "windoRebarLabel": "Demir",
+    "windoScrewLabel": "Vida",
+    "selectWindoProfile": "Profil seçin",
+    "selectWindoRebar": "Demir seçin",
+    "selectWindoScrew": "Vida seçin",
+    "searchWindoProfile": "Profil ara...",
+    "searchWindoRebar": "Demir ara...",
+    "searchWindoScrew": "Vida ara...",
+    "windoNoneSelected": "Seçim yok",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Döviz Kurları",
