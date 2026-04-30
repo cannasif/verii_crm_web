@@ -213,6 +213,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
               { title: t('sidebar.userVisibilityAssignments'), href: '/access-control/user-visibility-assignments' },
               { title: t('sidebar.visibilityPolicies'), href: '/access-control/visibility-policies' },
               { title: t('sidebar.visibilitySimulator'), href: '/access-control/visibility-simulator' },
+              { title: t('sidebar.accessControlGuide', { defaultValue: 'Erisim Kontrolu Rehberi' }), href: '/access-control/guide' },
               { title: t('sidebar.permissionGroups'), href: '/access-control/permission-groups' },
             ],
           },
