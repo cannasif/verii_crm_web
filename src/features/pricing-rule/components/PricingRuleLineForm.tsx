@@ -158,7 +158,7 @@ export function PricingRuleLineForm({
               <FormItem className="col-span-1 md:col-span-2 lg:col-span-1">
                 <FormLabel className={LABEL_STYLE}>
                   <Box size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.stokCode')} *
+                  {t('pricingRule.lines.stokCode')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <div className="flex gap-2">
                   <FormControl>
@@ -206,7 +206,7 @@ export function PricingRuleLineForm({
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
                   <Hash size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.minQuantity')} *
+                  {t('pricingRule.lines.minQuantity')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -231,7 +231,7 @@ export function PricingRuleLineForm({
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
                   <Hash size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.maxQuantity')} *
+                  {t('pricingRule.lines.maxQuantity')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -256,7 +256,7 @@ export function PricingRuleLineForm({
               <FormItem className="flex flex-col">
                 <FormLabel className={LABEL_STYLE}>
                   <Coins size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.currencyCode')} *
+                  {t('pricingRule.lines.currencyCode')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <Popover open={currencyPopoverOpen} onOpenChange={setCurrencyPopoverOpen}>
                   <PopoverTrigger asChild>
@@ -336,7 +336,7 @@ export function PricingRuleLineForm({
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
                   <DollarSign size={12} className="text-pink-500" />
-                  {t('pricingRule.lines.fixedUnitPrice')} *
+                  {t('pricingRule.lines.fixedUnitPrice')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -468,7 +468,7 @@ export function PricingRuleLineForm({
           <Button
             type="submit"
             disabled={!isFormValid}
-            className="w-full sm:w-auto bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95"
+            className="w-full sm:w-auto bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {t('pricingRule.form.save')}
           </Button>

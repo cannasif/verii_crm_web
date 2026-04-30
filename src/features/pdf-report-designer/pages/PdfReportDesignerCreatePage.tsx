@@ -1648,7 +1648,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 type="submit"
                 size="sm"
                 disabled={isSaving || (isEdit && !templateByIdLoaded) || !isFormValid}
-                className="min-w-[100px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500"
+                className="min-w-[100px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {isSaving ? (
                   <>
@@ -1742,9 +1742,9 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-md border border-slate-200 bg-white px-3 py-[7px] dark:border-slate-700 dark:bg-slate-950/60">
                         <FormControl>
-                          <Switch 
-                            checked={field.value ?? false} 
-                            onCheckedChange={field.onChange} 
+                          <Switch
+                            checked={field.value ?? false}
+                            onCheckedChange={field.onChange}
                           />
                         </FormControl>
                         <FormLabel className="cursor-pointer text-xs font-normal text-slate-700 dark:text-slate-300">

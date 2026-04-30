@@ -294,8 +294,8 @@ export function ShippingAddressManagementPage(): ReactElement {
         return (
           <span
             className={`inline-flex items-center gap-1.5 pl-1.5 pr-2.5 py-0.5 rounded-md border text-xs font-medium ${row.isActive
-                ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20'
-                : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20'
+              ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20'
+              : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20'
               }`}
           >
             {row.isActive ? t('common.active') : t('common.inactive')}
@@ -325,7 +325,7 @@ export function ShippingAddressManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleCreateClick}
-          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('shippingAddressManagement.create')}

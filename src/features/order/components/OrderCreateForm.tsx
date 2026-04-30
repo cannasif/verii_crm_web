@@ -41,13 +41,13 @@ export function OrderCreateForm(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
-  
+
   const [lines, setLines] = useState<OrderLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<OrderExchangeRateFormState[]>([]);
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
-  
+
   const createMutation = useCreateOrderBulk();
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export function OrderCreateForm(): ReactElement {
     [orderFormSlice, t],
   );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
-  
+
   const { calculateLineTotals } = useOrderCalculations();
   const { data: erpRates = [] } = useExchangeRate();
 
@@ -152,7 +152,7 @@ export function OrderCreateForm(): ReactElement {
       const linesToSend = lines.map((line) => {
         const { id, isEditing, ...lineData } = line;
         const { relatedLines, ...cleanLineData } = lineData as OrderLineFormState & { relatedLines?: unknown[] };
-        
+
         return {
           ...cleanLineData,
           orderId: 0,
@@ -173,20 +173,20 @@ export function OrderCreateForm(): ReactElement {
 
       const exchangeRatesToSend = exchangeRates.length > 0
         ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
-            const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
-            return {
-              ...rate,
-              currency: currencyValue,
-              orderId: 0,
-              isOfficial: rate.isOfficial ?? true,
-            };
-          })
+          const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
+          return {
+            ...rate,
+            currency: currencyValue,
+            orderId: 0,
+            isOfficial: rate.isOfficial ?? true,
+          };
+        })
         : [];
 
-      const currencyValue = typeof data.order.currency === 'string' 
-        ? data.order.currency 
+      const currencyValue = typeof data.order.currency === 'string'
+        ? data.order.currency
         : String(data.order.currency);
-      
+
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
         throw new Error(t('create.invalidCurrency'));
       }
@@ -237,7 +237,7 @@ export function OrderCreateForm(): ReactElement {
     } catch (error: unknown) {
       let errorMessage = t('create.errorMessage');
       if (error instanceof Error) {
-        errorMessage = error.message; 
+        errorMessage = error.message;
       }
       toast.error(t('create.error'), {
         description: errorMessage,
@@ -277,7 +277,7 @@ export function OrderCreateForm(): ReactElement {
 
         const conversionRatio = oldRate / newRate;
         const newUnitPrice = line.unitPrice * conversionRatio;
-        
+
         const updatedLine = {
           ...line,
           unitPrice: newUnitPrice,
@@ -306,7 +306,7 @@ export function OrderCreateForm(): ReactElement {
     <div className="w-full max-w-[1600px] mx-auto relative pb-10 px-4 md:px-6">
       <FormProvider {...form}>
         <form onSubmit={handleFormSubmit} className="space-y-0">
-          
+
           <DocumentCreatePageHeader
             title={t('create.pageTitle')}
             description={t('create.pageDescription')}
@@ -325,7 +325,7 @@ export function OrderCreateForm(): ReactElement {
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start mt-6">
             {/* Left Content Column */}
             <div className="flex flex-col gap-6 min-w-0 h-fit">
-              
+
               {/* Section 1: Order Information */}
               <section aria-label={t('sections.header')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
@@ -334,10 +334,10 @@ export function OrderCreateForm(): ReactElement {
                       1
                     </div>
                     <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('sections.header')}
-                        </h3>
+                      <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                        {t('sections.header')}
+                      </h3>
                     </div>
                   </div>
 
@@ -365,29 +365,29 @@ export function OrderCreateForm(): ReactElement {
               {/* Section 2: Order Lines */}
               <section aria-label={t('sections.lines')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
-                   <div className={CREATE_SECTION_HEADER_CLASSNAME}>
+                  <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
                       2
                     </div>
                     <div className="flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('sections.lines')}
-                        </h3>
+                      <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                        {t('sections.lines')}
+                      </h3>
                     </div>
                   </div>
                   <div className="w-full overflow-x-auto p-0">
-                      <OrderLineTable
-                        lines={lines}
-                        setLines={setLines}
-                        currency={watchedCurrency}
-                        exchangeRates={exchangeRates}
-                        pricingRules={pricingRules}
-                        userDiscountLimits={temporarySallerData}
-                        customerId={watchedCustomerId}
-                        erpCustomerCode={watchedErpCustomerCode}
-                        representativeId={watchedRepresentativeId}
-                      />
+                    <OrderLineTable
+                      lines={lines}
+                      setLines={setLines}
+                      currency={watchedCurrency}
+                      exchangeRates={exchangeRates}
+                      pricingRules={pricingRules}
+                      userDiscountLimits={temporarySallerData}
+                      customerId={watchedCustomerId}
+                      erpCustomerCode={watchedErpCustomerCode}
+                      representativeId={watchedRepresentativeId}
+                    />
                   </div>
                 </div>
               </section>
@@ -397,19 +397,19 @@ export function OrderCreateForm(): ReactElement {
             <aside className="xl:sticky xl:top-6 w-full">
               <div className={CREATE_SECTION_CARD_CLASSNAME}>
                 <div className={CREATE_SECTION_HEADER_CLASSNAME}>
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
-                      3
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('sections.summary')}
-                        </h3>
-                    </div>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
+                    3
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                      {t('sections.summary')}
+                    </h3>
+                  </div>
+                </div>
 
                 <div>
-                    <OrderSummaryCard lines={lines} currency={watchedCurrency} />
+                  <OrderSummaryCard lines={lines} currency={watchedCurrency} />
                 </div>
               </div>
             </aside>
@@ -436,7 +436,7 @@ export function OrderCreateForm(): ReactElement {
               <Button
                 type="submit"
                 disabled={createMutation.isPending || !isFormValid}
-                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
+                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending

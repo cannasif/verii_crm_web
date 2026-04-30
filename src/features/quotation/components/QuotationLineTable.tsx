@@ -360,7 +360,7 @@ export function QuotationLineTable({
     const { default: PptxGenJS } = await import('pptxgenjs');
     const pptx = new PptxGenJS();
     const slide = pptx.addSlide();
-    
+
     slide.addText("Teklif Kalemleri", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
 
     const headers = [
@@ -530,11 +530,11 @@ export function QuotationLineTable({
     if (isExistingQuotation && quotationId) {
       const apiTargets =
         patchedFromNext.relatedProductKey &&
-        patchedFromNext.isMainRelatedProduct &&
-        originalLine.quantity !== patchedFromNext.quantity
+          patchedFromNext.isMainRelatedProduct &&
+          originalLine.quantity !== patchedFromNext.quantity
           ? nextLines.filter(
-              (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && parseLineId(l.id) != null
-            )
+            (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && parseLineId(l.id) != null
+          )
           : parseLineId(patchedFromNext.id) != null
             ? [patchedFromNext]
             : [];
@@ -658,9 +658,9 @@ export function QuotationLineTable({
     if (isRelatedProduct) {
       const sameGroupLines = lines.filter((l) => l.relatedProductKey === line.relatedProductKey);
       const mainLine = sameGroupLines.find((l) => l.isMainRelatedProduct === true) || sameGroupLines[0];
-      
-      if (mainLine.id !== line.id) return; 
-      
+
+      if (mainLine.id !== line.id) return;
+
       const relatedLines = sameGroupLines.filter((l) => l.id !== line.id);
       setLineToEdit({ ...line, relatedLines: relatedLines.length > 0 ? relatedLines : undefined });
     } else {
@@ -800,14 +800,14 @@ export function QuotationLineTable({
                 {t('quotation.lines.title')}
               </h3>
               <p className="text-xs text-zinc-500 font-medium">
-                {lines.length > 0 
+                {lines.length > 0
                   ? t('quotation.lines.itemCount', { count: lines.length })
                   : t('quotation.lines.noItems')
                 }
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {linesEditable &&
               (canAddLine ? (
@@ -815,7 +815,7 @@ export function QuotationLineTable({
                   type="button"
                   onClick={handleAddLine}
                   size="sm"
-                  className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white"
+                  className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   {t('quotation.lines.add')}
@@ -926,7 +926,7 @@ export function QuotationLineTable({
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount3')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('quotation.lines.netPrice')}</th>
                     {linesEditable && (
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions')}</th>
+                      <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions')}</th>
                     )}
                   </tr>
                 </thead>
@@ -939,7 +939,7 @@ export function QuotationLineTable({
 
                     return (
                       <tr
-                        key={line.id} 
+                        key={line.id}
                         className={cn(
                           "border-b transition-colors",
                           styles.tableRow,
@@ -1025,7 +1025,7 @@ export function QuotationLineTable({
                                 </div>
                               )}
                             </div>
-                            
+
                             <div className="flex flex-wrap gap-2 mt-1">
                               {hasApprovalWarning && (
                                 <Badge variant="outline" className="h-5 bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800 gap-1 px-1.5 shadow-sm">
@@ -1033,11 +1033,11 @@ export function QuotationLineTable({
                                   <span className="text-[10px] font-bold">{t('quotation.lines.approvalRequired')}</span>
                                 </Badge>
                               )}
-                              
+
                               {isRelatedProduct && (
                                 <Badge variant="outline" className={cn(
                                   "h-5 gap-1 px-1.5 shadow-sm",
-                                  isMainStock 
+                                  isMainStock
                                     ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800"
                                     : "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800"
                                 )}>
@@ -1231,7 +1231,7 @@ export function QuotationLineTable({
                                   className={cn(
                                     'inline-flex min-w-[96px] flex-col items-center gap-1 rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-2 py-1.5 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20',
                                     lineAllowsQuickEdit(line) &&
-                                      'cursor-pointer hover:ring-2 hover:ring-pink-500/20'
+                                    'cursor-pointer hover:ring-2 hover:ring-pink-500/20'
                                   )}
                                   title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                                   onDoubleClick={(e) => {
@@ -1251,7 +1251,7 @@ export function QuotationLineTable({
                                   className={cn(
                                     'inline-flex min-w-[96px] justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-2 py-2 text-[11px] font-semibold text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600',
                                     lineAllowsQuickEdit(line) &&
-                                      'cursor-pointer hover:border-pink-400/50 hover:text-zinc-600 dark:hover:text-zinc-400'
+                                    'cursor-pointer hover:border-pink-400/50 hover:text-zinc-600 dark:hover:text-zinc-400'
                                   )}
                                   title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                                   onDoubleClick={(e) => {
@@ -1273,34 +1273,34 @@ export function QuotationLineTable({
                         </td>
 
                         {linesEditable && (
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center pr-4")}>
-                          <div className="flex items-center justify-center gap-2">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className={styles.actionButton}
-                              onClick={() => handleEditLine(line.id)}
-                              disabled={!isMainStock && isRelatedProduct}
-                              title={!isMainStock && isRelatedProduct ? "Bağlı stok düzenlenemez" : "Düzenle"}
-                            >
-                              <Edit className={cn(
-                                "h-4 w-4",
-                                !isMainStock && isRelatedProduct ? "text-zinc-300" : "text-blue-600"
-                              )} />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className={cn(styles.actionButton, "text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30")}
-                              onClick={() => handleDeleteClick(line.id)}
-                              title={t('common.delete.action')}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
+                          <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center pr-4")}>
+                            <div className="flex items-center justify-center gap-2">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className={styles.actionButton}
+                                onClick={() => handleEditLine(line.id)}
+                                disabled={!isMainStock && isRelatedProduct}
+                                title={!isMainStock && isRelatedProduct ? "Bağlı stok düzenlenemez" : "Düzenle"}
+                              >
+                                <Edit className={cn(
+                                  "h-4 w-4",
+                                  !isMainStock && isRelatedProduct ? "text-zinc-300" : "text-blue-600"
+                                )} />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className={cn(styles.actionButton, "text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30")}
+                                onClick={() => handleDeleteClick(line.id)}
+                                title={t('common.delete.action')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </td>
                         )}
                       </tr>
                     );
@@ -1395,10 +1395,10 @@ export function QuotationLineTable({
                 onSaveMultiple={
                   lineToEdit.relatedLines && lineToEdit.relatedLines.length > 0
                     ? (lines) => {
-                        if (lines.length === 0) return;
-                        const [main, ...rest] = lines;
-                        void handleSaveLine(main, rest);
-                      }
+                      if (lines.length === 0) return;
+                      const [main, ...rest] = lines;
+                      void handleSaveLine(main, rest);
+                    }
                     : undefined
                 }
                 onCancel={handleCancelEditLine}

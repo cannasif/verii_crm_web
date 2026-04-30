@@ -253,7 +253,7 @@ export function PermissionDefinitionsPage(): ReactElement {
               <Button
                 onClick={handleAddClick}
                 className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25
-                opacity-50 grayscale-[0] 
+                opacity-75 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0
                 "
               >

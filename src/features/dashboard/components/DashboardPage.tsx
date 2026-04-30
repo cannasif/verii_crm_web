@@ -89,7 +89,7 @@ export function DashboardPage(): ReactElement {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                className="flex-1 md:flex-none bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 shadow-md shadow-pink-600/20 hover:shadow-lg hover:shadow-pink-600/30 hover:scale-[1.02] transition-all h-10 px-6 font-bold opacity-60 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="flex-1 md:flex-none bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 shadow-md shadow-pink-600/20 hover:shadow-lg hover:shadow-pink-600/30 hover:scale-[1.02] transition-all h-10 px-6 font-bold opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Zap size={16} className="mr-2" />
                 {t('quickAction')}

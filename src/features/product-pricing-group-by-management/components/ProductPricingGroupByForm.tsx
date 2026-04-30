@@ -174,7 +174,7 @@ export function ProductPricingGroupByForm({
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
                           <Package size={14} className="text-pink-500" />
-                          {t('productPricingGroupByManagement.erpGroupCode')} *
+                          {t('productPricingGroupByManagement.erpGroupCode')} <span className="text-red-500 ml-1">*</span>
                         </FormLabel>
                         <FormControl>
                           <Button
@@ -228,7 +228,7 @@ export function ProductPricingGroupByForm({
                       <FormItem className="space-y-0 flex flex-col">
                         <FormLabel className={LABEL_STYLE}>
                           <Banknote size={14} className="text-pink-500" />
-                          {t('productPricingGroupByManagement.currency')} *
+                          {t('productPricingGroupByManagement.currency')} <span className="text-red-500 ml-1">*</span>
                         </FormLabel>
                         <Popover open={currencySelectDialogOpen} onOpenChange={setCurrencySelectDialogOpen}>
                           <PopoverTrigger asChild>
@@ -300,7 +300,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
-                          {t('productPricingGroupByManagement.listPrice')} *
+                          {t('productPricingGroupByManagement.listPrice')} <span className="text-red-500 ml-1">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -325,7 +325,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
-                          {t('productPricingGroupByManagement.costPrice')} *
+                          {t('productPricingGroupByManagement.costPrice')} <span className="text-red-500 ml-1">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -460,7 +460,7 @@ export function ProductPricingGroupByForm({
                   type="submit"
                   form="product-pricing-group-form"
                   disabled={isLoading || !isFormValid}
-                  className="h-12 px-10 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white font-black shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] border-0"
+                  className="h-12 px-10 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white font-black shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] border-0 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   {isLoading ? (
                     <>

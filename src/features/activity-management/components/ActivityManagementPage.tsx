@@ -606,7 +606,7 @@ export function ActivityManagementPage(): ReactElement {
         {canCreate ? (
           <Button
             onClick={handleAddClick}
-            className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus size={18} className="mr-2" />
             {t('activityManagement.create')}

@@ -88,13 +88,13 @@ export function QuotationCreateForm(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
-  
+
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<QuotationExchangeRateFormState[]>([]);
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
-  
+
   const createMutation = useCreateQuotationBulk();
   const { currencyOptions } = useCurrencyOptions();
 
@@ -162,7 +162,7 @@ export function QuotationCreateForm(): ReactElement {
       });
     }
   }, [watchedOfferDate, form]);
-  
+
   const { calculateLineTotals } = useQuotationCalculations();
   const { data: erpRates = [] } = useExchangeRate();
 
@@ -226,7 +226,7 @@ export function QuotationCreateForm(): ReactElement {
           pendingImagePreviewUrl: _pendingImagePreviewUrl,
           ...cleanLineData
         } = line as QuotationLineFormState & { relatedLines?: unknown[] };
-        
+
         return {
           ...cleanLineData,
           quotationId: 0,
@@ -243,20 +243,20 @@ export function QuotationCreateForm(): ReactElement {
 
       const exchangeRatesToSend = exchangeRates.length > 0
         ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
-            const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
-            return {
-              ...rate,
-              currency: currencyValue,
-              quotationId: 0,
-              isOfficial: rate.isOfficial ?? true,
-            };
-          })
+          const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
+          return {
+            ...rate,
+            currency: currencyValue,
+            quotationId: 0,
+            isOfficial: rate.isOfficial ?? true,
+          };
+        })
         : [];
 
-      const currencyValue = typeof data.quotation.currency === 'string' 
-        ? data.quotation.currency 
+      const currencyValue = typeof data.quotation.currency === 'string'
+        ? data.quotation.currency
         : String(data.quotation.currency);
-      
+
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
         throw new Error(t('quotation.create.invalidCurrency'));
       }
@@ -311,7 +311,7 @@ export function QuotationCreateForm(): ReactElement {
     } catch (error: unknown) {
       let errorMessage = t('quotation.create.errorMessage');
       if (error instanceof Error) {
-        errorMessage = error.message; 
+        errorMessage = error.message;
       }
       toast.error(t('quotation.create.error'), {
         description: errorMessage,
@@ -354,7 +354,7 @@ export function QuotationCreateForm(): ReactElement {
 
         const conversionRatio = oldRate / newRate;
         const newUnitPrice = line.unitPrice * conversionRatio;
-        
+
         const updatedLine = {
           ...line,
           unitPrice: newUnitPrice,
@@ -383,7 +383,7 @@ export function QuotationCreateForm(): ReactElement {
       import('jspdf-autotable'),
     ]);
     const doc = new JsPDF();
-    
+
     doc.setFontSize(18);
     doc.text(t('quotation.create.title'), 14, 20);
     doc.setFontSize(11);
@@ -443,7 +443,7 @@ export function QuotationCreateForm(): ReactElement {
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     const formData = form.getValues();
-    
+
     const isValid = await form.trigger();
     if (!isValid) {
       toast.error(t('quotation.create.error'), {
@@ -459,7 +459,7 @@ export function QuotationCreateForm(): ReactElement {
     <div className="w-full max-w-[1600px] mx-auto relative pb-10 px-4 md:px-6">
       <FormProvider {...form}>
         <form onSubmit={handleFormSubmit} className="space-y-0">
-          
+
           <DocumentCreatePageHeader
             title={t('quotation.create.pageTitle')}
             description={t('quotation.create.pageDescription')}
@@ -478,7 +478,7 @@ export function QuotationCreateForm(): ReactElement {
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start mt-6">
             {/* SOL KISIM */}
             <div className="flex flex-col gap-6 min-w-0 h-fit">
-              
+
               {/* --- 1. Bölüm: Teklif Bilgileri --- */}
               <section aria-label={t('quotation.sections.header')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
@@ -488,10 +488,10 @@ export function QuotationCreateForm(): ReactElement {
                       1
                     </div>
                     <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('quotation.sections.header')}
-                        </h3>
+                      <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                        {t('quotation.sections.header')}
+                      </h3>
                     </div>
                   </div>
 
@@ -518,31 +518,31 @@ export function QuotationCreateForm(): ReactElement {
               {/* --- 2. Bölüm: Teklif Satırları --- */}
               <section aria-label={t('quotation.sections.lines')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
-                   <div className={CREATE_SECTION_HEADER_CLASSNAME}>
+                  <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
                       2
                     </div>
                     <div className="flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('quotation.sections.lines')}
-                        </h3>
+                      <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                        {t('quotation.sections.lines')}
+                      </h3>
                     </div>
                   </div>
                   <div className="w-full overflow-x-auto p-0">
-                      <QuotationLineTable
-                        lines={lines}
-                        setLines={setLines}
-                        currency={watchedCurrency}
-                        exchangeRates={exchangeRates}
-                        pricingRules={pricingRules}
-                        userDiscountLimits={temporarySallerData}
-                        customerId={watchedCustomerId}
-                        erpCustomerCode={watchedErpCustomerCode}
-                        representativeId={watchedRepresentativeId}
-                        offerNo={form.watch('quotation.offerNo')}
-                        customerName={customerOptions.find((c) => c.id === watchedCustomerId)?.name ?? null}
-                      />
+                    <QuotationLineTable
+                      lines={lines}
+                      setLines={setLines}
+                      currency={watchedCurrency}
+                      exchangeRates={exchangeRates}
+                      pricingRules={pricingRules}
+                      userDiscountLimits={temporarySallerData}
+                      customerId={watchedCustomerId}
+                      erpCustomerCode={watchedErpCustomerCode}
+                      representativeId={watchedRepresentativeId}
+                      offerNo={form.watch('quotation.offerNo')}
+                      customerName={customerOptions.find((c) => c.id === watchedCustomerId)?.name ?? null}
+                    />
                   </div>
                 </div>
               </section>
@@ -552,19 +552,19 @@ export function QuotationCreateForm(): ReactElement {
             <aside className="xl:sticky xl:top-6 w-full">
               <div className={CREATE_SECTION_CARD_CLASSNAME}>
                 <div className={CREATE_SECTION_HEADER_CLASSNAME}>
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
-                      3
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                            {t('quotation.sections.summary')}
-                        </h3>
-                    </div>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
+                    3
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                      {t('quotation.sections.summary')}
+                    </h3>
+                  </div>
+                </div>
 
                 <div>
-                    <QuotationSummaryCard lines={lines} currency={watchedCurrency} />
+                  <QuotationSummaryCard lines={lines} currency={watchedCurrency} />
                 </div>
               </div>
             </aside>
@@ -614,7 +614,7 @@ export function QuotationCreateForm(): ReactElement {
               <Button
                 type="submit"
                 disabled={createMutation.isPending || !isFormValid}
-                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
+                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending

@@ -254,7 +254,7 @@ export function UserProfileModal({
             <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-dashed border-slate-200 dark:border-white/10 shrink-0 pb-1 md:pb-0">
               <Button
                 className="w-full h-11 md:h-14 lg:h-15 rounded-[1.2rem] md:rounded-[1.3rem] text-white font-black text-sm md:text-lg lg:text-xl bg-linear-to-r from-pink-600 to-orange-600 hover:scale-[1.01] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)]
-                opacity-60 grayscale-[0] 
+                opacity-75 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0
                 "
                 onClick={handleLogout}

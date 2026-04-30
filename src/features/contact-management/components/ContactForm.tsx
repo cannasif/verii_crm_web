@@ -37,7 +37,7 @@ import {
 import { contactFormSchema, SALUTATION_TYPE, type ContactFormSchema } from '../types/contact-types';
 import type { ContactDto } from '../types/contact-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { 
+import {
   AddTeamIcon,
   UserCircleIcon,
   Building03Icon,
@@ -171,7 +171,7 @@ export function ContactForm({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
-        
+
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/95 dark:bg-[#130822]/95">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
@@ -194,221 +194,221 @@ export function ContactForm({
         <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 custom-scrollbar">
           <Form {...form}>
             <form id="contact-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6">
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                  
+
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'firstName')}>
+                        <UserCircleIcon size={16} className="text-pink-500" />
+                        {t('contactManagement.form.firstName')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder')} maxLength={100} />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="salutation"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <UserCircleIcon size={16} className="text-pink-500" />
+                        {t('contactManagement.form.salutation')}
+                      </FormLabel>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                        value={String(field.value)}
+                      >
+                        <FormControl>
+                          <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
+                            <SelectValue placeholder={t('contactManagement.form.selectSalutation')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className={DROPDOWN_CONTENT_STYLE}>
+                          <SelectItem value={String(SALUTATION_TYPE.None)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationNone')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.Mr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMr')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.Ms)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMs')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.Mrs)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMrs')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.Dr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationDr')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'lastName')}>
+                        <UserCircleIcon size={16} className="text-pink-500" />
+                        {t('contactManagement.form.lastName')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder')} maxLength={100} />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="middleName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <UserCircleIcon size={16} className="text-pink-500" />
+                        {t('contactManagement.form.middleName')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.middleNamePlaceholder')} maxLength={100} />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="titleId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <Briefcase01Icon size={16} className="text-pink-500" />
+                        {t('contactManagement.form.title')}
+                      </FormLabel>
+                      <VoiceSearchCombobox
+                        options={[{ value: '0', label: t('contactManagement.form.titleNone') }, ...titleDropdown.options]}
+                        value={field.value !== undefined && field.value !== null && field.value !== 0 ? field.value.toString() : ''}
+                        onSelect={(value) => field.onChange(value ? Number(value) : 0)}
+                        onDebouncedSearchChange={setTitleSearchTerm}
+                        onFetchNextPage={titleDropdown.fetchNextPage}
+                        hasNextPage={titleDropdown.hasNextPage}
+                        isLoading={titleDropdown.isLoading}
+                        isFetchingNextPage={titleDropdown.isFetchingNextPage}
+                        placeholder={t('contactManagement.form.selectTitle')}
+                        searchPlaceholder={t('common.search')}
+                        className={INPUT_STYLE}
+                      />
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="customerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'customerId')}>
+                        <Building03Icon size={16} className="text-pink-500" />
+                        {t('contactManagement.form.customer')}
+                      </FormLabel>
+                      <VoiceSearchCombobox
+                        options={customerDropdown.options}
+                        value={field.value && field.value !== 0 ? field.value.toString() : ''}
+                        onSelect={(value) => field.onChange(value ? Number(value) : 0)}
+                        onDebouncedSearchChange={setCustomerSearchTerm}
+                        onFetchNextPage={customerDropdown.fetchNextPage}
+                        hasNextPage={customerDropdown.hasNextPage}
+                        isLoading={customerDropdown.isLoading}
+                        isFetchingNextPage={customerDropdown.isFetchingNextPage}
+                        placeholder={t('contactManagement.form.selectCustomer')}
+                        searchPlaceholder={t('common.search')}
+                        className={INPUT_STYLE}
+                      />
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="mobile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <SmartPhone01Icon size={16} className="text-pink-500" />
+                        {t('contactManagement.form.mobile')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.mobilePlaceholderExample')} maxLength={20} />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <Call02Icon size={16} className="text-pink-500" />
+                        {t('contactManagement.form.phone')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.phonePlaceholderExample')} maxLength={20} />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="col-span-1 md:col-span-2">
                   <FormField
                     control={form.control}
-                    name="firstName"
+                    name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'firstName')}>
-                          <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.firstName')}
+                        <FormLabel className={LABEL_STYLE}>
+                          <Mail01Icon size={16} className="text-pink-500" />
+                          {t('contactManagement.form.email')}
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder')} maxLength={100} />
+                          <Input {...field} type="email" className={INPUT_STYLE} placeholder={t('contactManagement.form.emailPlaceholderExample')} maxLength={100} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )}
                   />
+                </div>
 
+                <div className="col-span-1 md:col-span-2">
                   <FormField
                     control={form.control}
-                    name="salutation"
+                    name="notes"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.salutation')}
-                        </FormLabel>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))}
-                          value={String(field.value)}
-                        >
-                          <FormControl>
-                            <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                              <SelectValue placeholder={t('contactManagement.form.selectSalutation')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className={DROPDOWN_CONTENT_STYLE}>
-                            <SelectItem value={String(SALUTATION_TYPE.None)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationNone')}</SelectItem>
-                            <SelectItem value={String(SALUTATION_TYPE.Mr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMr')}</SelectItem>
-                            <SelectItem value={String(SALUTATION_TYPE.Ms)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMs')}</SelectItem>
-                            <SelectItem value={String(SALUTATION_TYPE.Mrs)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMrs')}</SelectItem>
-                            <SelectItem value={String(SALUTATION_TYPE.Dr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationDr')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'lastName')}>
-                          <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.lastName')}
+                          <Note01Icon size={16} className="text-pink-500" />
+                          {t('contactManagement.form.notes')}
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder')} maxLength={100} />
+                          <Textarea
+                            {...field}
+                            className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`}
+                            placeholder={t('contactManagement.form.notesPlaceholder')}
+                            maxLength={250}
+                          />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="middleName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
-                          <UserCircleIcon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.middleName')}
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.middleNamePlaceholder')} maxLength={100} />
-                        </FormControl>
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="titleId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
-                          <Briefcase01Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.title')}
-                        </FormLabel>
-                        <VoiceSearchCombobox
-                          options={[{ value: '0', label: t('contactManagement.form.titleNone') }, ...titleDropdown.options]}
-                          value={field.value !== undefined && field.value !== null && field.value !== 0 ? field.value.toString() : ''}
-                          onSelect={(value) => field.onChange(value ? Number(value) : 0)}
-                          onDebouncedSearchChange={setTitleSearchTerm}
-                          onFetchNextPage={titleDropdown.fetchNextPage}
-                          hasNextPage={titleDropdown.hasNextPage}
-                          isLoading={titleDropdown.isLoading}
-                          isFetchingNextPage={titleDropdown.isFetchingNextPage}
-                          placeholder={t('contactManagement.form.selectTitle')}
-                          searchPlaceholder={t('common.search')}
-                          className={INPUT_STYLE}
-                        />
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="customerId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'customerId')}>
-                          <Building03Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.customer')}
-                        </FormLabel>
-                        <VoiceSearchCombobox
-                          options={customerDropdown.options}
-                          value={field.value && field.value !== 0 ? field.value.toString() : ''}
-                          onSelect={(value) => field.onChange(value ? Number(value) : 0)}
-                          onDebouncedSearchChange={setCustomerSearchTerm}
-                          onFetchNextPage={customerDropdown.fetchNextPage}
-                          hasNextPage={customerDropdown.hasNextPage}
-                          isLoading={customerDropdown.isLoading}
-                          isFetchingNextPage={customerDropdown.isFetchingNextPage}
-                          placeholder={t('contactManagement.form.selectCustomer')}
-                          searchPlaceholder={t('common.search')}
-                          className={INPUT_STYLE}
-                        />
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="mobile"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
-                          <SmartPhone01Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.mobile')}
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.mobilePlaceholderExample')} maxLength={20} />
-                        </FormControl>
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LABEL_STYLE}>
-                          <Call02Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.phone')}
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.phonePlaceholderExample')} maxLength={20} />
-                        </FormControl>
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="col-span-1 md:col-span-2">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LABEL_STYLE}>
-                            <Mail01Icon size={16} className="text-pink-500" />
-                            {t('contactManagement.form.email')}
-                          </FormLabel>
-                          <FormControl>
-                            <Input {...field} type="email" className={INPUT_STYLE} placeholder={t('contactManagement.form.emailPlaceholderExample')} maxLength={100} />
-                          </FormControl>
-                          <FormMessage className="text-xs" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="col-span-1 md:col-span-2">
-                    <FormField
-                      control={form.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LABEL_STYLE}>
-                            <Note01Icon size={16} className="text-pink-500" />
-                            {t('contactManagement.form.notes')}
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`}
-                              placeholder={t('contactManagement.form.notesPlaceholder')}
-                              maxLength={250}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-xs" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                </div>
 
               </div>
             </form>
@@ -425,11 +425,11 @@ export function ContactForm({
           >
             {t('contactManagement.cancel')}
           </Button>
-          <Button 
-            type="submit" 
-            form="contact-form" 
+          <Button
+            type="submit"
+            form="contact-form"
             disabled={isLoading || !isFormValid}
-            className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black rounded-xl shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0"
+            className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black rounded-xl shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? t('contactManagement.saving') : t('contactManagement.save')}
           </Button>

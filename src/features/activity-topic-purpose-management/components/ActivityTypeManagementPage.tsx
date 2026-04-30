@@ -266,7 +266,7 @@ export function ActivityTypeManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleAddClick}
-          className="h-12 px-8 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] border-0 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="h-12 px-8 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] border-0 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('activityType.create')}

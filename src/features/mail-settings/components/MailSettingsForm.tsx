@@ -263,7 +263,7 @@ export function MailSettingsForm({
             onClick={() => testMailMutation.mutate({})}
             disabled={isSubmitting || testMailMutation.isPending}
             className="bg-linear-to-r from-purple-600 to-pink-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl h-11 px-6
-                opacity-40 grayscale-[0] 
+                opacity-75 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0"
           >
             {testMailMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
@@ -275,7 +275,7 @@ export function MailSettingsForm({
             type="submit"
             disabled={isSubmitting || !isFormValid}
             className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl h-11 px-8
-                opacity-50 grayscale-[0] 
+                opacity-75 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0"
           >
             {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}

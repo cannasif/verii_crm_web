@@ -190,7 +190,7 @@ export function GoogleAuthInformationPage(): ReactElement {
                 onClick={onSave}
                 disabled={saveMutation.isPending || !canSave}
                 className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl 
-                opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
 
               >
                 {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}

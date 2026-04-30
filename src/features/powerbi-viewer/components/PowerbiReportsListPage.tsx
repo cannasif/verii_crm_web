@@ -104,7 +104,7 @@ export function PowerbiReportsListPage(): ReactElement {
                         size="sm"
                         asChild
                         className="h-9 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_5px_12px_-4px_rgba(219,39,119,0.5)] gap-2
-                        opacity-50 grayscale-[0] 
+                        opacity-75 grayscale-[0] 
                         dark:opacity-100 dark:grayscale-0"
                       >
                         <Link to={`/powerbi/reports/${row.id}`}>

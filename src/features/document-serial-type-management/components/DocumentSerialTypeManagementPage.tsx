@@ -342,9 +342,9 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
             {t('description')}
           </p>
         </div>
-        <Button 
-          onClick={handleAddClick} 
-          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+        <Button
+          onClick={handleAddClick}
+          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('addButton')}
@@ -357,113 +357,113 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <ManagementDataTableChrome>
-          <DataTableGrid<DocumentSerialTypeDto, DocumentSerialTypeColumnKey>
-            actionBar={{
-              pageKey: PAGE_KEY,
-              userId: user?.id,
-              columns: baseColumns,
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
-              exportFileName: 'document-serial-types',
-              exportColumns,
-              exportRows,
-              getExportData,
-              filterColumns,
-              defaultFilterColumn: 'serialPrefix',
-              draftFilterRows,
-              onDraftFilterRowsChange: setDraftFilterRows,
-              onApplyFilters: () => setAppliedAdvancedFilters(documentSerialTypeRowsToBackendFilters(draftFilterRows)),
-              onClearFilters: () => {
-                setDraftFilterRows([]);
-                setAppliedAdvancedFilters([]);
-              },
-              translationNamespace: 'document-serial-type-management',
-              appliedFilterCount,
-              search: {
-                onSearchChange: setSearchTerm,
-                placeholder: t('search'),
-                minLength: 1,
-                resetKey: searchResetKey,
-              },
-              refresh: {
-                onRefresh: () => {
-                  void handleGridRefresh();
-                },
-                isLoading,
-                cooldownSeconds: 60,
-                label: resolveLabel(t, 'common.refresh', 'Yenile'),
-              },
-            } satisfies DataTableActionBarProps}
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={documentSerialTypes}
-            rowKey={(r) => r.id}
-            renderCell={renderCell}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-            renderSortIcon={(k) => {
-              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading || isFetching}
-            loadingText={t('loading')}
-            errorText={t('error', { defaultValue: t('common.error') })}
-            emptyText={t('noData')}
-            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
-            showActionsColumn
-            actionsHeaderLabel={t('actions')}
-            renderActionsCell={(documentSerialType) => (
-              <div className="flex justify-end gap-2 opacity-100 transition-opacity">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleEdit(documentSerialType)}
-                  className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-                >
-                  <Edit2 size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDeleteClick(documentSerialType)}
-                  className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              </div>
-            )}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={hasPreviousPage}
-            hasNextPage={hasNextPage}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('previous', { defaultValue: 'Önceki' })}
-            nextLabel={t('next', { defaultValue: 'Sonraki' })}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-            centerColumnHeaders
-          />
-          </ManagementDataTableChrome>
+            <ManagementDataTableChrome>
+              <DataTableGrid<DocumentSerialTypeDto, DocumentSerialTypeColumnKey>
+                actionBar={{
+                  pageKey: PAGE_KEY,
+                  userId: user?.id,
+                  columns: baseColumns,
+                  visibleColumns,
+                  columnOrder,
+                  onVisibleColumnsChange: setVisibleColumns,
+                  onColumnOrderChange: setColumnOrder,
+                  exportFileName: 'document-serial-types',
+                  exportColumns,
+                  exportRows,
+                  getExportData,
+                  filterColumns,
+                  defaultFilterColumn: 'serialPrefix',
+                  draftFilterRows,
+                  onDraftFilterRowsChange: setDraftFilterRows,
+                  onApplyFilters: () => setAppliedAdvancedFilters(documentSerialTypeRowsToBackendFilters(draftFilterRows)),
+                  onClearFilters: () => {
+                    setDraftFilterRows([]);
+                    setAppliedAdvancedFilters([]);
+                  },
+                  translationNamespace: 'document-serial-type-management',
+                  appliedFilterCount,
+                  search: {
+                    onSearchChange: setSearchTerm,
+                    placeholder: t('search'),
+                    minLength: 1,
+                    resetKey: searchResetKey,
+                  },
+                  refresh: {
+                    onRefresh: () => {
+                      void handleGridRefresh();
+                    },
+                    isLoading,
+                    cooldownSeconds: 60,
+                    label: resolveLabel(t, 'common.refresh', 'Yenile'),
+                  },
+                } satisfies DataTableActionBarProps}
+                columns={columns}
+                visibleColumnKeys={orderedVisibleColumns}
+                rows={documentSerialTypes}
+                rowKey={(r) => r.id}
+                renderCell={renderCell}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+                renderSortIcon={(k) => {
+                  if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                  return sortDirection === 'asc' ? (
+                    <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                  ) : (
+                    <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+                  );
+                }}
+                isLoading={isLoading || isFetching}
+                loadingText={t('loading')}
+                errorText={t('error', { defaultValue: t('common.error') })}
+                emptyText={t('noData')}
+                minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+                showActionsColumn
+                actionsHeaderLabel={t('actions')}
+                renderActionsCell={(documentSerialType) => (
+                  <div className="flex justify-end gap-2 opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(documentSerialType)}
+                      className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                    >
+                      <Edit2 size={16} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteClick(documentSerialType)}
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                )}
+                rowClassName="group"
+                pageSize={pageSize}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                onPageSizeChange={(s) => {
+                  setPageSize(s);
+                  setPageNumber(1);
+                }}
+                pageNumber={pageNumber}
+                totalPages={totalPages}
+                hasPreviousPage={hasPreviousPage}
+                hasNextPage={hasNextPage}
+                onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+                onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+                previousLabel={t('previous', { defaultValue: 'Önceki' })}
+                nextLabel={t('next', { defaultValue: 'Sonraki' })}
+                paginationInfoText={t('common.table.showing', {
+                  from: startRow,
+                  to: endRow,
+                  total: totalCount,
+                })}
+                disablePaginationButtons={false}
+                centerColumnHeaders
+              />
+            </ManagementDataTableChrome>
           </div>
         </CardContent>
       </Card>
