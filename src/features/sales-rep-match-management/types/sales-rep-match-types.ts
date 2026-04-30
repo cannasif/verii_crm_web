@@ -21,18 +21,18 @@ export interface SalesRepMatchCreateDto {
 export const salesRepMatchFormSchema = z.object({
   salesRepCodeId: z.coerce
     .number({
-      message: i18n.t('sales-rep-match-management.form.validation.salesRepRequired', {
+      message: i18n.t('form.validation.salesRepRequired', {
         ns: 'sales-rep-match-management',
       }),
     })
-    .min(1, i18n.t('sales-rep-match-management.form.validation.salesRepRequired', { ns: 'sales-rep-match-management' })),
+    .min(1, i18n.t('form.validation.salesRepRequired', { ns: 'sales-rep-match-management' })),
   userId: z.coerce
     .number({
-      message: i18n.t('sales-rep-match-management.form.validation.userRequired', {
+      message: i18n.t('form.validation.userRequired', {
         ns: 'sales-rep-match-management',
       }),
     })
-    .min(1, i18n.t('sales-rep-match-management.form.validation.userRequired', { ns: 'sales-rep-match-management' })),
+    .min(1, i18n.t('form.validation.userRequired', { ns: 'sales-rep-match-management' })),
 });
 
 export type SalesRepMatchFormInput = z.input<typeof salesRepMatchFormSchema>;

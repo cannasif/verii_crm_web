@@ -34,9 +34,9 @@ export const salesTypeFormSchema = z.object({
     message: i18n.t('common.offerType.requiredMessage', { ns: 'common' }),
   }),
   name: z
-    .string({ message: i18n.t('sales-type-management.form.validation.required', { ns: 'sales-type-management' }) })
-    .min(1, { message: i18n.t('sales-type-management.form.validation.required', { ns: 'sales-type-management' }) })
-    .refine((val) => val.trim().length > 0, { message: i18n.t('sales-type-management.form.validation.whitespace', { ns: 'sales-type-management' }) }),
+    .string({ message: i18n.t('form.validation.required', { ns: 'sales-type-management' }) })
+    .min(1, { message: i18n.t('form.validation.required', { ns: 'sales-type-management' }) })
+    .refine((val) => val.trim().length > 0, { message: i18n.t('form.validation.whitespace', { ns: 'sales-type-management' }) }),
 });
 
 export type SalesTypeFormSchema = z.infer<typeof salesTypeFormSchema>;

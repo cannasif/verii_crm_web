@@ -25,36 +25,36 @@ export interface SalesRepCreateDto {
 export const salesRepFormSchema = z.object({
   branchCode: z.coerce
     .number({
-      message: i18n.t('sales-rep-management.form.validation.branchCodeRequired', {
+      message: i18n.t('form.validation.branchCodeRequired', {
         ns: 'sales-rep-management',
       }),
     })
-    .int(i18n.t('sales-rep-management.form.validation.branchCodeRequired', { ns: 'sales-rep-management' }))
-    .min(0, i18n.t('sales-rep-management.form.validation.branchCodeRequired', { ns: 'sales-rep-management' })),
+    .int(i18n.t('form.validation.branchCodeRequired', { ns: 'sales-rep-management' }))
+    .min(0, i18n.t('form.validation.branchCodeRequired', { ns: 'sales-rep-management' })),
   salesRepCode: z
     .string({
-      message: i18n.t('sales-rep-management.form.validation.codeRequired', { ns: 'sales-rep-management' }),
+      message: i18n.t('form.validation.codeRequired', { ns: 'sales-rep-management' }),
     })
     .min(1, {
-      message: i18n.t('sales-rep-management.form.validation.codeRequired', { ns: 'sales-rep-management' }),
+      message: i18n.t('form.validation.codeRequired', { ns: 'sales-rep-management' }),
     })
     .max(8, {
-      message: i18n.t('sales-rep-management.form.validation.codeMaxLength', { ns: 'sales-rep-management' }),
+      message: i18n.t('form.validation.codeMaxLength', { ns: 'sales-rep-management' }),
     })
     .refine((value) => value.trim().length > 0, {
-      message: i18n.t('sales-rep-management.form.validation.codeRequired', { ns: 'sales-rep-management' }),
+      message: i18n.t('form.validation.codeRequired', { ns: 'sales-rep-management' }),
     }),
   salesRepDescription: z
     .string()
     .max(30, {
-      message: i18n.t('sales-rep-management.form.validation.descriptionMaxLength', { ns: 'sales-rep-management' }),
+      message: i18n.t('form.validation.descriptionMaxLength', { ns: 'sales-rep-management' }),
     })
     .optional()
     .or(z.literal('')),
   name: z
     .string()
     .max(35, {
-      message: i18n.t('sales-rep-management.form.validation.nameMaxLength', { ns: 'sales-rep-management' }),
+      message: i18n.t('form.validation.nameMaxLength', { ns: 'sales-rep-management' }),
     })
     .optional()
     .or(z.literal('')),
