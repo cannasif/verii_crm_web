@@ -2,7 +2,6 @@ import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Sheet,
@@ -63,7 +62,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useUserOptions } from '@/features/user-discount-limit-management/hooks/useUserOptions';
 import { useAuthStore } from '@/stores/auth-store';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -299,7 +297,6 @@ export function DailyTasksPage(): ReactElement {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('tasks');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [assignedUserFilter, setAssignedUserFilter] = useState<number | undefined>(undefined);
   const [formOpen, setFormOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<ActivityDto | null>(null);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
@@ -393,16 +390,10 @@ export function DailyTasksPage(): ReactElement {
   } | null>(null);
   const contentSectionRef = useRef<HTMLDivElement | null>(null);
 
-  const [userFilterSearchTerm, setUserFilterSearchTerm] = useState('');
   const [metricsNow, setMetricsNow] = useState<number>(() => Date.now());
   const hasShownContentOnce = useRef(false);
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 450);
   const { data: userOptions = [] } = useUserOptions();
-  const userDropdown = useUserOptionsInfinite(userFilterSearchTerm, true);
-  const userFilterOptions = [
-    { value: 'all', label: t('dailyTasks.allEmployees') },
-    ...userDropdown.options,
-  ];
 
   // Dinamik Selamlama
   useEffect(() => {
@@ -411,12 +402,6 @@ export function DailyTasksPage(): ReactElement {
     else if (hour < 18) setGreeting(t('dailyTasks.afternoon'));
     else setGreeting(t('dailyTasks.evening'));
   }, [t]);
-
-  useEffect(() => {
-    if (user?.id && assignedUserFilter === undefined) {
-      setAssignedUserFilter(user.id);
-    }
-  }, [user, assignedUserFilter]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -502,7 +487,6 @@ export function DailyTasksPage(): ReactElement {
         : calendarRange;
   const filters: Array<{ column: string; operator: string; value: string }> = [
     statusFilter !== 'all' ? { column: 'Status', operator: 'eq', value: statusFilter } : undefined,
-    assignedUserFilter ? { column: 'AssignedUserId', operator: 'eq', value: assignedUserFilter.toString() } : undefined,
     { column: 'StartDateTime', operator: 'gte', value: activeDateRange.startDate },
     { column: 'StartDateTime', operator: 'lte', value: activeDateRange.endDate },
   ].filter((f): f is { column: string; operator: string; value: string } => f !== undefined);
@@ -519,7 +503,6 @@ export function DailyTasksPage(): ReactElement {
       tasksWeekStart.toISOString(),
       listSelectedDate,
       statusFilter,
-      assignedUserFilter ?? 'all',
       debouncedSearchTerm,
       activeDateRange.startDate,
       activeDateRange.endDate,
@@ -641,7 +624,6 @@ export function DailyTasksPage(): ReactElement {
   const filteredActivities = useMemo(() => {
     let filtered = activities;
     if (statusFilter !== 'all') filtered = filtered.filter((activity) => String(activity.status) === statusFilter);
-    if (assignedUserFilter) filtered = filtered.filter((activity) => activity.assignedUserId === assignedUserFilter);
 
     const rangeStart = parseDateKey(activeDateRange.startDate).getTime();
     const rangeEnd = parseDateKey(activeDateRange.endDate).getTime() + (24 * 60 * 60 * 1000 - 1);
@@ -654,7 +636,7 @@ export function DailyTasksPage(): ReactElement {
     });
 
     return filtered;
-  }, [activities, statusFilter, assignedUserFilter, activeDateRange]);
+  }, [activities, statusFilter, activeDateRange]);
 
   const getAssignedUserName = (userId?: number) =>
     userOptions.find((option) => option.id === userId)?.fullName || t('dailyTasks.unassigned');
@@ -1558,7 +1540,7 @@ export function DailyTasksPage(): ReactElement {
 
         {/* 2. KONTROL PANELİ: Responsive Layout */}
         <div className="sticky top-2 z-30 rounded-[2rem] border border-slate-200/60 dark:border-white/10 bg-white/90 dark:bg-[#0c0516]/90 p-3 shadow-2xl backdrop-blur-2xl transition-all duration-300 md:p-4">
-          <div className="my-1 grid grid-cols-1 gap-3 py-1 lg:grid-cols-[minmax(220px,320px)_auto_minmax(220px,300px)_minmax(320px,1fr)] lg:items-stretch">
+          <div className="my-1 grid grid-cols-1 gap-3 py-1 lg:grid-cols-[minmax(220px,320px)_auto_minmax(320px,1fr)] lg:items-stretch">
             <div className="my-1 relative h-10 w-full min-w-0">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
@@ -1587,22 +1569,6 @@ export function DailyTasksPage(): ReactElement {
                   <CheckCircle2 size={12} className="mr-1" /> {t('dailyTasks.completed')}
                 </Button>
               </div>
-            </div>
-
-            <div className="my-1 flex h-10 w-full min-w-0 items-center gap-2 rounded-xl border border-slate-300/80 bg-white px-2 py-1.5 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <User size={14} className="shrink-0 text-pink-500" />
-              <VoiceSearchCombobox
-                options={userFilterOptions}
-                value={assignedUserFilter?.toString() || 'all'}
-                onSelect={(v) => setAssignedUserFilter(v === 'all' || !v ? undefined : parseInt(v, 10))}
-                onDebouncedSearchChange={setUserFilterSearchTerm}
-                onFetchNextPage={userDropdown.fetchNextPage}
-                hasNextPage={userDropdown.hasNextPage}
-                isLoading={userDropdown.isLoading}
-                isFetchingNextPage={userDropdown.isFetchingNextPage}
-                placeholder={t('dailyTasks.allEmployees')}
-                className="h-9 min-w-0 flex-1 rounded-lg border-slate-300 bg-white focus:ring-pink-500 dark:border-white/10 dark:bg-white/5"
-              />
             </div>
 
             {activeTab === 'tasks' ? (
