@@ -107,8 +107,8 @@ export function DemandSummaryCard({
             <Calculator className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
           </div>
           <div>
-            <h3 className="font-bold text-sm tracking-tight leading-none mb-1">{t('demand.summary.title')}</h3>
-            <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter">{t('demand.summary.grandTotalAnalysis')}</span>
+            <h3 className="font-bold text-sm tracking-tight leading-none mb-1">{t('summary.title')}</h3>
+            <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter">{t('summary.grandTotalAnalysis')}</span>
           </div>
         </div>
 
@@ -118,7 +118,7 @@ export function DemandSummaryCard({
               htmlFor="demand-generalDiscountRate"
               className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight truncate"
             >
-              {t('demand.summary.generalDiscountRate')} (%)
+              {t('summary.generalDiscountRate')} (%)
             </Label>
             <div className="relative">
               <Input
@@ -143,7 +143,7 @@ export function DemandSummaryCard({
               htmlFor="demand-generalDiscountAmount"
               className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight truncate"
             >
-              {t('demand.summary.generalDiscountAmount')}
+              {t('summary.generalDiscountAmount')}
             </Label>
             <Input
               id="demand-generalDiscountAmount"
@@ -162,14 +162,14 @@ export function DemandSummaryCard({
         <div className="flex gap-3 p-3 bg-pink-50/50 dark:bg-pink-900/10 rounded-xl border-l-4 border-l-pink-500 border-y border-r border-pink-100 dark:border-pink-900/20 shadow-sm animate-in fade-in slide-in-from-top-1">
           <Info className="h-4 w-4 text-pink-600 dark:text-pink-400 shrink-0 mt-0.5" />
           <p className="text-[10px] text-pink-800 dark:text-pink-300 leading-tight font-medium">
-            {t('demand.summary.generalDiscountHelp')}
+            {t('summary.generalDiscountHelp')}
           </p>
         </div>
 
         <div className="mt-6 pt-5 space-y-3.5">
             <div className="flex items-center justify-between gap-3">
               <dt className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-tight">
-                {t('demand.summary.subtotal')}
+                {t('summary.subtotal')}
               </dt>
               <dd className="font-bold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-sm">
                 {formatCurrency(totals.netTotal, currencyCode)}
@@ -179,7 +179,7 @@ export function DemandSummaryCard({
             {totals.generalDiscountAmount > 0 && (
               <div className="flex items-center justify-between gap-3 animate-in fade-in slide-in-from-right-2">
                 <dt className="text-xs text-red-500 dark:text-red-400 font-bold uppercase tracking-tight">
-                  {t('demand.summary.generalDiscount')}
+                  {t('summary.generalDiscount')}
                 </dt>
                 <dd className="font-bold text-red-600 dark:text-red-400 font-mono tabular-nums text-right text-sm">
                   -{formatCurrency(totals.generalDiscountAmount, currencyCode)}
@@ -189,7 +189,7 @@ export function DemandSummaryCard({
             
             <div className="flex items-center justify-between gap-3">
               <dt className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-tight">
-                {t('demand.summary.totalVat')}
+                {t('summary.totalVat')}
               </dt>
               <dd className="font-bold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-sm">
                 {formatCurrency(totals.totalVatAfterDiscount, currencyCode)}
@@ -200,7 +200,7 @@ export function DemandSummaryCard({
               <div className="flex items-center justify-between gap-3">
                 <span className="text-zinc-900 dark:text-white font-black text-xs uppercase tracking-widest flex items-center gap-2">
                   <Wallet className="h-4 w-4 text-pink-500" />
-                  {t('demand.summary.grandTotal')}
+                  {t('summary.grandTotal')}
                 </span>
                 <span className="font-black text-zinc-900 dark:text-white font-mono tabular-nums text-right text-lg text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-purple-600">
                   {formatCurrency(totals.grandTotalAfterDiscount, currencyCode)}

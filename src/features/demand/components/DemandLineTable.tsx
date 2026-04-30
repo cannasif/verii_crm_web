@@ -287,8 +287,8 @@ export function DemandLineTable({
     setQuickEdit(null);
     if (!linesEditable) return;
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('demand.error'), {
-        description: t('demand.lines.requiredFieldsMissing'),
+      toast.error(t('error'), {
+        description: t('lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -375,8 +375,8 @@ export function DemandLineTable({
 
   const handleProductSelect = async (product: ProductSelectionResult): Promise<void> => {
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('demand.error'), {
-        description: t('demand.lines.requiredFieldsMissing'),
+      toast.error(t('error'), {
+        description: t('lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -538,12 +538,12 @@ export function DemandLineTable({
 
   const handleExportExcel = async (): Promise<void> => {
     const dataToExport = lines.map((line) => ({
-      [t('demand.lines.productCode')]: line.productCode,
-      [t('demand.lines.productName')]: line.productName,
-      [t('demand.lines.quantity')]: line.quantity,
-      [t('demand.lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
-      [t('demand.lines.vatRate')]: `%${line.vatRate}`,
-      [t('demand.lines.lineTotal')]: formatCurrency(line.lineTotal, currencyCode),
+      [t('lines.productCode')]: line.productCode,
+      [t('lines.productName')]: line.productName,
+      [t('lines.quantity')]: line.quantity,
+      [t('lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
+      [t('lines.vatRate')]: `%${line.vatRate}`,
+      [t('lines.lineTotal')]: formatCurrency(line.lineTotal, currencyCode),
     }));
 
     const XLSX = await import('xlsx');
@@ -560,15 +560,15 @@ export function DemandLineTable({
     ]);
     const doc = new JsPDF();
     doc.setFontSize(16);
-    doc.text(t('demand.lines.title'), 14, 18);
+    doc.text(t('lines.title'), 14, 18);
     const headers = [
       [
-        t('demand.lines.productCode'),
-        t('demand.lines.productName'),
-        t('demand.lines.quantity'),
-        t('demand.lines.unitPrice'),
-        t('demand.lines.vatRate'),
-        t('demand.lines.lineTotal'),
+        t('lines.productCode'),
+        t('lines.productName'),
+        t('lines.quantity'),
+        t('lines.unitPrice'),
+        t('lines.vatRate'),
+        t('lines.lineTotal'),
       ],
     ];
     const data = lines.map((line) => [
@@ -594,15 +594,15 @@ export function DemandLineTable({
     const pptx = new PptxGenJS();
     const slide = pptx.addSlide();
 
-    slide.addText(t('demand.lines.title'), { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
+    slide.addText(t('lines.title'), { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
 
     const headers = [
-      t('demand.lines.productCode'),
-      t('demand.lines.productName'),
-      t('demand.lines.quantity'),
-      t('demand.lines.unitPrice'),
-      t('demand.lines.vatRate'),
-      t('demand.lines.lineTotal'),
+      t('lines.productCode'),
+      t('lines.productName'),
+      t('lines.quantity'),
+      t('lines.unitPrice'),
+      t('lines.vatRate'),
+      t('lines.lineTotal'),
     ];
 
     const rows = lines.map((line) => [
@@ -749,7 +749,7 @@ export function DemandLineTable({
 
   const canAddLine = linesEditable && Boolean((customerId || erpCustomerCode) && representativeId && isCurrencySelected);
 
-  const headerSectionTitle = t('demand.sections.header');
+  const headerSectionTitle = t('sections.header');
   const addLineDisableHints = useMemo(() => {
     if (canAddLine || !linesEditable) return [];
     const items: string[] = [];
@@ -775,12 +775,12 @@ export function DemandLineTable({
             </div>
             <div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                {t('demand.lines.title')}
+                {t('lines.title')}
               </h3>
               <p className="text-xs text-zinc-500 font-medium">
                 {lines.length > 0
-                  ? t('demand.lines.itemCount', { count: lines.length })
-                  : t('demand.lines.noItems')
+                  ? t('lines.itemCount', { count: lines.length })
+                  : t('lines.noItems')
                 }
               </p>
             </div>
@@ -800,7 +800,7 @@ export function DemandLineTable({
                   className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {t('demand.lines.add')}
+                  {t('lines.add')}
                 </Button>
               ) : (
                 <Tooltip delayDuration={250}>
@@ -817,7 +817,7 @@ export function DemandLineTable({
                         className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        {t('demand.lines.add')}
+                        {t('lines.add')}
                       </Button>
                     </span>
                   </TooltipTrigger>
@@ -901,10 +901,10 @@ export function DemandLineTable({
                 <Box className="h-8 w-8 text-zinc-300 dark:text-zinc-600" />
               </div>
               <h4 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-                {t('demand.lines.empty')}
+                {t('lines.empty')}
               </h4>
               <p className="text-sm text-zinc-500 max-w-xs mx-auto">
-                {t('demand.lines.emptyDescription')}
+                {t('lines.emptyDescription')}
               </p>
             </div>
           ) : (
@@ -922,15 +922,15 @@ export function DemandLineTable({
               <table className="w-full caption-bottom text-sm min-w-[1600px] whitespace-nowrap">
                 <thead className="[&_tr]:border-b">
                   <tr className={cn("hover:bg-transparent border-b", styles.tableHeadRow)}>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('demand.lines.stock')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('demand.lines.unitPrice')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('demand.lines.quantity')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('demand.lines.discount1')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('demand.lines.discount2')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('demand.lines.discount3')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('demand.lines.netPrice')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('lines.stock')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('lines.unitPrice')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('lines.quantity')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('lines.discount1')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('lines.discount2')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('lines.discount3')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('lines.netPrice')}</th>
                     {linesEditable && (
-                      <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('demand.actions')}</th>
+                      <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('actions')}</th>
                     )}
                   </tr>
                 </thead>
@@ -972,7 +972,7 @@ export function DemandLineTable({
                               )}
                               {line.unit && (
                                 <div className="text-[11px] font-semibold text-purple-600 dark:text-purple-300">
-                                  {t('demand.lines.unit')}: {line.unit}
+                                  {t('lines.unit')}: {line.unit}
                                 </div>
                               )}
 
@@ -980,48 +980,48 @@ export function DemandLineTable({
                                 <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
                                   {line.description1 && (
                                     <div className="line-clamp-1">
-                                      {t('demand.lines.lineDetailPair', {
-                                        label: t('demand.lines.descriptionField1Label'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.descriptionField1Label'),
                                         value: line.description1,
                                       })}
                                     </div>
                                   )}
                                   {line.description2 && (
                                     <div className="line-clamp-1">
-                                      {t('demand.lines.lineDetailPair', {
-                                        label: t('demand.lines.descriptionField2Label'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.descriptionField2Label'),
                                         value: line.description2,
                                       })}
                                     </div>
                                   )}
                                   {line.description3 && (
                                     <div className="line-clamp-1">
-                                      {t('demand.lines.lineDetailPair', {
-                                        label: t('demand.lines.descriptionField3Label'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.descriptionField3Label'),
                                         value: line.description3,
                                       })}
                                     </div>
                                   )}
                                   {line.profilDefinitionId && (
                                     <div className="line-clamp-1">
-                                      {t('demand.lines.lineDetailPair', {
-                                        label: t('demand.lines.windoProfileLabel'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.windoProfileLabel'),
                                         value: profilMap[line.profilDefinitionId] ?? `#${line.profilDefinitionId}`,
                                       })}
                                     </div>
                                   )}
                                   {line.demirDefinitionId && (
                                     <div className="line-clamp-1">
-                                      {t('demand.lines.lineDetailPair', {
-                                        label: t('demand.lines.windoRebarLabel'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.windoRebarLabel'),
                                         value: demirMap[line.demirDefinitionId] ?? `#${line.demirDefinitionId}`,
                                       })}
                                     </div>
                                   )}
                                   {line.vidaDefinitionId && (
                                     <div className="line-clamp-1">
-                                      {t('demand.lines.lineDetailPair', {
-                                        label: t('demand.lines.windoScrewLabel'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.windoScrewLabel'),
                                         value: vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`,
                                       })}
                                     </div>
@@ -1034,7 +1034,7 @@ export function DemandLineTable({
                               {hasApprovalWarning && (
                                 <Badge variant="outline" className="h-5 bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800 gap-1 px-1.5 shadow-sm">
                                   <AlertTriangle className="w-3 h-3" />
-                                  <span className="text-[10px] font-bold">{t('demand.lines.approvalRequired')}</span>
+                                  <span className="text-[10px] font-bold">{t('lines.approvalRequired')}</span>
                                 </Badge>
                               )}
 
@@ -1102,7 +1102,7 @@ export function DemandLineTable({
                                 'font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm',
                                 lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:ring-2 hover:ring-pink-500/25 rounded-lg'
                               )}
-                              title={t('demand.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                              title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 beginQuickEdit(line, 'unitPrice');
@@ -1161,7 +1161,7 @@ export function DemandLineTable({
                                 'inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums',
                                 lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:border-pink-400/60'
                               )}
-                              title={t('demand.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                              title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 beginQuickEdit(line, 'quantity');
@@ -1238,7 +1238,7 @@ export function DemandLineTable({
                                     lineAllowsQuickEdit(line) &&
                                     'cursor-pointer hover:ring-2 hover:ring-pink-500/20'
                                   )}
-                                  title={t('demand.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                                  title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                                   onDoubleClick={(e) => {
                                     e.stopPropagation();
                                     beginQuickEdit(line, discount.field);
@@ -1258,7 +1258,7 @@ export function DemandLineTable({
                                     lineAllowsQuickEdit(line) &&
                                     'cursor-pointer hover:border-pink-400/50 hover:text-zinc-600 dark:hover:text-zinc-400'
                                   )}
-                                  title={t('demand.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                                  title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                                   onDoubleClick={(e) => {
                                     e.stopPropagation();
                                     beginQuickEdit(line, discount.field);
@@ -1333,7 +1333,7 @@ export function DemandLineTable({
                   <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
                 </div>
               </div>
-              {t('demand.lines.addLine')}
+              {t('lines.addLine')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -1378,7 +1378,7 @@ export function DemandLineTable({
                   <Edit className="h-5 w-5 text-blue-600 dark:text-blue-500" />
                 </div>
               </div>
-              {t('demand.lines.editLine')}
+              {t('lines.editLine')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -1436,13 +1436,13 @@ export function DemandLineTable({
                 <Trash2 className="h-5 w-5" />
               </div>
               {relatedLinesCount > 1
-                ? t('demand.lines.delete.confirmTitleMultiple')
-                : t('demand.lines.delete.confirmTitle')}
+                ? t('lines.delete.confirmTitleMultiple')
+                : t('lines.delete.confirmTitle')}
             </DialogTitle>
             <DialogDescription className="pt-2 text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
               {relatedLinesCount > 1
-                ? t('demand.lines.delete.confirmMessageMultiple', { count: relatedLinesCount })
-                : t('demand.lines.delete.confirmMessage')
+                ? t('lines.delete.confirmMessageMultiple', { count: relatedLinesCount })
+                : t('lines.delete.confirmMessage')
               }
             </DialogDescription>
           </DialogHeader>
@@ -1454,7 +1454,7 @@ export function DemandLineTable({
               disabled={isDeleting}
               className="h-11 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 font-medium transition-all"
             >
-              {t('demand.cancel')}
+              {t('cancel')}
             </Button>
             <Button
               type="button"
@@ -1470,10 +1470,10 @@ export function DemandLineTable({
               {isDeleting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {t('demand.saving')}
+                  {t('saving')}
                 </>
               ) : (
-                t('demand.delete')
+                t('delete')
               )}
             </Button>
           </DialogFooter>

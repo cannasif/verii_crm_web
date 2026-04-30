@@ -14,10 +14,10 @@ export const useCreateRevisionOfDemand = (): UseMutationResult<ApiResponse<Deman
     mutationFn: (demandId: number) => demandApi.createRevisionOfDemand(demandId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.demands() });
-      toast.success(t('demand.revision.success'));
+      toast.success(t('revision.success'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('demand.revision.error'));
+      toast.error(error.message || t('revision.error'));
     },
   });
 };

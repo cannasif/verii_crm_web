@@ -219,19 +219,19 @@ export function DemandLineForm({
         val: discountRate1InputValue,
         setVal: setDiscountRate1InputValue,
         field: 'discountRate1',
-        label: t('demand.lines.discountNumbered1'),
+        label: t('lines.discountNumbered1'),
       },
       {
         val: discountRate2InputValue,
         setVal: setDiscountRate2InputValue,
         field: 'discountRate2',
-        label: t('demand.lines.discountNumbered2'),
+        label: t('lines.discountNumbered2'),
       },
       {
         val: discountRate3InputValue,
         setVal: setDiscountRate3InputValue,
         field: 'discountRate3',
-        label: t('demand.lines.discountNumbered3'),
+        label: t('lines.discountNumbered3'),
       },
     ],
     [discountRate1InputValue, discountRate2InputValue, discountRate3InputValue, t]
@@ -958,7 +958,7 @@ export function DemandLineForm({
       <div className="space-y-4">
         <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
           <Package className="h-4 w-4 text-pink-500" />
-          {t('demand.lines.stock')}
+          {t('lines.stock')}
           <span className="text-pink-500">*</span>
         </label>
 
@@ -967,7 +967,7 @@ export function DemandLineForm({
             <div className="relative flex-1">
               <Input
                 value={formData.productCode || ''}
-                placeholder={t('demand.lines.productCode')}
+                placeholder={t('lines.productCode')}
                 readOnly
                 onClick={() => setProductDialogOpen(true)}
                 className={`cursor-pointer bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-mono text-sm h-11 rounded-xl ${pinkFocusClass}`}
@@ -1010,13 +1010,13 @@ export function DemandLineForm({
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Input
               value={formData.groupCode || ''}
-              placeholder={t('demand.lines.groupCode')}
+              placeholder={t('lines.groupCode')}
               readOnly
               className={`bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-mono text-sm h-11 rounded-xl ${pinkFocusClass}`}
             />
             <Input
               value={formData.productName || ''}
-              placeholder={t('demand.lines.productName')}
+              placeholder={t('lines.productName')}
               readOnly
               className={`bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl ${pinkFocusClass}`}
             />
@@ -1042,7 +1042,7 @@ export function DemandLineForm({
             <div className="rounded-xl border border-pink-200/70 dark:border-pink-800/40 bg-pink-50/50 dark:bg-pink-950/10 p-3 space-y-2">
               <div className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-300">
                 <span className="font-semibold">
-                  {t('demand.lines.stock')} ({bulkDraftLines.length})
+                  {t('lines.stock')} ({bulkDraftLines.length})
                 </span>
                 <span className="inline-flex items-center rounded-full border border-pink-300/70 dark:border-pink-700/50 bg-white/90 dark:bg-pink-900/30 px-2.5 py-1 text-[11px] font-bold text-pink-700 dark:text-pink-300">
                   {t('quotation.lines.grandTotal')}: {formatCurrency(bulkDraftGrandTotal, currencyCode)}
@@ -1093,7 +1093,7 @@ export function DemandLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Layers className="h-4 w-4 text-blue-500" />
-            {t('demand.lines.quantity')}
+            {t('lines.quantity')}
           </label>
           <Input
             type="number"
@@ -1133,7 +1133,7 @@ export function DemandLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Coins className="h-4 w-4 text-emerald-500" />
-            {t('demand.lines.unitPrice')}
+            {t('lines.unitPrice')}
           </label>
           <div className="relative">
             <Input
@@ -1171,7 +1171,7 @@ export function DemandLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Percent className="h-4 w-4 text-orange-500" />
-            {t('demand.lines.vatRate')}
+            {t('lines.vatRate')}
           </label>
           <div className="relative">
             <Input
@@ -1210,7 +1210,7 @@ export function DemandLineForm({
         <div className="xl:col-span-7 space-y-4">
           <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <BadgePercent className="h-4 w-4 text-purple-500" />
-            {t('demand.lines.discounts')}
+            {t('lines.discounts')}
           </h5>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {discountInputs.map((item, idx) => (
@@ -1275,42 +1275,42 @@ export function DemandLineForm({
 
           <div className="space-y-3">
             <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-              {t('demand.lines.descriptionFieldsTitle')}
+              {t('lines.descriptionFieldsTitle')}
             </h5>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('demand.lines.descriptionField1Label')}
+                  {t('lines.descriptionField1Label')}
                 </label>
                 <Input
                   value={formData.description1 ?? ''}
                   onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('demand.lines.max200Chars')}
+                  placeholder={t('lines.max200Chars')}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('demand.lines.descriptionField2Label')}
+                  {t('lines.descriptionField2Label')}
                 </label>
                 <Input
                   value={formData.description2 ?? ''}
                   onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('demand.lines.max200Chars')}
+                  placeholder={t('lines.max200Chars')}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('demand.lines.descriptionField3Label')}
+                  {t('lines.descriptionField3Label')}
                 </label>
                 <Input
                   value={formData.description3 ?? ''}
                   onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('demand.lines.max200Chars')}
+                  placeholder={t('lines.max200Chars')}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
@@ -1318,42 +1318,42 @@ export function DemandLineForm({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('demand.lines.windoProfileLabel')}
+                  {t('lines.windoProfileLabel')}
                 </label>
                 <VoiceSearchCombobox
                   options={profilComboboxOptions}
                   value={formData.profilDefinitionId ? String(formData.profilDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('profilDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('demand.loading') : t('demand.lines.selectWindoProfile')}
-                  searchPlaceholder={t('demand.lines.searchWindoProfile')}
+                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoProfile')}
+                  searchPlaceholder={t('lines.searchWindoProfile')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('demand.lines.windoRebarLabel')}
+                  {t('lines.windoRebarLabel')}
                 </label>
                 <VoiceSearchCombobox
                   options={demirComboboxOptions}
                   value={formData.demirDefinitionId ? String(formData.demirDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('demirDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('demand.loading') : t('demand.lines.selectWindoRebar')}
-                  searchPlaceholder={t('demand.lines.searchWindoRebar')}
+                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoRebar')}
+                  searchPlaceholder={t('lines.searchWindoRebar')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('demand.lines.windoScrewLabel')}
+                  {t('lines.windoScrewLabel')}
                 </label>
                 <VoiceSearchCombobox
                   options={vidaComboboxOptions}
                   value={formData.vidaDefinitionId ? String(formData.vidaDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('vidaDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('demand.loading') : t('demand.lines.selectWindoScrew')}
-                  searchPlaceholder={t('demand.lines.searchWindoScrew')}
+                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoScrew')}
+                  searchPlaceholder={t('lines.searchWindoScrew')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
@@ -1453,7 +1453,7 @@ export function DemandLineForm({
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4 text-purple-500" />
                 <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  {t('demand.lines.relatedStocks')} ({relatedLines.length})
+                  {t('lines.relatedStocks')} ({relatedLines.length})
                 </h5>
               </div>
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
@@ -1464,13 +1464,13 @@ export function DemandLineForm({
                   >
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mb-2">
                       <div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('demand.lines.productCode')}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('lines.productCode')}</div>
                         <div className="font-mono text-sm font-semibold text-slate-800 dark:text-slate-100">
                           {relatedLine.productCode || '-'}
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('demand.lines.productName')}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('lines.productName')}</div>
                         <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                           {relatedLine.productName || '-'}
                         </div>
@@ -1478,11 +1478,11 @@ export function DemandLineForm({
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">{t('demand.lines.quantity')}:</span>
+                        <span className="text-slate-500 dark:text-slate-400">{t('lines.quantity')}:</span>
                         <span className="ml-2 font-semibold text-slate-800 dark:text-slate-200">{relatedLine.quantity}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">{t('demand.lines.unitPrice')}:</span>
+                        <span className="text-slate-500 dark:text-slate-400">{t('lines.unitPrice')}:</span>
                         <span className="ml-2 font-semibold text-slate-800 dark:text-slate-200">
                           {formatCurrency(relatedLine.unitPrice, currencyCode)}
                         </span>
@@ -1514,7 +1514,7 @@ export function DemandLineForm({
               disabled={isSaving}
               className="h-12 px-6 w-full sm:w-auto rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium transition-all"
             >
-              {t('demand.cancel')}
+              {t('cancel')}
             </Button>
             <Button
               type="button"
@@ -1528,12 +1528,12 @@ export function DemandLineForm({
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {t('demand.saving')}
+                  {t('saving')}
                 </>
               ) : (
                 <>
                   <Check className="h-4 w-4 mr-2" />
-                  {t('demand.save')}
+                  {t('save')}
                   {bulkDraftLines.length > 0 ? ` (${bulkDraftLines.length})` : ''}
                 </>
               )}

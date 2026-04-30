@@ -15,10 +15,10 @@ export const useApproveAction = (): UseMutationResult<ApiResponse<boolean>, Erro
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.waitingApprovals() });
       queryClient.invalidateQueries({ queryKey: queryKeys.demands() });
-      toast.success(t('demand.approval.approveSuccess'));
+      toast.success(t('approval.approveSuccess'));
     },
     onError: (error: Error) => {
-      let errorMessage = t('demand.approval.approveError');
+      let errorMessage = t('approval.approveError');
       
       if (error.message) {
         try {

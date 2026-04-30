@@ -499,7 +499,7 @@ export function DemandHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
-                            placeholder={t('demand.select')}
+                            placeholder={t('select')}
                             className={cn(styles.selectTrigger, "px-4 font-medium text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                             disabled={readOnly}
                           />
@@ -590,7 +590,7 @@ export function DemandHeaderForm({
                           }))}
                           value={field.value ? String(field.value) : ''}
                           onSelect={(v) => v && handleCurrencyChange(v)}
-                          placeholder={t('demand.select')}
+                          placeholder={t('select')}
                           className={cn(
                             styles.selectTrigger,
                             "pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
@@ -626,7 +626,7 @@ export function DemandHeaderForm({
                           hasNextPage={paymentTypeDropdown.hasNextPage}
                           isLoading={paymentTypeDropdown.isLoading}
                           isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
-                          placeholder={t('demand.select')}
+                          placeholder={t('select')}
                           className={cn(styles.selectTrigger, "pl-10 hover:border-pink-400 dark:hover:border-white/20 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                         />
                       </FormControl>
@@ -697,7 +697,7 @@ export function DemandHeaderForm({
                               hasNextPage={deliveryMethodDropdown.hasNextPage}
                               isLoading={deliveryMethodDropdown.isLoading}
                               isFetchingNextPage={deliveryMethodDropdown.isFetchingNextPage}
-                              placeholder={t('demand.select')}
+                              placeholder={t('select')}
                               className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                               disabled={readOnly}
                             />
@@ -786,7 +786,7 @@ export function DemandHeaderForm({
                                 .map((d) => ({ value: d.id.toString(), label: d.serialPrefix || String(d.id) }))}
                               value={field.value?.toString() || ''}
                               onSelect={(v) => field.onChange(v ? Number(v) : null)}
-                              placeholder={t('demand.select')}
+                              placeholder={t('select')}
                               className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                               disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
                             />
@@ -943,10 +943,10 @@ export function DemandHeaderForm({
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
             <Button variant="outline" onClick={handleCurrencyChangeCancel} className="rounded-xl border-slate-200 dark:border-white/10">
-              {t('demand.cancel')}
+              {t('cancel')}
             </Button>
             <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-pink-600 hover:bg-pink-700 text-white shadow-lg shadow-pink-500/20 transition-all">
-              {t('demand.confirm')}
+              {t('confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

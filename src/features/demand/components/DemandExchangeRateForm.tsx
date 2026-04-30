@@ -94,7 +94,7 @@ export function DemandExchangeRateForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-              {t('demand.exchangeRates.title')}
+              {t('exchangeRates.title')}
             </h3>
             <p className="text-xs text-zinc-500">
               Manuel kur girişi ve yönetimi
@@ -105,14 +105,14 @@ export function DemandExchangeRateForm({
         <div className="grid grid-cols-1 gap-5 md:grid-cols-12 items-end">
           {/* Para Birimi Seçimi */}
           <div className="md:col-span-3">
-            <Label className={styles.label}>{t('demand.exchangeRates.currency')}</Label>
+            <Label className={styles.label}>{t('exchangeRates.currency')}</Label>
             <Select
               value={newDovizTipi === '' ? undefined : String(newDovizTipi)}
               onValueChange={(value) => setNewDovizTipi(parseInt(value, 10))}
               disabled={isCurrencyLoading}
             >
               <SelectTrigger className={styles.inputBase}>
-                <SelectValue placeholder={isCurrencyLoading ? t('common.loading') : t('demand.select')} />
+                <SelectValue placeholder={isCurrencyLoading ? t('common.loading') : t('select')} />
               </SelectTrigger>
               <SelectContent>
                 {currencyOptions
@@ -129,7 +129,7 @@ export function DemandExchangeRateForm({
 
           {/* Kur Değeri */}
           <div className="md:col-span-3">
-            <Label className={styles.label}>{t('demand.exchangeRates.rate')}</Label>
+            <Label className={styles.label}>{t('exchangeRates.rate')}</Label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
                 <Calculator className="h-4 w-4" />
@@ -148,7 +148,7 @@ export function DemandExchangeRateForm({
 
           {/* Tarih */}
           <div className="md:col-span-3">
-            <Label className={styles.label}>{t('demand.exchangeRates.date')}</Label>
+            <Label className={styles.label}>{t('exchangeRates.date')}</Label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
                 <Calendar className="h-4 w-4" />
@@ -172,7 +172,7 @@ export function DemandExchangeRateForm({
                 className="data-[state=checked]:bg-emerald-600"
               />
               <Label htmlFor="isOfficial" className="mb-0 text-[10px] font-medium cursor-pointer">
-                {t('demand.exchangeRates.isOfficial')}
+                {t('exchangeRates.isOfficial')}
               </Label>
             </div>
             
@@ -183,7 +183,7 @@ export function DemandExchangeRateForm({
               className="h-10 px-4 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all border-0 flex-1 font-bold"
             >
               <Plus className="h-4 w-4 mr-1.5" />
-              {t('demand.add')}
+              {t('add')}
             </Button>
           </div>
         </div>
@@ -195,11 +195,11 @@ export function DemandExchangeRateForm({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-0">
-                <TableHead className={cn(styles.tableHead, "pl-6")}>{t('demand.exchangeRates.currency')}</TableHead>
-                <TableHead className={cn(styles.tableHead, "text-right")}>{t('demand.exchangeRates.rate')}</TableHead>
-                <TableHead className={cn(styles.tableHead, "text-center")}>{t('demand.exchangeRates.date')}</TableHead>
-                <TableHead className={cn(styles.tableHead, "text-center")}>{t('demand.exchangeRates.isOfficial')}</TableHead>
-                <TableHead className={cn(styles.tableHead, "text-center w-[80px]")}>{t('demand.actions')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "pl-6")}>{t('exchangeRates.currency')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "text-right")}>{t('exchangeRates.rate')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "text-center")}>{t('exchangeRates.date')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "text-center")}>{t('exchangeRates.isOfficial')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "text-center w-[80px]")}>{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -219,11 +219,11 @@ export function DemandExchangeRateForm({
                     <TableCell className="text-center">
                       {rate.isOfficial ? (
                         <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800 text-[10px] px-2 h-5">
-                          {t('demand.exchangeRates.official')}
+                          {t('exchangeRates.official')}
                         </Badge>
                       ) : (
                         <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800 text-[10px] px-2 h-5">
-                          {t('demand.exchangeRates.custom')}
+                          {t('exchangeRates.custom')}
                         </Badge>
                       )}
                     </TableCell>
@@ -246,7 +246,7 @@ export function DemandExchangeRateForm({
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-8 text-center text-zinc-400 dark:text-zinc-600">
-          <p className="text-sm">{t('demand.exchangeRates.empty')}</p>
+          <p className="text-sm">{t('exchangeRates.empty')}</p>
         </div>
       )}
     </div>

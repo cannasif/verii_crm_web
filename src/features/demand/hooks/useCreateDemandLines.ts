@@ -15,10 +15,10 @@ export const useCreateDemandLines = (
     mutationFn: (dtos: CreateDemandLineDto[]) => demandApi.createDemandLines(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.demandLines(demandId) });
-      toast.success(t('demand.lines.createSuccess'));
+      toast.success(t('lines.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('demand.lines.createError'));
+      toast.error(error.message ?? t('lines.createError'));
     },
   });
 };

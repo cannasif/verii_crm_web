@@ -14,10 +14,10 @@ export const useDeleteDemandLine = (
     mutationFn: (id: number) => demandApi.deleteDemandLine(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.demandLines(demandId) });
-      toast.success(t('demand.lines.deleteSuccess'));
+      toast.success(t('lines.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('demand.lines.deleteError'));
+      toast.error(error.message ?? t('lines.deleteError'));
     },
   });
 };

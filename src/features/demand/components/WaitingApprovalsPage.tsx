@@ -62,7 +62,7 @@ export function WaitingApprovalsPage(): ReactElement {
   const [rejectReason, setRejectReason] = useState('');
 
   useEffect(() => {
-    setPageTitle(t('demand.waitingApprovals.title'));
+    setPageTitle(t('waitingApprovals.title'));
     return () => {
       setPageTitle(null);
     };
@@ -137,7 +137,7 @@ export function WaitingApprovalsPage(): ReactElement {
               className="rounded-lg border-zinc-200 dark:border-zinc-800"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {t('demand.back')}
+              {t('back')}
             </Button>
           </div>
 
@@ -146,7 +146,7 @@ export function WaitingApprovalsPage(): ReactElement {
           </div>
           
           <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-            {t('demand.waitingApprovals.title')}
+            {t('waitingApprovals.title')}
           </h1>
           <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-2 max-w-2xl mx-auto">
             İşlem bekleyen onay taleplerinizi buradan görüntüleyebilir ve yönetebilirsiniz.
@@ -167,10 +167,10 @@ export function WaitingApprovalsPage(): ReactElement {
               >
                 <span className="inline-flex items-center gap-2">
                   <Clock className="h-5 w-5 shrink-0" />
-                  {t('demand.waitingApprovals.list')}
+                  {t('waitingApprovals.list')}
                 </span>
                 <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
-                  {approvals ? `${approvals.length} adet bekleyen onay` : t('demand.loading')}
+                  {approvals ? `${approvals.length} adet bekleyen onay` : t('loading')}
                 </span>
               </CardTitle>
             </CardHeader>
@@ -203,7 +203,7 @@ export function WaitingApprovalsPage(): ReactElement {
                     Harika! Bekleyen onay yok.
                   </h4>
                   <p className="text-sm text-slate-500 max-w-sm mx-auto">
-                    {t('demand.waitingApprovals.noApprovals')}
+                    {t('waitingApprovals.noApprovals')}
                   </p>
                 </div>
               ) : (
@@ -213,13 +213,13 @@ export function WaitingApprovalsPage(): ReactElement {
                   <Table className="min-w-[1000px] w-full caption-bottom text-sm whitespace-nowrap">
                     <TableHeader>
                       <TableRow className="border-none hover:bg-transparent">
-                        <TableHead className={cn(headStyle, 'pl-6')}>{t('demand.waitingApprovals.requestId')}</TableHead>
-                        <TableHead className={headStyle}>{t('demand.waitingApprovals.description')}</TableHead>
-                        <TableHead className={cn(headStyle, 'text-center')}>{t('demand.waitingApprovals.stepOrder')}</TableHead>
-                        <TableHead className={headStyle}>{t('demand.waitingApprovals.approvedBy')}</TableHead>
-                        <TableHead className={headStyle}>{t('demand.waitingApprovals.actionDate')}</TableHead>
-                        <TableHead className={headStyle}>{t('demand.waitingApprovals.status')}</TableHead>
-                        <TableHead className={cn(headStyle, 'text-right pr-6')}>{t('demand.actions')}</TableHead>
+                        <TableHead className={cn(headStyle, 'pl-6')}>{t('waitingApprovals.requestId')}</TableHead>
+                        <TableHead className={headStyle}>{t('waitingApprovals.description')}</TableHead>
+                        <TableHead className={cn(headStyle, 'text-center')}>{t('waitingApprovals.stepOrder')}</TableHead>
+                        <TableHead className={headStyle}>{t('waitingApprovals.approvedBy')}</TableHead>
+                        <TableHead className={headStyle}>{t('waitingApprovals.actionDate')}</TableHead>
+                        <TableHead className={headStyle}>{t('waitingApprovals.status')}</TableHead>
+                        <TableHead className={cn(headStyle, 'text-right pr-6')}>{t('actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -276,7 +276,7 @@ export function WaitingApprovalsPage(): ReactElement {
                                   : "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300"
                               )}
                             >
-                              {approval.statusName || t('demand.waitingApprovals.waiting')}
+                              {approval.statusName || t('waitingApprovals.waiting')}
                             </Badge>
                           </TableCell>
                           
@@ -289,10 +289,10 @@ export function WaitingApprovalsPage(): ReactElement {
                                 onClick={(e) => handleApprove(e, approval)}
                                 disabled={approveAction.isPending || rejectAction.isPending}
                                 className="h-8 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20"
-                                title={t('demand.approval.approve')}
+                                title={t('approval.approve')}
                               >
                                 <Check className="h-4 w-4 sm:mr-1.5" />
-                                <span className="hidden sm:inline font-bold">{t('demand.approval.approve')}</span>
+                                <span className="hidden sm:inline font-bold">{t('approval.approve')}</span>
                               </Button>
                               <Button
                                 variant="ghost"
@@ -300,10 +300,10 @@ export function WaitingApprovalsPage(): ReactElement {
                                 onClick={(e) => handleRejectClick(e, approval)}
                                 disabled={approveAction.isPending || rejectAction.isPending}
                                 className="h-8 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
-                                title={t('demand.approval.reject')}
+                                title={t('approval.reject')}
                               >
                                 <X className="h-4 w-4 sm:mr-1.5" />
-                                <span className="hidden sm:inline font-bold">{t('demand.approval.reject')}</span>
+                                <span className="hidden sm:inline font-bold">{t('approval.reject')}</span>
                               </Button>
                             </div>
                           </TableCell>
@@ -329,10 +329,10 @@ export function WaitingApprovalsPage(): ReactElement {
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('demand.approval.rejectTitle')}
+                {t('approval.rejectTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('demand.approval.rejectDescription')}
+                {t('approval.rejectDescription')}
               </DialogDescription>
             </div>
           </DialogHeader>
@@ -343,7 +343,7 @@ export function WaitingApprovalsPage(): ReactElement {
                 Ret Gerekçesi
               </label>
               <Textarea
-                placeholder={t('demand.approval.rejectReasonPlaceholder')}
+                placeholder={t('approval.rejectReasonPlaceholder')}
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 maxLength={500}
@@ -370,7 +370,7 @@ export function WaitingApprovalsPage(): ReactElement {
               disabled={rejectAction.isPending}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('demand.cancel')}
+              {t('cancel')}
             </Button>
             <Button
               type="button"
@@ -382,12 +382,12 @@ export function WaitingApprovalsPage(): ReactElement {
               {rejectAction.isPending ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                  {t('demand.loading')}
+                  {t('loading')}
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   <X className="h-4 w-4" />
-                  {t('demand.approval.reject')}
+                  {t('approval.reject')}
                 </span>
               )}
             </Button>

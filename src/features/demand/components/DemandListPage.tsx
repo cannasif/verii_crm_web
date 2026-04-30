@@ -143,7 +143,7 @@ export function DemandListPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('demand.list.title'));
+    setPageTitle(t('list.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -369,7 +369,7 @@ export function DemandListPage(): ReactElement {
       <Button
         variant="ghost"
         size="icon"
-        title={t('demand.list.detail', { defaultValue: 'Detay' })}
+        title={t('list.detail', { defaultValue: 'Detay' })}
         onClick={() => navigate(`/demands/${demand.id}`)}
         className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
       >
@@ -397,7 +397,7 @@ export function DemandListPage(): ReactElement {
         <Button
           variant="ghost"
           size="icon"
-          title={t('demand.list.revise')}
+          title={t('list.revise')}
           onClick={(event) => {
             void handleRevision(event, demand.id);
           }}
@@ -419,11 +419,11 @@ export function DemandListPage(): ReactElement {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-4">
           <div className="space-y-1">
             <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
-              {t('demand.list.title')}
+              {t('list.title')}
             </h1>
             <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
               <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-              {t('demand.list.description')}
+              {t('list.description')}
             </p>
           </div>
           <Button
@@ -431,7 +431,7 @@ export function DemandListPage(): ReactElement {
             className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus size={20} className="mr-2 stroke-[3px]" />
-            {t('demand.list.createNew')}
+            {t('list.createNew')}
           </Button>
         </div>
 
@@ -439,7 +439,7 @@ export function DemandListPage(): ReactElement {
           <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
             <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
               <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
-                {t('demand.list.cardTitle', { defaultValue: 'Talep listesi' })}
+                {t('list.cardTitle', { defaultValue: 'Talep listesi' })}
               </CardTitle>
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
@@ -481,7 +481,7 @@ export function DemandListPage(): ReactElement {
                         },
                         isLoading: demandQuery.isFetching,
                         cooldownSeconds: 60,
-                        label: t('demand.list.refresh', { defaultValue: 'Yenile' }),
+                        label: t('list.refresh', { defaultValue: 'Yenile' }),
                       },
                       leftSlot: (
                         <>
@@ -512,12 +512,12 @@ export function DemandListPage(): ReactElement {
                     renderSortIcon={renderSortIcon}
                     isLoading={demandQuery.isLoading || demandQuery.isFetching}
                     isError={demandQuery.isError}
-                    loadingText={t('demand.loading')}
-                    errorText={t('demand.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                    emptyText={t('demand.noData')}
+                    loadingText={t('loading')}
+                    errorText={t('loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                    emptyText={t('noData')}
                     minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
                     showActionsColumn
-                    actionsHeaderLabel={t('demand.list.actions')}
+                    actionsHeaderLabel={t('list.actions')}
                     renderActionsCell={renderActionsCell}
                     rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                     onRowClick={(order: DemandGetDto) => handleRowClick(order.id)}
@@ -531,8 +531,8 @@ export function DemandListPage(): ReactElement {
                     hasNextPage={hasNextPage}
                     onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
                     onNextPage={() => setPageNumber((prev) => prev + 1)}
-                    previousLabel={t('demand.previous')}
-                    nextLabel={t('demand.next')}
+                    previousLabel={t('previous')}
+                    nextLabel={t('next')}
                     paginationInfoText={t('common.paginationInfo', {
                       start: startRow,
                       end: endRow,

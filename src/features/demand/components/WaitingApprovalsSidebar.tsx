@@ -31,7 +31,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
           <Clock className="h-4 w-4" />
         </div>
         <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-          {t('demand.waitingApprovals.title')}
+          {t('waitingApprovals.title')}
         </h3>
       </div>
       {count !== undefined && count > 0 && (
@@ -67,7 +67,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
             İşlem Yok
           </h4>
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            {t('demand.waitingApprovals.noApprovals')}
+            {t('waitingApprovals.noApprovals')}
           </p>
         </div>
       </SidebarContainer>
@@ -93,7 +93,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
                   {approval.approvalRequestId}
                 </div>
                 <span className="text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-1">
-                  {approval.approvalRequestDescription || t('demand.untitled', 'İsimsiz Talep')}
+                  {approval.approvalRequestDescription || t('untitled', 'İsimsiz Talep')}
                 </span>
               </div>
               <Badge 
@@ -105,7 +105,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
                     : "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300"
                 )}
               >
-                {approval.statusName || t('demand.waitingApprovals.waiting')}
+                {approval.statusName || t('waitingApprovals.waiting')}
               </Badge>
             </div>
 
@@ -114,7 +114,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
               <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                 <ListOrdered className="h-3.5 w-3.5 text-indigo-500/60" />
                 <span className="truncate">
-                  <span className="font-medium text-slate-500">{t('demand.waitingApprovals.stepOrder')}:</span> {approval.stepOrder}
+                  <span className="font-medium text-slate-500">{t('waitingApprovals.stepOrder')}:</span> {approval.stepOrder}
                 </span>
               </div>
               
@@ -122,7 +122,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
                 <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                   <User className="h-3.5 w-3.5 text-indigo-500/60" />
                   <span className="truncate">
-                    <span className="font-medium text-slate-500">{t('demand.waitingApprovals.approvedBy')}:</span> {approval.approvedByUserFullName}
+                    <span className="font-medium text-slate-500">{t('waitingApprovals.approvedBy')}:</span> {approval.approvedByUserFullName}
                   </span>
                 </div>
               )}
@@ -130,7 +130,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
               <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                 <CalendarDays className="h-3.5 w-3.5 text-indigo-500/60" />
                 <span className="truncate">
-                  <span className="font-medium text-slate-500">{t('demand.waitingApprovals.actionDate')}:</span> {new Date(approval.actionDate).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  <span className="font-medium text-slate-500">{t('waitingApprovals.actionDate')}:</span> {new Date(approval.actionDate).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             </div>
