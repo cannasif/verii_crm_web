@@ -1,3 +1,17 @@
+
+import type { TFunction } from 'i18next';
+
+const COMMON_TRANSLATION_ROOTS = new Set(['sidebar', 'customer360']);
+
+export function translatePermissionLabel(t: TFunction, key: string, fallback: string): string {
+  if (!key) return fallback;
+  const root = key.split('.')[0] ?? '';
+  if (COMMON_TRANSLATION_ROOTS.has(root)) {
+    return String(t(key, { ns: 'common', defaultValue: fallback }));
+  }
+  return String(t(key, { ns: 'access-control', defaultValue: fallback }));
+}
+
 export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/': 'dashboard.view',
 
