@@ -6,6 +6,10 @@ import type {
   WindoDefinitionUpdateDto,
 } from '../types/windo-definition-types';
 
+type RawPagedResponse<T> = PagedResponse<T> & {
+  items?: T[];
+};
+
 function buildPagedQuery(params: PagedParams = {}): string {
   const searchParams = new URLSearchParams();
 
@@ -25,7 +29,12 @@ async function getDefinitionPagedList(path: string, params: PagedParams = {}): P
   );
 
   if (response.success && response.data) {
-    return response.data;
+    const rawData = response.data as RawPagedResponse<WindoDefinitionGetDto>;
+    const data = rawData.data ?? rawData.items ?? [];
+    return {
+      ...rawData,
+      data,
+    };
   }
 
   throw new Error(response.message || 'Tanımlar yüklenemedi');
