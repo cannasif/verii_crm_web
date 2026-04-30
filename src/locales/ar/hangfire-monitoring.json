@@ -1,29 +1,74 @@
 {
   "menu": "مراقبة Hangfire",
   "title": "مراقبة Hangfire",
-  "description": "مراقبة صحة المهام والمهام الفاشلة وطابور dead-letter.",
+  "description": "راقب صحة المهام والمهام الفاشلة وقائمة الانتظار للرسائل غير المُسلَّمة.",
+  "summary": {
+    "title": "ملخص النظام",
+    "description": "نظرة سريعة على المهام المتكررة وسلوك طوابير الانتظار.",
+    "totalJobs": "إجمالي المهام المتكررة",
+    "withQueue": "طوابير نشطة",
+    "withErrors": "مهام بها أخطاء",
+    "help": "تعكس الإحصائيات لقطة لخادم Hangfire؛ حدّث القوائم للتحديث."
+  },
   "refresh": "تحديث",
   "stats": {
-    "enqueued": "في الانتظار",
+    "enqueued": "في الطابور",
     "processing": "قيد المعالجة",
     "succeeded": "ناجح",
-    "failed": "فشل"
+    "failed": "فاشل"
   },
   "table": {
-    "jobId": "معرف المهمة",
+    "jobId": "معرّف المهمة",
     "jobName": "المهمة",
     "state": "الحالة",
     "time": "الوقت",
-    "reason": "السبب"
+    "reason": "السبب",
+    "queue": "الطابور",
+    "duration": "المدة",
+    "retryCount": "إعادة المحاولة",
+    "recurringJobId": "مهمة متكررة"
+  },
+  "succeeded": {
+    "title": "مهام ناجحة",
+    "empty": "لا توجد مهام ناجحة.",
+    "description": "مهام Hangfire اكتملت مؤخراً."
   },
   "failed": {
-    "title": "المهام الفاشلة",
+    "title": "مهام فاشلة",
     "empty": "لا توجد مهام فاشلة.",
-    "total": "الإجمالي"
+    "total": "الإجمالي",
+    "description": "مهام فشلت أو تنتظر إعادة المحاولة."
   },
   "deadLetter": {
-    "title": "طابور Dead-Letter",
-    "empty": "طابور dead-letter فارغ.",
-    "enqueued": "في الانتظار"
+    "title": "قائمة انتظار الرسائل غير المُسلَّمة",
+    "empty": "القائمة فارغة.",
+    "enqueued": "في الطابور",
+    "description": "رسائل لم تُسلَّم إلى العمال؛ تتطلب مراجعة يدوية."
+  },
+  "recurring": {
+    "title": "مهام متكررة",
+    "description": "اعرض مهام Hangfire المسجّل وشغّل المهمة المحددة فوراً.",
+    "selectLabel": "المهمة للتشغيل",
+    "selectPlaceholder": "اختر مهمة",
+    "triggerButton": "تشغيل الآن",
+    "triggerSuccess": "تم تشغيل {{jobName}}.",
+    "triggerError": "حدث خطأ أثناء تشغيل المهمة.",
+    "empty": "لا توجد مهام متكررة بعد.",
+    "tableTitle": "مهام متكررة",
+    "tableDescription": "جميع مهام Hangfire المتكررة وتفاصيل الجدولة.",
+    "labels": {
+      "schedule": "الجدولة",
+      "method": "الطريقة",
+      "error": "فيها خطأ",
+      "healthy": "سليم"
+    },
+    "table": {
+      "id": "معرّف المهمة",
+      "job": "المهمة",
+      "cron": "الجدولة",
+      "nextExecution": "التشغيل التالي",
+      "lastExecution": "آخر تشغيل",
+      "queue": "الطابور"
+    }
   }
 }

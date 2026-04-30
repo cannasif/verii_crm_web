@@ -1,7 +1,15 @@
 {
-  "menu": "Hangfire Uberwachung",
-  "title": "Hangfire Uberwachung",
-  "description": "Uberwachen Sie Job-Status, fehlgeschlagene Jobs und die Dead-Letter-Warteschlange.",
+  "menu": "Hangfire-Überwachung",
+  "title": "Hangfire-Überwachung",
+  "description": "Job-Status, fehlgeschlagene Jobs und die Dead-Letter-Warteschlange überwachen.",
+  "summary": {
+    "title": "Systemübersicht",
+    "description": "Schneller Überblick über wiederkehrende Jobs und Warteschlangen.",
+    "totalJobs": "Wiederkehrende Jobs gesamt",
+    "withQueue": "Aktive Warteschlangen",
+    "withErrors": "Jobs mit Fehlern",
+    "help": "Die Statistiken spiegeln einen Momentaufnahme Ihres Hangfire-Servers wider; Listen aktualisieren zum Erneuern."
+  },
   "refresh": "Aktualisieren",
   "stats": {
     "enqueued": "In Warteschlange",
@@ -11,19 +19,56 @@
   },
   "table": {
     "jobId": "Job-ID",
-    "jobName": "Arbeit",
+    "jobName": "Job",
     "state": "Status",
     "time": "Zeit",
-    "reason": "Grund"
+    "reason": "Grund",
+    "queue": "Warteschlange",
+    "duration": "Dauer",
+    "retryCount": "Wiederholung",
+    "recurringJobId": "Wiederkehrender Job"
+  },
+  "succeeded": {
+    "title": "Erfolgreiche Jobs",
+    "empty": "Keine erfolgreichen Jobs gefunden.",
+    "description": "Kürzlich abgeschlossene Hangfire-Jobs."
   },
   "failed": {
     "title": "Fehlgeschlagene Jobs",
     "empty": "Keine fehlgeschlagenen Jobs gefunden.",
-    "total": "Gesamt"
+    "total": "Gesamt",
+    "description": "Fehlgeschlagene Jobs oder solche, die auf Wiederholung warten."
   },
   "deadLetter": {
     "title": "Dead-Letter-Warteschlange",
-    "empty": "Dead-Letter-Warteschlange ist leer.",
-    "enqueued": "In Warteschlange"
+    "empty": "Die Dead-Letter-Warteschlange ist leer.",
+    "enqueued": "In Warteschlange",
+    "description": "Nicht zugestellte Nachrichten; manuelle Prüfung erforderlich."
+  },
+  "recurring": {
+    "title": "Wiederkehrende Jobs",
+    "description": "Registrierte Hangfire-Jobs anzeigen und den ausgewählten Job sofort auslösen.",
+    "selectLabel": "Auszuführender Job",
+    "selectPlaceholder": "Job auswählen",
+    "triggerButton": "Jetzt ausführen",
+    "triggerSuccess": "{{jobName}} wurde ausgelöst.",
+    "triggerError": "Beim Auslösen des Jobs ist ein Fehler aufgetreten.",
+    "empty": "Noch keine wiederkehrenden Jobs gefunden.",
+    "tableTitle": "Wiederkehrende Jobs",
+    "tableDescription": "Alle wiederkehrenden Hangfire-Jobs und Zeitpläne.",
+    "labels": {
+      "schedule": "Zeitplan",
+      "method": "Methode",
+      "error": "Mit Fehler",
+      "healthy": "In Ordnung"
+    },
+    "table": {
+      "id": "Job-ID",
+      "job": "Job",
+      "cron": "Zeitplan",
+      "nextExecution": "Nächste Ausführung",
+      "lastExecution": "Letzte Ausführung",
+      "queue": "Warteschlange"
+    }
   }
 }

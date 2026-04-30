@@ -1,29 +1,74 @@
 {
   "menu": "Surveillance Hangfire",
   "title": "Surveillance Hangfire",
-  "description": "Surveillez la sante des jobs, les echecs et la file dead-letter.",
-  "refresh": "Rafraichir",
+  "description": "Surveillez l'état des tâches, les échecs et la file dead-letter.",
+  "summary": {
+    "title": "Résumé système",
+    "description": "Aperçu rapide des tâches récurrentes et des files.",
+    "totalJobs": "Tâches récurrentes au total",
+    "withQueue": "Files actives",
+    "withErrors": "Tâches en erreur",
+    "help": "Les statistiques reflètent l'état du serveur Hangfire ; actualisez les listes pour mettre à jour."
+  },
+  "refresh": "Actualiser",
   "stats": {
     "enqueued": "En file",
     "processing": "En cours",
-    "succeeded": "Reussis",
-    "failed": "Echoues"
+    "succeeded": "Réussi",
+    "failed": "Échoué"
   },
   "table": {
-    "jobId": "ID de travail",
-    "jobName": "emploi",
-    "state": "Etat",
+    "jobId": "ID tâche",
+    "jobName": "Tâche",
+    "state": "État",
     "time": "Heure",
-    "reason": "Raison"
+    "reason": "Raison",
+    "queue": "File",
+    "duration": "Durée",
+    "retryCount": "Tentatives",
+    "recurringJobId": "Tâche récurrente"
+  },
+  "succeeded": {
+    "title": "Tâches réussies",
+    "empty": "Aucune tâche réussie trouvée.",
+    "description": "Dernières tâches Hangfire terminées avec succès."
   },
   "failed": {
-    "title": "Jobs en echec",
-    "empty": "Aucun job en echec.",
-    "total": "Total"
+    "title": "Tâches en échec",
+    "empty": "Aucune tâche en échec trouvée.",
+    "total": "Total",
+    "description": "Tâches ayant échoué ou en attente de nouvelle tentative."
   },
   "deadLetter": {
-    "title": "File Dead-Letter",
+    "title": "File dead-letter",
     "empty": "La file dead-letter est vide.",
-    "enqueued": "En file"
+    "enqueued": "En file",
+    "description": "Messages non remis ; examen manuel requis."
+  },
+  "recurring": {
+    "title": "Tâches récurrentes",
+    "description": "Consultez les tâches Hangfire enregistrées et déclenchez celle sélectionnée immédiatement.",
+    "selectLabel": "Tâche à exécuter",
+    "selectPlaceholder": "Sélectionner une tâche",
+    "triggerButton": "Lancer maintenant",
+    "triggerSuccess": "{{jobName}} a été déclenchée.",
+    "triggerError": "Une erreur s'est produite lors du déclenchement.",
+    "empty": "Aucune tâche récurrente pour le moment.",
+    "tableTitle": "Tâches récurrentes",
+    "tableDescription": "Toutes les tâches Hangfire récurrentes et leurs planifications.",
+    "labels": {
+      "schedule": "Planification",
+      "method": "Méthode",
+      "error": "Avec erreur",
+      "healthy": "Sain"
+    },
+    "table": {
+      "id": "ID tâche",
+      "job": "Tâche",
+      "cron": "Planification",
+      "nextExecution": "Prochaine exécution",
+      "lastExecution": "Dernière exécution",
+      "queue": "File"
+    }
   }
 }

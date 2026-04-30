@@ -2,6 +2,14 @@
   "menu": "Hangfire Monitoring",
   "title": "Hangfire Monitoring",
   "description": "Observe job health, failed jobs and dead-letter queue.",
+  "summary": {
+    "title": "System summary",
+    "description": "Quick view of recurring job health and queue behavior.",
+    "totalJobs": "Total recurring jobs",
+    "withQueue": "Active queues",
+    "withErrors": "Jobs with errors",
+    "help": "Statistics reflect your Hangfire server snapshot; refresh lists to update."
+  },
   "refresh": "Refresh",
   "stats": {
     "enqueued": "Enqueued",
@@ -22,17 +30,20 @@
   },
   "succeeded": {
     "title": "Succeeded Jobs",
-    "empty": "No succeeded jobs found."
+    "empty": "No succeeded jobs found.",
+    "description": "Recently completed Hangfire jobs."
   },
   "failed": {
     "title": "Failed Jobs",
     "empty": "No failed jobs found.",
-    "total": "Total"
+    "total": "Total",
+    "description": "Jobs that failed or await retry."
   },
   "deadLetter": {
     "title": "Dead-Letter Queue",
     "empty": "Dead-letter queue is empty.",
-    "enqueued": "Enqueued"
+    "enqueued": "Enqueued",
+    "description": "Messages not delivered to workers; needs manual review."
   },
   "recurring": {
     "title": "Recurring Jobs",
@@ -43,6 +54,14 @@
     "triggerSuccess": "{{jobName}} has been triggered.",
     "triggerError": "An error occurred while triggering the job.",
     "empty": "No recurring jobs found yet.",
+    "tableTitle": "Recurring jobs",
+    "tableDescription": "All recurring Hangfire jobs and schedule details.",
+    "labels": {
+      "schedule": "Schedule",
+      "method": "Method",
+      "error": "Has error",
+      "healthy": "Healthy"
+    },
     "table": {
       "id": "Job ID",
       "job": "Job",

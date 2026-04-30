@@ -1,29 +1,74 @@
 {
-  "menu": "Monitoreo Hangfire",
-  "title": "Monitoreo Hangfire",
-  "description": "Supervisa la salud de jobs, fallos y la cola dead-letter.",
+  "menu": "Supervisión de Hangfire",
+  "title": "Supervisión de Hangfire",
+  "description": "Observe el estado de los trabajos, fallos y la cola de mensajes no entregados.",
+  "summary": {
+    "title": "Resumen del sistema",
+    "description": "Vista rápida del estado de trabajos recurrentes y colas.",
+    "totalJobs": "Trabajos recurrentes en total",
+    "withQueue": "Colas activas",
+    "withErrors": "Trabajos con errores",
+    "help": "Las estadísticas reflejan el estado del servidor Hangfire; actualice las listas para refrescar."
+  },
   "refresh": "Actualizar",
   "stats": {
     "enqueued": "En cola",
     "processing": "Procesando",
-    "succeeded": "Exitosos",
+    "succeeded": "Correctos",
     "failed": "Fallidos"
   },
   "table": {
     "jobId": "ID de trabajo",
-    "jobName": "trabajo",
+    "jobName": "Trabajo",
     "state": "Estado",
     "time": "Hora",
-    "reason": "Motivo"
+    "reason": "Motivo",
+    "queue": "Cola",
+    "duration": "Duración",
+    "retryCount": "Reintentos",
+    "recurringJobId": "Trabajo recurrente"
+  },
+  "succeeded": {
+    "title": "Trabajos correctos",
+    "empty": "No se encontraron trabajos correctos.",
+    "description": "Trabajos Hangfire completados recientemente."
   },
   "failed": {
-    "title": "Jobs fallidos",
-    "empty": "No hay jobs fallidos.",
-    "total": "Total"
+    "title": "Trabajos fallidos",
+    "empty": "No se encontraron trabajos fallidos.",
+    "total": "Total",
+    "description": "Trabajos que fallaron o esperan reintento."
   },
   "deadLetter": {
-    "title": "Cola Dead-Letter",
-    "empty": "La cola dead-letter esta vacia.",
-    "enqueued": "En cola"
+    "title": "Cola de mensajes no entregados",
+    "empty": "La cola está vacía.",
+    "enqueued": "En cola",
+    "description": "Mensajes no entregados; requiere revisión manual."
+  },
+  "recurring": {
+    "title": "Trabajos recurrentes",
+    "description": "Vea los trabajos Hangfire registrados y ejecute el seleccionado al instante.",
+    "selectLabel": "Trabajo a ejecutar",
+    "selectPlaceholder": "Seleccione un trabajo",
+    "triggerButton": "Ejecutar ahora",
+    "triggerSuccess": "Se ha disparado {{jobName}}.",
+    "triggerError": "Ocurrió un error al disparar el trabajo.",
+    "empty": "Aún no hay trabajos recurrentes.",
+    "tableTitle": "Trabajos recurrentes",
+    "tableDescription": "Todos los trabajos Hangfire recurrentes y su programación.",
+    "labels": {
+      "schedule": "Programación",
+      "method": "Método",
+      "error": "Con error",
+      "healthy": "Correcto"
+    },
+    "table": {
+      "id": "ID de trabajo",
+      "job": "Trabajo",
+      "cron": "Programación",
+      "nextExecution": "Próxima ejecución",
+      "lastExecution": "Última ejecución",
+      "queue": "Cola"
+    }
   }
 }

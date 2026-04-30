@@ -1,29 +1,74 @@
 {
   "menu": "Monitoraggio Hangfire",
   "title": "Monitoraggio Hangfire",
-  "description": "Monitora stato job, errori e coda dead-letter.",
+  "description": "Monitora lo stato dei job, i fallimenti e la coda dead-letter.",
+  "summary": {
+    "title": "Riepilogo di sistema",
+    "description": "Panoramica rapida su job ricorrenti e code.",
+    "totalJobs": "Job ricorrenti totali",
+    "withQueue": "Code attive",
+    "withErrors": "Job con errori",
+    "help": "Le statistiche riflettono lo stato del server Hangfire; aggiorna gli elenchi per ricaricare."
+  },
   "refresh": "Aggiorna",
   "stats": {
     "enqueued": "In coda",
     "processing": "In elaborazione",
-    "succeeded": "Riusciti",
+    "succeeded": "Completati",
     "failed": "Falliti"
   },
   "table": {
-    "jobId": "ID lavoro",
-    "jobName": "lavoro",
+    "jobId": "ID job",
+    "jobName": "Job",
     "state": "Stato",
     "time": "Ora",
-    "reason": "Motivo"
+    "reason": "Motivo",
+    "queue": "Coda",
+    "duration": "Durata",
+    "retryCount": "Tentativi",
+    "recurringJobId": "Job ricorrente"
+  },
+  "succeeded": {
+    "title": "Job completati",
+    "empty": "Nessun job completato trovato.",
+    "description": "Job Hangfire completati di recente."
   },
   "failed": {
     "title": "Job falliti",
-    "empty": "Nessun job fallito.",
-    "total": "Totale"
+    "empty": "Nessun job fallito trovato.",
+    "total": "Totale",
+    "description": "Job falliti o in attesa di nuovo tentativo."
   },
   "deadLetter": {
-    "title": "Coda Dead-Letter",
-    "empty": "La coda dead-letter e vuota.",
-    "enqueued": "In coda"
+    "title": "Coda dead-letter",
+    "empty": "La coda dead-letter è vuota.",
+    "enqueued": "In coda",
+    "description": "Messaggi non consegnati; richiede revisione manuale."
+  },
+  "recurring": {
+    "title": "Job ricorrenti",
+    "description": "Consulta i job Hangfire registrati ed esegui subito quello selezionato.",
+    "selectLabel": "Job da eseguire",
+    "selectPlaceholder": "Seleziona un job",
+    "triggerButton": "Esegui ora",
+    "triggerSuccess": "{{jobName}} è stato avviato.",
+    "triggerError": "Errore durante l'avvio del job.",
+    "empty": "Nessun job ricorrente ancora.",
+    "tableTitle": "Job ricorrenti",
+    "tableDescription": "Tutti i job Hangfire ricorrenti e le pianificazioni.",
+    "labels": {
+      "schedule": "Pianificazione",
+      "method": "Metodo",
+      "error": "Con errore",
+      "healthy": "OK"
+    },
+    "table": {
+      "id": "ID job",
+      "job": "Job",
+      "cron": "Pianificazione",
+      "nextExecution": "Prossima esecuzione",
+      "lastExecution": "Ultima esecuzione",
+      "queue": "Coda"
+    }
   }
 }
