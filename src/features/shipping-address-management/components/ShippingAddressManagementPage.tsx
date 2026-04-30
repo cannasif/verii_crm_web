@@ -80,7 +80,7 @@ export function ShippingAddressManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('shippingAddressManagement.title'));
+    setPageTitle(t('title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -180,7 +180,7 @@ export function ShippingAddressManagementPage(): ReactElement {
       } else if (key === 'createdDate' && c.createdDate) {
         row[key] = new Date(String(c.createdDate)).toLocaleDateString(i18n.language);
       } else if (key === 'isDefault') {
-        row[key] = c.isDefault ? t('shippingAddressManagement.defaultBadge') : '-';
+        row[key] = c.isDefault ? t('defaultBadge') : '-';
       } else if (key === 'isActive') {
         row[key] = c.isActive ? t('common.active') : t('common.inactive');
       } else {
@@ -317,7 +317,7 @@ export function ShippingAddressManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('shippingAddressManagement.title')}
+            {t('title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
             {t('description', { defaultValue: 'Sevk adreslerini yönetin' })}
@@ -328,7 +328,7 @@ export function ShippingAddressManagementPage(): ReactElement {
           className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
-          {t('shippingAddressManagement.create')}
+          {t('create')}
         </Button>
       </div>
 
@@ -359,7 +359,7 @@ export function ShippingAddressManagementPage(): ReactElement {
             translationNamespace="shipping-address-management"
             appliedFilterCount={appliedFilterCount}
             searchValue={searchTerm}
-            searchPlaceholder={t('shippingAddressManagement.search')}
+            searchPlaceholder={t('search')}
             onSearchChange={setSearchTerm}
             leftSlot={
               <>
@@ -408,8 +408,8 @@ export function ShippingAddressManagementPage(): ReactElement {
               }}
               isLoading={isLoading}
               loadingText={t('common.loading')}
-              errorText={t('shippingAddressManagement.error', { defaultValue: 'Hata oluştu' })}
-              emptyText={t('shippingAddressManagement.noData')}
+              errorText={t('error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('noData')}
               minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
               showActionsColumn
               actionsHeaderLabel={t('common.actions')}

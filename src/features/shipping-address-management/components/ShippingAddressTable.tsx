@@ -62,16 +62,16 @@ interface ShippingAddressTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnConfig[] => [
-  { key: 'customerName', label: t('shippingAddressManagement.customerName'), visible: true },
-  { key: 'name', label: t('shippingAddressManagement.name'), visible: true },
-  { key: 'address', label: t('shippingAddressManagement.address'), visible: true },
-  { key: 'postalCode', label: t('shippingAddressManagement.postalCode'), visible: false },
-  { key: 'contactPerson', label: t('shippingAddressManagement.contactPerson'), visible: true },
-  { key: 'phone', label: t('shippingAddressManagement.phone'), visible: true },
-  { key: 'location', label: t('shippingAddressManagement.location'), visible: false },
-  { key: 'isDefault', label: t('shippingAddressManagement.isDefaultShort'), visible: true },
+  { key: 'customerName', label: t('customerName'), visible: true },
+  { key: 'name', label: t('name'), visible: true },
+  { key: 'address', label: t('address'), visible: true },
+  { key: 'postalCode', label: t('postalCode'), visible: false },
+  { key: 'contactPerson', label: t('contactPerson'), visible: true },
+  { key: 'phone', label: t('phone'), visible: true },
+  { key: 'location', label: t('location'), visible: false },
+  { key: 'isDefault', label: t('isDefaultShort'), visible: true },
   { key: 'isActive', label: t('common.status'), visible: true },
-  { key: 'createdDate', label: t('shippingAddressManagement.createdDate'), visible: true },
+  { key: 'createdDate', label: t('createdDate'), visible: true },
 ];
 
 export function ShippingAddressTable({
@@ -126,9 +126,9 @@ export function ShippingAddressTable({
         await deleteShippingAddress.mutateAsync(selectedShippingAddress.id);
         setDeleteDialogOpen(false);
         setSelectedShippingAddress(null);
-        toast.success(t('shippingAddressManagement.deleteSuccess'));
+        toast.success(t('deleteSuccess'));
       } catch {
-        toast.error(t('shippingAddressManagement.deleteError'));
+        toast.error(t('deleteError'));
       }
     }
   };
