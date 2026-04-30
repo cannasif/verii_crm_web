@@ -361,6 +361,35 @@ export function getPermissionDisplayMeta(code: string): { key?: string; fallback
   };
 }
 
+function getSubjectLabelHeuristicFromCode(code: string): string {
+  const parts = code.split('.').filter(Boolean);
+  if (parts.length <= 1) return code;
+  const subjectParts = parts.slice(1, -1);
+  const subject = (subjectParts.join(' ') || parts[parts.length - 2] || code)
+    .replace(/[-_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!subject) return code;
+  return subject
+    .split(' ')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+export function getPermissionSubjectDisplayLabel(
+  code: string,
+  translate: (key: string, fallback: string) => string
+): string {
+  const parts = code.split('.').filter(Boolean);
+  if (parts.length < 2) return code;
+  const last = parts[parts.length - 1]?.toLowerCase() ?? '';
+  const viewCode = isCrudAction(last) ? [...parts.slice(0, -1), 'view'].join('.') : code;
+  const meta = getPermissionDisplayMeta(viewCode) ?? getPermissionDisplayMeta(code);
+  if (meta?.key) return translate(meta.key, meta.fallback);
+  if (meta) return meta.fallback;
+  return getSubjectLabelHeuristicFromCode(code);
+}
+
 export function getPermissionDisplayLabel(
   code: string,
   translate: (key: string, fallback: string) => string
