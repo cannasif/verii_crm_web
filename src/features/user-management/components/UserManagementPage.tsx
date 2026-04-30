@@ -97,7 +97,7 @@ export function UserManagementPage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageTitle(t('userManagement.menu'));
+    setPageTitle(t('menu'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -164,7 +164,7 @@ export function UserManagementPage(): ReactElement {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           if (key === 'status') {
-            row[key] = u.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive');
+            row[key] = u.isActive ? t('table.active') : t('table.inactive');
           } else if (key === 'creationTime' && u.creationTime) {
             row[key] = new Date(u.creationTime).toLocaleDateString(i18n.language);
           } else {
@@ -185,7 +185,7 @@ export function UserManagementPage(): ReactElement {
         const row: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           if (key === 'status') {
-            row[key] = u.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive');
+            row[key] = u.isActive ? t('table.active') : t('table.inactive');
           } else if (key === 'creationTime' && u.creationTime) {
             row[key] = new Date(u.creationTime).toLocaleDateString(i18n.language);
           } else {
@@ -281,10 +281,10 @@ export function UserManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('userManagement.menu')}
+            {t('menu')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('userManagement.description')}
+            {t('description')}
           </p>
         </div>
         <Button
@@ -295,7 +295,7 @@ export function UserManagementPage(): ReactElement {
           "
         >
           <Plus size={18} className="mr-2" />
-          {t('userManagement.addButton')}
+          {t('addButton')}
         </Button>
       </div>
 
@@ -303,7 +303,7 @@ export function UserManagementPage(): ReactElement {
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
-          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('userManagement.table.title', { defaultValue: t('userManagement.menu') })}</CardTitle>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title', { defaultValue: t('menu') })}</CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -328,7 +328,7 @@ export function UserManagementPage(): ReactElement {
             translationNamespace="user-management"
             appliedFilterCount={appliedFilterCount}
             searchValue={searchTerm}
-            searchPlaceholder={t('userManagement.searchPlaceholder', { defaultValue: t('common.search') })}
+            searchPlaceholder={t('searchPlaceholder', { defaultValue: t('common.search') })}
             onSearchChange={setSearchTerm}
             leftSlot={
               <>
@@ -368,11 +368,11 @@ export function UserManagementPage(): ReactElement {
                         disabled={updateUserStatus.isPending}
                       />
                       <span className="text-sm text-muted-foreground">
-                        {row.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
+                        {row.isActive ? t('table.active') : t('table.inactive')}
                       </span>
                       {row.isEmailConfirmed && (
                         <Badge variant="outline" className="text-xs">
-                          {t('userManagement.table.confirmed')}
+                          {t('table.confirmed')}
                         </Badge>
                       )}
                     </div>
@@ -415,9 +415,9 @@ export function UserManagementPage(): ReactElement {
                 );
               }}
               isLoading={isLoading}
-              loadingText={t('userManagement.table.loading')}
-              errorText={t('userManagement.messages.error', { defaultValue: 'Hata oluştu' })}
-              emptyText={t('userManagement.table.noData')}
+              loadingText={t('table.loading')}
+              errorText={t('messages.error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('table.noData')}
               minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
               showActionsColumn
               actionsHeaderLabel={t('common.actions')}

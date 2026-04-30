@@ -221,10 +221,10 @@ export function UserForm({
             </div>
             <div className="min-w-0 text-left">
               <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white truncate">
-                {user ? t('userManagement.form.editUser') : t('userManagement.form.addUser')}
+                {user ? t('form.editUser') : t('form.addUser')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm truncate">
-                {user ? t('userManagement.form.editDescription') : t('userManagement.form.addDescription')}
+                {user ? t('form.editDescription') : t('form.addDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -246,12 +246,12 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <User size={16} className="text-pink-500" /> {t('userManagement.form.username')}
+                        <User size={16} className="text-pink-500" /> {t('form.username')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={t('userManagement.form.usernamePlaceholder')}
+                          placeholder={t('form.usernamePlaceholder')}
                           maxLength={50}
                           disabled={isEditMode}
                           className={INPUT_STYLE}
@@ -268,13 +268,13 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Mail size={16} className="text-pink-500" /> {t('userManagement.form.email')}
+                        <Mail size={16} className="text-pink-500" /> {t('form.email')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           type="email"
-                          placeholder={t('userManagement.form.emailPlaceholder')}
+                          placeholder={t('form.emailPlaceholder')}
                           className={INPUT_STYLE}
                         />
                       </FormControl>
@@ -291,13 +291,13 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Lock size={16} className="text-pink-500" /> {t('userManagement.form.password')}
+                        <Lock size={16} className="text-pink-500" /> {t('form.password')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           type="password"
-                          placeholder={t('userManagement.form.passwordPlaceholder')}
+                          placeholder={t('form.passwordPlaceholder')}
                           className={INPUT_STYLE}
                         />
                       </FormControl>
@@ -314,12 +314,12 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <User size={16} className="text-pink-500" /> {t('userManagement.form.firstName')}
+                        <User size={16} className="text-pink-500" /> {t('form.firstName')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={t('userManagement.form.firstNamePlaceholder')}
+                          placeholder={t('form.firstNamePlaceholder')}
                           maxLength={50}
                           className={INPUT_STYLE}
                         />
@@ -335,12 +335,12 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <User size={16} className="text-pink-500" /> {t('userManagement.form.lastName')}
+                        <User size={16} className="text-pink-500" /> {t('form.lastName')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={t('userManagement.form.lastNamePlaceholder')}
+                          placeholder={t('form.lastNamePlaceholder')}
                           maxLength={50}
                           className={INPUT_STYLE}
                         />
@@ -358,12 +358,12 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Phone size={16} className="text-pink-500" /> {t('userManagement.form.phoneNumber')}
+                        <Phone size={16} className="text-pink-500" /> {t('form.phoneNumber')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={t('userManagement.form.phoneNumberPlaceholder')}
+                          placeholder={t('form.phoneNumberPlaceholder')}
                           maxLength={20}
                           className={INPUT_STYLE}
                         />
@@ -379,7 +379,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Shield size={16} className="text-pink-500" /> {t('userManagement.form.role')}
+                        <Shield size={16} className="text-pink-500" /> {t('form.role')}
                         {!isEditMode && <span className="text-destructive ml-1">*</span>}
                       </FormLabel>
                       <Select
@@ -390,7 +390,7 @@ export function UserForm({
                         <FormControl>
                           <SelectTrigger className={INPUT_STYLE}>
                             <SelectValue
-                              placeholder={t('userManagement.form.rolePlaceholder')}
+                              placeholder={t('form.rolePlaceholder')}
                             />
                           </SelectTrigger>
                         </FormControl>
@@ -414,7 +414,7 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Users size={16} className="text-pink-500" /> {t('userManagement.form.manager')}
+                      <Users size={16} className="text-pink-500" /> {t('form.manager')}
                     </FormLabel>
                     <Select
                       value={field.value ? String(field.value) : 'none'}
@@ -423,11 +423,11 @@ export function UserForm({
                     >
                       <FormControl>
                         <SelectTrigger className={INPUT_STYLE}>
-                          <SelectValue placeholder={t('userManagement.form.managerPlaceholder')} />
+                          <SelectValue placeholder={t('form.managerPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white dark:bg-[#130822] border-slate-200 dark:border-white/10">
-                        <SelectItem value="none">{t('userManagement.form.noManager')}</SelectItem>
+                        <SelectItem value="none">{t('form.noManager')}</SelectItem>
                         {managerOptions.map((option) => (
                           <SelectItem key={option.value} value={String(option.value)} className="focus:bg-pink-500 focus:text-white">
                             {option.label}
@@ -446,7 +446,7 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Shield size={16} className="text-pink-500" /> {t('userManagement.form.permissionGroups')}
+                      <Shield size={16} className="text-pink-500" /> {t('form.permissionGroups')}
                     </FormLabel>
                     <FormControl>
                       <UserFormPermissionGroupSelect
@@ -466,7 +466,7 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-xl border border-slate-200 dark:border-white/10 p-4 bg-slate-50/50 dark:bg-white/5">
                     <FormLabel className="text-sm font-medium flex items-center gap-2 m-0">
-                      <Activity size={16} className="text-pink-500" /> {t('userManagement.form.isActive')}
+                      <Activity size={16} className="text-pink-500" /> {t('form.isActive')}
                     </FormLabel>
                     <FormControl>
                       <Switch
@@ -488,7 +488,7 @@ export function UserForm({
                   disabled={isLoading}
                   className="h-11 px-5 rounded-lg font-medium"
                 >
-                  {t('userManagement.form.cancel')}
+                  {t('form.cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -496,8 +496,8 @@ export function UserForm({
                   className="h-11 px-8 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   {isLoading
-                    ? t('userManagement.form.saving')
-                    : t('userManagement.form.save')}
+                    ? t('form.saving')
+                    : t('form.save')}
                 </Button>
               </div>
             </form>
