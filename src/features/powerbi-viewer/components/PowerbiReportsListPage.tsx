@@ -22,7 +22,7 @@ export function PowerbiReportsListPage(): ReactElement {
   const { data: items = [], isLoading } = usePowerbiReportsList();
 
   useEffect(() => {
-    setPageTitle(t('powerbiViewer.listTitle'));
+    setPageTitle(t('listTitle'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -49,10 +49,10 @@ export function PowerbiReportsListPage(): ReactElement {
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-              {t('powerbiViewer.listTitle')}
+              {t('listTitle')}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-              {t('powerbiViewer.listDescription')}
+              {t('listDescription')}
             </p>
           </div>
         </div>
@@ -63,9 +63,9 @@ export function PowerbiReportsListPage(): ReactElement {
           <Table>
             <TableHeader>
               <TableRow className="font-bold text-slate-700 dark:text-white dark:bg-[#231A2C] border-b border-slate-200 dark:border-white/5">
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{t('powerbiViewer.name')}</TableHead>
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white border-r border-slate-200 dark:border-white/5">{t('powerbiViewer.description')}</TableHead>
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white border-r border-slate-200 dark:border-white/5">{t('powerbiViewer.isActive')}</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{t('name')}</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white border-r border-slate-200 dark:border-white/5">{t('description')}</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white border-r border-slate-200 dark:border-white/5">{t('isActive')}</TableHead>
                 <TableHead className="text-right text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white w-[140px]">{t('common:actions')}</TableHead>
               </TableRow>
             </TableHeader>
@@ -109,7 +109,7 @@ export function PowerbiReportsListPage(): ReactElement {
                       >
                         <Link to={`/powerbi/reports/${row.id}`}>
                           <ExternalLink className="h-4 w-4" />
-                          {t('powerbiViewer.view')}
+                          {t('view')}
                         </Link>
                       </Button>
                     </TableCell>

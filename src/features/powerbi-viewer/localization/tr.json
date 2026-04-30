@@ -1,14 +1,16 @@
 {
-  "powerbiViewer": {
-    "invalidId": "Geçersiz rapor",
-    "backToList": "Listeye Dön",
-    "loadError": "Rapor yüklenemedi",
-    "loadingReport": "Rapor yükleniyor...",
-    "listTitle": "PowerBI Raporları",
-    "listDescription": "Raporlara tıklayarak görüntüleyebilirsiniz",
-    "name": "Ad",
-    "description": "Açıklama",
-    "isActive": "Durum",
-    "view": "Görüntüle"
+  "invalidId": "Geçersiz rapor",
+  "backToList": "Listeye Dön",
+  "loadError": "Rapor yüklenemedi",
+  "loadingReport": "Rapor yükleniyor...",
+  "listTitle": "PowerBI Raporları",
+  "listDescription": "Raporlara tıklayarak görüntüleyebilirsiniz",
+  "name": "Ad",
+  "description": "Açıklama",
+  "isActive": "Durum",
+  "view": "Görüntüle",
+  "status": {
+    "active": "Aktif",
+    "inactive": "Pasif"
   }
 }

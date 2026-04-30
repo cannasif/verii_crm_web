@@ -1,14 +1,16 @@
 {
-  "powerbiViewer": {
-    "invalidId": "Ungültiger Bericht",
-    "backToList": "Zurück zur Liste",
-    "loadError": "Bericht konnte nicht geladen werden",
-    "loadingReport": "Bericht wird geladen...",
-    "listTitle": "Power-BI-Berichte",
-    "listDescription": "Klicken Sie auf einen Bericht, um ihn anzuzeigen",
-    "name": "Name",
-    "description": "Beschreibung",
-    "isActive": "Status",
-    "view": "Anzeigen"
+  "invalidId": "Ungültiger Bericht",
+  "backToList": "Zurück zur Liste",
+  "loadError": "Bericht konnte nicht geladen werden",
+  "loadingReport": "Bericht wird geladen...",
+  "listTitle": "Power-BI-Berichte",
+  "listDescription": "Klicken Sie auf einen Bericht, um ihn anzuzeigen",
+  "name": "Name",
+  "description": "Beschreibung",
+  "isActive": "Status",
+  "view": "Anzeigen",
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
   }
 }

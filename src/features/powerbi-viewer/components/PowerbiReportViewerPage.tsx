@@ -82,11 +82,11 @@ export function PowerbiReportViewerPage(): ReactElement {
   if (reportId == null || Number.isNaN(reportId)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <p className="text-muted-foreground">{t('powerbiViewer.invalidId')}</p>
+        <p className="text-muted-foreground">{t('invalidId')}</p>
         <Button asChild variant="outline">
           <Link to="/powerbi/reports">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            {t('powerbiViewer.backToList')}
+            {t('backToList')}
           </Link>
         </Button>
       </div>
@@ -96,11 +96,11 @@ export function PowerbiReportViewerPage(): ReactElement {
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <p className="text-destructive">{error?.message ?? t('powerbiViewer.loadError')}</p>
+        <p className="text-destructive">{error?.message ?? t('loadError')}</p>
         <Button asChild variant="outline">
           <Link to="/powerbi/reports">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            {t('powerbiViewer.backToList')}
+            {t('backToList')}
           </Link>
         </Button>
       </div>
@@ -112,7 +112,7 @@ export function PowerbiReportViewerPage(): ReactElement {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-2">
           <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">{t('powerbiViewer.loadingReport')}</p>
+          <p className="text-sm text-muted-foreground">{t('loadingReport')}</p>
         </div>
       </div>
     );
@@ -124,7 +124,7 @@ export function PowerbiReportViewerPage(): ReactElement {
         <Button asChild variant="ghost" size="sm">
           <Link to="/powerbi/reports">
             <ArrowLeft className="h-4 w-4 mr-1" />
-            {t('powerbiViewer.backToList')}
+            {t('backToList')}
           </Link>
         </Button>
       </div>

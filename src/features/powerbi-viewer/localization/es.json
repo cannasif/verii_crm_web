@@ -1,14 +1,16 @@
 {
-  "powerbiViewer": {
-    "invalidId": "Informe no válido",
-    "backToList": "Volver a la lista",
-    "loadError": "No se pudo cargar el informe",
-    "loadingReport": "Cargando informe...",
-    "listTitle": "Informes de Power BI",
-    "listDescription": "Haga clic en un informe para verlo",
-    "name": "Nombre",
-    "description": "Descripción",
-    "isActive": "Estado",
-    "view": "Ver"
+  "invalidId": "Informe no válido",
+  "backToList": "Volver a la lista",
+  "loadError": "No se pudo cargar el informe",
+  "loadingReport": "Cargando informe...",
+  "listTitle": "Informes de Power BI",
+  "listDescription": "Haga clic en un informe para verlo",
+  "name": "Nombre",
+  "description": "Descripción",
+  "isActive": "Estado",
+  "view": "Ver",
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo"
   }
 }

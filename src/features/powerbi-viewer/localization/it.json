@@ -1,14 +1,16 @@
 {
-  "powerbiViewer": {
-    "invalidId": "Report non valido",
-    "backToList": "Torna all'elenco",
-    "loadError": "Impossibile caricare il report",
-    "loadingReport": "Caricamento report...",
-    "listTitle": "Report Power BI",
-    "listDescription": "Fai clic su un report per visualizzarlo",
-    "name": "Nome",
-    "description": "Descrizione",
-    "isActive": "Stato",
-    "view": "Visualizza"
+  "invalidId": "Report non valido",
+  "backToList": "Torna all'elenco",
+  "loadError": "Impossibile caricare il report",
+  "loadingReport": "Caricamento report...",
+  "listTitle": "Report Power BI",
+  "listDescription": "Fai clic su un report per visualizzarlo",
+  "name": "Nome",
+  "description": "Descrizione",
+  "isActive": "Stato",
+  "view": "Visualizza",
+  "status": {
+    "active": "Attivo",
+    "inactive": "Inattivo"
   }
 }
