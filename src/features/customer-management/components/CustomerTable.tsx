@@ -37,7 +37,7 @@ import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermi
 
 const CRM_NS = 'customer-management' as const;
 
-/** Tablo başlıkları bu namespace altında çözülmeli (çoklu ns ile t('customerManagement…') bazen eksik kalıyordu). */
+/** Tablo başlıkları customer-management namespace ve customerManagement.* anahtar yolu ile çözülür. */
 function tc(t: TFunction, key: string): string {
   return t(key, { ns: CRM_NS });
 }
@@ -261,17 +261,17 @@ export function CustomerTable({
         setDeleteDialogOpen(false);
         setSelectedCustomer(null);
         toast.success(
-          t('customerManagement.messages.deleteSuccess', {
+          t('messages.deleteSuccess', {
             ns: CRM_NS,
-            defaultValue: t('customerManagement.delete.success', { ns: CRM_NS }),
+            defaultValue: t('delete.success', { ns: CRM_NS }),
           })
         );
       } catch (error) {
         console.error(error);
         toast.error(
-          t('customerManagement.messages.deleteError', {
+          t('messages.deleteError', {
             ns: CRM_NS,
-            defaultValue: t('customerManagement.delete.error', { ns: CRM_NS }),
+            defaultValue: t('delete.error', { ns: CRM_NS }),
           })
         );
       }
@@ -293,7 +293,7 @@ export function CustomerTable({
           data-skip-row-double-click
           data-no-drag-scroll="true"
           className="cursor-pointer select-none rounded px-0.5 -mx-0.5 hover:bg-slate-100/80 dark:hover:bg-white/5"
-          title={t('customerManagement.nameOpen360Hint', {
+          title={t('nameOpen360Hint', {
             ns: CRM_NS,
             defaultValue: 'Çift tıklayarak Müşteri 360’a gidin',
           })}
@@ -317,7 +317,7 @@ export function CustomerTable({
         variant="ghost"
         size="icon"
         onClick={() => onQuickActivity(customer)}
-        title={t('customerManagement.quickActivity', { ns: CRM_NS })}
+        title={t('quickActivity', { ns: CRM_NS })}
         className="h-8 w-8 text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:text-pink-400 dark:hover:bg-pink-500/10"
       >
         <Activity size={16} />
@@ -404,10 +404,10 @@ export function CustomerTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('customerManagement.delete.confirmTitle', { ns: CRM_NS })}
+                {t('delete.confirmTitle', { ns: CRM_NS })}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('customerManagement.delete.confirmMessage', {
+                {t('delete.confirmMessage', {
                   ns: CRM_NS,
                   name: selectedCustomer?.name || '',
                 })}
@@ -421,7 +421,7 @@ export function CustomerTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('common.cancel')}
+              {t('cancel', { ns: 'common' })}
             </Button>
             <Button
               type="button"
@@ -431,9 +431,9 @@ export function CustomerTable({
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteCustomer.isPending ? (
-                <span className="animate-pulse">{t('customerManagement.loading', { ns: CRM_NS })}</span>
+                <span className="animate-pulse">{t('loading', { ns: CRM_NS })}</span>
               ) : null}
-              {t('customerManagement.delete.action', { ns: CRM_NS })}
+              {t('delete.action', { ns: CRM_NS })}
             </Button>
           </DialogFooter>
         </DialogContent>
