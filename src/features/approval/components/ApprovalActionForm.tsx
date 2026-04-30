@@ -45,17 +45,17 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
 
       if (result.success) {
         toast.success(
-          t('approval.approve.success'),
+          t('approve.success'),
           {
-            description: t('approval.approve.successMessage'),
+            description: t('approve.successMessage'),
           }
         );
         onSuccess();
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('approval.approve.errorMessage');
+      const errorMessage = error instanceof Error ? error.message : t('approve.errorMessage');
       toast.error(
-        t('approval.approve.error'),
+        t('approve.error'),
         {
           description: errorMessage,
         }
@@ -72,17 +72,17 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
 
       if (result.success) {
         toast.success(
-          t('approval.reject.success'),
+          t('reject.success'),
           {
-            description: t('approval.reject.successMessage'),
+            description: t('reject.successMessage'),
           }
         );
         onSuccess();
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('approval.reject.errorMessage');
+      const errorMessage = error instanceof Error ? error.message : t('reject.errorMessage');
       toast.error(
-        t('approval.reject.error'),
+        t('reject.error'),
         {
           description: errorMessage,
         }
@@ -98,12 +98,12 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
           name="note"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('approval.note.label')}</FormLabel>
+              <FormLabel>{t('note.label')}</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   value={field.value || ''}
-                  placeholder={t('approval.note.placeholder')}
+                  placeholder={t('note.placeholder')}
                   rows={4}
                 />
               </FormControl>
@@ -121,8 +121,8 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
           >
             <XCircle className="h-4 w-4 mr-2" />
             {rejectMutation.isPending
-          ? t('approval.processing')
-          : t('approval.actions.reject')}
+          ? t('processing')
+          : t('actions.reject')}
           </Button>
           <Button
             type="button"
@@ -132,8 +132,8 @@ export function ApprovalActionForm({ queue, onSuccess }: ApprovalActionFormProps
           >
             <CheckCircle2 className="h-4 w-4 mr-2" />
             {approveMutation.isPending
-              ? t('approval.processing')
-              : t('approval.actions.approve')}
+              ? t('processing')
+              : t('actions.approve')}
           </Button>
         </div>
       </form>

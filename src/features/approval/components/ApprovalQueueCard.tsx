@@ -18,12 +18,12 @@ export function ApprovalQueueCard({
 
   const getApprovalLevelLabel = (level: ApprovalLevel): string => {
     const labels: Record<ApprovalLevel, string> = {
-      [ApprovalLevel.SalesManager]: t('approval.level.salesManager'),
-      [ApprovalLevel.RegionalManager]: t('approval.level.regionalManager'),
-      [ApprovalLevel.Finance]: t('approval.level.finance'),
-      [ApprovalLevel.GeneralManager]: t('approval.level.generalManager'),
+      [ApprovalLevel.SalesManager]: t('level.salesManager'),
+      [ApprovalLevel.RegionalManager]: t('level.regionalManager'),
+      [ApprovalLevel.Finance]: t('level.finance'),
+      [ApprovalLevel.GeneralManager]: t('level.generalManager'),
     };
-    return labels[level] || t('approval.level.unknown');
+    return labels[level] || t('level.unknown');
   };
 
   const formatDate = (dateString: string): string => {
@@ -48,7 +48,7 @@ export function ApprovalQueueCard({
               <ApprovalStatusBadge status={queue.status} />
             </div>
             <p className="text-sm text-muted-foreground">
-              {queue.assignedToUserFullName || t('approval.assignedTo')}
+              {queue.assignedToUserFullName || t('assignedTo')}
             </p>
           </div>
           <Badge variant="outline">
@@ -65,7 +65,7 @@ export function ApprovalQueueCard({
 
           {queue.note && (
             <div className="text-sm">
-              <p className="font-medium">{t('approval.note.label')}:</p>
+              <p className="font-medium">{t('note.label')}:</p>
               <p className="text-muted-foreground">{queue.note}</p>
             </div>
           )}
@@ -78,7 +78,7 @@ export function ApprovalQueueCard({
               onClick={() => onViewDetail(queue)}
             >
               <Eye className="h-4 w-4 mr-2" />
-              {t('approval.actions.view')}
+              {t('actions.view')}
             </Button>
             {queue.status === ApprovalStatus.Waiting && queue.isCurrent && (
               <>
@@ -90,7 +90,7 @@ export function ApprovalQueueCard({
                   className="bg-green-600 hover:bg-green-700"
                 >
                   <CheckCircle2 className="h-4 w-4 mr-2" />
-                  {t('approval.actions.approve')}
+                  {t('actions.approve')}
                 </Button>
                 <Button
                   type="button"
@@ -99,7 +99,7 @@ export function ApprovalQueueCard({
                   onClick={() => onReject(queue)}
                 >
                   <XCircle className="h-4 w-4 mr-2" />
-                  {t('approval.actions.reject')}
+                  {t('actions.reject')}
                 </Button>
               </>
             )}

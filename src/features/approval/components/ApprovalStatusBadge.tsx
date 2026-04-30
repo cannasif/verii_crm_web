@@ -13,27 +13,27 @@ export function ApprovalStatusBadge({ status }: ApprovalStatusBadgeProps): React
 
   const statusConfig: Record<ApprovalStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; className?: string }> = {
     [ApprovalStatusEnum.NotRequired]: {
-      label: t('approval.status.notRequired'),
+      label: t('status.notRequired'),
       variant: 'secondary',
       className: undefined,
     },
     [ApprovalStatusEnum.Waiting]: {
-      label: t('approval.status.waiting'),
+      label: t('status.waiting'),
       variant: 'default',
       className: undefined,
     },
     [ApprovalStatusEnum.Approved]: {
-      label: t('approval.status.approved'),
+      label: t('status.approved'),
       variant: 'default',
       className: 'bg-green-600 hover:bg-green-700',
     },
     [ApprovalStatusEnum.Rejected]: {
-      label: t('approval.status.rejected'),
+      label: t('status.rejected'),
       variant: 'destructive',
       className: undefined,
     },
     [ApprovalStatusEnum.Closed]: {
-      label: t('approval.status.closed'),
+      label: t('status.closed'),
       variant: 'secondary',
       className: 'bg-zinc-500/80 hover:bg-zinc-600/80 text-white border-0',
     },

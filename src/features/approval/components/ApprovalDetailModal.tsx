@@ -37,19 +37,19 @@ export function ApprovalDetailModal({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {t('approval.detail.title')} - {queue.quotationOfferNo || `#${queue.quotationId}`}
+            {t('detail.title')} - {queue.quotationOfferNo || `#${queue.quotationId}`}
           </DialogTitle>
           <DialogDescription>
-            {t('approval.detail.subtitle')}
+            {t('detail.subtitle')}
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="detail" className="w-full">
           <TabsList>
-            <TabsTrigger value="detail">{t('approval.detail.tabs.detail')}</TabsTrigger>
-            <TabsTrigger value="history">{t('approval.detail.tabs.history')}</TabsTrigger>
+            <TabsTrigger value="detail">{t('detail.tabs.detail')}</TabsTrigger>
+            <TabsTrigger value="history">{t('detail.tabs.history')}</TabsTrigger>
             {queue.status === ApprovalStatus.Waiting && queue.isCurrent && (
-              <TabsTrigger value="action">{t('approval.detail.tabs.action')}</TabsTrigger>
+              <TabsTrigger value="action">{t('detail.tabs.action')}</TabsTrigger>
             )}
           </TabsList>
 
@@ -59,7 +59,7 @@ export function ApprovalDetailModal({
             ) : quotation ? (
               <QuotationDetailView quotation={quotation} />
             ) : (
-              <p>{t('approval.detail.notFound')}</p>
+              <p>{t('detail.notFound')}</p>
             )}
           </TabsContent>
 

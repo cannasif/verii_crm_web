@@ -32,49 +32,49 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps): Re
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>{t('approval.detail.quotationInfo')}</CardTitle>
+          <CardTitle>{t('detail.quotationInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.offerNo')}
+                {t('detail.offerNo')}
               </p>
               <p className="text-sm">{quotation.offerNo || '-'}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.customer')}
+                {t('detail.customer')}
               </p>
               <p className="text-sm">{quotation.potentialCustomerName || '-'}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.representative')}
+                {t('detail.representative')}
               </p>
               <p className="text-sm">{quotation.representativeName || '-'}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.currency')}
+                {t('detail.currency')}
               </p>
               <p className="text-sm">{quotation.currency}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.offerDate')}
+                {t('detail.offerDate')}
               </p>
               <p className="text-sm">{formatDate(quotation.offerDate)}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.deliveryDate')}
+                {t('detail.deliveryDate')}
               </p>
               <p className="text-sm">{formatDate(quotation.deliveryDate)}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.total')}
+                {t('detail.total')}
               </p>
               <p className="text-sm font-semibold">
                 {formatCurrency(quotation.total, quotation.currency)}
@@ -82,7 +82,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps): Re
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.grandTotal')}
+                {t('detail.grandTotal')}
               </p>
               <p className="text-sm font-semibold">
                 {formatCurrency(quotation.grandTotal, quotation.currency)}
@@ -92,7 +92,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps): Re
           {quotation.description && (
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('approval.detail.description')}
+                {t('detail.description')}
               </p>
               <p className="text-sm">{quotation.description}</p>
             </div>
@@ -102,26 +102,26 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps): Re
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('approval.detail.lines')}</CardTitle>
+          <CardTitle>{t('detail.lines')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('approval.detail.productCode')}</TableHead>
-                  <TableHead>{t('approval.detail.productName')}</TableHead>
+                  <TableHead>{t('detail.productCode')}</TableHead>
+                  <TableHead>{t('detail.productName')}</TableHead>
                   <TableHead className="text-right">
-                    {t('approval.detail.quantity')}
+                    {t('detail.quantity')}
                   </TableHead>
                   <TableHead className="text-right">
-                    {t('approval.detail.unitPrice')}
+                    {t('detail.unitPrice')}
                   </TableHead>
                   <TableHead className="text-right">
-                    {t('approval.detail.lineTotal')}
+                    {t('detail.lineTotal')}
                   </TableHead>
                   <TableHead className="text-right">
-                    {t('approval.detail.lineGrandTotal')}
+                    {t('detail.lineGrandTotal')}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -151,19 +151,19 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps): Re
       {quotation.exchangeRates && quotation.exchangeRates.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>{t('approval.detail.exchangeRates')}</CardTitle>
+            <CardTitle>{t('detail.exchangeRates')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t('approval.detail.currency')}</TableHead>
+                    <TableHead>{t('detail.currency')}</TableHead>
                     <TableHead className="text-right">
-                      {t('approval.detail.exchangeRate')}
+                      {t('detail.exchangeRate')}
                     </TableHead>
-                    <TableHead>{t('approval.detail.exchangeRateDate')}</TableHead>
-                    <TableHead>{t('approval.detail.isOfficial')}</TableHead>
+                    <TableHead>{t('detail.exchangeRateDate')}</TableHead>
+                    <TableHead>{t('detail.isOfficial')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -172,7 +172,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps): Re
                       <TableCell>{rate.currency}</TableCell>
                       <TableCell className="text-right">{rate.exchangeRate}</TableCell>
                       <TableCell>{formatDate(rate.exchangeRateDate)}</TableCell>
-                      <TableCell>{rate.isOfficial ? t('approval.yes') : t('approval.no')}</TableCell>
+                      <TableCell>{rate.isOfficial ? t('yes') : t('no')}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
