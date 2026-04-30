@@ -130,6 +130,7 @@ export function UserManagementPage(): ReactElement {
     Username: 'username',
     Email: 'email',
     FullName: 'fullName',
+    ManagerFullName: 'managerFullName',
     Role: 'role',
     IsActive: 'status',
     CreationTime: 'creationTime',
@@ -220,6 +221,7 @@ export function UserManagementPage(): ReactElement {
         lastName: data.lastName || undefined,
         phoneNumber: data.phoneNumber || undefined,
         roleId: data.roleId && data.roleId > 0 ? data.roleId : undefined,
+        managerUserId: data.managerUserId ?? null,
         isActive: data.isActive,
         permissionGroupIds: data.permissionGroupIds,
       };
@@ -237,6 +239,7 @@ export function UserManagementPage(): ReactElement {
         lastName: createFormData.lastName || undefined,
         phoneNumber: createFormData.phoneNumber || undefined,
         roleId: createFormData.roleId!,
+        managerUserId: createFormData.managerUserId ?? null,
         isActive: createFormData.isActive,
         permissionGroupIds: createFormData.permissionGroupIds,
       };
@@ -386,7 +389,24 @@ export function UserManagementPage(): ReactElement {
               sortDirection={sortDirection}
               onSortChange={handleSortChange}
               renderSortIcon={(k) => {
-                const backendKey = k === 'status' ? 'IsActive' : k === 'id' ? 'Id' : k === 'username' ? 'Username' : k === 'email' ? 'Email' : k === 'fullName' ? 'FullName' : k === 'role' ? 'Role' : k === 'creationTime' ? 'CreationTime' : k;
+                const backendKey =
+                  k === 'status'
+                    ? 'IsActive'
+                    : k === 'id'
+                      ? 'Id'
+                      : k === 'username'
+                        ? 'Username'
+                        : k === 'email'
+                          ? 'Email'
+                          : k === 'fullName'
+                            ? 'FullName'
+                            : k === 'managerFullName'
+                              ? 'ManagerFullName'
+                              : k === 'role'
+                                ? 'Role'
+                                : k === 'creationTime'
+                                  ? 'CreationTime'
+                                  : k;
                 if (sortBy !== backendKey) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
                 return sortDirection === 'asc' ? (
                   <ArrowUp className="h-3.5 w-3.5 text-foreground" />

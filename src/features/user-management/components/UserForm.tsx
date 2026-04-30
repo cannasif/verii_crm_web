@@ -36,9 +36,10 @@ import {
 import type { UserDto } from '../types/user-types';
 import { useUserAuthorityOptionsQuery } from '../hooks/useUserAuthorityOptionsQuery';
 import type { RoleOption } from '../hooks/useUserAuthorityOptionsQuery';
+import { useUserManagerOptionsQuery } from '../hooks/useUserManagerOptionsQuery';
 import { useUserPermissionGroupsForForm } from '../hooks/useUserPermissionGroupsForForm';
 import { UserFormPermissionGroupSelect } from './UserFormPermissionGroupSelect';
-import { User, Mail, Lock, Phone, Shield, Activity, X } from 'lucide-react';
+import { User, Mail, Lock, Phone, Shield, Activity, X, Users } from 'lucide-react';
 
 interface UserFormProps {
   open: boolean;
@@ -77,12 +78,15 @@ export function UserForm({
   const userFirstName = user?.firstName ?? '';
   const userLastName = user?.lastName ?? '';
   const userPhoneNumber = user?.phoneNumber ?? '';
+  const userManagerUserId = user?.managerUserId ?? null;
   const userRoleLabel = user?.role ?? '';
   const userRoleId = user?.roleId ?? 0;
   const userIsActive = user?.isActive ?? true;
   const isEditMode = userId != null;
   const roleOptionsQuery = useUserAuthorityOptionsQuery();
   const roleOptions = roleOptionsQuery.data ?? EMPTY_ROLE_OPTIONS;
+  const managerOptionsQuery = useUserManagerOptionsQuery();
+  const managerOptions = (managerOptionsQuery.data ?? []).filter((option) => option.value !== userId);
   const userPermissionGroupsQuery = useUserPermissionGroupsForForm(
     userId
   );
@@ -99,6 +103,7 @@ export function UserForm({
       lastName: '',
       phoneNumber: '',
       roleId: 0,
+      managerUserId: null,
       isActive: true,
       permissionGroupIds: [],
     },
@@ -118,6 +123,7 @@ export function UserForm({
         lastName: userLastName,
         phoneNumber: userPhoneNumber,
         roleId: userRoleId,
+        managerUserId: userManagerUserId,
         isActive: userIsActive,
         permissionGroupIds: [],
       });
@@ -132,6 +138,7 @@ export function UserForm({
       lastName: '',
       phoneNumber: '',
       roleId: 0,
+      managerUserId: null,
       isActive: true,
       permissionGroupIds: [],
     });
@@ -143,6 +150,7 @@ export function UserForm({
     userFirstName,
     userLastName,
     userPhoneNumber,
+    userManagerUserId,
     userIsActive,
     userRoleId,
     form,
@@ -195,6 +203,7 @@ export function UserForm({
         lastName: '',
         phoneNumber: '',
         roleId: 0,
+        managerUserId: null,
         isActive: true,
         permissionGroupIds: [],
       });
@@ -401,6 +410,38 @@ export function UserForm({
 
               <FormField
                 control={form.control}
+                name="managerUserId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Users size={16} className="text-pink-500" /> {t('userManagement.form.manager')}
+                    </FormLabel>
+                    <Select
+                      value={field.value ? String(field.value) : 'none'}
+                      onValueChange={(value) => field.onChange(value === 'none' ? null : parseInt(value, 10))}
+                      disabled={isLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger className={INPUT_STYLE}>
+                          <SelectValue placeholder={t('userManagement.form.managerPlaceholder')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white dark:bg-[#130822] border-slate-200 dark:border-white/10">
+                        <SelectItem value="none">{t('userManagement.form.noManager')}</SelectItem>
+                        {managerOptions.map((option) => (
+                          <SelectItem key={option.value} value={String(option.value)} className="focus:bg-pink-500 focus:text-white">
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="permissionGroupIds"
                 render={({ field }) => (
                   <FormItem>
@@ -466,4 +507,3 @@ export function UserForm({
     </Dialog>
   );
 }
-

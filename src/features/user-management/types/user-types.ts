@@ -9,6 +9,8 @@ export interface UserDto {
   phoneNumber: string | null;
   role: string;
   roleId?: number;
+  managerUserId?: number | null;
+  managerFullName?: string | null;
   isEmailConfirmed: boolean;
   isActive: boolean;
   lastLoginDate: string | null;
@@ -26,6 +28,7 @@ export interface CreateUserDto {
   lastName?: string;
   phoneNumber?: string;
   roleId: number;
+  managerUserId?: number | null;
   isActive?: boolean;
   permissionGroupIds?: number[];
 }
@@ -36,6 +39,7 @@ export interface UpdateUserDto {
   lastName?: string;
   phoneNumber?: string;
   roleId?: number;
+  managerUserId?: number | null;
   isActive?: boolean;
   permissionGroupIds?: number[];
 }
@@ -55,6 +59,7 @@ export interface UserFormData {
   lastName?: string;
   phoneNumber?: string;
   roleId: number;
+  managerUserId?: number | null;
   isActive?: boolean;
   permissionGroupIds?: number[];
 }
@@ -78,6 +83,7 @@ export const userFormSchema = z.object({
   lastName: z.string().max(50, 'userManagement.form.lastName.maxLength').optional(),
   phoneNumber: z.string().max(20, 'userManagement.form.phoneNumber.maxLength').optional(),
   roleId: z.number().min(1, 'userManagement.form.roleRequired'),
+  managerUserId: z.number().nullable().optional(),
   isActive: z.boolean().optional(),
   permissionGroupIds: z.array(z.number()).optional(),
 });
@@ -89,6 +95,7 @@ export const userUpdateFormSchema = z.object({
   lastName: z.string().max(50).optional(),
   phoneNumber: z.string().max(20).optional(),
   roleId: z.number().min(1, 'userManagement.form.roleRequired').optional().nullable(),
+  managerUserId: z.number().nullable().optional(),
   isActive: z.boolean().optional(),
   permissionGroupIds: z.array(z.number()).optional(),
 });
