@@ -16,7 +16,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getImageUrl } from '@/features/stock/utils/image-url';
 import { stockApi } from '@/features/stock/api/stock-api';
-import { RelatedStocksSelectionDialog } from './RelatedStocksSelectionDialog';
+import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 import { cn } from '@/lib/utils';
 import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/features/stock/types';
 import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
@@ -65,6 +65,7 @@ export interface ProductSelectionResult {
   vatRate?: number;
   groupCode?: string;
   relatedStockIds?: number[];
+  relatedStockQuantitiesById?: Record<number, number>;
 }
 
 export function stockMatchesDraftSnapshot(
@@ -899,19 +900,26 @@ export function ProductSelectDialog({
     }
   };
 
-  const handleRelatedStocksConfirm = async (selectedStockIds: number[]): Promise<void> => {
+  const handleRelatedStocksConfirm = async (selection: RelatedStockSelectionConfirmItem[]): Promise<void> => {
     if (!selectedStock) {
       return;
     }
 
     try {
+      const relatedStockIds = selection.map((item) => item.relatedStockId);
+      const relatedStockQuantitiesById: Record<number, number> = {};
+      for (const item of selection) {
+        relatedStockQuantitiesById[item.relatedStockId] = item.quantityPerMain;
+      }
+
       const result: ProductSelectionResult = {
         id: selectedStock.id,
         code: selectedStock.erpStockCode,
         name: selectedStock.stockName,
         unit: selectedStock.unit,
         groupCode: selectedStock.grupKodu,
-        relatedStockIds: selectedStockIds,
+        relatedStockIds,
+        relatedStockQuantitiesById,
       };
 
       if (multiSelect) {

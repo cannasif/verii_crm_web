@@ -2607,7 +2607,9 @@
     "searchPlaceholder": "Cerca per nome, codice o telefono...",
     "erpCustomers": "Clienti ERP",
     "potentialCustomers": "Potential",
-    "allCustomers": "Tutte"
+    "allCustomers": "Tutte",
+    "badgeKindErp": "ERP",
+    "badgeKindPotential": "Potenziale"
   },
   "menu": "Monitoraggio degli incendi",
   "roles": {
@@ -4539,6 +4541,9 @@
     "currentPathLabel": "Percorso corrente",
     "levelBadge": "Livello {{level}}",
     "browseChildrenButton": "Sotto-livelli",
+    "childBranchPreviewLabel": "Subito sotto",
+    "expandNestedPreview": "Mostra sotto-rami",
+    "collapseNestedPreview": "Nascondi sotto-rami",
     "listDescendantsButton": "Elenca",
     "directCategoryModeBadge": "Categoria diretta",
     "listDescendantsModeBadge": "Elenco sottoalbero",

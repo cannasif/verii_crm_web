@@ -292,22 +292,23 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
          <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] max-w-[600px] aspect-square rounded-full bg-orange-300/30 dark:bg-orange-600/5 blur-[60px] md:blur-[100px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
       </div>
 
-      <div className="relative z-20 h-full">
-        <Sidebar items={items} />
-      </div>
+      {/* Sidebar - Mobile handles itself with fixed position, Desktop uses sticky/relative */}
+      <Sidebar items={items} />
 
-      <div className="flex flex-1 flex-col h-full overflow-hidden relative z-10">
+      <div className="flex flex-1 flex-col h-full min-h-0 overflow-hidden relative z-10">
         <Navbar />
         <TooltipProvider delayDuration={200}>
-          <main className="flex-1 overflow-auto p-4 md:p-6 text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-            <div className="w-full min-h-full max-w-[1920px] mx-auto">
-              <Suspense fallback={<PageLoader />}>
-                <RouteNamespaceLoader>
-                  <RoutePermissionGuard />
-                </RouteNamespaceLoader>
-              </Suspense>
-            </div>
-          </main>
+          <div className="flex-1 min-h-0 relative">
+            <main className="absolute inset-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent touch-pan-y overscroll-contain [-webkit-overflow-scrolling:touch]">
+              <div className="w-full min-h-full max-w-[1920px] mx-auto pb-8">
+                <Suspense fallback={<PageLoader />}>
+                  <RouteNamespaceLoader>
+                    <RoutePermissionGuard />
+                  </RouteNamespaceLoader>
+                </Suspense>
+              </div>
+            </main>
+          </div>
         </TooltipProvider>
         <Footer />
       </div>

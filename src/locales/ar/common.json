@@ -2578,7 +2578,9 @@
     "searchPlaceholder": "البحث بالاسم أو الرمز أو الهاتف...",
     "erpCustomers": "عملاء ERP",
     "potentialCustomers": "Potential",
-    "allCustomers": "الكل"
+    "allCustomers": "الكل",
+    "badgeKindErp": "ERP",
+    "badgeKindPotential": "محتمل"
   },
   "menu": "مراقبة هانجفاير",
   "roles": {
@@ -4510,6 +4512,9 @@
     "currentPathLabel": "المسار الحالي",
     "levelBadge": "المستوى {{level}}",
     "browseChildrenButton": "المستوى الفرعي",
+    "childBranchPreviewLabel": "المستوى الأدنى مباشرة",
+    "expandNestedPreview": "إظهار الفروع الفرعية",
+    "collapseNestedPreview": "إخفاء الفروع الفرعية",
     "listDescendantsButton": "قائمة",
     "directCategoryModeBadge": "تصنيف مباشر",
     "listDescendantsModeBadge": "قائمة الشجرة الفرعية",

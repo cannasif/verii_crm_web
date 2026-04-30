@@ -266,20 +266,21 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
             {t('title')}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
+          <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
+            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
             {t('description')}
           </p>
         </div>
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
-          <Plus size={18} className="mr-2" />
+          <Plus size={20} className="mr-2 stroke-[3px]" />
           {t('create', { defaultValue: t('common.create') })}
         </Button>
       </div>
@@ -335,71 +336,71 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <ProductPricingGroupByTable
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={currentPageRows}
-            rowKey={(r) => r.id}
-            renderCell={(row, key) => {
-              const val = row[key];
-              if (val == null && val !== 0) return '-';
-              if (key === 'id') return `#${val}`;
-              if (key === 'createdDate' || key === 'updatedDate') return new Date(String(val)).toLocaleDateString(i18n.language);
-              if (key === 'listPrice' || key === 'costPrice') {
-                return formatPrice(Number(val), row.currency);
-              }
-              if (key === 'discount1' || key === 'discount2' || key === 'discount3') {
-                return val ? `%${val}` : '-';
-              }
-              return String(val);
-            }}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={(k) => {
-              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-              else {
-                setSortBy(k);
-                setSortDirection('asc');
-              }
-            }}
-            renderSortIcon={(k) => {
-              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading}
-            loadingText={t('loading')}
-            errorText={t('deleteError')}
-            emptyText={t('noData')}
-            minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
-            showActionsColumn
-            actionsHeaderLabel={t('common.actions')}
-            onEdit={handleEdit}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('previous')}
-            nextLabel={t('next')}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+            <ProductPricingGroupByTable
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={currentPageRows}
+              rowKey={(r) => r.id}
+              renderCell={(row, key) => {
+                const val = row[key];
+                if (val == null && val !== 0) return '-';
+                if (key === 'id') return `#${val}`;
+                if (key === 'createdDate' || key === 'updatedDate') return new Date(String(val)).toLocaleDateString(i18n.language);
+                if (key === 'listPrice' || key === 'costPrice') {
+                  return formatPrice(Number(val), row.currency);
+                }
+                if (key === 'discount1' || key === 'discount2' || key === 'discount3') {
+                  return val ? `%${val}` : '-';
+                }
+                return String(val);
+              }}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={(k) => {
+                if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+                else {
+                  setSortBy(k);
+                  setSortDirection('asc');
+                }
+              }}
+              renderSortIcon={(k) => {
+                if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+                );
+              }}
+              isLoading={isLoading}
+              loadingText={t('loading')}
+              errorText={t('deleteError')}
+              emptyText={t('noData')}
+              minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
+              showActionsColumn
+              actionsHeaderLabel={t('common.actions')}
+              onEdit={handleEdit}
+              rowClassName="group"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('previous')}
+              nextLabel={t('next')}
+              paginationInfoText={t('common.table.showing', {
+                from: startRow,
+                to: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
           </div>
         </CardContent>
       </Card>

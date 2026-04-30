@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Search, Package } from 'lucide-react';
+import { Search, Package, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useStockList } from '@/features/stock/hooks/useStockList';
 import type { StockGetDto } from '@/features/stock/types';
@@ -80,15 +80,27 @@ export function ProductPricingStockSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl sm:rounded-2xl">
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md flex-shrink-0">
+      <DialogContent
+        showCloseButton={false}
+        className="!max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden dark:bg-[#130822]/95 border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2rem] backdrop-blur-xl"
+      >
+        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md flex-shrink-0 flex-row items-center justify-between space-y-0">
           <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
             <div className="bg-gradient-to-br from-pink-500 to-orange-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
               <Package size={20} />
             </div>
             {t('productPricingManagement.selectStok')}
           </DialogTitle>
-          <div className="flex items-center gap-2 mt-4">
+          <button
+            onClick={() => onOpenChange(false)}
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+          >
+            <X className="relative z-10" size={20} />
+            <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
+        </DialogHeader>
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-white/5 bg-white/50 dark:bg-white/[0.02]">
+          <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <Search
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -102,7 +114,7 @@ export function ProductPricingStockSelectDialog({
               />
             </div>
           </div>
-        </DialogHeader>
+        </div>
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/30 dark:bg-black/20">
           {isLoading ? (
             <div className="flex items-center justify-center py-10 text-slate-500">

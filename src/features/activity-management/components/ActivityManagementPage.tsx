@@ -606,7 +606,7 @@ export function ActivityManagementPage(): ReactElement {
         {canCreate ? (
           <Button
             onClick={handleAddClick}
-            className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+            className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus size={18} className="mr-2" />
             {t('activityManagement.create')}
@@ -623,113 +623,113 @@ export function ActivityManagementPage(): ReactElement {
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
-          <DataTableGrid<ActivityDto, string>
-            actionBar={{
-              pageKey: PAGE_KEY,
-              userId: user?.id,
-              columns: baseColumns,
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
-              exportFileName: 'activities',
-              exportColumns,
-              exportRows,
-              getExportData,
-              filterColumns,
-              defaultFilterColumn: 'Subject',
-              draftFilterRows,
-              onDraftFilterRowsChange: setDraftFilterRows,
-              filterLogic: draftFilterLogic,
-              onFilterLogicChange: setDraftFilterLogic,
-              onApplyFilters: () => {
-                setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows as ActivityFilterRow[]));
-                setAppliedFilterLogic(draftFilterLogic);
-                setPageNumber(1);
-              },
-              onClearFilters: () => {
-                setDraftFilterRows([]);
-                setDraftFilterLogic('and');
-                setAppliedAdvancedFilters([]);
-                setAppliedFilterLogic('and');
-                setPageNumber(1);
-              },
-              translationNamespace: 'activity-management',
-              appliedFilterCount,
-              search: {
-                onSearchChange: setSearchTerm,
-                placeholder: t('search', { ns: 'common' }),
-                minLength: 1,
-                resetKey: searchResetKey,
-              },
-              refresh: {
-                onRefresh: () => {
-                  void handleGridRefresh();
-                },
-                isLoading: activitiesLoading,
-                cooldownSeconds: 60,
-                label: t('refresh', { ns: 'common' }),
-              },
-            } satisfies DataTableActionBarProps}
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={activities}
-            rowKey={(r) => r.id}
-            renderCell={renderCell}
-            sortBy={sortByDisplayKey}
-            sortDirection={sortDirection}
-            onSort={(k) => {
-              const apiKey = COLUMN_TO_API[k] ?? k;
-              if (sortBy === apiKey) handleSortChange(k, sortDirection === 'asc' ? 'desc' : 'asc');
-              else handleSortChange(k, 'asc');
-            }}
-            renderSortIcon={(k) => {
-              const apiKey = COLUMN_TO_API[k] ?? k;
-              if (sortBy !== apiKey) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={activitiesLoading || activitiesFetching}
-            loadingText={t('loading', { ns: 'common' })}
-            errorText={t('error', { ns: 'common', defaultValue: 'Hata oluştu' })}
-            emptyText={t('noData', { ns: 'common' })}
-            minTableWidthClassName="min-w-[1100px]"
-            showActionsColumn
-            actionsHeaderLabel={t('actions', { ns: 'common' })}
-            renderActionsCell={renderActionsCell}
-            rowClassName={(row) => {
-              const status = row.status;
-              const isCompleted = status === 1 || status === 'Completed';
-              const isCancelled = status === 2 || status === 'Cancelled' || status === 'Canceled';
-              return isCompleted || isCancelled
-                ? 'bg-slate-50/50 dark:bg-white/5 opacity-60 grayscale'
-                : 'group';
-            }}
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('previous', { ns: 'common' })}
-            nextLabel={t('next', { ns: 'common' })}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={activitiesLoading}
-            centerColumnHeaders
-          />
+              <DataTableGrid<ActivityDto, string>
+                actionBar={{
+                  pageKey: PAGE_KEY,
+                  userId: user?.id,
+                  columns: baseColumns,
+                  visibleColumns,
+                  columnOrder,
+                  onVisibleColumnsChange: setVisibleColumns,
+                  onColumnOrderChange: setColumnOrder,
+                  exportFileName: 'activities',
+                  exportColumns,
+                  exportRows,
+                  getExportData,
+                  filterColumns,
+                  defaultFilterColumn: 'Subject',
+                  draftFilterRows,
+                  onDraftFilterRowsChange: setDraftFilterRows,
+                  filterLogic: draftFilterLogic,
+                  onFilterLogicChange: setDraftFilterLogic,
+                  onApplyFilters: () => {
+                    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows as ActivityFilterRow[]));
+                    setAppliedFilterLogic(draftFilterLogic);
+                    setPageNumber(1);
+                  },
+                  onClearFilters: () => {
+                    setDraftFilterRows([]);
+                    setDraftFilterLogic('and');
+                    setAppliedAdvancedFilters([]);
+                    setAppliedFilterLogic('and');
+                    setPageNumber(1);
+                  },
+                  translationNamespace: 'activity-management',
+                  appliedFilterCount,
+                  search: {
+                    onSearchChange: setSearchTerm,
+                    placeholder: t('search', { ns: 'common' }),
+                    minLength: 1,
+                    resetKey: searchResetKey,
+                  },
+                  refresh: {
+                    onRefresh: () => {
+                      void handleGridRefresh();
+                    },
+                    isLoading: activitiesLoading,
+                    cooldownSeconds: 60,
+                    label: t('refresh', { ns: 'common' }),
+                  },
+                } satisfies DataTableActionBarProps}
+                columns={columns}
+                visibleColumnKeys={orderedVisibleColumns}
+                rows={activities}
+                rowKey={(r) => r.id}
+                renderCell={renderCell}
+                sortBy={sortByDisplayKey}
+                sortDirection={sortDirection}
+                onSort={(k) => {
+                  const apiKey = COLUMN_TO_API[k] ?? k;
+                  if (sortBy === apiKey) handleSortChange(k, sortDirection === 'asc' ? 'desc' : 'asc');
+                  else handleSortChange(k, 'asc');
+                }}
+                renderSortIcon={(k) => {
+                  const apiKey = COLUMN_TO_API[k] ?? k;
+                  if (sortBy !== apiKey) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                  return sortDirection === 'asc' ? (
+                    <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                  ) : (
+                    <ArrowDown className="h-3.5 w-3.5 text-foreground" />
+                  );
+                }}
+                isLoading={activitiesLoading || activitiesFetching}
+                loadingText={t('loading', { ns: 'common' })}
+                errorText={t('error', { ns: 'common', defaultValue: 'Hata oluştu' })}
+                emptyText={t('noData', { ns: 'common' })}
+                minTableWidthClassName="min-w-[1100px]"
+                showActionsColumn
+                actionsHeaderLabel={t('actions', { ns: 'common' })}
+                renderActionsCell={renderActionsCell}
+                rowClassName={(row) => {
+                  const status = row.status;
+                  const isCompleted = status === 1 || status === 'Completed';
+                  const isCancelled = status === 2 || status === 'Cancelled' || status === 'Canceled';
+                  return isCompleted || isCancelled
+                    ? 'bg-slate-50/50 dark:bg-white/5 opacity-60 grayscale'
+                    : 'group';
+                }}
+                pageSize={pageSize}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                onPageSizeChange={(s) => {
+                  setPageSize(s);
+                  setPageNumber(1);
+                }}
+                pageNumber={pageNumber}
+                totalPages={totalPages}
+                hasPreviousPage={pageNumber > 1}
+                hasNextPage={pageNumber < totalPages}
+                onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+                onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+                previousLabel={t('previous', { ns: 'common' })}
+                nextLabel={t('next', { ns: 'common' })}
+                paginationInfoText={t('common.table.showing', {
+                  from: startRow,
+                  to: endRow,
+                  total: totalCount,
+                })}
+                disablePaginationButtons={activitiesLoading}
+                centerColumnHeaders
+              />
             </div>
           </div>
         </CardContent>

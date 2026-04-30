@@ -66,28 +66,28 @@ function normalizeReportConfig(config: ReportConfig | null): ReportConfig | null
   const rawWidgets = Array.isArray(config.widgets) ? config.widgets : [];
   const widgets: ReportWidget[] = rawWidgets.length > 0
     ? rawWidgets.map((widget, index) => ({
-        ...widget,
-        id: widget.id?.trim() ? widget.id : config.activeWidgetId?.trim() || `fallback-widget-${index + 1}`,
-        title: widget.title?.trim() || config.chartType || `Widget ${index + 1}`,
-        filters: widget.filters ?? config.filters ?? [],
-        values: widget.values ?? config.values ?? [],
-        chartType: widget.chartType ?? config.chartType,
-      }))
+      ...widget,
+      id: widget.id?.trim() ? widget.id : config.activeWidgetId?.trim() || `fallback-widget-${index + 1}`,
+      title: widget.title?.trim() || config.chartType || `Widget ${index + 1}`,
+      filters: widget.filters ?? config.filters ?? [],
+      values: widget.values ?? config.values ?? [],
+      chartType: widget.chartType ?? config.chartType,
+    }))
     : [
-        {
-          id: config.activeWidgetId?.trim() || 'widget-1',
-          title: config.chartType || 'Widget 1',
-          chartType: config.chartType,
-          axis: config.axis,
-          values: config.values ?? [],
-          legend: config.legend,
-          sorting: config.sorting,
-          filters: config.filters ?? [],
-          appearance: undefined,
-          size: 'half',
-          height: 'md',
-        },
-      ];
+      {
+        id: config.activeWidgetId?.trim() || 'widget-1',
+        title: config.chartType || 'Widget 1',
+        chartType: config.chartType,
+        axis: config.axis,
+        values: config.values ?? [],
+        legend: config.legend,
+        sorting: config.sorting,
+        filters: config.filters ?? [],
+        appearance: undefined,
+        size: 'half',
+        height: 'md',
+      },
+    ];
 
   const activeWidgetId =
     config.activeWidgetId && widgets.some((widget) => widget.id === config.activeWidgetId)
@@ -208,24 +208,24 @@ function buildPreviewPayload(
 
   const configJson = selectedWidget
     ? JSON.stringify({
-        chartType: selectedWidget.chartType,
-        axis: selectedWidget.axis,
-        values: selectedWidget.values,
-        legend: selectedWidget.legend,
-        sorting: selectedWidget.sorting,
-        filters: [...(config.filters ?? []), ...(selectedWidget.filters ?? [])],
-        datasetParameters,
-        calculatedFields: config.calculatedFields as CalculatedField[] | undefined,
-        lifecycle: config.lifecycle,
-        widgets: config.widgets,
-        activeWidgetId: selectedWidget.id,
-        governance: config.governance,
-        history: config.history,
-      })
+      chartType: selectedWidget.chartType,
+      axis: selectedWidget.axis,
+      values: selectedWidget.values,
+      legend: selectedWidget.legend,
+      sorting: selectedWidget.sorting,
+      filters: [...(config.filters ?? []), ...(selectedWidget.filters ?? [])],
+      datasetParameters,
+      calculatedFields: config.calculatedFields as CalculatedField[] | undefined,
+      lifecycle: config.lifecycle,
+      widgets: config.widgets,
+      activeWidgetId: selectedWidget.id,
+      governance: config.governance,
+      history: config.history,
+    })
     : JSON.stringify({
-        ...config,
-        datasetParameters,
-      });
+      ...config,
+      datasetParameters,
+    });
 
   return {
     chartType: selectedChartType,
@@ -555,12 +555,12 @@ export function AssignedReportsDashboardSection(): ReactElement {
       items.map((item) =>
         getItemKey(item) === itemKey
           ? {
-              ...item,
-              x: position.x,
-              y: position.y,
-              w: ref.offsetWidth,
-              h: ref.offsetHeight,
-            }
+            ...item,
+            x: position.x,
+            y: position.y,
+            w: ref.offsetWidth,
+            h: ref.offsetHeight,
+          }
           : item,
       ),
     );
@@ -584,8 +584,12 @@ export function AssignedReportsDashboardSection(): ReactElement {
                 {t('common.reportBuilder.dashboardUnsavedChangesBadge')}
               </Badge>
             ) : null}
-            <Button variant="outline" onClick={() => setPickerOpen(true)} disabled={isLoading || choices.length === 0}>
-              <Plus className="mr-2 size-4" />
+            <Button
+              onClick={() => setPickerOpen(true)}
+              disabled={isLoading || choices.length === 0}
+              className="h-9 px-6 bg-linear-to-r from-pink-600 to-orange-600 rounded-2x1 text-white text-sm font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-60 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            >
+              <Plus className="mr-2 size-4 stroke-[3px]" />
               {t('common.reportBuilder.addReportsToDashboard')}
             </Button>
             <Button variant={isEditMode ? 'secondary' : 'outline'} onClick={() => setIsEditMode((current) => !current)} disabled={layout.items.length === 0}>
@@ -596,11 +600,17 @@ export function AssignedReportsDashboardSection(): ReactElement {
               {saveState === 'saved' ? <CheckCircle2 className="mr-2 size-4" /> : <Save className="mr-2 size-4" />}
               {saveState === 'saved' ? t('common.reportBuilder.dashboardLayoutSaved') : t('common.reportBuilder.saveDashboardLayout')}
             </Button>
-            <Button variant="ghost" onClick={handleReset} disabled={layout.items.length === 0}>
+            <Button variant="ghost" onClick={handleReset} disabled={layout.items.length === 0}
+              className="border-slate-400 dark:border-white/20 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold shadow-sm"
+            >
               <RefreshCw className="mr-2 size-4" />
               {t('common.reportBuilder.resetMyDashboard')}
             </Button>
-            <Button variant="ghost" onClick={() => navigate('/reports/my')}>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/reports/my')}
+              className="border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold shadow-sm"
+            >
               {t('common.reportBuilder.goToMyReports')}
             </Button>
           </div>
@@ -629,10 +639,6 @@ export function AssignedReportsDashboardSection(): ReactElement {
             <div className="rounded-2xl border border-dashed border-border/80 bg-muted/10 p-8 text-center">
               <p className="font-medium">{t('common.reportBuilder.dashboardHomeEmptyTitle')}</p>
               <p className="mt-2 text-sm text-muted-foreground">{t('common.reportBuilder.dashboardHomeEmptyDescription')}</p>
-              <Button className="mt-4" onClick={() => setPickerOpen(true)} disabled={choices.length === 0}>
-                <Plus className="mr-2 size-4" />
-                {t('common.reportBuilder.addReportsToDashboard')}
-              </Button>
             </div>
           ) : (
             <div

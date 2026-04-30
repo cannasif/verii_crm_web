@@ -2537,7 +2537,9 @@
     "searchPlaceholder": "Suche nach Name, Code oder Telefonnummer...",
     "erpCustomers": "ERP",
     "potentialCustomers": "Potenzial",
-    "allCustomers": "Alle"
+    "allCustomers": "Alle",
+    "badgeKindErp": "ERP",
+    "badgeKindPotential": "Potenzial"
   },
   "menu": "Hangfire-Überwachung",
   "roles": {
@@ -2847,7 +2849,10 @@
     "alreadyOnLineBadge": "In Zeile",
     "alreadyOnLineTooltip": "Dieses Produkt ist in diesem Dokument bereits in einer Zeile enthalten.",
     "confirmTotalCount": "Gesamt {{count}} Zeilen",
-    "draftRetainedInConfirm": "{{count}} Zeile(n) aus dem Entwurf bleiben beim Übernehmen erhalten; in der Liste werden sie nicht pink markiert—nur das „Entwurf“-Abzeichen."
+    "draftRetainedInConfirm": "{{count}} Zeile(n) aus dem Entwurf bleiben beim Übernehmen erhalten; in der Liste werden sie nicht pink markiert—nur das „Entwurf“-Abzeichen.",
+    "childBranchPreviewLabel": "Direkt darunter",
+    "expandNestedPreview": "Unterzweige anzeigen",
+    "collapseNestedPreview": "Unterzweige ausblenden"
   },
   "relatedStocksSelectionDialog": {
     "title": "Wählen Sie Verbundene Aktien aus",

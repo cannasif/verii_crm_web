@@ -986,19 +986,6 @@ export function QuotationLineForm({
       setRelatedLines(updatedRelatedLines);
     }
 
-    if (
-      field === 'unitPrice' &&
-      formData.isMainRelatedProduct === true &&
-      formData.relatedProductKey &&
-      relatedLines.length > 0
-    ) {
-      const nextUnitPrice = calculated.unitPrice;
-      setRelatedLines(
-        relatedLines.map((relatedLine) =>
-          calculateLineTotals({ ...relatedLine, unitPrice: nextUnitPrice })
-        )
-      );
-    }
   };
 
   const handleSave = (): void => {

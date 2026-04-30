@@ -10,6 +10,7 @@ import type { QuotationLineFormState, QuotationExchangeRateFormState } from '../
 import type { ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import type { KurDto } from '@/services/erp-types';
 import { createClientId } from '@/lib/create-client-id';
+import { getRelatedQuantityPerMainUnit } from '@/lib/related-stock-quantity';
 
 function findExchangeRateByDovizTipi(
   dovizTipi: number,
@@ -66,7 +67,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         discountAmount2: 0,
         discountRate3: 0,
         discountAmount3: 0,
-        vatRate: product.vatRate || 18,
+        vatRate: product.vatRate || 20,
         vatAmount: 0,
         lineTotal: 0,
         lineGrandTotal: 0,
@@ -118,14 +119,15 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
           const isMainProduct = i === 0;
           
           let productName = isMainProduct ? product.name : '';
-          const vatRate = product.vatRate || 18;
+          const vatRate = product.vatRate || 20;
           const relatedStockId: number | null = mainStockId;
 
+          let relatedStockIdFromArray: number | undefined;
           if (!isMainProduct) {
-            const relatedStockIdFromArray = relatedStockIds[i - 1];
+            relatedStockIdFromArray = relatedStockIds[i - 1];
             
             try {
-              const relatedStock = await stockApi.getById(relatedStockIdFromArray);
+              const relatedStock = relatedStockIdFromArray != null ? await stockApi.getById(relatedStockIdFromArray) : null;
               if (relatedStock) {
                 productName = relatedStock.stockName;
               }
@@ -133,6 +135,12 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
               void 0;
             }
           }
+
+          const lineQty = isMainProduct
+            ? 1
+            : relatedStockIdFromArray != null
+              ? getRelatedQuantityPerMainUnit(product, relatedStockIdFromArray)
+              : 1;
 
           const priceData = prices.find((p) => p.productCode === productCode);
           
@@ -144,7 +152,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
               productName,
               unit: isMainProduct ? (product.unit ?? null) : null,
               groupCode: request.groupCode || null,
-              quantity: 1,
+              quantity: lineQty,
               unitPrice: 0,
               discountRate1: 0,
               discountAmount1: 0,
@@ -208,7 +216,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
             productName,
             unit: isMainProduct ? (product.unit ?? null) : null,
             groupCode: priceData.groupCode || request.groupCode || null,
-            quantity: 1,
+            quantity: lineQty,
             unitPrice: convertedPrice,
             discountRate1: priceData.discount1 ?? 0,
             discountAmount1: 0,

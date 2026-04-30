@@ -64,12 +64,12 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
 
   const handleUpload = async (files: File[], descriptions: string[]): Promise<void> => {
     if (!activityId) return;
-    
+
     await uploadMutation.mutateAsync({
       files,
       resimAciklamalar: descriptions.length > 0 ? descriptions : undefined,
     });
-    
+
     setIsUploadDialogOpen(false);
   };
 
@@ -80,7 +80,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
 
   const handleEditSubmit = async (data: ActivityImageUpdateSchema): Promise<void> => {
     if (!editingImage || !activityId) return;
-    
+
     await updateMutation.mutateAsync({
       id: editingImage.id,
       data: {
@@ -89,7 +89,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
         resimUrl: editingImage.resimUrl,
       },
     });
-    
+
     setIsEditDialogOpen(false);
     setEditingImage(null);
   };
@@ -133,7 +133,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
           <Button
             onClick={handleUploadClick}
             disabled={isCreatingActivity}
-            className="mt-4 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white"
+            className="mt-4 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white opacity-60 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isCreatingActivity ? (
               <>
@@ -177,7 +177,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
         <Button
           onClick={handleUploadClick}
           disabled={uploadMutation.isPending}
-          className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white"
+          className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white "
         >
           <Upload className="h-4 w-4 mr-2" />
           {t('activity-image:uploadImages')}

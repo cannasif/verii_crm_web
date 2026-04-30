@@ -3169,7 +3169,9 @@
     "description": "Select the customer you want to transact with",
     "searchPlaceholder": "Search by name, code or phone...",
     "potentialCustomers": "Potential",
-    "allCustomers": "All"
+    "allCustomers": "All",
+    "badgeKindErp": "ERP",
+    "badgeKindPotential": "Potential"
   },
   "roles": {
     "admin": "Executive"
@@ -3465,6 +3467,9 @@
     "currentPathLabel": "Current path",
     "levelBadge": "Level {{level}}",
     "browseChildrenButton": "Browse Children",
+    "childBranchPreviewLabel": "Next level down",
+    "expandNestedPreview": "Show sub-branches",
+    "collapseNestedPreview": "Hide sub-branches",
     "listDescendantsButton": "List",
     "directCategoryModeBadge": "Direct category",
     "listDescendantsModeBadge": "Sub-tree listing",

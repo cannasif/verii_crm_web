@@ -253,20 +253,21 @@ export function PricingRuleManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
             {t('pricingRule.list.title')}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
+          <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
+            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
             {t('pricingRule.list.description')}
           </p>
         </div>
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
-          <Plus size={18} className="mr-2" />
+          <Plus size={20} className="mr-2 stroke-[3px]" />
           {t('pricingRule.list.add')}
         </Button>
       </div>
@@ -289,9 +290,9 @@ export function PricingRuleManagementPage(): ReactElement {
             filterColumns={filterColumns}
             defaultFilterColumn="ruleName"
             draftFilterRows={[]}
-            onDraftFilterRowsChange={() => {}}
-            onApplyFilters={() => {}}
-            onClearFilters={() => {}}
+            onDraftFilterRowsChange={() => { }}
+            onApplyFilters={() => { }}
+            onClearFilters={() => { }}
             translationNamespace="pricing-rule"
             appliedFilterCount={0}
             searchValue={searchTerm}
@@ -306,11 +307,10 @@ export function PricingRuleManagementPage(): ReactElement {
                       variant="ghost"
                       size="sm"
                       onClick={() => setActiveFilter(filter)}
-                      className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${
-                        activeFilter === filter
-                          ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
-                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                      }`}
+                      className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
+                        ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                        }`}
                     >
                       {filter === 'all'
                         ? t('common.all')
@@ -340,118 +340,117 @@ export function PricingRuleManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <PricingRuleTable
-            onEdit={handleEdit}
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={currentPageRows}
-            rowKey={(r) => r.id}
-            renderCell={(row, key) => {
-              if (key === 'isActive') {
-                const now = new Date();
-                const from = new Date(row.validFrom);
-                const to = new Date(row.validTo);
-                const isRuleValid = row.isActive && from <= now && to >= now;
-                return (
-                  <Badge
-                    variant="outline"
-                    className={`gap-1.5 pl-1.5 pr-2.5 py-0.5 border ${
-                      isRuleValid
+            <PricingRuleTable
+              onEdit={handleEdit}
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns}
+              rows={currentPageRows}
+              rowKey={(r) => r.id}
+              renderCell={(row, key) => {
+                if (key === 'isActive') {
+                  const now = new Date();
+                  const from = new Date(row.validFrom);
+                  const to = new Date(row.validTo);
+                  const isRuleValid = row.isActive && from <= now && to >= now;
+                  return (
+                    <Badge
+                      variant="outline"
+                      className={`gap-1.5 pl-1.5 pr-2.5 py-0.5 border ${isRuleValid
                         ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20'
                         : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20'
-                    }`}
-                  >
-                    {isRuleValid ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                    {isRuleValid ? t('pricingRule.status.active') : t('pricingRule.status.inactive')}
-                  </Badge>
-                );
-              }
-              const val = (row as unknown as Record<string, unknown>)[key as string];
-              if (!val && val !== 0) return '-';
-              if (key === 'ruleCode') {
-                return (
-                  <span className="font-mono text-xs bg-slate-100 dark:bg-white/10 px-2 py-1 rounded text-slate-700 dark:text-slate-300">
-                    {String(val)}
-                  </span>
-                );
-              }
-              if (key === 'ruleType') {
-                const config = getRuleTypeConfig(t, row.ruleType);
-                const Icon = config.icon;
-                return (
-                  <Badge variant="outline" className={`gap-1.5 pl-2 pr-2.5 py-0.5 ${config.className}`}>
-                    <Icon size={12} />
-                    {config.label}
-                  </Badge>
-                );
-              }
-              if (key === 'customerName') {
-                return (
-                  <div className="flex items-center gap-1.5">
-                    <Building2 size={14} className="text-slate-400 shrink-0" />
-                    <span className="truncate max-w-[150px]" title={String(val)}>
+                        }`}
+                    >
+                      {isRuleValid ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                      {isRuleValid ? t('pricingRule.status.active') : t('pricingRule.status.inactive')}
+                    </Badge>
+                  );
+                }
+                const val = (row as unknown as Record<string, unknown>)[key as string];
+                if (!val && val !== 0) return '-';
+                if (key === 'ruleCode') {
+                  return (
+                    <span className="font-mono text-xs bg-slate-100 dark:bg-white/10 px-2 py-1 rounded text-slate-700 dark:text-slate-300">
                       {String(val)}
                     </span>
-                  </div>
+                  );
+                }
+                if (key === 'ruleType') {
+                  const config = getRuleTypeConfig(t, row.ruleType);
+                  const Icon = config.icon;
+                  return (
+                    <Badge variant="outline" className={`gap-1.5 pl-2 pr-2.5 py-0.5 ${config.className}`}>
+                      <Icon size={12} />
+                      {config.label}
+                    </Badge>
+                  );
+                }
+                if (key === 'customerName') {
+                  return (
+                    <div className="flex items-center gap-1.5">
+                      <Building2 size={14} className="text-slate-400 shrink-0" />
+                      <span className="truncate max-w-[150px]" title={String(val)}>
+                        {String(val)}
+                      </span>
+                    </div>
+                  );
+                }
+                if (key === 'validFrom' || key === 'validTo') {
+                  return (
+                    <div className="flex items-center gap-2 text-xs">
+                      <Calendar size={14} className="text-slate-400" />
+                      {new Date(String(val)).toLocaleDateString(i18n.language)}
+                    </div>
+                  );
+                }
+                return String(val);
+              }}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={(k) => {
+                if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+                else {
+                  setSortBy(k);
+                  setSortDirection('asc');
+                }
+              }}
+              renderSortIcon={(k) => {
+                if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                return sortDirection === 'asc' ? (
+                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                ) : (
+                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
                 );
-              }
-              if (key === 'validFrom' || key === 'validTo') {
-                return (
-                  <div className="flex items-center gap-2 text-xs">
-                    <Calendar size={14} className="text-slate-400" />
-                    {new Date(String(val)).toLocaleDateString(i18n.language)}
-                  </div>
-                );
-              }
-              return String(val);
-            }}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={(k) => {
-              if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-              else {
-                setSortBy(k);
-                setSortDirection('asc');
-              }
-            }}
-            renderSortIcon={(k) => {
-              if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-              return sortDirection === 'asc' ? (
-                <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-              ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-              );
-            }}
-            isLoading={isLoading}
-            loadingText={t('pricingRule.loading')}
-            errorText={t('pricingRule.error', { defaultValue: 'Hata oluştu' })}
-            emptyText={t('pricingRule.noData')}
-            onRowDoubleClick={handleEdit}
-            minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
-            showActionsColumn
-            actionsHeaderLabel={t('pricingRule.actions')}
-            rowClassName="group"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(s) => {
-              setPageSize(s);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-            onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={t('common.table.showing', {
-              from: startRow,
-              to: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={false}
-          />
+              }}
+              isLoading={isLoading}
+              loadingText={t('pricingRule.loading')}
+              errorText={t('pricingRule.error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('pricingRule.noData')}
+              onRowDoubleClick={handleEdit}
+              minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
+              showActionsColumn
+              actionsHeaderLabel={t('pricingRule.actions')}
+              rowClassName="group"
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPageNumber(1);
+              }}
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              previousLabel={t('common.previous')}
+              nextLabel={t('common.next')}
+              paginationInfoText={t('common.table.showing', {
+                from: startRow,
+                to: endRow,
+                total: totalCount,
+              })}
+              disablePaginationButtons={false}
+            />
           </div>
         </CardContent>
       </Card>

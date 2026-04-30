@@ -921,19 +921,6 @@ export function OrderLineForm({
       setRelatedLines(updatedRelatedLines);
     }
 
-    if (
-      field === 'unitPrice' &&
-      formData.isMainRelatedProduct === true &&
-      formData.relatedProductKey &&
-      relatedLines.length > 0
-    ) {
-      const nextUnitPrice = calculated.unitPrice;
-      setRelatedLines(
-        relatedLines.map((relatedLine) =>
-          calculateLineTotals({ ...relatedLine, unitPrice: nextUnitPrice })
-        )
-      );
-    }
   };
 
   const handleImageSelect = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {

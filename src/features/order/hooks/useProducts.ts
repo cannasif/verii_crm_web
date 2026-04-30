@@ -19,7 +19,7 @@ export const useProducts = (search?: string): UseProductsReturn => {
           id: isNaN(id) ? index : id,
           code: product.stokKodu || '',
           name: product.stokAdi || product.grupKodu || '',
-          vatRate: 18,
+          vatRate: 20,
           groupCode: product.grupKodu || '',
         };
       }) || [],

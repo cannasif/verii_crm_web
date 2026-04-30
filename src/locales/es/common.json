@@ -2578,7 +2578,9 @@
     "searchPlaceholder": "Busca por nombre, código o teléfono...",
     "erpCustomers": "Clientes ERP",
     "potentialCustomers": "Potential",
-    "allCustomers": "Todas"
+    "allCustomers": "Todas",
+    "badgeKindErp": "ERP",
+    "badgeKindPotential": "Potencial"
   },
   "menu": "Monitoreo de Hangfire",
   "roles": {
@@ -4510,6 +4512,9 @@
     "currentPathLabel": "Ruta actual",
     "levelBadge": "Nivel {{level}}",
     "browseChildrenButton": "Subniveles",
+    "childBranchPreviewLabel": "Nivel inferior",
+    "expandNestedPreview": "Mostrar sub-ramas",
+    "collapseNestedPreview": "Ocultar sub-ramas",
     "listDescendantsButton": "Listar",
     "directCategoryModeBadge": "Categoría directa",
     "listDescendantsModeBadge": "Listado del subárbol",

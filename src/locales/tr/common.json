@@ -3173,7 +3173,9 @@
     "searchPlaceholder": "İsim, kod veya telefon ile ara...",
     "erpCustomers": "ERP",
     "potentialCustomers": "Potansiyel",
-    "allCustomers": "Tümü"
+    "allCustomers": "Tümü",
+    "badgeKindErp": "ERP",
+    "badgeKindPotential": "Potansiyel"
   },
   "menu": "Hangfire Izleme",
   "roles": {
@@ -3484,6 +3486,9 @@
     "currentPathLabel": "Geçerli yol",
     "levelBadge": "Seviye {{level}}",
     "browseChildrenButton": "Alt Kırılıma Git",
+    "childBranchPreviewLabel": "Hemen alt kırılım",
+    "expandNestedPreview": "Alt dalları göster",
+    "collapseNestedPreview": "Alt dalları gizle",
     "listDescendantsButton": "Listele",
     "directCategoryModeBadge": "Doğrudan kategori",
     "listDescendantsModeBadge": "Alt ağaç listesi",

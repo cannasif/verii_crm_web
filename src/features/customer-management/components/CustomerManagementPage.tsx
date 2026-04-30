@@ -338,20 +338,21 @@ export function CustomerManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
             {t('customerManagement.menu', { ns: CRM_NS })}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
+          <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
+            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
             {t('customerManagement.description', { ns: CRM_NS })}
           </p>
         </div>
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
-          <Plus size={18} className="mr-2" />
+          <Plus size={20} className="mr-2 stroke-[3px]" />
           {t('customerManagement.addButton', { ns: CRM_NS })}
         </Button>
       </div>

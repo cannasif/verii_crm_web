@@ -20,19 +20,19 @@ import { useUpdatePricingRuleHeader } from '../hooks/useUpdatePricingRuleHeader'
 import { PricingRuleHeaderForm } from './PricingRuleHeaderForm';
 import { PricingRuleLineTable } from './PricingRuleLineTable';
 import { PricingRuleSalesmanTable } from './PricingRuleSalesmanTable';
-import { 
-  PricingRuleType, 
-  type PricingRuleHeaderCreateDto, 
-  type PricingRuleLineFormState, 
+import {
+  PricingRuleType,
+  type PricingRuleHeaderCreateDto,
+  type PricingRuleLineFormState,
   type PricingRuleSalesmanFormState,
   pricingRuleHeaderSchema,
   type PricingRuleFormSchema
 } from '../types/pricing-rule-types';
 import type { PricingRuleHeaderGetDto } from '../types/pricing-rule-types';
-import { 
-  FileText, 
-  List, 
-  Users, 
+import {
+  FileText,
+  List,
+  Users,
   Loader2,
   Tag,
 } from 'lucide-react';
@@ -47,7 +47,7 @@ interface PricingRuleFormProps {
 export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormProps): ReactElement {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'header' | 'lines' | 'salesmen'>('header');
-  
+
   const { data: existingHeader, isLoading } = usePricingRuleHeader(header?.id || 0);
   const createMutation = useCreatePricingRuleHeader();
   const updateMutation = useUpdatePricingRuleHeader();
@@ -152,13 +152,13 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
       return;
     }
 
-    const linesWithInvalidMinQuantity = validLines.filter((line) => 
-      line.minQuantity < 0 || 
-      isNaN(line.minQuantity) || 
-      line.minQuantity === null || 
+    const linesWithInvalidMinQuantity = validLines.filter((line) =>
+      line.minQuantity < 0 ||
+      isNaN(line.minQuantity) ||
+      line.minQuantity === null ||
       line.minQuantity === undefined
     );
-    
+
     if (linesWithInvalidMinQuantity.length > 0) {
       toast.error(
         t('pricingRule.form.lines.minQuantityInvalid'),
@@ -170,12 +170,12 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
       return;
     }
 
-    const linesWithInvalidCurrency = validLines.filter((line) => 
-      !line.currencyCode || 
-      line.currencyCode === undefined || 
+    const linesWithInvalidCurrency = validLines.filter((line) =>
+      !line.currencyCode ||
+      line.currencyCode === undefined ||
       line.currencyCode === null
     );
-    
+
     if (linesWithInvalidCurrency.length > 0) {
       toast.error(
         t('pricingRule.form.lines.currencyCodeRequired'),
@@ -247,15 +247,15 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
   if (isLoading && header?.id) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-6xl max-h-[90vh] flex items-center justify-center bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10">
-           <div className="flex flex-col items-center gap-4">
-             <div className="relative">
-               <div className="h-12 w-12 animate-spin rounded-full border-b-4 border-pink-500" />
-               <div className="absolute inset-0 h-12 w-12 animate-ping rounded-full border-pink-500 opacity-20" />
-             </div>
-             <div className="text-sm font-medium text-slate-500 animate-pulse">
-               {t('pricingRule.loadingDescription')}
-             </div>
+        <DialogContent className="max-w-6xl max-h-[90vh] flex items-center justify-center bg-white/95 dark:bg-[#130822]/95 border border-slate-200/60 dark:border-white/10 rounded-[2.5rem] backdrop-blur-xl shadow-2xl">
+          <div className="flex flex-col items-center gap-4 p-20">
+            <div className="relative">
+              <div className="h-16 w-16 animate-spin rounded-full border-b-4 border-pink-500" />
+              <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-pink-500 opacity-20" />
+            </div>
+            <div className="text-sm font-bold text-slate-500 dark:text-slate-400 animate-pulse uppercase tracking-widest">
+              {t('pricingRule.loadingDescription')}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -264,30 +264,33 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent showCloseButton={false} className="max-w-4xl max-h-[85vh] flex flex-col p-0 bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl overflow-hidden transition-colors duration-300">
-        
-        <DialogHeader className="px-6 py-5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
+      <DialogContent showCloseButton={false} className="!max-w-[900px] w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] flex flex-col p-0 dark:bg-[#130822]/95 border border-slate-200/60 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl rounded-[2.5rem] backdrop-blur-xl max-h-[95vh] h-auto overflow-hidden">
+
+        <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md flex-shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                 <Tag size={24} className="text-pink-600 dark:text-pink-500" />
-               </div>
-             </div>
-             <div className="space-y-1">
-                <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {header?.id
-                    ? t('pricingRule.form.edit')
-                    : t('pricingRule.form.create')}
-                </DialogTitle>
-                <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
-                  {header?.id
-                    ? t('pricingRule.form.editDescription')
-                    : t('pricingRule.form.createDescription')}
-                </DialogDescription>
-             </div>
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-600 p-3 shadow-lg shadow-pink-500/20 text-white flex items-center justify-center">
+              <Tag size={24} />
+            </div>
+            <div className="space-y-0.5">
+              <DialogTitle className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                {header?.id
+                  ? t('pricingRule.form.edit')
+                  : t('pricingRule.form.create')}
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs font-medium">
+                {header?.id
+                  ? t('pricingRule.form.editDescription')
+                  : t('pricingRule.form.createDescription')}
+              </DialogDescription>
+            </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full">
-            <Cancel01Icon size={20} />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onOpenChange(false)}
+            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+          >
+            <Cancel01Icon size={20} className="relative z-10" />
           </Button>
         </DialogHeader>
 
@@ -295,41 +298,41 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
             <div className="flex-1 min-h-0 flex flex-col">
               <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'header' | 'lines' | 'salesmen')} className="w-full flex-1 flex flex-col min-h-0">
-                
-                <div className="px-6 pt-4 pb-2 bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-white/5">
-                    <TabsList className="bg-slate-200/50 dark:bg-white/10 p-1 rounded-lg h-auto grid grid-cols-3 w-full max-w-md">
-                      <TabsTrigger value="header" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm py-2 text-xs font-medium transition-all">
-                        <FileText size={14} className="mr-2" />
-                        {t('pricingRule.form.tabs.header')}
-                      </TabsTrigger>
-                      <TabsTrigger value="lines" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm py-2 text-xs font-medium transition-all">
-                        <List size={14} className="mr-2" />
-                        {t('pricingRule.form.tabs.lines')} 
-                        <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-[10px]">{watchedLines?.length || 0}</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="salesmen" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm py-2 text-xs font-medium transition-all">
-                        <Users size={14} className="mr-2" />
-                        {t('pricingRule.form.tabs.salesmen')}
-                        <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-[10px]">{watchedSalesmen?.length || 0}</span>
-                      </TabsTrigger>
-                    </TabsList>
+
+                <div className="px-8 pt-6 pb-2 bg-slate-50/30 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5">
+                  <TabsList className="bg-slate-200/50 dark:bg-white/10 p-1 rounded-2xl h-auto grid grid-cols-3 w-full max-w-2xl mx-auto">
+                    <TabsTrigger value="header" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
+                      <FileText size={16} className="mr-2" />
+                      {t('pricingRule.form.tabs.header')}
+                    </TabsTrigger>
+                    <TabsTrigger value="lines" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
+                      <List size={16} className="mr-2" />
+                      {t('pricingRule.form.tabs.lines')}
+                      <span className="ml-1.5 px-2 py-0.5 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 text-[10px] font-black">{watchedLines?.length || 0}</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="salesmen" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
+                      <Users size={16} className="mr-2" />
+                      {t('pricingRule.form.tabs.salesmen')}
+                      <span className="ml-1.5 px-2 py-0.5 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 text-[10px] font-black">{watchedSalesmen?.length || 0}</span>
+                    </TabsTrigger>
+                  </TabsList>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
                   <TabsContent value="header" className="mt-0 h-full focus-visible:outline-none focus-visible:ring-0">
-                    <div className="max-w-3xl mx-auto w-full">
+                    <div className="w-full">
                       <PricingRuleHeaderForm />
                     </div>
                   </TabsContent>
-                  
+
                   <TabsContent value="lines" className="mt-0 h-full focus-visible:outline-none focus-visible:ring-0">
-                    <div className="max-w-4xl mx-auto w-full">
+                    <div className="w-full">
                       <PricingRuleLineTable header={header} />
                     </div>
                   </TabsContent>
-                  
+
                   <TabsContent value="salesmen" className="mt-0 h-full focus-visible:outline-none focus-visible:ring-0">
-                    <div className="max-w-3xl mx-auto w-full">
+                    <div className="w-full">
                       <PricingRuleSalesmanTable header={header} />
                     </div>
                   </TabsContent>
@@ -337,22 +340,28 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
               </Tabs>
             </div>
 
-            <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 shrink-0 backdrop-blur-sm">
+            <DialogFooter className="px-8 py-6 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 shrink-0 backdrop-blur-sm gap-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="h-11 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
+                className="h-12 px-8 rounded-2xl border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 font-bold transition-all"
               >
                 {t('pricingRule.form.cancel')}
               </Button>
               <Button
                 type="submit"
-                className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 text-white shadow-lg shadow-pink-500/20 border-0"
+                className="h-12 px-10 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white font-black shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] border-0"
                 disabled={isSubmitting || !isFormValid}
               >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('pricingRule.form.save')}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('common.saving')}
+                  </>
+                ) : (
+                  t('pricingRule.form.save')
+                )}
               </Button>
             </DialogFooter>
           </form>

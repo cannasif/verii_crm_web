@@ -177,7 +177,7 @@ export function PermissionDefinitionMultiSelect({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full min-w-0">
       <Input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
@@ -185,7 +185,7 @@ export function PermissionDefinitionMultiSelect({
         disabled={disabled}
       />
 
-      <div className="max-h-[420px] overflow-y-auto rounded-2xl border border-slate-200 bg-white/80 p-2 dark:border-white/10 dark:bg-white/[0.03]">
+      <div className="max-h-[420px] overflow-y-auto w-full min-w-0 rounded-2xl border border-slate-200 bg-white/80 p-2 dark:border-white/10 dark:bg-white/[0.03]">
         {filteredItems.length === 0 ? (
           <p className="text-sm text-slate-500 py-2">{t('permissionGroups.noDefinitions')}</p>
         ) : (

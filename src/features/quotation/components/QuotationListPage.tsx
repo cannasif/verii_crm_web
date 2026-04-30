@@ -405,7 +405,7 @@ export function QuotationListPage(): ReactElement {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
-      <div className="relative z-10 space-y-8 max-w-[1600px] mx-auto">
+      <div className="relative z-10 space-y-8">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-2">
           <div className="space-y-1">
             <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
@@ -418,7 +418,7 @@ export function QuotationListPage(): ReactElement {
           </div>
           <Button
             onClick={() => navigate('/quotations/create')}
-            className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group"
+            className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group opacity-60 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
             {t('quotation.list.createNew')}
@@ -434,106 +434,106 @@ export function QuotationListPage(): ReactElement {
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
               <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-              <ManagementDataTableChrome>
-              <DataTableGrid<QuotationGetDto, QuotationColumnKey>
-                actionBar={{
-                  pageKey: PAGE_KEY,
-                  userId: user?.id,
-                  columns: baseColumns,
-                  visibleColumns,
-                  columnOrder,
-                  onVisibleColumnsChange: setVisibleColumns,
-                  onColumnOrderChange: setColumnOrder,
-                  exportFileName: 'quotation-list',
-                  exportColumns,
-                  exportRows,
-                  getExportData,
-                  filterColumns,
-                  defaultFilterColumn: 'OfferNo',
-                  draftFilterRows,
-                  onDraftFilterRowsChange: setDraftFilterRows,
-                  onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
-                  onClearFilters: () => {
-                    setDraftFilterRows([]);
-                    setAppliedFilterRows([]);
-                  },
-                  translationNamespace: 'quotation',
-                  appliedFilterCount: appliedFilters.length,
-                  search: {
-                    onSearchChange: setSearchTerm,
-                    placeholder: t('common.search'),
-                    minLength: 1,
-                    resetKey: searchResetKey,
-                  },
-                  refresh: {
-                    onRefresh: () => {
-                      void handleGridRefresh();
-                    },
-                    isLoading: quotationQuery.isFetching,
-                    cooldownSeconds: 60,
-                    label: t('quotation.list.refresh', { defaultValue: 'Yenile' }),
-                  },
-                  leftSlot: (
-                    <>
-                      <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-                        <SelectTrigger className="w-[180px] h-9">
-                          <SelectValue placeholder={t('approval.statusFilterLabel', { defaultValue: 'Onay durumu' })} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{t('common.all', { ns: 'common', defaultValue: 'Tumu' })}</SelectItem>
-                          <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
-                          <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-                          <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-                          <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-                          <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </>
-                  ),
-                } satisfies DataTableActionBarProps}
-                columns={columns}
-                visibleColumnKeys={orderedVisibleColumns}
-                rows={currentPageRows}
-                rowKey={(row: QuotationGetDto) => String(row.id)}
-                renderCell={renderCell}
-                sortBy={sortBy}
-                sortDirection={sortDirection}
-                onSort={onSort}
-                renderSortIcon={renderSortIcon}
-                isLoading={quotationQuery.isLoading || quotationQuery.isFetching}
-                isError={quotationQuery.isError}
-                loadingText={t('quotation.loading')}
-                errorText={t('quotation.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                emptyText={t('quotation.noData')}
-                minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
-                showActionsColumn
-                actionsHeaderLabel={t('quotation.list.actions')}
-                renderActionsCell={renderActionsCell}
-                iconOnlyActions={false}
-                rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
-                onRowClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
-                onRowDoubleClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
-                pageSize={pageSize}
-                pageSizeOptions={PAGE_SIZE_OPTIONS}
-                onPageSizeChange={setPageSize}
-                pageNumber={pageNumber}
-                totalPages={totalPages}
-                hasPreviousPage={hasPreviousPage}
-                hasNextPage={hasNextPage}
-                onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                onNextPage={() => setPageNumber((prev) => prev + 1)}
-                previousLabel={t('quotation.previous')}
-                nextLabel={t('quotation.next')}
-                paginationInfoText={t('common.paginationInfo', {
-                  start: startRow,
-                  end: endRow,
-                  total: totalCount,
-                  ns: 'common',
-                })}
-                disablePaginationButtons={quotationQuery.isFetching}
-                centerColumnHeaders
-              />
-              </ManagementDataTableChrome>
+                <ManagementDataTableChrome>
+                  <DataTableGrid<QuotationGetDto, QuotationColumnKey>
+                    actionBar={{
+                      pageKey: PAGE_KEY,
+                      userId: user?.id,
+                      columns: baseColumns,
+                      visibleColumns,
+                      columnOrder,
+                      onVisibleColumnsChange: setVisibleColumns,
+                      onColumnOrderChange: setColumnOrder,
+                      exportFileName: 'quotation-list',
+                      exportColumns,
+                      exportRows,
+                      getExportData,
+                      filterColumns,
+                      defaultFilterColumn: 'OfferNo',
+                      draftFilterRows,
+                      onDraftFilterRowsChange: setDraftFilterRows,
+                      onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
+                      onClearFilters: () => {
+                        setDraftFilterRows([]);
+                        setAppliedFilterRows([]);
+                      },
+                      translationNamespace: 'quotation',
+                      appliedFilterCount: appliedFilters.length,
+                      search: {
+                        onSearchChange: setSearchTerm,
+                        placeholder: t('common.search'),
+                        minLength: 1,
+                        resetKey: searchResetKey,
+                      },
+                      refresh: {
+                        onRefresh: () => {
+                          void handleGridRefresh();
+                        },
+                        isLoading: quotationQuery.isFetching,
+                        cooldownSeconds: 60,
+                        label: t('quotation.list.refresh', { defaultValue: 'Yenile' }),
+                      },
+                      leftSlot: (
+                        <>
+                          <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
+                            <SelectTrigger className="w-[180px] h-9">
+                              <SelectValue placeholder={t('approval.statusFilterLabel', { defaultValue: 'Onay durumu' })} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">{t('common.all', { ns: 'common', defaultValue: 'Tumu' })}</SelectItem>
+                              <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                              <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+                              <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+                              <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+                              <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </>
+                      ),
+                    } satisfies DataTableActionBarProps}
+                    columns={columns}
+                    visibleColumnKeys={orderedVisibleColumns}
+                    rows={currentPageRows}
+                    rowKey={(row: QuotationGetDto) => String(row.id)}
+                    renderCell={renderCell}
+                    sortBy={sortBy}
+                    sortDirection={sortDirection}
+                    onSort={onSort}
+                    renderSortIcon={renderSortIcon}
+                    isLoading={quotationQuery.isLoading || quotationQuery.isFetching}
+                    isError={quotationQuery.isError}
+                    loadingText={t('quotation.loading')}
+                    errorText={t('quotation.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                    emptyText={t('quotation.noData')}
+                    minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
+                    showActionsColumn
+                    actionsHeaderLabel={t('quotation.list.actions')}
+                    renderActionsCell={renderActionsCell}
+                    iconOnlyActions={false}
+                    rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onRowClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
+                    onRowDoubleClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
+                    pageSize={pageSize}
+                    pageSizeOptions={PAGE_SIZE_OPTIONS}
+                    onPageSizeChange={setPageSize}
+                    pageNumber={pageNumber}
+                    totalPages={totalPages}
+                    hasPreviousPage={hasPreviousPage}
+                    hasNextPage={hasNextPage}
+                    onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                    onNextPage={() => setPageNumber((prev) => prev + 1)}
+                    previousLabel={t('quotation.previous')}
+                    nextLabel={t('quotation.next')}
+                    paginationInfoText={t('common.paginationInfo', {
+                      start: startRow,
+                      end: endRow,
+                      total: totalCount,
+                      ns: 'common',
+                    })}
+                    disablePaginationButtons={quotationQuery.isFetching}
+                    centerColumnHeaders
+                  />
+                </ManagementDataTableChrome>
               </div>
             </CardContent>
           </Card>

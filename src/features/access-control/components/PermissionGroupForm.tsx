@@ -191,18 +191,18 @@ export function PermissionGroupForm({
                     </FormItem>
                   )}
                 />
-                  /*Tablo bölümü*/
+
                 <FormField
                   control={form.control}
                   name="permissionDefinitionIds"
                   render={({ field }) => (
-                    <FormItem >
+                    <FormItem className="w-full overflow-hidden">
                       <FormLabel className={cn(LABEL_STYLE, "mb-3")}>
                         <Lock size={16} className="text-pink-500" />
                         {t('permissionGroups.form.permissions')}
                         <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
                       </FormLabel>
-                      <FormControl>
+                      <FormControl className="w-full overflow-hidden">
                         <PermissionDefinitionMultiSelect value={field.value} onChange={field.onChange} disabled={isLoading} />
                       </FormControl>
                       <FormMessage />

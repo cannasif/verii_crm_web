@@ -150,7 +150,7 @@ export function CreateCategoryDialog({
         <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
           <X size={20} strokeWidth={2.5} />
         </DialogPrimitive.Close>
-        <DialogHeader className="p-6 pb-4 border-b border-slate-100 dark:border-white/5 text-left shrink-0">
+        <DialogHeader className="p-8 pb-4 border-b border-slate-100 dark:border-white/5 text-left shrink-0">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
               <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -169,8 +169,8 @@ export function CreateCategoryDialog({
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto space-y-5 px-6 py-6">
-          <div className="space-y-5">
+        <div className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar">
+          <div className="space-y-6">
             <div className="rounded-2xl border border-dashed border-pink-200 dark:border-pink-500/30 bg-pink-50/50 dark:bg-pink-500/5 px-4 py-3 text-sm font-medium text-pink-600 dark:text-pink-400">
               {t('categoryDefinitions.createCategoryTarget')}: <span className="font-bold text-pink-700 dark:text-pink-300 ml-1">{targetLabel}</span>
             </div>
@@ -339,7 +339,7 @@ export function CreateCategoryDialog({
           </div>
         </div>
 
-        <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-6 py-4 flex-col sm:flex-row gap-3 shrink-0">
+        <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-8 py-4 flex-col sm:flex-row gap-3 shrink-0">
           <div className="flex-1 flex items-center text-xs font-semibold text-slate-400">
             <span className="text-pink-500 mr-1">*</span> {t('common.required')}
           </div>
