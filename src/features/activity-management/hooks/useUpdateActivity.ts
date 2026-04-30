@@ -20,10 +20,10 @@ export const useUpdateActivity = () => {
         exact: false,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.detail(updatedActivity.id) });
-      toast.success(t('activityManagement.updateSuccess'));
+      toast.success(t('updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('activityManagement.updateError'));
+      toast.error(error.message || t('updateError'));
     },
   });
 };

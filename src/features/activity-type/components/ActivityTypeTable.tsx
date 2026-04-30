@@ -282,7 +282,7 @@ export function ActivityTypeTable({
               disabled={deleteActivityType.isPending}
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
-              {deleteActivityType.isPending ? <span className="animate-pulse">{t('activityType.loading')}</span> : null}
+              {deleteActivityType.isPending ? <span className="animate-pulse">{t('loading')}</span> : null}
               {t('deleteButton')}
             </Button>
           </DialogFooter>

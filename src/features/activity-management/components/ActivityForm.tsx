@@ -200,8 +200,8 @@ export function ActivityForm({
   const [selectedCustomerDisplayName, setSelectedCustomerDisplayName] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('details');
   const reminderChannelOptions = [
-    { value: String(ReminderChannel.InApp), label: t('activityManagement.reminderChannelInApp') },
-    { value: String(ReminderChannel.Email), label: t('activityManagement.reminderChannelEmail') },
+    { value: String(ReminderChannel.InApp), label: t('reminderChannelInApp') },
+    { value: String(ReminderChannel.Email), label: t('reminderChannelEmail') },
   ] as const;
 
   const defaultStartDateTime = useMemo(
@@ -389,8 +389,8 @@ export function ActivityForm({
   };
 
   const handleInvalidSubmit = (): void => {
-    toast.error(t('activityManagement.error'), {
-      description: t('activityManagement.validationError'),
+    toast.error(t('error'), {
+      description: t('validationError'),
     });
   };
 
@@ -410,10 +410,10 @@ export function ActivityForm({
             </div>
             <div className="min-w-0">
               <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white truncate">
-                {activity ? t('activityManagement.edit') : t('activityManagement.create')}
+                {activity ? t('edit') : t('create')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm truncate">
-                {activity ? t('activityManagement.editDescription') : t('activityManagement.createDescription')}
+                {activity ? t('editDescription') : t('createDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -433,29 +433,29 @@ export function ActivityForm({
             <TabsList className="bg-muted/50 h-auto p-1 rounded-xl gap-1 mb-4">
               <TabsTrigger value="details" className="rounded-lg px-4 py-2">
                 <FileText className="h-4 w-4 mr-2" />
-                {t('activityManagement.detailsTab')}
+                {t('detailsTab')}
               </TabsTrigger>
               <TabsTrigger value="images" className="rounded-lg px-4 py-2">
                 <Image className="h-4 w-4 mr-2" />
-                {t('activityManagement.imagesTab')}
+                {t('imagesTab')}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="mt-0">
               <Form {...form}>
                 <form id="activity-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-8">
-                  <FormSection title={t('activityManagement.basicInfo')}>
+                  <FormSection title={t('basicInfo')}>
                     <FormField control={form.control} name="subject" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'subject')}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.subject')}</FormLabel>
-                        <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('activityManagement.enterSubject')} /></FormControl>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'subject')}><FileText size={16} className="text-pink-500 shrink-0" /> {t('subject')}</FormLabel>
+                        <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('enterSubject')} /></FormControl>
                         <FormMessage className="text-xs text-red-500" />
                       </FormItem>
                     )} />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={form.control} name="activityType" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'activityType')}><List size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityType')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'activityType')}><List size={16} className="text-pink-500 shrink-0" /> {t('activityType')}</FormLabel>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={activityTypeDropdown.options}
@@ -469,7 +469,7 @@ export function ActivityForm({
                               hasNextPage={activityTypeDropdown.hasNextPage}
                               isLoading={activityTypeDropdown.isLoading}
                               isFetchingNextPage={activityTypeDropdown.isFetchingNextPage}
-                              placeholder={t('activityManagement.select')}
+                              placeholder={t('select')}
                               className={INPUT_STYLE}
                             />
                           </FormControl>
@@ -478,13 +478,13 @@ export function ActivityForm({
                       )} />
                       <FormField control={form.control} name="status" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'status')}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.status')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'status')}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('status')}</FormLabel>
                           <FormControl>
                             <Combobox
                               options={ACTIVITY_STATUSES.map((statusOption) => ({ value: String(statusOption.value), label: t(statusOption.labelKey, statusOption.label) }))}
                               value={String(field.value)}
                               onValueChange={(value) => field.onChange(Number(value))}
-                              placeholder={t('activityManagement.select')}
+                              placeholder={t('select')}
                               className={INPUT_STYLE}
                             />
                           </FormControl>
@@ -495,11 +495,11 @@ export function ActivityForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={form.control} name="isAllDay" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.allDay')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('allDay')}</FormLabel>
                           <FormControl>
                             <div className="h-11 px-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center gap-3">
                               <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
-                              <span className="text-sm text-slate-700 dark:text-slate-300">{t('activityManagement.allDay')}</span>
+                              <span className="text-sm text-slate-700 dark:text-slate-300">{t('allDay')}</span>
                             </div>
                           </FormControl>
                           <FormMessage className="text-xs text-red-500" />
@@ -507,13 +507,13 @@ export function ActivityForm({
                       )} />
                       <FormField control={form.control} name="priority" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.priority')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('priority')}</FormLabel>
                           <FormControl>
                             <Combobox
                               options={ACTIVITY_PRIORITIES.map((priorityOption) => ({ value: String(priorityOption.value), label: t(priorityOption.labelKey, priorityOption.label) }))}
                               value={String(field.value ?? ActivityPriority.Medium)}
                               onValueChange={(value) => field.onChange(Number(value))}
-                              placeholder={t('activityManagement.select')}
+                              placeholder={t('select')}
                               className={INPUT_STYLE}
                             />
                           </FormControl>
@@ -525,7 +525,7 @@ export function ActivityForm({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField control={form.control} name="startDateTime" render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityDate')}</FormLabel>
                             <FormControl>
                               <Input
                                 type="date"
@@ -547,7 +547,7 @@ export function ActivityForm({
                         )} />
                         <FormField control={form.control} name="endDateTime" render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('endDate')}</FormLabel>
                             <FormControl>
                               <Input
                                 type="date"
@@ -567,14 +567,14 @@ export function ActivityForm({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField control={form.control} name="startDateTime" render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.activityDate')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityDate')}</FormLabel>
                             <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
                             <FormMessage className="text-xs text-red-500" />
                           </FormItem>
                         )} />
                         <FormField control={form.control} name="endDateTime" render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.endDate')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('endDate')}</FormLabel>
                             <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || '')} /></FormControl>
                             <FormMessage className="text-xs text-red-500" />
                           </FormItem>
@@ -583,7 +583,7 @@ export function ActivityForm({
                     )}
                   </FormSection>
 
-                  <FormSection title={t('activityManagement.relations')}>
+                  <FormSection title={t('relations')}>
                     <FormField
                       control={form.control}
                       name="potentialCustomerId"
@@ -602,18 +602,18 @@ export function ActivityForm({
 
                         return (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.customer')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('customer')}</FormLabel>
                             <div className="flex w-full items-center gap-2">
                               <FormControl>
                                 <Input
                                   readOnly
                                   value={displayValue}
-                                  placeholder={t('activityManagement.selectCustomer')}
+                                  placeholder={t('selectCustomer')}
                                   className={`${INPUT_STYLE} flex-1 cursor-pointer`}
                                   onClick={() => setCustomerSelectDialogOpen(true)}
                                 />
                               </FormControl>
-                              <Button type="button" variant="outline" onClick={() => setCustomerSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10" aria-label={t('activityManagement.selectCustomer')}>
+                              <Button type="button" variant="outline" onClick={() => setCustomerSelectDialogOpen(true)} className="h-11 w-11 shrink-0 rounded-lg border-slate-200 dark:border-white/10" aria-label={t('selectCustomer')}>
                                 <Search size={18} />
                               </Button>
                               {(field.value != null || watchedErpCode) && (
@@ -630,13 +630,13 @@ export function ActivityForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={form.control} name="contactId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.contactId')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('contactId')}</FormLabel>
                           <FormControl>
                             <Combobox
-                              options={[{ value: 'none', label: t('activityManagement.noContactSelected') }, ...contactOptions.map((contact) => ({ value: contact.id.toString(), label: contact.fullName }))]}
+                              options={[{ value: 'none', label: t('noContactSelected') }, ...contactOptions.map((contact) => ({ value: contact.id.toString(), label: contact.fullName }))]}
                               value={field.value && field.value !== 0 ? field.value.toString() : 'none'}
                               onValueChange={(value) => field.onChange(value && value !== 'none' ? Number(value) : undefined)}
-                              placeholder={watchedCustomerId ? t('activityManagement.select') : t('activityManagement.selectCustomerFirst')}
+                              placeholder={watchedCustomerId ? t('select') : t('selectCustomerFirst')}
                               disabled={!watchedCustomerId}
                               className={INPUT_STYLE}
                             />
@@ -646,7 +646,7 @@ export function ActivityForm({
                       )} />
                       <FormField control={form.control} name="assignedUserId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'assignedUserId')}><User size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.assignedUser')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'assignedUserId')}><User size={16} className="text-pink-500 shrink-0" /> {t('assignedUser')}</FormLabel>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={assignedUserDropdown.options}
@@ -657,7 +657,7 @@ export function ActivityForm({
                               hasNextPage={assignedUserDropdown.hasNextPage}
                               isLoading={assignedUserDropdown.isLoading}
                               isFetchingNextPage={assignedUserDropdown.isFetchingNextPage}
-                              placeholder={t('activityManagement.select')}
+                              placeholder={t('select')}
                               className={INPUT_STYLE}
                             />
                           </FormControl>
@@ -668,7 +668,7 @@ export function ActivityForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={form.control} name="paymentTypeId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}>{t('activityManagement.paymentType')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}>{t('paymentType')}</FormLabel>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={paymentTypeDropdown.options}
@@ -679,7 +679,7 @@ export function ActivityForm({
                               hasNextPage={paymentTypeDropdown.hasNextPage}
                               isLoading={paymentTypeDropdown.isLoading}
                               isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
-                              placeholder={t('activityManagement.select')}
+                              placeholder={t('select')}
                               className={INPUT_STYLE}
                             />
                           </FormControl>
@@ -688,7 +688,7 @@ export function ActivityForm({
                       )} />
                       <FormField control={form.control} name="activityMeetingTypeId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityMeetingType')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}>{t('activityMeetingType')}</FormLabel>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={meetingTypeDropdown.options}
@@ -699,7 +699,7 @@ export function ActivityForm({
                               hasNextPage={meetingTypeDropdown.hasNextPage}
                               isLoading={meetingTypeDropdown.isLoading}
                               isFetchingNextPage={meetingTypeDropdown.isFetchingNextPage}
-                              placeholder={t('activityManagement.select')}
+                              placeholder={t('select')}
                               className={INPUT_STYLE}
                             />
                           </FormControl>
@@ -710,7 +710,7 @@ export function ActivityForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={form.control} name="activityTopicPurposeId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityTopicPurpose')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}>{t('activityTopicPurpose')}</FormLabel>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={topicPurposeDropdown.options}
@@ -721,7 +721,7 @@ export function ActivityForm({
                               hasNextPage={topicPurposeDropdown.hasNextPage}
                               isLoading={topicPurposeDropdown.isLoading}
                               isFetchingNextPage={topicPurposeDropdown.isFetchingNextPage}
-                              placeholder={t('activityManagement.select')}
+                              placeholder={t('select')}
                               className={INPUT_STYLE}
                             />
                           </FormControl>
@@ -730,7 +730,7 @@ export function ActivityForm({
                       )} />
                       <FormField control={form.control} name="activityShippingId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}>{t('activityManagement.activityShipping')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}>{t('activityShipping')}</FormLabel>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={shippingDropdown.options}
@@ -741,7 +741,7 @@ export function ActivityForm({
                               hasNextPage={shippingDropdown.hasNextPage}
                               isLoading={shippingDropdown.isLoading}
                               isFetchingNextPage={shippingDropdown.isFetchingNextPage}
-                              placeholder={t('activityManagement.select')}
+                              placeholder={t('select')}
                               className={INPUT_STYLE}
                             />
                           </FormControl>
@@ -751,18 +751,18 @@ export function ActivityForm({
                     </div>
                   </FormSection>
 
-                  <FormSection title={t('activityManagement.details')}>
+                  <FormSection title={t('details')}>
                     <FormField control={form.control} name="description" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.descriptionLabel')}</FormLabel>
-                        <FormControl><Textarea {...field} maxLength={2000} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('activityManagement.enterDescription')} /></FormControl>
+                        <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('descriptionLabel')}</FormLabel>
+                        <FormControl><Textarea {...field} maxLength={2000} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('enterDescription')} /></FormControl>
                         <FormMessage className="text-xs text-red-500" />
                       </FormItem>
                     )} />
 
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('activityManagement.reminders')}</FormLabel>
+                        <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('reminders')}</FormLabel>
                         <Button type="button" variant="outline" size="sm" onClick={() => appendReminder({ offsetMinutes: 15, channel: ReminderChannel.InApp })}>
                           <Plus size={14} className="mr-1" /> {t('add', { ns: 'common' })}
                         </Button>
@@ -772,15 +772,15 @@ export function ActivityForm({
                         {REMINDER_MINUTE_PRESETS.map((offset) => (
                           <Button key={offset} type="button" variant="ghost" size="sm" className="border border-slate-200 dark:border-white/10" onClick={() => addPresetReminder(offset)}>
                             {offset >= 1440
-                              ? t('activityManagement.reminderPresetDays', { count: Math.floor(offset / 1440) })
-                              : t('activityManagement.reminderPresetMinutes', { count: offset })}
+                              ? t('reminderPresetDays', { count: Math.floor(offset / 1440) })
+                              : t('reminderPresetMinutes', { count: offset })}
                           </Button>
                         ))}
                       </div>
 
                       {reminderFields.length === 0 && (
                         <div className="text-xs text-slate-500 dark:text-slate-400 rounded-lg border border-dashed border-slate-200 dark:border-white/10 p-3">
-                          {t('activityManagement.noReminder')}
+                          {t('noReminder')}
                         </div>
                       )}
 
@@ -821,7 +821,7 @@ export function ActivityForm({
                                         }))}
                                         value={String(reminderChannelField.value ?? ReminderChannel.InApp)}
                                         onValueChange={(value) => reminderChannelField.onChange(Number(value))}
-                                        placeholder={t('activityManagement.select')}
+                                        placeholder={t('select')}
                                         className={INPUT_STYLE}
                                       />
                                     </FormControl>
@@ -858,7 +858,7 @@ export function ActivityForm({
                 onCreateActivity={async () => {
                   const isValid = await form.trigger();
                   if (!isValid) {
-                    throw new Error(t('activityManagement.validationError'));
+                    throw new Error(t('validationError'));
                   }
                   const formData = form.getValues();
                   await handleSubmit(formData);

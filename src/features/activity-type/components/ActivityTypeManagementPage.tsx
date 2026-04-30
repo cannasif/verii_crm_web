@@ -270,13 +270,13 @@ export function ActivityTypeManagementPage(): ReactElement {
           className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
-          {t('activityType.create')}
+          {t('create')}
         </Button>
       </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
-          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('activityType.table.title', { defaultValue: t('table.title') })}</CardTitle>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title', { defaultValue: t('table.title') })}</CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
             userId={user?.id}
@@ -348,12 +348,12 @@ export function ActivityTypeManagementPage(): ReactElement {
                 );
               }}
               isLoading={isLoading}
-              loadingText={t('activityType.loading')}
-              errorText={t('activityType.error', { defaultValue: 'Hata oluştu' })}
-              emptyText={t('activityType.noData')}
+              loadingText={t('loading')}
+              errorText={t('error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('noData')}
               minTableWidthClassName="min-w-[600px] lg:min-w-[800px]"
               showActionsColumn
-              actionsHeaderLabel={t('activityType.actions')}
+              actionsHeaderLabel={t('actions')}
               onEdit={handleEdit}
               rowClassName="group"
               pageSize={pageSize}

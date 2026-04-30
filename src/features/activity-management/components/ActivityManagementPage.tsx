@@ -143,7 +143,7 @@ export function ActivityManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('activityManagement.title'));
+    setPageTitle(t('title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -534,7 +534,7 @@ export function ActivityManagementPage(): ReactElement {
               size="icon"
               className="h-8 w-8 text-green-600 hover:bg-green-50 dark:text-green-400"
               onClick={() => void handleStatusChange(activity, ActivityStatus.Completed)}
-              title={t('activityManagement.complete', { defaultValue: 'Tamamla' })}
+              title={t('complete', { defaultValue: 'Tamamla' })}
             >
               <CheckCircle2 size={16} />
             </Button>
@@ -543,7 +543,7 @@ export function ActivityManagementPage(): ReactElement {
               size="icon"
               className="h-8 w-8 text-orange-600 hover:bg-orange-50 dark:text-orange-400"
               onClick={() => void handleStatusChange(activity, ActivityStatus.Cancelled)}
-              title={t('activityManagement.cancel', { defaultValue: 'İptal Et' })}
+              title={t('cancel', { defaultValue: 'İptal Et' })}
             >
               <XCircle size={16} />
             </Button>
@@ -597,10 +597,10 @@ export function ActivityManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('activityManagement.title')}
+            {t('title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('activityManagement.description')}
+            {t('description')}
           </p>
         </div>
         {canCreate ? (
@@ -609,7 +609,7 @@ export function ActivityManagementPage(): ReactElement {
             className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus size={18} className="mr-2" />
-            {t('activityManagement.create')}
+            {t('create')}
           </Button>
         ) : null}
       </div>
@@ -617,7 +617,7 @@ export function ActivityManagementPage(): ReactElement {
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
-            {t('activityManagement.table.title', { defaultValue: t('table.title') })}
+            {t('table.title', { defaultValue: t('table.title') })}
           </CardTitle>
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
@@ -742,10 +742,10 @@ export function ActivityManagementPage(): ReactElement {
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
                 <Alert02Icon size={18} />
               </span>
-              {t('activityManagement.deleteActivity')}
+              {t('deleteActivity')}
             </DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-2">
-              {t('activityManagement.deleteConfirmation')}
+              {t('deleteConfirmation')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="px-6 py-4 border-t border-slate-100 dark:border-white/10 flex justify-end gap-2">

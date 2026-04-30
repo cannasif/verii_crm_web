@@ -23,10 +23,10 @@ export const useCreateActivity = () => {
         queryKey: ['customer360'],
         exact: false,
       });
-      toast.success(t('activityManagement.createSuccess'));
+      toast.success(t('createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('activityManagement.createError'));
+      toast.error(error.message || t('createError'));
     },
   });
 };
