@@ -322,6 +322,7 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
       logic: 'any' as const,
     },
   ];
+  const lineFieldDefinitions = fieldDefinitions.filter((field) => field.path.startsWith('Lines.'));
 
   const elementTypeKey = getPdfElementTypeKey(selectedElement);
   const elementTypeLabel = t(`pdfReportDesigner.elementTypes.${elementTypeKey}` as unknown as string);
@@ -1089,6 +1090,122 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
                         <SelectItem value="image">image</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div className="rounded border border-slate-200 bg-slate-50/70 p-2 dark:border-slate-700 dark:bg-slate-900/40">
+                    <div className="mb-2 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                      {t('pdfReportDesigner.visibilityRuleTitle')}
+                    </div>
+                    <Select
+                      value={column.visibilityLogic ?? 'all'}
+                      onValueChange={(value: 'all' | 'any') =>
+                        updateTableColumn(selectedElement.id, index, { visibilityLogic: value })
+                      }
+                    >
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('pdfReportDesigner.visibilityLogic.all')}</SelectItem>
+                        <SelectItem value="any">{t('pdfReportDesigner.visibilityLogic.any')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {(column.visibilityRules ?? (column.visibilityRule ? [column.visibilityRule] : [])).map((rule, ruleIndex, rules) => {
+                      const fieldDefinition = lineFieldDefinitions.find((field) => field.path === rule.fieldPath);
+                      return (
+                        <div key={`${column.path || 'column'}-${ruleIndex}`} className="mt-2 rounded border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-950/50">
+                          <div className="mb-2 flex items-center justify-between">
+                            <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                              {t('pdfReportDesigner.visibilityRuleItemTitle', { index: ruleIndex + 1 })}
+                            </span>
+                            <button
+                              type="button"
+                              className="text-[11px] font-medium text-rose-500"
+                              onClick={() => {
+                                const nextRules = rules.filter((_, currentIndex) => currentIndex !== ruleIndex);
+                                updateTableColumn(selectedElement.id, index, {
+                                  visibilityRule: nextRules[0],
+                                  visibilityRules: nextRules.length > 0 ? nextRules : undefined,
+                                });
+                              }}
+                            >
+                              {t('pdfReportDesigner.visibilityRuleRemove')}
+                            </button>
+                          </div>
+                          <Input
+                            value={rule.fieldPath ?? ''}
+                            onChange={(e) => {
+                              const nextRules = rules.map((item, currentIndex) =>
+                                currentIndex === ruleIndex ? { ...item, fieldPath: e.target.value || undefined } : item,
+                              );
+                              updateTableColumn(selectedElement.id, index, {
+                                visibilityRule: nextRules[0],
+                                visibilityRules: nextRules,
+                              });
+                            }}
+                            className="h-8 text-xs"
+                            placeholder="Lines.DiscountRate1"
+                          />
+                          <Select
+                            value={rule.operator ?? 'equals'}
+                            onValueChange={(value: PdfRuleOperator) => {
+                              const nextRules = rules.map((item, currentIndex) =>
+                                currentIndex === ruleIndex ? { ...item, operator: value } : item,
+                              );
+                              updateTableColumn(selectedElement.id, index, {
+                                visibilityRule: nextRules[0],
+                                visibilityRules: nextRules,
+                              });
+                            }}
+                          >
+                            <SelectTrigger className="mt-2 h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="equals">{t('pdfReportDesigner.visibilityOperators.equals')}</SelectItem>
+                              <SelectItem value="notEquals">{t('pdfReportDesigner.visibilityOperators.notEquals')}</SelectItem>
+                              <SelectItem value="isEmpty">{t('pdfReportDesigner.visibilityOperators.isEmpty')}</SelectItem>
+                              <SelectItem value="isNotEmpty">{t('pdfReportDesigner.visibilityOperators.isNotEmpty')}</SelectItem>
+                              <SelectItem value="greaterThan">{t('pdfReportDesigner.visibilityOperators.greaterThan')}</SelectItem>
+                              <SelectItem value="greaterOrEqual">{t('pdfReportDesigner.visibilityOperators.greaterOrEqual')}</SelectItem>
+                              <SelectItem value="lessThan">{t('pdfReportDesigner.visibilityOperators.lessThan')}</SelectItem>
+                              <SelectItem value="lessOrEqual">{t('pdfReportDesigner.visibilityOperators.lessOrEqual')}</SelectItem>
+                              <SelectItem value="contains">{t('pdfReportDesigner.visibilityOperators.contains')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            value={rule.value ?? ''}
+                            onChange={(e) => {
+                              const nextRules = rules.map((item, currentIndex) =>
+                                currentIndex === ruleIndex ? { ...item, value: e.target.value || undefined } : item,
+                              );
+                              updateTableColumn(selectedElement.id, index, {
+                                visibilityRule: nextRules[0],
+                                visibilityRules: nextRules,
+                              });
+                            }}
+                            className="mt-2 h-8 text-xs"
+                            placeholder="0"
+                          />
+                          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                            {fieldDefinition?.description ?? fieldDefinition?.exampleValue ?? 'Example: Lines.DiscountRate1 equals 0'}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      className="mt-2 h-8 rounded-md border px-3 text-xs font-medium"
+                      onClick={() => {
+                        const currentRules = column.visibilityRules ?? (column.visibilityRule ? [column.visibilityRule] : []);
+                        const nextRules = [...currentRules, { operator: 'equals' as PdfRuleOperator }];
+                        updateTableColumn(selectedElement.id, index, {
+                          visibilityRule: nextRules[0],
+                          visibilityRules: nextRules,
+                        });
+                      }}
+                    >
+                      {t('pdfReportDesigner.visibilityRuleAdd')}
+                    </button>
                   </div>
                 </div>
               </div>

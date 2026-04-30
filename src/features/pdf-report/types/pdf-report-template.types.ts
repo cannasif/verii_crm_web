@@ -137,6 +137,9 @@ export interface ReportTemplateElementDto {
     width?: number;
     align?: 'left' | 'center' | 'right';
     format?: 'text' | 'number' | 'currency' | 'date' | 'image';
+    visibilityRule?: PdfVisibilityRuleDto;
+    visibilityRules?: PdfVisibilityRuleDto[];
+    visibilityLogic?: PdfVisibilityLogicDto;
   }[];
   headerStyle?: {
     fontSize?: number;

@@ -108,6 +108,9 @@ export interface PdfTableColumn {
   width?: number;
   align?: 'left' | 'center' | 'right';
   format?: 'text' | 'number' | 'currency' | 'date' | 'image';
+  visibilityRule?: PdfVisibilityRule;
+  visibilityRules?: PdfVisibilityRule[];
+  visibilityLogic?: PdfVisibilityLogic;
 }
 
 export interface PdfTableStyle {
