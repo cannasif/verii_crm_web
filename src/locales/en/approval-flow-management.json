@@ -64,6 +64,7 @@
       "deleteSuccess": "Onay akışı başarıyla silindi",
       "deleteError": "Onay akışı silinirken hata oluştu"
     },
+    "steps": "Flow steps",
     "error": "Hata oluştu"
   },
   "approvalFlowStep": {

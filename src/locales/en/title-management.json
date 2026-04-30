@@ -47,6 +47,11 @@
     "save": "Save",
     "saving": "Saving..."
   },
+  "stats": {
+    "totalTitles": "Total titles",
+    "activeTitles": "Active titles",
+    "newThisMonth": "New this month"
+  },
   "titleManagement": {
     "error": "Hata oluştu"
   },

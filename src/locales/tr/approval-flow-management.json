@@ -59,7 +59,8 @@
     "messages": {
       "deleteSuccess": "Onay akışı başarıyla silindi",
       "deleteError": "Onay akışı silinirken hata oluştu"
-    }
+    },
+    "steps": "Akış adımları"
   },
   "approvalFlowStep": {
     "title": "Akış Adımları",
