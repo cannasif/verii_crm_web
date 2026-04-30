@@ -8,6 +8,10 @@
     "create": "Oluştur",
     "close": "Kapat",
     "expand": "Büyüt",
+    "collapse": "Daralt",
+    "increase": "Artış",
+    "decrease": "Azalış",
+    "guide": "Rehber",
     "previous": "Önceki",
     "next": "Sonraki",
     "delete": {
@@ -24,6 +28,9 @@
     "back": "Geri",
     "optional": "Opsiyonel",
     "required": "Zorunlu",
+    "form": {
+      "requiredFields": "Lütfen zorunlu alanları doldurun."
+    },
     "disabledActionHints": {
       "saveTitle": "Kaydetmek için zorunlu alanları doldurun",
       "saveIssuesIntro": "Şu zorunlu alanlar eksik veya geçersiz:",
@@ -120,6 +127,7 @@
       "page": "Sayfa {{current}} / {{total}}"
     },
     "filters": "Filtreler",
+    "total": "Toplam",
     "advancedFilter": {
       "title": "Gelişmiş Filtre",
       "add": "Filtre Ekle",
@@ -222,6 +230,7 @@
       "properties": "Özellikler",
       "invalidReportId": "Geçersiz rapor ID",
       "backToList": "Listeye dön",
+      "delta": "Fark",
       "newReport": "Yeni Oluştur",
       "allReportsTitle": "Rapor Listesi",
       "allReportsDescription": "Oluşturulan tüm raporları yönetin, düzenleyin ve paylaşım durumlarını takip edin.",
@@ -1248,7 +1257,8 @@
     "created": "Oluşturulan",
     "updated": "Güncellenen",
     "reactivated": "Yeniden Aktif",
-    "deleted": "Silinen"
+    "deleted": "Silinen",
+    "syncSuccess": "Senkronizasyon tamamlandı"
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -1283,6 +1293,7 @@
     "powerbiReportsView": "PowerBI Raporları (Görüntüle)",
     "powerbiRls": "RLS Yönetimi",
     "powerbiSync": "PowerBI Senkronizasyon",
+    "accessControlGuide": "Erişim kontrolü rehberi",
     "titleManagement": "Ünvan Yönetimi",
     "shippingAddressManagement": "Sevk Adresi Yönetimi",
     "userManagement": "Kullanıcı Yönetimi",

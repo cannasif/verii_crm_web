@@ -7,6 +7,10 @@
     "cancel": "Cancel",
     "close": "Close",
     "expand": "Expand",
+    "collapse": "Collapse",
+    "increase": "Increase",
+    "decrease": "Decrease",
+    "guide": "Guide",
     "previous": "Previous",
     "next": "Next",
     "delete": {
@@ -23,6 +27,9 @@
     "back": "Back",
     "optional": "Optional",
     "required": "Required",
+    "form": {
+      "requiredFields": "Please fill in the required fields."
+    },
     "disabledActionHints": {
       "saveTitle": "Fill required fields before saving",
       "saveIssuesIntro": "These required fields are missing or invalid:",
@@ -120,6 +127,7 @@
     "refresh": "Refresh",
     "showing": "shown",
     "filters": "Detailed Filter",
+    "total": "Total",
     "advancedFilter": {
       "title": "Advanced Filter",
       "add": "Add Filter",
@@ -217,6 +225,7 @@
       "properties": "Properties",
       "invalidReportId": "Invalid report ID",
       "backToList": "Back to list",
+      "delta": "Delta",
       "newReport": "Create New",
       "allReportsTitle": "Report List",
       "allReportsDescription": "Manage all created reports, update them, and track sharing status.",
@@ -1244,7 +1253,8 @@
     "created": "Created",
     "updated": "Updated",
     "reactivated": "Reactivated",
-    "deleted": "Deleted"
+    "deleted": "Deleted",
+    "syncSuccess": "Sync completed"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -1279,6 +1289,7 @@
     "powerbiReportsView": "Power BI Reports (View)",
     "powerbiRls": "RLS Management",
     "powerbiSync": "Power BI Sync",
+    "accessControlGuide": "Access control guide",
     "titleManagement": "Title Management",
     "shippingAddressManagement": "Shipping Address Management",
     "userManagement": "User Management",
