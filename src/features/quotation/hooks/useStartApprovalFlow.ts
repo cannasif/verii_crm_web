@@ -19,10 +19,10 @@ export const useStartApprovalFlow = (): UseMutationResult<ApiResponse<boolean>, 
         refetchType: 'active',
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.waitingApprovals() });
-      toast.success(t('quotation.approval.startSuccess'));
+      toast.success(t('approval.startSuccess'));
     },
     onError: (error: Error) => {
-      let errorMessage = t('quotation.approval.startError');
+      let errorMessage = t('approval.startError');
       
       if (error.message) {
         try {

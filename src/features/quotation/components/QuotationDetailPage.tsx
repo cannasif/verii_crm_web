@@ -150,12 +150,12 @@ export function QuotationDetailPage(): ReactElement {
   useEffect(() => {
     if (quotation) {
       setPageTitle(
-        t('quotation.detail.title', {
+        t('detail.title', {
           offerNo: quotation.offerNo || `#${quotation.id}`,
         })
       );
     } else {
-      setPageTitle(t('quotation.detail.title'));
+      setPageTitle(t('detail.title'));
     }
     return () => {
       setPageTitle(null);
@@ -279,18 +279,18 @@ export function QuotationDetailPage(): ReactElement {
     const doc = new JsPDF();
     
     doc.setFontSize(18);
-    doc.text(t('quotation.detail.title'), 14, 20);
+    doc.text(t('detail.title'), 14, 20);
     doc.setFontSize(11);
-    doc.text(`${t('quotation.date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
-    doc.text(`${t('quotation.offerNo')}: ${quotation?.offerNo || ''}`, 14, 34);
+    doc.text(`${t('date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+    doc.text(`${t('offerNo')}: ${quotation?.offerNo || ''}`, 14, 34);
 
     const headers = [[
-      t('quotation.lines.productCode'),
-      t('quotation.lines.productName'),
-      t('quotation.lines.quantity'),
-      t('quotation.lines.unitPrice'),
-      t('quotation.lines.vatRate'),
-      t('quotation.lines.total')
+      t('lines.productCode'),
+      t('lines.productName'),
+      t('lines.quantity'),
+      t('lines.unitPrice'),
+      t('lines.vatRate'),
+      t('lines.total')
     ]];
 
     const data = lines.map(line => [
@@ -321,18 +321,18 @@ export function QuotationDetailPage(): ReactElement {
   const handleShareWhatsApp = async () => {
     const doc = await generatePDF();
     doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-    const text = encodeURIComponent(t('quotation.share.whatsappMessage'));
+    const text = encodeURIComponent(t('share.whatsappMessage'));
     window.open(`https://wa.me/?text=${text}`, '_blank');
-    toast.info(t('quotation.share.downloaded'));
+    toast.info(t('share.downloaded'));
   };
 
   const handleShareMail = async () => {
     const doc = await generatePDF();
     doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-    const subject = encodeURIComponent(t('quotation.share.mailSubject'));
-    const body = encodeURIComponent(t('quotation.share.mailBody'));
+    const subject = encodeURIComponent(t('share.mailSubject'));
+    const body = encodeURIComponent(t('share.mailBody'));
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
-    toast.info(t('quotation.share.downloaded'));
+    toast.info(t('share.downloaded'));
   };
 
   useEffect(() => {
@@ -406,8 +406,8 @@ export function QuotationDetailPage(): ReactElement {
   const onSubmit = async (data: CreateQuotationSchema): Promise<void> => {
     if (isReadOnly) return;
     if (lines.length === 0) {
-      toast.error(t('quotation.update.error'), {
-        description: t('quotation.lines.required'),
+      toast.error(t('update.error'), {
+        description: t('lines.required'),
       });
       return;
     }
@@ -415,8 +415,8 @@ export function QuotationDetailPage(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
     if (overLimitNote) {
-      toast.error(t('quotation.update.error'), {
-        description: t('quotation.notes.maxLengthError'),
+      toast.error(t('update.error'), {
+        description: t('notes.maxLengthError'),
       });
       return;
     }
@@ -458,7 +458,7 @@ export function QuotationDetailPage(): ReactElement {
         : String(data.quotation.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('quotation.update.invalidCurrency'));
+        throw new Error(t('update.invalidCurrency'));
       }
 
       const quotationData: CreateQuotationDto = {
@@ -493,14 +493,14 @@ export function QuotationDetailPage(): ReactElement {
       const result = await updateMutation.mutateAsync({ id: quotationId, data: payload });
 
       if (result.success && result.data) {
-        toast.success(t('quotation.update.success'), {
-          description: t('quotation.update.successMessage'),
+        toast.success(t('update.success'), {
+          description: t('update.successMessage'),
         });
       } else {
-        throw new Error(result.message || t('quotation.update.errorMessage'));
+        throw new Error(result.message || t('update.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('quotation.update.errorMessage');
+      let errorMessage = t('update.errorMessage');
       if (error instanceof Error) {
           try {
              const parsedError = JSON.parse(error.message);
@@ -511,7 +511,7 @@ export function QuotationDetailPage(): ReactElement {
              errorMessage = error.message;
           }
       }
-      toast.error(t('quotation.update.error'), {
+      toast.error(t('update.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -533,8 +533,8 @@ export function QuotationDetailPage(): ReactElement {
     const sampleNewRate = findExchangeRateByDovizTipi(newCurrencyNum, exchangeRates, erpRates);
 
     if (!sampleOldRate || sampleOldRate <= 0 || !sampleNewRate || sampleNewRate <= 0) {
-      toast.error(t('quotation.update.error'), {
-        description: t('quotation.exchangeRates.zeroRateError', {
+      toast.error(t('update.error'), {
+        description: t('exchangeRates.zeroRateError', {
           defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
         }),
       });
@@ -571,7 +571,7 @@ export function QuotationDetailPage(): ReactElement {
     if (isReadOnly) return;
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('quotation.update.error'), {
+      toast.error(t('update.error'), {
         description: 'Zorunlu alanlar doldurulmadı.',
       });
       return;
@@ -594,7 +594,7 @@ export function QuotationDetailPage(): ReactElement {
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
         <span className="text-muted-foreground animate-pulse text-sm font-medium">
-          {t('quotation.loading')}
+          {t('loading')}
         </span>
       </div>
     );
@@ -605,10 +605,10 @@ export function QuotationDetailPage(): ReactElement {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <p className="text-lg font-medium text-muted-foreground mb-4">
-          {t('quotation.detail.notFound')}
+          {t('detail.notFound')}
         </p>
         <Button variant="outline" onClick={() => navigate('/quotations')}>
-          {t('quotation.backToQuotations')}
+          {t('backToQuotations')}
         </Button>
       </div>
     );
@@ -619,13 +619,13 @@ export function QuotationDetailPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            {t('quotation.detail.title', { offerNo: quotation.offerNo || `#${quotation.id}` })}
+            {t('detail.title', { offerNo: quotation.offerNo || `#${quotation.id}` })}
           </h2>
           <p className="text-muted-foreground text-sm">
-            {t('quotation.detail.subtitle')}
+            {t('detail.subtitle')}
             {quotation.revisionNo != null && quotation.revisionNo !== '' && (
               <span className="block mt-1">
-                {t('quotation.detail.revisionNo')}: {quotation.revisionNo}
+                {t('detail.revisionNo')}: {quotation.revisionNo}
               </span>
             )}
           </p>
@@ -645,7 +645,7 @@ export function QuotationDetailPage(): ReactElement {
             )}
           >
             <Layers className="h-4 w-4 mr-2" />
-            {t('quotation.detail.tabDetail')}
+            {t('detail.tabDetail')}
           </TabsTrigger>
           <TabsTrigger
             value="approval-flow"
@@ -658,7 +658,7 @@ export function QuotationDetailPage(): ReactElement {
             )}
           >
             <FileCheck className="h-4 w-4 mr-2" />
-            {t('quotation.detail.tabApprovalFlow')}
+            {t('detail.tabApprovalFlow')}
           </TabsTrigger>
           <TabsTrigger
             value="report"
@@ -671,7 +671,7 @@ export function QuotationDetailPage(): ReactElement {
             )}
           >
             <FileText className="h-4 w-4 mr-2" />
-            {t('quotation.detail.tabReport')}
+            {t('detail.tabReport')}
           </TabsTrigger>
         </TabsList>
 
@@ -685,14 +685,14 @@ export function QuotationDetailPage(): ReactElement {
             <form onSubmit={handleFormSubmit} className="space-y-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
                 <div className="flex flex-col gap-6 min-w-0">
-                  <section aria-label={t('quotation.sections.header')}>
+                  <section aria-label={t('sections.header')}>
                     <div className="rounded-xl border border-zinc-300 dark:border-zinc-600/90 bg-white dark:bg-zinc-950/40 p-4 sm:p-5 space-y-4 shadow-sm">
                       <div className="flex items-center gap-2">
                         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200 dark:bg-zinc-700/70 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-300/80 dark:border-zinc-600">
                           1
                         </span>
                         <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                          {t('quotation.sections.header')}
+                          {t('sections.header')}
                         </h3>
                       </div>
                     <QuotationHeaderForm
@@ -703,24 +703,24 @@ export function QuotationDetailPage(): ReactElement {
                       onSaveNotes={async (notes) => {
                         const list = quotationNotesDtoToNotesList(notes);
                         if (list.length > 15) {
-                          toast.error(t('quotation.update.error'), {
-                            description: t('quotation.notes.maxCountError'),
+                          toast.error(t('update.error'), {
+                            description: t('notes.maxCountError'),
                           });
                           throw new Error('maxCount');
                         }
                         const overLimit = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).find((k) => (notes[k]?.length ?? 0) > 100);
                         if (overLimit) {
-                          toast.error(t('quotation.update.error'), {
-                            description: t('quotation.notes.maxLengthError'),
+                          toast.error(t('update.error'), {
+                            description: t('notes.maxLengthError'),
                           });
                           throw new Error('maxLength');
                         }
                         try {
                           await updateNotesMutation.mutateAsync({ notes: list });
-                          toast.success(t('quotation.notes.saved'));
+                          toast.success(t('notes.saved'));
                         } catch (err) {
-                          toast.error(t('quotation.update.error'), {
-                            description: err instanceof Error ? err.message : t('quotation.notes.saveError'),
+                          toast.error(t('update.error'), {
+                            description: err instanceof Error ? err.message : t('notes.saveError'),
                           });
                           throw err;
                         }
@@ -744,14 +744,14 @@ export function QuotationDetailPage(): ReactElement {
                     </div>
                   </section>
 
-                  <section aria-label={t('quotation.sections.lines')}>
+                  <section aria-label={t('sections.lines')}>
                     <div className="rounded-xl border border-zinc-300 dark:border-zinc-600/90 bg-white dark:bg-zinc-950/40 p-4 sm:p-5 space-y-4 shadow-sm">
                       <div className="flex items-center gap-2">
                         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200 dark:bg-zinc-700/70 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-300/80 dark:border-zinc-600">
                           2
                         </span>
                         <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                          {t('quotation.sections.lines')}
+                          {t('sections.lines')}
                         </h3>
                       </div>
                     <QuotationLineTable
@@ -780,7 +780,7 @@ export function QuotationDetailPage(): ReactElement {
                         3
                       </span>
                       <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                        {t('quotation.sections.summary')}
+                        {t('sections.summary')}
                       </h3>
                     </div>
                     <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-900/60 overflow-hidden">
@@ -798,28 +798,28 @@ export function QuotationDetailPage(): ReactElement {
                   className="group w-full sm:w-auto"
                 >
                   <X className="mr-2 h-4 w-4" />
-                  {t('quotation.cancel')}
+                  {t('cancel')}
                 </Button>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button type="button" variant="outline" className="group w-full sm:w-auto">
                       <Share2 className="mr-2 h-4 w-4" />
-                      {t('quotation.export')}
+                      {t('export')}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#130822] border-slate-100 dark:border-white/10">
                     <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                       <FileDown className="mr-2 h-4 w-4 text-slate-500" />
-                      {t('quotation.exportPdf')}
+                      {t('exportPdf')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                       <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
-                      {t('quotation.shareWhatsapp')}
+                      {t('shareWhatsapp')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleShareMail} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
                       <Mail className="mr-2 h-4 w-4 text-blue-500" />
-                      {t('quotation.shareMail')}
+                      {t('shareMail')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -832,8 +832,8 @@ export function QuotationDetailPage(): ReactElement {
                   >
                     <Save className="mr-2 h-4 w-4" />
                     {updateMutation.isPending
-                      ? t('quotation.saving')
-                      : t('quotation.update.saveButton', { defaultValue: 'Güncellemeyi Kaydet' })
+                      ? t('saving')
+                      : t('update.saveButton', { defaultValue: 'Güncellemeyi Kaydet' })
                     }
                   </Button>
                 )}
@@ -849,12 +849,12 @@ export function QuotationDetailPage(): ReactElement {
                     {startApprovalFlow.isPending ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        {t('quotation.approval.sending')}
+                        {t('approval.sending')}
                       </>
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        {t('quotation.approval.sendForApproval')}
+                        {t('approval.sendForApproval')}
                       </>
                     )}
                   </Button>

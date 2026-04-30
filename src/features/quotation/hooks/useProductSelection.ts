@@ -196,8 +196,8 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
             const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
 
             if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
-              toast.error(t('quotation.update.error'), {
-                description: t('quotation.exchangeRates.zeroRateError', {
+              toast.error(t('update.error'), {
+                description: t('exchangeRates.zeroRateError', {
                   defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
                 }),
               });
@@ -310,8 +310,8 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
 
         if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
-          toast.error(t('quotation.update.error'), {
-            description: t('quotation.exchangeRates.zeroRateError', {
+          toast.error(t('update.error'), {
+            description: t('exchangeRates.zeroRateError', {
               defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
             }),
           });

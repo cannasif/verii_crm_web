@@ -183,19 +183,19 @@ export function QuotationLineForm({
         val: discountRate1InputValue,
         setVal: setDiscountRate1InputValue,
         field: 'discountRate1',
-        label: t('quotation.lines.discountNumbered1'),
+        label: t('lines.discountNumbered1'),
       },
       {
         val: discountRate2InputValue,
         setVal: setDiscountRate2InputValue,
         field: 'discountRate2',
-        label: t('quotation.lines.discountNumbered2'),
+        label: t('lines.discountNumbered2'),
       },
       {
         val: discountRate3InputValue,
         setVal: setDiscountRate3InputValue,
         field: 'discountRate3',
-        label: t('quotation.lines.discountNumbered3'),
+        label: t('lines.discountNumbered3'),
       },
     ],
     [t, discountRate1InputValue, discountRate2InputValue, discountRate3InputValue]
@@ -997,7 +997,7 @@ export function QuotationLineForm({
       <div className="space-y-4">
         <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
           <Package className="h-4 w-4 text-pink-500" />
-          {t('quotation.lines.stock')}
+          {t('lines.stock')}
           {isZodFieldRequired(quotationLineRequiredSchema, 'productCode') ? <span className="text-pink-500">*</span> : null}
         </label>
 
@@ -1006,7 +1006,7 @@ export function QuotationLineForm({
             <div className="relative flex-1">
               <Input
                 value={formData.productCode || ''}
-                placeholder={t('quotation.lines.productCode')}
+                placeholder={t('lines.productCode')}
                 readOnly
                 onClick={() => setProductDialogOpen(true)}
                 className={`cursor-pointer bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-mono text-sm h-11 rounded-xl ${pinkFocusClass}`}
@@ -1053,7 +1053,7 @@ export function QuotationLineForm({
           <div className="w-full">
             <Input
               value={formData.productName || ''}
-              placeholder={t('quotation.lines.productName')}
+              placeholder={t('lines.productName')}
               readOnly
               className={`bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full ${pinkFocusClass}`}
             />
@@ -1078,9 +1078,9 @@ export function QuotationLineForm({
           {bulkDraftLines.length > 0 && (
             <div className="rounded-xl border border-pink-200/70 dark:border-pink-800/40 bg-pink-50/50 dark:bg-pink-950/10 p-3 space-y-2">
               <div className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-300">
-                <span className="font-semibold">{t('quotation.lines.stock')} ({bulkDraftLines.length})</span>
+                <span className="font-semibold">{t('lines.stock')} ({bulkDraftLines.length})</span>
                 <span className="inline-flex items-center rounded-full border border-pink-300/70 dark:border-pink-700/50 bg-white/90 dark:bg-pink-900/30 px-2.5 py-1 text-[11px] font-bold text-pink-700 dark:text-pink-300">
-                  {t('quotation.lines.grandTotal')}: {formatCurrency(bulkDraftGrandTotal, currencyCode)}
+                  {t('lines.grandTotal')}: {formatCurrency(bulkDraftGrandTotal, currencyCode)}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -1128,7 +1128,7 @@ export function QuotationLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Layers className="h-4 w-4 text-blue-500" />
-            {t('quotation.lines.quantity')}
+            {t('lines.quantity')}
           </label>
           <Input
             type="number"
@@ -1168,7 +1168,7 @@ export function QuotationLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Coins className="h-4 w-4 text-emerald-500" />
-            {t('quotation.lines.unitPrice')}
+            {t('lines.unitPrice')}
           </label>
           <div className="relative">
             <Input
@@ -1190,14 +1190,14 @@ export function QuotationLineForm({
               }}
               className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-mono font-extrabold text-center pr-10 shadow-sm ${pinkFocusClass}`}
             />
-            <div className="absolute right-3 top-3 text-xs font-bold text-slate-400 dark:text-slate-500">{t('quotation.lines.currencyTry')}</div>
+            <div className="absolute right-3 top-3 text-xs font-bold text-slate-400 dark:text-slate-500">{t('lines.currencyTry')}</div>
           </div>
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Package className="h-4 w-4 text-purple-500" />
-            {t('quotation.lines.unit')}
+            {t('lines.unit')}
           </label>
           <Input
             value={formData.unit || '-'}
@@ -1209,7 +1209,7 @@ export function QuotationLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Percent className="h-4 w-4 text-orange-500" />
-            {t('quotation.lines.vatRate')}
+            {t('lines.vatRate')}
           </label>
           <div className="relative">
             <Input
@@ -1252,7 +1252,7 @@ export function QuotationLineForm({
         <div className="xl:col-span-7 space-y-4">
           <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <BadgePercent className="h-4 w-4 text-purple-500" />
-            {t('quotation.lines.discounts')}
+            {t('lines.discounts')}
           </h5>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {discountInputs.map((item, idx) => (
@@ -1308,50 +1308,50 @@ export function QuotationLineForm({
                 <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-red-800 dark:text-red-300">{t('quotation.lines.approvalNeeded')}</h4>
-                <p className="text-xs text-red-600 dark:text-red-400 mt-1">{t('quotation.lines.discountLimitExceeded')}</p>
+                <h4 className="text-sm font-bold text-red-800 dark:text-red-300">{t('lines.approvalNeeded')}</h4>
+                <p className="text-xs text-red-600 dark:text-red-400 mt-1">{t('lines.discountLimitExceeded')}</p>
               </div>
             </div>
           )}
 
           <div className="space-y-3">
             <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-              {t('quotation.lines.descriptionFieldsTitle')}
+              {t('lines.descriptionFieldsTitle')}
             </h5>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('quotation.lines.descriptionField1Label')}
+                  {t('lines.descriptionField1Label')}
                 </label>
                 <Input
                   value={formData.description1 ?? ''}
                   onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('quotation.lines.max200Chars')}
+                  placeholder={t('lines.max200Chars')}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('quotation.lines.descriptionField2Label')}
+                  {t('lines.descriptionField2Label')}
                 </label>
                 <Input
                   value={formData.description2 ?? ''}
                   onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('quotation.lines.max200Chars')}
+                  placeholder={t('lines.max200Chars')}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('quotation.lines.descriptionField3Label')}
+                  {t('lines.descriptionField3Label')}
                 </label>
                 <Input
                   value={formData.description3 ?? ''}
                   onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('quotation.lines.max200Chars')}
+                  placeholder={t('lines.max200Chars')}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
@@ -1359,42 +1359,42 @@ export function QuotationLineForm({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('quotation.lines.windoProfileLabel')}
+                  {t('lines.windoProfileLabel')}
                 </label>
                 <VoiceSearchCombobox
                   options={profilComboboxOptions}
                   value={formData.profilDefinitionId ? String(formData.profilDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('profilDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('quotation.loading') : t('quotation.lines.selectWindoProfile')}
-                  searchPlaceholder={t('quotation.lines.searchWindoProfile')}
+                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoProfile')}
+                  searchPlaceholder={t('lines.searchWindoProfile')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('quotation.lines.windoRebarLabel')}
+                  {t('lines.windoRebarLabel')}
                 </label>
                 <VoiceSearchCombobox
                   options={demirComboboxOptions}
                   value={formData.demirDefinitionId ? String(formData.demirDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('demirDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('quotation.loading') : t('quotation.lines.selectWindoRebar')}
-                  searchPlaceholder={t('quotation.lines.searchWindoRebar')}
+                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoRebar')}
+                  searchPlaceholder={t('lines.searchWindoRebar')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('quotation.lines.windoScrewLabel')}
+                  {t('lines.windoScrewLabel')}
                 </label>
                 <VoiceSearchCombobox
                   options={vidaComboboxOptions}
                   value={formData.vidaDefinitionId ? String(formData.vidaDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('vidaDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('quotation.loading') : t('quotation.lines.selectWindoScrew')}
-                  searchPlaceholder={t('quotation.lines.searchWindoScrew')}
+                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoScrew')}
+                  searchPlaceholder={t('lines.searchWindoScrew')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
@@ -1466,22 +1466,22 @@ export function QuotationLineForm({
 
           <div className="bg-slate-50 dark:bg-[#1a1025]/50 rounded-2xl p-5 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
             <div className="flex justify-between items-center text-sm gap-4">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.subtotal')}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('lines.subtotal')}</span>
               <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(formData.lineTotal || 0, currencyCode)}</span>
             </div>
             <div className="flex justify-between items-center text-sm gap-4">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.totalDiscount')}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('lines.totalDiscount')}</span>
               <span className="font-semibold text-red-500 dark:text-red-400">
                 {hasDiscount ? '-' : ''}{formatCurrency(totalDiscount, currencyCode)}
               </span>
             </div>
             <div className="flex justify-between items-center text-sm gap-4">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.vatAmount')}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('lines.vatAmount')}</span>
               <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(formData.vatAmount || 0, currencyCode)}</span>
             </div>
             <div className="h-px bg-slate-200 dark:bg-white/10 my-2 border-dashed" />
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span className="text-base font-bold text-slate-900 dark:text-white">{t('quotation.lines.grandTotal')}</span>
+              <span className="text-base font-bold text-slate-900 dark:text-white">{t('lines.grandTotal')}</span>
               <span className="text-2xl font-black tracking-tight text-orange-600 dark:text-orange-500">
                 {formatCurrency(formData.lineGrandTotal, currencyCode)}
               </span>
@@ -1493,7 +1493,7 @@ export function QuotationLineForm({
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4 text-purple-500" />
                 <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  {t('quotation.lines.relatedStocks')} ({relatedLines.length})
+                  {t('lines.relatedStocks')} ({relatedLines.length})
                 </h5>
               </div>
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
@@ -1505,7 +1505,7 @@ export function QuotationLineForm({
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mb-2">
                       <div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                          {t('quotation.lines.productCode')}
+                          {t('lines.productCode')}
                         </div>
                         <div className="font-mono text-sm font-semibold text-slate-800 dark:text-slate-100">
                           {relatedLine.productCode || '-'}
@@ -1513,7 +1513,7 @@ export function QuotationLineForm({
                       </div>
                       <div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                          {t('quotation.lines.productName')}
+                          {t('lines.productName')}
                         </div>
                         <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                           {relatedLine.productName || '-'}
@@ -1523,13 +1523,13 @@ export function QuotationLineForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">
-                          {t('quotation.lines.quantity')}:
+                          {t('lines.quantity')}:
                         </span>
                         <span className="ml-2 font-semibold text-slate-800 dark:text-slate-200">{relatedLine.quantity}</span>
                       </div>
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">
-                          {t('quotation.lines.unitPrice')}:
+                          {t('lines.unitPrice')}:
                         </span>
                         <span className="ml-2 font-semibold text-slate-800 dark:text-slate-200">
                           {formatCurrency(relatedLine.unitPrice, currencyCode)}
@@ -1537,7 +1537,7 @@ export function QuotationLineForm({
                       </div>
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">
-                          {t('quotation.lines.netPrice')}:
+                          {t('lines.netPrice')}:
                         </span>
                         <span className="ml-2 font-semibold text-emerald-600 dark:text-emerald-400">
                           {formatCurrency(relatedLine.lineTotal || 0, currencyCode)}
@@ -1545,7 +1545,7 @@ export function QuotationLineForm({
                       </div>
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">
-                          {t('quotation.lines.lineTotal')}:
+                          {t('lines.lineTotal')}:
                         </span>
                         <span className="ml-2 font-semibold text-orange-600 dark:text-orange-400">
                           {formatCurrency(relatedLine.lineGrandTotal || 0, currencyCode)}
@@ -1566,7 +1566,7 @@ export function QuotationLineForm({
               disabled={isSaving}
               className="h-12 px-6 w-full sm:w-auto rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium transition-all"
             >
-              {t('quotation.cancel')}
+              {t('cancel')}
             </Button>
             <Button
               type="button"
@@ -1577,12 +1577,12 @@ export function QuotationLineForm({
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {t('quotation.saving')}
+                  {t('saving')}
                 </>
               ) : (
                 <>
                   <Check className="h-4 w-4 mr-2" />
-                  {t('quotation.save')}{bulkDraftLines.length > 0 ? ` (${bulkDraftLines.length})` : ''}
+                  {t('save')}{bulkDraftLines.length > 0 ? ` (${bulkDraftLines.length})` : ''}
                 </>
               )}
             </Button>

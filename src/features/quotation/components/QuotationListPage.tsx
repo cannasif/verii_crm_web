@@ -143,7 +143,7 @@ export function QuotationListPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('quotation.list.title'));
+    setPageTitle(t('list.title'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -372,15 +372,15 @@ export function QuotationListPage(): ReactElement {
     <div className="flex items-center justify-center gap-2">
       <Button variant="outline" size="sm" onClick={() => navigate(`/quotations/${quotation.id}`)}>
         <Edit2 className="h-4 w-4 mr-1" />
-        {t('quotation.list.detail', { defaultValue: 'Detay' })}
+        {t('list.detail', { defaultValue: 'Detay' })}
       </Button>
       <Button variant="outline" size="sm" onClick={(event) => handleOpenMailDialog(event, quotation)}>
         <Mail className="h-4 w-4 mr-1" />
-        {t('quotation.list.sendGmail', { defaultValue: 'Gmail Gonder' })}
+        {t('list.sendGmail', { defaultValue: 'Gmail Gonder' })}
       </Button>
       <Button variant="outline" size="sm" onClick={(event) => handleOpenOutlookMailDialog(event, quotation)}>
         <Mail className="h-4 w-4 mr-1" />
-        {t('quotation.list.sendOutlook', { defaultValue: 'Outlook Gonder' })}
+        {t('list.sendOutlook', { defaultValue: 'Outlook Gonder' })}
       </Button>
       {(quotation.status === 0 || quotation.status === 3) && (
         <Button
@@ -393,8 +393,8 @@ export function QuotationListPage(): ReactElement {
         >
           <GitBranchPlus className="h-4 w-4 mr-1" />
           {createRevisionMutation.isPending
-            ? t('quotation.loading')
-            : t('quotation.list.revise', { defaultValue: 'Revize Et' })}
+            ? t('loading')
+            : t('list.revise', { defaultValue: 'Revize Et' })}
         </Button>
       )}
     </div>
@@ -409,11 +409,11 @@ export function QuotationListPage(): ReactElement {
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-2">
           <div className="space-y-1">
             <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-              {t('quotation.list.title')}
+              {t('list.title')}
             </h1>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-              {t('quotation.list.description')}
+              {t('list.description')}
             </p>
           </div>
           <Button
@@ -421,7 +421,7 @@ export function QuotationListPage(): ReactElement {
             className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-            {t('quotation.list.createNew')}
+            {t('list.createNew')}
           </Button>
         </div>
 
@@ -429,7 +429,7 @@ export function QuotationListPage(): ReactElement {
           <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
             <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
               <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
-                {t('quotation.list.cardTitle', { defaultValue: 'Teklif listesi' })}
+                {t('list.cardTitle', { defaultValue: 'Teklif listesi' })}
               </CardTitle>
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
@@ -471,7 +471,7 @@ export function QuotationListPage(): ReactElement {
                         },
                         isLoading: quotationQuery.isFetching,
                         cooldownSeconds: 60,
-                        label: t('quotation.list.refresh', { defaultValue: 'Yenile' }),
+                        label: t('list.refresh', { defaultValue: 'Yenile' }),
                       },
                       leftSlot: (
                         <>
@@ -502,12 +502,12 @@ export function QuotationListPage(): ReactElement {
                     renderSortIcon={renderSortIcon}
                     isLoading={quotationQuery.isLoading || quotationQuery.isFetching}
                     isError={quotationQuery.isError}
-                    loadingText={t('quotation.loading')}
-                    errorText={t('quotation.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                    emptyText={t('quotation.noData')}
+                    loadingText={t('loading')}
+                    errorText={t('loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                    emptyText={t('noData')}
                     minTableWidthClassName="min-w-[920px] lg:min-w-[1100px]"
                     showActionsColumn
-                    actionsHeaderLabel={t('quotation.list.actions')}
+                    actionsHeaderLabel={t('list.actions')}
                     renderActionsCell={renderActionsCell}
                     iconOnlyActions={false}
                     rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
@@ -522,8 +522,8 @@ export function QuotationListPage(): ReactElement {
                     hasNextPage={hasNextPage}
                     onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
                     onNextPage={() => setPageNumber((prev) => prev + 1)}
-                    previousLabel={t('quotation.previous')}
-                    nextLabel={t('quotation.next')}
+                    previousLabel={t('previous')}
+                    nextLabel={t('next')}
                     paginationInfoText={t('common.paginationInfo', {
                       start: startRow,
                       end: endRow,

@@ -91,9 +91,9 @@ export function QuotationNotesDialog({
               </div>
             </div>
             <div className="flex flex-col gap-0.5 min-w-0">
-              <span className="truncate">{t('quotation.notes.title')}</span>
+              <span className="truncate">{t('notes.title')}</span>
               <span className="text-xs font-normal text-slate-500 dark:text-slate-400 truncate">
-                {t('quotation.notes.description')}
+                {t('notes.description')}
               </span>
             </div>
           </DialogTitle>
@@ -133,7 +133,7 @@ export function QuotationNotesDialog({
                           "h-9 text-sm border-slate-200 dark:border-white/10 focus-visible:ring-purple-500 transition-all bg-transparent",
                           isOverLimit || fieldError ? "border-red-500 dark:border-red-500" : ""
                         )}
-                        placeholder={t('quotation.notes.placeholder')}
+                        placeholder={t('notes.placeholder')}
                       />
                     </div>
                     <span
@@ -147,7 +147,7 @@ export function QuotationNotesDialog({
                   </div>
                   {(fieldError || isOverLimit) && (
                     <p className="text-[10px] sm:text-xs text-red-600 dark:text-red-400 pl-1">
-                      {fieldError ?? t('quotation.notes.maxLengthError')}
+                      {fieldError ?? t('notes.maxLengthError')}
                     </p>
                   )}
                 </div>
@@ -172,7 +172,7 @@ export function QuotationNotesDialog({
             {isSaving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('quotation.notes.saving')}
+                {t('notes.saving')}
               </>
             ) : (
               t('common.save')

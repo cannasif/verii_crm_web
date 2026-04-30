@@ -210,12 +210,12 @@ export function ExchangeRateDialog({
               <DollarSign className="h-5 w-5" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className="text-zinc-900 dark:text-zinc-100">{t('quotation.exchangeRates.dialog.title')}</span>
-              <span className="text-xs font-normal text-slate-500 dark:text-slate-400">{t('quotation.exchangeRates.dialog.subtitle')}</span>
+              <span className="text-zinc-900 dark:text-zinc-100">{t('exchangeRates.dialog.title')}</span>
+              <span className="text-xs font-normal text-slate-500 dark:text-slate-400">{t('exchangeRates.dialog.subtitle')}</span>
             </div>
           </DialogTitle>
           <DialogDescription className="hidden">
-            {t('quotation.exchangeRates.dialog.description')}
+            {t('exchangeRates.dialog.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -224,24 +224,24 @@ export function ExchangeRateDialog({
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
               <RefreshCw className="h-8 w-8 animate-spin text-zinc-300" />
-              <span className="text-sm font-medium">{t('quotation.loading')}</span>
+              <span className="text-sm font-medium">{t('loading')}</span>
             </div>
           ) : (
             <div className="rounded-xl border border-zinc-200 dark:border-white/10 overflow-hidden shadow-sm bg-white dark:bg-black/20">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-0 bg-zinc-50/50 dark:bg-white/5">
-                    <TableHead className={cn(styles.tableHead, "pl-6 text-zinc-600 dark:text-zinc-400")}>{t('quotation.exchangeRates.currency')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-right text-zinc-600 dark:text-zinc-400")}>{t('quotation.exchangeRates.rate')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center text-zinc-600 dark:text-zinc-400")}>{t('quotation.exchangeRates.status')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center w-[100px] text-zinc-600 dark:text-zinc-400")}>{t('quotation.actions')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "pl-6 text-zinc-600 dark:text-zinc-400")}>{t('exchangeRates.currency')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-right text-zinc-600 dark:text-zinc-400")}>{t('exchangeRates.rate')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center text-zinc-600 dark:text-zinc-400")}>{t('exchangeRates.status')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[100px] text-zinc-600 dark:text-zinc-400")}>{t('actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {localRates.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                        {t('quotation.exchangeRates.empty')}
+                        {t('exchangeRates.empty')}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -284,11 +284,11 @@ export function ExchangeRateDialog({
                           <TableCell className="text-center">
                             {rate.isOfficial ? (
                               <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800 text-[10px] px-2 h-5 shadow-sm">
-                                {t('quotation.exchangeRates.official')}
+                                {t('exchangeRates.official')}
                               </Badge>
                             ) : (
                               <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800 text-[10px] px-2 h-5 shadow-sm">
-                                {t('quotation.exchangeRates.custom')}
+                                {t('exchangeRates.custom')}
                               </Badge>
                             )}
                           </TableCell>
@@ -334,7 +334,7 @@ export function ExchangeRateDialog({
                                 variant="ghost"
                                 onClick={() => {
                                   if (isUsed) {
-                                    toast.error(t('quotation.exchangeRates.cannotEditUsedCurrency'));
+                                    toast.error(t('exchangeRates.cannotEditUsedCurrency'));
                                     return;
                                   }
                                   setEditingDraft(formatExchangeRateForEdit(rate.exchangeRate));
@@ -343,7 +343,7 @@ export function ExchangeRateDialog({
                                 }}
                                 className={cn(styles.actionButton, "text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:hover:text-blue-400")}
                                 disabled={isUsed}
-                                title={isUsed ? t('quotation.exchangeRates.cannotEditUsedCurrency') : t('quotation.edit')}
+                                title={isUsed ? t('exchangeRates.cannotEditUsedCurrency') : t('edit')}
                               >
                                 <Edit2 className="h-4 w-4" />
                               </Button>
@@ -362,7 +362,7 @@ export function ExchangeRateDialog({
              <div className="mt-0.5 min-w-4 p-1 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                <DollarSign className="w-3 h-3" />
              </div>
-             <p className="leading-relaxed opacity-90">{t('quotation.exchangeRates.dialog.info')}</p>
+             <p className="leading-relaxed opacity-90">{t('exchangeRates.dialog.info')}</p>
           </div>
         </div>
 
@@ -375,7 +375,7 @@ export function ExchangeRateDialog({
             disabled={isSaving}
             className="h-11 px-6 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 font-medium transition-all"
           >
-            {t('quotation.cancel')}
+            {t('cancel')}
           </Button>
           <Button
             type="button"
@@ -386,10 +386,10 @@ export function ExchangeRateDialog({
             {isSaving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                {t('quotation.saving')}
+                {t('saving')}
               </>
             ) : (
-              t('quotation.saveAndApply')
+              t('saveAndApply')
             )}
           </Button>
         </DialogFooter>

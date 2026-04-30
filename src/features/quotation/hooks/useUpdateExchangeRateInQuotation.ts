@@ -17,10 +17,10 @@ export const useUpdateExchangeRateInQuotation = (
       quotationApi.updateExchangeRateInQuotation(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quotationExchangeRates(quotationId) });
-      toast.success(t('quotation.exchangeRates.updateSuccess'));
+      toast.success(t('exchangeRates.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('quotation.exchangeRates.updateError'));
+      toast.error(error.message ?? t('exchangeRates.updateError'));
     },
   });
 };

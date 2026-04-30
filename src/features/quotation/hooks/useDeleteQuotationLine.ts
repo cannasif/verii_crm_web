@@ -14,10 +14,10 @@ export const useDeleteQuotationLine = (
     mutationFn: (id: number) => quotationApi.deleteQuotationLine(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quotationLines(quotationId) });
-      toast.success(t('quotation.lines.deleteSuccess'));
+      toast.success(t('lines.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('quotation.lines.deleteError'));
+      toast.error(error.message ?? t('lines.deleteError'));
     },
   });
 };

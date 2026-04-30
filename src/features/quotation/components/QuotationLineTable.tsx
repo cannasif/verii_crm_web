@@ -328,13 +328,13 @@ export function QuotationLineTable({
 
   const handleExportExcel = async () => {
     const dataToExport = lines.map(line => ({
-      [t('quotation.lines.productCode')]: line.productCode,
-      [t('quotation.lines.productName')]: line.productName,
-      [t('quotation.lines.quantity')]: line.quantity,
-      [t('quotation.lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
-      [t('quotation.lines.vatRate')]: `%${line.vatRate}`,
-      [t('quotation.lines.total')]: formatCurrency(line.lineTotal, currencyCode),
-      [t('quotation.lines.description')]: line.description || '',
+      [t('lines.productCode')]: line.productCode,
+      [t('lines.productName')]: line.productName,
+      [t('lines.quantity')]: line.quantity,
+      [t('lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
+      [t('lines.vatRate')]: `%${line.vatRate}`,
+      [t('lines.total')]: formatCurrency(line.lineTotal, currencyCode),
+      [t('lines.description')]: line.description || '',
     }));
 
     const XLSX = await import('xlsx');
@@ -347,7 +347,7 @@ export function QuotationLineTable({
   const handleExportPDF = async () => {
     await exportQuotationLinesPdf({
       fileName: 'teklif-kalemleri.pdf',
-      title: t('quotation.sections.lines'),
+      title: t('sections.lines'),
       currencyCode,
       lines,
       offerNo,
@@ -364,12 +364,12 @@ export function QuotationLineTable({
     slide.addText("Teklif Kalemleri", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
 
     const headers = [
-      t('quotation.lines.productCode'),
-      t('quotation.lines.productName'),
-      t('quotation.lines.quantity'),
-      t('quotation.lines.unitPrice'),
-      t('quotation.lines.vatRate'),
-      t('quotation.lines.total')
+      t('lines.productCode'),
+      t('lines.productName'),
+      t('lines.quantity'),
+      t('lines.unitPrice'),
+      t('lines.vatRate'),
+      t('lines.total')
     ];
 
     const rows = lines.map(line => [
@@ -395,8 +395,8 @@ export function QuotationLineTable({
     setQuickEdit(null);
     if (!linesEditable) return;
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('quotation.error'), {
-        description: t('quotation.lines.requiredFieldsMissing'),
+      toast.error(t('error'), {
+        description: t('lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -430,7 +430,7 @@ export function QuotationLineTable({
 
   const canAddLine = linesEditable && Boolean((customerId || erpCustomerCode) && representativeId && isCurrencySelected);
 
-  const headerSectionTitle = t('quotation.sections.header');
+  const headerSectionTitle = t('sections.header');
   const addLineDisableHints = useMemo(() => {
     if (canAddLine || !linesEditable) return [];
     const items: string[] = [];
@@ -626,8 +626,8 @@ export function QuotationLineTable({
 
   const handleProductSelect = async (product: ProductSelectionResult): Promise<void> => {
     if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
-      toast.error(t('quotation.error'), {
-        description: t('quotation.lines.requiredFieldsMissing'),
+      toast.error(t('error'), {
+        description: t('lines.requiredFieldsMissing'),
       });
       return;
     }
@@ -797,12 +797,12 @@ export function QuotationLineTable({
             </div>
             <div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                {t('quotation.lines.title')}
+                {t('lines.title')}
               </h3>
               <p className="text-xs text-zinc-500 font-medium">
                 {lines.length > 0
-                  ? t('quotation.lines.itemCount', { count: lines.length })
-                  : t('quotation.lines.noItems')
+                  ? t('lines.itemCount', { count: lines.length })
+                  : t('lines.noItems')
                 }
               </p>
             </div>
@@ -818,7 +818,7 @@ export function QuotationLineTable({
                   className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {t('quotation.lines.add')}
+                  {t('lines.add')}
                 </Button>
               ) : (
                 <Tooltip delayDuration={250}>
@@ -832,7 +832,7 @@ export function QuotationLineTable({
                         className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        {t('quotation.lines.add')}
+                        {t('lines.add')}
                       </Button>
                     </span>
                   </TooltipTrigger>
@@ -897,10 +897,10 @@ export function QuotationLineTable({
                 <Box className="h-8 w-8 text-zinc-300 dark:text-zinc-600" />
               </div>
               <h4 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-                {t('quotation.lines.empty')}
+                {t('lines.empty')}
               </h4>
               <p className="text-sm text-zinc-500 max-w-xs mx-auto">
-                {t('quotation.lines.emptyDescription')}
+                {t('lines.emptyDescription')}
               </p>
             </div>
           ) : (
@@ -918,15 +918,15 @@ export function QuotationLineTable({
               <table className="w-full caption-bottom text-sm min-w-[1600px] whitespace-nowrap">
                 <thead className="[&_tr]:border-b">
                   <tr className={cn("hover:bg-transparent border-b", styles.tableHeadRow)}>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('quotation.lines.stock')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('quotation.lines.unitPrice')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('quotation.lines.quantity')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount1')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount2')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('quotation.lines.discount3')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('quotation.lines.netPrice')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('lines.stock')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('lines.unitPrice')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('lines.quantity')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('lines.discount1')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('lines.discount2')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('lines.discount3')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('lines.netPrice')}</th>
                     {linesEditable && (
-                      <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('quotation.actions')}</th>
+                      <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('actions')}</th>
                     )}
                   </tr>
                 </thead>
@@ -968,7 +968,7 @@ export function QuotationLineTable({
                               )}
                               {line.unit && (
                                 <div className="text-[11px] font-semibold text-purple-600 dark:text-purple-300">
-                                  {t('quotation.lines.unit')}: {line.unit}
+                                  {t('lines.unit')}: {line.unit}
                                 </div>
                               )}
 
@@ -976,48 +976,48 @@ export function QuotationLineTable({
                                 <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
                                   {line.description1 && (
                                     <div className="line-clamp-1">
-                                      {t('quotation.lines.lineDetailPair', {
-                                        label: t('quotation.lines.descriptionField1Label'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.descriptionField1Label'),
                                         value: line.description1,
                                       })}
                                     </div>
                                   )}
                                   {line.description2 && (
                                     <div className="line-clamp-1">
-                                      {t('quotation.lines.lineDetailPair', {
-                                        label: t('quotation.lines.descriptionField2Label'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.descriptionField2Label'),
                                         value: line.description2,
                                       })}
                                     </div>
                                   )}
                                   {line.description3 && (
                                     <div className="line-clamp-1">
-                                      {t('quotation.lines.lineDetailPair', {
-                                        label: t('quotation.lines.descriptionField3Label'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.descriptionField3Label'),
                                         value: line.description3,
                                       })}
                                     </div>
                                   )}
                                   {line.profilDefinitionId && (
                                     <div className="line-clamp-1">
-                                      {t('quotation.lines.lineDetailPair', {
-                                        label: t('quotation.lines.windoProfileLabel'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.windoProfileLabel'),
                                         value: profilMap[line.profilDefinitionId] ?? `#${line.profilDefinitionId}`,
                                       })}
                                     </div>
                                   )}
                                   {line.demirDefinitionId && (
                                     <div className="line-clamp-1">
-                                      {t('quotation.lines.lineDetailPair', {
-                                        label: t('quotation.lines.windoRebarLabel'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.windoRebarLabel'),
                                         value: demirMap[line.demirDefinitionId] ?? `#${line.demirDefinitionId}`,
                                       })}
                                     </div>
                                   )}
                                   {line.vidaDefinitionId && (
                                     <div className="line-clamp-1">
-                                      {t('quotation.lines.lineDetailPair', {
-                                        label: t('quotation.lines.windoScrewLabel'),
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.windoScrewLabel'),
                                         value: vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`,
                                       })}
                                     </div>
@@ -1030,7 +1030,7 @@ export function QuotationLineTable({
                               {hasApprovalWarning && (
                                 <Badge variant="outline" className="h-5 bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800 gap-1 px-1.5 shadow-sm">
                                   <AlertTriangle className="w-3 h-3" />
-                                  <span className="text-[10px] font-bold">{t('quotation.lines.approvalRequired')}</span>
+                                  <span className="text-[10px] font-bold">{t('lines.approvalRequired')}</span>
                                 </Badge>
                               )}
 
@@ -1098,7 +1098,7 @@ export function QuotationLineTable({
                                 'font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm',
                                 lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:ring-2 hover:ring-pink-500/25 rounded-lg'
                               )}
-                              title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                              title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 beginQuickEdit(line, 'unitPrice');
@@ -1156,7 +1156,7 @@ export function QuotationLineTable({
                                 'inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums',
                                 lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:border-pink-400/60'
                               )}
-                              title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                              title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 beginQuickEdit(line, 'quantity');
@@ -1233,7 +1233,7 @@ export function QuotationLineTable({
                                     lineAllowsQuickEdit(line) &&
                                     'cursor-pointer hover:ring-2 hover:ring-pink-500/20'
                                   )}
-                                  title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                                  title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                                   onDoubleClick={(e) => {
                                     e.stopPropagation();
                                     beginQuickEdit(line, discount.field);
@@ -1253,7 +1253,7 @@ export function QuotationLineTable({
                                     lineAllowsQuickEdit(line) &&
                                     'cursor-pointer hover:border-pink-400/50 hover:text-zinc-600 dark:hover:text-zinc-400'
                                   )}
-                                  title={t('quotation.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
+                                  title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                                   onDoubleClick={(e) => {
                                     e.stopPropagation();
                                     beginQuickEdit(line, discount.field);
@@ -1327,7 +1327,7 @@ export function QuotationLineTable({
                   <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
                 </div>
               </div>
-              {t('quotation.lines.addTitle')}
+              {t('lines.addTitle')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -1372,7 +1372,7 @@ export function QuotationLineTable({
                   <Edit className="h-5 w-5 text-blue-600 dark:text-blue-500" />
                 </div>
               </div>
-              {t('quotation.lines.editTitle')}
+              {t('lines.editTitle')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -1439,13 +1439,13 @@ export function QuotationLineTable({
                 <Trash2 className="h-5 w-5" />
               </div>
               {relatedLinesCount > 1
-                ? t('quotation.lines.delete.confirmTitleMultiple')
-                : t('quotation.lines.delete.confirmTitle')}
+                ? t('lines.delete.confirmTitleMultiple')
+                : t('lines.delete.confirmTitle')}
             </DialogTitle>
             <DialogDescription className="pt-2 text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
               {relatedLinesCount > 1
-                ? t('quotation.lines.delete.confirmMessageMultiple', { count: relatedLinesCount })
-                : t('quotation.lines.delete.confirmMessage')
+                ? t('lines.delete.confirmMessageMultiple', { count: relatedLinesCount })
+                : t('lines.delete.confirmMessage')
               }
             </DialogDescription>
           </DialogHeader>
@@ -1457,7 +1457,7 @@ export function QuotationLineTable({
               disabled={isDeleting}
               className="h-11 px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 font-medium transition-all"
             >
-              {t('quotation.cancel')}
+              {t('cancel')}
             </Button>
             <Button
               type="button"
@@ -1473,10 +1473,10 @@ export function QuotationLineTable({
               {isDeleting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {t('quotation.saving')}
+                  {t('saving')}
                 </>
               ) : (
-                t('quotation.delete')
+                t('delete')
               )}
             </Button>
           </DialogFooter>

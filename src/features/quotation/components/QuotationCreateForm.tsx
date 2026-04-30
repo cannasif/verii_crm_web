@@ -201,8 +201,8 @@ export function QuotationCreateForm(): ReactElement {
 
   const onSubmit = async (data: CreateQuotationSchema): Promise<void> => {
     if (lines.length === 0) {
-      toast.error(t('quotation.create.error'), {
-        description: t('quotation.lines.required'),
+      toast.error(t('create.error'), {
+        description: t('lines.required'),
       });
       return;
     }
@@ -210,8 +210,8 @@ export function QuotationCreateForm(): ReactElement {
     const noteKeys = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
     const overLimitNote = noteKeys.find((k) => (quotationNotes[k]?.length ?? 0) > 100);
     if (overLimitNote) {
-      toast.error(t('quotation.create.error'), {
-        description: t('quotation.notes.maxLengthError'),
+      toast.error(t('create.error'), {
+        description: t('notes.maxLengthError'),
       });
       return;
     }
@@ -258,7 +258,7 @@ export function QuotationCreateForm(): ReactElement {
         : String(data.quotation.currency);
 
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
-        throw new Error(t('quotation.create.invalidCurrency'));
+        throw new Error(t('create.invalidCurrency'));
       }
 
       const quotationData: CreateQuotationDto = {
@@ -301,19 +301,19 @@ export function QuotationCreateForm(): ReactElement {
         if (notesList.length > 0) {
           await quotationApi.updateNotesListByQuotationId(result.data.id, { notes: notesList });
         }
-        toast.success(t('quotation.create.success'), {
-          description: t('quotation.create.successMessage'),
+        toast.success(t('create.success'), {
+          description: t('create.successMessage'),
         });
         navigate(`/quotations/${result.data.id}`);
       } else {
-        throw new Error(result.message || t('quotation.create.errorMessage'));
+        throw new Error(result.message || t('create.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('quotation.create.errorMessage');
+      let errorMessage = t('create.errorMessage');
       if (error instanceof Error) {
         errorMessage = error.message;
       }
-      toast.error(t('quotation.create.error'), {
+      toast.error(t('create.error'), {
         description: errorMessage,
         duration: 10000,
       });
@@ -335,8 +335,8 @@ export function QuotationCreateForm(): ReactElement {
     const sampleNewRate = findExchangeRateByDovizTipi(newCurrencyNum, exchangeRates, erpRates);
 
     if (!sampleOldRate || sampleOldRate <= 0 || !sampleNewRate || sampleNewRate <= 0) {
-      toast.error(t('quotation.update.error'), {
-        description: t('quotation.exchangeRates.zeroRateError', {
+      toast.error(t('update.error'), {
+        description: t('exchangeRates.zeroRateError', {
           defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
         }),
       });
@@ -385,17 +385,17 @@ export function QuotationCreateForm(): ReactElement {
     const doc = new JsPDF();
 
     doc.setFontSize(18);
-    doc.text(t('quotation.create.title'), 14, 20);
+    doc.text(t('create.title'), 14, 20);
     doc.setFontSize(11);
-    doc.text(`${t('quotation.date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+    doc.text(`${t('date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
 
     const headers = [[
-      t('quotation.lines.productCode'),
-      t('quotation.lines.productName'),
-      t('quotation.lines.quantity'),
-      t('quotation.lines.unitPrice'),
-      t('quotation.lines.vatRate'),
-      t('quotation.lines.total')
+      t('lines.productCode'),
+      t('lines.productName'),
+      t('lines.quantity'),
+      t('lines.unitPrice'),
+      t('lines.vatRate'),
+      t('lines.total')
     ]];
 
     const data = lines.map(line => [
@@ -426,18 +426,18 @@ export function QuotationCreateForm(): ReactElement {
   const handleShareWhatsApp = async () => {
     const doc = await generatePDF();
     doc.save("teklif.pdf");
-    const text = encodeURIComponent(t('quotation.share.whatsappMessage'));
+    const text = encodeURIComponent(t('share.whatsappMessage'));
     window.open(`https://wa.me/?text=${text}`, '_blank');
-    toast.info(t('quotation.share.downloaded'));
+    toast.info(t('share.downloaded'));
   };
 
   const handleShareMail = async () => {
     const doc = await generatePDF();
     doc.save("teklif.pdf");
-    const subject = encodeURIComponent(t('quotation.share.mailSubject'));
-    const body = encodeURIComponent(t('quotation.share.mailBody'));
+    const subject = encodeURIComponent(t('share.mailSubject'));
+    const body = encodeURIComponent(t('share.mailBody'));
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
-    toast.info(t('quotation.share.downloaded'));
+    toast.info(t('share.downloaded'));
   };
 
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -446,7 +446,7 @@ export function QuotationCreateForm(): ReactElement {
 
     const isValid = await form.trigger();
     if (!isValid) {
-      toast.error(t('quotation.create.error'), {
+      toast.error(t('create.error'), {
         description: 'Zorunlu alanlar doldurulmadı.',
       });
       return;
@@ -461,17 +461,17 @@ export function QuotationCreateForm(): ReactElement {
         <form onSubmit={handleFormSubmit} className="space-y-0">
 
           <DocumentCreatePageHeader
-            title={t('quotation.create.pageTitle')}
-            description={t('quotation.create.pageDescription')}
+            title={t('create.pageTitle')}
+            description={t('create.pageDescription')}
             onBack={() => navigate(-1)}
             backLabel={t('common.back')}
-            helpTitle={t('quotation.create.helpTitle')}
-            helpTriggerLabel={t('quotation.create.helpTriggerLabel')}
+            helpTitle={t('create.helpTitle')}
+            helpTriggerLabel={t('create.helpTriggerLabel')}
             helpSteps={[
-              t('quotation.create.helpStep1'),
-              t('quotation.create.helpStep2'),
-              t('quotation.create.helpStep3'),
-              t('quotation.create.helpStep4'),
+              t('create.helpStep1'),
+              t('create.helpStep2'),
+              t('create.helpStep3'),
+              t('create.helpStep4'),
             ]}
           />
 
@@ -480,7 +480,7 @@ export function QuotationCreateForm(): ReactElement {
             <div className="flex flex-col gap-6 min-w-0 h-fit">
 
               {/* --- 1. Bölüm: Teklif Bilgileri --- */}
-              <section aria-label={t('quotation.sections.header')}>
+              <section aria-label={t('sections.header')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
                   {/* Başlık Alanı */}
                   <div className={CREATE_SECTION_HEADER_CLASSNAME}>
@@ -490,7 +490,7 @@ export function QuotationCreateForm(): ReactElement {
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                       <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                        {t('quotation.sections.header')}
+                        {t('sections.header')}
                       </h3>
                     </div>
                   </div>
@@ -516,7 +516,7 @@ export function QuotationCreateForm(): ReactElement {
               </section>
 
               {/* --- 2. Bölüm: Teklif Satırları --- */}
-              <section aria-label={t('quotation.sections.lines')}>
+              <section aria-label={t('sections.lines')}>
                 <div className={CREATE_SECTION_CARD_CLASSNAME}>
                   <div className={CREATE_SECTION_HEADER_CLASSNAME}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-bold shadow-sm">
@@ -525,7 +525,7 @@ export function QuotationCreateForm(): ReactElement {
                     <div className="flex items-center gap-2">
                       <Layers className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                       <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                        {t('quotation.sections.lines')}
+                        {t('sections.lines')}
                       </h3>
                     </div>
                   </div>
@@ -558,7 +558,7 @@ export function QuotationCreateForm(): ReactElement {
                   <div className="flex items-center gap-2">
                     <Calculator className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                     <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
-                      {t('quotation.sections.summary')}
+                      {t('sections.summary')}
                     </h3>
                   </div>
                 </div>
@@ -578,28 +578,28 @@ export function QuotationCreateForm(): ReactElement {
               className="group w-full sm:w-auto"
             >
               <X className="mr-2 h-4 w-4" />
-              {t('quotation.cancel')}
+              {t('cancel')}
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button type="button" variant="outline" className="group w-full sm:w-auto">
                   <Share2 className="mr-2 h-4 w-4" />
-                  {t('quotation.export')}
+                  {t('export')}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#130822] border-slate-100 dark:border-white/10">
                 <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer">
                   <FileDown className="mr-2 h-4 w-4 text-slate-500" />
-                  {t('quotation.exportPdf')}
+                  {t('exportPdf')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer">
                   <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
-                  {t('quotation.shareWhatsapp')}
+                  {t('shareWhatsapp')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleShareMail} className="cursor-pointer">
                   <Mail className="mr-2 h-4 w-4 text-blue-500" />
-                  {t('quotation.shareMail')}
+                  {t('shareMail')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -618,8 +618,8 @@ export function QuotationCreateForm(): ReactElement {
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending
-                  ? t('quotation.saving')
-                  : t('quotation.save')
+                  ? t('saving')
+                  : t('save')
                 }
               </Button>
             </FormSubmitTooltipWrap>

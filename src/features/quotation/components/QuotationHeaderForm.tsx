@@ -510,7 +510,7 @@ export function QuotationHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
-                            placeholder={t('quotation.select')}
+                            placeholder={t('select')}
                             className={cn(styles.selectTrigger, "px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                             disabled={readOnly}
                           />
@@ -601,7 +601,7 @@ export function QuotationHeaderForm({
                           }))}
                           value={field.value ? String(field.value) : ''}
                           onSelect={(v) => v && handleCurrencyChange(v)}
-                          placeholder={t('quotation.select')}
+                          placeholder={t('select')}
                           className={cn(
                             styles.selectTrigger,
                             "pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
@@ -637,7 +637,7 @@ export function QuotationHeaderForm({
                           hasNextPage={paymentTypeDropdown.hasNextPage}
                           isLoading={paymentTypeDropdown.isLoading}
                           isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
-                          placeholder={t('quotation.select')}
+                          placeholder={t('select')}
                           className={cn(styles.selectTrigger, "pl-10 hover:border-pink-400 dark:hover:border-zinc-700 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                         />
                       </FormControl>
@@ -707,7 +707,7 @@ export function QuotationHeaderForm({
                               hasNextPage={deliveryMethodDropdown.hasNextPage}
                               isLoading={deliveryMethodDropdown.isLoading}
                               isFetchingNextPage={deliveryMethodDropdown.isFetchingNextPage}
-                              placeholder={t('quotation.select')}
+                              placeholder={t('select')}
                               className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                               disabled={readOnly}
                             />
@@ -795,7 +795,7 @@ export function QuotationHeaderForm({
                                 .map((d) => ({ value: d.id.toString(), label: d.serialPrefix || String(d.id) }))}
                               value={field.value?.toString() || ''}
                               onSelect={(v) => field.onChange(v ? Number(v) : null)}
-                              placeholder={t('quotation.select')}
+                              placeholder={t('select')}
                               className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                               disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
                             />
@@ -858,7 +858,7 @@ export function QuotationHeaderForm({
                               className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 max-w-full h-auto py-1 text-xs border border-purple-200 dark:border-purple-500/20 shadow-sm"
                             >
                               <span className="mr-1.5 break-all whitespace-normal">
-                                {(quotationNotes[key] ?? '').trim() || `${t('quotation.notes.noteLabel')} ${idx + 1}`}
+                                {(quotationNotes[key] ?? '').trim() || `${t('notes.noteLabel')} ${idx + 1}`}
                               </span>
                               {!readOnly && onQuotationNotesChange && (
                                 <button
@@ -952,10 +952,10 @@ export function QuotationHeaderForm({
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
             <Button variant="outline" onClick={handleCurrencyChangeCancel} className="rounded-xl border-zinc-200 dark:border-zinc-800">
-              {t('quotation.cancel')}
+              {t('cancel')}
             </Button>
             <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-pink-600 hover:bg-pink-700 text-white shadow-lg shadow-pink-500/20 transition-all">
-              {t('quotation.confirm')}
+              {t('confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

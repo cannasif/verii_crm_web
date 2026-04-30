@@ -113,7 +113,7 @@ export function WaitingApprovalsPage(): ReactElement {
   const [rejectReason, setRejectReason] = useState('');
 
   useEffect(() => {
-    setPageTitle(t('quotation.waitingApprovals.title'));
+    setPageTitle(t('waitingApprovals.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -220,7 +220,7 @@ export function WaitingApprovalsPage(): ReactElement {
         StepOrder: approval.stepOrder,
         ApprovedByUserFullName: approval.approvedByUserFullName ?? '-',
         ActionDate: formatDate(approval.actionDate),
-        Status: approval.statusName ?? t('quotation.waitingApprovals.waiting'),
+        Status: approval.statusName ?? t('waitingApprovals.waiting'),
       })),
     [currentPageRows, formatDate, t]
   );
@@ -252,7 +252,7 @@ export function WaitingApprovalsPage(): ReactElement {
         StepOrder: approval.stepOrder,
         ApprovedByUserFullName: approval.approvedByUserFullName ?? '-',
         ActionDate: formatDate(approval.actionDate),
-        Status: approval.statusName ?? t('quotation.waitingApprovals.waiting'),
+        Status: approval.statusName ?? t('waitingApprovals.waiting'),
       })),
     };
   }, [appliedFilters, exportColumns, formatDate, searchTerm, sortBy, sortDirection, t]);
@@ -299,7 +299,7 @@ export function WaitingApprovalsPage(): ReactElement {
     if (key === 'Status') {
       return (
         <Badge variant={approval.status === 1 ? 'default' : 'secondary'}>
-          {approval.statusName || t('quotation.waitingApprovals.waiting')}
+          {approval.statusName || t('waitingApprovals.waiting')}
         </Badge>
       );
     }
@@ -342,7 +342,7 @@ export function WaitingApprovalsPage(): ReactElement {
         className="gap-1"
       >
         <Check className="h-4 w-4" />
-        {t('quotation.approval.approve')}
+        {t('approval.approve')}
       </Button>
       <Button
         variant="destructive"
@@ -355,7 +355,7 @@ export function WaitingApprovalsPage(): ReactElement {
         className="gap-1"
       >
         <X className="h-4 w-4" />
-        {t('quotation.approval.reject')}
+        {t('approval.reject')}
       </Button>
     </div>
   );
@@ -369,7 +369,7 @@ export function WaitingApprovalsPage(): ReactElement {
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={() => navigate('/quotations')}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('quotation.back')}
+          {t('back')}
         </Button>
       </div>
 
@@ -377,7 +377,7 @@ export function WaitingApprovalsPage(): ReactElement {
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
           <CardTitle className={cn(MANAGEMENT_LIST_CARD_TITLE_CLASSNAME, 'flex items-center gap-2')}>
             <Clock className="h-5 w-5" />
-            {t('quotation.waitingApprovals.title')}
+            {t('waitingApprovals.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
@@ -420,7 +420,7 @@ export function WaitingApprovalsPage(): ReactElement {
                 },
                 isLoading: waitingApprovalsQuery.isFetching,
                 cooldownSeconds: 60,
-                label: t('quotation.list.refresh', { defaultValue: 'Yenile' }),
+                label: t('list.refresh', { defaultValue: 'Yenile' }),
               },
             } satisfies DataTableActionBarProps}
             columns={columns}
@@ -434,12 +434,12 @@ export function WaitingApprovalsPage(): ReactElement {
             renderSortIcon={renderSortIcon}
             isLoading={waitingApprovalsQuery.isLoading || waitingApprovalsQuery.isFetching}
             isError={waitingApprovalsQuery.isError}
-            loadingText={t('quotation.loading')}
-            errorText={t('quotation.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-            emptyText={t('quotation.waitingApprovals.noApprovals')}
+            loadingText={t('loading')}
+            errorText={t('loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+            emptyText={t('waitingApprovals.noApprovals')}
             minTableWidthClassName="min-w-[1500px]"
             showActionsColumn
-            actionsHeaderLabel={t('quotation.actions')}
+            actionsHeaderLabel={t('actions')}
             renderActionsCell={renderActionsCell}
             iconOnlyActions={false}
             rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
@@ -454,8 +454,8 @@ export function WaitingApprovalsPage(): ReactElement {
             hasNextPage={hasNextPage}
             onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
             onNextPage={() => setPageNumber((prev) => prev + 1)}
-            previousLabel={t('quotation.previous')}
-            nextLabel={t('quotation.next')}
+            previousLabel={t('previous')}
+            nextLabel={t('next')}
             paginationInfoText={t('common.paginationInfo', {
               start: startRow,
               end: endRow,
@@ -473,12 +473,12 @@ export function WaitingApprovalsPage(): ReactElement {
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('quotation.approval.rejectTitle')}</DialogTitle>
-            <DialogDescription>{t('quotation.approval.rejectDescription')}</DialogDescription>
+            <DialogTitle>{t('approval.rejectTitle')}</DialogTitle>
+            <DialogDescription>{t('approval.rejectDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <Textarea
-              placeholder={t('quotation.approval.rejectReasonPlaceholder')}
+              placeholder={t('approval.rejectReasonPlaceholder')}
               value={rejectReason}
               onChange={(event) => setRejectReason(event.target.value)}
               maxLength={500}
@@ -495,14 +495,14 @@ export function WaitingApprovalsPage(): ReactElement {
               }}
               disabled={rejectAction.isPending}
             >
-              {t('quotation.cancel')}
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleRejectConfirm}
               disabled={rejectAction.isPending}
             >
-              {rejectAction.isPending ? t('quotation.loading') : t('quotation.approval.reject')}
+              {rejectAction.isPending ? t('loading') : t('approval.reject')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -88,7 +88,7 @@ export function QuotationExchangeRateForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-              {t('quotation.exchangeRates.title')}
+              {t('exchangeRates.title')}
             </h3>
             <p className="text-xs text-zinc-500">
               Manuel kur girişi ve yönetimi
@@ -99,7 +99,7 @@ export function QuotationExchangeRateForm({
         <div className="grid grid-cols-1 gap-5 md:grid-cols-12 items-end">
           {/* Para Birimi Seçimi */}
           <div className="md:col-span-3">
-            <Label className={styles.label}>{t('quotation.exchangeRates.currency')}</Label>
+            <Label className={styles.label}>{t('exchangeRates.currency')}</Label>
             <VoiceSearchCombobox
               options={currencyOptions
                 .filter((opt) => !exchangeRates.some((er) => er.dovizTipi === opt.dovizTipi))
@@ -110,14 +110,14 @@ export function QuotationExchangeRateForm({
               value={newDovizTipi === '' ? '' : String(newDovizTipi)}
               onSelect={(v) => setNewDovizTipi(v ? parseInt(v, 10) : '')}
               isLoading={isCurrencyLoading}
-              placeholder={t('quotation.select')}
+              placeholder={t('select')}
               className={styles.inputBase}
             />
           </div>
 
           {/* Kur Değeri */}
           <div className="md:col-span-3">
-            <Label className={styles.label}>{t('quotation.exchangeRates.rate')}</Label>
+            <Label className={styles.label}>{t('exchangeRates.rate')}</Label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
                 <Calculator className="h-4 w-4" />
@@ -136,7 +136,7 @@ export function QuotationExchangeRateForm({
 
           {/* Tarih */}
           <div className="md:col-span-3">
-            <Label className={styles.label}>{t('quotation.exchangeRates.date')}</Label>
+            <Label className={styles.label}>{t('exchangeRates.date')}</Label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
                 <Calendar className="h-4 w-4" />
@@ -160,7 +160,7 @@ export function QuotationExchangeRateForm({
                 className="data-[state=checked]:bg-emerald-600"
               />
               <Label htmlFor="isOfficial" className="mb-0 text-[10px] font-medium cursor-pointer">
-                {t('quotation.exchangeRates.isOfficial')}
+                {t('exchangeRates.isOfficial')}
               </Label>
             </div>
             
@@ -171,7 +171,7 @@ export function QuotationExchangeRateForm({
               className="h-10 px-4 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all border-0 flex-1 font-bold"
             >
               <Plus className="h-4 w-4 mr-1.5" />
-              {t('quotation.add')}
+              {t('add')}
             </Button>
           </div>
         </div>
@@ -183,11 +183,11 @@ export function QuotationExchangeRateForm({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-0">
-                <TableHead className={cn(styles.tableHead, "pl-6")}>{t('quotation.exchangeRates.currency')}</TableHead>
-                <TableHead className={cn(styles.tableHead, "text-right")}>{t('quotation.exchangeRates.rate')}</TableHead>
-                <TableHead className={cn(styles.tableHead, "text-center")}>{t('quotation.exchangeRates.date')}</TableHead>
-                <TableHead className={cn(styles.tableHead, "text-center")}>{t('quotation.exchangeRates.isOfficial')}</TableHead>
-                <TableHead className={cn(styles.tableHead, "text-center w-[80px]")}>{t('quotation.actions')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "pl-6")}>{t('exchangeRates.currency')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "text-right")}>{t('exchangeRates.rate')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "text-center")}>{t('exchangeRates.date')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "text-center")}>{t('exchangeRates.isOfficial')}</TableHead>
+                <TableHead className={cn(styles.tableHead, "text-center w-[80px]")}>{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -207,11 +207,11 @@ export function QuotationExchangeRateForm({
                     <TableCell className="text-center">
                       {rate.isOfficial ? (
                         <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800 text-[10px] px-2 h-5">
-                          {t('quotation.exchangeRates.official')}
+                          {t('exchangeRates.official')}
                         </Badge>
                       ) : (
                         <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800 text-[10px] px-2 h-5">
-                          {t('quotation.exchangeRates.custom')}
+                          {t('exchangeRates.custom')}
                         </Badge>
                       )}
                     </TableCell>
@@ -234,7 +234,7 @@ export function QuotationExchangeRateForm({
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-8 text-center text-zinc-400 dark:text-zinc-600">
-          <p className="text-sm">{t('quotation.exchangeRates.empty')}</p>
+          <p className="text-sm">{t('exchangeRates.empty')}</p>
         </div>
       )}
     </div>

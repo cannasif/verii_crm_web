@@ -15,10 +15,10 @@ export const useUpdateQuotationLines = (
     mutationFn: (dtos: QuotationLineGetDto[]) => quotationApi.updateQuotationLines(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quotationLines(quotationId) });
-      toast.success(t('quotation.lines.updateSuccess'));
+      toast.success(t('lines.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? t('quotation.lines.updateError'));
+      toast.error(error.message ?? t('lines.updateError'));
     },
   });
 };
