@@ -16,6 +16,8 @@ import {
   List,
   MinusCircle,
   Package,
+  RotateCcw,
+  Loader2,
   Search,
   ShoppingBag,
   Sparkles,
@@ -26,7 +28,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { categoryDefinitionsApi } from '@/features/category-definitions/api/category-definitions-api';
+import {
+  buildAncestorChainFromRoot,
+  buildCategoryIdIndex,
+  fetchCatalogCategoryTreeFlat,
+  filterCategoryNodesForClientSearch,
+  MAX_CATEGORY_CLIENT_SEARCH_RESULTS,
+  tokenizeCategorySearchQuery,
+} from '@/features/category-definitions/utils/catalog-category-tree-client';
 import type {
   CatalogCategoryNodeDto,
   CatalogStockItemDto,
@@ -358,7 +370,10 @@ export function CatalogStockSelectDialog({
   /** Yalnızca max-lg: dar ekranda accordion; xl+ iki sütun düzeni değişmez */
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(true);
   const [mobileStocksOpen, setMobileStocksOpen] = useState(true);
+  const [categoryClientSearch, setCategoryClientSearch] = useState('');
+  const [categorySearchShowBranches, setCategorySearchShowBranches] = useState(false);
   const debouncedStockSearch = useDebouncedValue(stockSearch, 300);
+  const debouncedCategoryClientSearch = useDebouncedValue(categoryClientSearch, 320);
   const wasOpenRef = useRef(false);
   const initialDraftSnapshotRef = useRef<ProductSelectionResult[]>([]);
   const documentLinesSnapshotRef = useRef<ProductSelectionResult[]>([]);
@@ -380,6 +395,8 @@ export function CatalogStockSelectDialog({
       setStockLayoutMode('list');
       setMobileCategoriesOpen(true);
       setMobileStocksOpen(true);
+      setCategoryClientSearch('');
+      setCategorySearchShowBranches(false);
       wasOpenRef.current = false;
       initialDraftSnapshotRef.current = [];
       documentLinesSnapshotRef.current = [];
@@ -427,6 +444,55 @@ export function CatalogStockSelectDialog({
     queryFn: () => categoryDefinitionsApi.getCatalogCategories(selectedCatalog!.id, currentParentCategoryId),
     enabled: open && selectedCatalog != null,
   });
+
+  const fullCategoryTreeQuery = useQuery({
+    queryKey: ['catalog-client-full-tree', selectedCatalog?.id],
+    queryFn: (): Promise<CatalogCategoryNodeDto[]> => fetchCatalogCategoryTreeFlat(selectedCatalog!.id),
+    enabled: open && selectedCatalog != null,
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: 86_400_000,
+    retry: 1,
+  });
+
+  const categoryClientSearchResults = useMemo((): CatalogCategoryNodeDto[] => {
+    const flat = fullCategoryTreeQuery.data;
+    if (!flat?.length) {
+      return [];
+    }
+    return filterCategoryNodesForClientSearch(flat, debouncedCategoryClientSearch, {
+      includeBranches: categorySearchShowBranches,
+    });
+  }, [
+    fullCategoryTreeQuery.data,
+    debouncedCategoryClientSearch,
+    categorySearchShowBranches,
+  ]);
+
+  const handleCategoryClientSearchPick = useCallback(
+    (node: CatalogCategoryNodeDto): void => {
+      const flat = fullCategoryTreeQuery.data;
+      if (!flat?.length) {
+        return;
+      }
+      const byId = buildCategoryIdIndex(flat);
+      const chain = buildAncestorChainFromRoot(node, byId);
+      if (chain.length === 0) {
+        return;
+      }
+      if (node.hasChildren) {
+        setNavigationPath(chain);
+        setSelectedLeafCategory(null);
+      } else {
+        setNavigationPath(chain.slice(0, -1));
+        setSelectedLeafCategory(node);
+      }
+      setIncludeDescendants(false);
+      setStockSearch('');
+      setPageNumber(1);
+      setCategoryClientSearch('');
+    },
+    [fullCategoryTreeQuery.data]
+  );
 
   useEffect(() => {
     setPageNumber(1);
@@ -511,6 +577,8 @@ export function CatalogStockSelectDialog({
     setIncludeDescendants(false);
     setStockSearch('');
     setPageNumber(1);
+    setCategoryClientSearch('');
+    setCategorySearchShowBranches(false);
   };
 
   const handleCategoryClick = (category: CatalogCategoryNodeDto): void => {
@@ -536,6 +604,23 @@ export function CatalogStockSelectDialog({
     setSelectedLeafCategory(null);
     setIncludeDescendants(false);
   };
+
+  const handleResetCategoryBranch = (): void => {
+    setNavigationPath([]);
+    setSelectedLeafCategory(null);
+    setIncludeDescendants(false);
+    setStockSearch('');
+    setPageNumber(1);
+    setCategoryClientSearch('');
+  };
+
+  const canResetCategoryBranch =
+    selectedCatalog != null &&
+    (navigationPath.length > 0 ||
+      selectedLeafCategory != null ||
+      includeDescendants ||
+      stockSearch.trim() !== '' ||
+      pageNumber > 1);
 
   const handleBreadcrumbClick = (index: number): void => {
     setNavigationPath((prev) => prev.slice(0, index + 1));
@@ -1234,7 +1319,7 @@ export function CatalogStockSelectDialog({
               <div
                 className={cn(
                   'flex items-center justify-between gap-2',
-                  navigationPath.length === 0 && 'max-lg:hidden',
+                  navigationPath.length === 0 && !selectedLeafCategory && 'max-lg:hidden',
                 )}
               >
                 <div className="hidden min-w-0 items-center gap-2 lg:flex">
@@ -1247,17 +1332,41 @@ export function CatalogStockSelectDialog({
                     </div>
                   </div>
                 </div>
-                {navigationPath.length > 0 ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleBackLevel}
-                    className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-pink-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-pink-200"
-                  >
-                    <ArrowLeft className="mr-1 h-3.5 w-3.5" />
-                    {t('catalogStockPicker.back')}
-                  </Button>
+                {navigationPath.length > 0 || canResetCategoryBranch ? (
+                  <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1">
+                    {navigationPath.length > 0 ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleBackLevel}
+                        className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-pink-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-pink-200"
+                      >
+                        <ArrowLeft className="mr-1 h-3.5 w-3.5" />
+                        {t('catalogStockPicker.back')}
+                      </Button>
+                    ) : null}
+                    {canResetCategoryBranch ? (
+                      <Tooltip delayDuration={250}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleResetCategoryBranch}
+                            className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-pink-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-pink-200"
+                            aria-label={t('catalogStockPicker.resetBranchTooltip')}
+                          >
+                            <RotateCcw className="mr-1 h-3.5 w-3.5" />
+                            {t('catalogStockPicker.resetBranch')}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs text-xs">
+                          {t('catalogStockPicker.resetBranchTooltip')}
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
 
@@ -1288,6 +1397,113 @@ export function CatalogStockSelectDialog({
                   </span>
                 ))}
               </HorizontalScrollRow>
+
+              <div className="mt-3 space-y-2 border-t border-slate-200/95 pt-3 dark:border-white/[0.06]">
+                {fullCategoryTreeQuery.isError ? (
+                  <div className="flex flex-wrap items-center gap-2 rounded-lg border border-red-300/50 bg-red-50/90 px-2.5 py-2 text-[11px] text-red-800 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-100">
+                    <span className="min-w-0 flex-1 leading-snug">{t('catalogStockPicker.categoryClientSearchError')}</span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-7 shrink-0 border-red-300/60 text-xs text-red-800 hover:bg-red-100 dark:border-red-500/40 dark:text-red-100 dark:hover:bg-red-950/60"
+                      onClick={() => void fullCategoryTreeQuery.refetch()}
+                    >
+                      {t('catalogStockPicker.categoryClientSearchRetry')}
+                    </Button>
+                  </div>
+                ) : null}
+
+                {fullCategoryTreeQuery.isLoading ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-dashed border-slate-300/90 bg-slate-50/80 px-2.5 py-2 text-[11px] text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-400">
+                    <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-pink-500" aria-hidden />
+                    <span>{t('catalogStockPicker.categoryClientSearchLoadingTree')}</span>
+                  </div>
+                ) : fullCategoryTreeQuery.data?.length ? (
+                  <p className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
+                    {t('catalogStockPicker.categoryClientSearchFootnote')}
+                  </p>
+                ) : null}
+
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-2.5 top-2 h-3.5 w-3.5 text-pink-500/70 dark:text-pink-400/70" aria-hidden />
+                  <Input
+                    value={categoryClientSearch}
+                    onChange={(e) => setCategoryClientSearch(e.target.value)}
+                    placeholder={t('catalogStockPicker.categoryClientSearchPlaceholder')}
+                    disabled={!fullCategoryTreeQuery.data?.length || fullCategoryTreeQuery.isLoading}
+                    className="h-9 rounded-xl border border-slate-300/90 bg-white pl-8 text-xs text-slate-900 shadow-sm placeholder:text-slate-500 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 sm:h-9 sm:pl-9"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between gap-2">
+                  <Label
+                    htmlFor="catalog-category-search-branches"
+                    className="cursor-pointer text-[11px] font-medium text-slate-700 dark:text-slate-300"
+                  >
+                    {t('catalogStockPicker.categoryClientSearchShowBranches')}
+                  </Label>
+                  <Switch
+                    id="catalog-category-search-branches"
+                    checked={categorySearchShowBranches}
+                    onCheckedChange={setCategorySearchShowBranches}
+                    disabled={!fullCategoryTreeQuery.data?.length || fullCategoryTreeQuery.isLoading}
+                  />
+                </div>
+
+                {tokenizeCategorySearchQuery(debouncedCategoryClientSearch).length > 0 ? (
+                  <div className="max-h-[min(40vh,220px)] overflow-y-auto rounded-xl border border-slate-300/90 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
+                    {fullCategoryTreeQuery.isLoading ? (
+                      <div className="flex items-center justify-center gap-2 px-3 py-6 text-xs text-slate-500 dark:text-slate-400">
+                        <Loader2 className="h-4 w-4 animate-spin text-pink-500" aria-hidden />
+                      </div>
+                    ) : categoryClientSearchResults.length === 0 ? (
+                      <div className="px-3 py-4 text-center text-[11px] text-slate-500 dark:text-slate-400">
+                        {t('catalogStockPicker.categoryClientSearchEmpty')}
+                      </div>
+                    ) : (
+                      <ul className="divide-y divide-slate-200/90 dark:divide-white/[0.06]">
+                        {categoryClientSearchResults.map((row) => (
+                          <li key={row.catalogCategoryId}>
+                            <button
+                              type="button"
+                              onClick={() => handleCategoryClientSearchPick(row)}
+                              className="flex w-full flex-col gap-0.5 px-3 py-2 text-left transition-colors hover:bg-pink-50/90 dark:hover:bg-pink-500/10"
+                            >
+                              <span className="text-[12px] font-semibold leading-tight text-slate-900 dark:text-slate-100">
+                                {row.name}
+                                {row.hasChildren ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="ml-2 align-middle text-[9px] font-normal text-cyan-700 dark:text-cyan-300"
+                                  >
+                                    {t('catalogStockPicker.subCategoryBadge')}
+                                  </Badge>
+                                ) : (
+                                  <Badge
+                                    variant="outline"
+                                    className="ml-2 align-middle text-[9px] font-normal text-pink-700 dark:text-pink-300"
+                                  >
+                                    {t('catalogStockPicker.leafBadge')}
+                                  </Badge>
+                                )}
+                              </span>
+                              <span className="line-clamp-2 font-mono text-[10px] leading-snug text-slate-500 dark:text-slate-400">
+                                {row.fullPath ?? row.code}
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {categoryClientSearchResults.length >= MAX_CATEGORY_CLIENT_SEARCH_RESULTS ? (
+                      <div className="border-t border-slate-200/90 px-3 py-2 text-[10px] text-slate-500 dark:border-white/[0.06] dark:text-slate-400">
+                        {t('catalogStockPicker.categoryClientSearchCapped', { count: MAX_CATEGORY_CLIENT_SEARCH_RESULTS })}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
             </div>
 
             <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-2.5 py-2 [-webkit-overflow-scrolling:touch] sm:px-3 sm:py-2.5">
