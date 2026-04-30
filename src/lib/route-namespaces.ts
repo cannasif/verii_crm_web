@@ -54,7 +54,7 @@ const ROUTE_NAMESPACE_ENTRIES: Array<{ match: (pathname: string) => boolean; nam
   { match: (pathname) => pathname.startsWith('/profile'), namespaces: ['user-detail-management'] },
 ];
 
-export const GLOBAL_ROUTE_NAMESPACES = ['common', 'notification'] as const;
+export const GLOBAL_ROUTE_NAMESPACES = ['common', 'notification', 'activity-image'] as const;
 
 function deriveNamespacesFromPath(pathname: string): string[] {
   const segments = pathname.split('/').filter(Boolean);
