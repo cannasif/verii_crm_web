@@ -3,6 +3,7 @@
   "editDescriptionSubtitle": "Aggiorna la descrizione dell'immagine",
   "description": "Description",
   "descriptionPlaceholder": "Inserisci una descrizione dell'immagine...",
+  "descriptionMaxLength": "La descrizione non può superare i 500 caratteri",
   "saveActivityFirst": "Salva prima l'attività",
   "saveActivityFirstDescription": "Per aggiungere un'immagine, devi prima salvare l'attività.",
   "saveAndUpload": "Salva e carica immagine",

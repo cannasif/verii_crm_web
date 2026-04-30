@@ -3,6 +3,7 @@
   "editDescriptionSubtitle": "Resim açıklamasını güncelleyin",
   "description": "Açıklama",
   "descriptionPlaceholder": "Resim hakkında açıklama girin...",
+  "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir",
   "saveActivityFirst": "Önce Aktivite Kaydet",
   "saveActivityFirstDescription": "Resim eklemek için önce aktiviteyi kaydetmelisiniz.",
   "saveAndUpload": "Kaydet ve Resim Yükle",

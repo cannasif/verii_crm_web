@@ -3,6 +3,7 @@
   "editDescriptionSubtitle": "تحديث وصف الصورة",
   "description": "Description",
   "descriptionPlaceholder": "أدخل وصفًا للصورة...",
+  "descriptionMaxLength": "يجب ألا يتجاوز الوصف 500 حرفًا",
   "saveActivityFirst": "احفظ النشاط أولاً",
   "saveActivityFirstDescription": "لإضافة صورة، يجب عليك أولاً حفظ النشاط.",
   "saveAndUpload": "حفظ وتحميل الصورة",
