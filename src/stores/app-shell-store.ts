@@ -16,6 +16,7 @@ import {
   getSystemSettingsCacheEntry,
   useSystemSettingsStore,
 } from '@/stores/system-settings-store';
+import { ensurePermissionDefinitionsSynced } from '@/features/access-control/utils/permission-definition-sync';
 
 export const APP_SHELL_USER_SUMMARY_TTL_MS = 30 * 60 * 1000;
 export const APP_SHELL_UNREAD_COUNT_TTL_MS = 60 * 1000;
@@ -224,6 +225,17 @@ export const useAppShellStore = create<AppShellStoreState>()(
               useSystemSettingsStore.getState().setSettings(bootstrap.systemSettings);
               usePermissionsStore.getState().setPermissions(bootstrap.permissions.userId, bootstrap.permissions);
               await applySystemLanguageIfNeeded();
+
+              runAsyncTask(async () => {
+                try {
+                  await ensurePermissionDefinitionsSynced({
+                    userId: bootstrap.permissions.userId,
+                    permissions: bootstrap.permissions,
+                  });
+                } catch {
+                  // Permission definition sync is best-effort and should never block login/bootstrap.
+                }
+              });
             } else if (settingsEntry.hasLoadedFromApi) {
               await applySystemLanguageIfNeeded();
             }
