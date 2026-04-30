@@ -38,7 +38,13 @@ import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
-import { getPermissionDisplayLabel, getPermissionPlatform, inferPermissionPlatforms, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
+import {
+  getPermissionDisplayLabel,
+  getPermissionPlatform,
+  inferPermissionPlatforms,
+  PERMISSION_CODE_CATALOG,
+  translatePermissionLabel,
+} from '../utils/permission-config';
 
 const EMPTY_PERMISSION_DEFINITIONS: PermissionDefinitionDto[] = [];
 const PAGE_KEY = 'permission-definitions';
@@ -95,7 +101,9 @@ export function PermissionDefinitionsPage(): ReactElement {
     if (!searchTerm.trim()) return items;
     const lower = searchTerm.toLowerCase();
     return items.filter((item) => {
-      const displayName = getPermissionDisplayLabel(item.code, (key, fallback) => t(key, fallback));
+      const displayName = getPermissionDisplayLabel(item.code, (key, fallback) =>
+        translatePermissionLabel(t, key, fallback)
+      );
       return (
         item.code.toLowerCase().includes(lower) ||
         item.name.toLowerCase().includes(lower) ||
@@ -111,7 +119,7 @@ export function PermissionDefinitionsPage(): ReactElement {
 
   const handleSyncFromRoutes = async (): Promise<void> => {
     const syncItems = PERMISSION_CODE_CATALOG.map((code) => {
-      const name = getPermissionDisplayLabel(code, (key, fallback) => t(key, fallback));
+      const name = getPermissionDisplayLabel(code, (key, fallback) => translatePermissionLabel(t, key, fallback));
       return { code, name, isActive: true, ...inferPermissionPlatforms(code) };
     });
     await syncMutation.mutateAsync({
@@ -174,13 +182,16 @@ export function PermissionDefinitionsPage(): ReactElement {
   const exportColumns = baseColumns;
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      filteredItems.map((item) => ({
-        code: item.code,
-        name: getPermissionDisplayLabel(item.code, (key, fallback) => t(key, fallback)),
-        platform: t(`permissionDefinitions.platform.${getPermissionPlatform(item.code, item.availableOnWeb, item.availableOnMobile)}`),
-        isActive: item.isActive ? t('common.yes') : t('common.no'),
-        updatedDate: item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-',
-      })),
+      filteredItems.map((item) => {
+        const platform = getPermissionPlatform(item.code, item.availableOnWeb, item.availableOnMobile);
+        return {
+          code: item.code,
+          name: getPermissionDisplayLabel(item.code, (key, fallback) => translatePermissionLabel(t, key, fallback)),
+          platform: translatePermissionLabel(t, `permissionDefinitions.platform.${platform}`, platform),
+          isActive: item.isActive ? t('common.yes') : t('common.no'),
+          updatedDate: item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-',
+        };
+      }),
     [filteredItems, t]
   );
 
@@ -380,10 +391,14 @@ export function PermissionDefinitionsPage(): ReactElement {
                     return (
                       <div className="flex flex-col">
                         <span>
-                          {getPermissionDisplayLabel(row.code, (key, fallback) => t(key, fallback))}
+                          {getPermissionDisplayLabel(row.code, (key, fallback) =>
+                            translatePermissionLabel(t, key, fallback)
+                          )}
                         </span>
                         {(() => {
-                          const displayName = getPermissionDisplayLabel(row.code, (key, fallback) => t(key, fallback));
+                          const displayName = getPermissionDisplayLabel(row.code, (key, fallback) =>
+                            translatePermissionLabel(t, key, fallback)
+                          );
                           const storedName = row.name;
                           if (storedName.trim().toLowerCase() === displayName.trim().toLowerCase()) return null;
                           return (
@@ -395,7 +410,7 @@ export function PermissionDefinitionsPage(): ReactElement {
                   }
                   if (key === 'platform') {
                     const platform = getPermissionPlatform(row.code, row.availableOnWeb, row.availableOnMobile);
-                    const label = t(`permissionDefinitions.platform.${platform}`);
+                    const label = translatePermissionLabel(t, `permissionDefinitions.platform.${platform}`, platform);
                     const className =
                       platform === 'both'
                         ? 'bg-linear-to-r from-fuchsia-500/15 to-cyan-500/15 text-fuchsia-700 dark:text-fuchsia-200 border-fuchsia-300/40 dark:border-fuchsia-500/30'

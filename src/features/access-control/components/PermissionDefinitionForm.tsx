@@ -30,7 +30,7 @@ import {
 } from '../schemas/permission-definition-schema';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
-import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayLabel, inferPermissionPlatforms } from '../utils/permission-config';
+import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayLabel, inferPermissionPlatforms, translatePermissionLabel } from '../utils/permission-config';
 import { Badge } from '@/components/ui/badge';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { KeyRound, X, FileText, Info } from 'lucide-react';
@@ -114,7 +114,7 @@ export function PermissionDefinitionForm({
       if (currentCode && lowerCode === currentCode) return true;
       return !usedSet.has(lowerCode);
     }).map((code) => {
-      const title = getPermissionDisplayLabel(code, (key, fallback) => t(key, fallback));
+      const title = getPermissionDisplayLabel(code, (key, fallback) => translatePermissionLabel(t, key, fallback));
       return { value: code, label: `${title} (${code})` };
     });
   }, [t, usedCodes, item?.code]);
@@ -176,7 +176,9 @@ export function PermissionDefinitionForm({
                           modal
                           onValueChange={(value) => {
                             field.onChange(value);
-                            const title = getPermissionDisplayLabel(value, (key, fallback) => t(key, fallback));
+                            const title = getPermissionDisplayLabel(value, (key, fallback) =>
+                              translatePermissionLabel(t, key, fallback)
+                            );
                             const platforms = inferPermissionPlatforms(value);
                             if (!form.getValues('name') && title) {
                               form.setValue('name', title, { shouldDirty: true });
