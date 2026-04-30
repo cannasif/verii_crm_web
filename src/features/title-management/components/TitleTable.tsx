@@ -63,11 +63,11 @@ interface TitleTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<TitleDto>[] => [
-  { key: 'id', label: t('titleManagement.table.id'), type: 'id', className: 'w-[100px]' },
-  { key: 'titleName', label: t('titleManagement.table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
-  { key: 'code', label: t('titleManagement.table.code'), type: 'text', className: 'w-[140px]' },
-  { key: 'createdDate', label: t('titleManagement.table.createdDate'), type: 'date', className: 'w-[160px]' },
-  { key: 'createdByFullUser', label: t('titleManagement.table.createdBy'), type: 'user', className: 'w-[160px]' },
+  { key: 'id', label: t('table.id'), type: 'id', className: 'w-[100px]' },
+  { key: 'titleName', label: t('table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
+  { key: 'code', label: t('table.code'), type: 'text', className: 'w-[140px]' },
+  { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'w-[160px]' },
+  { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'w-[160px]' },
 ];
 
 export function TitleTable({
@@ -122,9 +122,9 @@ export function TitleTable({
         await deleteTitle.mutateAsync(selectedTitle.id);
         setDeleteDialogOpen(false);
         setSelectedTitle(null);
-        toast.success(t('titleManagement.messages.deleteSuccess'));
+        toast.success(t('messages.deleteSuccess'));
       } catch {
-        toast.error(t('titleManagement.messages.deleteError'));
+        toast.error(t('messages.deleteError'));
       }
     }
   };
@@ -204,10 +204,10 @@ export function TitleTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('titleManagement.delete.confirmTitle')}
+                {t('delete.confirmTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('titleManagement.delete.confirmMessage', {
+                {t('delete.confirmMessage', {
                   titleName: selectedTitle?.titleName || '',
                 })}
               </DialogDescription>

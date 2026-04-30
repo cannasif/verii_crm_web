@@ -80,7 +80,7 @@ export function TitleManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   useEffect(() => {
-    setPageTitle(t('titleManagement.menu'));
+    setPageTitle(t('menu'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
@@ -258,19 +258,19 @@ export function TitleManagementPage(): ReactElement {
 
   const stats = [
     {
-      title: t('titleManagement.stats.totalTitles'),
+      title: t('stats.totalTitles'),
       value: statsData?.totalTitles || 0,
       icon: Users,
       iconContainerClass: 'bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400 border-pink-100 dark:border-pink-500/20',
     },
     {
-      title: t('titleManagement.stats.activeTitles'),
+      title: t('stats.activeTitles'),
       value: statsData?.activeTitles || 0,
       icon: Activity,
       iconContainerClass: 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border-orange-100 dark:border-orange-500/20',
     },
     {
-      title: t('titleManagement.stats.newThisMonth'),
+      title: t('stats.newThisMonth'),
       value: statsData?.newThisMonth || 0,
       icon: Calendar,
       iconContainerClass: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border-blue-100 dark:border-blue-500/20',
@@ -282,10 +282,10 @@ export function TitleManagementPage(): ReactElement {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('titleManagement.menu')}
+            {t('menu')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('titleManagement.description')}
+            {t('description')}
           </p>
         </div>
         <Button
@@ -293,7 +293,7 @@ export function TitleManagementPage(): ReactElement {
           className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
-          {t('titleManagement.addButton')}
+          {t('addButton')}
         </Button>
       </div>
 
@@ -343,7 +343,7 @@ export function TitleManagementPage(): ReactElement {
             translationNamespace="title-management"
             appliedFilterCount={appliedFilterCount}
             searchValue={searchTerm}
-            searchPlaceholder={t('titleManagement.search')}
+            searchPlaceholder={t('search')}
             onSearchChange={setSearchTerm}
             leftSlot={
               <>
@@ -399,8 +399,8 @@ export function TitleManagementPage(): ReactElement {
               }}
               isLoading={isLoading}
               loadingText={t('common.loading')}
-              errorText={t('titleManagement.error', { defaultValue: 'Hata oluştu' })}
-              emptyText={t('titleManagement.noData')}
+              errorText={t('error', { defaultValue: 'Hata oluştu' })}
+              emptyText={t('noData')}
               minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
               showActionsColumn
               actionsHeaderLabel={t('common.actions')}
