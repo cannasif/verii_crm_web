@@ -34,7 +34,7 @@ export function NotificationIcon(): ReactElement {
           "hover:bg-slate-100 dark:hover:bg-white/10",
           "active:scale-95"
         )}
-        aria-label={`${t('notification.notifications')}${hasUnread ? ` (${unreadCount} ${t('notification.new')})` : ''}`}
+        aria-label={`${t('notifications')}${hasUnread ? ` (${unreadCount} ${t('new')})` : ''}`}
       >
         <Notification01Icon 
           size={20} // 22'den 20'ye düşürüldü, daha zarif

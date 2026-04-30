@@ -151,7 +151,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
         <div className="p-3.5 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider">
-              {t('notification.title')}
+              {t('title')}
             </span>
             {unreadCount > 0 && (
               <span className="text-[10px] font-bold bg-pink-500 text-white px-1.5 py-0.5 rounded-md leading-none">
@@ -163,7 +163,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
             type="button"
             onClick={handleClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all active:scale-90"
-            aria-label={t('notification.close')}
+            aria-label={t('close')}
           >
             <X size={16} />
           </button>
@@ -183,7 +183,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
                 <Search size={20} className="text-slate-300 dark:text-slate-600" />
               </div>
               <p className="text-slate-400 dark:text-slate-500 text-[13px] font-medium italic">
-                {t('notification.noNotifications')}
+                {t('noNotifications')}
               </p>
             </div>
           ) : (
@@ -211,7 +211,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
             )}
             disabled={unreadCount === 0 || markAllAsReadMutation.isPending}
           >
-            {t('notification.markAllAsRead')}
+            {t('markAllAsRead')}
           </button>
         </div>
       </DropdownMenuContent>

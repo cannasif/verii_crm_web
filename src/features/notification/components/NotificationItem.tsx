@@ -158,7 +158,7 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
       {!notification.isRead && (
         <div 
           className="w-2 h-2 rounded-full bg-pink-500 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(236,72,153,0.5)]" 
-          title={t('notification.unread')}
+          title={t('unread')}
           onClick={handleMarkAsRead}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
