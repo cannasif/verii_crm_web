@@ -71,7 +71,13 @@ export function MyReportsDashboardPage(): ReactElement {
   const navigate = useNavigate();
   const userId = useAuthStore((state) => state.user?.id);
   const { data: reports = [], isLoading, error } = useReportsList(undefined, 'assigned');
-  const [layout, setLayout] = useState<MyReportDashboardLayout>({ version: 1, updatedAt: new Date().toISOString(), items: [] });
+  const [layout, setLayout] = useState<MyReportDashboardLayout>({
+    version: 2,
+    maxCols: 3,
+    maxRows: 2,
+    updatedAt: new Date().toISOString(),
+    items: [],
+  });
   const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -101,7 +107,9 @@ export function MyReportsDashboardPage(): ReactElement {
 
   const updateItems = (updater: (items: MyReportDashboardItem[]) => MyReportDashboardItem[]): void => {
     setLayout((current) => ({
-      version: 1,
+      version: 2,
+      maxCols: current.maxCols,
+      maxRows: current.maxRows,
       updatedAt: new Date().toISOString(),
       items: updater([...current.items]).map((item, index) => ({ ...item, order: index })),
     }));
@@ -119,7 +127,7 @@ export function MyReportsDashboardPage(): ReactElement {
   };
 
   const handleReset = (): void => {
-    setLayout({ version: 1, updatedAt: new Date().toISOString(), items: [] });
+    setLayout({ version: 2, maxCols: 3, maxRows: 2, updatedAt: new Date().toISOString(), items: [] });
     setSelectedReportId(null);
   };
 
