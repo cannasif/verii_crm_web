@@ -1,14 +1,6 @@
 import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import type { ChartType, ReportWidgetAppearance, ReportWidgetTableColumnSetting } from '../types';
 import { useRechartsModule } from '@/lib/useRechartsModule';
@@ -106,10 +98,10 @@ function renderCellValueWithSetting(
 }
 
 function getColumnWidthClass(width?: ReportWidgetTableColumnSetting['width']): string {
-  if (width === 'sm') return 'w-[140px]';
-  if (width === 'md') return 'w-[220px]';
-  if (width === 'lg') return 'w-[320px]';
-  return '';
+  if (width === 'sm') return 'min-w-[140px]';
+  if (width === 'md') return 'min-w-[220px]';
+  if (width === 'lg') return 'min-w-[320px]';
+  return 'min-w-[112px]';
 }
 
 function getColumnAlignClass(align?: ReportWidgetTableColumnSetting['align'], columnLabel?: string): string {
@@ -128,7 +120,7 @@ function formatAxisTooltipLabel(value: unknown): string {
   return value;
 }
 
-export function ReportChart({ columns, rows, chartType, className, appearance, labelOverrides, isExpanded }: ReportChartProps): ReactElement {
+export function ReportChart({ columns, rows, chartType, className, appearance, labelOverrides }: ReportChartProps): ReactElement {
   const { t } = useTranslation('common');
   const [showAllSeries, setShowAllSeries] = useState(false);
   const needsRecharts =
@@ -390,57 +382,58 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
   }
 
   if (chartType === 'table') {
+    const tableText = tableDensity === 'compact' ? 'text-[11px]' : 'text-xs';
     return (
-      <div className={cn(isExpanded ? 'h-full w-full space-y-2 flex flex-col' : 'max-h-[400px] space-y-2', className)}>
-        {/* Header Table */}
-        <div className="shrink-0 overflow-hidden rounded-t-xl border-x border-t border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-white/[0.05]">
-          <Table className={cn('w-full table-fixed border-collapse', tableDensity === 'compact' ? 'text-[11px]' : 'text-xs')}>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent border-b-0">
+      <div className={cn('flex h-full min-h-0 w-full flex-col', className)}>
+        <div
+          className="h-full min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] shadow-inner"
+          style={{ scrollbarGutter: 'stable' }}
+        >
+          <table className={cn('w-max min-w-full border-collapse text-left', tableText)}>
+            <thead className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/95 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-slate-950/95">
+              <tr>
                 {orderedColumnLabels.map((col, i) => (
-                  <TableHead
+                  <th
                     key={col || i}
+                    scope="col"
                     className={cn(
-                      'whitespace-normal wrap-break-word align-middle font-black uppercase tracking-widest text-[10px] text-slate-500 dark:text-slate-400',
-                      tableDensity === 'compact' ? 'py-3' : 'py-4',
+                      'whitespace-nowrap px-3 text-left align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400',
+                      tableDensity === 'compact' ? 'py-3' : 'py-3.5',
                       getColumnWidthClass(orderedColumnSettings[i]?.width),
                       getColumnAlignClass(orderedColumnSettings[i]?.align, col),
                     )}
                   >
                     {col}
-                  </TableHead>
+                  </th>
                 ))}
-              </TableRow>
-            </TableHeader>
-          </Table>
-        </div>
-
-        {/* Body Table */}
-        <div
-          className={cn('overflow-x-auto overflow-y-auto rounded-b-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02]', isExpanded ? 'flex-1 h-full' : 'max-h-[300px]')}
-          style={{ scrollbarGutter: 'stable both-edges' }}
-        >
-          <Table className={cn('w-full table-fixed border-collapse', tableDensity === 'compact' ? 'text-[11px]' : 'text-xs')}>
-            <TableBody>
+              </tr>
+            </thead>
+            <tbody>
               {orderedRows.slice(0, 5000).map((row, ri) => (
-                <TableRow key={ri} className={cn('border-b border-slate-100 dark:border-white/5', ri % 2 === 1 ? 'bg-slate-50/30 dark:bg-white/[0.01] hover:bg-slate-50/30 dark:hover:bg-white/[0.01]' : 'hover:bg-transparent')}>
+                <tr
+                  key={ri}
+                  className={cn(
+                    'border-b border-slate-100 dark:border-white/5',
+                    ri % 2 === 1 ? 'bg-slate-50/40 dark:bg-white/[0.02]' : '',
+                  )}
+                >
                   {row.map((cell, ci) => (
-                    <TableCell
+                    <td
                       key={ci}
                       className={cn(
-                        'whitespace-normal wrap-break-word align-top font-medium text-slate-700 dark:text-slate-300',
-                        tableDensity === 'compact' ? 'py-2.5' : 'py-3.5',
+                        'whitespace-nowrap px-3 align-top font-medium text-slate-700 dark:text-slate-300',
+                        tableDensity === 'compact' ? 'py-2.5' : 'py-3',
                         getColumnWidthClass(orderedColumnSettings[ci]?.width),
                         getColumnAlignClass(orderedColumnSettings[ci]?.align, orderedColumnLabels[ci]),
                       )}
                     >
                       {renderCellValueWithSetting(cell, appearance, orderedColumnSettings[ci])}
-                    </TableCell>
+                    </td>
                   ))}
-                </TableRow>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </div>
     );
@@ -448,45 +441,58 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
 
   if (chartType === 'matrix' && matrixData) {
     return (
-      <div className={cn(isExpanded ? 'h-full w-full space-y-2 flex flex-col' : 'max-h-[400px] space-y-2', className)}>
-        {/* Header Table */}
-        <div className="shrink-0 overflow-hidden rounded-t-xl border-x border-t border-slate-200 dark:border-white/10 bg-indigo-50/30 dark:bg-indigo-500/5">
-          <Table className="w-full table-fixed border-collapse text-xs">
-            <TableHeader>
-              <TableRow className="hover:bg-transparent border-b-0">
-                <TableHead className="whitespace-normal wrap-break-word align-middle font-black uppercase tracking-widest text-[10px] text-slate-500 dark:text-slate-400 py-4">{matrixData.rowKey}</TableHead>
-                {matrixData.columnHeaders.map((header) => (
-                  <TableHead key={header} className="whitespace-normal wrap-break-word align-middle font-black uppercase tracking-widest text-[10px] text-slate-500 dark:text-slate-400 py-4">
-                    {header}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-          </Table>
-        </div>
-
-        {/* Body Table */}
+      <div className={cn('flex h-full min-h-0 w-full flex-col', className)}>
         <div
-          className={cn('overflow-x-auto overflow-y-auto rounded-b-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02]', isExpanded ? 'flex-1 h-full' : 'max-h-[300px]')}
-          style={{ scrollbarGutter: 'stable both-edges' }}
+          className="h-full min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] shadow-inner"
+          style={{ scrollbarGutter: 'stable' }}
         >
-          <Table className="w-full table-fixed border-collapse text-xs">
-            <TableBody>
+          <table className="w-max min-w-full border-collapse text-left text-xs">
+            <thead className="sticky top-0 z-20 border-b border-slate-200 bg-indigo-50/95 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-indigo-950/90">
+              <tr>
+                <th
+                  scope="col"
+                  className="min-w-[112px] whitespace-nowrap px-3 py-3.5 text-left align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400"
+                >
+                  {matrixData.rowKey}
+                </th>
+                {matrixData.columnHeaders.map((header) => (
+                  <th
+                    key={header}
+                    scope="col"
+                    className="min-w-[112px] whitespace-nowrap px-3 py-3.5 text-left align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400"
+                  >
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
               {matrixData.rowLabels.map((rowLabel, ri) => {
                 const cells = matrixData.grid.get(rowLabel) ?? {};
                 return (
-                  <TableRow key={rowLabel} className={cn('border-b border-slate-100 dark:border-white/5', ri % 2 === 1 ? 'bg-slate-50/30 dark:bg-white/[0.01] hover:bg-slate-50/30 dark:hover:bg-white/[0.01]' : 'hover:bg-transparent')}>
-                    <TableCell className="font-bold text-slate-900 dark:text-white whitespace-normal wrap-break-word align-top py-3.5 bg-slate-50/20 dark:bg-white/5">{rowLabel}</TableCell>
+                  <tr
+                    key={rowLabel}
+                    className={cn(
+                      'border-b border-slate-100 dark:border-white/5',
+                      ri % 2 === 1 ? 'bg-slate-50/40 dark:bg-white/[0.02]' : '',
+                    )}
+                  >
+                    <th
+                      scope="row"
+                      className="whitespace-nowrap bg-slate-50/80 px-3 py-3.5 text-left align-top font-bold text-slate-900 dark:bg-white/5 dark:text-white"
+                    >
+                      {rowLabel}
+                    </th>
                     {matrixData.columnHeaders.map((header) => (
-                      <TableCell key={`${rowLabel}-${header}`} className="whitespace-normal wrap-break-word align-top py-3.5 text-slate-600 dark:text-slate-400">
+                      <td key={`${rowLabel}-${header}`} className="whitespace-nowrap px-3 py-3.5 align-top text-slate-600 dark:text-slate-400">
                         {renderCellValue(cells[header] ?? '', appearance)}
-                      </TableCell>
+                      </td>
                     ))}
-                  </TableRow>
+                  </tr>
                 );
               })}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </div>
     );
@@ -603,7 +609,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
       value: Number(r[valueKeys[0]]) || 0,
     }));
     return (
-      <div className={cn('h-[300px] w-full', className)}>
+      <div className={cn('h-full w-full', className)}>
         <Recharts.ResponsiveContainer width="100%" height="100%">
           <Recharts.PieChart>
             <Recharts.Pie
@@ -612,15 +618,14 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
               nameKey="name"
               cx="50%"
               cy="50%"
-              outerRadius={80}
-              innerRadius={chartType === 'donut' ? 45 : 0}
+              outerRadius="70%"
+              innerRadius={chartType === 'donut' ? '40%' : 0}
               label
             >
               {data.map((_, i) => (
                 <Recharts.Cell key={i} fill={palette[i % palette.length]} />
               ))}
             </Recharts.Pie>
-            <Recharts.Tooltip />
             <Recharts.Tooltip formatter={(value: unknown) => {
               if (typeof value === 'number') return formatMetricValue(value, valueFormat, decimalPlaces);
               if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) return formatMetricValue(Number(value), valueFormat, decimalPlaces);
@@ -642,9 +647,9 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     const chartLabelKey = multiSeriesChartData?.axisKey ?? labelKey;
     const chartValueKeys = multiSeriesSummary?.visibleSeriesKeys ?? multiSeriesChartData?.seriesKeys ?? valueKeys;
     return (
-      <div className={cn('space-y-3', className)}>
+      <div className={cn('flex h-full min-h-0 w-full flex-col', className)}>
         {multiSeriesSummary && multiSeriesSummary.totals.length > 1 ? (
-          <div className="space-y-2 rounded-xl border bg-muted/20 p-3">
+          <div className="mb-3 shrink-0 space-y-2 rounded-xl border bg-muted/20 p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-xs font-medium text-muted-foreground">
                 {t('common.reportBuilder.seriesSummary', { count: multiSeriesSummary.totals.length })}
@@ -691,7 +696,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
             </div>
           </div>
         ) : null}
-        <div className="h-[300px] w-full">
+        <div className="min-h-0 w-full flex-1">
           <Recharts.ResponsiveContainer width="100%" height="100%">
             <ChartComponent data={chartData}>
               <Recharts.CartesianGrid strokeDasharray="3 3" />
