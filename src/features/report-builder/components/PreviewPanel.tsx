@@ -26,6 +26,9 @@ interface PreviewPanelProps {
   appearance?: ReportWidgetAppearance;
   labelOverrides?: Record<string, string>;
   headerActions?: ReactNode;
+  presentationVariant?: 'default' | 'dashboard';
+  suppressTopAccent?: boolean;
+  hideHeader?: boolean;
 }
 
 export function PreviewPanel({
@@ -42,12 +45,17 @@ export function PreviewPanel({
   appearance,
   labelOverrides,
   headerActions,
+  presentationVariant = 'default',
+  suppressTopAccent = false,
+  hideHeader = false,
 }: PreviewPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
   const resolvedTitle = title ?? t('common.reportBuilder.preview');
+  const isDashboardPresentation = presentationVariant === 'dashboard';
   const tone = appearance?.tone ?? 'neutral';
   const showStats = appearance?.showStats ?? true;
+  const showMetricPills = showStats && !isDashboardPresentation;
   const themePreset = appearance?.themePreset ?? 'executive';
   const titleAlign = appearance?.titleAlign ?? 'left';
   const sectionLabel = appearance?.sectionLabel?.trim();
@@ -58,8 +66,18 @@ export function PreviewPanel({
       : tone === 'soft'
         ? 'border-indigo-100 dark:border-indigo-500/20 bg-linear-to-br from-indigo-50/50 to-white dark:from-indigo-500/5 dark:to-slate-950'
         : 'border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/[0.03]';
-  const subtitleClassName = tone === 'bold' ? 'text-slate-400 font-medium' : 'text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest text-[9px] mt-0.5';
-  const titleClassName = tone === 'bold' ? 'text-white font-black italic uppercase' : 'text-slate-800 dark:text-white font-black uppercase tracking-tight';
+  const subtitleClassName =
+    isDashboardPresentation && tone !== 'bold'
+      ? 'text-slate-500 dark:text-slate-400 text-xs font-medium normal-case mt-0.5'
+      : tone === 'bold'
+        ? 'text-slate-400 font-medium'
+        : 'text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest text-[9px] mt-0.5';
+  const titleClassName =
+    isDashboardPresentation && tone !== 'bold'
+      ? 'text-slate-800 dark:text-white text-base font-semibold tracking-tight normal-case'
+      : tone === 'bold'
+        ? 'text-white font-black italic uppercase'
+        : 'text-slate-800 dark:text-white font-black uppercase tracking-tight';
   const sectionBadgeClassName =
     themePreset === 'performance'
       ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20'
@@ -81,9 +99,25 @@ export function PreviewPanel({
 
   return (
     <div
-      className={cn('flex h-full flex-col rounded-2xl p-4 relative overflow-hidden', toneClassName, backgroundClassName, minHeightClassName, className)}
+      className={cn(
+        'flex h-full min-w-0 flex-col rounded-2xl relative overflow-hidden',
+        isDashboardPresentation && tone !== 'bold' ? 'border-slate-200/90 bg-white p-5 shadow-md shadow-slate-900/[0.06] dark:border-white/10 dark:bg-slate-950/90 dark:shadow-black/40' : 'p-4',
+        !(isDashboardPresentation && tone !== 'bold') && toneClassName,
+        !(isDashboardPresentation && tone !== 'bold') && backgroundClassName,
+        hideHeader && 'p-3',
+        minHeightClassName,
+        className,
+      )}
     >
-      <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-80" />
+      {suppressTopAccent || hideHeader ? null : (
+        <div
+          className={cn(
+            'absolute top-0 left-0 right-0 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500',
+            isDashboardPresentation ? 'h-0.5 opacity-70' : 'h-1 opacity-80',
+          )}
+        />
+      )}
+      {hideHeader ? null : (
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className={cn(titleAlign === 'center' && 'w-full text-center')}>
           {sectionLabel ? (
@@ -94,9 +128,9 @@ export function PreviewPanel({
           <h3 className={cn('text-sm font-semibold tracking-tight', titleClassName, titleAlign === 'center' && 'text-center')}>{resolvedTitle}</h3>
           {subtitle && <p className={cn('mt-1 text-xs', subtitleClassName)}>{subtitle}</p>}
         </div>
-        {(showStats && !loading && !error && !empty) || headerActions ? (
+        {(showMetricPills && !loading && !error && !empty) || (!loading && !error && !empty && isDashboardPresentation) || headerActions ? (
           <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
-            {showStats && !loading && !error && !empty ? (
+            {showMetricPills && !loading && !error && !empty ? (
               <>
                 <span className={metricClassName}>
                   {columns.length} {t('common.reportBuilder.columns')}
@@ -119,10 +153,26 @@ export function PreviewPanel({
                 </Button>
               </>
             ) : null}
+            {!showMetricPills && !loading && !error && !empty && isDashboardPresentation ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  'size-8 shrink-0 rounded-lg transition-all',
+                  tone === 'bold' ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-indigo-500',
+                )}
+                onClick={() => setExpanded(true)}
+                aria-label={t('common.expand')}
+              >
+                <Maximize2 className="size-4" />
+              </Button>
+            ) : null}
             {headerActions}
           </div>
         ) : null}
       </div>
+      )}
       {loading && (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 text-muted-foreground text-sm">
           <Loader2 className="size-6 animate-spin" />
@@ -150,15 +200,15 @@ export function PreviewPanel({
         </div>
       )}
       {!loading && !error && !empty && (
-        <div className="flex-1 overflow-hidden">
+        <div className="relative min-h-0 flex-1 overflow-hidden">
           <Suspense fallback={chartSkeleton}>
-            <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} />
+            <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} className="absolute inset-0" />
           </Suspense>
         </div>
       )}
       <Dialog open={expanded} onOpenChange={setExpanded}>
         <DialogContent className="!max-w-[min(900px,98vw)] w-[98vw] h-auto max-h-[94vh] p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden">
-          <div className="flex flex-col bg-white/95 dark:bg-[#120D19]/95 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-2xl overflow-hidden max-h-[94vh]">
+          <div className="flex max-h-[94vh] min-h-0 flex-col overflow-hidden rounded-3xl border border-white/20 bg-white/95 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#120D19]/95">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 px-8 py-5">
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
@@ -175,11 +225,11 @@ export function PreviewPanel({
                 </Button>
               </div>
             </div>
-            <div className="flex-1 min-h-0 p-4">
-              <div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] p-2 shadow-inner relative overflow-hidden ">
+            <div className="flex min-h-0 flex-1 flex-col p-4">
+              <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-inner dark:border-white/10 dark:bg-white/[0.02]">
                 <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Suspense fallback={chartSkeleton}>
-                  <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} isExpanded={true} className="h-full w-full max-h-none relative z-10" />
+                  <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} isExpanded={true} className="relative z-10 h-full min-h-0 w-full max-h-none flex-1" />
                 </Suspense>
               </div>
             </div>
