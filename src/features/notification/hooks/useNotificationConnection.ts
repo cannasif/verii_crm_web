@@ -3,11 +3,12 @@ import { useAuthStore } from '@/stores/auth-store';
 import { notificationService } from '../services/notification-service';
 
 export function useNotificationConnection(): void {
-  const { isAuthenticated } = useAuthStore();
+  const token = useAuthStore((state) => state.token);
+  const userId = useAuthStore((state) => state.user?.id ?? null);
   const connectedRef = useRef(false);
 
   useEffect(() => {
-    const shouldConnect = isAuthenticated();
+    const shouldConnect = !!token && !!userId;
 
     if (shouldConnect && !connectedRef.current) {
       connectedRef.current = true;
@@ -31,6 +32,5 @@ export function useNotificationConnection(): void {
         notificationService.disconnect().catch(() => {});
       }
     };
-  }, [isAuthenticated]);
+  }, [token, userId]);
 }
-

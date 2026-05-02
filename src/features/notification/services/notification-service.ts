@@ -3,9 +3,19 @@ import type { NotificationDto } from '../types/notification';
 import { useNotificationStore } from '../stores/notification-store';
 import { getApiUrl } from '@/lib/axios';
 import { showLocalNotification, requestNotificationPermission } from '../utils/web-notifications';
+import { useAuthStore } from '@/stores/auth-store';
+import { useAppShellStore } from '@/stores/app-shell-store';
+import { queryClient } from '@/lib/query-client';
+
+interface AccessControlChangedPayload {
+  reason?: string;
+  forceBootstrapRefresh?: boolean;
+  issuedAt?: string;
+}
 
 class NotificationService {
   private hubConnection: signalR.HubConnection | null = null;
+  private accessControlRefreshPromise: Promise<void> | null = null;
 
   private getToken(): string | null {
     return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
@@ -42,6 +52,10 @@ class NotificationService {
 
       this.hubConnection.on('ReceiveNotification', (payload: NotificationDto) => {
         this.handleNotification(payload);
+      });
+
+      this.hubConnection.on('AccessControlChanged', (payload: AccessControlChangedPayload) => {
+        void this.handleAccessControlChanged(payload);
       });
 
       this.hubConnection.onreconnecting(() => {
@@ -135,7 +149,37 @@ class NotificationService {
   getConnectionState(): signalR.HubConnectionState | null {
     return this.hubConnection?.state ?? null;
   }
+
+  private async handleAccessControlChanged(payload: AccessControlChangedPayload): Promise<void> {
+    if (this.accessControlRefreshPromise) {
+      return this.accessControlRefreshPromise;
+    }
+
+    this.accessControlRefreshPromise = (async () => {
+      const token = this.getToken();
+      const userId = useAuthStore.getState().user?.id ?? null;
+      if (!token || !userId) {
+        return;
+      }
+
+      await useAppShellStore.getState().bootstrapAppShell({
+        token,
+        userId,
+        force: payload.forceBootstrapRefresh ?? true,
+      });
+
+      await queryClient.invalidateQueries();
+      await queryClient.refetchQueries({ type: 'active' });
+    })()
+      .catch((error) => {
+        console.error('[NotificationService] Access control refresh failed:', error);
+      })
+      .finally(() => {
+        this.accessControlRefreshPromise = null;
+      });
+
+    return this.accessControlRefreshPromise;
+  }
 }
 
 export const notificationService = new NotificationService();
-
