@@ -229,6 +229,13 @@ class NotificationService {
 
     store.addRealTimeNotification(notification);
 
+    const userId = useAuthStore.getState().user?.id ?? null;
+    if (userId && notification.userId === userId && notification.isRead !== true) {
+      const unreadEntry = useAppShellStore.getState().unreadCounts[String(userId)];
+      const nextUnreadCount = (unreadEntry?.data ?? 0) + 1;
+      useAppShellStore.getState().setUnreadCount(userId, nextUnreadCount);
+    }
+
     showLocalNotification({
       title: notification.title,
       message: notification.message,
