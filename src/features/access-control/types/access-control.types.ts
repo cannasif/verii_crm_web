@@ -288,3 +288,31 @@ export interface UpdateUserVisibilityPolicyDto {
   userId?: number;
   visibilityPolicyId?: number;
 }
+
+export interface AuditLogChangedFieldDto {
+  field: string;
+  oldValue?: string | null;
+  newValue?: string | null;
+}
+
+export interface AuditLogDto {
+  id: number;
+  traceId: string;
+  actionType: string;
+  entityType?: string | null;
+  entityId?: string | null;
+  result: string;
+  source?: string | null;
+  branchCode?: string | null;
+  requestPath?: string | null;
+  requestMethod?: string | null;
+  reason?: string | null;
+  failureReason?: string | null;
+  performedByUserId?: number | null;
+  performedByUserEmail?: string | null;
+  oldValuesJson?: string | null;
+  newValuesJson?: string | null;
+  changedFieldsJson?: string | null;
+  changedFields: AuditLogChangedFieldDto[];
+  createdDate: string;
+}

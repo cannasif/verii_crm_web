@@ -249,6 +249,47 @@
       "approve": "Onay"
     }
   },
+  "auditLogs": {
+    "title": "Audit Kayıtları",
+    "description": "Kritik işlemlerin kim tarafından, hangi trace ile ve nasıl sonuçlandığını izleyin.",
+    "search": "Audit kaydı ara...",
+    "clearTraceFilter": "Trace filtresini temizle",
+    "viewDetail": "Detay",
+    "filterTrace": "Trace filtrele",
+    "loadError": "Audit kayıtları yüklenemedi",
+    "stats": {
+      "total": "Toplam Kayıt",
+      "errors": "Hatalı Sonuç",
+      "traces": "Aktif Trace"
+    },
+    "table": {
+      "title": "Audit Kayıt Listesi",
+      "createdDate": "Tarih",
+      "traceId": "Trace ID",
+      "actionType": "Aksiyon",
+      "entityType": "Varlık",
+      "entityId": "Kayıt ID",
+      "result": "Sonuç",
+      "source": "Kaynak",
+      "performedBy": "İşlemi Yapan",
+      "branchCode": "Şube",
+      "requestPath": "İstek Yolu",
+      "requestMethod": "Metot",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "detail": {
+      "title": "Audit Kaydı Detayı",
+      "description": "Seçilen kaydın request bağlamını ve değişiklik özetini inceleyin.",
+      "contextTitle": "İşlem Bağlamı",
+      "requestTitle": "Request Özeti",
+      "reason": "İşlem Nedeni",
+      "failureReason": "Hata Detayı",
+      "changedFieldsTitle": "Değişen Alanlar",
+      "noChangedFields": "Bu kayıtta alan farkı bulunmuyor.",
+      "oldValuesTitle": "Eski Değerler",
+      "newValuesTitle": "Yeni Değerler"
+    }
+  },
   "common": {
     "cancel": "Vazgeç",
     "saving": "Kaydediliyor...",
@@ -271,6 +312,7 @@
     "permissionGroups": "İzin Grupları",
     "userGroupAssignments": "Kullanıcı Grup Atamaları",
     "visibilityPolicies": "Görünürlük Politikaları",
-    "userVisibilityAssignments": "Kullanıcı Görünürlük Atamaları"
+    "userVisibilityAssignments": "Kullanıcı Görünürlük Atamaları",
+    "auditLogs": "Audit Kayıtları"
   }
 }

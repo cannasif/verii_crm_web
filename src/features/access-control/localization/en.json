@@ -249,6 +249,47 @@
       "approve": "Approve"
     }
   },
+  "auditLogs": {
+    "title": "Audit logs",
+    "description": "Track who performed critical actions, under which trace, and how they ended.",
+    "search": "Search audit logs...",
+    "clearTraceFilter": "Clear trace filter",
+    "viewDetail": "Detail",
+    "filterTrace": "Filter trace",
+    "loadError": "Audit logs could not be loaded",
+    "stats": {
+      "total": "Total records",
+      "errors": "Failed results",
+      "traces": "Active traces"
+    },
+    "table": {
+      "title": "Audit log list",
+      "createdDate": "Date",
+      "traceId": "Trace ID",
+      "actionType": "Action",
+      "entityType": "Entity",
+      "entityId": "Record ID",
+      "result": "Result",
+      "source": "Source",
+      "performedBy": "Performed by",
+      "branchCode": "Branch",
+      "requestPath": "Request path",
+      "requestMethod": "Method",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "detail": {
+      "title": "Audit log detail",
+      "description": "Inspect the request context and change summary of the selected record.",
+      "contextTitle": "Action context",
+      "requestTitle": "Request summary",
+      "reason": "Reason",
+      "failureReason": "Failure detail",
+      "changedFieldsTitle": "Changed fields",
+      "noChangedFields": "No field diff is available for this record.",
+      "oldValuesTitle": "Old values",
+      "newValuesTitle": "New values"
+    }
+  },
   "common": {
     "cancel": "Cancel",
     "saving": "Saving...",
@@ -271,6 +312,7 @@
     "permissionGroups": "Permission groups",
     "userGroupAssignments": "User group assignments",
     "visibilityPolicies": "Visibility policies",
-    "userVisibilityAssignments": "User visibility assignments"
+    "userVisibilityAssignments": "User visibility assignments",
+    "auditLogs": "Audit logs"
   }
 }

@@ -1376,6 +1376,7 @@
     "visibilityPolicies": "Visibility Policies",
     "userVisibilityAssignments": "User Visibility Assignments",
     "visibilitySimulator": "Visibility Simulator",
+    "auditLogs": "Audit Logs",
     "demands": "Requests",
     "demandCreateWizard": "Create New Request",
     "waitingApprovalDemands": "Requests Pending Approval",

@@ -94,6 +94,7 @@ const UserGroupAssignmentsPage = lazyImport(() => import('@/features/access-cont
 const VisibilityPoliciesPage = lazyImport(() => import('@/features/access-control'), 'VisibilityPoliciesPage');
 const UserVisibilityAssignmentsPage = lazyImport(() => import('@/features/access-control'), 'UserVisibilityAssignmentsPage');
 const VisibilitySimulatorPage = lazyImport(() => import('@/features/access-control'), 'VisibilitySimulatorPage');
+const AuditLogsPage = lazyImport(() => import('@/features/access-control'), 'AuditLogsPage');
 const HangfireMonitoringPage = lazyImport(() => import('@/features/hangfire-monitoring'), 'HangfireMonitoringPage');
 const ProfilePage = lazyImport(() => import('@/features/user-detail-management'), 'ProfilePage');
 const GoogleConnectionPage = lazyImport(() => import('@/features/google-integration'), 'GoogleConnectionPage');
@@ -198,6 +199,7 @@ export function createAppRouter() {
         { path: 'access-control/visibility-policies', element: <VisibilityPoliciesPage /> },
         { path: 'access-control/user-visibility-assignments', element: <UserVisibilityAssignmentsPage /> },
         { path: 'access-control/visibility-simulator', element: <VisibilitySimulatorPage /> },
+        { path: 'access-control/audit-logs', element: <AuditLogsPage /> },
         { path: 'hangfire-monitoring', element: <HangfireMonitoringPage /> },
         { path: 'settings/integrations/google', element: <GoogleConnectionPage /> },
         { path: 'settings/integrations/google/sync', element: <GoogleSyncPage /> },
