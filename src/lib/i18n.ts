@@ -70,7 +70,7 @@ for (const [path, loader] of Object.entries(featureModules)) {
 const DEFAULT_LANG = 'tr';
 const fallbackLng = DEFAULT_LANG;
 const supportedLngs = Object.keys(loaders);
-const INITIAL_NAMESPACES = ['common', 'notification'] as const;
+const INITIAL_NAMESPACES = ['common', 'notification', 'dashboard'] as const;
 const loadedBundlesByLanguage: Record<string, Record<string, Record<string, unknown>>> = {};
 
 const toCamelCase = (value: string): string =>

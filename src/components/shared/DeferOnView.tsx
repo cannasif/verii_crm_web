@@ -4,12 +4,14 @@ interface DeferOnViewProps {
   children: ReactNode;
   fallback?: ReactNode;
   rootMargin?: string;
+  className?: string;
 }
 
 export function DeferOnView({
   children,
   fallback = null,
   rootMargin = '200px',
+  className,
 }: DeferOnViewProps): ReactElement {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -38,5 +40,9 @@ export function DeferOnView({
     return () => observer.disconnect();
   }, [isVisible, rootMargin]);
 
-  return <div ref={containerRef}>{isVisible ? children : fallback}</div>;
+  return (
+    <div ref={containerRef} className={className}>
+      {isVisible ? children : fallback}
+    </div>
+  );
 }

@@ -69,7 +69,15 @@
     "errorMessage": "حدث خطأ أثناء إنشاء العرض.",
     "subtitle": "إدارة رأس العرض والأسطر وأسعار الصرف",
     "invalidCurrency": "يرجى اختيار عملة صالحة.",
-    "validationError": "يرجى التحقق من الحقول المطلوبة."
+    "validationError": "يرجى التحقق من الحقول المطلوبة.",
+    "pageTitle": "عرض سعر",
+    "pageDescription": "أكمل الرأس، أضف الأسطر، راجع الملخص ثم احفظ.",
+    "helpTitle": "طريقة الاستخدام",
+    "helpTriggerLabel": "نصائح",
+    "helpStep1": "العميل: اكتب للبحث أو الدفتر؛ إن لزم اختر نوع التسلسل أولاً.",
+    "helpStep2": "اضبط تاريخ العرض والتسليم وأسعار الصرف.",
+    "helpStep3": "أضف الأسطر؛ استخدم المعاينة للتحقق من PDF.",
+    "helpStep4": "راجع الإجماليات على اليمين ثم اضغط حفظ."
   },
   "header": {
     "title": "معلومات عرض السعر",
@@ -251,6 +259,25 @@
     "mailSubject": "مشاركة عرض السعر",
     "mailBody": "هل ترغب في مراجعة تفاصيل العرض؟",
     "whatsappMessage": "أشارك معك تفاصيل عرض السعر."
+  },
+  "exportPreview": {
+    "trigger": "معاينة",
+    "title": "معاينة PDF",
+    "subtitle": "راجع المستند ثم نزّله أو استخدم خيارات المشاركة.",
+    "close": "إغلاق",
+    "loading": "جارٍ إعداد PDF…",
+    "error": "تعذر إنشاء PDF. حاول مرة أخرى.",
+    "download": "تنزيل",
+    "errorDismiss": "إغلاق",
+    "downloadFileName": "quotation.pdf"
+  },
+  "pdfExportTemplate": {
+    "documentTitle": "عرض سعر",
+    "metaDate": "التاريخ",
+    "metaOfferNo": "رقم العرض",
+    "metaCustomer": "العميل",
+    "notSpecified": "—",
+    "grandTotal": "الإجمالي"
   },
   "revision": {
     "success": "تم إنشاء سجل المراجعة.",

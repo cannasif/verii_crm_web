@@ -591,7 +591,7 @@ export function QuotationLineForm({
         pendingImageFile: file,
         pendingImagePreviewUrl: previewUrl,
       }));
-      toast.success(t('common.saved'));
+      toast.success(t('common.saved', { ns: 'common' }));
       return;
     }
 
@@ -609,10 +609,10 @@ export function QuotationLineForm({
         pendingImageFile: null,
         pendingImagePreviewUrl: null,
       }));
-      toast.success(t('common.saved'));
+      toast.success(t('common.saved', { ns: 'common' }));
     } catch (error) {
-      const message = error instanceof Error ? error.message : t('common.imageUploadFailed');
-      toast.error(t('common.imageUploadFailed'), { description: message });
+      const message = error instanceof Error ? error.message : t('common.imageUploadFailed', { ns: 'common' });
+      toast.error(t('common.imageUploadFailed', { ns: 'common' }), { description: message });
     } finally {
       setIsUploadingImage(false);
     }
@@ -1040,7 +1040,7 @@ export function QuotationLineForm({
             >
               <Info className="h-4 w-4" />
               <span className="text-xs font-medium">
-                {t('common.pricingInsights.button')}
+                {t('common.pricingInsights.button', { ns: 'common' })}
               </span>
               {ruleInsightCount > 0 && (
                 <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">
@@ -1071,7 +1071,7 @@ export function QuotationLineForm({
               isLoading={projectDropdown.isLoading}
               isFetchingNextPage={projectDropdown.isFetchingNextPage}
               placeholder={t('quotation:header.projectCode')}
-              searchPlaceholder={t('common.search')}
+              searchPlaceholder={t('common.search', { ns: 'common' })}
             />
           </div>
 
@@ -1106,8 +1106,8 @@ export function QuotationLineForm({
                     </button>
                     <button
                       type="button"
-                      aria-label={t('common.remove')}
-                      title={t('common.remove')}
+                      aria-label={t('common.remove', { ns: 'common' })}
+                      title={t('common.remove', { ns: 'common' })}
                       onClick={handleRemoveBulkDraftLine(index)}
                       className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${index === activeBulkIndex
                         ? 'border-pink-400/50 text-white/90 hover:bg-white/15 hover:text-white'
@@ -1409,10 +1409,10 @@ export function QuotationLineForm({
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    {t('common.lineImage.title')}
+                    {t('common.lineImage.title', { ns: 'common' })}
                   </h5>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {t('common.lineImage.hint')}
+                    {t('common.lineImage.hint', { ns: 'common' })}
                   </p>
                 </div>
                 <input
@@ -1435,7 +1435,7 @@ export function QuotationLineForm({
                     <ImagePlus className="h-4 w-4" />
                   )}
                   <span className="ml-2">
-                    {currentImagePreview ? t('common.lineImage.change') : t('common.lineImage.add')}
+                    {currentImagePreview ? t('common.lineImage.change', { ns: 'common' }) : t('common.lineImage.add', { ns: 'common' })}
                   </span>
                 </Button>
               </div>
@@ -1443,7 +1443,7 @@ export function QuotationLineForm({
                 <div className="space-y-3">
                   <img
                     src={formData.pendingImagePreviewUrl || getImageUrl(formData.imagePath) || formData.imagePath || ''}
-                    alt={formData.productName || t('common.lineImage.title')}
+                    alt={formData.productName || t('common.lineImage.title', { ns: 'common' })}
                     className="h-44 w-full rounded-xl border border-slate-200 dark:border-white/10 object-cover bg-white dark:bg-[#0f0a18]"
                   />
                   <Button
@@ -1453,12 +1453,12 @@ export function QuotationLineForm({
                     className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    {t('common.lineImage.remove')}
+                    {t('common.lineImage.remove', { ns: 'common' })}
                   </Button>
                 </div>
               ) : (
                 <div className="rounded-xl border border-dashed border-slate-300 dark:border-white/10 bg-white/70 dark:bg-[#0f0a18] px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
-                  {t('common.lineImage.empty')}
+                  {t('common.lineImage.empty', { ns: 'common' })}
                 </div>
               )}
             </div>

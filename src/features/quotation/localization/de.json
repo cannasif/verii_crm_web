@@ -69,7 +69,15 @@
     "errorMessage": "Beim Erstellen des Angebots ist ein Fehler aufgetreten.",
     "subtitle": "Kopfzeile, Positionen und Wechselkurse verwalten",
     "invalidCurrency": "Bitte wählen Sie eine gültige Währung.",
-    "validationError": "Bitte prüfen Sie die Pflichtfelder."
+    "validationError": "Bitte prüfen Sie die Pflichtfelder.",
+    "pageTitle": "Angebot",
+    "pageDescription": "Kopfdaten ausfüllen, Positionen hinzufügen, Summe prüfen und speichern.",
+    "helpTitle": "Bedienung",
+    "helpTriggerLabel": "Hinweise",
+    "helpStep1": "Kunde: tippen zum Suchen oder Adressbuch; ggf. zuerst Serientyp wählen.",
+    "helpStep2": "Angebotsdatum, Lieferung und Kurse nach Bedarf anpassen.",
+    "helpStep3": "Positionen hinzufügen; mit Vorschau das PDF prüfen.",
+    "helpStep4": "Summen rechts prüfen und auf Speichern klicken."
   },
   "header": {
     "title": "Angebotsinformationen",
@@ -251,6 +259,25 @@
     "mailSubject": "Angebotsfreigabe",
     "mailBody": "Möchten Sie die Angebotsdetails prüfen?",
     "whatsappMessage": "Ich teile die Angebotsdetails mit Ihnen."
+  },
+  "exportPreview": {
+    "trigger": "Vorschau",
+    "title": "PDF-Vorschau",
+    "subtitle": "Prüfen Sie das Dokument, laden Sie es herunter oder nutzen Sie die Freigabeoptionen.",
+    "close": "Schließen",
+    "loading": "PDF wird erstellt…",
+    "error": "PDF konnte nicht erstellt werden. Bitte erneut versuchen.",
+    "download": "Herunterladen",
+    "errorDismiss": "Schließen",
+    "downloadFileName": "angebot.pdf"
+  },
+  "pdfExportTemplate": {
+    "documentTitle": "ANGEBOT",
+    "metaDate": "Datum",
+    "metaOfferNo": "Angebots-Nr.",
+    "metaCustomer": "Kunde",
+    "notSpecified": "—",
+    "grandTotal": "Gesamtsumme"
   },
   "revision": {
     "success": "Revisionsdatensatz erstellt.",

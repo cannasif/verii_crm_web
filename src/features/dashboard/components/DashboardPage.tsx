@@ -15,6 +15,8 @@ import {
   ShoppingBag,
   PlusCircle,
   CalendarPlus,
+  Pencil,
+  Eye,
 } from 'lucide-react';
 
 import {
@@ -33,6 +35,8 @@ export function DashboardPage(): ReactElement {
   const { user } = useAuthStore();
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
+  const [dashboardMode, setDashboardMode] = useState<'view' | 'edit'>('view');
+  const tCommon = useTranslation('common').t;
 
   useEffect(() => {
     const startMark = 'dashboard:mount:start';
@@ -86,6 +90,24 @@ export function DashboardPage(): ReactElement {
         </div>
 
         <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setDashboardMode((current) => (current === 'view' ? 'edit' : 'view'))}
+            className="hidden md:inline-flex h-10 px-4 font-semibold border-slate-300/70 dark:border-white/15 hover:bg-slate-100 dark:hover:bg-white/5"
+          >
+            {dashboardMode === 'view' ? (
+              <>
+                <Pencil size={16} className="mr-2" />
+                {tCommon('common.reportBuilder.dashboardTabEdit')}
+              </>
+            ) : (
+              <>
+                <Eye size={16} className="mr-2" />
+                {tCommon('common.reportBuilder.dashboardTabView')}
+              </>
+            )}
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -188,7 +210,7 @@ export function DashboardPage(): ReactElement {
         </div>
       </div>
 
-      <AssignedReportsDashboardSection />
+      <AssignedReportsDashboardSection mode={dashboardMode} onModeChange={setDashboardMode} />
 
     </div>
   );

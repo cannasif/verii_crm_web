@@ -862,7 +862,7 @@ export function QuotationLineTable({
               <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
                 <div className="p-2">
                   <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {t('common.actions')}
+                    {t('common.actions', { ns: 'common' })}
                   </div>
                 </div>
 
@@ -870,19 +870,19 @@ export function QuotationLineTable({
 
                 <div className="p-2">
                   <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {t('common.export')}
+                    {t('common.export', { ns: 'common' })}
                   </div>
                   <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                     <FileSpreadsheet size={16} className="text-emerald-500" />
-                    <span>{t('common.exportExcel')}</span>
+                    <span>{t('common.exportExcel', { ns: 'common' })}</span>
                   </button>
                   <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                     <FileText size={16} className="text-red-400" />
-                    <span>{t('common.exportPDF')}</span>
+                    <span>{t('common.exportPDF', { ns: 'common' })}</span>
                   </button>
                   <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
                     <Presentation size={16} className="text-orange-400" />
-                    <span>{t('common.exportPPT')}</span>
+                    <span>{t('common.exportPPT', { ns: 'common' })}</span>
                   </button>
                 </div>
               </DropdownMenuContent>
@@ -1295,7 +1295,7 @@ export function QuotationLineTable({
                                 size="icon"
                                 className={cn(styles.actionButton, "text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30")}
                                 onClick={() => handleDeleteClick(line.id)}
-                                title={t('common.delete.action')}
+                                title={t('common.delete.action', { ns: 'common' })}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>

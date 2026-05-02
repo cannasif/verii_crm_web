@@ -461,7 +461,7 @@ export function QuotationListPage(): ReactElement {
                       appliedFilterCount: appliedFilters.length,
                       search: {
                         onSearchChange: setSearchTerm,
-                        placeholder: t('common.search'),
+                        placeholder: t('common.search', { ns: 'common' }),
                         minLength: 1,
                         resetKey: searchResetKey,
                       },
@@ -480,7 +480,7 @@ export function QuotationListPage(): ReactElement {
                               <SelectValue placeholder={t('approval.statusFilterLabel', { defaultValue: 'Onay durumu' })} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="all">{t('common.all', { ns: 'common', defaultValue: 'Tumu' })}</SelectItem>
+                              <SelectItem value="all">{t('common.all', { ns: 'common' })}</SelectItem>
                               <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
                               <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
                               <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
@@ -525,10 +525,10 @@ export function QuotationListPage(): ReactElement {
                     previousLabel={t('previous')}
                     nextLabel={t('next')}
                     paginationInfoText={t('common.paginationInfo', {
+                      ns: 'common',
                       start: startRow,
                       end: endRow,
                       total: totalCount,
-                      ns: 'common',
                     })}
                     disablePaginationButtons={quotationQuery.isFetching}
                     centerColumnHeaders

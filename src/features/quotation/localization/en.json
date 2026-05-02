@@ -69,7 +69,15 @@
     "errorMessage": "Something went wrong while creating the quotation.",
     "subtitle": "Manage the header, lines, and exchange rates",
     "invalidCurrency": "Select a valid currency.",
-    "validationError": "Check the required fields."
+    "validationError": "Check the required fields.",
+    "pageTitle": "Quotation",
+    "pageDescription": "Fill in the header, add lines, check the summary, then save.",
+    "helpTitle": "How to use",
+    "helpTriggerLabel": "Usage tips",
+    "helpStep1": "Search the customer field or use the address-book icon; pick document serial type first if required.",
+    "helpStep2": "Adjust offer date, delivery, and exchange rates as needed.",
+    "helpStep3": "Add line items; use Preview to check the PDF.",
+    "helpStep4": "Review totals in the summary on the right, then click Save."
   },
   "header": {
     "title": "Quotation details",
@@ -252,6 +260,25 @@
     "mailSubject": "Quotation",
     "mailBody": "Please review the quotation details.",
     "whatsappMessage": "Sharing the quotation details with you."
+  },
+  "exportPreview": {
+    "trigger": "Preview",
+    "title": "PDF preview",
+    "subtitle": "Review the document, then download it or use the sharing options.",
+    "close": "Close",
+    "loading": "Preparing PDF…",
+    "error": "Could not create the PDF. Please try again.",
+    "download": "Download",
+    "errorDismiss": "Close",
+    "downloadFileName": "quotation.pdf"
+  },
+  "pdfExportTemplate": {
+    "documentTitle": "QUOTATION",
+    "metaDate": "Date",
+    "metaOfferNo": "Quotation no.",
+    "metaCustomer": "Customer",
+    "notSpecified": "—",
+    "grandTotal": "Grand total"
   },
   "revision": {
     "success": "Revision created.",

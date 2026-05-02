@@ -13,7 +13,7 @@ import { Copy, ExternalLink, LayoutGrid, Loader2, Pencil, Plus, Search, Trash2 }
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth-store';
 import { createDashboardItem, getReportSummary, loadMyDashboardLayout, saveMyDashboardLayout, sanitizeMyDashboardLayout } from '../utils';
-import type { ReportConfig } from '../types';
+import type { MyReportDashboardLayout, ReportConfig } from '../types';
 
 export function ReportsListPage(): ReactElement {
   const { t, i18n } = useTranslation('common');
@@ -50,8 +50,10 @@ export function ReportsListPage(): ReactElement {
       toast.info(t('common.reportBuilder.dashboardAlreadyAdded'));
       return;
     }
-    const nextLayout = {
-      version: 1 as const,
+    const nextLayout: MyReportDashboardLayout = {
+      version: 2,
+      maxCols: currentLayout.maxCols,
+      maxRows: currentLayout.maxRows,
       updatedAt: new Date().toISOString(),
       items: [...currentLayout.items, createDashboardItem(reportId, currentLayout.items, { widgetId: defaultWidgetId, widgetTitle: defaultWidgetTitle })],
     };

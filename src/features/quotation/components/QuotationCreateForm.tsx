@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -14,16 +14,15 @@ import { QuotationSummaryCard } from './QuotationSummaryCard';
 import { Button } from '@/components/ui/button';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
-import { Save, X, FileDown, Mail, MessageCircle, Share2, FileText, Layers, Calculator } from 'lucide-react';
+import { Save, X, Eye, FileText, Layers, Calculator } from 'lucide-react';
 import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { QuotationPdfExportPreviewDialog } from './QuotationPdfExportPreviewDialog';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { formatCurrency } from '../utils/format-currency';
+import {
+  QUOTATION_EXPORT_PDF_FONT,
+  registerQuotationExportPdfFont,
+} from '../utils/quotation-export-pdf-font';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto } from '../types/quotation-types';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
@@ -84,7 +83,7 @@ async function finalizePendingQuotationImages(
 }
 
 export function QuotationCreateForm(): ReactElement {
-  const { t } = useTranslation(['quotation', 'common']);
+  const { t, i18n } = useTranslation(['quotation', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
@@ -94,7 +93,7 @@ export function QuotationCreateForm(): ReactElement {
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
-
+  const [pdfExportOpen, setPdfExportOpen] = useState(false);
   const createMutation = useCreateQuotationBulk();
   const { currencyOptions } = useCurrencyOptions();
 
@@ -336,9 +335,7 @@ export function QuotationCreateForm(): ReactElement {
 
     if (!sampleOldRate || sampleOldRate <= 0 || !sampleNewRate || sampleNewRate <= 0) {
       toast.error(t('update.error'), {
-        description: t('exchangeRates.zeroRateError', {
-          defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
-        }),
+        description: t('exchangeRates.zeroRateError'),
       });
       throw new Error('ZERO_RATE');
     }
@@ -377,17 +374,52 @@ export function QuotationCreateForm(): ReactElement {
     return found?.code || 'TRY';
   }, [watchedCurrency, currencyOptions]);
 
-  const generatePDF = async () => {
+  const buildExportPdfBlob = useCallback(async (): Promise<Blob> => {
     const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
       import('jspdf'),
       import('jspdf-autotable'),
     ]);
     const doc = new JsPDF();
+    const hasUtf8Font = await registerQuotationExportPdfFont(doc);
+    const bodyFont = hasUtf8Font ? QUOTATION_EXPORT_PDF_FONT : 'helvetica';
+    const M = 14;
+    const RW = 196;
+    const accentBlue: [number, number, number] = [23, 45, 96];
+    const qc = quotationFormSlice;
+
+    const offerDateStr = qc.offerDate
+      ? new Date(`${qc.offerDate}T12:00:00`).toLocaleDateString(i18n.language)
+      : new Date().toLocaleDateString(i18n.language);
+    const offerNoDisplay = qc.offerNo?.trim() || t('pdfExportTemplate.notSpecified');
+    const customerLabel =
+      customerOptions.find((c) => c.id === qc.potentialCustomerId)?.name?.trim() ||
+      qc.erpCustomerCode?.trim() ||
+      t('pdfExportTemplate.notSpecified');
+    const branchCodeDisplay = customerCode?.trim() || t('pdfExportTemplate.notSpecified');
+
+    doc.setFont(bodyFont, 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(branchCodeDisplay, M, 16);
 
     doc.setFontSize(18);
-    doc.text(t('create.title'), 14, 20);
-    doc.setFontSize(11);
-    doc.text(`${t('date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+    doc.setTextColor(accentBlue[0], accentBlue[1], accentBlue[2]);
+    doc.text(t('pdfExportTemplate.documentTitle'), RW, 16, { align: 'right' });
+
+    doc.setFontSize(9);
+    doc.setTextColor(75, 75, 75);
+    doc.setFont(bodyFont, 'normal');
+    doc.text(`${t('pdfExportTemplate.metaDate')}: ${offerDateStr}`, RW, 24, { align: 'right' });
+    doc.text(`${t('pdfExportTemplate.metaOfferNo')}: ${offerNoDisplay}`, RW, 29.5, { align: 'right' });
+
+    doc.setFontSize(9);
+    doc.setTextColor(40, 40, 40);
+    doc.text(`${t('pdfExportTemplate.metaCustomer')}: ${customerLabel}`, M, 26);
+
+    doc.setDrawColor(210, 210, 210);
+    doc.line(M, 33, RW, 33);
+
+    doc.setTextColor(0, 0, 0);
 
     const headers = [[
       t('lines.productCode'),
@@ -395,45 +427,106 @@ export function QuotationCreateForm(): ReactElement {
       t('lines.quantity'),
       t('lines.unitPrice'),
       t('lines.vatRate'),
-      t('lines.total')
+      t('lines.total'),
     ]];
 
-    const data = lines.map(line => [
-      line.productCode,
-      line.productName,
-      line.quantity,
+    const data = lines.map((line) => [
+      line.productCode ?? '',
+      line.productName ?? '',
+      String(line.quantity ?? ''),
       formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate}`,
-      formatCurrency(line.lineTotal, currencyCode)
+      `%${line.vatRate ?? 0}`,
+      formatCurrency(line.lineTotal, currencyCode),
     ]);
 
     autoTable(doc, {
-      startY: 35,
+      startY: 38,
       head: headers,
       body: data,
-      styles: { font: 'helvetica', fontStyle: 'normal' },
+      styles: {
+        font: bodyFont,
+        fontStyle: 'normal',
+        fontSize: 8.5,
+        cellPadding: 2.8,
+        lineColor: [220, 220, 220],
+        lineWidth: 0.15,
+        textColor: [35, 35, 35],
+      },
+      headStyles: {
+        font: bodyFont,
+        fontStyle: 'bold',
+        fillColor: accentBlue,
+        textColor: 255,
+        halign: 'center',
+        valign: 'middle',
+      },
+      columnStyles: {
+        0: { cellWidth: 34, halign: 'left' },
+        1: { halign: 'left' },
+        2: { halign: 'center', cellWidth: 16 },
+        3: { halign: 'right', cellWidth: 28 },
+        4: { halign: 'center', cellWidth: 14 },
+        5: { halign: 'right', cellWidth: 30 },
+      },
+      alternateRowStyles: { fillColor: [245, 246, 250] },
       theme: 'grid',
+      margin: { left: M, right: M },
     });
 
-    return doc;
+    type DocWithTable = InstanceType<typeof JsPDF> & { lastAutoTable?: { finalY: number } };
+    const finalY = (doc as DocWithTable).lastAutoTable?.finalY ?? 38;
+    const grandTotal = lines.reduce((sum, line) => sum + (Number(line.lineTotal) || 0), 0);
+    const pageBottom = doc.internal.pageSize.getHeight() - 22;
+    const bandHeight = 9;
+    let bandTop = finalY + 8;
+    if (bandTop + bandHeight + 8 > pageBottom) {
+      doc.addPage();
+      if (hasUtf8Font) {
+        doc.setFont(QUOTATION_EXPORT_PDF_FONT, 'normal');
+      } else {
+        doc.setFont('helvetica', 'normal');
+      }
+      bandTop = 18;
+    }
+    const labelBaseline = bandTop + 6.4;
+    doc.setFillColor(236, 241, 248);
+    doc.roundedRect(M, bandTop, RW - M, bandHeight, 1.2, 1.2, 'F');
+    doc.setDrawColor(200, 210, 225);
+    doc.roundedRect(M, bandTop, RW - M, bandHeight, 1.2, 1.2, 'S');
+    doc.setFont(bodyFont, 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(accentBlue[0], accentBlue[1], accentBlue[2]);
+    doc.text(t('pdfExportTemplate.grandTotal'), M + 3, labelBaseline);
+    doc.text(formatCurrency(grandTotal, currencyCode), RW - 3, labelBaseline, { align: 'right' });
+
+    return doc.output('blob') as Blob;
+  }, [
+    lines,
+    currencyCode,
+    t,
+    i18n.language,
+    quotationFormSlice,
+    customerCode,
+    customerOptions,
+  ]);
+
+  const openPdfExportPreview = (): void => {
+    if (lines.length === 0) {
+      toast.error(t('create.error'), {
+        description: t('lines.required'),
+      });
+      return;
+    }
+    setPdfExportOpen(true);
   };
 
-  const handleExportPDF = async () => {
-    const doc = await generatePDF();
-    doc.save("teklif.pdf");
-  };
-
-  const handleShareWhatsApp = async () => {
-    const doc = await generatePDF();
-    doc.save("teklif.pdf");
+  const handleModalShareWhatsapp = (): void => {
     const text = encodeURIComponent(t('share.whatsappMessage'));
     window.open(`https://wa.me/?text=${text}`, '_blank');
     toast.info(t('share.downloaded'));
   };
 
-  const handleShareMail = async () => {
-    const doc = await generatePDF();
-    doc.save("teklif.pdf");
+  const handleModalShareMail = (): void => {
     const subject = encodeURIComponent(t('share.mailSubject'));
     const body = encodeURIComponent(t('share.mailBody'));
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
@@ -447,7 +540,7 @@ export function QuotationCreateForm(): ReactElement {
     const isValid = await form.trigger();
     if (!isValid) {
       toast.error(t('create.error'), {
-        description: 'Zorunlu alanlar doldurulmadı.',
+        description: t('create.validationError'),
       });
       return;
     }
@@ -464,7 +557,7 @@ export function QuotationCreateForm(): ReactElement {
             title={t('create.pageTitle')}
             description={t('create.pageDescription')}
             onBack={() => navigate(-1)}
-            backLabel={t('common.back')}
+            backLabel={t('back', { ns: 'common' })}
             helpTitle={t('create.helpTitle')}
             helpTriggerLabel={t('create.helpTriggerLabel')}
             helpSteps={[
@@ -581,28 +674,15 @@ export function QuotationCreateForm(): ReactElement {
               {t('cancel')}
             </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button type="button" variant="outline" className="group w-full sm:w-auto">
-                  <Share2 className="mr-2 h-4 w-4" />
-                  {t('export')}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#130822] border-slate-100 dark:border-white/10">
-                <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer">
-                  <FileDown className="mr-2 h-4 w-4 text-slate-500" />
-                  {t('exportPdf')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer">
-                  <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
-                  {t('shareWhatsapp')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShareMail} className="cursor-pointer">
-                  <Mail className="mr-2 h-4 w-4 text-blue-500" />
-                  {t('shareMail')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={openPdfExportPreview}
+              className="group w-full sm:w-auto"
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              {t('exportPreview.trigger')}
+            </Button>
 
             <FormSubmitTooltipWrap
               schema={createQuotationSchema}
@@ -626,6 +706,26 @@ export function QuotationCreateForm(): ReactElement {
           </div>
         </form>
       </FormProvider>
+
+      <QuotationPdfExportPreviewDialog
+        open={pdfExportOpen}
+        onOpenChange={setPdfExportOpen}
+        buildPdfBlob={buildExportPdfBlob}
+        fileName={t('exportPreview.downloadFileName')}
+        labels={{
+          title: t('exportPreview.title'),
+          subtitle: t('exportPreview.subtitle'),
+          close: t('exportPreview.close'),
+          loading: t('exportPreview.loading'),
+          error: t('exportPreview.error'),
+          download: t('exportPreview.download'),
+          errorDismiss: t('exportPreview.errorDismiss'),
+          shareWhatsapp: t('shareWhatsapp'),
+          shareMail: t('shareMail'),
+        }}
+        onShareWhatsapp={handleModalShareWhatsapp}
+        onShareMail={handleModalShareMail}
+      />
     </div>
   );
 }

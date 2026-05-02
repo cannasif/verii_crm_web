@@ -69,7 +69,15 @@
     "errorMessage": "Une erreur s'est produite lors de la création du devis.",
     "subtitle": "Gérer l'en-tête, les lignes et les taux de change",
     "invalidCurrency": "Veuillez sélectionner une devise valide.",
-    "validationError": "Veuillez vérifier les champs obligatoires."
+    "validationError": "Veuillez vérifier les champs obligatoires.",
+    "pageTitle": "Devis",
+    "pageDescription": "Renseignez l'en-tête, ajoutez les lignes, vérifiez le résumé puis enregistrez.",
+    "helpTitle": "Mode d'emploi",
+    "helpTriggerLabel": "Conseils",
+    "helpStep1": "Client : saisissez pour filtrer ou carnet d'adresses ; choisissez d'abord le type de série si requis.",
+    "helpStep2": "Ajustez date d'offre, livraison et taux de change.",
+    "helpStep3": "Ajoutez des lignes ; utilisez Aperçu pour vérifier le PDF.",
+    "helpStep4": "Contrôlez les totaux à droite puis cliquez sur Enregistrer."
   },
   "header": {
     "title": "Informations devis",
@@ -251,6 +259,25 @@
     "mailSubject": "Partage de devis",
     "mailBody": "Souhaitez-vous consulter le détail du devis ?",
     "whatsappMessage": "Je partage avec vous le détail du devis."
+  },
+  "exportPreview": {
+    "trigger": "Aperçu",
+    "title": "Aperçu PDF",
+    "subtitle": "Vérifiez le document, puis téléchargez-le ou utilisez les options de partage.",
+    "close": "Fermer",
+    "loading": "Préparation du PDF…",
+    "error": "Impossible de créer le PDF. Réessayez.",
+    "download": "Télécharger",
+    "errorDismiss": "Fermer",
+    "downloadFileName": "devis.pdf"
+  },
+  "pdfExportTemplate": {
+    "documentTitle": "DEVIS",
+    "metaDate": "Date",
+    "metaOfferNo": "N° de devis",
+    "metaCustomer": "Client",
+    "notSpecified": "—",
+    "grandTotal": "Total général"
   },
   "revision": {
     "success": "Enregistrement de révision créé.",

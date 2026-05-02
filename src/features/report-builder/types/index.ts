@@ -225,16 +225,21 @@ export interface MyReportDashboardItem {
   reportId: number;
   widgetId?: string;
   widgetTitle?: string;
+  colSpan: number;
+  rowSpan: number;
   x: number;
   y: number;
   w: number;
   h: number;
   order: number;
   hidden?: boolean;
+  hideChrome?: boolean;
 }
 
 export interface MyReportDashboardLayout {
-  version: 1;
+  version: 2;
+  maxCols: number;
+  maxRows: number;
   updatedAt: string;
   items: MyReportDashboardItem[];
 }

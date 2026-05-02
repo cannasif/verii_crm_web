@@ -69,7 +69,15 @@
     "errorMessage": "Se produjo un error al crear el presupuesto.",
     "subtitle": "Gestionar cabecera, líneas y tipos de cambio",
     "invalidCurrency": "Seleccione una moneda válida.",
-    "validationError": "Revise los campos obligatorios."
+    "validationError": "Revise los campos obligatorios.",
+    "pageTitle": "Presupuesto",
+    "pageDescription": "Complete la cabecera, añada líneas, revise el resumen y guarde.",
+    "helpTitle": "Cómo usar",
+    "helpTriggerLabel": "Consejos",
+    "helpStep1": "Cliente: escriba para buscar o use la agenda; si aplica, elija primero el tipo de serie.",
+    "helpStep2": "Ajuste fecha de oferta, entrega y tipos de cambio.",
+    "helpStep3": "Añada líneas; use Vista previa para revisar el PDF.",
+    "helpStep4": "Revise totales a la derecha y pulse Guardar."
   },
   "header": {
     "title": "Información del presupuesto",
@@ -251,6 +259,25 @@
     "mailSubject": "Compartir presupuesto",
     "mailBody": "¿Desea revisar los detalles del presupuesto?",
     "whatsappMessage": "Le comparto los detalles del presupuesto."
+  },
+  "exportPreview": {
+    "trigger": "Vista previa",
+    "title": "Vista previa PDF",
+    "subtitle": "Revise el documento, descárguelo o use las opciones para compartir.",
+    "close": "Cerrar",
+    "loading": "Preparando PDF…",
+    "error": "No se pudo crear el PDF. Inténtelo de nuevo.",
+    "download": "Descargar",
+    "errorDismiss": "Cerrar",
+    "downloadFileName": "presupuesto.pdf"
+  },
+  "pdfExportTemplate": {
+    "documentTitle": "PRESUPUESTO",
+    "metaDate": "Fecha",
+    "metaOfferNo": "Nº presupuesto",
+    "metaCustomer": "Cliente",
+    "notSpecified": "—",
+    "grandTotal": "Total general"
   },
   "revision": {
     "success": "Registro de revisión creado.",
