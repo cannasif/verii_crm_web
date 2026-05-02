@@ -13,6 +13,20 @@ interface AccessControlChangedPayload {
   issuedAt?: string;
 }
 
+const ACCESS_CONTROL_QUERY_PREFIXES = [
+  'activityManagement.',
+  'demand.',
+  'quotation.',
+  'order.',
+  'approval.',
+] as const;
+
+const ACCESS_CONTROL_QUERY_ROOTS = new Set([
+  'permissions',
+  'users',
+  'auth',
+]);
+
 class NotificationService {
   private hubConnection: signalR.HubConnection | null = null;
   private accessControlRefreshPromise: Promise<void> | null = null;
@@ -168,8 +182,20 @@ class NotificationService {
         force: payload.forceBootstrapRefresh ?? true,
       });
 
-      await queryClient.invalidateQueries();
-      await queryClient.refetchQueries({ type: 'active' });
+      await queryClient.invalidateQueries({
+        predicate: (query) => {
+          const [root] = query.queryKey;
+          if (typeof root !== 'string') {
+            return false;
+          }
+
+          return (
+            ACCESS_CONTROL_QUERY_ROOTS.has(root) ||
+            ACCESS_CONTROL_QUERY_PREFIXES.some((prefix) => root.startsWith(prefix))
+          );
+        },
+        refetchType: 'active',
+      });
     })()
       .catch((error) => {
         console.error('[NotificationService] Access control refresh failed:', error);
