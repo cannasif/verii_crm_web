@@ -253,6 +253,18 @@
     "title": "Audit logs",
     "description": "Track who performed critical actions, under which trace, and how they ended.",
     "search": "Search audit logs...",
+    "filters": {
+      "result": "Result",
+      "actionType": "Action",
+      "entityType": "Entity",
+      "entityId": "Record ID",
+      "performedByUserEmail": "Performed by",
+      "source": "Source",
+      "branchCode": "Branch",
+      "requestPath": "Request path",
+      "requestMethod": "Method",
+      "createdDate": "Date"
+    },
     "clearTraceFilter": "Clear trace filter",
     "viewDetail": "Detail",
     "filterTrace": "Filter trace",

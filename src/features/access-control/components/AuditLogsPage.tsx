@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
-import type { FilterRow } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -24,6 +24,18 @@ import type { AuditLogDto, PagedRequest } from '../types/access-control.types';
 const PAGE_KEY = 'audit-logs';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 const EMPTY_ITEMS: AuditLogDto[] = [];
+const FILTER_COLUMNS: readonly FilterColumnConfig[] = [
+  { value: 'result', type: 'string', labelKey: 'auditLogs.filters.result' },
+  { value: 'actionType', type: 'string', labelKey: 'auditLogs.filters.actionType' },
+  { value: 'entityType', type: 'string', labelKey: 'auditLogs.filters.entityType' },
+  { value: 'entityId', type: 'string', labelKey: 'auditLogs.filters.entityId' },
+  { value: 'performedByUserEmail', type: 'string', labelKey: 'auditLogs.filters.performedByUserEmail' },
+  { value: 'source', type: 'string', labelKey: 'auditLogs.filters.source' },
+  { value: 'branchCode', type: 'string', labelKey: 'auditLogs.filters.branchCode' },
+  { value: 'requestPath', type: 'string', labelKey: 'auditLogs.filters.requestPath' },
+  { value: 'requestMethod', type: 'string', labelKey: 'auditLogs.filters.requestMethod' },
+  { value: 'createdDate', type: 'date', labelKey: 'auditLogs.filters.createdDate' },
+] as const;
 
 type AuditLogColumnKey =
   | 'createdDate'
@@ -98,6 +110,7 @@ export function AuditLogsPage(): ReactElement {
     'requestPath',
   ]);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
 
   useEffect(() => {
     setPageTitle(t('auditLogs.title'));
@@ -111,8 +124,14 @@ export function AuditLogsPage(): ReactElement {
       search: searchTerm || undefined,
       sortBy: 'createdDate',
       sortDirection: 'desc',
+      ...(appliedFilterRows.length > 0
+        ? {
+            filters: rowsToBackendFilters(appliedFilterRows),
+            filterLogic: 'and' as const,
+          }
+        : {}),
     }),
-    [pageNumber, pageSize, searchTerm]
+    [appliedFilterRows, pageNumber, pageSize, searchTerm]
   );
 
   const listQuery = useQuery({
@@ -177,6 +196,7 @@ export function AuditLogsPage(): ReactElement {
   const selectedAuditLog = detailQuery.data ?? items.find((item) => item.id === selectedAuditLogId) ?? null;
   const currentPageErrorCount = items.filter((item) => ['error', 'failed'].includes(item.result.trim().toLowerCase())).length;
   const currentPageTraceCount = new Set(items.map((item) => item.traceId)).size;
+  const appliedFilterCount = appliedFilterRows.filter((row) => row.value.trim()).length;
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
@@ -243,13 +263,21 @@ export function AuditLogsPage(): ReactElement {
             exportColumns={exportColumns}
             exportRows={exportRows}
             getExportData={async () => ({ columns: exportColumns, rows: exportRows })}
-            filterColumns={[]}
-            defaultFilterColumn=""
+            filterColumns={FILTER_COLUMNS}
+            defaultFilterColumn="result"
             draftFilterRows={draftFilterRows}
             onDraftFilterRowsChange={setDraftFilterRows}
-            onApplyFilters={() => undefined}
-            onClearFilters={() => undefined}
+            onApplyFilters={() => {
+              setAppliedFilterRows(draftFilterRows);
+              setPageNumber(1);
+            }}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+              setPageNumber(1);
+            }}
             translationNamespace="access-control"
+            appliedFilterCount={appliedFilterCount}
             searchValue={searchTerm}
             searchPlaceholder={t('auditLogs.search')}
             onSearchChange={(value) => {

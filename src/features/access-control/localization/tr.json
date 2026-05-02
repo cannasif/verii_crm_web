@@ -253,6 +253,18 @@
     "title": "Audit Kayıtları",
     "description": "Kritik işlemlerin kim tarafından, hangi trace ile ve nasıl sonuçlandığını izleyin.",
     "search": "Audit kaydı ara...",
+    "filters": {
+      "result": "Sonuç",
+      "actionType": "Aksiyon",
+      "entityType": "Varlık",
+      "entityId": "Kayıt ID",
+      "performedByUserEmail": "İşlemi Yapan",
+      "source": "Kaynak",
+      "branchCode": "Şube",
+      "requestPath": "İstek Yolu",
+      "requestMethod": "Metot",
+      "createdDate": "Tarih"
+    },
     "clearTraceFilter": "Trace filtresini temizle",
     "viewDetail": "Detay",
     "filterTrace": "Trace filtrele",
