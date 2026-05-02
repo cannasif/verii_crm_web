@@ -69,7 +69,15 @@
     "errorMessage": "Teklif oluşturulurken bir hata oluştu.",
     "subtitle": "Teklif başlığı, satırlar ve kur bilgilerini yönetin",
     "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin."
+    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "pageTitle": "Teklif",
+    "pageDescription": "Başlık bilgilerini doldurun, satırları ekleyin ve özeti kontrol ederek kaydedin.",
+    "helpTitle": "Nasıl kullanılır?",
+    "helpTriggerLabel": "Kullanım ipuçları",
+    "helpStep1": "Müşteri alanında yazarak arayın veya rehber ikonundan seçim yapın; seri tipi gerekiyorsa önce onu seçin.",
+    "helpStep2": "Teklif tarihi, teslimat ve döviz kurlarını ihtiyaca göre düzenleyin.",
+    "helpStep3": "Satırlara ürün ekleyin; önizleme ile PDF kontrol edebilirsiniz.",
+    "helpStep4": "Sağdaki özetten toplamları kontrol edin ve Kaydet ile kaydedin."
   },
   "header": {
     "title": "Teklif Bilgileri",
@@ -252,6 +260,25 @@
     "mailSubject": "Teklif paylaşımı",
     "mailBody": "Teklif detaylarını inceler misiniz?",
     "whatsappMessage": "Teklif detaylarını sizinle paylaşıyorum."
+  },
+  "exportPreview": {
+    "trigger": "Önizle",
+    "title": "PDF önizleme",
+    "subtitle": "Belgeyi inceledikten sonra bilgisayarınıza indirebilir veya paylaşım seçeneklerini kullanabilirsiniz.",
+    "close": "Kapat",
+    "loading": "PDF hazırlanıyor...",
+    "error": "PDF oluşturulamadı. Lütfen tekrar deneyin.",
+    "download": "Bilgisayara indir",
+    "errorDismiss": "Kapat",
+    "downloadFileName": "teklif.pdf"
+  },
+  "pdfExportTemplate": {
+    "documentTitle": "FİYAT TEKLİFİ",
+    "metaDate": "Tarih",
+    "metaOfferNo": "Teklif No",
+    "metaCustomer": "Müşteri",
+    "notSpecified": "—",
+    "grandTotal": "Genel Toplam"
   },
   "revision": {
     "success": "Revizyon kaydı oluşturuldu.",
