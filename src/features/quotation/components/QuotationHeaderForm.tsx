@@ -442,7 +442,7 @@ export function QuotationHeaderForm({
                               {filteredCustomerOptions.length === 0 && (
                                 <CommandEmpty className="py-8 text-center flex flex-col items-center gap-2">
                                   <SearchX className="w-5 h-5 text-zinc-400" />
-                                  <span className="text-sm font-medium text-zinc-500">{t('common.noResults')}</span>
+                                  <span className="text-sm font-medium text-zinc-500">{t('common.noResults', { ns: 'common' })}</span>
                                 </CommandEmpty>
                               )}
                               <CommandGroup>
@@ -666,19 +666,19 @@ export function QuotationHeaderForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group">
                       <FormLabel className={styles.label} required={isZodFieldRequired(createQuotationSchema, 'quotation.offerType')}>
-                        {t('common.offerType.label')}
+                        {t('common.offerType.label', { ns: 'common' })}
                       </FormLabel>
                       <div className="relative">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
                             options={[
-                              { value: OfferType.YURTICI, label: t('common.offerType.yurtici') },
-                              { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi') },
+                              { value: OfferType.YURTICI, label: t('common.offerType.yurtici', { ns: 'common' }) },
+                              { value: OfferType.YURTDISI, label: t('common.offerType.yurtdisi', { ns: 'common' }) },
                             ]}
                             value={field.value || ''}
                             onSelect={(v) => field.onChange(v ?? '')}
-                            placeholder={t('common.offerType.selectPlaceholder')}
+                            placeholder={t('common.offerType.selectPlaceholder', { ns: 'common' })}
                             className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                             disabled={readOnly}
                           />
@@ -829,7 +829,7 @@ export function QuotationHeaderForm({
                             isLoading={projectDropdown.isLoading}
                             isFetchingNextPage={projectDropdown.isFetchingNextPage}
                             placeholder={t('quotation:header.projectCodePlaceholder')}
-                            searchPlaceholder={t('common.search')}
+                            searchPlaceholder={t('common.search', { ns: 'common' })}
                             disabled={readOnly}
                           />
                         </div>

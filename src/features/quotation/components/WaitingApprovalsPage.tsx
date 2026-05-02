@@ -410,7 +410,7 @@ export function WaitingApprovalsPage(): ReactElement {
               appliedFilterCount: appliedFilters.length,
               search: {
                 onSearchChange: setSearchTerm,
-                placeholder: t('common.search'),
+                placeholder: t('common.search', { ns: 'common' }),
                 minLength: 1,
                 resetKey: searchResetKey,
               },
@@ -457,10 +457,10 @@ export function WaitingApprovalsPage(): ReactElement {
             previousLabel={t('previous')}
             nextLabel={t('next')}
             paginationInfoText={t('common.paginationInfo', {
+              ns: 'common',
               start: startRow,
               end: endRow,
               total: totalCount,
-              ns: 'common',
             })}
             disablePaginationButtons={waitingApprovalsQuery.isFetching}
             centerColumnHeaders

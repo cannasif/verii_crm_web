@@ -162,7 +162,7 @@ export function QuotationNotesDialog({
             onClick={() => onOpenChange(false)}
             className="h-10 px-4 sm:px-6 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-xs sm:text-sm"
           >
-            {t('common.cancel')}
+            {t('common.cancel', { ns: 'common' })}
           </Button>
           <Button
             onClick={handleSave}
@@ -175,7 +175,7 @@ export function QuotationNotesDialog({
                 {t('notes.saving')}
               </>
             ) : (
-              t('common.save')
+              t('common.save', { ns: 'common' })
             )}
           </Button>
         </DialogFooter>
