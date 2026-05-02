@@ -30,9 +30,96 @@ const ACCESS_CONTROL_QUERY_ROOTS = new Set([
 class NotificationService {
   private hubConnection: signalR.HubConnection | null = null;
   private accessControlRefreshPromise: Promise<void> | null = null;
+  private connectPromise: Promise<void> | null = null;
+  private activeToken: string | null = null;
+  private manualDisconnect = false;
 
   private getToken(): string | null {
     return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+  }
+
+  private buildHubConnection(apiUrl: string): signalR.HubConnection {
+    const hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl(`${apiUrl}/notificationHub`, {
+        accessTokenFactory: () => this.getToken() ?? '',
+      })
+      .withAutomaticReconnect({
+        nextRetryDelayInMilliseconds: (retryContext) => {
+          if (retryContext.elapsedMilliseconds >= 60_000) {
+            return null;
+          }
+
+          const previousRetryCount = retryContext.previousRetryCount;
+          if (previousRetryCount === 0) return 0;
+          if (previousRetryCount === 1) return 2_000;
+          if (previousRetryCount === 2) return 10_000;
+          return Math.min(30_000, 5_000 * (previousRetryCount + 1));
+        },
+      })
+      .configureLogging(signalR.LogLevel.Warning)
+      .build();
+
+    hubConnection.serverTimeoutInMilliseconds = 60_000;
+    hubConnection.keepAliveIntervalInMilliseconds = 15_000;
+
+    hubConnection.on('ReceiveNotification', (payload: NotificationDto) => {
+      this.handleNotification(payload);
+    });
+
+    hubConnection.on('AccessControlChanged', (payload: AccessControlChangedPayload) => {
+      void this.handleAccessControlChanged(payload);
+    });
+
+    hubConnection.onreconnecting(() => {
+      console.log('🔄 SignalR reconnecting');
+      useNotificationStore.getState().setConnectionState('reconnecting');
+    });
+
+    hubConnection.onreconnected(() => {
+      console.log('✅ SignalR reconnected');
+      useNotificationStore.getState().setConnectionState('connected');
+      void this.handleAccessControlChanged({
+        forceBootstrapRefresh: true,
+        reason: 'signalr-reconnected',
+      });
+    });
+
+    hubConnection.onclose((error) => {
+      if (error) {
+        console.error('🔌 SignalR connection closed with error:', error);
+      } else {
+        console.log('🔌 SignalR connection closed');
+      }
+      useNotificationStore.getState().setConnectionState('disconnected');
+      this.hubConnection = null;
+      this.connectPromise = null;
+
+      if (!this.manualDisconnect && this.getToken()) {
+        globalThis.setTimeout(() => {
+          void this.connect().catch(() => undefined);
+        }, 5_000);
+      }
+    });
+
+    return hubConnection;
+  }
+
+  private async startConnectionWithRetry(connection: signalR.HubConnection): Promise<boolean> {
+    let attempt = 0;
+
+    while (!this.manualDisconnect) {
+      try {
+        await connection.start();
+        return true;
+      } catch (error) {
+        attempt += 1;
+        console.error('[NotificationService] SignalR start attempt failed:', error);
+        const delayMs = Math.min(30_000, 1_000 * 2 ** Math.min(attempt, 5));
+        await new Promise((resolve) => globalThis.setTimeout(resolve, delayMs));
+      }
+    }
+
+    return false;
   }
 
   async connect(): Promise<void> {
@@ -42,70 +129,61 @@ class NotificationService {
       return;
     }
 
-    if (this.hubConnection?.state === signalR.HubConnectionState.Connected) {
-      return;
+    if (this.hubConnection && this.activeToken !== token) {
+      await this.disconnect();
     }
 
-    try {
-      const apiUrl = await getApiUrl();
-      const hubUrl = `${apiUrl}/notificationHub?access_token=${encodeURIComponent(token)}`;
+    if (
+      this.hubConnection?.state === signalR.HubConnectionState.Connected ||
+      this.hubConnection?.state === signalR.HubConnectionState.Connecting ||
+      this.hubConnection?.state === signalR.HubConnectionState.Reconnecting
+    ) {
+      return this.connectPromise ?? Promise.resolve();
+    }
 
-      this.hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl(hubUrl)
-        .withAutomaticReconnect({
-          nextRetryDelayInMilliseconds: (retryContext) => {
-            const previousRetryCount = retryContext.previousRetryCount;
-            if (previousRetryCount === 0) return 0;
-            if (previousRetryCount === 1) return 2000;
-            if (previousRetryCount === 2) return 10000;
-            return 30000;
-          },
-        })
-        .configureLogging(signalR.LogLevel.Warning)
-        .build();
+    if (this.connectPromise) {
+      return this.connectPromise;
+    }
 
-      this.hubConnection.on('ReceiveNotification', (payload: NotificationDto) => {
-        this.handleNotification(payload);
-      });
+    this.manualDisconnect = false;
 
-      this.hubConnection.on('AccessControlChanged', (payload: AccessControlChangedPayload) => {
-        void this.handleAccessControlChanged(payload);
-      });
+    this.connectPromise = (async () => {
+      try {
+        const apiUrl = await getApiUrl();
+        const hubConnection = this.buildHubConnection(apiUrl);
+        this.hubConnection = hubConnection;
+        this.activeToken = token;
 
-      this.hubConnection.onreconnecting(() => {
-        console.log('🔄 SignalR reconnecting');
-        useNotificationStore.getState().setConnectionState('reconnecting');
-      });
-
-      this.hubConnection.onreconnected((connectionId) => {
-        console.log('✅ SignalR reconnected', connectionId);
-        useNotificationStore.getState().setConnectionState('connected');
-      });
-
-      this.hubConnection.onclose((error) => {
-        if (error) {
-          console.error('🔌 SignalR connection closed with error:', error);
-        } else {
-          console.log('🔌 SignalR connection closed');
+        const started = await this.startConnectionWithRetry(hubConnection);
+        if (!started) {
+          return;
         }
-        useNotificationStore.getState().setConnectionState('disconnected');
-      });
+        console.log('✅ SignalR connected to NotificationHub');
+        useNotificationStore.getState().setConnectionState('connected');
 
-      await this.hubConnection.start();
-      console.log('✅ SignalR connected to NotificationHub');
-      useNotificationStore.getState().setConnectionState('connected');
-      
-      await requestNotificationPermission();
-    } catch (error) {
-      console.error('[NotificationService] SignalR connection error:', error);
-      useNotificationStore.getState().setConnectionState('disconnected');
-    }
+        await requestNotificationPermission();
+      } catch (error) {
+        console.error('[NotificationService] SignalR connection error:', error);
+        useNotificationStore.getState().setConnectionState('disconnected');
+        this.hubConnection = null;
+        throw error;
+      } finally {
+        this.connectPromise = null;
+      }
+    })();
+
+    return this.connectPromise;
   }
 
   async disconnect(): Promise<void> {
-    if (this.hubConnection) {
-      await this.hubConnection.stop();
-      this.hubConnection = null;
+    this.manualDisconnect = true;
+    this.activeToken = null;
+
+    const connection = this.hubConnection;
+    this.hubConnection = null;
+
+    if (connection) {
+      await connection.stop();
     }
     useNotificationStore.getState().setConnectionState('disconnected');
   }
@@ -114,7 +192,7 @@ class NotificationService {
     console.log('📬 SignalR Notification received:', payload);
 
     const store = useNotificationStore.getState();
-    
+
     const exists = store.realTimeNotifications.some((n) => n.id === payload.id);
     if (exists) {
       console.log('⚠️ Duplicate notification ignored:', payload.id);
