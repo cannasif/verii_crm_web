@@ -300,6 +300,14 @@
       "noChangedFields": "Bu kayıtta alan farkı bulunmuyor.",
       "oldValuesTitle": "Eski Değerler",
       "newValuesTitle": "Yeni Değerler"
+    },
+    "traceDrillDown": {
+      "traceId": "Seçili Trace",
+      "startedAt": "Başlangıç",
+      "completedAt": "Bitiş",
+      "entities": "Dokunulan Varlık",
+      "timelineTitle": "Trace Akış Özeti",
+      "openTrace": "Bu trace'i aç"
     }
   },
   "common": {

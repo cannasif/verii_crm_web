@@ -300,6 +300,14 @@
       "noChangedFields": "No field diff is available for this record.",
       "oldValuesTitle": "Old values",
       "newValuesTitle": "New values"
+    },
+    "traceDrillDown": {
+      "traceId": "Selected trace",
+      "startedAt": "Started at",
+      "completedAt": "Completed at",
+      "entities": "Touched entities",
+      "timelineTitle": "Trace flow summary",
+      "openTrace": "Open this trace"
     }
   },
   "common": {

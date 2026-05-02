@@ -2,6 +2,7 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Eye, Loader2, RefreshCw, SearchX } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -82,9 +83,9 @@ export function AuditLogsPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [traceFilter, setTraceFilter] = useState<string | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [selectedAuditLogId, setSelectedAuditLogId] = useState<number | null>(null);
@@ -111,11 +112,22 @@ export function AuditLogsPage(): ReactElement {
   ]);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const traceFilter = searchParams.get('traceId');
 
   useEffect(() => {
     setPageTitle(t('auditLogs.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
+
+  const setTraceFilter = (value: string | null): void => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (value) {
+      nextParams.set('traceId', value);
+    } else {
+      nextParams.delete('traceId');
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const queryParams = useMemo<PagedRequest>(
     () => ({
@@ -197,6 +209,13 @@ export function AuditLogsPage(): ReactElement {
   const currentPageErrorCount = items.filter((item) => ['error', 'failed'].includes(item.result.trim().toLowerCase())).length;
   const currentPageTraceCount = new Set(items.map((item) => item.traceId)).size;
   const appliedFilterCount = appliedFilterRows.filter((row) => row.value.trim()).length;
+  const traceTimeline = useMemo(
+    () => [...items].sort((left, right) => new Date(left.createdDate).getTime() - new Date(right.createdDate).getTime()),
+    [items]
+  );
+  const traceStartedAt = traceTimeline[0]?.createdDate;
+  const traceCompletedAt = traceTimeline.length > 0 ? traceTimeline[traceTimeline.length - 1]?.createdDate : undefined;
+  const traceEntityCount = new Set(traceTimeline.map((item) => item.entityType).filter(Boolean)).size;
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
@@ -247,6 +266,72 @@ export function AuditLogsPage(): ReactElement {
           </CardContent>
         </Card>
       </div>
+
+      {traceFilter ? (
+        <>
+          <div className="grid gap-4 xl:grid-cols-4">
+            <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+              <CardContent className="p-5">
+                <div className="text-sm text-slate-500">{t('auditLogs.traceDrillDown.traceId')}</div>
+                <div className="mt-2 break-all font-mono text-xs text-slate-900 dark:text-white">{traceFilter}</div>
+              </CardContent>
+            </Card>
+            <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+              <CardContent className="p-5">
+                <div className="text-sm text-slate-500">{t('auditLogs.traceDrillDown.startedAt')}</div>
+                <div className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
+                  {traceStartedAt ? new Date(traceStartedAt).toLocaleString() : '-'}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+              <CardContent className="p-5">
+                <div className="text-sm text-slate-500">{t('auditLogs.traceDrillDown.completedAt')}</div>
+                <div className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
+                  {traceCompletedAt ? new Date(traceCompletedAt).toLocaleString() : '-'}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+              <CardContent className="p-5">
+                <div className="text-sm text-slate-500">{t('auditLogs.traceDrillDown.entities')}</div>
+                <div className="mt-2 text-3xl font-black text-slate-900 dark:text-white">{traceEntityCount}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+            <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+              <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('auditLogs.traceDrillDown.timelineTitle')}</CardTitle>
+            </CardHeader>
+            <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+              <div className="space-y-3">
+                {traceTimeline.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex flex-col gap-2 rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5 lg:flex-row lg:items-center lg:justify-between"
+                  >
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        {new Date(item.createdDate).toLocaleString()}
+                      </div>
+                      <div className="text-sm font-semibold text-slate-900 dark:text-white">{item.actionType}</div>
+                      <div className="text-sm text-slate-500 dark:text-slate-400">
+                        {(item.entityType ?? '-') + (item.entityId ? ` #${item.entityId}` : '')}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant={getResultBadgeVariant(item.result)}>{item.result}</Badge>
+                      {item.requestMethod ? <Badge variant="outline">{item.requestMethod}</Badge> : null}
+                      {item.requestPath ? <Badge variant="outline">{item.requestPath}</Badge> : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      ) : null}
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
@@ -409,6 +494,18 @@ export function AuditLogsPage(): ReactElement {
                     <CardContent className="space-y-2 p-4 text-sm">
                       <div className="text-slate-500">{t('auditLogs.table.traceId')}</div>
                       <div className="font-mono text-xs break-all">{selectedAuditLog.traceId}</div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto justify-start px-0 text-cyan-600 hover:bg-transparent hover:text-cyan-700 dark:text-cyan-300 dark:hover:text-cyan-200"
+                        onClick={() => {
+                          setTraceFilter(selectedAuditLog.traceId);
+                          setSelectedAuditLogId(null);
+                          setPageNumber(1);
+                        }}
+                      >
+                        {t('auditLogs.traceDrillDown.openTrace')}
+                      </Button>
                     </CardContent>
                   </Card>
                   <Card className="border-slate-200/70 shadow-none dark:border-white/10">
