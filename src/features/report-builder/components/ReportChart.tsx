@@ -498,14 +498,6 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     );
   }
 
-  if (!Recharts) {
-    return (
-      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
-        {t('common.reportBuilder.loadingChart')}
-      </div>
-    );
-  }
-
   if (chartType === 'kpi') {
     const numericCells = normalizedRows.flat().filter((value) => typeof value === 'number' || (typeof value === 'string' && !Number.isNaN(Number(value))));
     const primaryValue = numericCells.length > 0 ? Number(numericCells[0]) : 0;
@@ -599,6 +591,14 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
             {secondaryDiff != null ? t('common.reportBuilder.deltaSuffix', { value: secondaryDiff }) : t('common.reportBuilder.noComparisonValue')}
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!Recharts) {
+    return (
+      <div className={cn('flex h-48 items-center justify-center text-muted-foreground text-sm', className)}>
+        {t('common.reportBuilder.loadingChart')}
       </div>
     );
   }
