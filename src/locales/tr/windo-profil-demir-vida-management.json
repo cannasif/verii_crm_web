@@ -21,6 +21,7 @@
   "table": {
     "id": "ID",
     "name": "Ad",
+    "profilName": "Profil",
     "createdDate": "Oluşturulma",
     "updatedDate": "Güncellenme",
     "newRecord": "Yeni Kayıt",
@@ -39,11 +40,15 @@
     "editTitle": "{{section}} güncelle",
     "addTitle": "{{section}} ekle",
     "nameLabel": "Ad",
+    "profilLabel": "Bağlı profil",
+    "profilPlaceholder": "Profil seçin",
+    "profilSearchPlaceholder": "Profil ara",
     "cancel": "İptal",
     "save": "Kaydet"
   },
   "validation": {
-    "nameRequired": "Ad alanı zorunludur"
+    "nameRequired": "Ad alanı zorunludur",
+    "profilRequired": "Profil seçimi zorunludur"
   },
   "toasts": {
     "created": "{{section}} kaydı oluşturuldu",

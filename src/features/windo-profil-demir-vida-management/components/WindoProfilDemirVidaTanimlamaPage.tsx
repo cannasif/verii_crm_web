@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -22,18 +24,20 @@ import { loadColumnPreferences } from '@/lib/column-preferences';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { windoDefinitionApi } from '../api/windo-definition-api';
+import { useWindoDefinitionOptions } from '../hooks/useWindoDefinitionOptions';
 import type { WindoDefinitionCreateDto, WindoDefinitionGetDto } from '../types/windo-definition-types';
 
 const WINDO_I18N_NS = 'windo-profil-demir-vida-management' as const;
 
 type DefinitionKind = 'profil' | 'demir' | 'vida';
-type SortKey = 'id' | 'name' | 'createdDate' | 'updatedDate';
+type SortKey = 'id' | 'name' | 'profilName' | 'createdDate' | 'updatedDate';
 
 interface DefinitionSectionConfig {
   kind: DefinitionKind;
   title: string;
   description: string;
   queryKey: string;
+  requiresProfilParent?: boolean;
   getList: (args: {
     pageNumber: number;
     pageSize: number;
@@ -58,6 +62,7 @@ const EMPTY_DEFINITION_ROWS: WindoDefinitionGetDto[] = [];
 const SORT_MAP: Record<SortKey, string> = {
   id: 'Id',
   name: 'Name',
+  profilName: 'ProfilDefinition.Name',
   createdDate: 'CreatedDate',
   updatedDate: 'UpdatedDate',
 };
@@ -75,9 +80,15 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [draftName, setDraftName] = useState('');
+  const [draftProfilDefinitionId, setDraftProfilDefinitionId] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<WindoDefinitionGetDto | null>(null);
-  const [columnOrder, setColumnOrder] = useState<string[]>(['id', 'name', 'createdDate', 'updatedDate']);
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(['id', 'name', 'createdDate', 'updatedDate']);
+  const defaultColumns = useMemo(
+    () => (config.requiresProfilParent ? ['id', 'name', 'profilName', 'createdDate', 'updatedDate'] : ['id', 'name', 'createdDate', 'updatedDate']),
+    [config.requiresProfilParent]
+  );
+  const [columnOrder, setColumnOrder] = useState<string[]>(defaultColumns);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumns);
+  const { profilOptions, isLoading: isProfilOptionsLoading } = useWindoDefinitionOptions();
 
   const dateLocale = i18n.language.startsWith('tr') ? 'tr-TR' : 'en-US';
 
@@ -87,11 +98,11 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   );
 
   useEffect(() => {
-    const defaults = ['id', 'name', 'createdDate', 'updatedDate'];
+    const defaults = defaultColumns;
     const prefs = loadColumnPreferences(`${PAGE_KEY}-${config.kind}`, user?.id, defaults);
     setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
-  }, [config.kind, user?.id]);
+  }, [config.kind, defaultColumns, user?.id]);
 
   const serverSearchTerm = useMemo(() => {
     const filterValue = appliedFilterRows.find((row) => row.column === 'name')?.value?.trim() ?? '';
@@ -125,10 +136,16 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
     () => [
       { key: 'id', label: t('table.id'), cellClassName: 'whitespace-nowrap text-slate-500' },
       { key: 'name', label: t('table.name') },
+      ...(config.requiresProfilParent ? [{ key: 'profilName' as SortKey, label: t('table.profilName') }] : []),
       { key: 'createdDate', label: t('table.createdDate') },
       { key: 'updatedDate', label: t('table.updatedDate') },
     ],
-    [t]
+    [config.requiresProfilParent, t]
+  );
+
+  const profilComboboxOptions = useMemo<ComboboxOption[]>(
+    () => profilOptions.map((option) => ({ value: String(option.id), label: option.name })),
+    [profilOptions]
   );
 
   const exportColumns = useMemo(
@@ -153,6 +170,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       data.map((row) => ({
         id: row.id,
         name: row.name,
+        profilName: row.profilDefinitionName ?? '',
         createdDate: row.createdDate ? new Date(row.createdDate).toLocaleDateString(dateLocale) : '',
         updatedDate: row.updatedDate ? new Date(row.updatedDate).toLocaleDateString(dateLocale) : '',
       })),
@@ -171,6 +189,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       await invalidate();
       setDialogOpen(false);
       setDraftName('');
+      setDraftProfilDefinitionId(null);
     },
   });
 
@@ -182,6 +201,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       setDialogOpen(false);
       setEditingItem(null);
       setDraftName('');
+      setDraftProfilDefinitionId(null);
     },
   });
 
@@ -200,12 +220,22 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       return;
     }
 
-    if (editingItem) {
-      await updateMutation.mutateAsync({ id: editingItem.id, data: { name } });
+    if (config.requiresProfilParent && !draftProfilDefinitionId) {
+      toast.error(t('validation.profilRequired'));
       return;
     }
 
-    await createMutation.mutateAsync({ name });
+    const payload: WindoDefinitionCreateDto = {
+      name,
+      profilDefinitionId: config.requiresProfilParent && draftProfilDefinitionId ? Number(draftProfilDefinitionId) : null,
+    };
+
+    if (editingItem) {
+      await updateMutation.mutateAsync({ id: editingItem.id, data: payload });
+      return;
+    }
+
+    await createMutation.mutateAsync(payload);
   };
 
   useEffect(() => {
@@ -229,6 +259,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               onClick={() => {
                 setEditingItem(null);
                 setDraftName('');
+                setDraftProfilDefinitionId(null);
                 setDialogOpen(true);
               }}
             >
@@ -284,6 +315,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               rowKey={(row) => row.id}
               renderCell={(row, key) => {
                 if (key === 'id') return `#${row.id}`;
+                if (key === 'profilName') return row.profilDefinitionName ?? '-';
                 if (key === 'createdDate') return formatDateCell(row.createdDate);
                 if (key === 'updatedDate') return formatDateCell(row.updatedDate);
                 return row.name;
@@ -322,6 +354,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                     onClick={() => {
                       setEditingItem(item);
                       setDraftName(item.name);
+                      setDraftProfilDefinitionId(item.profilDefinitionId ? String(item.profilDefinitionId) : null);
                       setDialogOpen(true);
                     }}
                   >
@@ -375,6 +408,20 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               <Label>{t('dialog.nameLabel')}</Label>
               <Input value={draftName} onChange={(e) => setDraftName(e.target.value)} maxLength={150} />
             </div>
+            {config.requiresProfilParent ? (
+              <div className="space-y-2">
+                <Label>{t('dialog.profilLabel')}</Label>
+                <VoiceSearchCombobox
+                  options={profilComboboxOptions}
+                  value={draftProfilDefinitionId}
+                  onSelect={setDraftProfilDefinitionId}
+                  placeholder={isProfilOptionsLoading ? t('table.loading') : t('dialog.profilPlaceholder')}
+                  searchPlaceholder={t('dialog.profilSearchPlaceholder')}
+                  disabled={isProfilOptionsLoading}
+                  className="h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white"
+                />
+              </div>
+            ) : null}
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                 {t('dialog.cancel')}
@@ -422,6 +469,7 @@ export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
         title: t('sections.demir.title'),
         description: t('sections.demir.description'),
         queryKey: 'demir',
+        requiresProfilParent: true,
         getList: windoDefinitionApi.getDemirPagedList,
         create: windoDefinitionApi.createDemir,
         update: windoDefinitionApi.updateDemir,
@@ -432,6 +480,7 @@ export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
         title: t('sections.vida.title'),
         description: t('sections.vida.description'),
         queryKey: 'vida',
+        requiresProfilParent: true,
         getList: windoDefinitionApi.getVidaPagedList,
         create: windoDefinitionApi.createVida,
         update: windoDefinitionApi.updateVida,

@@ -21,6 +21,7 @@
   "table": {
     "id": "ID",
     "name": "Name",
+    "profilName": "Profile",
     "createdDate": "Created",
     "updatedDate": "Updated",
     "newRecord": "New record",
@@ -39,11 +40,15 @@
     "editTitle": "Edit {{section}}",
     "addTitle": "Add {{section}}",
     "nameLabel": "Name",
+    "profilLabel": "Linked profile",
+    "profilPlaceholder": "Select a profile",
+    "profilSearchPlaceholder": "Search profile",
     "cancel": "Cancel",
     "save": "Save"
   },
   "validation": {
-    "nameRequired": "Name is required"
+    "nameRequired": "Name is required",
+    "profilRequired": "Profile selection is required"
   },
   "toasts": {
     "created": "{{section}} record created",

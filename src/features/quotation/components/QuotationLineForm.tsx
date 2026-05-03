@@ -114,7 +114,6 @@ export function QuotationLineForm({
 }: QuotationLineFormProps): ReactElement {
   const { t } = useTranslation(['quotation', 'common']);
   const { calculateLineTotals } = useQuotationCalculations();
-  const { profilOptions, demirOptions, vidaOptions, isLoading: isDefinitionOptionsLoading } = useWindoDefinitionOptions();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
@@ -142,6 +141,11 @@ export function QuotationLineForm({
   }, [currency, currencyOptions]);
 
   const [formData, setFormData] = useState<QuotationLineFormState>(line);
+  const { profilOptions, demirOptions, vidaOptions, allDemirOptions, allVidaOptions, isLoading: isDefinitionOptionsLoading } =
+    useWindoDefinitionOptions(formData.profilDefinitionId, {
+      demirDefinitionId: formData.demirDefinitionId,
+      vidaDefinitionId: formData.vidaDefinitionId,
+    });
   const [relatedLines, setRelatedLines] = useState<QuotationLineFormState[]>([]);
   const [bulkDraftLines, setBulkDraftLines] = useState<QuotationLineFormState[]>([]);
   const [activeBulkIndex, setActiveBulkIndex] = useState(0);
@@ -258,6 +262,28 @@ export function QuotationLineForm({
       setRelatedLines([]);
     }
   }, [line]);
+
+  useEffect(() => {
+    if (!formData.profilDefinitionId || !formData.demirDefinitionId) {
+      return;
+    }
+
+    const selectedDemir = allDemirOptions.find((option) => option.id === formData.demirDefinitionId);
+    if (selectedDemir && selectedDemir.profilDefinitionId !== formData.profilDefinitionId) {
+      setFormData((prev) => ({ ...prev, demirDefinitionId: null }));
+    }
+  }, [allDemirOptions, formData.demirDefinitionId, formData.profilDefinitionId]);
+
+  useEffect(() => {
+    if (!formData.profilDefinitionId || !formData.vidaDefinitionId) {
+      return;
+    }
+
+    const selectedVida = allVidaOptions.find((option) => option.id === formData.vidaDefinitionId);
+    if (selectedVida && selectedVida.profilDefinitionId !== formData.profilDefinitionId) {
+      setFormData((prev) => ({ ...prev, vidaDefinitionId: null }));
+    }
+  }, [allVidaOptions, formData.profilDefinitionId, formData.vidaDefinitionId]);
 
   useEffect(() => {
     return () => {

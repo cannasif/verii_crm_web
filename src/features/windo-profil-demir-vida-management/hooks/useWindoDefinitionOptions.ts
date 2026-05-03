@@ -4,7 +4,12 @@ import { windoDefinitionApi } from '../api/windo-definition-api';
 import type { WindoDefinitionGetDto, WindoDefinitionOption } from '../types/windo-definition-types';
 
 function toOptions(items: WindoDefinitionGetDto[]): WindoDefinitionOption[] {
-  return items.map((item) => ({ id: item.id, name: item.name }));
+  return items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    profilDefinitionId: item.profilDefinitionId ?? null,
+    profilDefinitionName: item.profilDefinitionName ?? null,
+  }));
 }
 
 function toOptionMap(items: WindoDefinitionOption[]): Record<number, string> {
@@ -14,7 +19,26 @@ function toOptionMap(items: WindoDefinitionOption[]): Record<number, string> {
   }, {});
 }
 
-export function useWindoDefinitionOptions() {
+function filterChildOptions(
+  items: WindoDefinitionOption[],
+  selectedProfilDefinitionId?: number | null,
+  preserveOptionId?: number | null
+): WindoDefinitionOption[] {
+  if (!selectedProfilDefinitionId) {
+    return items;
+  }
+
+  return items.filter(
+    (item) =>
+      item.profilDefinitionId === selectedProfilDefinitionId ||
+      item.id === preserveOptionId
+  );
+}
+
+export function useWindoDefinitionOptions(
+  selectedProfilDefinitionId?: number | null,
+  preserveSelection?: { demirDefinitionId?: number | null; vidaDefinitionId?: number | null }
+) {
   const [profilQuery, demirQuery, vidaQuery] = useQueries({
     queries: [
       { queryKey: ['windo-definition', 'profil'], queryFn: windoDefinitionApi.getProfilList },
@@ -24,16 +48,26 @@ export function useWindoDefinitionOptions() {
   });
 
   const profilOptions = useMemo(() => toOptions(profilQuery.data ?? []), [profilQuery.data]);
-  const demirOptions = useMemo(() => toOptions(demirQuery.data ?? []), [demirQuery.data]);
-  const vidaOptions = useMemo(() => toOptions(vidaQuery.data ?? []), [vidaQuery.data]);
+  const allDemirOptions = useMemo(() => toOptions(demirQuery.data ?? []), [demirQuery.data]);
+  const allVidaOptions = useMemo(() => toOptions(vidaQuery.data ?? []), [vidaQuery.data]);
+  const demirOptions = useMemo(
+    () => filterChildOptions(allDemirOptions, selectedProfilDefinitionId, preserveSelection?.demirDefinitionId),
+    [allDemirOptions, preserveSelection?.demirDefinitionId, selectedProfilDefinitionId]
+  );
+  const vidaOptions = useMemo(
+    () => filterChildOptions(allVidaOptions, selectedProfilDefinitionId, preserveSelection?.vidaDefinitionId),
+    [allVidaOptions, preserveSelection?.vidaDefinitionId, selectedProfilDefinitionId]
+  );
 
   return {
     profilOptions,
+    allDemirOptions,
+    allVidaOptions,
     demirOptions,
     vidaOptions,
     profilMap: toOptionMap(profilOptions),
-    demirMap: toOptionMap(demirOptions),
-    vidaMap: toOptionMap(vidaOptions),
+    demirMap: toOptionMap(allDemirOptions),
+    vidaMap: toOptionMap(allVidaOptions),
     isLoading: profilQuery.isLoading || demirQuery.isLoading || vidaQuery.isLoading,
   };
 }
