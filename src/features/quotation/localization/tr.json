@@ -170,9 +170,9 @@
     "discountNumbered2": "2. İndirim",
     "discountNumbered3": "3. İndirim",
     "descriptionFieldsTitle": "Açıklama Alanları",
-    "descriptionField1Label": "Profil",
-    "descriptionField2Label": "Demir",
-    "descriptionField3Label": "Vida",
+    "descriptionField1Label": "Açıklama 1",
+    "descriptionField2Label": "Açıklama 2",
+    "descriptionField3Label": "Açıklama 3",
     "doubleClickToEdit": "Düzenlemek için çift tıklayın"
   },
   "exchangeRates": {

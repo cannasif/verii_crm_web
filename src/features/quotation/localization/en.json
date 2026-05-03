@@ -170,9 +170,9 @@
     "discountNumbered2": "2. Discount",
     "discountNumbered3": "3. Discount",
     "descriptionFieldsTitle": "Description fields",
-    "descriptionField1Label": "Profile",
-    "descriptionField2Label": "Iron",
-    "descriptionField3Label": "Screw",
+    "descriptionField1Label": "Description 1",
+    "descriptionField2Label": "Description 2",
+    "descriptionField3Label": "Description 3",
     "doubleClickToEdit": "Double-click to edit"
   },
   "exchangeRates": {
