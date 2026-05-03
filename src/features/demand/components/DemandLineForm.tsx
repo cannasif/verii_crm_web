@@ -1,6 +1,7 @@
 'use client';
 
 import { type ChangeEvent, type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,7 @@ import type { UploadPdfAssetOptions } from '@/features/pdf-report/api/pdf-report
 import { getImageUrl } from '@/lib/image-url';
 import { isIntegerQuantityUnit } from '@/lib/system-settings';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import { WindoQuickCreateDialog } from '@/features/windo-profil-demir-vida-management/components/WindoQuickCreateDialog';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/demand-types';
 import {
   Check,
@@ -40,6 +42,7 @@ import {
   X,
   ImagePlus,
   Trash2,
+  CirclePlus,
 } from 'lucide-react';
 
 interface TemporaryStockData {
@@ -124,9 +127,13 @@ export function DemandLineForm({
   imageUploadExtras,
 }: DemandLineFormProps): ReactElement {
   const { t } = useTranslation(['demand', 'common']);
+  const queryClient = useQueryClient();
   const { calculateLineTotals } = useDemandCalculations();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
+  const [profilCreateOpen, setProfilCreateOpen] = useState(false);
+  const [demirCreateOpen, setDemirCreateOpen] = useState(false);
+  const [vidaCreateOpen, setVidaCreateOpen] = useState(false);
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
@@ -173,6 +180,37 @@ export function DemandLineForm({
     () => vidaOptions.map((option) => ({ value: String(option.id), label: option.name })),
     [vidaOptions]
   );
+
+  const handleWindoDefinitionCreated = async (
+    kind: 'profil' | 'demir' | 'vida',
+    item: { id: number; profilDefinitionId?: number | null }
+  ): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: ['windo-definition'] });
+    setFormData((prev) => {
+      if (kind === 'profil') {
+        return {
+          ...prev,
+          profilDefinitionId: item.id,
+          demirDefinitionId: null,
+          vidaDefinitionId: null,
+        };
+      }
+
+      if (kind === 'demir') {
+        return {
+          ...prev,
+          profilDefinitionId: item.profilDefinitionId ?? prev.profilDefinitionId ?? null,
+          demirDefinitionId: item.id,
+        };
+      }
+
+      return {
+        ...prev,
+        profilDefinitionId: item.profilDefinitionId ?? prev.profilDefinitionId ?? null,
+        vidaDefinitionId: item.id,
+      };
+    });
+  };
 
   const mainStockData = useMemo(() => {
     return temporaryStockData.find((data) => data.productCode === formData.productCode);
@@ -1355,6 +1393,16 @@ export function DemandLineForm({
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-0 text-xs text-pink-600 hover:text-pink-700"
+                  onClick={() => setProfilCreateOpen(true)}
+                >
+                  <CirclePlus className="mr-1 h-3.5 w-3.5" />
+                  {t('lines.addNewProfile', { defaultValue: 'Yeni profil ekle' })}
+                </Button>
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
@@ -1369,6 +1417,16 @@ export function DemandLineForm({
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-0 text-xs text-pink-600 hover:text-pink-700"
+                  onClick={() => setDemirCreateOpen(true)}
+                >
+                  <CirclePlus className="mr-1 h-3.5 w-3.5" />
+                  {t('lines.addNewRebar', { defaultValue: 'Yeni demir ekle' })}
+                </Button>
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
@@ -1383,6 +1441,16 @@ export function DemandLineForm({
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-0 text-xs text-pink-600 hover:text-pink-700"
+                  onClick={() => setVidaCreateOpen(true)}
+                >
+                  <CirclePlus className="mr-1 h-3.5 w-3.5" />
+                  {t('lines.addNewScrew', { defaultValue: 'Yeni vida ekle' })}
+                </Button>
               </div>
             </div>
           </div>
@@ -1575,6 +1643,30 @@ export function DemandLineForm({
         activeGroupCode={activeGroupCode}
         rules={matchingPricingRules}
         discountLimit={matchingDiscountLimit}
+      />
+      <WindoQuickCreateDialog
+        kind="profil"
+        open={profilCreateOpen}
+        onOpenChange={setProfilCreateOpen}
+        initialProfilDefinitionId={formData.profilDefinitionId}
+        profilOptions={profilComboboxOptions}
+        onCreated={(item) => void handleWindoDefinitionCreated('profil', item)}
+      />
+      <WindoQuickCreateDialog
+        kind="demir"
+        open={demirCreateOpen}
+        onOpenChange={setDemirCreateOpen}
+        initialProfilDefinitionId={formData.profilDefinitionId}
+        profilOptions={profilComboboxOptions}
+        onCreated={(item) => void handleWindoDefinitionCreated('demir', item)}
+      />
+      <WindoQuickCreateDialog
+        kind="vida"
+        open={vidaCreateOpen}
+        onOpenChange={setVidaCreateOpen}
+        initialProfilDefinitionId={formData.profilDefinitionId}
+        profilOptions={profilComboboxOptions}
+        onCreated={(item) => void handleWindoDefinitionCreated('vida', item)}
       />
 
       <ProductSelectDialog
