@@ -302,26 +302,41 @@ export function OrderLineForm({
   }, [line]);
 
   useEffect(() => {
-    if (!formData.profilDefinitionId || !formData.demirDefinitionId) {
-      return;
-    }
+    setFormData((prev) => {
+      if (!prev.profilDefinitionId) {
+        if (prev.demirDefinitionId == null && prev.vidaDefinitionId == null) {
+          return prev;
+        }
 
-    const selectedDemir = allDemirOptions.find((option) => option.id === formData.demirDefinitionId);
-    if (selectedDemir && selectedDemir.profilDefinitionId !== formData.profilDefinitionId) {
-      setFormData((prev) => ({ ...prev, demirDefinitionId: null }));
-    }
-  }, [allDemirOptions, formData.demirDefinitionId, formData.profilDefinitionId]);
+        return {
+          ...prev,
+          demirDefinitionId: null,
+          vidaDefinitionId: null,
+        };
+      }
 
-  useEffect(() => {
-    if (!formData.profilDefinitionId || !formData.vidaDefinitionId) {
-      return;
-    }
+      const currentDemir = allDemirOptions.find((option) => option.id === prev.demirDefinitionId);
+      const currentVida = allVidaOptions.find((option) => option.id === prev.vidaDefinitionId);
+      const nextDemirId =
+        currentDemir?.profilDefinitionId === prev.profilDefinitionId
+          ? prev.demirDefinitionId
+          : (demirOptions[0]?.id ?? null);
+      const nextVidaId =
+        currentVida?.profilDefinitionId === prev.profilDefinitionId
+          ? prev.vidaDefinitionId
+          : (vidaOptions[0]?.id ?? null);
 
-    const selectedVida = allVidaOptions.find((option) => option.id === formData.vidaDefinitionId);
-    if (selectedVida && selectedVida.profilDefinitionId !== formData.profilDefinitionId) {
-      setFormData((prev) => ({ ...prev, vidaDefinitionId: null }));
-    }
-  }, [allVidaOptions, formData.profilDefinitionId, formData.vidaDefinitionId]);
+      if (nextDemirId === prev.demirDefinitionId && nextVidaId === prev.vidaDefinitionId) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        demirDefinitionId: nextDemirId,
+        vidaDefinitionId: nextVidaId,
+      };
+    });
+  }, [allDemirOptions, allVidaOptions, demirOptions, vidaOptions, formData.profilDefinitionId]);
 
   useEffect(() => {
     const lineRelatedLines = (line as OrderLineFormState & { relatedLines?: OrderLineFormState[] }).relatedLines || [];
