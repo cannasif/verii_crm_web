@@ -11,6 +11,7 @@ import {
   ManagementDataTableChrome,
   type DataTableGridColumn,
 } from '@/components/shared';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -69,6 +70,12 @@ export function PermissionGroupsPage(): ReactElement {
   const [itemToDelete, setItemToDelete] = useState<PermissionGroupDto | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
   const [columnOrder, setColumnOrder] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, ['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
+    setVisibleColumns(prefs.visibleKeys);
+    setColumnOrder(prefs.order);
+  }, [user?.id]);
 
   const { data, isLoading } = usePermissionGroupsQuery({
     pageNumber,
@@ -276,7 +283,7 @@ export function PermissionGroupsPage(): ReactElement {
             <div className="flex shrink-0">
               <Button
                 onClick={handleAddClick}
-                className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Plus size={20} className="mr-2" />
                 {t('permissionGroups.add')}
@@ -340,7 +347,14 @@ export function PermissionGroupsPage(): ReactElement {
             visibleColumns={visibleColumns}
             columnOrder={columnOrder}
             onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={setColumnOrder}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
             exportFileName="permission-groups"
             exportColumns={exportColumns}
             exportRows={exportRows}
@@ -380,7 +394,7 @@ export function PermissionGroupsPage(): ReactElement {
             <ManagementDataTableChrome>
               <DataTableGrid<PermissionGroupDto, PermissionGroupColumnKey>
                 columns={columns}
-                visibleColumnKeys={visibleColumns as PermissionGroupColumnKey[]}
+                visibleColumnKeys={columnOrder.filter((key) => visibleColumns.includes(key)) as PermissionGroupColumnKey[]}
                 rows={filteredItems}
                 rowKey={(r) => r.id}
                 renderCell={(row, key) => {
@@ -444,6 +458,14 @@ export function PermissionGroupsPage(): ReactElement {
                   to: Math.min(pageNumber * pageSize, totalCount),
                   total: totalCount,
                 })}
+                onColumnOrderChange={(newVisibleOrder) => {
+                  setColumnOrder((currentOrder) => {
+                    const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                    return finalOrder;
+                  });
+                }}
                 centerColumnHeaders
               />
             </ManagementDataTableChrome>

@@ -214,7 +214,7 @@ export function CreateCatalogDialog({
           <Button
             onClick={() => void handleSubmit()}
             disabled={isDisabled}
-            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:grayscale-[0] disabled:hover:scale-100 px-8 h-11 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:grayscale-[0] disabled:hover:scale-100 px-8 h-11 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? t('common.saving') : initialData ? t('common.update') : t('categoryDefinitions.actions.createCatalog')}
           </Button>

@@ -298,7 +298,7 @@ function RecommendedActionsPanel({
                       onClick={() => onExecute(action)}
                       disabled={busy}
                       className="shrink-0 h-9 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-bold px-4 gap-1.5 border-0
-                      opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                      opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                     >
                       {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Zap className="size-3.5" />}
                       {t('salesman360.actions.execute')}

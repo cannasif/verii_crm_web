@@ -20,7 +20,7 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
-import { loadColumnPreferences } from '@/lib/column-preferences';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { windoDefinitionApi } from '../api/windo-definition-api';
@@ -274,7 +274,14 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
             visibleColumns={visibleColumns}
             columnOrder={columnOrder}
             onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={setColumnOrder}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(`${PAGE_KEY}-${config.kind}`, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
             exportFileName={`windo-${config.kind}`}
             exportColumns={exportColumns}
             exportRows={exportRows}
@@ -389,6 +396,14 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               nextLabel={t('table.next')}
               paginationInfoText={paginationInfoText}
               disablePaginationButtons={isFetching}
+              onColumnOrderChange={(newVisibleOrder) => {
+                setColumnOrder((currentOrder) => {
+                  const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                  const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                  saveColumnPreferences(`${PAGE_KEY}-${config.kind}`, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                  return finalOrder;
+                });
+              }}
             />
           </div>
         </CardContent>

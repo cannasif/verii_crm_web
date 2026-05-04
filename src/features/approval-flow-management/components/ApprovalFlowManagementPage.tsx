@@ -7,7 +7,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucid
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { loadColumnPreferences } from '@/lib/column-preferences';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -263,7 +263,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleAddClick}
-          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('approvalFlow.addButton')}
@@ -413,6 +413,14 @@ export function ApprovalFlowManagementPage(): ReactElement {
                 total: totalCount,
               })}
               disablePaginationButtons={false}
+              onColumnOrderChange={(newVisibleOrder) => {
+                setColumnOrder((currentOrder) => {
+                  const hiddenCols = currentOrder.filter(k => !newVisibleOrder.includes(k));
+                  const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                  saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                  return finalOrder;
+                });
+              }}
             />
           </div>
         </CardContent>

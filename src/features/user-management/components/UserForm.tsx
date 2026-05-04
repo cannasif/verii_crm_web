@@ -493,7 +493,7 @@ export function UserForm({
                 <Button
                   type="submit"
                   disabled={isLoading || !isFormValid}
-                  className="h-11 px-8 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                  className="h-11 px-8 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   {isLoading
                     ? t('form.saving')

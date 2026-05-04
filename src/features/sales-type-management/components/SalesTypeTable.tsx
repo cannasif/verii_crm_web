@@ -59,6 +59,7 @@ interface SalesTypeTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<SalesTypeGetDto>[] => [
@@ -100,6 +101,7 @@ export function SalesTypeTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: SalesTypeTableProps): ReactElement {
   const { t } = useTranslation(['sales-type-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -184,6 +186,7 @@ export function SalesTypeTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

@@ -60,6 +60,7 @@ interface PaymentTypeTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<PaymentTypeDto>[] => [
@@ -104,6 +105,7 @@ export function PaymentTypeTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: PaymentTypeTableProps): ReactElement {
   const { t } = useTranslation(['payment-type-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -193,6 +195,7 @@ export function PaymentTypeTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

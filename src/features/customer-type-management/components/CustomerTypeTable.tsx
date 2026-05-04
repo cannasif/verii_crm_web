@@ -60,6 +60,7 @@ interface CustomerTypeTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerTypeDto>[] => [
@@ -144,6 +145,7 @@ export function CustomerTypeTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: CustomerTypeTableProps): ReactElement {
   const { t, i18n } = useTranslation(['customer-type-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -244,6 +246,7 @@ export function CustomerTypeTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </div>
 

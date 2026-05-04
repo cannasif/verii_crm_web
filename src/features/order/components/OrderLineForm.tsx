@@ -1130,8 +1130,8 @@ export function OrderLineForm({
                   <div
                     key={`${item.id}-${index}`}
                     className={`inline-flex items-stretch overflow-hidden rounded-full border transition-all ${index === activeBulkIndex
-                        ? 'border-pink-500 bg-pink-600 shadow-md shadow-pink-500/30 dark:border-pink-400 dark:bg-pink-500'
-                        : 'border-pink-200/80 bg-white/80 dark:border-pink-700/40 dark:bg-pink-900/20'
+                      ? 'border-pink-500 bg-pink-600 shadow-md shadow-pink-500/30 dark:border-pink-400 dark:bg-pink-500'
+                      : 'border-pink-200/80 bg-white/80 dark:border-pink-700/40 dark:bg-pink-900/20'
                       }`}
                   >
                     <button
@@ -1139,8 +1139,8 @@ export function OrderLineForm({
                       onClick={() => handleSelectBulkLine(index)}
                       title={item.productName || item.productCode || '-'}
                       className={`flex h-8 max-w-[180px] items-center gap-1.5 px-3 text-left text-sm transition-colors ${index === activeBulkIndex
-                          ? 'text-white hover:bg-pink-700/35 dark:hover:bg-white/10'
-                          : 'text-pink-700 hover:bg-pink-50 dark:text-pink-300 dark:hover:bg-pink-900/35'
+                        ? 'text-white hover:bg-pink-700/35 dark:hover:bg-white/10'
+                        : 'text-pink-700 hover:bg-pink-50 dark:text-pink-300 dark:hover:bg-pink-900/35'
                         }`}
                     >
                       {(item.relatedLines?.length ?? 0) > 0 ? <Layers className="h-3.5 w-3.5 shrink-0" /> : null}
@@ -1152,8 +1152,8 @@ export function OrderLineForm({
                       title={t('common.remove')}
                       onClick={handleRemoveBulkDraftLine(index)}
                       className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${index === activeBulkIndex
-                          ? 'border-pink-400/50 text-white/90 hover:bg-white/15 hover:text-white'
-                          : 'border-pink-200/70 text-pink-600 hover:bg-pink-100 dark:border-pink-700/50 dark:text-pink-300 dark:hover:bg-pink-900/40'
+                        ? 'border-pink-400/50 text-white/90 hover:bg-white/15 hover:text-white'
+                        : 'border-pink-200/70 text-pink-600 hover:bg-pink-100 dark:border-pink-700/50 dark:text-pink-300 dark:hover:bg-pink-900/40'
                         }`}
                     >
                       <X className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -1636,7 +1636,7 @@ export function OrderLineForm({
                 (bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : !formData.productCode || !formData.productName) ||
                 isSaving
               }
-              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               {isSaving ? (
                 <>

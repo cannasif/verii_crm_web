@@ -59,6 +59,7 @@ interface ApprovalRoleGroupTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalRoleGroupDto>[] => [
@@ -101,6 +102,7 @@ export function ApprovalRoleGroupTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: ApprovalRoleGroupTableProps): ReactElement {
   const { t } = useTranslation(['approval-role-group-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -191,6 +193,7 @@ export function ApprovalRoleGroupTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

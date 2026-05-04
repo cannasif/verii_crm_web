@@ -73,6 +73,7 @@ interface ContactTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ContactDto>[] => [
@@ -215,6 +216,7 @@ export function ContactTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: ContactTableProps): ReactElement {
   const { t, i18n } = useTranslation(['contact-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions('customers.contact-management.view');
@@ -324,6 +326,7 @@ export function ContactTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </div>
 

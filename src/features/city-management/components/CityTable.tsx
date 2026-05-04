@@ -69,6 +69,7 @@ interface CityTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export function CityTable({
@@ -104,6 +105,7 @@ export function CityTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: CityTableProps): ReactElement {
   const { t } = useTranslation(['city-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -194,6 +196,7 @@ export function CityTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

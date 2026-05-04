@@ -14,7 +14,8 @@ export function loadColumnPreferences(
   pageKey: string,
   userId: number | undefined,
   defaultOrder: string[],
-  idColumnKey = 'id'
+  idColumnKey = 'id',
+  forceIdFirst = true
 ): ColumnPreferences {
   const key = getColumnStorageKey(pageKey, userId);
   try {
@@ -31,7 +32,11 @@ export function loadColumnPreferences(
     const visibleKeys = storedVisible.filter((k) => defaultOrder.includes(k));
     const visibleWithDefaults = visibleKeys.length > 0 ? visibleKeys : [...defaultOrder];
     const idFirst =
-      order[0] === idColumnKey ? order : [idColumnKey, ...order.filter((k) => k !== idColumnKey)];
+      forceIdFirst && (order[0] === idColumnKey || defaultOrder.includes(idColumnKey))
+        ? order[0] === idColumnKey
+          ? order
+          : [idColumnKey, ...order.filter((k) => k !== idColumnKey)]
+        : order;
     return { visibleKeys: visibleWithDefaults, order: idFirst };
   } catch {
     return { visibleKeys: [...defaultOrder], order: [...defaultOrder] };

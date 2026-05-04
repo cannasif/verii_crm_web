@@ -1648,7 +1648,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 type="submit"
                 size="sm"
                 disabled={isSaving || (isEdit && !templateByIdLoaded) || !isFormValid}
-                className="min-w-[100px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="min-w-[100px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {isSaving ? (
                   <>

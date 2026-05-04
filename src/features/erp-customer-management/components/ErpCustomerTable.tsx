@@ -37,6 +37,7 @@ interface ErpCustomerTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction) => [
@@ -88,6 +89,7 @@ export function ErpCustomerTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: ErpCustomerTableProps): ReactElement {
   return (
     <DataTableGrid<ErpCustomer, ErpCustomerColumnKey>
@@ -123,6 +125,7 @@ export function ErpCustomerTable({
       nextLabel={nextLabel}
       paginationInfoText={paginationInfoText}
       disablePaginationButtons={disablePaginationButtons}
+      onColumnOrderChange={onColumnOrderChange}
     />
   );
 }

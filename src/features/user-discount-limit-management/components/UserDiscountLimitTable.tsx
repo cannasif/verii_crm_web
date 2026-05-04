@@ -60,6 +60,7 @@ interface UserDiscountLimitTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<UserDiscountLimitDto>[] => [
@@ -105,6 +106,7 @@ export function UserDiscountLimitTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: UserDiscountLimitTableProps): ReactElement {
   const { t } = useTranslation(['user-discount-limit-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions('users.discount-limits.view');
@@ -195,6 +197,7 @@ export function UserDiscountLimitTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

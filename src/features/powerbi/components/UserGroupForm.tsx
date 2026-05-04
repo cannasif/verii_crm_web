@@ -173,7 +173,7 @@ export function UserGroupForm({
               <Button
                 type="submit"
                 disabled={isSubmitting || !isFormValid}
-                className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11 gap-2 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11 gap-2 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t('common.save')}

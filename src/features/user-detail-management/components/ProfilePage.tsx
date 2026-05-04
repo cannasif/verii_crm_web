@@ -24,11 +24,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
 import { userDetailFormSchema, type UserDetailFormSchema, Gender, GENDER_OPTIONS } from '../types/user-detail-types';
 import { useUserDetailByUserId } from '../hooks/useUserDetailByUserId';
 import { useCreateUserDetail } from '../hooks/useCreateUserDetail';
@@ -40,14 +50,11 @@ import { toast } from 'sonner';
 import { getImageUrl } from '../utils/image-url';
 import { useChangePassword } from '@/features/auth/hooks/useChangePassword';
 import { changePasswordSchema, type ChangePasswordRequest } from '@/features/auth/types/auth';
+import { useSalesmenOverviewQuery } from '@/features/salesman-360/hooks/useSalesmen360';
+import { useSalesRepMatchList } from '@/features/sales-rep-match-management/hooks/useSalesRepMatchList';
 import {
   User,
-  Shield,
   Camera,
-  Save,
-  Ruler,
-  Weight,
-  FileText,
   Mail,
   Lock,
   Eye,
@@ -58,8 +65,65 @@ import {
   Briefcase,
   Phone,
   Linkedin,
+  Ruler,
+  Weight,
+  FileText,
+  TrendingUp,
+  Heart,
+  UserMinus,
+  Activity,
+  Zap,
+  BarChart3,
+  DollarSign,
+  MessageSquare,
+  CheckCircle,
+  Settings,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ElementType;
+  description?: string;
+  colorClass?: string;
+  progress?: number;
+}
+
+function StatCard({ title, value, icon: Icon, description, colorClass, progress }: StatCardProps) {
+  return (
+    <div className="relative group overflow-hidden rounded-3xl border border-slate-200 dark:border-white/20 bg-white/60 dark:bg-[#1D1726] p-6 transition-all backdrop-blur-xl">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">{title}</p>
+          <h3 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{value}</h3>
+          {description && <p className="mt-1 text-xs text-muted-foreground dark:text-slate-400 font-bold">{description}</p>}
+        </div>
+        <div className={cn("p-3 rounded-2xl bg-white/50 dark:bg-black/40 shadow-sm transition-colors", colorClass)}>
+          <Icon size={22} className="opacity-100" />
+        </div>
+      </div>
+      {progress !== undefined && (
+        <div className="mt-4 h-2.5 w-full rounded-full bg-slate-200 dark:bg-white/5 overflow-hidden border border-slate-300/30 dark:border-transparent">
+          <div
+            className={cn("h-full transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(var(--progress-color),0.4)]",
+              colorClass?.replace('text-emerald-600', 'bg-emerald-500')
+                .replace('text-blue-200', 'bg-blue-600')
+                .replace('text-pink-200', 'bg-rose-600')
+                .replace('text-indigo-200 ', 'bg-indigo-600')
+            )}
+            style={{
+              width: `${progress}%`,
+              // @ts-ignore
+              '--progress-color': colorClass?.includes('emerald') ? '16,185,129' : colorClass?.includes('blue') ? '37,99,235' : colorClass?.includes('indigo') ? '79,70,229' : '225,29,72'
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ProfilePage(): ReactElement {
   const { t } = useTranslation();
@@ -72,6 +136,14 @@ export function ProfilePage(): ReactElement {
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
 
   const { data: userDetail, isLoading: isLoadingDetail, refetch: refetchUserDetail } = useUserDetailByUserId(userId);
+  const { data: overview, isLoading: isLoadingOverview } = useSalesmenOverviewQuery(userId);
+  const { data: matchData } = useSalesRepMatchList({
+    pageSize: 1,
+    filters: [{ column: 'userId', value: String(userId), operator: 'eq' }]
+  });
+
+  const erpMatch = matchData?.data?.[0];
+
   const createUserDetail = useCreateUserDetail();
   const updateUserDetail = useUpdateUserDetail();
   const uploadProfilePicture = useUploadProfilePicture();
@@ -97,21 +169,11 @@ export function ProfilePage(): ReactElement {
       email: '',
     },
   });
-  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     setPageTitle(t('userDetailManagement.profilePageTitle'));
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
-
-  useEffect(() => {
-    const u = new URL(window.location.href);
-    if (u.searchParams.has('currentPassword') || u.searchParams.has('newPassword')) {
-      u.searchParams.delete('currentPassword');
-      u.searchParams.delete('newPassword');
-      window.history.replaceState({}, '', u.pathname + u.search);
-    }
-  }, []);
 
   useEffect(() => {
     if (userDetail) {
@@ -126,55 +188,20 @@ export function ProfilePage(): ReactElement {
         email: userDetail.email || '',
       });
       setPreviewUrl(userDetail.profilePictureUrl ? getImageUrl(userDetail.profilePictureUrl) : null);
-    } else {
-      form.reset({
-        profilePictureUrl: '',
-        height: undefined,
-        weight: undefined,
-        description: '',
-        gender: undefined,
-        linkedinUrl: '',
-        phoneNumber: '',
-        email: '',
-      });
-      setPreviewUrl(null);
     }
   }, [userDetail, form]);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error(t('userDetailManagement.fileSizeError'));
-      return;
-    }
-    if (!file.type.startsWith('image/')) {
-      toast.error(t('userDetailManagement.fileTypeError'));
-      return;
-    }
-    const tempPreviewUrl = await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setPreviewUrl(result);
-        resolve(result);
-      };
-      reader.readAsDataURL(file);
-    });
     try {
       const result = await uploadProfilePicture.mutateAsync({ userId, file });
-      const refetchedData = await refetchUserDetail();
+      await refetchUserDetail();
       if (result?.profilePictureUrl) {
         setPreviewUrl(getImageUrl(result.profilePictureUrl));
-        form.setValue('profilePictureUrl', result.profilePictureUrl);
-      } else if (refetchedData.data?.profilePictureUrl) {
-        setPreviewUrl(getImageUrl(refetchedData.data.profilePictureUrl));
-        form.setValue('profilePictureUrl', refetchedData.data.profilePictureUrl);
-      } else if (tempPreviewUrl) {
-        setPreviewUrl(tempPreviewUrl);
       }
-    } catch {
-      if (tempPreviewUrl) setPreviewUrl(tempPreviewUrl);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -212,420 +239,541 @@ export function ProfilePage(): ReactElement {
   const handleChangePasswordSubmit = async (data: ChangePasswordRequest): Promise<void> => {
     await changePassword.mutateAsync(data);
     changePasswordForm.reset();
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('currentPassword') || url.searchParams.has('newPassword')) {
-      url.searchParams.delete('currentPassword');
-      url.searchParams.delete('newPassword');
-      window.history.replaceState({}, '', url.pathname + url.search);
-    }
   };
-
-  if (isLoadingDetail) {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
 
   const isSaving = createUserDetail.isPending || updateUserDetail.isPending;
   const isChangingPassword = changePassword.isPending;
   const displayName = user?.name || user?.email || 'Kullanıcı';
 
+  if (isLoadingDetail || isLoadingOverview) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" />
+      </div>
+    );
+  }
+
+  const kpis = overview?.kpis;
+  const revenueQuality = overview?.revenueQuality;
+
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-10">
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.home') },
-          { label: t('userDetailManagement.profilePageTitle'), isActive: true },
-        ]}
-      />
+    <div className="w-full space-y-6 pb-20 px-4 sm:px-8">
+      <div className="space-y-4">
+        <Breadcrumb
+          items={[
+            { label: t('sidebar.home') },
+            { label: t('userDetailManagement.profilePageTitle'), isActive: true },
+          ]}
+        />
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-all bg-white/80 dark:bg-white/5 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm w-fit"
+        >
+          <ArrowLeft size={16} />
+          {t('userDetailManagement.backToHome')}
+        </Link>
+      </div>
 
-      <Link
-        to="/"
-        className={cn(
-          'inline-flex items-center gap-2 text-sm font-medium transition-colors',
-          'text-muted-foreground hover:text-foreground'
-        )}
-      >
-        <ArrowLeft size={16} />
-        {t('userDetailManagement.backToHome')}
-      </Link>
+      <section className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-white/5 bg-linear-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 backdrop-blur-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 blur-3xl -mr-20 -mt-20 rounded-full" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/10 blur-3xl -ml-20 -mb-20 rounded-full" />
 
-      <section className="rounded-2xl border bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border-white/60 dark:border-white/5 p-6 sm:p-8 shadow-sm transition-all duration-300">
-        <div className="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-8">
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="relative group shrink-0 self-center sm:self-auto"
-          >
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-border bg-muted overflow-hidden shadow-lg ring-2 ring-background transition-all group-hover:ring-primary/20">
+        <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8">
+          <div className="relative shrink-0 group">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl border-4 border-white/80 dark:border-white/10 bg-muted overflow-hidden shadow-2xl ring-4 ring-pink-500/20 group-hover:ring-pink-500/40 transition-all duration-500">
               {previewUrl ? (
-                <img src={previewUrl} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <img src={previewUrl} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-bold text-white bg-linear-to-br from-pink-500 to-orange-500">
+                <div className="w-full h-full flex items-center justify-center text-5xl font-black text-white bg-linear-to-br from-pink-600 via-pink-500 to-orange-500">
                   {displayName[0]?.toUpperCase() || 'U'}
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full">
-                <Camera size={28} className="text-white" />
-              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-sm cursor-pointer"
+              >
+                <Camera size={32} className="text-white transform scale-90 group-hover:scale-100 transition-transform" />
+              </button>
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="sr-only"
-            />
-          </button>
-          <div className="flex-1 min-w-0 text-center sm:text-left">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground truncate">
-              {displayName}
-            </h1>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-2 text-muted-foreground">
-              <span className="inline-flex items-center gap-2 text-sm">
-                <Mail size={14} />
-                <span className="break-all">{user?.email}</span>
-              </span>
-              {branch?.name && (
-                <span className="inline-flex items-center gap-2 text-sm">
-                  <Building2 size={14} />
-                  {branch.name}
-                </span>
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="sr-only" />
+          </div>
+
+          <div className="flex-1 text-center md:text-left space-y-4">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex flex-col md:flex-row md:items-center gap-3">
+                  <h1 className="text-3xl sm:text-4xl font-black tracking-tighter text-slate-800 dark:text-white">
+                    {displayName}
+                  </h1>
+                  {erpMatch && (
+                    <Badge variant="outline" className="w-fit mx-auto md:mx-0 border-pink-500/30 bg-pink-500/5 text-pink-600 dark:text-pink-400 font-bold px-3 py-1 rounded-lg">
+                      #{erpMatch.salesRepCode}
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-slate-500 dark:text-slate-400 font-medium flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-2">
+                  <span className="flex items-center gap-1.5"><Mail size={16} className="opacity-60" /> {user?.email}</span>
+                  <span className="hidden sm:inline opacity-20">|</span>
+                  <span className="flex items-center gap-1.5"><Building2 size={16} className="opacity-60" /> {branch?.name || '-'}</span>
+                  <span className="hidden sm:inline opacity-20">|</span>
+                  <span className="flex items-center gap-1.5"><Briefcase size={16} className="opacity-60" /> {t('roles.admin')}</span>
+                </p>
+              </div>
+
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="rounded-2xl border-slate-300 dark:border-white/20 bg-white/40 dark:bg-white/5 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-white/10 transition-all gap-2 font-bold shadow-sm px-6">
+                    <Settings size={18} className="text-pink-500" />
+                    Profil Ayarları
+                  </Button>
+                </SheetTrigger>
+                <SheetContent showCloseButton={false} className="w-full sm:max-w-2xl overflow-y-auto border-l border-white/20 bg-white/90 dark:bg-[#1D1726]/95 backdrop-blur-3xl p-0">
+                  <div className="p-8 space-y-8 relative">
+                    <div className="absolute right-8 top-8 z-50">
+                      <SheetClose asChild>
+                        <Button variant="outline" size="icon" className="rounded-2xl border-2 border-slate-300 dark:border-white/30 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 transition-all text-muted-foreground hover:text-pink-500 shadow-md">
+                          <X size={24} />
+                        </Button>
+                      </SheetClose>
+                    </div>
+                    <SheetHeader>
+                      <SheetTitle className="text-3xl font-black tracking-tighter">Profil Ayarları</SheetTitle>
+                      <SheetDescription className="text-base font-medium">Profil bilgilerinizi ve güvenlik ayarlarınızı buradan yönetebilirsiniz.</SheetDescription>
+                    </SheetHeader>
+
+                    <Tabs defaultValue="personal" className="w-full">
+                      <TabsList className="w-full grid grid-cols-2 p-1 bg-slate-100 dark:bg-white/5 rounded-2xl h-14 mb-8">
+                        <TabsTrigger value="personal" className="rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                          <User size={16} />
+                          {t('userDetailManagement.personalInfo')}
+                        </TabsTrigger>
+                        <TabsTrigger value="security" className="rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                          <Lock size={16} />
+                          {t('userDetailManagement.security')}
+                        </TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="personal" className="mt-0 space-y-6">
+                        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-10 border border-slate-200 dark:border-white/10 shadow-sm">
+                          <Form {...form}>
+                            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <FormField
+                                  control={form.control}
+                                  name="height"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                                        {t('userDetailManagement.height')}
+                                      </FormLabel>
+                                      <FormControl>
+                                        <div className="relative group">
+                                          <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                          <Input
+                                            type="number"
+                                            {...field}
+                                            value={field.value ?? ''}
+                                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            placeholder="Örn: 175"
+                                          />
+                                        </div>
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="weight"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                                        {t('userDetailManagement.weight')}
+                                      </FormLabel>
+                                      <FormControl>
+                                        <div className="relative group">
+                                          <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                          <Input
+                                            type="number"
+                                            {...field}
+                                            value={field.value ?? ''}
+                                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            placeholder="Örn: 70"
+                                          />
+                                        </div>
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                              <FormField
+                                control={form.control}
+                                name="gender"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                                      {t('userDetailManagement.gender')}
+                                    </FormLabel>
+                                    <div className="relative group w-full">
+                                      <User className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                      <Select
+                                        onValueChange={(value) => field.onChange(value && value !== 'none' ? (parseInt(value, 10) as Gender) : undefined)}
+                                        value={field.value !== undefined ? String(field.value) : undefined}
+                                      >
+                                        <FormControl>
+                                          <SelectTrigger className="w-full pl-12 h-14 min-h-[56px] py-0 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:ring-0 focus:ring-offset-0 focus:border-pink-500 transition-all flex items-center">
+                                            <SelectValue placeholder={t('userDetailManagement.selectGender')} />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          <SelectItem value="none">{t('userDetailManagement.noGenderSelected')}</SelectItem>
+                                          {GENDER_OPTIONS.map((opt) => (
+                                            <SelectItem key={opt.value} value={String(opt.value)}>{t(`userDetailManagement.gender${opt.label}`)}</SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <FormField
+                                  control={form.control}
+                                  name="phoneNumber"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                                        {t('userDetailManagement.phoneNumber')}
+                                      </FormLabel>
+                                      <FormControl>
+                                        <div className="relative group">
+                                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                          <Input
+                                            type="text"
+                                            {...field}
+                                            value={field.value ?? ''}
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            placeholder={t('userDetailManagement.enterPhoneNumber')}
+                                          />
+                                        </div>
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="email"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                                        {t('userDetailManagement.email')}
+                                      </FormLabel>
+                                      <FormControl>
+                                        <div className="relative group">
+                                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                          <Input
+                                            type="email"
+                                            {...field}
+                                            value={field.value ?? ''}
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            placeholder={t('userDetailManagement.enterEmail')}
+                                          />
+                                        </div>
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+
+                              <FormField
+                                control={form.control}
+                                name="linkedinUrl"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                                      {t('userDetailManagement.linkedinUrl')}
+                                    </FormLabel>
+                                    <FormControl>
+                                      <div className="relative group">
+                                        <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                        <Input
+                                          type="url"
+                                          {...field}
+                                          value={field.value ?? ''}
+                                          className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                          placeholder={t('userDetailManagement.enterLinkedinUrl')}
+                                        />
+                                      </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                                      {t('userDetailManagement.description')}
+                                    </FormLabel>
+                                    <FormControl>
+                                      <div className="relative group">
+                                        <FileText className="absolute left-4 top-5 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                        <Textarea
+                                          {...field}
+                                          value={field.value ?? ''}
+                                          rows={4}
+                                          className="pl-14 pt-5 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 resize-none transition-all"
+                                          placeholder={t('userDetailManagement.enterDescription')}
+                                        />
+                                      </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <Button type="submit" disabled={isSaving} className="w-full px-10 rounded-2xl font-black bg-linear-to-r from-pink-600 to-orange-600 hover:opacity-90 transition-all h-14 shadow-lg shadow-pink-500/20 border-none text-white text-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+                                {isSaving ? <Loader2 className="animate-spin" /> : t('userDetailManagement.save')}
+                              </Button>
+                            </form>
+                          </Form>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="security" className="mt-0">
+                        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-10 border border-slate-200 dark:border-white/10 shadow-sm">
+                          <Form {...changePasswordForm}>
+                            <form onSubmit={changePasswordForm.handleSubmit(handleChangePasswordSubmit)} className="space-y-6">
+                              <FormField
+                                control={changePasswordForm.control}
+                                name="currentPassword"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                      {t('userDetailManagement.currentPassword')}
+                                    </FormLabel>
+                                    <FormControl>
+                                      <div className="relative group">
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-orange-500 transition-colors size-5" />
+                                        <Input
+                                          type={isCurrentPasswordVisible ? 'text' : 'password'}
+                                          {...field}
+                                          className="pl-12 pr-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-orange-500 transition-all"
+                                          placeholder="••••••••"
+                                        />
+                                        <button
+                                          type="button"
+                                          onClick={() => setIsCurrentPasswordVisible(!isCurrentPasswordVisible)}
+                                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-orange-500 transition-colors"
+                                        >
+                                          {isCurrentPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                      </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={changePasswordForm.control}
+                                name="newPassword"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                      {t('userDetailManagement.newPassword')}
+                                    </FormLabel>
+                                    <FormControl>
+                                      <div className="relative group">
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-orange-500 transition-colors size-5" />
+                                        <Input
+                                          type={isNewPasswordVisible ? 'text' : 'password'}
+                                          {...field}
+                                          className="pl-12 pr-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-orange-500 transition-all"
+                                          placeholder={t('userDetailManagement.newPasswordPlaceholder')}
+                                        />
+                                        <button
+                                          type="button"
+                                          onClick={() => setIsNewPasswordVisible(!isNewPasswordVisible)}
+                                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-orange-500 transition-colors"
+                                        >
+                                          {isNewPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                      </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <Button type="submit" disabled={isChangingPassword} className="w-full rounded-2xl font-black bg-linear-to-r from-pink-600 to-orange-600 hover:opacity-90 transition-all h-14 shadow-lg shadow-pink-500/20 border-none text-white text-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+                                {isChangingPassword ? <Loader2 className="animate-spin" /> : t('userDetailManagement.changePasswordButton')}
+                              </Button>
+                            </form>
+                          </Form>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-1">
+              {userDetail?.phoneNumber && (
+                <div className="px-4 py-2 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 flex items-center gap-2 shadow-sm">
+                  <Phone size={16} className="text-orange-500" />
+                  <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{userDetail.phoneNumber}</span>
+                </div>
               )}
-              <span className="inline-flex items-center gap-2 text-sm">
-                <Briefcase size={14} />
-                {t('roles.admin')}
-              </span>
             </div>
           </div>
         </div>
       </section>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
-        <CardHeader>
-          <CardTitle className="text-xl">{t('userDetailManagement.personalInfo')}</CardTitle>
-          <CardDescription>
-            {t('userDetailManagement.personalInfoDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="height"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.height')}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative group">
-                          <Ruler className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
-                          <Input
-                            type="number"
-                            step="0.000001"
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            value={field.value ?? ''}
-                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder={t('userDetailManagement.heightPlaceholderExample', { defaultValue: 'Örn: 175' })}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-destructive text-xs" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="weight"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.weight')}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative group">
-                          <Weight className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
-                          <Input
-                            type="number"
-                            step="0.000001"
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            value={field.value ?? ''}
-                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder={t('userDetailManagement.weightPlaceholderExample', { defaultValue: 'Örn: 70' })}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-destructive text-xs" />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t('userDetailManagement.gender')}
-                    </FormLabel>
-                    <div className="relative group">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
-                      <Select
-                        onValueChange={(value) => field.onChange(value && value !== 'none' ? (parseInt(value, 10) as Gender) : undefined)}
-                        value={field.value !== undefined && field.value !== null ? String(field.value) : undefined}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:ring-0 focus:ring-offset-0 focus:border-pink-500 dark:focus:border-pink-500 rounded-xl transition-all w-full">
-                            <SelectValue placeholder={t('userDetailManagement.selectGender')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">{t('userDetailManagement.noGenderSelected')}</SelectItem>
-                          {GENDER_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={String(option.value)}>
-                              {t(`userDetailManagement.gender${option.label}`, option.label)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <FormMessage className="text-destructive text-xs" />
-                  </FormItem>
-                )}
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.phoneNumber')}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative group">
-                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
-                          <Input
-                            type="text"
-                            {...field}
-                            value={field.value ?? ''}
-                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder={t('userDetailManagement.enterPhoneNumber')}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-destructive text-xs" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.email')}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative group">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
-                          <Input
-                            type="email"
-                            {...field}
-                            value={field.value ?? ''}
-                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder={t('userDetailManagement.enterEmail')}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-destructive text-xs" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="linkedinUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('userDetailManagement.linkedinUrl')}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative group">
-                          <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
-                          <Input
-                            type="url"
-                            {...field}
-                            value={field.value ?? ''}
-                            className="pl-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                            placeholder={t('userDetailManagement.enterLinkedinUrl')}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-destructive text-xs" />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t('userDetailManagement.description')}
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative group">
-                        <FileText className="absolute left-3 top-3 text-muted-foreground group-focus-within:text-primary transition-colors size-4" />
-                        <Textarea
-                          {...field}
-                          value={field.value ?? ''}
-                          placeholder={t('userDetailManagement.enterDescription')}
-                          rows={4}
-                          className="pl-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl min-h-[120px] resize-none transition-all"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-destructive text-xs" />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-end pt-2">
-                <Button type="submit" disabled={isSaving || !isFormValid} className="min-w-[140px]">
-                  {isSaving ? (
-                    <>
-                      <Loader2 size={18} className="animate-spin mr-2" />
-                      {t('userDetailManagement.saving')}
-                    </>
-                  ) : (
-                    <>
-                      <Save size={18} className="mr-2" />
-                      {t('userDetailManagement.save')}
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StatCard
+          title="Sağlık Skoru"
+          value={`${revenueQuality?.healthScore || 0}%`}
+          icon={Heart}
+          progress={revenueQuality?.healthScore || 0}
+          colorClass="text-emerald-200 dark:text-emerald-100 bg-emerald-600 dark:bg-emerald-900"
+          description="Genel Portföy Sağlığı"
+        />
+        <StatCard
+          title="Elde Tutma"
+          value={`${Math.round((revenueQuality?.retentionRate || 0) * 100)}%`}
+          icon={TrendingUp}
+          progress={Math.round((revenueQuality?.retentionRate || 0) * 100)}
+          colorClass="text-blue-200 dark:text-blue-100 bg-blue-600 dark:bg-blue-900"
+          description="Müşteri Elde Tutma Oranı"
+        />
+        <StatCard
+          title="Kayıp Riski"
+          value={`${revenueQuality?.churnRiskScore || 0}%`}
+          icon={UserMinus}
+          progress={revenueQuality?.churnRiskScore || 0}
+          colorClass="text-rose-200 dark:text-rose-100 bg-rose-600 dark:bg-rose-900"
+          description="Müşteri Kayıp Tahmini"
+        />
+      </div>
 
-      <Card className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-2">
-            <Shield size={20} className="text-muted-foreground" />
-            {t('userDetailManagement.security')}
-          </CardTitle>
-          <CardDescription>
-            {t('userDetailManagement.securityDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="change-password" className="border-none">
-              <AccordionTrigger className="py-4 px-0 hover:no-underline [&[data-state=open]>div]:text-primary">
-                <div className="flex items-center gap-3 font-medium">
-                  <div className="p-2 rounded-lg bg-muted">
-                    <Lock size={18} className="text-muted-foreground" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <Card className="rounded-3xl border-slate-200 dark:border-white/20 bg-white/40 dark:bg-[#1D1726] backdrop-blur-xl shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div className="space-y-1">
+              <CardTitle className="text-lg font-black flex items-center gap-2">
+                <BarChart3 size={20} className="text-pink-600" />
+                Finans & Satış Vitrini
+              </CardTitle>
+              <CardDescription>Dönüşüm ve ciro istatistikleri</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/10 shadow-md">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-pink-100 dark:bg-pink-500/10 text-pink-600">
+                    <MessageSquare size={20} />
                   </div>
-                  {t('userDetailManagement.changePassword')}
+                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">Talepler</div>
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-2 pb-0 px-0">
-                <Form {...changePasswordForm}>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      changePasswordForm.handleSubmit(handleChangePasswordSubmit)(e);
-                    }}
-                    className="space-y-5"
-                  >
-                    <FormField
-                      control={changePasswordForm.control}
-                      name="currentPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('userDetailManagement.currentPassword')}</FormLabel>
-                          <FormControl>
-                            <div className="relative group">
-                              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
-                              <Input
-                                {...field}
-                                type={isCurrentPasswordVisible ? 'text' : 'password'}
-                                className="pl-10 pr-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                                placeholder="••••••••"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setIsCurrentPasswordVisible((v) => !v)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                              >
-                                {isCurrentPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-                              </button>
-                            </div>
-                          </FormControl>
-                          <FormMessage className="text-destructive text-xs" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={changePasswordForm.control}
-                      name="newPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('userDetailManagement.newPassword')}</FormLabel>
-                          <FormControl>
-                            <div className="relative group">
-                              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
-                              <Input
-                                {...field}
-                                type={isNewPasswordVisible ? 'text' : 'password'}
-                                className="pl-10 pr-10 h-11 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 dark:focus-visible:border-pink-500 rounded-xl transition-all"
-                                placeholder={t('userDetailManagement.newPasswordPlaceholder')}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setIsNewPasswordVisible((v) => !v)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                              >
-                                {isNewPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-                              </button>
-                            </div>
-                          </FormControl>
-                          <FormMessage className="text-destructive text-xs" />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="flex justify-end">
-                      <Button type="submit" disabled={isChangingPassword} variant="outline" className="rounded-xl">
-                        {isChangingPassword ? (
-                          <>
-                            <Loader2 size={16} className="animate-spin mr-2" />
-                            {t('userDetailManagement.changingPassword')}
-                          </>
-                        ) : (
-                          <>
-                            <Shield size={16} className="mr-2" />
-                            {t('userDetailManagement.changePasswordButton')}
-                          </>
-                        )}
-                      </Button>
+                <div className="text-3xl font-black text-slate-900 dark:text-white">{kpis?.totalDemands || 0}</div>
+              </div>
+
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/10 shadow-md">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-500/10 text-blue-600">
+                    <FileText size={20} />
+                  </div>
+                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">Teklifler</div>
+                </div>
+                <div className="text-3xl font-black text-slate-900 dark:text-white">{kpis?.totalQuotations || 0}</div>
+              </div>
+
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/10 shadow-md">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600">
+                    <CheckCircle size={20} />
+                  </div>
+                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">Siparişler</div>
+                </div>
+                <div className="text-3xl font-black text-slate-900 dark:text-white">{kpis?.totalOrders || 0}</div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <DollarSign size={12} className="text-pink-600" />
+                Döviz Bazlı Cirolar
+              </h4>
+              <div className="space-y-3">
+                {kpis?.totalsByCurrency?.map((cur) => (
+                  <div key={cur.currency} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-black text-slate-800 dark:text-slate-200">{cur.currency}</span>
+                      <span className="font-bold">{cur.orderAmount.toLocaleString()} / {cur.quotationAmount.toLocaleString()}</span>
                     </div>
-                  </form>
-                </Form>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </CardContent>
-      </Card>
+                    <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-white/5 overflow-hidden flex border border-slate-300/20 dark:border-transparent">
+                      <div
+                        className="h-full bg-linear-to-r from-rose-600 to-pink-500 rounded-full shadow-[0_0_10px_rgba(225,29,72,0.4)]"
+                        style={{ width: `${Math.min(100, (cur.orderAmount / (cur.quotationAmount || 1)) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-slate-200 dark:border-white/20 bg-white/40 dark:bg-[#1D1726] backdrop-blur-xl shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-black flex items-center gap-2">
+              <Activity size={20} className="text-orange-500" />
+              Saha & Aktivite Vitrini
+            </CardTitle>
+            <CardDescription className="text-xs">Gerçekleşen saha performans verileri</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-8 pt-4">
+            <div className="flex items-center justify-center py-6">
+              <div className="relative w-40 h-40 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full border-8 border-slate-300/30 dark:border-white/5" />
+                <div className="absolute inset-0 rounded-full border-8 border-orange-500 border-t-transparent -rotate-45 shadow-[0_0_15px_rgba(249,115,22,0.3)]" />
+                <div className="text-center">
+                  <div className="text-4xl font-black text-slate-800 dark:text-white">{kpis?.totalActivities || 0}</div>
+                  <div className="text-xs font-black uppercase text-muted-foreground tracking-tighter">Toplam Aktivite</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-500/5 border border-orange-500/10 group hover:bg-orange-500/10 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-500/20">
+                    <Zap size={20} />
+                  </div>
+                  <div>
+                    <div className="text-sm font-black text-slate-800 dark:text-white">Aksiyon Bekleyenler</div>
+                    <div className="text-xs font-medium text-muted-foreground">Önerilen aksiyon sayısı</div>
+                  </div>
+                </div>
+                <div className="text-3xl font-black text-orange-600">{overview?.recommendedActions?.length || 0}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
     </div>
   );
 }

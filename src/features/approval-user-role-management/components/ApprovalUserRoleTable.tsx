@@ -67,6 +67,7 @@ interface ApprovalUserRoleTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export function ApprovalUserRoleTable({
@@ -102,6 +103,7 @@ export function ApprovalUserRoleTable({
   nextLabel,
   paginationInfoText,
   disablePaginationButtons = false,
+  onColumnOrderChange,
 }: ApprovalUserRoleTableProps): ReactElement {
   const { t } = useTranslation();
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -193,6 +195,7 @@ export function ApprovalUserRoleTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

@@ -21,6 +21,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { auditLogApi } from '../api/auditLogApi';
 import type { AuditLogDto, PagedRequest } from '../types/access-control.types';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 
 const PAGE_KEY = 'audit-logs';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -89,27 +90,25 @@ export function AuditLogsPage(): ReactElement {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [selectedAuditLogId, setSelectedAuditLogId] = useState<number | null>(null);
-  const [visibleColumns, setVisibleColumns] = useState<string[]>([
-    'createdDate',
-    'traceId',
-    'actionType',
-    'entityType',
-    'result',
-    'performedByUserEmail',
-    'requestPath',
-  ]);
-  const [columnOrder, setColumnOrder] = useState<string[]>([
-    'createdDate',
-    'traceId',
-    'actionType',
-    'entityType',
-    'entityId',
-    'result',
-    'source',
-    'performedByUserEmail',
-    'branchCode',
-    'requestPath',
-  ]);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(['createdDate', 'traceId', 'actionType', 'entityType', 'result', 'performedByUserEmail', 'requestPath']);
+  const [columnOrder, setColumnOrder] = useState<string[]>(['createdDate', 'traceId', 'actionType', 'entityType', 'entityId', 'result', 'source', 'performedByUserEmail', 'branchCode', 'requestPath']);
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, [
+      'createdDate',
+      'traceId',
+      'actionType',
+      'entityType',
+      'entityId',
+      'result',
+      'source',
+      'performedByUserEmail',
+      'branchCode',
+      'requestPath',
+    ]);
+    setVisibleColumns(prefs.visibleKeys);
+    setColumnOrder(prefs.order);
+  }, [user?.id]);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const traceFilter = searchParams.get('traceId');
@@ -343,7 +342,14 @@ export function AuditLogsPage(): ReactElement {
             visibleColumns={visibleColumns}
             columnOrder={columnOrder}
             onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={setColumnOrder}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
             exportFileName="audit-logs"
             exportColumns={exportColumns}
             exportRows={exportRows}
@@ -466,6 +472,14 @@ export function AuditLogsPage(): ReactElement {
                   to: Math.min(pageNumber * pageSize, totalCount),
                   total: totalCount,
                 })}
+                onColumnOrderChange={(newVisibleOrder) => {
+                  setColumnOrder((currentOrder) => {
+                    const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                    return finalOrder;
+                  });
+                }}
               />
             </ManagementDataTableChrome>
           </div>

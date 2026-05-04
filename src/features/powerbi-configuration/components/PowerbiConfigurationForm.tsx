@@ -215,7 +215,7 @@ export function PowerbiConfigurationForm({
                   type="submit"
                   disabled={isSubmitting}
                   className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-50 disabled:hover:scale-100 h-11 px-8 gap-2
-                  opacity-50 grayscale-[0] 
+                  opacity-90 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0"
                 >
                   {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -276,7 +276,7 @@ export function PowerbiConfigurationForm({
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
               className="h-11 px-6 sm:px-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-pink-500/25 text-xs sm:text-sm
-              opacity-75 grayscale-[0] 
+              opacity-90 grayscale-[0] 
               dark:opacity-100 dark:grayscale-0"
             >
               {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}

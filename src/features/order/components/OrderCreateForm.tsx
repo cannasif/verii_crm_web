@@ -436,7 +436,7 @@ export function OrderCreateForm(): ReactElement {
               <Button
                 type="submit"
                 disabled={createMutation.isPending || !isFormValid}
-                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending

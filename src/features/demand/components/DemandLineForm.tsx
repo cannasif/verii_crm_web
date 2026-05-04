@@ -1632,7 +1632,7 @@ export function DemandLineForm({
                 (bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : !formData.productCode || !formData.productName) ||
                 isSaving
               }
-              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               {isSaving ? (
                 <>

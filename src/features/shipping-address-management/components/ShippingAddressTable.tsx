@@ -59,6 +59,7 @@ interface ShippingAddressTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnConfig[] => [
@@ -107,6 +108,7 @@ export function ShippingAddressTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: ShippingAddressTableProps): ReactElement {
   const { t } = useTranslation(['shipping-address-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions('definitions.shipping-address-management.view');
@@ -196,6 +198,7 @@ export function ShippingAddressTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

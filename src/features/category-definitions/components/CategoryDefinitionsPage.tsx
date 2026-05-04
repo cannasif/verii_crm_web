@@ -541,7 +541,7 @@ export function CategoryDefinitionsPage(): ReactElement {
 
             <Button
               className="w-full h-11 bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl
-              opacity-75 grayscale-[0] 
+              opacity-90 grayscale-[0] 
               dark:opacity-100 dark:grayscale-0"
               onClick={() => setIsCreateCatalogOpen(true)}
             >
@@ -638,7 +638,7 @@ export function CategoryDefinitionsPage(): ReactElement {
               <div className="flex flex-wrap items-center gap-2">
                 <Button
                   className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] rounded-xl
-                  opacity-75 grayscale-[0] 
+                  opacity-90 grayscale-[0] 
                   dark:opacity-100 dark:grayscale-0"
                   size="sm"
                   onClick={() => setIsCreateCategoryOpen(true)}
@@ -879,7 +879,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                     <div className="mt-4 flex flex-wrap gap-2">
                       {selectedCatalog && !selectedLeaf ? (
                         <Button className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] rounded-xl
-                        opacity-75 grayscale-[0] 
+                        opacity-90 grayscale-[0] 
                         dark:opacity-100 dark:grayscale-0" size="sm" onClick={() => setIsCreateCategoryOpen(true)}>
                           <CirclePlus className="mr-2 h-4 w-4" />
                           {targetParent
@@ -914,7 +914,7 @@ export function CategoryDefinitionsPage(): ReactElement {
 
                 <div className="flex items-center gap-2">
                   <Button
-                    className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] rounded-xl h-11 px-6 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                    className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] rounded-xl h-11 px-6 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                     onClick={() => setIsProductSelectOpen(true)}
                     disabled={!selectedLeaf}
                   >
@@ -998,7 +998,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                   <Button
                     onClick={() => setIsRuleDialogOpen(true)}
                     disabled={!selectedLeaf}
-                    className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-75 disabled:grayscale-[0] disabled:hover:scale-100 px-8 h-11"
+                    className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-90 disabled:grayscale-[0] disabled:hover:scale-100 px-8 h-11"
                   >
                     <CirclePlus className="mr-2 h-5 w-5" />
                     {t('categoryDefinitions.actions.addRule')}

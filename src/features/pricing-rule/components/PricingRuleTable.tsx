@@ -73,6 +73,7 @@ interface PricingRuleTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export function PricingRuleTable({
@@ -109,6 +110,7 @@ export function PricingRuleTable({
   nextLabel,
   paginationInfoText,
   disablePaginationButtons = false,
+  onColumnOrderChange,
 }: PricingRuleTableProps): ReactElement {
   const { t } = useTranslation();
   const { canUpdate, canDelete } = useCrudPermissions('pricing.pricing-rules.view');
@@ -199,6 +201,7 @@ export function PricingRuleTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

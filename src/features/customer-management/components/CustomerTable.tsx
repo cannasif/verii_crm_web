@@ -85,6 +85,7 @@ interface CustomerTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: CustomerColumnKey[]) => void;
 }
 
 const idColumnSurface =
@@ -235,6 +236,7 @@ export function CustomerTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: CustomerTableProps): ReactElement {
   const { t, i18n } = useTranslation(['customer-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions('customers.customer-management.view');
@@ -393,6 +395,7 @@ export function CustomerTable({
           paginationInfoText={paginationInfoText}
           disablePaginationButtons={disablePaginationButtons}
           centerColumnHeaders
+          onColumnOrderChange={onColumnOrderChange}
         />
       </div>
 

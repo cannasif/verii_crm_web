@@ -263,7 +263,7 @@ export function PricingRuleLineTable({
           type="button"
           onClick={() => setProductDialogOpen(true)}
           size="sm"
-          className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           disabled={isLoadingAction}
         >
           <Plus className="h-4 w-4 mr-2 stroke-[3px]" />

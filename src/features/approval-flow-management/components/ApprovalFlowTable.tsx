@@ -68,6 +68,7 @@ interface ApprovalFlowTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export function ApprovalFlowTable({
@@ -103,6 +104,7 @@ export function ApprovalFlowTable({
   nextLabel,
   paginationInfoText,
   disablePaginationButtons = false,
+  onColumnOrderChange,
 }: ApprovalFlowTableProps): ReactElement {
   const { t } = useTranslation();
   const { canUpdate, canDelete } = useCrudPermissions('approval.flow-management.view');
@@ -194,6 +196,7 @@ export function ApprovalFlowTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

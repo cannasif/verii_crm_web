@@ -59,6 +59,7 @@ interface ProductPricingGroupByTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ProductPricingGroupByDto>[] => [
@@ -105,6 +106,7 @@ export function ProductPricingGroupByTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: ProductPricingGroupByTableProps): ReactElement {
   const { t } = useTranslation(['product-pricing-group-by-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -195,6 +197,7 @@ export function ProductPricingGroupByTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

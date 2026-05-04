@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowLeft, ArrowUp, ArrowUpDown, Check, Clock, X } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { loadColumnPreferences } from '@/lib/column-preferences';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -147,7 +147,7 @@ export function WaitingApprovalsPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
   useEffect(() => {
-    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'QuotationOfferNo');
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'QuotationOfferNo', false);
     setColumnOrder(prefs.order);
     setVisibleColumns(prefs.visibleKeys);
   }, [defaultColumnKeys, user?.id]);
@@ -391,7 +391,14 @@ export function WaitingApprovalsPage(): ReactElement {
               visibleColumns,
               columnOrder,
               onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
+              onColumnOrderChange: (newVisibleOrder) => {
+                setColumnOrder((currentOrder) => {
+                  const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                  const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                  saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                  return finalOrder;
+                });
+              },
               exportFileName: 'quotation-waiting-approvals',
               exportColumns,
               exportRows,
@@ -463,6 +470,14 @@ export function WaitingApprovalsPage(): ReactElement {
               total: totalCount,
             })}
             disablePaginationButtons={waitingApprovalsQuery.isFetching}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
             centerColumnHeaders
           />
           </ManagementDataTableChrome>

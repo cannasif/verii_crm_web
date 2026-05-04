@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, RefreshCw } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { loadColumnPreferences } from '@/lib/column-preferences';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -278,7 +278,14 @@ export function OutlookLogsPage(): ReactElement {
             visibleColumns={visibleColumns}
             columnOrder={columnOrder}
             onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={setColumnOrder}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
             exportFileName="outlook-integration-logs"
             exportColumns={exportColumns}
             exportRows={exportRows}
@@ -382,6 +389,14 @@ export function OutlookLogsPage(): ReactElement {
               ns: 'common',
             })}
             disablePaginationButtons={logsQuery.isFetching}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
             centerColumnHeaders
           />
           </ManagementDataTableChrome>

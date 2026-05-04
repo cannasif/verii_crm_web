@@ -68,6 +68,7 @@ interface UserTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export function UserTable({
@@ -103,6 +104,7 @@ export function UserTable({
   nextLabel,
   paginationInfoText,
   disablePaginationButtons = false,
+  onColumnOrderChange,
 }: UserTableProps): ReactElement {
 
   const handleSort = (key: UserColumnKey): void => {
@@ -162,6 +164,7 @@ export function UserTable({
       paginationInfoText={paginationInfoText}
       disablePaginationButtons={disablePaginationButtons}
       centerColumnHeaders
+      onColumnOrderChange={onColumnOrderChange}
     />
     </ManagementDataTableChrome>
   );

@@ -62,6 +62,7 @@ interface ProductPricingTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ProductPricingGetDto>[] => [
@@ -111,6 +112,7 @@ export function ProductPricingTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: ProductPricingTableProps): ReactElement {
   const { t } = useTranslation(['product-pricing-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions('pricing.product-pricing.view');
@@ -202,6 +204,7 @@ export function ProductPricingTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </div>
 

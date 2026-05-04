@@ -1,6 +1,9 @@
-import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState } from 'react';
+import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, GripVertical } from 'lucide-react';
+import { DndContext, closestCenter, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -57,16 +60,97 @@ interface DataTableGridProps<TRow, TKey extends string> {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
-  /** Tüm sütun başlıklarını ve sıralama butonlarını ortalar (ör. müşteri listesi). */
+
   centerColumnHeaders?: boolean;
+  enableColumnDragAndDrop?: boolean;
+  onColumnOrderChange?: (newOrder: TKey[]) => void;
 }
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
+  if (!(target instanceof Element)) return false;
   return Boolean(
     target.closest(
       'button, a, input, select, textarea, label, [role="button"], [data-no-drag-scroll="true"], [data-skip-row-double-click]'
     )
+  );
+}
+
+function SortableTableHead<TKey extends string>({
+  columnKey,
+  column,
+  sortable,
+  onSort,
+  renderSortIcon,
+  centerColumnHeaders,
+  enableDragAndDrop,
+}: {
+  columnKey: TKey;
+  column?: DataTableGridColumn<TKey>;
+  sortable: boolean;
+  onSort?: (key: TKey) => void;
+  renderSortIcon?: (key: TKey) => ReactNode;
+  centerColumnHeaders?: boolean;
+  enableDragAndDrop?: boolean;
+}) {
+  const isDraggable = enableDragAndDrop && columnKey.toLowerCase() !== 'id';
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: columnKey, disabled: !isDraggable });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 10 : 'auto',
+    position: isDragging ? 'relative' as const : 'static' as const,
+  };
+
+  return (
+    <TableHead
+      ref={setNodeRef}
+      style={style}
+      className={cn(centerColumnHeaders && 'text-center', column?.headClassName, isDragging && 'bg-slate-100 dark:bg-white/10 shadow-md')}
+    >
+      <div className={cn("flex items-center gap-1 w-full", centerColumnHeaders ? "justify-center" : "justify-start")}>
+        {isDraggable && (
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 -ml-2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors shrink-0 touch-none"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            data-no-drag-scroll="true"
+          >
+            <GripVertical size={14} />
+          </div>
+        )}
+        {sortable ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onSort?.(columnKey)}
+            className={cn(
+              'h-7 hover:bg-transparent flex-1',
+              centerColumnHeaders
+                ? 'inline-flex min-h-7 w-full max-w-full flex-nowrap items-center justify-center gap-1 px-1'
+                : 'px-1 -ml-1 text-left justify-start'
+            )}
+          >
+            <span className={cn(centerColumnHeaders && 'truncate')}>{column?.label ?? columnKey}</span>
+            {renderSortIcon?.(columnKey)}
+          </Button>
+        ) : (
+          <span className={cn("flex-1 px-1", centerColumnHeaders ? "text-center block w-full" : "text-left")}>
+            {column?.label ?? columnKey}
+          </span>
+        )}
+      </div>
+    </TableHead>
   );
 }
 
@@ -110,6 +194,8 @@ export function DataTableGrid<TRow, TKey extends string>({
   paginationInfoText,
   disablePaginationButtons = false,
   centerColumnHeaders = false,
+  enableColumnDragAndDrop = true,
+  onColumnOrderChange,
 }: DataTableGridProps<TRow, TKey>): ReactElement {
   const { t } = useTranslation('common');
   const MISSING_TRANSLATION = 'Çeviri eksik';
@@ -117,6 +203,20 @@ export function DataTableGrid<TRow, TKey extends string>({
   const resolvedPreviousLabel = previousLabel === MISSING_TRANSLATION ? t('previous', { ns: 'common' }) : previousLabel;
   const resolvedNextLabel = nextLabel === MISSING_TRANSLATION ? t('next', { ns: 'common' }) : nextLabel;
   const resolvedActionsHeaderLabel = actionsHeaderLabel === MISSING_TRANSLATION ? t('actions', { ns: 'common' }) : actionsHeaderLabel;
+
+  const [localVisibleColumnKeys, setLocalVisibleColumnKeys] = useState<TKey[]>(visibleColumnKeys);
+
+  const lastPropRef = useRef(visibleColumnKeys);
+
+  useEffect(() => {
+    const isSame = visibleColumnKeys.length === lastPropRef.current.length &&
+      visibleColumnKeys.every((key, i) => key === lastPropRef.current[i]);
+
+    if (!isSame) {
+      setLocalVisibleColumnKeys(visibleColumnKeys);
+      lastPropRef.current = visibleColumnKeys;
+    }
+  }, [visibleColumnKeys]);
 
   const [isDragging, setIsDragging] = useState(false);
   const lastRowClickRef = useRef<{ key: string | number; timestamp: number } | null>(null);
@@ -205,7 +305,45 @@ export function DataTableGrid<TRow, TKey extends string>({
     onRowDoubleClick(row);
   };
 
-  const colSpan = visibleColumnKeys.length + (showActionsColumn ? 1 : 0) || 1;
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 1,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEndDnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = localVisibleColumnKeys.indexOf(active.id as TKey);
+      let newIndex = localVisibleColumnKeys.indexOf(over.id as TKey);
+
+      // 'id' sütununun yerini koruması için:
+      // Eğer 'id' sütunu ilk sıradaysa ve başka bir sütun ilk sıraya taşınmaya çalışılıyorsa,
+      // taşınan sütunu en az 2. sıraya (index 1) yerleştir.
+      if (String(localVisibleColumnKeys[0]).toLowerCase() === 'id' && newIndex === 0) {
+        newIndex = 1;
+      }
+
+      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+        const newKeys = arrayMove(localVisibleColumnKeys, oldIndex, newIndex);
+        setLocalVisibleColumnKeys(newKeys);
+        onColumnOrderChange?.(newKeys);
+      }
+    }
+  };
+
+  const colSpan = localVisibleColumnKeys.length + (showActionsColumn ? 1 : 0) || 1;
 
   return (
     <div className="flex min-w-0 w-full flex-col gap-2">
@@ -223,50 +361,47 @@ export function DataTableGrid<TRow, TKey extends string>({
         onClickCapture={handleClickCapture}
       >
         <Table className={minTableWidthClassName}>
-          <TableHeader>
-            <TableRow>
-              {visibleColumnKeys.map((key) => {
-                const column = columns.find((item) => item.key === key);
-                const sortable = Boolean(onSort && column?.sortable !== false);
-                return (
-                  <TableHead key={key} className={cn(centerColumnHeaders && 'text-center', column?.headClassName)}>
-                    {sortable ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onSort?.(key)}
-                        className={cn(
-                          'h-7 hover:bg-transparent',
-                          centerColumnHeaders
-                            ? 'inline-flex min-h-7 w-full max-w-full flex-nowrap items-center justify-center gap-1 px-2'
-                            : 'px-1 -ml-1'
-                        )}
-                      >
-                        <span className={cn(centerColumnHeaders && 'truncate')}>{column?.label ?? key}</span>
-                        {renderSortIcon?.(key)}
-                      </Button>
-                    ) : centerColumnHeaders ? (
-                      <span className="block w-full px-2 text-center">{column?.label ?? key}</span>
-                    ) : (
-                      <span>{column?.label ?? key}</span>
-                    )}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEndDnd}
+            autoScroll={false}
+          >
+            <TableHeader>
+              <TableRow>
+                <SortableContext items={localVisibleColumnKeys.filter((k) => String(k).toLowerCase() !== 'id')} strategy={horizontalListSortingStrategy}>
+                  {localVisibleColumnKeys.map((key) => {
+                    const column = columns.find((item) => item.key === key);
+                    const sortable = Boolean(onSort && column?.sortable !== false);
+                    return (
+                      <SortableTableHead
+                        key={key}
+                        columnKey={key}
+                        column={column}
+                        sortable={sortable}
+                        onSort={onSort}
+                        renderSortIcon={renderSortIcon}
+                        centerColumnHeaders={centerColumnHeaders}
+                        enableDragAndDrop={enableColumnDragAndDrop}
+                      />
+                    );
+                  })}
+                </SortableContext>
+                {showActionsColumn && (
+                  <TableHead
+                    className={cn(iconOnlyActions ? 'w-[84px] text-center' : 'min-w-[280px] text-right')}
+                  >
+                    {resolvedActionsHeaderLabel}
                   </TableHead>
-                );
-              })}
-              {showActionsColumn && (
-                <TableHead
-                  className={cn(iconOnlyActions ? 'w-[84px] text-center' : 'min-w-[280px] text-right')}
-                >
-                  {resolvedActionsHeaderLabel}
-                </TableHead>
-              )}
-            </TableRow>
-          </TableHeader>
+                )}
+              </TableRow>
+            </TableHeader>
+          </DndContext>
           <TableBody>
             {isLoading &&
               Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
                 <TableRow key={`skeleton-${i}`}>
-                  {visibleColumnKeys.map((key) => (
+                  {localVisibleColumnKeys.map((key) => (
                     <TableCell key={key}>
                       <Skeleton className="h-5 w-full max-w-[120px] bg-slate-200/60 dark:bg-white/10" />
                     </TableCell>
@@ -311,7 +446,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                     }
                     onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
                   >
-                    {visibleColumnKeys.map((key) => {
+                    {localVisibleColumnKeys.map((key) => {
                       const column = columns.find((item) => item.key === key);
                       return (
                         <TableCell key={`${rowKey(row)}-${key}`} className={column?.cellClassName}>
@@ -324,7 +459,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                         className={cn(
                           actionsCellClassName,
                           iconOnlyActions &&
-                            '[&_button]:h-8 [&_button]:w-8 [&_button]:p-0 [&_button]:min-w-8 [&_button]:text-[0px] [&_button]:leading-none [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:mx-auto [&_button_svg]:shrink-0 [&_button_span]:hidden'
+                          '[&_button]:h-8 [&_button]:w-8 [&_button]:p-0 [&_button]:min-w-8 [&_button]:text-[0px] [&_button]:leading-none [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:mx-auto [&_button_svg]:shrink-0 [&_button_span]:hidden'
                         )}
                         onClick={(event) => event.stopPropagation()}
                         data-no-drag-scroll="true"

@@ -52,7 +52,7 @@ import {
   type DataTableGridColumn,
 } from '@/components/shared';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import { loadColumnPreferences } from '@/lib/column-preferences';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -415,7 +415,7 @@ export function PdfReportDesignerListPage(): ReactElement {
           {canCreate ? (
             <Button
               asChild
-              className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-5 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-5 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               <Link to="/pdf-report-designer/create" className="inline-flex items-center gap-2">
                 <Plus className="size-4" />
@@ -437,7 +437,14 @@ export function PdfReportDesignerListPage(): ReactElement {
             visibleColumns={visibleColumns}
             columnOrder={columnOrder}
             onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={setColumnOrder}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
             exportFileName="pdf-report-templates"
             exportColumns={exportColumns}
             exportRows={exportRows}
@@ -625,6 +632,14 @@ export function PdfReportDesignerListPage(): ReactElement {
                 nextLabel={t('common.next')}
                 paginationInfoText={summaryText}
                 disablePaginationButtons={isFetching}
+                onColumnOrderChange={(newVisibleOrder) => {
+                  setColumnOrder((currentOrder) => {
+                    const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                    return finalOrder;
+                  });
+                }}
               />
             </ManagementDataTableChrome>
           </div>

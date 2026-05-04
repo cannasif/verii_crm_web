@@ -1600,7 +1600,7 @@ export function ReportBuilderPage(): ReactElement {
                     className={cn(
                       "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
                       builderMode === 'basic'
-                        ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                         : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
                     )}
                     role="tab"
@@ -1616,7 +1616,7 @@ export function ReportBuilderPage(): ReactElement {
                     className={cn(
                       "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
                       builderMode === 'advanced'
-                        ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                         : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
                     )}
                     role="tab"
@@ -1640,7 +1640,7 @@ export function ReportBuilderPage(): ReactElement {
                       className={cn(
                         "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
                         advancedWorkspaceMode === 'guided'
-                          ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                          ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                           : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
                       )}
                       role="tab"
@@ -1656,7 +1656,7 @@ export function ReportBuilderPage(): ReactElement {
                       className={cn(
                         "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
                         advancedWorkspaceMode === 'expert'
-                          ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                          ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                           : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
                       )}
                       role="tab"
@@ -1685,7 +1685,7 @@ export function ReportBuilderPage(): ReactElement {
                 size="sm"
                 onClick={handleSave}
                 disabled={ui.saveLoading}
-                className="h-9 min-w-[120px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-9 min-w-[120px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {ui.saveLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
                 {builderMode === 'basic'
@@ -1787,7 +1787,7 @@ export function ReportBuilderPage(): ReactElement {
                         type="button"
                         size="sm"
                         onClick={handleSmartComplete}
-                        className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                       >
                         <Sparkles className="mr-2 size-3.5" />
                         {t('common.reportBuilder.smartComplete')}
@@ -2203,7 +2203,7 @@ export function ReportBuilderPage(): ReactElement {
               <Button
                 type="button"
                 size="sm"
-                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 onClick={(event) => {
                   event.stopPropagation();
                   handleSmartComplete();
@@ -2417,7 +2417,7 @@ export function ReportBuilderPage(): ReactElement {
                 type="button"
                 size="sm"
                 onClick={nextStep.action}
-                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {nextStep.actionLabel}
               </Button>
@@ -2439,7 +2439,7 @@ export function ReportBuilderPage(): ReactElement {
               <Button
                 type="button"
                 size="sm"
-                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 onClick={(event) => {
                   event.stopPropagation();
                   addWidget();
@@ -2837,7 +2837,7 @@ export function ReportBuilderPage(): ReactElement {
                       <Button
                         type="button"
                         onClick={handleSmartComplete}
-                        className="justify-start bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        className="justify-start bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                       >
                         <Sparkles className="mr-2 size-4" />
                         {t('common.reportBuilder.smartComplete')}

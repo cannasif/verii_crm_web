@@ -133,7 +133,7 @@ export function ReportsListPage(): ReactElement {
               <Button
                 onClick={() => navigate('/reports/new')}
                 className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white h-11 px-8 font-bold border-0 shadow-lg shadow-pink-500/20 transition-all hover:scale-105 active:scale-95
-                opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Plus className="mr-2 size-4" />
                 {t('common.reportBuilder.newReport')}

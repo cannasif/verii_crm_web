@@ -43,6 +43,7 @@ interface SalesRepTableProps {
   previousLabel: string;
   nextLabel: string;
   paginationInfoText: string;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export function SalesRepTable({
@@ -70,6 +71,7 @@ export function SalesRepTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: SalesRepTableProps): ReactElement {
   const { t } = useTranslation(['sales-rep-management', 'common']);
   const { canDelete } = useCrudPermissions();
@@ -135,6 +137,7 @@ export function SalesRepTable({
           nextLabel={nextLabel}
           paginationInfoText={paginationInfoText}
           centerColumnHeaders
+          onColumnOrderChange={onColumnOrderChange}
         />
       </ManagementDataTableChrome>
 

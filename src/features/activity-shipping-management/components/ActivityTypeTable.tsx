@@ -59,6 +59,7 @@ interface ActivityTypeTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ActivityTypeDto>[] => [
@@ -147,6 +148,7 @@ export function ActivityTypeTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: ActivityTypeTableProps): ReactElement {
   const { t, i18n } = useTranslation(['activity-shipping-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -246,6 +248,7 @@ export function ActivityTypeTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

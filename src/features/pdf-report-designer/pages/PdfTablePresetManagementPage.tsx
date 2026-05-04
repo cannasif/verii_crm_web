@@ -175,7 +175,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
         </div>
         <Button
           onClick={openCreate}
-          className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-5 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-5 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus className="size-4 mr-2" />
           Yeni preset
@@ -271,7 +271,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent showCloseButton={false} className="max-w-3xl border-slate-300/80 bg-stone-50/95 p-0 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/95 dark:ring-0">
           <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
-          
+
           <div className="relative z-10">
             <DialogClose className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-slate-200/60 bg-white/50 text-slate-400 transition-all duration-300 hover:bg-white hover:text-pink-500 hover:rotate-90 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-pink-400">
               <X className="size-4" />
@@ -379,7 +379,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
               <Button
                 onClick={handleSubmit}
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.02] hover:from-pink-500 active:scale-[0.98] opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.02] hover:from-pink-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 Kaydet
               </Button>

@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -44,6 +45,13 @@ export function VisibilityPoliciesPage(): ReactElement {
   const [editingItem, setEditingItem] = useState<VisibilityPolicyDto | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['code', 'name', 'entityLabel', 'scopeLabel', 'isActive']);
   const [columnOrder, setColumnOrder] = useState<string[]>(['code', 'name', 'entityLabel', 'scopeLabel', 'isActive']);
+
+  useEffect(() => {
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, ['code', 'name', 'entityLabel', 'scopeLabel', 'isActive']);
+    setVisibleColumns(prefs.visibleKeys);
+    setColumnOrder(prefs.order);
+  }, [user?.id]);
+
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
 
   useEffect(() => {
@@ -191,7 +199,14 @@ export function VisibilityPoliciesPage(): ReactElement {
             visibleColumns={visibleColumns}
             columnOrder={columnOrder}
             onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={setColumnOrder}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
             exportFileName="visibility-policies"
             exportColumns={exportColumns}
             exportRows={exportRows}
@@ -301,6 +316,14 @@ export function VisibilityPoliciesPage(): ReactElement {
                   to: Math.min(pageNumber * pageSize, totalCount),
                   total: totalCount,
                 })}
+                onColumnOrderChange={(newVisibleOrder) => {
+                  setColumnOrder((currentOrder) => {
+                    const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                    return finalOrder;
+                  });
+                }}
               />
             </ManagementDataTableChrome>
           </div>

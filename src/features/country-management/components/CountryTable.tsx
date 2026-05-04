@@ -60,6 +60,7 @@ interface CountryTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CountryDto>[] => [
@@ -104,6 +105,7 @@ export function CountryTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: CountryTableProps): ReactElement {
   const { t } = useTranslation(['country-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -195,6 +197,7 @@ export function CountryTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

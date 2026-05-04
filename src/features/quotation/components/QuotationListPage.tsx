@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, GitBranchPlus, Mail, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { loadColumnPreferences } from '@/lib/column-preferences';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -418,7 +418,7 @@ export function QuotationListPage(): ReactElement {
           </div>
           <Button
             onClick={() => navigate('/quotations/create')}
-            className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
             {t('list.createNew')}
@@ -443,7 +443,14 @@ export function QuotationListPage(): ReactElement {
                       visibleColumns,
                       columnOrder,
                       onVisibleColumnsChange: setVisibleColumns,
-                      onColumnOrderChange: setColumnOrder,
+                      onColumnOrderChange: (newVisibleOrder) => {
+                        setColumnOrder((currentOrder) => {
+                          const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                          const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                          saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                          return finalOrder;
+                        });
+                      },
                       exportFileName: 'quotation-list',
                       exportColumns,
                       exportRows,
@@ -532,6 +539,14 @@ export function QuotationListPage(): ReactElement {
                     })}
                     disablePaginationButtons={quotationQuery.isFetching}
                     centerColumnHeaders
+                    onColumnOrderChange={(newVisibleOrder) => {
+                      setColumnOrder((currentOrder) => {
+                        const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                        const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                        saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                        return finalOrder;
+                      });
+                    }}
                   />
                 </ManagementDataTableChrome>
               </div>

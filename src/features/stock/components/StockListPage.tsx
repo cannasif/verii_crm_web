@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { loadColumnPreferences } from '@/lib/column-preferences';
+import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
@@ -302,7 +302,14 @@ export function StockListPage(): ReactElement {
                   visibleColumns,
                   columnOrder,
                   onVisibleColumnsChange: setVisibleColumns,
-                  onColumnOrderChange: setColumnOrder,
+                  onColumnOrderChange: (newVisibleOrder) => {
+                    setColumnOrder((currentOrder) => {
+                      const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                      const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                      saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                      return finalOrder;
+                    });
+                  },
                   exportFileName: 'stock-list',
                   exportColumns,
                   exportRows,
@@ -389,6 +396,14 @@ export function StockListPage(): ReactElement {
                   ns: 'common',
                 })}
                 disablePaginationButtons={stockQuery.isFetching}
+                onColumnOrderChange={(newVisibleOrder) => {
+                  setColumnOrder((currentOrder) => {
+                    const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                    return finalOrder;
+                  });
+                }}
               />
             </div>
           </CardContent>

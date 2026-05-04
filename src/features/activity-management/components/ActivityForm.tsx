@@ -844,7 +844,7 @@ export function ActivityForm({
                     <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="h-11 px-5 rounded-lg font-medium">
                       {t('cancel', { ns: 'common' })}
                     </Button>
-                    <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+                    <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0">
                       {isSubmitting ? t('saving', { ns: 'common' }) : activity ? t('update', { ns: 'common' }) : t('save', { ns: 'common' })}
                     </Button>
                   </div>

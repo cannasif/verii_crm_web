@@ -67,6 +67,7 @@ interface DistrictTableProps {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export function DistrictTable({
@@ -102,6 +103,7 @@ export function DistrictTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: DistrictTableProps): ReactElement {
   const { t } = useTranslation(['district-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions();
@@ -191,6 +193,7 @@ export function DistrictTable({
         paginationInfoText={paginationInfoText}
         disablePaginationButtons={disablePaginationButtons}
         centerColumnHeaders
+        onColumnOrderChange={onColumnOrderChange}
       />
       </ManagementDataTableChrome>
 

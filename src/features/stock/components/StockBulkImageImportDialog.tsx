@@ -66,7 +66,7 @@ export function StockBulkImageImportDialog(): ReactElement {
       <Button
         type="button"
         onClick={() => setOpen(true)}
-        className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-6 font-bold text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+        className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-6 font-bold text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
       >
         <ImagePlus className="mr-2 h-4 w-4" />
         {t('bulkImport.button', { defaultValue: 'Toplu görsel yükle' })}
@@ -207,7 +207,7 @@ export function StockBulkImageImportDialog(): ReactElement {
               type="button"
               onClick={() => void handleSubmit()}
               disabled={submitting || !file}
-              className="h-12 bg-linear-to-r from-pink-600 to-orange-600 px-10 font-black text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-2xl opacity-75 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className="h-12 bg-linear-to-r from-pink-600 to-orange-600 px-10 font-black text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-2xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               {submitting ? (
                 <>

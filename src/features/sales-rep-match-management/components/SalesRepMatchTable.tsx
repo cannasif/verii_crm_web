@@ -43,6 +43,7 @@ interface SalesRepMatchTableProps {
   previousLabel: string;
   nextLabel: string;
   paginationInfoText: string;
+  onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
 export function SalesRepMatchTable({
@@ -70,6 +71,7 @@ export function SalesRepMatchTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onColumnOrderChange,
 }: SalesRepMatchTableProps): ReactElement {
   const { t } = useTranslation(['sales-rep-match-management', 'common']);
   const { canDelete } = useCrudPermissions();
@@ -135,6 +137,7 @@ export function SalesRepMatchTable({
           nextLabel={nextLabel}
           paginationInfoText={paginationInfoText}
           centerColumnHeaders
+          onColumnOrderChange={onColumnOrderChange}
         />
       </ManagementDataTableChrome>
 

@@ -274,7 +274,7 @@ export function HangfireMonitoringPage(): ReactElement {
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25
-            opacity-75 grayscale-[0] 
+            opacity-90 grayscale-[0] 
             dark:opacity-100 dark:grayscale-0"
           >
             <RefreshCw size={18} className={cn("mr-2", isRefreshing && "animate-spin")} />
@@ -366,7 +366,7 @@ export function HangfireMonitoringPage(): ReactElement {
                 onClick={() => selectedRecurringJobId && triggerRecurringJobMutation.mutate(selectedRecurringJobId)}
                 disabled={!selectedRecurringJobId || triggerRecurringJobMutation.isPending}
                 className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl 
-                opacity-75 grayscale-[0] 
+                opacity-90 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0"
               >
                 {triggerRecurringJobMutation.isPending ? (
@@ -514,6 +514,7 @@ export function HangfireMonitoringPage(): ReactElement {
               paginationInfoText={t('failed.total') + `: ${recurringJobsQuery.data?.total ?? 0}`}
               rowClassName={(row: HangfireRecurringJobItemDto) => (selectedRecurringJobId === row.id ? 'bg-pink-50 dark:bg-pink-500/10' : undefined)}
               onRowClick={(row: HangfireRecurringJobItemDto) => setSelectedRecurringJobId(row.id)}
+              enableColumnDragAndDrop={false}
               centerColumnHeaders
             />
           </ManagementDataTableChrome>
@@ -561,6 +562,7 @@ export function HangfireMonitoringPage(): ReactElement {
               previousLabel={t('common:previous')}
               nextLabel={t('common:next')}
               paginationInfoText={t('common:total') + `: ${successQuery.data?.total ?? 0}`}
+              enableColumnDragAndDrop={false}
               centerColumnHeaders
             />
           </ManagementDataTableChrome>
@@ -608,6 +610,7 @@ export function HangfireMonitoringPage(): ReactElement {
               previousLabel={t('common:previous')}
               nextLabel={t('common:next')}
               paginationInfoText={t('common:total') + `: ${failedQuery.data?.total ?? 0}`}
+              enableColumnDragAndDrop={false}
               centerColumnHeaders
             />
           </ManagementDataTableChrome>
@@ -664,6 +667,7 @@ export function HangfireMonitoringPage(): ReactElement {
               previousLabel={t('common:previous')}
               nextLabel={t('common:next')}
               paginationInfoText={t('common:total') + `: ${deadLetterQuery.data?.total ?? 0}`}
+              enableColumnDragAndDrop={false}
               centerColumnHeaders
             />
           </ManagementDataTableChrome>
