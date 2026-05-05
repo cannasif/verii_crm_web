@@ -36,6 +36,40 @@ const CREATE_SECTION_HEADER_CLASSNAME =
 const CREATE_HEADER_FORM_SURFACE_CLASSNAME =
   '[&_label]:text-slate-800 dark:[&_label]:text-slate-200 [&_input]:border-slate-500/70 [&_input]:bg-white [&_input]:shadow-sm [&_input]:placeholder:text-slate-400 [&_input]:focus-visible:border-pink-500/85 [&_input]:focus-visible:ring-pink-200/70 dark:[&_input]:border-white/20 dark:[&_input]:bg-[#120d1d] dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus-visible:border-pink-400/60 dark:[&_input]:focus-visible:ring-pink-400/20 [&_textarea]:border-slate-500/70 [&_textarea]:bg-white [&_textarea]:shadow-sm [&_textarea]:placeholder:text-slate-400 [&_textarea]:focus-visible:border-pink-500/85 [&_textarea]:focus-visible:ring-pink-200/70 dark:[&_textarea]:border-white/20 dark:[&_textarea]:bg-[#120d1d] dark:[&_textarea]:placeholder:text-slate-500 dark:[&_textarea]:focus-visible:border-pink-400/60 dark:[&_textarea]:focus-visible:ring-pink-400/20 [&_[data-slot=select-trigger]]:border-slate-500/70 [&_[data-slot=select-trigger]]:bg-white [&_[data-slot=select-trigger]]:shadow-sm dark:[&_[data-slot=select-trigger]]:border-white/20 dark:[&_[data-slot=select-trigger]]:bg-[#120d1d]';
 
+function extractOrderCreateErrorMessage(error: unknown, fallback: string): string {
+  if (!(error instanceof Error)) {
+    return fallback;
+  }
+
+  try {
+    const parsed = JSON.parse(error.message) as {
+      errors?: string[] | Record<string, string[]>;
+      message?: string;
+    };
+
+    if (Array.isArray(parsed.errors) && parsed.errors.length > 0) {
+      return parsed.errors[0];
+    }
+
+    if (parsed.errors && typeof parsed.errors === 'object') {
+      const firstEntry = Object.values(parsed.errors).find(
+        (value): value is string[] => Array.isArray(value) && value.length > 0,
+      );
+      if (firstEntry) {
+        return firstEntry[0];
+      }
+    }
+
+    if (parsed.message) {
+      return parsed.message;
+    }
+  } catch {
+    return error.message;
+  }
+
+  return error.message || fallback;
+}
+
 export function OrderCreateForm(): ReactElement {
   const { t } = useTranslation(['order', 'common']);
   const navigate = useNavigate();
@@ -235,10 +269,7 @@ export function OrderCreateForm(): ReactElement {
         throw new Error(result.message || t('create.errorMessage'));
       }
     } catch (error: unknown) {
-      let errorMessage = t('create.errorMessage');
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
+      const errorMessage = extractOrderCreateErrorMessage(error, t('create.errorMessage'));
       toast.error(t('create.error'), {
         description: errorMessage,
         duration: 10000,

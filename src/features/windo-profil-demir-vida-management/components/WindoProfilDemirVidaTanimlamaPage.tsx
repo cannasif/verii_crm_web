@@ -80,6 +80,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [draftName, setDraftName] = useState('');
+  const [draftDemirName, setDraftDemirName] = useState('');
+  const [draftVidaName, setDraftVidaName] = useState('');
   const [draftProfilDefinitionId, setDraftProfilDefinitionId] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<WindoDefinitionGetDto | null>(null);
   const defaultColumns = useMemo(
@@ -189,6 +191,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       await invalidate();
       setDialogOpen(false);
       setDraftName('');
+      setDraftDemirName('');
+      setDraftVidaName('');
       setDraftProfilDefinitionId(null);
     },
   });
@@ -201,6 +205,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       setDialogOpen(false);
       setEditingItem(null);
       setDraftName('');
+      setDraftDemirName('');
+      setDraftVidaName('');
       setDraftProfilDefinitionId(null);
     },
   });
@@ -222,6 +228,40 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
 
     if (config.requiresProfilParent && !draftProfilDefinitionId) {
       toast.error(t('validation.profilRequired'));
+      return;
+    }
+
+    const trimmedDemirName = draftDemirName.trim();
+    const trimmedVidaName = draftVidaName.trim();
+
+    if (!editingItem && config.kind === 'profil') {
+      if (!trimmedDemirName || !trimmedVidaName) {
+        toast.error(t('validation.bundleChildrenRequired', { defaultValue: 'Profil ile birlikte demir ve vida adı zorunludur.' }));
+        return;
+      }
+
+      const profile = await config.create({
+        name,
+        profilDefinitionId: null,
+      });
+
+      await windoDefinitionApi.createDemir({
+        name: trimmedDemirName,
+        profilDefinitionId: profile.id,
+      });
+
+      await windoDefinitionApi.createVida({
+        name: trimmedVidaName,
+        profilDefinitionId: profile.id,
+      });
+
+      toast.success(t('toasts.bundleCreated', { section: config.title, defaultValue: 'Profil, demir ve vida birlikte oluşturuldu.' }));
+      await invalidate();
+      setDialogOpen(false);
+      setDraftName('');
+      setDraftDemirName('');
+      setDraftVidaName('');
+      setDraftProfilDefinitionId(null);
       return;
     }
 
@@ -259,6 +299,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               onClick={() => {
                 setEditingItem(null);
                 setDraftName('');
+                setDraftDemirName('');
+                setDraftVidaName('');
                 setDraftProfilDefinitionId(null);
                 setDialogOpen(true);
               }}
@@ -361,6 +403,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                     onClick={() => {
                       setEditingItem(item);
                       setDraftName(item.name);
+                      setDraftDemirName('');
+                      setDraftVidaName('');
                       setDraftProfilDefinitionId(item.profilDefinitionId ? String(item.profilDefinitionId) : null);
                       setDialogOpen(true);
                     }}
@@ -423,6 +467,18 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               <Label>{t('dialog.nameLabel')}</Label>
               <Input value={draftName} onChange={(e) => setDraftName(e.target.value)} maxLength={150} />
             </div>
+            {!editingItem && config.kind === 'profil' ? (
+              <>
+                <div className="space-y-2">
+                  <Label>{t('dialog.demirNameLabel', { defaultValue: 'Demir adı' })}</Label>
+                  <Input value={draftDemirName} onChange={(e) => setDraftDemirName(e.target.value)} maxLength={150} />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('dialog.vidaNameLabel', { defaultValue: 'Vida adı' })}</Label>
+                  <Input value={draftVidaName} onChange={(e) => setDraftVidaName(e.target.value)} maxLength={150} />
+                </div>
+              </>
+            ) : null}
             {config.requiresProfilParent ? (
               <div className="space-y-2">
                 <Label>{t('dialog.profilLabel')}</Label>

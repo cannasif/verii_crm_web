@@ -39,6 +39,8 @@ export function WindoQuickCreateDialog({
   const { i18n, t } = useTranslation(['common']);
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
+  const [demirName, setDemirName] = useState('');
+  const [vidaName, setVidaName] = useState('');
   const [profilDefinitionId, setProfilDefinitionId] = useState<string | null>(
     initialProfilDefinitionId ? String(initialProfilDefinitionId) : null
   );
@@ -46,6 +48,7 @@ export function WindoQuickCreateDialog({
   const labels = KIND_LABELS[kind];
   const label = i18n.language.startsWith('tr') ? labels.tr : labels.en;
   const requiresProfil = kind !== 'profil';
+  const createsBundle = kind === 'profil';
 
   const mutation = useMutation({
     mutationFn: async (payload: WindoDefinitionCreateDto): Promise<WindoDefinitionGetDto> => {
@@ -63,6 +66,8 @@ export function WindoQuickCreateDialog({
       );
       onCreated(item);
       setName('');
+      setDemirName('');
+      setVidaName('');
       setProfilDefinitionId(initialProfilDefinitionId ? String(initialProfilDefinitionId) : null);
       onOpenChange(false);
     },
@@ -86,8 +91,52 @@ export function WindoQuickCreateDialog({
       return;
     }
 
+    const trimmedDemirName = demirName.trim();
+    const trimmedVidaName = vidaName.trim();
+
     if (requiresProfil && !profilDefinitionId) {
       toast.error(i18n.language.startsWith('tr') ? 'Profil seçimi zorunludur' : 'Profile is required');
+      return;
+    }
+
+    if (createsBundle) {
+      if (!trimmedDemirName || !trimmedVidaName) {
+        toast.error(
+          i18n.language.startsWith('tr')
+            ? 'Profil ile birlikte demir ve vida adı da zorunludur'
+            : 'Rebar and screw names are also required with profile'
+        );
+        return;
+      }
+
+      const profile = await windoDefinitionApi.createProfil({
+        name: trimmedName,
+        profilDefinitionId: null,
+      });
+
+      await windoDefinitionApi.createDemir({
+        name: trimmedDemirName,
+        profilDefinitionId: profile.id,
+      });
+
+      await windoDefinitionApi.createVida({
+        name: trimmedVidaName,
+        profilDefinitionId: profile.id,
+      });
+
+      await queryClient.invalidateQueries({ queryKey: ['windo-definition'] });
+      await queryClient.invalidateQueries({ queryKey: ['windo-definition-management'] });
+      toast.success(
+        i18n.language.startsWith('tr')
+          ? 'Profil, demir ve vida kaydı oluşturuldu'
+          : 'Profile, rebar and screw records created'
+      );
+      onCreated(profile);
+      setName('');
+      setDemirName('');
+      setVidaName('');
+      setProfilDefinitionId(null);
+      onOpenChange(false);
       return;
     }
 
@@ -105,6 +154,8 @@ export function WindoQuickCreateDialog({
       onOpenChange={(nextOpen) => {
         if (!nextOpen) {
           setName('');
+          setDemirName('');
+          setVidaName('');
           setProfilDefinitionId(initialProfilDefinitionId ? String(initialProfilDefinitionId) : null);
         }
         onOpenChange(nextOpen);
@@ -136,6 +187,28 @@ export function WindoQuickCreateDialog({
               maxLength={150}
             />
           </div>
+          {createsBundle ? (
+            <>
+              <div className="space-y-2">
+                <Label>{i18n.language.startsWith('tr') ? 'Demir adı' : 'Rebar name'}</Label>
+                <Input
+                  value={demirName}
+                  onChange={(event) => setDemirName(event.target.value)}
+                  placeholder={i18n.language.startsWith('tr') ? 'Bağlı demir adı' : 'Linked rebar name'}
+                  maxLength={150}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{i18n.language.startsWith('tr') ? 'Vida adı' : 'Screw name'}</Label>
+                <Input
+                  value={vidaName}
+                  onChange={(event) => setVidaName(event.target.value)}
+                  placeholder={i18n.language.startsWith('tr') ? 'Bağlı vida adı' : 'Linked screw name'}
+                  maxLength={150}
+                />
+              </div>
+            </>
+          ) : null}
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {i18n.language.startsWith('tr') ? 'İptal' : 'Cancel'}

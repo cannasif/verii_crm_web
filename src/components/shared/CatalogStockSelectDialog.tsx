@@ -468,32 +468,6 @@ export function CatalogStockSelectDialog({
     categorySearchShowBranches,
   ]);
 
-  const handleCategoryClientSearchPick = useCallback(
-    (node: CatalogCategoryNodeDto): void => {
-      const flat = fullCategoryTreeQuery.data;
-      if (!flat?.length) {
-        return;
-      }
-      const byId = buildCategoryIdIndex(flat);
-      const chain = buildAncestorChainFromRoot(node, byId);
-      if (chain.length === 0) {
-        return;
-      }
-      if (node.hasChildren) {
-        setNavigationPath(chain);
-        setSelectedLeafCategory(null);
-      } else {
-        setNavigationPath(chain.slice(0, -1));
-        setSelectedLeafCategory(node);
-      }
-      setIncludeDescendants(false);
-      setStockSearch('');
-      setPageNumber(1);
-      setCategoryClientSearch('');
-    },
-    [fullCategoryTreeQuery.data]
-  );
-
   useEffect(() => {
     setPageNumber(1);
   }, [selectedLeafCategory?.catalogCategoryId, debouncedStockSearch, includeDescendants]);
@@ -581,28 +555,53 @@ export function CatalogStockSelectDialog({
     setCategorySearchShowBranches(false);
   };
 
-  const handleCategoryClick = (category: CatalogCategoryNodeDto): void => {
-    if (category.hasChildren) {
-      setNavigationPath((prev) => [...prev, category]);
-      setSelectedLeafCategory(null);
-      setIncludeDescendants(false);
-      return;
-    }
+  const activateCategorySelection = useCallback(
+    (category: CatalogCategoryNodeDto, branchPath?: CatalogCategoryNodeDto[]): void => {
+      const nextPath = branchPath ?? (category.hasChildren ? [...navigationPath, category] : navigationPath);
+      setNavigationPath(nextPath);
+      setSelectedLeafCategory(category);
+      setIncludeDescendants(category.hasChildren);
+      setStockSearch('');
+      setPageNumber(1);
+    },
+    [navigationPath],
+  );
 
-    setSelectedLeafCategory(category);
-    setIncludeDescendants(false);
+  const handleCategoryClientSearchPick = useCallback(
+    (node: CatalogCategoryNodeDto): void => {
+      const flat = fullCategoryTreeQuery.data;
+      if (!flat?.length) {
+        return;
+      }
+      const byId = buildCategoryIdIndex(flat);
+      const chain = buildAncestorChainFromRoot(node, byId);
+      if (chain.length === 0) {
+        return;
+      }
+      activateCategorySelection(node, node.hasChildren ? chain : chain.slice(0, -1));
+      setCategoryClientSearch('');
+    },
+    [activateCategorySelection, fullCategoryTreeQuery.data]
+  );
+
+  const handleCategoryClick = (category: CatalogCategoryNodeDto): void => {
+    activateCategorySelection(category);
   };
 
   const handleCategoryList = (category: CatalogCategoryNodeDto): void => {
-    setSelectedLeafCategory(category);
-    setIncludeDescendants(category.hasChildren);
-    setPageNumber(1);
+    activateCategorySelection(category);
   };
 
   const handleBackLevel = (): void => {
-    setNavigationPath((prev) => prev.slice(0, -1));
-    setSelectedLeafCategory(null);
-    setIncludeDescendants(false);
+    setNavigationPath((prev) => {
+      const nextPath = prev.slice(0, -1);
+      const parent = nextPath[nextPath.length - 1] ?? null;
+      setSelectedLeafCategory(parent);
+      setIncludeDescendants(parent?.hasChildren ?? false);
+      setStockSearch('');
+      setPageNumber(1);
+      return nextPath;
+    });
   };
 
   const handleResetCategoryBranch = (): void => {
@@ -623,9 +622,15 @@ export function CatalogStockSelectDialog({
       pageNumber > 1);
 
   const handleBreadcrumbClick = (index: number): void => {
-    setNavigationPath((prev) => prev.slice(0, index + 1));
-    setSelectedLeafCategory(null);
-    setIncludeDescendants(false);
+    setNavigationPath((prev) => {
+      const nextPath = prev.slice(0, index + 1);
+      const selected = nextPath[nextPath.length - 1] ?? null;
+      setSelectedLeafCategory(selected);
+      setIncludeDescendants(selected?.hasChildren ?? false);
+      setStockSearch('');
+      setPageNumber(1);
+      return nextPath;
+    });
   };
 
   const handlePreviewNavigateChain = useCallback((chain: CatalogCategoryNodeDto[]): void => {
@@ -634,17 +639,11 @@ export function CatalogStockSelectDialog({
     }
     const last = chain[chain.length - 1];
     if (last.hasChildren) {
-      setNavigationPath((prev) => [...prev, ...chain]);
-      setSelectedLeafCategory(null);
-      setIncludeDescendants(false);
+      activateCategorySelection(last, chain);
     } else {
-      setNavigationPath((prev) => [...prev, ...chain.slice(0, -1)]);
-      setSelectedLeafCategory(last);
-      setIncludeDescendants(false);
+      activateCategorySelection(last, chain.slice(0, -1));
     }
-    setStockSearch('');
-    setPageNumber(1);
-  }, []);
+  }, [activateCategorySelection]);
 
   const toSelectionResult = (stock: CatalogStockItemDto): ProductSelectionResult => ({
     id: stock.stockId,
@@ -730,11 +729,13 @@ export function CatalogStockSelectDialog({
     const parts = [
       selectedCatalog?.name,
       ...navigationPath.map((item) => item.name),
-      selectedLeafCategory?.name,
+      navigationPath[navigationPath.length - 1]?.catalogCategoryId === selectedLeafCategory?.catalogCategoryId
+        ? null
+        : selectedLeafCategory?.name,
     ].filter(Boolean);
 
     return parts.length > 0 ? parts.join(' / ') : t('catalogStockPicker.noCatalogSelected');
-  }, [navigationPath, selectedCatalog?.name, selectedLeafCategory?.name, t]);
+  }, [navigationPath, selectedCatalog?.name, selectedLeafCategory?.catalogCategoryId, selectedLeafCategory?.name, t]);
 
   const categoryScrollSyncKey = useMemo(
     () => `${selectedCatalog?.id ?? 0}-${navigationPath.map((p) => p.catalogCategoryId).join('-')}`,
