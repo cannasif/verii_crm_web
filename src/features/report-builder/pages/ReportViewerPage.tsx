@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ReactElement, type ComponentType } from 'react';
+import { Fragment, lazy, Suspense, type ReactElement, type ComponentType } from 'react';
 import { useEffect, useCallback, useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,12 +7,15 @@ import { reportsApi } from '../api';
 import { Badge } from '@/components/ui/badge';
 import {
   Activity,
+  BadgeCheck,
   BarChart3,
   BellRing,
+  ChevronDown,
   ChevronLeft,
   Download,
   FileJson,
-  Filter,
+  FileSpreadsheet,
+  FolderOpen,
   GripHorizontal,
   LayoutGrid,
   Loader2,
@@ -51,6 +54,12 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const PreviewPanel = lazy(async () =>
   import('../components/PreviewPanel').then((mod) => ({ default: mod.PreviewPanel }))
@@ -58,6 +67,54 @@ const PreviewPanel = lazy(async () =>
 const RuntimeFiltersPanel = lazy(async () =>
   import('../components/RuntimeFiltersPanel').then((mod) => ({ default: mod.RuntimeFiltersPanel }))
 );
+
+interface StatRibbonItem {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  accent: 'indigo' | 'violet' | 'emerald' | 'amber' | 'pink' | 'sky';
+}
+
+const RIBBON_ACCENT_MAP: Record<StatRibbonItem['accent'], { bg: string; ring: string; icon: string }> = {
+  indigo: { bg: 'bg-indigo-50 dark:bg-indigo-500/10', ring: 'border-indigo-100 dark:border-indigo-500/20', icon: 'text-indigo-600 dark:text-indigo-400' },
+  violet: { bg: 'bg-violet-50 dark:bg-violet-500/10', ring: 'border-violet-100 dark:border-violet-500/20', icon: 'text-violet-600 dark:text-violet-400' },
+  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-500/10', ring: 'border-emerald-100 dark:border-emerald-500/20', icon: 'text-emerald-600 dark:text-emerald-400' },
+  amber: { bg: 'bg-amber-50 dark:bg-amber-500/10', ring: 'border-amber-100 dark:border-amber-500/20', icon: 'text-amber-600 dark:text-amber-400' },
+  pink: { bg: 'bg-pink-50 dark:bg-pink-500/10', ring: 'border-pink-100 dark:border-pink-500/20', icon: 'text-pink-600 dark:text-pink-400' },
+  sky: { bg: 'bg-sky-50 dark:bg-sky-500/10', ring: 'border-sky-100 dark:border-sky-500/20', icon: 'text-sky-600 dark:text-sky-400' },
+};
+
+function ViewerMetaStrip({ items }: { items: StatRibbonItem[] }): ReactElement {
+  return (
+    <div className="flex flex-wrap items-center gap-x-0 gap-y-2">
+      {items.map((item, index) => {
+        const accent = RIBBON_ACCENT_MAP[item.accent];
+        const Icon = item.icon;
+        return (
+          <Fragment key={`${item.label}-${index}`}>
+            {index > 0 ? (
+              <span
+                className="mx-2 hidden h-3 w-px shrink-0 bg-slate-200 dark:bg-white/15 sm:inline-block"
+                aria-hidden
+              />
+            ) : null}
+            <span className="inline-flex max-w-full min-w-0 items-center gap-2 rounded-md py-0.5 sm:max-w-none">
+              <span className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-md border', accent.bg, accent.ring)}>
+                <Icon className={cn('size-3.5', accent.icon)} />
+              </span>
+              <span className="flex min-w-0 flex-col leading-tight">
+                <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{item.label}</span>
+                <span className="truncate text-xs font-semibold text-foreground" title={item.value}>
+                  {item.value}
+                </span>
+              </span>
+            </span>
+          </Fragment>
+        );
+      })}
+    </div>
+  );
+}
 
 interface WidgetLayoutItem {
   colSpan: number;
@@ -74,10 +131,10 @@ interface ViewerLayoutState {
 
 const DEFAULT_MAX_COLS = 3;
 const DEFAULT_MAX_ROWS = 2;
-const COL_OPTIONS = [1, 2, 3, 4, 6] as const;
-const ROW_OPTIONS = [1, 2, 3, 4] as const;
+const COL_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
+const ROW_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 const ROW_HEIGHT_PX = 320;
-const ABSOLUTE_MAX_ROW_SPAN = 4;
+const ABSOLUTE_MAX_ROW_SPAN = 6;
 
 function getViewerLayoutKey(reportId: number): string {
   return `crm-report-viewer-layout-v4:${reportId}`;
@@ -301,6 +358,37 @@ function buildCsv(columns: string[], rows: unknown[][]): string {
   return [header, body].filter(Boolean).join('\n');
 }
 
+function downloadBlobFile(filename: string, blob: Blob): void {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function buildExcelAoA(columns: string[], rows: unknown[][]): unknown[][] {
+  return [columns, ...rows.map((row) => row.map((cell) => (cell == null ? '' : cell)))];
+}
+
+function makeUniqueExcelSheetName(title: string, index: number, used: Set<string>): string {
+  const invalid = /[:\\/?*[\]]/g;
+  const raw = (title.trim() || `Widget ${index + 1}`).replace(invalid, ' ').replace(/\s+/g, ' ').trim();
+  let base = raw.slice(0, 31);
+  if (!base) {
+    base = `Sheet${index + 1}`;
+  }
+  let candidate = base;
+  let n = 2;
+  while (used.has(candidate)) {
+    const suffix = `-${n}`;
+    candidate = `${raw.slice(0, Math.max(1, 31 - suffix.length))}${suffix}`;
+    n += 1;
+  }
+  used.add(candidate);
+  return candidate;
+}
+
 function buildWidgetLabelOverrides(widget?: {
   axis?: { field: string; label?: string };
   legend?: { field: string; label?: string };
@@ -362,6 +450,55 @@ export function ReportViewerPage(): ReactElement {
   const refreshCadenceLabel = governance.refreshCadence ? t(`common.reportBuilder.refreshCadences.${governance.refreshCadence}`) : '-';
   const subscriptionFrequencyLabel = governance.subscriptionFrequency ? t(`common.reportBuilder.subscriptionFrequencies.${governance.subscriptionFrequency}`) : t('common.reportBuilder.subscriptionFrequencies.manual');
   const subscriptionChannelLabel = governance.subscriptionChannel ? t(`common.reportBuilder.subscriptionChannels.${governance.subscriptionChannel}`) : t('common.reportBuilder.subscriptionChannels.email');
+  const reportHeaderMetaItems = useMemo((): StatRibbonItem[] => {
+    const items: StatRibbonItem[] = [
+      { icon: Activity, label: t('common.status'), value: statusLabel, accent: 'indigo' },
+      { icon: Tag, label: t('common.reportBuilder.version'), value: `v${lifecycle.version}`, accent: 'violet' },
+      { icon: Users, label: t('common.reportBuilder.owner'), value: governance.owner ?? '-', accent: 'emerald' },
+      { icon: ShieldCheck, label: t('common.reportBuilder.audience'), value: audienceLabel, accent: 'amber' },
+      { icon: RefreshCw, label: t('common.refresh'), value: refreshCadenceLabel, accent: 'pink' },
+      {
+        icon: BellRing,
+        label: t('common.reportBuilder.subscription'),
+        value: governance.subscriptionEnabled
+          ? `${subscriptionFrequencyLabel} / ${subscriptionChannelLabel}`
+          : t('common.reportBuilder.off'),
+        accent: 'sky',
+      },
+    ];
+    if (governance.certified) {
+      items.push({
+        icon: BadgeCheck,
+        label: t('common.reportBuilder.certified'),
+        value: t('common.yes'),
+        accent: 'sky',
+      });
+    }
+    if (governance.category?.trim()) {
+      items.push({
+        icon: FolderOpen,
+        label: t('common.reportBuilder.category'),
+        value: governance.category.trim(),
+        accent: 'amber',
+      });
+    }
+    return items;
+  }, [
+    t,
+    statusLabel,
+    lifecycle.version,
+    governance.owner,
+    governance.audience,
+    governance.subscriptionEnabled,
+    governance.subscriptionFrequency,
+    governance.subscriptionChannel,
+    governance.certified,
+    governance.category,
+    audienceLabel,
+    refreshCadenceLabel,
+    subscriptionFrequencyLabel,
+    subscriptionChannelLabel,
+  ]);
   const viewerEditableParameters = (config.datasetParameters ?? []).filter((item) => item.allowViewerOverride);
   const dataSourceTypeLabel = meta.dataSourceType
     ? (meta.dataSourceType === 'view' || meta.dataSourceType === 'function'
@@ -602,7 +739,7 @@ export function ReportViewerPage(): ReactElement {
 
     const sections = widgets.map((widget, index) => {
       const data: ReportPreviewResponse | undefined =
-        widget.id === config.activeWidgetId || index === 0
+        widget.id === config.activeWidgetId
           ? { columns: preview.columns, rows: preview.rows }
           : widgetPreviews[widget.id]
             ? { columns: widgetPreviews[widget.id].columns, rows: widgetPreviews[widget.id].rows }
@@ -617,7 +754,58 @@ export function ReportViewerPage(): ReactElement {
 
     const baseName = meta.name?.trim() || 'report';
     downloadTextFile(`${baseName}-all-widgets.csv`, sections.join('\n\n'), 'text/csv;charset=utf-8;');
-  }, [config.activeWidgetId, config.widgets, exportCurrentWidgetCsv, meta.name, preview.columns, preview.rows, widgetPreviews]);
+  }, [config.activeWidgetId, config.widgets, exportCurrentWidgetCsv, meta.name, preview.columns, preview.rows, widgetPreviews, t]);
+
+  const exportCurrentWidgetXlsx = useCallback(async (): Promise<void> => {
+    if (!preview.columns.length) return;
+    const XLSX = await import('xlsx');
+    const baseName = meta.name?.trim() || 'report';
+    const ws = XLSX.utils.aoa_to_sheet(buildExcelAoA(preview.columns, preview.rows));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Data');
+    const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    downloadBlobFile(
+      `${baseName}-widget.xlsx`,
+      new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+    );
+  }, [meta.name, preview.columns, preview.rows]);
+
+  const exportAllWidgetsXlsx = useCallback(async (): Promise<void> => {
+    const widgets = config.widgets ?? [];
+    if (widgets.length === 0) {
+      await exportCurrentWidgetXlsx();
+      return;
+    }
+    const XLSX = await import('xlsx');
+    const wb = XLSX.utils.book_new();
+    const usedNames = new Set<string>();
+    widgets.forEach((widget, index) => {
+      const data: ReportPreviewResponse | undefined =
+        widget.id === config.activeWidgetId
+          ? { columns: preview.columns, rows: preview.rows }
+          : widgetPreviews[widget.id]
+            ? { columns: widgetPreviews[widget.id].columns, rows: widgetPreviews[widget.id].rows }
+            : undefined;
+      const sheetName = makeUniqueExcelSheetName(
+        widget.title || t('common.reportBuilder.widgetTitleFallback', { index: index + 1 }),
+        index,
+        usedNames,
+      );
+      if (!data || !data.columns.length) {
+        const ws = XLSX.utils.aoa_to_sheet([[t('common.noData')]]);
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        return;
+      }
+      const ws = XLSX.utils.aoa_to_sheet(buildExcelAoA(data.columns, data.rows));
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    });
+    const baseName = meta.name?.trim() || 'report';
+    const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    downloadBlobFile(
+      `${baseName}-all-widgets.xlsx`,
+      new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+    );
+  }, [config.activeWidgetId, config.widgets, exportCurrentWidgetXlsx, meta.name, preview.columns, preview.rows, widgetPreviews, t]);
 
   const loadReport = useCallback(async () => {
     if (Number.isNaN(reportId)) return;
@@ -753,225 +941,221 @@ export function ReportViewerPage(): ReactElement {
   }
 
   return (
-    <div className="w-full space-y-6 px-4 pb-8 pt-0 animate-in fade-in duration-500 sm:px-6">
-      <div className="flex items-center justify-between pt-6">
+    <div className="w-full space-y-5 px-4 pb-8 pt-0 animate-in fade-in duration-500 sm:px-6">
+      <div className="flex items-center justify-between gap-3 pt-5">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate(listPath)}
-          className="rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 font-bold text-slate-500 dark:text-slate-400 h-10 pr-4"
+          className="h-9 rounded-lg font-semibold text-muted-foreground hover:bg-muted/60"
         >
           <ChevronLeft className="mr-1 size-4" />
           {t('common.reportBuilder.backToList')}
         </Button>
 
-        {saveState?.justSaved && (
-          <div className="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 px-4 py-2 rounded-xl animate-in slide-in-from-top-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white">
+        {saveState?.justSaved ? (
+          <div className="flex max-w-[min(100%,28rem)] items-center gap-2 rounded-lg border border-emerald-200/80 bg-emerald-50/90 px-3 py-2 dark:border-emerald-500/25 dark:bg-emerald-500/10">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
               <Zap className="size-3 stroke-[3]" />
             </div>
-            <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+            <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 sm:text-sm">
               {saveState.isEdit
                 ? t('common.reportBuilder.saveSuccessUpdatedDescription')
                 : t('common.reportBuilder.saveSuccessCreatedDescription')}
             </p>
           </div>
-        )}
+        ) : null}
       </div>
 
-      <div className="flex flex-col gap-6 rounded-2xl border border-slate-200/90 bg-linear-to-br from-white/90 via-slate-50/80 to-indigo-50/40 p-5 shadow-sm dark:border-white/10 dark:from-slate-950/80 dark:via-slate-950/60 dark:to-indigo-950/30 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-indigo-200 bg-indigo-100 shadow-inner dark:border-white/10 dark:bg-white/5 group">
-            <div className="absolute inset-0 bg-linear-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <LayoutGrid className="size-8 text-indigo-600 dark:text-indigo-400 relative z-10" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
-              {meta.name}
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mt-1">
-              {meta.connectionKey} <span className="mx-1 text-slate-300">/</span> {dataSourceTypeLabel} <span className="mx-1 text-slate-300">/</span> {meta.dataSourceName}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Badge variant="secondary" className="rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-100 dark:border-pink-500/20 font-bold px-2 py-0.5 text-[10px] uppercase">
-                {statusLabel}
-              </Badge>
-              <Badge variant="outline" className="rounded-md border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
-                v{lifecycle.version}
-              </Badge>
-              {governance.certified && (
-                <Badge variant="secondary" className="rounded-md bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
-                  {t('common.reportBuilder.certified')}
-                </Badge>
-              )}
-              {governance.category && (
-                <Badge variant="outline" className="rounded-md border-indigo-100 dark:border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
-                  {governance.category}
-                </Badge>
-              )}
+      <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-white/10 dark:bg-slate-950/70">
+        <div className="flex flex-col gap-4 border-b border-slate-200/80 p-4 dark:border-white/10 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:p-5">
+          <div className="flex min-w-0 gap-3 sm:gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-200/80 bg-indigo-50 dark:border-white/10 dark:bg-indigo-500/10">
+              <LayoutGrid className="size-5 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-2xl">{meta.name}</h1>
+              <p className="mt-0.5 truncate text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {meta.connectionKey}{' '}
+                <span className="mx-0.5 text-slate-300 dark:text-slate-600">/</span> {dataSourceTypeLabel}{' '}
+                <span className="mx-0.5 text-slate-300 dark:text-slate-600">/</span> {meta.dataSourceName}
+              </p>
+              <div className="mt-2">
+                <ViewerMetaStrip items={reportHeaderMetaItems} />
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => runPreview(viewerParameterValues)}
-            disabled={ui.previewLoading}
-            className="rounded-xl h-10 border-slate-200 dark:border-white/10 font-bold hover:bg-slate-50 dark:hover:bg-white/5"
-          >
-            <RefreshCw className={cn('mr-2 size-4 text-indigo-500', ui.previewLoading && 'animate-spin')} />
-            {t('common.refresh')}
-          </Button>
-
-          <div className="flex items-center gap-2 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/10">
-            <Button variant="ghost" size="sm" onClick={exportCurrentWidgetCsv} disabled={!preview.columns.length} className="rounded-lg h-8 px-3 font-bold text-xs uppercase">
-              <Download className="mr-2 size-3.5 text-slate-500" />
-              {t('common.reportBuilder.exportCurrentCsv')}
-            </Button>
-            <div className="w-px h-4 bg-slate-200 dark:bg-white/10" />
-            <Button variant="ghost" size="sm" onClick={exportAllWidgetsCsv} disabled={widgetCount === 0} className="rounded-lg h-8 px-3 font-bold text-xs uppercase">
-              <Download className="mr-2 size-3.5 text-slate-500" />
-              {t('common.reportBuilder.exportAllCsv')}
-            </Button>
-            <div className="w-px h-4 bg-slate-200 dark:bg-white/10" />
-            <Button variant="ghost" size="sm" onClick={exportDefinitionJson} className="rounded-lg h-8 px-3 font-bold text-xs uppercase">
-              <FileJson className="mr-2 size-3.5 text-slate-500" />
-              {t('common.reportBuilder.exportDefinition')}
-            </Button>
-          </div>
-
-          {!isMyReportsView && meta.canManage !== false && (
+          <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
             <Button
+              variant="outline"
               size="sm"
-              onClick={() => navigate(`/reports/${reportId}/edit`)}
-              className="rounded-xl text-white h-10 px-6 font-bold bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 border-0 shadow-lg shadow-pink-500/20 transition-all hover:scale-105
-              opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              onClick={() => runPreview(viewerParameterValues)}
+              disabled={ui.previewLoading}
+              className="h-9 rounded-lg border-slate-200 font-semibold dark:border-white/10"
             >
-              <Pencil className="mr-2 size-4" />
-              {t('common.edit')}
+              <RefreshCw className={cn('mr-2 size-4 text-indigo-500', ui.previewLoading && 'animate-spin')} />
+              {t('common.refresh')}
             </Button>
-          )}
-        </div>
-      </div>
-
-      <StatRibbon
-        items={[
-          { icon: Activity, label: t('common.status'), value: statusLabel, accent: 'indigo' },
-          { icon: Tag, label: t('common.reportBuilder.version'), value: `v${lifecycle.version}`, accent: 'violet' },
-          { icon: Users, label: t('common.reportBuilder.owner'), value: governance.owner ?? '-', accent: 'emerald' },
-          { icon: ShieldCheck, label: t('common.reportBuilder.audience'), value: audienceLabel, accent: 'amber' },
-          { icon: RefreshCw, label: t('common.refresh'), value: refreshCadenceLabel, accent: 'pink' },
-          {
-            icon: BellRing,
-            label: t('common.reportBuilder.subscription'),
-            value: governance.subscriptionEnabled
-              ? `${subscriptionFrequencyLabel} / ${subscriptionChannelLabel}`
-              : t('common.reportBuilder.off'),
-            accent: 'sky',
-          },
-        ]}
-      />
-
-      {(reportWidgetTotal > 0 || viewerEditableParameters.length > 0 || (config.filters && config.filters.length > 0)) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/90 bg-white/70 px-4 py-3 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03]">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-indigo-100 bg-indigo-50 shadow-sm dark:border-indigo-500/20 dark:bg-indigo-500/10">
-              <LayoutGrid className="size-4 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <div>
-              <div className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
-                {t('common.reportBuilder.canvasLayoutTitle')}
-              </div>
-              <div className="text-[11px] font-medium text-slate-400">
-                {t('common.reportBuilder.canvasLayoutHint')}
-              </div>
-            </div>
-            {reportWidgetTotal > 0 && (
-              <div className="ml-2 flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                    {t('common.reportBuilder.canvasColsLabel')}
-                  </span>
-                  <div className="flex items-center gap-0.5 rounded-xl border border-slate-200 bg-white/80 p-1 shadow-inner dark:border-white/10 dark:bg-white/5">
-                    {COL_OPTIONS.map((cols) => {
-                      const isActive = maxCols === cols;
-                      const enabled = isActive || isCanvasSizeAvailable(cols, maxRows);
-                      return (
-                        <button
-                          key={`cols-${cols}`}
-                          type="button"
-                          onClick={() => enabled && handleSetMaxCols(cols)}
-                          disabled={!enabled}
-                          aria-pressed={isActive}
-                          aria-disabled={!enabled}
-                          title={
-                            enabled
-                              ? (t('common.reportBuilder.canvasColsOption', { count: cols }) as string)
-                              : (t('common.reportBuilder.canvasShrinkBlocked') as string)
-                          }
-                          className={cn(
-                            'flex h-7 min-w-[28px] items-center justify-center rounded-lg px-2 text-[11px] font-black transition-colors',
-                            isActive
-                              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
-                              : enabled
-                                ? 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
-                                : 'cursor-not-allowed text-slate-300 dark:text-slate-600',
-                          )}
-                        >
-                          {cols}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                    {t('common.reportBuilder.canvasRowsLabel')}
-                  </span>
-                  <div className="flex items-center gap-0.5 rounded-xl border border-slate-200 bg-white/80 p-1 shadow-inner dark:border-white/10 dark:bg-white/5">
-                    {ROW_OPTIONS.map((rows) => {
-                      const isActive = maxRows === rows;
-                      const enabled = isActive || isCanvasSizeAvailable(maxCols, rows);
-                      return (
-                        <button
-                          key={`rows-${rows}`}
-                          type="button"
-                          onClick={() => enabled && handleSetMaxRows(rows)}
-                          disabled={!enabled}
-                          aria-pressed={isActive}
-                          aria-disabled={!enabled}
-                          title={
-                            enabled
-                              ? (t('common.reportBuilder.canvasRowsOption', { count: rows }) as string)
-                              : (t('common.reportBuilder.canvasShrinkBlocked') as string)
-                          }
-                          className={cn(
-                            'flex h-7 min-w-[28px] items-center justify-center rounded-lg px-2 text-[11px] font-black transition-colors',
-                            isActive
-                              ? 'bg-pink-600 text-white shadow-md shadow-pink-500/30'
-                              : enabled
-                                ? 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
-                                : 'cursor-not-allowed text-slate-300 dark:text-slate-600',
-                          )}
-                        >
-                          {rows}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {(config.filters && config.filters.length > 0) || viewerEditableParameters.length > 0 ? (
-              <span className="hidden items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 sm:inline-flex">
-                <Filter className="size-3" />
-                {t('common.reportBuilder.runtimeFilters')}
-              </span>
+            {meta.canManage !== false ? (
+              <Button
+                size="sm"
+                onClick={() => navigate(`/reports/${reportId}/edit`)}
+                className="h-9 gap-1.5 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 px-4 font-semibold text-white shadow-md shadow-pink-500/15 hover:from-pink-500 hover:to-orange-500"
+              >
+                <Pencil className="size-4" />
+                {t('common.edit')}
+              </Button>
             ) : null}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-9 gap-1 rounded-lg font-semibold">
+                  <Download className="size-4 text-indigo-500" />
+                  {t('common.reportBuilder.viewerExportMenu')}
+                  <ChevronDown className="size-4 opacity-60" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[min(300px,90vw)]">
+                <DropdownMenuItem
+                  disabled={!preview.columns.length}
+                  className="cursor-pointer gap-2 font-medium"
+                  onClick={() => exportCurrentWidgetCsv()}
+                >
+                  <Download className="size-4" />
+                  {t('common.reportBuilder.exportCurrentCsv')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={!preview.columns.length}
+                  className="cursor-pointer gap-2 font-medium"
+                  onClick={() => void exportCurrentWidgetXlsx()}
+                >
+                  <FileSpreadsheet className="size-4 text-emerald-600" />
+                  {t('common.reportBuilder.exportCurrentXlsx')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={widgetCount === 0}
+                  className="cursor-pointer gap-2 font-medium"
+                  onClick={() => exportAllWidgetsCsv()}
+                >
+                  <Download className="size-4" />
+                  {t('common.reportBuilder.exportAllCsv')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={widgetCount === 0}
+                  className="cursor-pointer gap-2 font-medium"
+                  onClick={() => void exportAllWidgetsXlsx()}
+                >
+                  <FileSpreadsheet className="size-4 text-emerald-600" />
+                  {t('common.reportBuilder.exportAllXlsx')}
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer gap-2 font-medium" onClick={() => exportDefinitionJson()}>
+                  <FileJson className="size-4" />
+                  {t('common.reportBuilder.exportDefinition')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        {(reportWidgetTotal > 0 || viewerEditableParameters.length > 0 || (config.filters && config.filters.length > 0)) && (
+          <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2 sm:px-5">
+            <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+              {reportWidgetTotal > 0 ? (
+                <>
+                  <div className="flex items-start gap-2 text-muted-foreground">
+                    <LayoutGrid className="mt-0.5 size-4 shrink-0 text-indigo-500" />
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                        {t('common.reportBuilder.canvasLayoutTitle')}
+                      </div>
+                      <div className="text-[10px] leading-snug text-muted-foreground sm:max-w-xl">
+                        {t('common.reportBuilder.canvasLayoutHint')}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-row flex-wrap items-center gap-x-3 gap-y-2 sm:gap-x-4">
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                        {t('common.reportBuilder.canvasColsShort')}
+                      </span>
+                      <span className="shrink-0 text-[10px] font-medium text-muted-foreground/90">
+                        {t('common.reportBuilder.canvasColWidthLabel')}
+                      </span>
+                      <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 bg-white/90 p-0.5 dark:border-white/10 dark:bg-white/5">
+                        {COL_OPTIONS.map((cols) => {
+                          const isActive = maxCols === cols;
+                          const enabled = isActive || isCanvasSizeAvailable(cols, maxRows);
+                          return (
+                            <button
+                              key={`cols-${cols}`}
+                              type="button"
+                              onClick={() => enabled && handleSetMaxCols(cols)}
+                              disabled={!enabled}
+                              aria-pressed={isActive}
+                              aria-disabled={!enabled}
+                              title={
+                                enabled
+                                  ? (t('common.reportBuilder.canvasColsOption', { count: cols }) as string)
+                                  : (t('common.reportBuilder.canvasShrinkBlocked') as string)
+                              }
+                              className={cn(
+                                'flex h-7 min-w-[28px] items-center justify-center rounded-lg px-2 text-[11px] font-black transition-colors',
+                                isActive
+                                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
+                                  : enabled
+                                    ? 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
+                                    : 'cursor-not-allowed text-slate-300 dark:text-slate-600',
+                              )}
+                            >
+                              {cols}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                        {t('common.reportBuilder.canvasRowsShort')}
+                      </span>
+                      <span className="shrink-0 text-[10px] font-medium text-muted-foreground/90">
+                        {t('common.reportBuilder.canvasRowHeightLabel')}
+                      </span>
+                      <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 bg-white/90 p-0.5 dark:border-white/10 dark:bg-white/5">
+                        {ROW_OPTIONS.map((rows) => {
+                          const isActive = maxRows === rows;
+                          const enabled = isActive || isCanvasSizeAvailable(maxCols, rows);
+                          return (
+                            <button
+                              key={`rows-${rows}`}
+                              type="button"
+                              onClick={() => enabled && handleSetMaxRows(rows)}
+                              disabled={!enabled}
+                              aria-pressed={isActive}
+                              aria-disabled={!enabled}
+                              title={
+                                enabled
+                                  ? (t('common.reportBuilder.canvasRowsOption', { count: rows }) as string)
+                                  : (t('common.reportBuilder.canvasShrinkBlocked') as string)
+                              }
+                              className={cn(
+                                'flex h-7 min-w-[28px] items-center justify-center rounded-lg px-2 text-[11px] font-black transition-colors',
+                                isActive
+                                  ? 'bg-pink-600 text-white shadow-md shadow-pink-500/30'
+                                  : enabled
+                                    ? 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
+                                    : 'cursor-not-allowed text-slate-300 dark:text-slate-600',
+                              )}
+                            >
+                              {rows}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </div>
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -1062,8 +1246,9 @@ export function ReportViewerPage(): ReactElement {
                 </div>
               </PopoverContent>
             </Popover>
-            {reportWidgetTotal > 0 && (
+            {reportWidgetTotal > 0 ? (
               <Button
+                type="button"
                 variant="ghost"
                 size="sm"
                 onClick={handleResetLayout}
@@ -1073,10 +1258,11 @@ export function ReportViewerPage(): ReactElement {
                 <RotateCcw className="mr-1.5 size-3.5" />
                 {t('common.reset')}
               </Button>
-            )}
+            ) : null}
           </div>
         </div>
       )}
+      </div>
 
       {reportWidgetTotal === 0 ? (
         <div className="flex min-h-[260px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/80 bg-white/60 p-12 text-center dark:border-white/10 dark:bg-white/[0.02]">
@@ -1124,14 +1310,15 @@ export function ReportViewerPage(): ReactElement {
                     {section.widgets.map((widget) => {
                       const widgetPreview = widgetPreviews[widget.id];
                       const widgetIndex = orderedWidgets.findIndex((item) => item.id === widget.id);
-                      const isPrimaryWidget = widget.id === config.activeWidgetId || widgetIndex === 0;
+                      const isPrimaryWidget = widget.id === config.activeWidgetId;
+                      const isPrimaryForSubtitle = widget.id === config.activeWidgetId || widgetIndex === 0;
                       const layoutItem = widgetLayouts[widget.id] ?? {
                         colSpan: defaultColSpanFor(widget.size, maxCols),
                         rowSpan: clamp(defaultRowSpanFor(widget.height), 1, maxRows),
                       };
                       const widgetTitle = widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 });
                       const widgetSubtitle = widget.appearance?.subtitle ||
-                        (isPrimaryWidget
+                        (isPrimaryForSubtitle
                           ? t('common.reportBuilder.primaryWidgetPreview')
                           : t('common.reportBuilder.additionalWidgetPreview'));
                       return (
@@ -1160,6 +1347,7 @@ export function ReportViewerPage(): ReactElement {
                                 labelOverrides={buildWidgetLabelOverrides(widget)}
                                 className="h-full w-full !min-h-0"
                                 minHeightClassName=""
+                                chartPresentationVariant="dashboard"
                                 headerActions={
                                   <WidgetSizePopover
                                     layout={layoutItem}
@@ -1186,51 +1374,6 @@ export function ReportViewerPage(): ReactElement {
   );
 }
 
-interface StatRibbonItem {
-  icon: ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  accent: 'indigo' | 'violet' | 'emerald' | 'amber' | 'pink' | 'sky';
-}
-
-const RIBBON_ACCENT_MAP: Record<StatRibbonItem['accent'], { bg: string; ring: string; icon: string }> = {
-  indigo: { bg: 'bg-indigo-50 dark:bg-indigo-500/10', ring: 'border-indigo-100 dark:border-indigo-500/20', icon: 'text-indigo-600 dark:text-indigo-400' },
-  violet: { bg: 'bg-violet-50 dark:bg-violet-500/10', ring: 'border-violet-100 dark:border-violet-500/20', icon: 'text-violet-600 dark:text-violet-400' },
-  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-500/10', ring: 'border-emerald-100 dark:border-emerald-500/20', icon: 'text-emerald-600 dark:text-emerald-400' },
-  amber: { bg: 'bg-amber-50 dark:bg-amber-500/10', ring: 'border-amber-100 dark:border-amber-500/20', icon: 'text-amber-600 dark:text-amber-400' },
-  pink: { bg: 'bg-pink-50 dark:bg-pink-500/10', ring: 'border-pink-100 dark:border-pink-500/20', icon: 'text-pink-600 dark:text-pink-400' },
-  sky: { bg: 'bg-sky-50 dark:bg-sky-500/10', ring: 'border-sky-100 dark:border-sky-500/20', icon: 'text-sky-600 dark:text-sky-400' },
-};
-
-function StatRibbon({ items }: { items: StatRibbonItem[] }): ReactElement {
-  return (
-    <div className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-200/90 bg-white/70 p-2 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] sm:grid-cols-3 lg:grid-cols-6">
-      {items.map((item) => {
-        const accent = RIBBON_ACCENT_MAP[item.accent];
-        const Icon = item.icon;
-        return (
-          <div
-            key={item.label}
-            className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-2 transition-colors hover:border-slate-200/80 hover:bg-white/80 dark:hover:border-white/10 dark:hover:bg-white/5"
-          >
-            <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border shadow-inner', accent.bg, accent.ring)}>
-              <Icon className={cn('size-4', accent.icon)} />
-            </div>
-            <div className="min-w-0">
-              <div className="truncate text-[9px] font-black uppercase tracking-widest text-slate-400">
-                {item.label}
-              </div>
-              <div className="mt-0.5 truncate text-sm font-black text-slate-800 dark:text-white" title={item.value}>
-                {item.value}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 interface SortableWidgetCardProps {
   widgetId: string;
   maxCols: number;
@@ -1247,16 +1390,20 @@ function SortableWidgetCard({
   children,
 }: SortableWidgetCardProps): ReactElement {
   const { t } = useTranslation('common');
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: widgetId });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: widgetId,
+  });
+  const rowSpanClamped = clamp(layout.rowSpan, 1, maxRows);
 
   const style: React.CSSProperties = {
     gridColumn: `span ${clamp(layout.colSpan, 1, maxCols)}`,
-    gridRow: `span ${clamp(layout.rowSpan, 1, maxRows)}`,
+    gridRow: `span ${rowSpanClamped}`,
     transform: CSS.Transform.toString(transform),
     transition: transition ?? undefined,
-    minHeight: 0,
+    minHeight: ROW_HEIGHT_PX * rowSpanClamped,
     minWidth: 0,
     overflow: 'hidden',
+    alignSelf: 'stretch',
   };
 
   return (
@@ -1315,7 +1462,7 @@ function WidgetSizePopover({ layout, maxCols, maxRows, isSizeAvailable, onChange
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="w-[260px] rounded-2xl border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#120D19]/95"
+        className="w-[300px] rounded-2xl border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#120D19]/95"
       >
         <div className="space-y-4">
           <div>
@@ -1339,7 +1486,7 @@ function WidgetSizePopover({ layout, maxCols, maxRows, isSizeAvailable, onChange
                     disabled={!enabled}
                     title={enabled ? undefined : (t('common.reportBuilder.resizeUnavailable') as string)}
                     className={cn(
-                      'h-9 rounded-lg border text-xs font-black transition-all',
+                      'h-9 min-w-0 rounded-lg border text-xs font-black transition-all',
                       isActive
                         ? 'border-indigo-500 bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
                         : enabled
@@ -1364,7 +1511,7 @@ function WidgetSizePopover({ layout, maxCols, maxRows, isSizeAvailable, onChange
                 {rowSpan} / {maxRows}
               </span>
             </div>
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid grid-cols-6 gap-1">
               {Array.from({ length: maxRows }, (_, idx) => idx + 1).map((value) => {
                 const isActive = rowSpan === value;
                 const enabled = isActive || isSizeAvailable(colSpan, value);
@@ -1376,7 +1523,7 @@ function WidgetSizePopover({ layout, maxCols, maxRows, isSizeAvailable, onChange
                     disabled={!enabled}
                     title={enabled ? undefined : (t('common.reportBuilder.resizeUnavailable') as string)}
                     className={cn(
-                      'h-9 rounded-lg border text-xs font-black transition-all',
+                      'h-9 min-w-0 rounded-lg border text-xs font-black transition-all',
                       isActive
                         ? 'border-pink-500 bg-pink-600 text-white shadow-md shadow-pink-500/30'
                         : enabled

@@ -487,6 +487,24 @@ export function ReportBuilderPage(): ReactElement {
     if (!fieldName) return t('common.reportBuilder.basicNoneSelected');
     return fieldLabelMap.get(fieldName) ?? fieldName;
   }, [fieldLabelMap, t]);
+  const commitTableColumnWidthPx = useCallback(
+    (columnKey: string, widthPx: number): void => {
+      const widgetId = config.activeWidgetId;
+      if (!widgetId) return;
+      const widget = (config.widgets ?? []).find((w) => w.id === widgetId);
+      if (!widget) return;
+      const clamped = Math.round(Math.min(2000, Math.max(48, widthPx)));
+      const tableColumnSettings = [...(widget.appearance?.tableColumnSettings ?? [])];
+      const idx = tableColumnSettings.findIndex((item) => item.key === columnKey);
+      if (idx >= 0) {
+        tableColumnSettings[idx] = { ...tableColumnSettings[idx], widthPx: clamped };
+      } else {
+        tableColumnSettings.push({ key: columnKey, widthPx: clamped });
+      }
+      setWidgetAppearance(widgetId, { tableColumnSettings });
+    },
+    [config.activeWidgetId, config.widgets, setWidgetAppearance],
+  );
   const selectedAxisSchemaField = useMemo(
     () => schema.find((field) => field.name === config.axis?.field),
     [config.axis?.field, schema],
@@ -2732,7 +2750,7 @@ export function ReportBuilderPage(): ReactElement {
 
               <div className="flex flex-col gap-4 pr-1">
                 <DeferOnView fallback={<PreviewPanelSkeleton className="border-slate-300/80 bg-stone-50/95 p-5 ring-1 ring-slate-200/70 dark:border-white/10 dark:bg-[#1a1025]/60" />}>
-                  <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                  <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
                     <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
                     <div className="relative z-10">
                       <Suspense fallback={<PreviewPanelSkeleton />}>
@@ -2747,6 +2765,8 @@ export function ReportBuilderPage(): ReactElement {
                           loading={ui.previewLoading}
                           error={ui.error}
                           empty={!dataSourceChecked}
+                          minHeightClassName="min-h-[min(21rem,55vh)]"
+                          onTableColumnWidthPxCommit={activeWidget?.chartType === 'table' ? commitTableColumnWidthPx : undefined}
                         />
                       </Suspense>
                     </div>
@@ -2785,7 +2805,7 @@ export function ReportBuilderPage(): ReactElement {
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]">
               <div className="flex flex-col pr-1">
                 <DeferOnView fallback={<PreviewPanelSkeleton className="shrink-0" />}>
-                  <div className="shrink-0 relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+                  <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
                     <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
                     <div className="relative z-10">
                       <Suspense fallback={<PreviewPanelSkeleton />}>
@@ -2800,6 +2820,8 @@ export function ReportBuilderPage(): ReactElement {
                           loading={ui.previewLoading}
                           error={ui.error}
                           empty={!dataSourceChecked}
+                          minHeightClassName="min-h-[min(21rem,55vh)]"
+                          onTableColumnWidthPxCommit={activeWidget?.chartType === 'table' ? commitTableColumnWidthPx : undefined}
                         />
                       </Suspense>
                     </div>
@@ -2953,7 +2975,7 @@ export function ReportBuilderPage(): ReactElement {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
+            <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
               <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
               <div className="relative z-10">
                 <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -2972,6 +2994,8 @@ export function ReportBuilderPage(): ReactElement {
                       loading={ui.previewLoading}
                       error={ui.error}
                       empty={!dataSourceChecked}
+                      minHeightClassName="min-h-[min(21rem,55vh)]"
+                      onTableColumnWidthPxCommit={activeWidget?.chartType === 'table' ? commitTableColumnWidthPx : undefined}
                     />
                   </Suspense>
                 </DeferOnView>

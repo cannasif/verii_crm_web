@@ -1,24 +1,20 @@
-﻿import { useCallback, useEffect, useMemo, useState, type CSSProperties, type ReactElement } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactElement } from 'react';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
-  KeyboardSensor,
-  closestCenter,
+  pointerWithin,
+  useDraggable,
+  useDroppable,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  arrayMove,
-  rectSortingStrategy,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { CheckCircle2, Eye, EyeOff, ExternalLink, GripHorizontal, LayoutGrid, Plus, RefreshCw, Save, Sparkles, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,9 +38,17 @@ import type {
   ReportPreviewResponse,
   ReportWidget,
 } from '../types';
-import { createDashboardItem, loadMyDashboardLayout, sanitizeMyDashboardLayout, saveMyDashboardLayout } from '../utils';
 import {
-  buildOccupancyGrid,
+  buildOccupancyForItemsAtStoredPositions,
+  canAppend1x1Tile,
+  canPlaceWidgetAtCell,
+  createDashboardItem,
+  loadMyDashboardLayout,
+  reconcileDashboardLayoutPositions,
+  sanitizeMyDashboardLayout,
+  saveMyDashboardLayout,
+} from '../utils';
+import {
   canCanvasHoldAllSpans,
   canFitInGridOccupancy,
   clampGridSpan,
@@ -53,9 +57,10 @@ import {
 import { reportBuilderQueryKeys, REPORTS_LIST_STALE_TIME_MS } from '../utils/query-keys';
 
 const DASHBOARD_ROW_HEIGHT_PX = 320;
-const DASHBOARD_COL_OPTIONS = [1, 2, 3, 4, 6] as const;
-const DASHBOARD_ROW_OPTIONS = [1, 2, 3, 4] as const;
-const DASHBOARD_ABS_MAX_ROWS = 4;
+const DASHBOARD_GRID_GAP_PX = 20;
+const DASHBOARD_COL_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
+const DASHBOARD_ROW_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
+const DASHBOARD_ABS_MAX_ROWS = 6;
 
 const CORPORATE_KPI_TOP_CLASSES = [
   'bg-linear-to-r from-sky-500 to-cyan-400',
@@ -79,6 +84,35 @@ interface DashboardChoice {
 
 function getItemKey(item: Pick<MyReportDashboardItem, 'reportId' | 'widgetId'>): string {
   return `${item.reportId}:${item.widgetId ?? '__report__'}`;
+}
+
+function dashboardGridMinHeightPx(maxRows: number): number {
+  const rows = Math.max(1, maxRows);
+  return rows * DASHBOARD_ROW_HEIGHT_PX + Math.max(0, rows - 1) * DASHBOARD_GRID_GAP_PX;
+}
+
+function DashboardDropCell({
+  row,
+  col,
+  isDropActive,
+}: {
+  row: number;
+  col: number;
+  isDropActive: boolean;
+}): ReactElement {
+  const id = `cell-${row}-${col}`;
+  const { setNodeRef, isOver } = useDroppable({ id, disabled: !isDropActive });
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        'min-h-0 min-w-0 rounded-lg transition-colors',
+        isDropActive && 'bg-pink-500/[0.06] ring-1 ring-pink-300/35 dark:ring-pink-500/25',
+        isOver && 'bg-pink-500/15 ring-2 ring-pink-400',
+      )}
+      style={{ gridRow: row + 1, gridColumn: col + 1 }}
+    />
+  );
 }
 
 function parseReportConfig(configJson: string): ReportConfig | null {
@@ -206,14 +240,14 @@ function DashboardTileSizePopover({
         >
           <LayoutGrid className="size-3" />
           <span className="text-slate-700 dark:text-white">{c}</span>
-          <span className="text-slate-400">Ã—</span>
+          <span className="text-slate-400">×</span>
           <span className="text-slate-700 dark:text-white">{r}</span>
         </button>
       </PopoverTrigger>
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="w-[260px] rounded-2xl border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#120D19]/95"
+        className="w-[300px] rounded-2xl border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#120D19]/95"
       >
         <div className="space-y-4">
           <div>
@@ -237,7 +271,7 @@ function DashboardTileSizePopover({
                     disabled={!enabled}
                     title={enabled ? undefined : (t('common.reportBuilder.resizeUnavailable') as string)}
                     className={cn(
-                      'h-9 rounded-lg border text-xs font-black transition-all',
+                      'h-9 min-w-0 rounded-lg border text-xs font-black transition-all',
                       isActive
                         ? 'border-indigo-500 bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
                         : enabled
@@ -261,7 +295,7 @@ function DashboardTileSizePopover({
                 {r} / {maxRows}
               </span>
             </div>
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid grid-cols-6 gap-1">
               {Array.from({ length: maxRows }, (_, idx) => idx + 1).map((value) => {
                 const isActive = r === value;
                 const enabled = isActive || isSizeAvailable(c, value);
@@ -273,7 +307,7 @@ function DashboardTileSizePopover({
                     disabled={!enabled}
                     title={enabled ? undefined : (t('common.reportBuilder.resizeUnavailable') as string)}
                     className={cn(
-                      'h-9 rounded-lg border text-xs font-black transition-all',
+                      'h-9 min-w-0 rounded-lg border text-xs font-black transition-all',
                       isActive
                         ? 'border-pink-500 bg-pink-600 text-white shadow-md shadow-pink-500/30'
                         : enabled
@@ -303,6 +337,8 @@ interface SortableDashboardTileProps {
   maxRows: number;
   colSpan: number;
   rowSpan: number;
+  gridCol?: number;
+  gridRow?: number;
   isEditMode: boolean;
   hideChrome: boolean;
   isSizeAvailable: (cols: number, rows: number) => boolean;
@@ -317,6 +353,8 @@ function SortableDashboardTile({
   maxRows,
   colSpan,
   rowSpan,
+  gridCol,
+  gridRow,
   isEditMode,
   hideChrome,
   isSizeAvailable,
@@ -325,18 +363,20 @@ function SortableDashboardTile({
   children,
 }: SortableDashboardTileProps): ReactElement {
   const { t } = useTranslation('common');
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, isDragging } = useDraggable({
     id: itemKey,
     disabled: !isEditMode,
   });
+  const c = clampGridSpan(colSpan, 1, maxCols);
+  const r = clampGridSpan(rowSpan, 1, maxRows);
+  const hasOrigin = gridCol != null && gridRow != null;
   const style: CSSProperties = {
-    gridColumn: `span ${clampGridSpan(colSpan, 1, maxCols)}`,
-    gridRow: `span ${clampGridSpan(rowSpan, 1, maxRows)}`,
-    transform: CSS.Transform.toString(transform),
-    transition: transition ?? undefined,
+    gridColumn: hasOrigin ? `${gridCol} / span ${c}` : `span ${c}`,
+    gridRow: hasOrigin ? `${gridRow} / span ${r}` : `span ${r}`,
     minHeight: 0,
     minWidth: 0,
     overflow: 'hidden',
+    opacity: isDragging ? 0.35 : 1,
   };
   return (
     <div
@@ -344,8 +384,8 @@ function SortableDashboardTile({
       data-dashboard-tile
       style={style}
       className={cn(
-        'group relative min-w-0',
-        isDragging ? 'z-50 opacity-95 shadow-2xl ring-2 ring-pink-400/60' : 'z-0',
+        'group relative z-[1] min-w-0 w-full max-w-full',
+        isDragging && 'z-50 shadow-2xl ring-2 ring-pink-400/60',
       )}
     >
       <div className={cn('flex h-full w-full flex-col', isEditMode && 'pt-1')}>
@@ -387,17 +427,17 @@ function SortableDashboardTile({
         <div className="min-h-0 flex-1">{children}</div>
       </div>
       {isEditMode ? (
-        <div
+        <button
+          ref={setActivatorNodeRef}
+          type="button"
           {...attributes}
           {...listeners}
-          role="button"
-          tabIndex={0}
           aria-label={t('common.reportBuilder.dragWidget') as string}
           title={t('common.reportBuilder.dragWidget') as string}
           className="absolute left-1/2 top-0 z-40 flex h-5 w-14 -translate-x-1/2 -translate-y-2.5 cursor-grab items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-400 shadow-md opacity-70 backdrop-blur transition-opacity duration-200 hover:text-pink-600 group-hover:opacity-100 focus-visible:opacity-100 active:cursor-grabbing dark:border-white/10 dark:bg-slate-950/95 dark:text-slate-500"
         >
           <GripHorizontal className="size-3.5" />
-        </div>
+        </button>
       ) : null}
     </div>
   );
@@ -587,6 +627,7 @@ function CompactWidgetPreview({
       )}
       minHeightClassName={minHeightClassName}
       presentationVariant={corporateAccentIndex != null ? 'dashboard' : presentationVariant}
+      chartPresentationVariant="dashboard"
       suppressTopAccent={corporateAccentIndex != null || hideChrome}
       hideHeader={hideChrome}
     />
@@ -773,6 +814,7 @@ export function AssignedReportsDashboardSection({
   const [pickerOpen, setPickerOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle');
+  const [activeDragKey, setActiveDragKey] = useState<string | null>(null);
   const [internalMode, setInternalMode] = useState<'view' | 'edit'>('view');
   const dashboardTab = controlledMode ?? internalMode;
   const isEditorTab = dashboardTab === 'edit';
@@ -800,17 +842,39 @@ export function AssignedReportsDashboardSection({
   );
   const detailedReportMap = useMemo(() => new Map(reportsWithDetails.map((report) => [report.id, report])), [reportsWithDetails]);
 
+  const prevUserIdRef = useRef<number | undefined>(undefined);
+  const prevAllowedCountRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!userId) {
       setIsHydrated(false);
+      prevUserIdRef.current = undefined;
+      prevAllowedCountRef.current = null;
       return;
     }
-    const stored = loadMyDashboardLayout(userId);
-    const sanitized = sanitizeMyDashboardLayout(stored, allowedReportIds);
-    setLayout(sanitized);
-    setSavedLayout(sanitized);
-    setSaveState('idle');
-    setIsHydrated(true);
+
+    const allowedCount = allowedReportIds.length;
+    const prevCount = prevAllowedCountRef.current;
+    const userChanged = prevUserIdRef.current !== userId;
+    const becamePopulated = prevCount === 0 && allowedCount > 0;
+    const firstSyncForUser = userChanged || prevCount === null;
+    const reloadFromDisk = firstSyncForUser || becamePopulated;
+
+    prevUserIdRef.current = userId;
+    prevAllowedCountRef.current = allowedCount;
+
+    if (reloadFromDisk) {
+      const stored = loadMyDashboardLayout(userId);
+      const sanitized = sanitizeMyDashboardLayout(stored, allowedReportIds);
+      setLayout(sanitized);
+      setSavedLayout(sanitized);
+      setSaveState('idle');
+      setIsHydrated(true);
+      return;
+    }
+
+    setLayout((current) => sanitizeMyDashboardLayout(current, allowedReportIds));
+    setSavedLayout((saved) => sanitizeMyDashboardLayout(saved, allowedReportIds));
   }, [allowedReportIds, userId]);
 
   useEffect(() => {
@@ -832,17 +896,31 @@ export function AssignedReportsDashboardSection({
         .filter((choice) => !placedKeys.has(`${choice.reportId}:${choice.widgetId ?? '__report__'}`)),
     [placedKeys, reportsWithDetails, t],
   );
+  const canAddAnyTile = useMemo(() => canAppend1x1Tile(layout), [layout]);
+
+  const handleAddReportsButtonClick = useCallback((): void => {
+    if (isLoading || choices.length === 0) return;
+    if (!canAddAnyTile) {
+      toast.warning(t('common.reportBuilder.dashboardReportAreaFullHint'));
+      return;
+    }
+    setPickerOpen(true);
+  }, [canAddAnyTile, choices.length, isLoading, t]);
   const updateItems = (updater: (items: MyReportDashboardItem[]) => MyReportDashboardItem[]): void => {
-    setLayout((current) => ({
-      version: 2,
-      maxCols: current.maxCols,
-      maxRows: current.maxRows,
-      updatedAt: new Date().toISOString(),
-      items: updater([...current.items]).map((item, index) => ({ ...item, order: index })),
-    }));
+    setLayout((current) =>
+      reconcileDashboardLayoutPositions({
+        ...current,
+        updatedAt: new Date().toISOString(),
+        items: updater([...current.items]).map((item, index) => ({ ...item, order: index })),
+      }),
+    );
   };
 
   const handleAddChoice = (choice: DashboardChoice): void => {
+    if (!canAppend1x1Tile(layout)) {
+      toast.error(t('common.reportBuilder.dashboardCanvasFull'));
+      return;
+    }
     updateItems((items) => [
       ...items,
       createDashboardItem(choice.reportId, items, {
@@ -887,25 +965,18 @@ export function AssignedReportsDashboardSection({
     [layout.items],
   );
 
-  const sortedItemKeys = useMemo(
-    () => [...layout.items].sort((a, b) => a.order - b.order).map(getItemKey),
-    [layout.items],
-  );
-
   const isWidgetSizeAvailable = useCallback(
     (excludeKey: string, cols: number, rows: number): boolean => {
-      const sorted = [...layout.items].sort((a, b) => a.order - b.order);
-      const otherIds = sorted.filter((item) => getItemKey(item) !== excludeKey).map(getItemKey);
-      const gridLayouts: Record<string, GridSpan> = {};
-      sorted.forEach((item) => {
-        const k = getItemKey(item);
-        if (k === excludeKey) return;
-        gridLayouts[k] = { colSpan: item.colSpan, rowSpan: item.rowSpan };
-      });
-      const { grid } = buildOccupancyGrid(gridLayouts, otherIds, layout.maxCols, layout.maxRows);
-      return canFitInGridOccupancy(grid, cols, rows, layout.maxCols, layout.maxRows);
+      const grid = buildOccupancyForItemsAtStoredPositions(layout, excludeKey, getItemKey);
+      return canFitInGridOccupancy(
+        grid,
+        clampGridSpan(cols, 1, layout.maxCols),
+        clampGridSpan(rows, 1, layout.maxRows),
+        layout.maxCols,
+        layout.maxRows,
+      );
     },
-    [layout.items, layout.maxCols, layout.maxRows],
+    [layout],
   );
 
   const isCanvasSizeAvailable = useCallback(
@@ -941,12 +1012,12 @@ export function AssignedReportsDashboardSection({
           return k;
         });
         if (!canCanvasHoldAllSpans(layouts, ids, c, current.maxRows)) return current;
-        return {
+        return reconcileDashboardLayoutPositions({
           ...current,
           maxCols: c,
           items: nextItems,
           updatedAt: new Date().toISOString(),
-        };
+        });
       });
       setDashboardTab('edit');
     },
@@ -968,12 +1039,12 @@ export function AssignedReportsDashboardSection({
           return k;
         });
         if (!canCanvasHoldAllSpans(layouts, ids, current.maxCols, r)) return current;
-        return {
+        return reconcileDashboardLayoutPositions({
           ...current,
           maxRows: r,
           items: nextItems,
           updatedAt: new Date().toISOString(),
-        };
+        });
       });
       setDashboardTab('edit');
     },
@@ -981,19 +1052,21 @@ export function AssignedReportsDashboardSection({
   );
 
   const handleItemSpanChange = useCallback((itemKey: string, colSpan: number, rowSpan: number): void => {
-    setLayout((current) => ({
-      ...current,
-      items: current.items.map((item) =>
-        getItemKey(item) === itemKey
-          ? {
-              ...item,
-              colSpan: clampGridSpan(colSpan, 1, current.maxCols),
-              rowSpan: clampGridSpan(rowSpan, 1, current.maxRows),
-            }
-          : item,
-      ),
-      updatedAt: new Date().toISOString(),
-    }));
+    setLayout((current) =>
+      reconcileDashboardLayoutPositions({
+        ...current,
+        items: current.items.map((item) =>
+          getItemKey(item) === itemKey
+            ? {
+                ...item,
+                colSpan: clampGridSpan(colSpan, 1, current.maxCols),
+                rowSpan: clampGridSpan(rowSpan, 1, current.maxRows),
+              }
+            : item,
+        ),
+        updatedAt: new Date().toISOString(),
+      }),
+    );
     setDashboardTab('edit');
   }, [setDashboardTab]);
 
@@ -1010,24 +1083,45 @@ export function AssignedReportsDashboardSection({
 
   const dndSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
+  const handleDragStart = useCallback((event: DragStartEvent): void => {
+    setActiveDragKey(String(event.active.id));
+  }, []);
+
+  const handleDragCancel = useCallback((): void => {
+    setActiveDragKey(null);
+  }, []);
+
   const handleDragEnd = useCallback((event: DragEndEvent): void => {
+    setActiveDragKey(null);
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    if (!over) return;
+    const overId = String(over.id);
+    const cellMatch = /^cell-(\d+)-(\d+)$/.exec(overId);
+    if (!cellMatch) return;
+    const dropRow = Number(cellMatch[1]);
+    const dropCol = Number(cellMatch[2]);
+    const itemKey = String(active.id);
     setLayout((current) => {
-      const sorted = [...current.items].sort((a, b) => a.order - b.order);
-      const ids = sorted.map(getItemKey);
-      const oldIndex = ids.indexOf(active.id as string);
-      const newIndex = ids.indexOf(over.id as string);
-      if (oldIndex < 0 || newIndex < 0) return current;
-      const nextOrder = arrayMove(sorted, oldIndex, newIndex);
-      const items = nextOrder.map((item, index) => ({ ...item, order: index }));
-      return { ...current, items, updatedAt: new Date().toISOString() };
+      const item = current.items.find((i) => getItemKey(i) === itemKey);
+      if (!item) return current;
+      const cols = clampGridSpan(item.colSpan, 1, current.maxCols);
+      const rows = clampGridSpan(item.rowSpan, 1, current.maxRows);
+      if (!canPlaceWidgetAtCell(current, itemKey, getItemKey, dropRow, dropCol, rows, cols)) {
+        toast.error(t('common.reportBuilder.dashboardDropDoesNotFit'));
+        return current;
+      }
+      return {
+        ...current,
+        items: current.items.map((i) =>
+          getItemKey(i) === itemKey ? { ...i, gridRow: dropRow + 1, gridCol: dropCol + 1 } : i,
+        ),
+        updatedAt: new Date().toISOString(),
+      };
     });
     setDashboardTab('edit');
-  }, []);
+  }, [setDashboardTab, t]);
 
   const handleAddAllWidgetsForReport = useCallback(
     (reportId: number): void => {
@@ -1039,23 +1133,14 @@ export function AssignedReportsDashboardSection({
         for (const choice of widgetChoices) {
           const key = `${choice.reportId}:${choice.widgetId ?? '__report__'}`;
           if (items.some((item) => getItemKey(item) === key)) continue;
-          const trialLayouts: Record<string, GridSpan> = {};
-          const trialIds: string[] = [];
-          items.forEach((item) => {
-            const k = getItemKey(item);
-            trialLayouts[k] = { colSpan: item.colSpan, rowSpan: item.rowSpan };
-            trialIds.push(k);
-          });
-          trialLayouts[key] = { colSpan: 1, rowSpan: 1 };
-          trialIds.push(key);
-          if (!canCanvasHoldAllSpans(trialLayouts, trialIds, current.maxCols, current.maxRows)) continue;
+          if (!canAppend1x1Tile({ ...current, items })) continue;
           items = [...items, createDashboardItem(choice.reportId, items, { widgetId: choice.widgetId, widgetTitle: choice.widgetTitle })];
         }
-        return {
+        return reconcileDashboardLayoutPositions({
           ...current,
           items: items.map((item, index) => ({ ...item, order: index })),
           updatedAt: new Date().toISOString(),
-        };
+        });
       });
       setDashboardTab('edit');
       setPickerOpen(false);
@@ -1168,18 +1253,65 @@ export function AssignedReportsDashboardSection({
     </DialogContent>
   );
 
+  const dragOverlayItem = activeDragKey
+    ? sortedLayoutItems.find((item) => getItemKey(item) === activeDragKey)
+    : undefined;
+  const dragOverlayReport = dragOverlayItem
+    ? detailedReportMap.get(dragOverlayItem.reportId) ?? reportMap.get(dragOverlayItem.reportId)
+    : undefined;
+  const dragOverlayLabel =
+    dragOverlayItem?.widgetTitle?.trim()
+    || dragOverlayReport?.name?.trim()
+    || '';
+
+  const dashboardGridTemplateStyle: CSSProperties = {
+    gridTemplateColumns: `repeat(${layout.maxCols}, minmax(0, 1fr))`,
+    gridTemplateRows: `repeat(${layout.maxRows}, ${DASHBOARD_ROW_HEIGHT_PX}px)`,
+    gap: DASHBOARD_GRID_GAP_PX,
+  };
+
+  const isDropLayerActive = isEditorTab && activeDragKey != null;
+
   const widgetGrid = (
-    <DndContext sensors={dndSensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={sortedItemKeys} strategy={rectSortingStrategy}>
+    <DndContext
+      sensors={dndSensors}
+      collisionDetection={pointerWithin}
+      onDragStart={handleDragStart}
+      onDragCancel={handleDragCancel}
+      onDragEnd={handleDragEnd}
+    >
+      <div
+        className="relative w-full"
+        style={{ minHeight: dashboardGridMinHeightPx(layout.maxRows) }}
+      >
+        {isEditorTab ? (
+          <div
+            className={cn(
+              'absolute inset-0 z-0 grid',
+              !isDropLayerActive && 'pointer-events-none',
+            )}
+            style={dashboardGridTemplateStyle}
+          >
+            {Array.from({ length: layout.maxRows * layout.maxCols }, (_, i) => {
+              const row = Math.floor(i / layout.maxCols);
+              const col = i % layout.maxCols;
+              return (
+                <DashboardDropCell
+                  key={`drop-${row}-${col}`}
+                  row={row}
+                  col={col}
+                  isDropActive={isDropLayerActive}
+                />
+              );
+            })}
+          </div>
+        ) : null}
         <div
-          className="grid w-full max-w-full gap-5"
-          style={{
-            gridTemplateColumns: `repeat(${layout.maxCols}, minmax(0, 1fr))`,
-            gridTemplateRows: `repeat(${layout.maxRows}, ${DASHBOARD_ROW_HEIGHT_PX}px)`,
-            gridAutoRows: `${DASHBOARD_ROW_HEIGHT_PX}px`,
-            gridAutoFlow: 'row dense',
-            alignItems: 'stretch',
-          }}
+          className={cn(
+            'relative z-[1] grid w-full max-w-full items-stretch',
+            isDropLayerActive && 'pointer-events-none',
+          )}
+          style={dashboardGridTemplateStyle}
         >
           {sortedLayoutItems.map((item, tileIndex) => {
             const report = detailedReportMap.get(item.reportId) ?? reportMap.get(item.reportId);
@@ -1193,6 +1325,8 @@ export function AssignedReportsDashboardSection({
                 maxRows={layout.maxRows}
                 colSpan={item.colSpan}
                 rowSpan={item.rowSpan}
+                gridCol={item.gridCol}
+                gridRow={item.gridRow}
                 isEditMode={isEditorTab}
                 hideChrome={Boolean(item.hideChrome)}
                 isSizeAvailable={(cols, rows) => isWidgetSizeAvailable(itemKey, cols, rows)}
@@ -1210,7 +1344,14 @@ export function AssignedReportsDashboardSection({
             );
           })}
         </div>
-      </SortableContext>
+      </div>
+      <DragOverlay dropAnimation={null}>
+        {activeDragKey && dragOverlayLabel ? (
+          <div className="flex max-w-sm cursor-grabbing rounded-2xl border border-pink-300/80 bg-white/95 px-4 py-3 shadow-2xl dark:border-pink-500/40 dark:bg-slate-950/95">
+            <p className="truncate text-sm font-semibold text-slate-800 dark:text-white">{dragOverlayLabel}</p>
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 
@@ -1271,9 +1412,23 @@ export function AssignedReportsDashboardSection({
               </Badge>
             ) : null}
             <Button
-              onClick={() => setPickerOpen(true)}
+              type="button"
+              onClick={handleAddReportsButtonClick}
               disabled={isLoading || choices.length === 0}
-              className="h-9 px-6 bg-linear-to-r from-pink-600 to-orange-600 rounded-2x1 text-white text-sm font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              aria-disabled={!canAddAnyTile && !isLoading && choices.length > 0}
+              title={
+                !canAddAnyTile && !isLoading && choices.length > 0
+                  ? (t('common.reportBuilder.dashboardReportAreaFullHint') as string)
+                  : undefined
+              }
+              className={cn(
+                'h-9 px-6 bg-linear-to-r from-pink-600 to-orange-600 rounded-2x1 text-white text-sm font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0',
+                isLoading || choices.length === 0
+                  ? 'opacity-60'
+                  : !canAddAnyTile
+                    ? 'cursor-not-allowed opacity-45 saturate-50 hover:scale-100 hover:shadow-lg active:scale-100 dark:opacity-50'
+                    : 'opacity-90 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] dark:opacity-100',
+              )}
             >
               <Plus className="mr-2 size-4 stroke-[3px]" />
               {t('common.reportBuilder.addReportsToDashboard')}
@@ -1358,10 +1513,15 @@ export function AssignedReportsDashboardSection({
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                        {t('common.reportBuilder.canvasColsLabel')}
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex min-w-[4.5rem] flex-col leading-tight">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                          {t('common.reportBuilder.canvasColsLabel')}
+                        </span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                          {t('common.reportBuilder.canvasColsDimension')}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-0.5 rounded-xl border border-slate-200 bg-white/80 p-1 shadow-inner dark:border-white/10 dark:bg-white/5">
                         {DASHBOARD_COL_OPTIONS.map((cols) => {
                           const isActive = layout.maxCols === cols;
@@ -1393,10 +1553,15 @@ export function AssignedReportsDashboardSection({
                         })}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                        {t('common.reportBuilder.canvasRowsLabel')}
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex min-w-[4.5rem] flex-col leading-tight">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                          {t('common.reportBuilder.canvasRowsLabel')}
+                        </span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                          {t('common.reportBuilder.canvasRowsDimension')}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-0.5 rounded-xl border border-slate-200 bg-white/80 p-1 shadow-inner dark:border-white/10 dark:bg-white/5">
                         {DASHBOARD_ROW_OPTIONS.map((rows) => {
                           const isActive = layout.maxRows === rows;
