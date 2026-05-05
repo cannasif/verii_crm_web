@@ -291,7 +291,7 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'pricing.pricing-rules.view': { key: 'sidebar.pricingRuleManagement', fallback: 'Fiyat Kurallari' },
 
   'reports.list.view': { key: 'sidebar.reports', fallback: 'Raporlar' },
-  'reports.builder.view': { key: 'sidebar.reportBuilder', fallback: 'Report Builder' },
+  'reports.builder.view': { key: 'sidebar.reportBuilder', fallback: 'Reports' },
   'reports.viewer.view': { key: 'sidebar.reports', fallback: 'Raporlar' },
   'reports.designer.list.view': { key: 'sidebar.pdfBuilder', fallback: 'PDF Builder' },
   'reports.designer.editor.view': { key: 'sidebar.pdfBuilder', fallback: 'PDF Builder' },
