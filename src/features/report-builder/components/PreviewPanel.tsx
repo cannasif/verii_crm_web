@@ -27,8 +27,10 @@ interface PreviewPanelProps {
   labelOverrides?: Record<string, string>;
   headerActions?: ReactNode;
   presentationVariant?: 'default' | 'dashboard';
+  chartPresentationVariant?: 'default' | 'dashboard';
   suppressTopAccent?: boolean;
   hideHeader?: boolean;
+  onTableColumnWidthPxCommit?: (columnKey: string, widthPx: number) => void;
 }
 
 export function PreviewPanel({
@@ -46,13 +48,17 @@ export function PreviewPanel({
   labelOverrides,
   headerActions,
   presentationVariant = 'default',
+  chartPresentationVariant,
   suppressTopAccent = false,
   hideHeader = false,
+  onTableColumnWidthPxCommit,
 }: PreviewPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
   const resolvedTitle = title ?? t('common.reportBuilder.preview');
   const isDashboardPresentation = presentationVariant === 'dashboard';
+  const resolvedChartPresentation =
+    chartPresentationVariant ?? (isDashboardPresentation ? 'dashboard' : 'default');
   const tone = appearance?.tone ?? 'neutral';
   const showStats = appearance?.showStats ?? true;
   const showMetricPills = showStats && !isDashboardPresentation;
@@ -202,7 +208,16 @@ export function PreviewPanel({
       {!loading && !error && !empty && (
         <div className="relative min-h-0 flex-1 overflow-hidden">
           <Suspense fallback={chartSkeleton}>
-            <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} className="absolute inset-0" />
+            <ReportChart
+              columns={columns}
+              rows={rows}
+              chartType={chartType}
+              appearance={appearance}
+              labelOverrides={labelOverrides}
+              presentationVariant={resolvedChartPresentation}
+              className="absolute inset-0"
+              onTableColumnWidthPxCommit={onTableColumnWidthPxCommit}
+            />
           </Suspense>
         </div>
       )}
@@ -229,7 +244,17 @@ export function PreviewPanel({
               <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-inner dark:border-white/10 dark:bg-white/[0.02]">
                 <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Suspense fallback={chartSkeleton}>
-                  <ReportChart columns={columns} rows={rows} chartType={chartType} appearance={appearance} labelOverrides={labelOverrides} isExpanded={true} className="relative z-10 h-full min-h-0 w-full max-h-none flex-1" />
+                  <ReportChart
+                    columns={columns}
+                    rows={rows}
+                    chartType={chartType}
+                    appearance={appearance}
+                    labelOverrides={labelOverrides}
+                    isExpanded
+                    presentationVariant="default"
+                    className="relative z-10 h-full min-h-0 w-full max-h-none flex-1"
+                    onTableColumnWidthPxCommit={onTableColumnWidthPxCommit}
+                  />
                 </Suspense>
               </div>
             </div>

@@ -33,6 +33,7 @@ import type {
   WidgetTitleAlign,
   WidgetTone,
   WidgetSeriesVisibilityMode,
+  ReportWidgetTableColumnSetting,
   WidgetSeriesOverflowMode,
 } from '../types';
 import { getFieldSemanticType, getOperatorsForField } from '../utils';
@@ -407,13 +408,27 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
   };
   const updateTableColumnSetting = (
     columnKey: string,
-    patch: { align?: WidgetTableColumnAlign; width?: WidgetTableColumnWidth; valueFormat?: WidgetValueFormat; decimalPlaces?: number },
+    patch: {
+      align?: WidgetTableColumnAlign;
+      width?: WidgetTableColumnWidth;
+      valueFormat?: WidgetValueFormat;
+      decimalPlaces?: number;
+      widthPx?: number | null;
+    },
   ): void => {
     if (!activeWidget) return;
     const nextSettings = [...tableColumnSettings];
     const existingIndex = nextSettings.findIndex((item) => item.key === columnKey);
     const current = existingIndex >= 0 ? nextSettings[existingIndex] : { key: columnKey };
-    const next = { ...current, ...patch };
+    const { widthPx: patchWidthPx, ...patchRest } = patch;
+    const next: ReportWidgetTableColumnSetting = { ...current, ...patchRest };
+    if ('widthPx' in patch) {
+      if (patchWidthPx === null || patchWidthPx === undefined || Number.isNaN(Number(patchWidthPx))) {
+        delete next.widthPx;
+      } else {
+        next.widthPx = Math.round(Math.min(2000, Math.max(48, Number(patchWidthPx))));
+      }
+    }
     if (existingIndex >= 0) nextSettings[existingIndex] = next;
     else nextSettings.push(next);
     setWidgetAppearance(activeWidget.id, { tableColumnSettings: nextSettings });
@@ -755,6 +770,26 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
                                 ))}
                               </SelectContent>
                             </Select>
+                            <div className="space-y-1 sm:col-span-2">
+                              <Label className="text-muted-foreground text-xs">{t('common.reportBuilder.columnWidthPx')}</Label>
+                              <Input
+                                type="number"
+                                min={48}
+                                max={2000}
+                                value={setting?.widthPx != null ? String(setting.widthPx) : ''}
+                                placeholder={t('common.reportBuilder.columnWidthPxPlaceholder')}
+                                onChange={(e) => {
+                                  const raw = e.target.value.trim();
+                                  if (raw === '') {
+                                    updateTableColumnSetting(column.key, { widthPx: null });
+                                    return;
+                                  }
+                                  const n = Number(raw);
+                                  if (Number.isNaN(n)) return;
+                                  updateTableColumnSetting(column.key, { widthPx: n });
+                                }}
+                              />
+                            </div>
                             <Select value={setting?.valueFormat ?? 'default'} onValueChange={(value) => updateTableColumnSetting(column.key, { valueFormat: value as WidgetValueFormat })}>
                               <SelectTrigger className="w-full">
                                 <SelectValue placeholder={t('common.reportBuilder.columnValueFormat')} />
@@ -1424,6 +1459,26 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
                               ))}
                             </SelectContent>
                           </Select>
+                          <div className="space-y-1 sm:col-span-2">
+                            <Label className="text-muted-foreground text-xs">{t('common.reportBuilder.columnWidthPx')}</Label>
+                            <Input
+                              type="number"
+                              min={48}
+                              max={2000}
+                              value={setting?.widthPx != null ? String(setting.widthPx) : ''}
+                              placeholder={t('common.reportBuilder.columnWidthPxPlaceholder')}
+                              onChange={(e) => {
+                                const raw = e.target.value.trim();
+                                if (raw === '') {
+                                  updateTableColumnSetting(column.key, { widthPx: null });
+                                  return;
+                                }
+                                const n = Number(raw);
+                                if (Number.isNaN(n)) return;
+                                updateTableColumnSetting(column.key, { widthPx: n });
+                              }}
+                            />
+                          </div>
                           <Select value={setting?.valueFormat ?? 'default'} onValueChange={(value) => updateTableColumnSetting(column.key, { valueFormat: value as WidgetValueFormat })}>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder={t('common.reportBuilder.columnValueFormat')} />

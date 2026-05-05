@@ -1,5 +1,5 @@
-import type { ReactElement } from 'react';
-import { useMemo, useState } from 'react';
+import type { CSSProperties, PointerEvent, ReactElement, RefObject } from 'react';
+import { useCallback, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import type { ChartType, ReportWidgetAppearance, ReportWidgetTableColumnSetting } from '../types';
@@ -18,6 +18,21 @@ interface ReportChartProps {
   appearance?: ReportWidgetAppearance;
   labelOverrides?: Record<string, string>;
   isExpanded?: boolean;
+  presentationVariant?: 'default' | 'dashboard';
+  onTableColumnWidthPxCommit?: (columnKey: string, widthPx: number) => void;
+}
+
+const TABLE_CELL_RAIL = 'border-r border-slate-200 dark:border-white/15';
+
+function getPresetFallbackWidthPx(width?: ReportWidgetTableColumnSetting['width']): number {
+  if (width === 'sm') return 140;
+  if (width === 'md') return 220;
+  if (width === 'lg') return 320;
+  return 112;
+}
+
+function clampTableColWidth(px: number): number {
+  return Math.round(Math.min(2000, Math.max(48, px)));
 }
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1', '#a4de6c'];
@@ -97,11 +112,109 @@ function renderCellValueWithSetting(
   return String(cell ?? '');
 }
 
-function getColumnWidthClass(width?: ReportWidgetTableColumnSetting['width']): string {
-  if (width === 'sm') return 'min-w-[140px]';
-  if (width === 'md') return 'min-w-[220px]';
-  if (width === 'lg') return 'min-w-[320px]';
-  return 'min-w-[112px]';
+function TablePanScrollContainer({
+  children,
+  className,
+  title,
+  measureRef,
+  contentVersion,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  title?: string;
+  measureRef?: RefObject<HTMLDivElement | null>;
+  contentVersion: string;
+}): ReactElement {
+  const { t } = useTranslation('common');
+  const scrollHintId = useId();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ pointerId: number; startX: number; startScrollLeft: number } | null>(null);
+  const [grabbing, setGrabbing] = useState(false);
+  const [hasScrollOverflow, setHasScrollOverflow] = useState(false);
+
+  const refreshScrollOverflow = useCallback((): void => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const x = el.scrollWidth > el.clientWidth + 1;
+    const y = el.scrollHeight > el.clientHeight + 1;
+    setHasScrollOverflow(x || y);
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    refreshScrollOverflow();
+    const ro = new ResizeObserver(() => {
+      refreshScrollOverflow();
+    });
+    ro.observe(el);
+    const inner = el.firstElementChild;
+    if (inner instanceof Element) {
+      ro.observe(inner);
+    }
+    el.addEventListener('scroll', refreshScrollOverflow, { passive: true });
+    return () => {
+      ro.disconnect();
+      el.removeEventListener('scroll', refreshScrollOverflow);
+    };
+  }, [refreshScrollOverflow, contentVersion]);
+
+  const endDrag = (e: PointerEvent<HTMLDivElement>): void => {
+    const d = dragRef.current;
+    if (!d || e.pointerId !== d.pointerId) return;
+    dragRef.current = null;
+    setGrabbing(false);
+    scrollRef.current?.releasePointerCapture(e.pointerId);
+  };
+
+  const setScrollNode = (node: HTMLDivElement | null): void => {
+    scrollRef.current = node;
+    if (measureRef) {
+      measureRef.current = node;
+    }
+  };
+
+  return (
+    <div className={cn('flex min-h-0 min-w-0 flex-1 flex-col gap-1', className)}>
+      <div
+        ref={setScrollNode}
+        title={title}
+        aria-describedby={hasScrollOverflow ? scrollHintId : undefined}
+        style={{ scrollbarGutter: 'stable' }}
+        className={cn(
+          'custom-scrollbar min-h-0 min-w-0 flex-1 cursor-grab overflow-auto rounded-xl border border-slate-200 bg-white/50 shadow-inner active:cursor-grabbing dark:border-white/10 dark:bg-white/[0.02]',
+          grabbing ? 'select-none' : '',
+        )}
+        onPointerDown={(e) => {
+          if (e.button !== 0) return;
+          const el = scrollRef.current;
+          if (!el) return;
+          el.setPointerCapture(e.pointerId);
+          dragRef.current = { pointerId: e.pointerId, startX: e.clientX, startScrollLeft: el.scrollLeft };
+          setGrabbing(true);
+        }}
+        onPointerMove={(e) => {
+          const el = scrollRef.current;
+          const d = dragRef.current;
+          if (!el || !d || e.pointerId !== d.pointerId) return;
+          el.scrollLeft = d.startScrollLeft - (e.clientX - d.startX);
+        }}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      >
+        {children}
+      </div>
+      {hasScrollOverflow ? (
+        <p
+          id={scrollHintId}
+          aria-live="polite"
+          className="shrink-0 px-2 text-center text-[10px] leading-snug text-muted-foreground"
+        >
+          {t('common.reportBuilder.tableScrollMoreHint')}
+        </p>
+      ) : null}
+    </div>
+  );
 }
 
 function getColumnAlignClass(align?: ReportWidgetTableColumnSetting['align'], columnLabel?: string): string {
@@ -120,9 +233,26 @@ function formatAxisTooltipLabel(value: unknown): string {
   return value;
 }
 
-export function ReportChart({ columns, rows, chartType, className, appearance, labelOverrides }: ReportChartProps): ReactElement {
+export function ReportChart({
+  columns,
+  rows,
+  chartType,
+  className,
+  appearance,
+  labelOverrides,
+  isExpanded = false,
+  presentationVariant = 'default',
+  onTableColumnWidthPxCommit,
+}: ReportChartProps): ReactElement {
   const { t } = useTranslation('common');
   const [showAllSeries, setShowAllSeries] = useState(false);
+  const [tableResizePreview, setTableResizePreview] = useState<{ key: string; widthPx: number } | null>(null);
+  const [tableSessionWidths, setTableSessionWidths] = useState<Record<string, number>>({});
+  const tableSessionWidthsRef = useRef<Record<string, number>>({});
+  tableSessionWidthsRef.current = tableSessionWidths;
+  const tableResizeSessionRef = useRef<{ pointerId: number; key: string; startX: number; startW: number } | null>(null);
+  const tableResizeWidthRef = useRef<number>(112);
+  const isDashboardTile = presentationVariant === 'dashboard' && !isExpanded;
   const needsRecharts =
     chartType === 'bar' ||
     chartType === 'stackedBar' ||
@@ -169,6 +299,187 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     () => normalizedRows.map((row) => visibleColumnIndexes.map((index) => row[index])),
     [normalizedRows, visibleColumnIndexes],
   );
+
+  const orderedColumnWidthsPx = useMemo(() => {
+    return orderedRawColumns.map((columnKey, i) => {
+      const setting = orderedColumnSettings[i];
+      if (tableResizePreview?.key === columnKey) {
+        return clampTableColWidth(tableResizePreview.widthPx);
+      }
+      const sess = tableSessionWidths[columnKey];
+      if (sess != null) {
+        return clampTableColWidth(sess);
+      }
+      if (setting?.widthPx != null && setting.widthPx > 0) {
+        return clampTableColWidth(setting.widthPx);
+      }
+      return getPresetFallbackWidthPx(setting?.width);
+    });
+  }, [orderedRawColumns, orderedColumnSettings, tableResizePreview, tableSessionWidths]);
+
+  const tableScrollMeasureRef = useRef<HTMLDivElement | null>(null);
+  const [tableContainerWidthPx, setTableContainerWidthPx] = useState(0);
+
+  useLayoutEffect(() => {
+    if (chartType !== 'table') {
+      setTableContainerWidthPx(0);
+      return undefined;
+    }
+    const el = tableScrollMeasureRef.current;
+    if (!el) return undefined;
+    const measure = (): void => {
+      setTableContainerWidthPx(Math.max(0, Math.floor(el.getBoundingClientRect().width)));
+    };
+    measure();
+    const ro = new ResizeObserver(() => {
+      measure();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [chartType, orderedRawColumns.length]);
+
+  const tableLayout = useMemo((): {
+    tableStyle: CSSProperties;
+    tableClassName: string;
+    colStyles: CSSProperties[];
+    displayWidthsPx: number[];
+  } => {
+    const n = orderedRawColumns.length;
+    if (n === 0) {
+      return { tableStyle: { width: 0 }, tableClassName: 'table-fixed border-collapse', colStyles: [], displayWidthsPx: [] };
+    }
+
+    const presetWeights = orderedColumnSettings.map((s) => getPresetFallbackWidthPx(s?.width));
+    const presetSum = presetWeights.reduce((a, b) => a + b, 0) || 1;
+
+    const hasHardWidth = (i: number): boolean => {
+      const key = orderedRawColumns[i];
+      const s = orderedColumnSettings[i];
+      if (tableResizePreview?.key === key) return true;
+      if (tableSessionWidths[key] != null) return true;
+      if (s?.widthPx != null && s.widthPx > 0) return true;
+      return false;
+    };
+
+    const allSoft = orderedRawColumns.every((_, i) => !hasHardWidth(i));
+    const cw = tableContainerWidthPx;
+
+    if (allSoft && cw > 0) {
+      let runningPct = 0;
+      const colStyles: CSSProperties[] = [];
+      const displayWidthsPx: number[] = [];
+      for (let i = 0; i < n; i++) {
+        if (i === n - 1) {
+          const lastPct = Math.max(0, 100 - runningPct);
+          colStyles.push({ width: `${lastPct}%` });
+          displayWidthsPx.push(Math.max(48, Math.round((lastPct / 100) * cw)));
+        } else {
+          const p = Math.floor(((presetWeights[i] / presetSum) * 100) * 10000) / 10000;
+          runningPct += p;
+          colStyles.push({ width: `${p}%` });
+          displayWidthsPx.push(Math.max(48, Math.round((p / 100) * cw)));
+        }
+      }
+      return {
+        tableStyle: { width: '100%' },
+        tableClassName: 'table-fixed border-collapse min-w-0',
+        colStyles,
+        displayWidthsPx,
+      };
+    }
+
+    const baseWidths = orderedColumnWidthsPx.slice();
+    const softIndices: number[] = [];
+    for (let i = 0; i < n; i++) {
+      if (!hasHardWidth(i)) softIndices.push(i);
+    }
+    const hardSum = baseWidths.reduce((sum, w, i) => (hasHardWidth(i) ? sum + w : sum), 0);
+
+    if (cw > 0 && softIndices.length > 0) {
+      const remaining = cw - hardSum;
+      if (remaining > 0) {
+        const flexWeight = softIndices.reduce((s, i) => s + presetWeights[i], 0) || 1;
+        let used = 0;
+        softIndices.forEach((si, j) => {
+          if (j === softIndices.length - 1) {
+            baseWidths[si] = Math.max(48, remaining - used);
+          } else {
+            const next = Math.max(48, Math.round((remaining * presetWeights[si]) / flexWeight));
+            baseWidths[si] = next;
+            used += next;
+          }
+        });
+      }
+    }
+
+    const sumBase = baseWidths.reduce((a, b) => a + b, 0);
+    const tableW = cw > 0 ? Math.max(sumBase, cw) : sumBase;
+    return {
+      tableStyle: { width: tableW },
+      tableClassName: 'table-fixed border-collapse',
+      colStyles: baseWidths.map((w) => ({ width: w })),
+      displayWidthsPx: baseWidths.slice(),
+    };
+  }, [
+    orderedRawColumns,
+    orderedColumnSettings,
+    orderedColumnWidthsPx,
+    tableContainerWidthPx,
+    tableResizePreview,
+    tableSessionWidths,
+  ]);
+
+  const handleTableColumnResizePointerDown = (
+    e: PointerEvent<HTMLSpanElement>,
+    columnKey: string,
+    setting?: ReportWidgetTableColumnSetting,
+  ): void => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const fromSession = tableSessionWidthsRef.current[columnKey];
+    const colIndex = orderedRawColumns.indexOf(columnKey);
+    const fromLayout =
+      colIndex >= 0 && tableLayout.displayWidthsPx[colIndex] != null
+        ? tableLayout.displayWidthsPx[colIndex]
+        : null;
+    let startW = getPresetFallbackWidthPx(setting?.width);
+    if (fromSession != null) {
+      startW = clampTableColWidth(fromSession);
+    } else if (setting?.widthPx != null && setting.widthPx > 0) {
+      startW = clampTableColWidth(setting.widthPx);
+    } else if (fromLayout != null && fromLayout > 0) {
+      startW = clampTableColWidth(fromLayout);
+    }
+    tableResizeSessionRef.current = { pointerId: e.pointerId, key: columnKey, startX: e.clientX, startW };
+    tableResizeWidthRef.current = startW;
+  };
+
+  const handleTableColumnResizePointerMove = (e: PointerEvent<HTMLSpanElement>): void => {
+    const s = tableResizeSessionRef.current;
+    if (!s || e.pointerId !== s.pointerId) return;
+    const dw = e.clientX - s.startX;
+    const nw = clampTableColWidth(s.startW + dw);
+    tableResizeWidthRef.current = nw;
+    setTableResizePreview({ key: s.key, widthPx: nw });
+  };
+
+  const handleTableColumnResizePointerEnd = (e: PointerEvent<HTMLSpanElement>): void => {
+    const s = tableResizeSessionRef.current;
+    if (!s || e.pointerId !== s.pointerId) return;
+    tableResizeSessionRef.current = null;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
+    const finalW = tableResizeWidthRef.current;
+    setTableResizePreview(null);
+    if (onTableColumnWidthPxCommit) {
+      onTableColumnWidthPxCommit(s.key, finalW);
+    } else {
+      setTableSessionWidths((prev) => ({ ...prev, [s.key]: finalW }));
+    }
+  };
 
   const tableData = useMemo(() => {
     return normalizedRows.map((row) => {
@@ -385,27 +696,50 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     const tableText = tableDensity === 'compact' ? 'text-[11px]' : 'text-xs';
     return (
       <div className={cn('flex h-full min-h-0 w-full flex-col', className)}>
-        <div
-          className="h-full min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] shadow-inner"
-          style={{ scrollbarGutter: 'stable' }}
+        <TablePanScrollContainer
+          className="h-full min-h-0"
+          title={t('common.reportBuilder.tablePanScrollHint')}
+          measureRef={tableScrollMeasureRef}
+          contentVersion={`${orderedRawColumns.join('\0')}:${orderedRows.length}:${tableLayout.tableClassName}`}
         >
-          <table className={cn('w-max min-w-full border-collapse text-left', tableText)}>
+          <table className={cn(tableLayout.tableClassName, tableText)} style={tableLayout.tableStyle}>
+            <colgroup>
+              {tableLayout.colStyles.map((colStyle, i) => (
+                <col key={`${orderedRawColumns[i]}-${i}`} style={colStyle} />
+              ))}
+            </colgroup>
             <thead className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/95 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-slate-950/95">
               <tr>
-                {orderedColumnLabels.map((col, i) => (
-                  <th
-                    key={col || i}
-                    scope="col"
-                    className={cn(
-                      'whitespace-nowrap px-3 text-left align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400',
-                      tableDensity === 'compact' ? 'py-3' : 'py-3.5',
-                      getColumnWidthClass(orderedColumnSettings[i]?.width),
-                      getColumnAlignClass(orderedColumnSettings[i]?.align, col),
-                    )}
-                  >
-                    {col}
-                  </th>
-                ))}
+                {orderedColumnLabels.map((col, i) => {
+                  const colKey = orderedRawColumns[i];
+                  const setting = orderedColumnSettings[i];
+                  return (
+                    <th
+                      key={col || colKey || i}
+                      scope="col"
+                      className={cn(
+                        'relative max-w-0 overflow-hidden px-3 align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400',
+                        TABLE_CELL_RAIL,
+                        tableDensity === 'compact' ? 'py-3' : 'py-3.5',
+                        getColumnAlignClass(setting?.align, col),
+                      )}
+                    >
+                      <span className="block min-w-0 truncate pr-2" title={col}>
+                        {col}
+                      </span>
+                      <span
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label={t('common.reportBuilder.tableColumnResizeHandle')}
+                        className="pointer-events-auto absolute top-0 right-0 z-40 h-full w-1.5 cursor-col-resize touch-none select-none hover:bg-primary/40"
+                        onPointerDown={(e) => handleTableColumnResizePointerDown(e, colKey, setting)}
+                        onPointerMove={handleTableColumnResizePointerMove}
+                        onPointerUp={handleTableColumnResizePointerEnd}
+                        onPointerCancel={handleTableColumnResizePointerEnd}
+                      />
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
@@ -417,24 +751,29 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
                     ri % 2 === 1 ? 'bg-slate-50/40 dark:bg-white/[0.02]' : '',
                   )}
                 >
-                  {row.map((cell, ci) => (
-                    <td
-                      key={ci}
-                      className={cn(
-                        'whitespace-nowrap px-3 align-top font-medium text-slate-700 dark:text-slate-300',
-                        tableDensity === 'compact' ? 'py-2.5' : 'py-3',
-                        getColumnWidthClass(orderedColumnSettings[ci]?.width),
-                        getColumnAlignClass(orderedColumnSettings[ci]?.align, orderedColumnLabels[ci]),
-                      )}
-                    >
-                      {renderCellValueWithSetting(cell, appearance, orderedColumnSettings[ci])}
-                    </td>
-                  ))}
+                  {row.map((cell, ci) => {
+                    const setting = orderedColumnSettings[ci];
+                    const shown = renderCellValueWithSetting(cell, appearance, setting);
+                    return (
+                      <td
+                        key={ci}
+                        className={cn(
+                          'max-w-0 overflow-hidden text-ellipsis whitespace-nowrap px-3 align-top font-medium text-slate-700 dark:text-slate-300',
+                          TABLE_CELL_RAIL,
+                          tableDensity === 'compact' ? 'py-2.5' : 'py-3',
+                          getColumnAlignClass(setting?.align, orderedColumnLabels[ci]),
+                        )}
+                        title={shown}
+                      >
+                        {shown}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </TablePanScrollContainer>
       </div>
     );
   }
@@ -443,15 +782,19 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     return (
       <div className={cn('flex h-full min-h-0 w-full flex-col', className)}>
         <div
-          className="h-full min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] shadow-inner"
+          className="custom-scrollbar h-full min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200 bg-white/50 shadow-inner dark:border-white/10 dark:bg-white/[0.02]"
           style={{ scrollbarGutter: 'stable' }}
         >
-          <table className="w-max min-w-full border-collapse text-left text-xs">
+          <table className="w-max min-w-full border-collapse text-xs">
             <thead className="sticky top-0 z-20 border-b border-slate-200 bg-indigo-50/95 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-indigo-950/90">
               <tr>
                 <th
                   scope="col"
-                  className="min-w-[112px] whitespace-nowrap px-3 py-3.5 text-left align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400"
+                  className={cn(
+                    'min-w-[112px] whitespace-nowrap px-3 py-3.5 align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400',
+                    TABLE_CELL_RAIL,
+                    'text-left',
+                  )}
                 >
                   {matrixData.rowKey}
                 </th>
@@ -459,7 +802,11 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
                   <th
                     key={header}
                     scope="col"
-                    className="min-w-[112px] whitespace-nowrap px-3 py-3.5 text-left align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400"
+                    className={cn(
+                      'min-w-[112px] whitespace-nowrap px-3 py-3.5 align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400',
+                      TABLE_CELL_RAIL,
+                      'text-left',
+                    )}
                   >
                     {header}
                   </th>
@@ -479,12 +826,22 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
                   >
                     <th
                       scope="row"
-                      className="whitespace-nowrap bg-slate-50/80 px-3 py-3.5 text-left align-top font-bold text-slate-900 dark:bg-white/5 dark:text-white"
+                      className={cn(
+                        'whitespace-nowrap bg-slate-50/80 px-3 py-3.5 align-top font-bold text-slate-900 dark:bg-white/5 dark:text-white',
+                        TABLE_CELL_RAIL,
+                        'text-left',
+                      )}
                     >
                       {rowLabel}
                     </th>
                     {matrixData.columnHeaders.map((header) => (
-                      <td key={`${rowLabel}-${header}`} className="whitespace-nowrap px-3 py-3.5 align-top text-slate-600 dark:text-slate-400">
+                      <td
+                        key={`${rowLabel}-${header}`}
+                        className={cn(
+                          'whitespace-nowrap px-3 py-3.5 align-top text-slate-600 dark:text-slate-400',
+                          TABLE_CELL_RAIL,
+                        )}
+                      >
                         {renderCellValue(cells[header] ?? '', appearance)}
                       </td>
                     ))}
@@ -531,10 +888,22 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     if (kpiLayout === 'spotlight') {
       return (
         <div className={cn('flex h-full min-h-[220px] items-center justify-center p-2', className)}>
-          <div className={cn('w-full rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] bg-linear-to-br p-10 text-center shadow-xl shadow-slate-200/50 dark:shadow-none relative overflow-hidden group', primaryCardGradient)}>
+          <div
+            className={cn(
+              'w-full rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] bg-linear-to-br text-center shadow-xl shadow-slate-200/50 dark:shadow-none relative overflow-hidden group',
+              isDashboardTile ? 'p-5' : 'p-10',
+              primaryCardGradient,
+            )}
+          >
             <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-indigo-500 to-pink-500 opacity-60" />
             <div className="text-slate-400 dark:text-slate-500 text-xs font-black uppercase tracking-[0.3em] mb-4">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
-            <div className={cn('text-6xl font-black tracking-tighter mb-4 tabular-nums', valueColor)}>
+            <div
+              className={cn(
+                'font-black tracking-tighter mb-4 tabular-nums',
+                isDashboardTile ? 'text-4xl' : 'text-6xl',
+                valueColor,
+              )}
+            >
               {formatKpiValue(primaryValue, kpiFormat)}
             </div>
             {secondaryDiff != null && (
@@ -556,7 +925,7 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
             <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">{t('common.reportBuilder.primaryKpi')}</div>
             <div className={cn('text-4xl font-black tracking-tight tabular-nums', valueColor)}>{formatKpiValue(primaryValue, kpiFormat)}</div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className={cn('grid gap-4', isDashboardTile ? 'grid-cols-1' : 'grid-cols-2')}>
             <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] p-5 shadow-inner">
               <div className="text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">{t('common.reportBuilder.comparison')}</div>
               <div className="text-xl font-black text-slate-700 dark:text-slate-300 tabular-nums">
@@ -575,14 +944,39 @@ export function ReportChart({ columns, rows, chartType, className, appearance, l
     }
 
     return (
-      <div className={cn('grid h-full min-h-[220px] gap-6 md:grid-cols-2', className)}>
-        <div className={cn('rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] bg-linear-to-br p-8 shadow-sm relative overflow-hidden group', primaryCardGradient)}>
+      <div
+        className={cn(
+          'grid h-full min-h-[220px] gap-6',
+          isDashboardTile ? 'grid-cols-1' : 'md:grid-cols-2',
+          className,
+        )}
+      >
+        <div
+          className={cn(
+            'rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] bg-linear-to-br shadow-sm relative overflow-hidden group',
+            isDashboardTile ? 'p-4' : 'p-8',
+            primaryCardGradient,
+          )}
+        >
           <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">{t('common.reportBuilder.primaryKpi')}</div>
-          <div className={cn('text-5xl font-black tracking-tighter tabular-nums mb-2', valueColor)}>{formatKpiValue(primaryValue, kpiFormat)}</div>
+          <div
+            className={cn(
+              'font-black tracking-tighter tabular-nums mb-2',
+              isDashboardTile ? 'text-3xl' : 'text-5xl',
+              valueColor,
+            )}
+          >
+            {formatKpiValue(primaryValue, kpiFormat)}
+          </div>
           <div className="text-slate-500 dark:text-slate-400 text-xs font-bold">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
         </div>
 
-        <div className="flex-1 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] p-6 shadow-inner">
+        <div
+          className={cn(
+            'flex-1 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] shadow-inner',
+            isDashboardTile ? 'p-4' : 'p-6',
+          )}
+        >
           <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">{t('common.reportBuilder.comparison')}</div>
           <div className="tmt-4 text-2xl font-semibold">
             {secondaryValue != null ? formatKpiValue(secondaryValue, kpiFormat) : t('common.reportBuilder.emptyDash')}
