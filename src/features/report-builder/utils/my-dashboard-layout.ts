@@ -1,5 +1,11 @@
 import type { MyReportDashboardItem, MyReportDashboardLayout } from '../types';
-import { clampGridSpan } from './grid-occupancy';
+import {
+  clampGridSpan,
+  createEmptyOccupancyGrid,
+  isRectangleFree,
+  occupyRectangle,
+  tryPlaceFirstFit,
+} from './grid-occupancy';
 
 const STORAGE_PREFIX = 'report-builder:my-dashboard-layout';
 export const DASHBOARD_CANVAS_WIDTH = 1200;
@@ -12,7 +18,8 @@ export const DASHBOARD_GRID_SIZE = 12;
 const DEFAULT_MAX_COLS = 3;
 const DEFAULT_MAX_ROWS = 2;
 const ABS_MAX_COLS = 6;
-const ABS_MAX_ROWS = 4;
+const ABS_MAX_ROWS = 6;
+const APPEND_PROBE_REPORT_ID = -9_000_001;
 
 function getStorageKey(userId: number | undefined): string {
   return `${STORAGE_PREFIX}:user-${userId ?? 'anonymous'}`;
@@ -35,12 +42,16 @@ function normalizeItem(item: MyReportDashboardItem): MyReportDashboardItem {
   const maxX = Math.max(0, DASHBOARD_CANVAS_WIDTH - DASHBOARD_ITEM_MIN_WIDTH);
   const colSpan = clampGridSpan(Math.round(Number(item.colSpan) || 1), 1, ABS_MAX_COLS);
   const rowSpan = clampGridSpan(Math.round(Number(item.rowSpan) || 1), 1, ABS_MAX_ROWS);
+  const rawGc = item.gridCol != null ? Math.round(Number(item.gridCol)) : undefined;
+  const rawGr = item.gridRow != null ? Math.round(Number(item.gridRow)) : undefined;
   return {
     reportId: item.reportId,
     widgetId: item.widgetId?.trim() || undefined,
     widgetTitle: item.widgetTitle?.trim() || undefined,
     colSpan,
     rowSpan,
+    gridCol: rawGc != null ? clampGridSpan(rawGc, 1, ABS_MAX_COLS) : undefined,
+    gridRow: rawGr != null ? clampGridSpan(rawGr, 1, ABS_MAX_ROWS) : undefined,
     x: Math.max(0, Math.min(maxX, Math.round(item.x))),
     y: Math.max(0, Math.round(item.y)),
     w: Math.max(DASHBOARD_ITEM_MIN_WIDTH, Math.round(item.w)),
@@ -48,6 +59,95 @@ function normalizeItem(item: MyReportDashboardItem): MyReportDashboardItem {
     order: Math.max(0, Math.round(item.order)),
     hidden: Boolean(item.hidden),
     hideChrome: Boolean(item.hideChrome),
+  };
+}
+
+export function buildOccupancyForItemsAtStoredPositions(
+  layout: MyReportDashboardLayout,
+  excludeKey: string | undefined,
+  getKey: (item: MyReportDashboardItem) => string,
+): boolean[][] {
+  const grid = createEmptyOccupancyGrid(layout.maxRows, layout.maxCols);
+  const sorted = [...layout.items].sort((a, b) => a.order - b.order);
+  for (const item of sorted) {
+    if (excludeKey != null && getKey(item) === excludeKey) continue;
+    const gr = item.gridRow;
+    const gc = item.gridCol;
+    if (gr == null || gc == null) continue;
+    const cols = clampGridSpan(item.colSpan, 1, layout.maxCols);
+    const rows = clampGridSpan(item.rowSpan, 1, layout.maxRows);
+    occupyRectangle(grid, gr - 1, gc - 1, rows, cols);
+  }
+  return grid;
+}
+
+export function canPlaceWidgetAtCell(
+  layout: MyReportDashboardLayout,
+  excludeKey: string,
+  getKey: (item: MyReportDashboardItem) => string,
+  dropRow0: number,
+  dropCol0: number,
+  rowSpan: number,
+  colSpan: number,
+): boolean {
+  const grid = buildOccupancyForItemsAtStoredPositions(layout, excludeKey, getKey);
+  const cols = clampGridSpan(colSpan, 1, layout.maxCols);
+  const rows = clampGridSpan(rowSpan, 1, layout.maxRows);
+  return isRectangleFree(grid, dropRow0, dropCol0, rows, cols, layout.maxRows, layout.maxCols);
+}
+
+export function canAppend1x1Tile(layout: MyReportDashboardLayout): boolean {
+  const nextOrder = layout.items.length;
+  const ghost: MyReportDashboardItem = {
+    reportId: APPEND_PROBE_REPORT_ID,
+    colSpan: 1,
+    rowSpan: 1,
+    x: 0,
+    y: 0,
+    w: DASHBOARD_ITEM_DEFAULT_WIDTH,
+    h: DASHBOARD_ITEM_DEFAULT_HEIGHT,
+    order: nextOrder,
+    hidden: true,
+  };
+  const merged = reconcileDashboardLayoutPositions({
+    ...layout,
+    items: [...layout.items, ghost],
+  });
+  const probe = merged.items.find((it) => it.reportId === APPEND_PROBE_REPORT_ID);
+  return Boolean(probe?.gridCol != null && probe?.gridRow != null);
+}
+
+export function reconcileDashboardLayoutPositions(layout: MyReportDashboardLayout): MyReportDashboardLayout {
+  const { maxCols, maxRows, items } = layout;
+  const mc = clampGridSpan(maxCols, 1, ABS_MAX_COLS);
+  const mr = clampGridSpan(maxRows, 1, ABS_MAX_ROWS);
+  const grid = createEmptyOccupancyGrid(mr, mc);
+  const sorted = [...items].sort((a, b) => a.order - b.order);
+  const nextItems = sorted.map((item) => {
+    const cols = clampGridSpan(item.colSpan, 1, mc);
+    const rows = clampGridSpan(item.rowSpan, 1, mr);
+    const prefR = item.gridRow != null ? item.gridRow - 1 : -1;
+    const prefC = item.gridCol != null ? item.gridCol - 1 : -1;
+    if (
+      prefR >= 0
+      && prefC >= 0
+      && isRectangleFree(grid, prefR, prefC, rows, cols, mr, mc)
+    ) {
+      occupyRectangle(grid, prefR, prefC, rows, cols);
+      return { ...item, colSpan: cols, rowSpan: rows, gridCol: prefC + 1, gridRow: prefR + 1 };
+    }
+    const fit = tryPlaceFirstFit(grid, cols, rows, mc, mr);
+    if (!fit) {
+      return { ...item, colSpan: cols, rowSpan: rows };
+    }
+    return { ...item, colSpan: cols, rowSpan: rows, gridCol: fit.col + 1, gridRow: fit.row + 1 };
+  });
+  return {
+    ...layout,
+    maxCols: mc,
+    maxRows: mr,
+    items: nextItems,
+    updatedAt: layout.updatedAt,
   };
 }
 
@@ -70,13 +170,13 @@ function migrateLayoutFromV1(
       rowSpan: clampGridSpan(item.rowSpan, 1, maxRows),
       order: index,
     }));
-  return {
+  return reconcileDashboardLayoutPositions({
     version: 2,
     maxCols,
     maxRows,
     updatedAt: new Date().toISOString(),
     items: normalizedItems,
-  };
+  });
 }
 
 export function loadMyDashboardLayout(userId: number | undefined): MyReportDashboardLayout {
@@ -133,13 +233,13 @@ export function loadMyDashboardLayout(userId: number | undefined): MyReportDashb
       .sort((a, b) => a.order - b.order)
       .map((item, index) => ({ ...item, order: index }));
 
-    return {
+    return reconcileDashboardLayoutPositions({
       version: 2,
       maxCols,
       maxRows,
       updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : new Date().toISOString(),
       items: normalizedItems,
-    };
+    });
   } catch {
     return {
       version: 2,
@@ -155,6 +255,11 @@ export function saveMyDashboardLayout(userId: number | undefined, layout: MyRepo
   if (typeof window === 'undefined') return;
   const maxCols = clampGridSpan(layout.maxCols, 1, ABS_MAX_COLS);
   const maxRows = clampGridSpan(layout.maxRows, 1, ABS_MAX_ROWS);
+  const reconciled = reconcileDashboardLayoutPositions({
+    ...layout,
+    maxCols,
+    maxRows,
+  });
   window.localStorage.setItem(
     getStorageKey(userId),
     JSON.stringify({
@@ -162,7 +267,7 @@ export function saveMyDashboardLayout(userId: number | undefined, layout: MyRepo
       maxCols,
       maxRows,
       updatedAt: new Date().toISOString(),
-      items: layout.items.map((item) => normalizeItem({
+      items: reconciled.items.map((item) => normalizeItem({
         ...item,
         colSpan: clampGridSpan(item.colSpan, 1, maxCols),
         rowSpan: clampGridSpan(item.rowSpan, 1, maxRows),
@@ -195,13 +300,13 @@ export function sanitizeMyDashboardLayout(
     .sort((a, b) => a.order - b.order)
     .map((item, index) => ({ ...item, order: index }));
 
-  return {
+  return reconcileDashboardLayoutPositions({
     version: 2,
     maxCols,
     maxRows,
     updatedAt: new Date().toISOString(),
     items,
-  };
+  });
 }
 
 export function createDashboardItem(

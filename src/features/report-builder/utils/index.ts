@@ -17,8 +17,12 @@ export {
   DASHBOARD_ITEM_DEFAULT_WIDTH,
   DASHBOARD_ITEM_MIN_HEIGHT,
   DASHBOARD_ITEM_MIN_WIDTH,
+  buildOccupancyForItemsAtStoredPositions,
+  canAppend1x1Tile,
+  canPlaceWidgetAtCell,
   createDashboardItem,
   loadMyDashboardLayout,
+  reconcileDashboardLayoutPositions,
   sanitizeMyDashboardLayout,
   saveMyDashboardLayout,
 } from './my-dashboard-layout';

@@ -22,6 +22,7 @@ export interface ReportWidgetTableColumnSetting {
   key: string;
   align?: WidgetTableColumnAlign;
   width?: WidgetTableColumnWidth;
+  widthPx?: number;
   valueFormat?: WidgetValueFormat;
   decimalPlaces?: number;
 }
@@ -227,6 +228,8 @@ export interface MyReportDashboardItem {
   widgetTitle?: string;
   colSpan: number;
   rowSpan: number;
+  gridCol?: number;
+  gridRow?: number;
   x: number;
   y: number;
   w: number;

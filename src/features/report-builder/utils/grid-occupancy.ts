@@ -87,3 +87,54 @@ export function canCanvasHoldAllSpans(
 ): boolean {
   return buildOccupancyGrid(layouts, ids, newMaxCols, newMaxRows).placedAll;
 }
+
+export function createEmptyOccupancyGrid(maxRows: number, maxCols: number): boolean[][] {
+  return Array.from({ length: maxRows }, () => Array<boolean>(maxCols).fill(false));
+}
+
+export function isRectangleFree(
+  grid: boolean[][],
+  row0: number,
+  col0: number,
+  rows: number,
+  cols: number,
+  maxRows: number,
+  maxCols: number,
+): boolean {
+  if (row0 < 0 || col0 < 0 || rows < 1 || cols < 1) return false;
+  if (row0 + rows > maxRows || col0 + cols > maxCols) return false;
+  for (let dr = 0; dr < rows; dr += 1) {
+    for (let dc = 0; dc < cols; dc += 1) {
+      if (grid[row0 + dr][col0 + dc]) return false;
+    }
+  }
+  return true;
+}
+
+export function occupyRectangle(
+  grid: boolean[][],
+  row0: number,
+  col0: number,
+  rows: number,
+  cols: number,
+): void {
+  for (let dr = 0; dr < rows; dr += 1) {
+    for (let dc = 0; dc < cols; dc += 1) {
+      grid[row0 + dr][col0 + dc] = true;
+    }
+  }
+}
+
+export function tryOccupyAt(
+  grid: boolean[][],
+  row0: number,
+  col0: number,
+  rows: number,
+  cols: number,
+  maxRows: number,
+  maxCols: number,
+): boolean {
+  if (!isRectangleFree(grid, row0, col0, rows, cols, maxRows, maxCols)) return false;
+  occupyRectangle(grid, row0, col0, rows, cols);
+  return true;
+}
