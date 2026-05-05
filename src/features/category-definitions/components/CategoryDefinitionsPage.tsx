@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUIStore } from '@/stores/ui-store';
@@ -53,8 +54,9 @@ import { useDeleteCategoryRule } from '../hooks/useDeleteCategoryRule';
 import { useApplyCategoryRules } from '../hooks/useApplyCategoryRules';
 import { usePreviewCategoryRules } from '../hooks/usePreviewCategoryRules';
 import { useReorderCatalogCategories } from '../hooks/useReorderCatalogCategories';
+import { useApplyStockHierarchyImport, usePreviewStockHierarchyImport } from '../hooks/useStockHierarchyImport';
 import type { CatalogCategoryNodeDto, ProductCatalogDto } from '../types/category-definition-types';
-import type { CatalogCategoryCreateDto, CatalogCategoryUpdateDto, CategoryRuleApplyResultDto, CategoryRulePreviewResultDto, ProductCatalogCreateDto, ProductCatalogUpdateDto, ProductCategoryRuleCreateDto, ProductCategoryRuleDto, ProductCategoryRuleUpdateDto } from '../types/category-definition-types';
+import type { CatalogCategoryCreateDto, CatalogCategoryUpdateDto, CatalogStockHierarchyImportPreviewDto, CatalogStockHierarchyImportRequestDto, CategoryRuleApplyResultDto, CategoryRulePreviewResultDto, ProductCatalogCreateDto, ProductCatalogUpdateDto, ProductCategoryRuleCreateDto, ProductCategoryRuleDto, ProductCategoryRuleUpdateDto } from '../types/category-definition-types';
 import { CreateCatalogDialog } from './CreateCatalogDialog';
 import { CreateCategoryDialog } from './CreateCategoryDialog';
 import { CategoryRuleDialog } from './CategoryRuleDialog';
@@ -109,6 +111,14 @@ export function CategoryDefinitionsPage(): ReactElement {
   const [ruleToDelete, setRuleToDelete] = useState<ProductCategoryRuleDto | null>(null);
   const [lastRuleApplyResult, setLastRuleApplyResult] = useState<CategoryRuleApplyResultDto | null>(null);
   const [lastRulePreviewResult, setLastRulePreviewResult] = useState<CategoryRulePreviewResultDto | null>(null);
+  const [isStockHierarchyDialogOpen, setIsStockHierarchyDialogOpen] = useState(false);
+  const [stockHierarchyPreviewResult, setStockHierarchyPreviewResult] = useState<CatalogStockHierarchyImportPreviewDto | null>(null);
+  const [stockHierarchyOptions, setStockHierarchyOptions] = useState<CatalogStockHierarchyImportRequestDto>({
+    includeCode1: true,
+    includeCode2: true,
+    includeCode3: true,
+    assignStocks: true,
+  });
 
   useEffect(() => {
     setPageTitle(t('categoryDefinitions.title'));
@@ -150,6 +160,8 @@ export function CategoryDefinitionsPage(): ReactElement {
   const deleteCategoryRule = useDeleteCategoryRule(selectedCatalogId, selectedLeaf?.catalogCategoryId ?? null);
   const previewCategoryRules = usePreviewCategoryRules(selectedCatalogId, selectedLeaf?.catalogCategoryId ?? null);
   const applyCategoryRules = useApplyCategoryRules(selectedCatalogId, selectedLeaf?.catalogCategoryId ?? null);
+  const previewStockHierarchyImport = usePreviewStockHierarchyImport(selectedCatalogId);
+  const applyStockHierarchyImport = useApplyStockHierarchyImport(selectedCatalogId);
 
   const stocksQuery = useCatalogCategoryStocks(
     selectedCatalogId,
@@ -368,6 +380,29 @@ export function CategoryDefinitionsPage(): ReactElement {
     await stocksQuery.refetch();
   };
 
+  const handlePreviewStockHierarchyImport = async (): Promise<void> => {
+    if (!selectedCatalogId) {
+      return;
+    }
+
+    const result = await previewStockHierarchyImport.mutateAsync(stockHierarchyOptions);
+    setStockHierarchyPreviewResult(result);
+    setIsStockHierarchyDialogOpen(true);
+  };
+
+  const handleApplyStockHierarchyImport = async (): Promise<void> => {
+    if (!selectedCatalogId) {
+      return;
+    }
+
+    await applyStockHierarchyImport.mutateAsync(stockHierarchyOptions);
+    setIsStockHierarchyDialogOpen(false);
+    setStockHierarchyPreviewResult(null);
+    setNavigationStack([]);
+    setSelectedLeaf(null);
+    await categoriesQuery.refetch();
+  };
+
   const handleCategoryDragStart = (catalogCategoryId: number): void => {
     setDraggedCategoryId(catalogCategoryId);
     setDragOverCategoryId(catalogCategoryId);
@@ -506,6 +541,19 @@ export function CategoryDefinitionsPage(): ReactElement {
               <Button onClick={() => setIsCreateCategoryOpen(true)}>
                 <CirclePlus className="mr-2 h-4 w-4" />
                 {t('categoryDefinitions.actions.addRootCategory')}
+              </Button>
+            ) : null}
+
+            {selectedCatalog ? (
+              <Button
+                variant="outline"
+                onClick={() => void handlePreviewStockHierarchyImport()}
+                disabled={previewStockHierarchyImport.isPending}
+              >
+                <WandSparkles className="mr-2 h-4 w-4" />
+                {previewStockHierarchyImport.isPending
+                  ? t('categoryDefinitions.actions.previewingStockHierarchy')
+                  : t('categoryDefinitions.actions.importFromRiiStock')}
               </Button>
             ) : null}
 
@@ -665,6 +713,16 @@ export function CategoryDefinitionsPage(): ReactElement {
                 >
                   <RefreshCcw className="mr-2 h-4 w-4" />
                   {t('common.refresh')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void handlePreviewStockHierarchyImport()}
+                  disabled={!selectedCatalogId || previewStockHierarchyImport.isPending}
+                  className="rounded-xl border-pink-200 bg-pink-50 text-pink-700 hover:bg-pink-100 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-300 dark:hover:bg-pink-500/20 font-semibold"
+                >
+                  <WandSparkles className="mr-2 h-4 w-4" />
+                  {t('categoryDefinitions.actions.importFromRiiStock')}
                 </Button>
               </div>
             </div>
@@ -1196,6 +1254,123 @@ export function CategoryDefinitionsPage(): ReactElement {
         parentCatalogCategoryId={editingCategory?.parentCatalogCategoryId ?? targetParent?.catalogCategoryId ?? null}
         initialData={editingCategory}
       />
+
+      <AlertDialog open={isStockHierarchyDialogOpen} onOpenChange={(open) => {
+        setIsStockHierarchyDialogOpen(open);
+        if (!open) setStockHierarchyPreviewResult(null);
+      }}>
+        <AlertDialogContent className="max-w-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <WandSparkles className="h-5 w-5 text-pink-600" />
+              {t('categoryDefinitions.stockHierarchyImport.title')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('categoryDefinitions.stockHierarchyImport.description')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-5">
+            <div className="grid gap-3 rounded-2xl border bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/5 md:grid-cols-2">
+              {(['includeCode1', 'includeCode2', 'includeCode3', 'assignStocks'] as const).map((field) => (
+                <label key={field} className="flex cursor-pointer items-start gap-3 rounded-xl border bg-white p-3 dark:border-white/10 dark:bg-[#130822]">
+                  <Checkbox
+                    checked={stockHierarchyOptions[field]}
+                    onCheckedChange={(checked) => {
+                      setStockHierarchyOptions((prev) => ({
+                        ...prev,
+                        [field]: checked === true,
+                      }));
+                      setStockHierarchyPreviewResult(null);
+                    }}
+                  />
+                  <span>
+                    <span className="block font-semibold text-foreground">
+                      {t(`categoryDefinitions.stockHierarchyImport.options.${field}.title`)}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      {t(`categoryDefinitions.stockHierarchyImport.options.${field}.description`)}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              className="w-full rounded-xl font-semibold"
+              onClick={() => void handlePreviewStockHierarchyImport()}
+              disabled={previewStockHierarchyImport.isPending}
+            >
+              <Search className="mr-2 h-4 w-4" />
+              {previewStockHierarchyImport.isPending
+                ? t('categoryDefinitions.actions.previewingStockHierarchy')
+                : t('categoryDefinitions.actions.refreshStockHierarchyPreview')}
+            </Button>
+
+            {stockHierarchyPreviewResult ? (
+              <div className="space-y-4">
+                <div className="grid gap-3 md:grid-cols-4">
+                  <div className="rounded-2xl border bg-white p-4 dark:border-white/10 dark:bg-white/5">
+                    <div className="text-xs font-bold uppercase text-muted-foreground">{t('categoryDefinitions.stockHierarchyImport.preview.sourceStock')}</div>
+                    <div className="mt-2 text-2xl font-black">{stockHierarchyPreviewResult.sourceStockCount}</div>
+                  </div>
+                  <div className="rounded-2xl border bg-white p-4 dark:border-white/10 dark:bg-white/5">
+                    <div className="text-xs font-bold uppercase text-muted-foreground">{t('categoryDefinitions.stockHierarchyImport.preview.category')}</div>
+                    <div className="mt-2 text-2xl font-black">{stockHierarchyPreviewResult.categoryCount}</div>
+                  </div>
+                  <div className="rounded-2xl border bg-white p-4 dark:border-white/10 dark:bg-white/5">
+                    <div className="text-xs font-bold uppercase text-muted-foreground">{t('categoryDefinitions.stockHierarchyImport.preview.newCategory')}</div>
+                    <div className="mt-2 text-2xl font-black">{stockHierarchyPreviewResult.newCategoryCount}</div>
+                  </div>
+                  <div className="rounded-2xl border bg-white p-4 dark:border-white/10 dark:bg-white/5">
+                    <div className="text-xs font-bold uppercase text-muted-foreground">{t('categoryDefinitions.stockHierarchyImport.preview.newStockAssignment')}</div>
+                    <div className="mt-2 text-2xl font-black">{stockHierarchyPreviewResult.newStockAssignmentCount}</div>
+                  </div>
+                </div>
+
+                <div className="grid gap-2 text-sm md:grid-cols-4">
+                  <Badge variant="outline">{t('categoryDefinitions.stockHierarchyImport.preview.group', { count: stockHierarchyPreviewResult.groupCount })}</Badge>
+                  <Badge variant="outline">{t('categoryDefinitions.stockHierarchyImport.preview.code1', { count: stockHierarchyPreviewResult.code1Count })}</Badge>
+                  <Badge variant="outline">{t('categoryDefinitions.stockHierarchyImport.preview.code2', { count: stockHierarchyPreviewResult.code2Count })}</Badge>
+                  <Badge variant="outline">{t('categoryDefinitions.stockHierarchyImport.preview.code3', { count: stockHierarchyPreviewResult.code3Count })}</Badge>
+                </div>
+
+                <div className="rounded-2xl border border-dashed p-4 dark:border-white/10">
+                  <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                    {t('categoryDefinitions.stockHierarchyImport.preview.samples')}
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    {stockHierarchyPreviewResult.samples.map((sample) => (
+                      <div key={sample.stockId} className="rounded-xl bg-slate-50 p-3 text-sm dark:bg-white/5">
+                        <div className="font-semibold">{sample.path}</div>
+                        <div className="mt-1 text-xs text-muted-foreground">{sample.erpStockCode} · {sample.stockName}</div>
+                      </div>
+                    ))}
+                    {stockHierarchyPreviewResult.samples.length === 0 ? (
+                      <div className="text-sm text-muted-foreground">
+                        {t('categoryDefinitions.stockHierarchyImport.preview.noSamples')}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void handleApplyStockHierarchyImport()}
+              disabled={!stockHierarchyPreviewResult || applyStockHierarchyImport.isPending}
+            >
+              {applyStockHierarchyImport.isPending
+                ? t('categoryDefinitions.actions.applyingStockHierarchy')
+                : t('categoryDefinitions.actions.applyStockHierarchy')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={catalogToDelete != null} onOpenChange={(open) => !open && setCatalogToDelete(null)}>
         <AlertDialogContent>

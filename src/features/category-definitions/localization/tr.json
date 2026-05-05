@@ -138,7 +138,12 @@
       "previewRules": "Kuralları Önizle",
       "previewingRules": "Önizleme Hazırlanıyor",
       "applyRules": "Kuralları Uygula",
-      "applyingRules": "Kurallar Uygulanıyor"
+      "applyingRules": "Kurallar Uygulanıyor",
+      "importFromRiiStock": "RII_STOK'tan Oluştur",
+      "previewingStockHierarchy": "Kırılım Okunuyor",
+      "refreshStockHierarchyPreview": "Önizlemeyi Yenile",
+      "applyStockHierarchy": "Katalog Ağacını Oluştur",
+      "applyingStockHierarchy": "Katalog Ağacı Oluşturuluyor"
     },
     "messages": {
       "catalogCreateSuccess": "Katalog başarıyla oluşturuldu.",
@@ -168,7 +173,44 @@
       "ruleDeleteError": "Kural silinemedi.",
       "rulePreviewError": "Kural önizlemesi alınamadı.",
       "ruleApplySuccess": "Kurallar başarıyla uygulandı.",
-      "ruleApplyError": "Kurallar uygulanamadı."
+      "ruleApplyError": "Kurallar uygulanamadı.",
+      "stockHierarchyPreviewError": "Stok kırılımı önizlemesi alınamadı.",
+      "stockHierarchyApplySuccess": "RII_STOK kırılımından katalog ağacı oluşturuldu.",
+      "stockHierarchyApplyError": "RII_STOK kırılımından katalog ağacı oluşturulamadı."
+    },
+    "stockHierarchyImport": {
+      "title": "RII_STOK kırılımından katalog oluştur",
+      "description": "Grup Kodu > Kod1 > Kod2 > Kod3 sırasını katalog ağacına dönüştürür. Trendyol/Sahibinden mantığı gibi kullanıcı her tıklamada bir alt kırılıma iner, son seviyede stokları görür.",
+      "options": {
+        "includeCode1": {
+          "title": "Kod1 seviyesini dahil et",
+          "description": "Grup Kodu altına ilk kırılımı açar. Örn: Benzinli / Dizel."
+        },
+        "includeCode2": {
+          "title": "Kod2 seviyesini dahil et",
+          "description": "Kod1 altına ikinci kırılımı açar. Örn: Manuel / Otomatik."
+        },
+        "includeCode3": {
+          "title": "Kod3 seviyesini dahil et",
+          "description": "Kod2 altına üçüncü kırılımı açar. Boş olan stoklarda en derin dolu seviye uç kategori olur."
+        },
+        "assignStocks": {
+          "title": "Stokları son seviyeye bağla",
+          "description": "Kategori ağacını oluştururken stokları kendi en derin kırılımına otomatik bağlar."
+        }
+      },
+      "preview": {
+        "sourceStock": "Okunan stok",
+        "category": "Toplam kategori",
+        "newCategory": "Yeni kategori",
+        "newStockAssignment": "Yeni stok bağlantısı",
+        "group": "Grup: {{count}}",
+        "code1": "Kod1: {{count}}",
+        "code2": "Kod2: {{count}}",
+        "code3": "Kod3: {{count}}",
+        "samples": "Örnek oluşacak yollar",
+        "noSamples": "Örnek kırılım bulunamadı."
+      }
     },
     "rulePreviewSummaryTitle": "Kural önizleme özeti",
     "rulePreviewSummary": {

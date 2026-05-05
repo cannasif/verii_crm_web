@@ -133,3 +133,40 @@ export interface CategoryRulePreviewItemDto {
 export interface CategoryRulePreviewResultDto extends CategoryRuleApplyResultDto {
   previewItems: CategoryRulePreviewItemDto[];
 }
+
+export interface CatalogStockHierarchyImportRequestDto {
+  includeCode1: boolean;
+  includeCode2: boolean;
+  includeCode3: boolean;
+  assignStocks: boolean;
+}
+
+export interface CatalogStockHierarchyImportSampleDto {
+  stockId: number;
+  erpStockCode: string;
+  stockName: string;
+  path: string;
+}
+
+export interface CatalogStockHierarchyImportPreviewDto {
+  sourceStockCount: number;
+  emptyHierarchyStockCount: number;
+  categoryCount: number;
+  existingCategoryCount: number;
+  newCategoryCount: number;
+  stockAssignmentCount: number;
+  existingStockAssignmentCount: number;
+  newStockAssignmentCount: number;
+  groupCount: number;
+  code1Count: number;
+  code2Count: number;
+  code3Count: number;
+  samples: CatalogStockHierarchyImportSampleDto[];
+}
+
+export interface CatalogStockHierarchyImportResultDto extends CatalogStockHierarchyImportPreviewDto {
+  createdCategoryCount: number;
+  updatedCategoryCount: number;
+  createdStockAssignmentCount: number;
+  restoredStockAssignmentCount: number;
+}

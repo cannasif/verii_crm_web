@@ -8,6 +8,9 @@ import type {
   CatalogStockItemDto,
   CategoryRuleApplyResultDto,
   CategoryRulePreviewResultDto,
+  CatalogStockHierarchyImportPreviewDto,
+  CatalogStockHierarchyImportRequestDto,
+  CatalogStockHierarchyImportResultDto,
   ProductCategoryRuleCreateDto,
   ProductCategoryRuleDto,
   ProductCategoryRuleUpdateDto,
@@ -201,6 +204,34 @@ export const categoryDefinitionsApi = {
       return response.data;
     }
     throw new Error(response.message || 'Kurallar uygulanamadı');
+  },
+
+  previewStockHierarchyImport: async (
+    catalogId: number,
+    data: CatalogStockHierarchyImportRequestDto
+  ): Promise<CatalogStockHierarchyImportPreviewDto> => {
+    const response = await api.post<ApiResponse<CatalogStockHierarchyImportPreviewDto>>(
+      `/api/Catalog/${catalogId}/stock-hierarchy-import/preview`,
+      data
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Stok kırılımı önizlemesi alınamadı');
+  },
+
+  applyStockHierarchyImport: async (
+    catalogId: number,
+    data: CatalogStockHierarchyImportRequestDto
+  ): Promise<CatalogStockHierarchyImportResultDto> => {
+    const response = await api.post<ApiResponse<CatalogStockHierarchyImportResultDto>>(
+      `/api/Catalog/${catalogId}/stock-hierarchy-import/apply`,
+      data
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Stok kırılımı katalog yapısı oluşturulamadı');
   },
 
   createStockCategoryAssignment: async (

@@ -138,7 +138,12 @@
       "previewRules": "Preview Rules",
       "previewingRules": "Building Preview",
       "applyRules": "Apply Rules",
-      "applyingRules": "Applying Rules"
+      "applyingRules": "Applying Rules",
+      "importFromRiiStock": "Build from RII_STOK",
+      "previewingStockHierarchy": "Reading Hierarchy",
+      "refreshStockHierarchyPreview": "Refresh Preview",
+      "applyStockHierarchy": "Build Catalog Tree",
+      "applyingStockHierarchy": "Building Catalog Tree"
     },
     "messages": {
       "catalogCreateSuccess": "Catalog created successfully.",
@@ -168,7 +173,44 @@
       "ruleDeleteError": "Rule could not be deleted.",
       "rulePreviewError": "Rule preview could not be loaded.",
       "ruleApplySuccess": "Rules applied successfully.",
-      "ruleApplyError": "Rules could not be applied."
+      "ruleApplyError": "Rules could not be applied.",
+      "stockHierarchyPreviewError": "Stock hierarchy preview could not be loaded.",
+      "stockHierarchyApplySuccess": "Catalog tree generated from RII_STOK hierarchy.",
+      "stockHierarchyApplyError": "Catalog tree could not be generated from RII_STOK hierarchy."
+    },
+    "stockHierarchyImport": {
+      "title": "Build catalog from RII_STOK hierarchy",
+      "description": "Converts Group Code > Code1 > Code2 > Code3 into a catalog tree. Like marketplace category flows, users drill down step by step and see stocks at the final level.",
+      "options": {
+        "includeCode1": {
+          "title": "Include Code1 level",
+          "description": "Creates the first child split under Group Code."
+        },
+        "includeCode2": {
+          "title": "Include Code2 level",
+          "description": "Creates the second child split under Code1."
+        },
+        "includeCode3": {
+          "title": "Include Code3 level",
+          "description": "Creates the third child split under Code2. If empty, the deepest available level becomes the leaf."
+        },
+        "assignStocks": {
+          "title": "Assign stocks to leaf level",
+          "description": "Automatically links each stock to its deepest generated category."
+        }
+      },
+      "preview": {
+        "sourceStock": "Source stocks",
+        "category": "Total categories",
+        "newCategory": "New categories",
+        "newStockAssignment": "New stock links",
+        "group": "Group: {{count}}",
+        "code1": "Code1: {{count}}",
+        "code2": "Code2: {{count}}",
+        "code3": "Code3: {{count}}",
+        "samples": "Sample generated paths",
+        "noSamples": "No sample hierarchy found."
+      }
     },
     "rulePreviewSummaryTitle": "Rule preview summary",
     "rulePreviewSummary": {
