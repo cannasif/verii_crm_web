@@ -1,6 +1,5 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
-import { appendPagedQueryParams } from '@/utils/query-params';
 import type {
   QuotationBulkCreateDto,
   QuotationGetDto,
@@ -41,10 +40,17 @@ export const quotationApi = {
   },
 
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<QuotationGetDto>> => {
-    const queryParams = appendPagedQueryParams(new URLSearchParams(), params);
-
-    const response = await api.get<ApiResponse<PagedResponse<QuotationGetDto>>>(
-      `/api/Quotation/related?${queryParams.toString()}`
+    const response = await api.post<ApiResponse<PagedResponse<QuotationGetDto>>>(
+      '/api/Quotation/related/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
     );
     
     if (response.success && response.data) {
@@ -275,7 +281,18 @@ export const quotationApi = {
   },
 
   getWaitingApprovals: async (params: PagedParams): Promise<PagedResponse<ApprovalActionGetDto>> => {
-    const response = await api.get<ApiResponse<PagedResponse<ApprovalActionGetDto>>>('/api/quotation/waiting-approvals', { params });
+    const response = await api.post<ApiResponse<PagedResponse<ApprovalActionGetDto>>>(
+      '/api/quotation/waiting-approvals/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 20,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
+    );
     if (response.success && response.data) {
       const pagedData = response.data;
       const pagedDataWithItems = pagedData as PagedResponse<ApprovalActionGetDto> & { items?: ApprovalActionGetDto[] };

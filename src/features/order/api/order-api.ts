@@ -1,6 +1,5 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
-import { appendPagedQueryParams } from '@/utils/query-params';
 import type {
   OrderBulkCreateDto,
   OrderGetDto,
@@ -41,10 +40,17 @@ export const orderApi = {
   },
 
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<OrderGetDto>> => {
-    const queryParams = appendPagedQueryParams(new URLSearchParams(), params);
-
-    const response = await api.get<ApiResponse<PagedResponse<OrderGetDto>>>(
-      `/api/Order/related?${queryParams.toString()}`
+    const response = await api.post<ApiResponse<PagedResponse<OrderGetDto>>>(
+      '/api/Order/related/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
     );
     
     if (response.success && response.data) {
