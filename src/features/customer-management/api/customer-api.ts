@@ -1,5 +1,4 @@
 import { api } from '@/lib/axios';
-import { appendPagedQueryParams } from '@/utils/query-params';
 import type { ApiResponse, CustomerSyncTriggerResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { CustomerDto, CreateCustomerDto, UpdateCustomerDto } from '../types/customer-types';
 
@@ -33,14 +32,16 @@ const sanitizeCustomerPayload = <T extends CreateCustomerDto | UpdateCustomerDto
 
 export const customerApi = {
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<CustomerDto>> => {
-    const queryParams = appendPagedQueryParams(new URLSearchParams(), params);
-    if (params.contextUserId) {
-      queryParams.append('contextUserId', params.contextUserId.toString());
-    }
-
-    const response = await api.get<ApiResponse<PagedResponse<CustomerDto>>>(
-      `/api/Customer?${queryParams.toString()}`
-    );
+    const response = await api.post<ApiResponse<PagedResponse<CustomerDto>>>('/api/Customer/query', {
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 10,
+      search: params.search ?? '',
+      sortBy: params.sortBy ?? 'Id',
+      sortDirection: params.sortDirection ?? 'asc',
+      filterLogic: params.filterLogic ?? 'and',
+      filters: params.filters ?? [],
+      ...(params.contextUserId ? { contextUserId: params.contextUserId } : {}),
+    });
     
     if (response.success && response.data) {
       const pagedData = response.data as PagedResponse<CustomerDto> & { items?: CustomerDto[] };

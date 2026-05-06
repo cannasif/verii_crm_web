@@ -115,7 +115,7 @@ async function getDropdownPageByQuery<T>(
 
 export const dropdownApi = {
   getCustomerPage: (request: DropdownPageRequest): Promise<PagedResponse<CustomerDto>> => {
-    return getDropdownPage<CustomerDto>('/api/Customer', request, 'pageNumber');
+    return getDropdownPageByQuery<CustomerDto>('/api/Customer', request);
   },
   getStockPage: (request: DropdownPageRequest): Promise<PagedResponse<StockGetDto>> => {
     // Stock API expects `page` instead of `pageNumber` for dropdown requests.
