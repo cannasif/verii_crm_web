@@ -13,13 +13,17 @@ function toPagedData<T>(raw: { items?: T[]; data?: T[] } & PagedResponse<T>): Pa
 
 export const powerbiRlsApi = {
   getList: async (params: PagedParams): Promise<PagedResponse<PowerBIReportRoleMapping>> => {
-    const queryParams = new URLSearchParams();
-    if (params.pageNumber != null) queryParams.append('pageNumber', String(params.pageNumber));
-    if (params.pageSize != null) queryParams.append('pageSize', String(params.pageSize));
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    const response = await api.get<ApiResponse<PagedResponse<PowerBIReportRoleMapping>>>(
-      `/api/powerbi/report-role-mappings?${queryParams.toString()}`
+    const response = await api.post<ApiResponse<PagedResponse<PowerBIReportRoleMapping>>>(
+      '/api/powerbi/report-role-mappings/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
     );
     if (response.success && response.data) {
       return toPagedData(response.data as { items?: PowerBIReportRoleMapping[] } & PagedResponse<PowerBIReportRoleMapping>);

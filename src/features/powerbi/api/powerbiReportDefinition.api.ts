@@ -18,18 +18,17 @@ export const powerbiReportDefinitionApi = {
   getList: async (
     params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }
   ): Promise<PagedResponse<PowerBIReportDefinitionGetDto>> => {
-    const queryParams = new URLSearchParams();
-    if (params.pageNumber != null) queryParams.append('pageNumber', String(params.pageNumber));
-    if (params.pageSize != null) queryParams.append('pageSize', String(params.pageSize));
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params.filters) {
-      queryParams.append('filters', JSON.stringify(params.filters));
-      queryParams.append('filterLogic', params.filterLogic ?? 'and');
-    }
-
-    const response = await api.get<ApiResponse<PagedResponse<PowerBIReportDefinitionGetDto>>>(
-      `/api/PowerBIReportDefinition?${queryParams.toString()}`
+    const response = await api.post<ApiResponse<PagedResponse<PowerBIReportDefinitionGetDto>>>(
+      '/api/PowerBIReportDefinition/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
     );
     if (response.success && response.data) {
       return toPagedData(response.data as { items?: PowerBIReportDefinitionGetDto[] } & PagedResponse<PowerBIReportDefinitionGetDto>);
