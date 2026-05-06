@@ -1,5 +1,26 @@
 import type { PagedParams, PagedFilter } from '@/types/api';
 
+export const appendIndexedFilterParams = (
+  queryParams: URLSearchParams,
+  filters?: PagedFilter[] | Record<string, unknown>
+): URLSearchParams => {
+  if (!Array.isArray(filters) || filters.length === 0) {
+    return queryParams;
+  }
+
+  filters.forEach((filter, index) => {
+    if (!filter || !filter.column || !filter.operator) {
+      return;
+    }
+
+    queryParams.append(`filters[${index}].column`, String(filter.column));
+    queryParams.append(`filters[${index}].operator`, String(filter.operator));
+    queryParams.append(`filters[${index}].value`, filter.value == null ? '' : String(filter.value));
+  });
+
+  return queryParams;
+};
+
 export const appendPagedQueryParams = (
   queryParams: URLSearchParams,
   params: Omit<PagedParams, 'filters'> & { filters?: PagedFilter[] | Record<string, unknown> },
@@ -17,7 +38,7 @@ export const appendPagedQueryParams = (
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);
   if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
   if (params.filters) {
-    queryParams.append('filters', JSON.stringify(params.filters));
+    appendIndexedFilterParams(queryParams, params.filters);
     queryParams.append('filterLogic', params.filterLogic ?? 'and');
   }
 

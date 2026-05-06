@@ -198,6 +198,41 @@ function clampPageSizeValue(value: unknown): string | null {
   return String(Math.min(Math.trunc(numeric), MAX_MANAGEMENT_PAGE_SIZE));
 }
 
+type RequestFilterParam = {
+  column?: unknown;
+  operator?: unknown;
+  value?: unknown;
+};
+
+function appendIndexedFilters(searchParams: URLSearchParams, filters: RequestFilterParam[]): boolean {
+  const validFilters = filters.filter((filter) => filter?.column && filter?.operator);
+  if (validFilters.length === 0) return false;
+
+  searchParams.delete('filters');
+  searchParams.delete('Filters');
+
+  validFilters.forEach((filter, index) => {
+    searchParams.append(`filters[${index}].column`, String(filter.column));
+    searchParams.append(`filters[${index}].operator`, String(filter.operator));
+    searchParams.append(`filters[${index}].value`, filter.value == null ? '' : String(filter.value));
+  });
+
+  return true;
+}
+
+function rewriteJsonFilterParam(searchParams: URLSearchParams): boolean {
+  const rawFilters = searchParams.get('filters') ?? searchParams.get('Filters');
+  if (!rawFilters?.trim().startsWith('[')) return false;
+
+  try {
+    const parsed = JSON.parse(rawFilters) as unknown;
+    if (!Array.isArray(parsed)) return false;
+    return appendIndexedFilters(searchParams, parsed as RequestFilterParam[]);
+  } catch {
+    return false;
+  }
+}
+
 function clampPagedRequestUrl(url?: string): string | undefined {
   if (!url || !url.includes('?')) return url;
 
@@ -216,6 +251,8 @@ function clampPagedRequestUrl(url?: string): string | undefined {
     }
   });
 
+  changed = rewriteJsonFilterParam(searchParams) || changed;
+
   if (!changed) return url;
   const nextQuery = searchParams.toString();
   return nextQuery ? `${path}?${nextQuery}` : path;
@@ -232,6 +269,7 @@ function clampPagedRequestParams(params: unknown): unknown {
         params.set(key, next);
       }
     });
+    rewriteJsonFilterParam(params);
     return params;
   }
 
@@ -247,6 +285,21 @@ function clampPagedRequestParams(params: unknown): unknown {
       nextParams[key] = next;
     }
   });
+
+  const rawFilters = nextParams.filters ?? nextParams.Filters;
+  if (Array.isArray(rawFilters)) {
+    delete nextParams.filters;
+    delete nextParams.Filters;
+
+    rawFilters
+      .filter((filter): filter is RequestFilterParam => Boolean(filter && typeof filter === 'object'))
+      .forEach((filter, index) => {
+        if (!filter.column || !filter.operator) return;
+        nextParams[`filters[${index}].column`] = String(filter.column);
+        nextParams[`filters[${index}].operator`] = String(filter.operator);
+        nextParams[`filters[${index}].value`] = filter.value == null ? '' : String(filter.value);
+      });
+  }
 
   return nextParams;
 }
