@@ -2,23 +2,23 @@ import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { SalesTypeGetDto, SalesTypeCreateDto, SalesTypeUpdateDto } from '../types/sales-type-types';
 
-export const salesTypeApi = {
-  getList: async (
-    params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }
-  ): Promise<PagedResponse<SalesTypeGetDto>> => {
-    const queryParams = new URLSearchParams();
-    if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
-    if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-    if (params.search) queryParams.append('search', params.search);
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params.filters) {
-      queryParams.append('filters', JSON.stringify(params.filters));
-      queryParams.append('filterLogic', params.filterLogic ?? 'and');
-    }
+type SalesTypePagedQuery = PagedParams & { filters?: PagedFilter[] | Record<string, unknown> };
 
-    const response = await api.get<ApiResponse<PagedResponse<SalesTypeGetDto> & { items?: SalesTypeGetDto[] }>>(
-      `/api/SalesType?${queryParams.toString()}`
+export const salesTypeApi = {
+  getList: async (params: SalesTypePagedQuery): Promise<PagedResponse<SalesTypeGetDto>> => {
+    const payload: SalesTypePagedQuery = {
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 10,
+      search: params.search ?? '',
+      sortBy: params.sortBy ?? 'Id',
+      sortDirection: params.sortDirection ?? 'asc',
+      filterLogic: params.filterLogic ?? 'and',
+      filters: params.filters ?? [],
+    };
+
+    const response = await api.post<ApiResponse<PagedResponse<SalesTypeGetDto> & { items?: SalesTypeGetDto[] }>>(
+      '/api/SalesType/query',
+      payload
     );
 
     if (response.success && response.data) {
