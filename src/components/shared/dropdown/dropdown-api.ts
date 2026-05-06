@@ -125,7 +125,7 @@ export const dropdownApi = {
     return getDropdownPage<StockGetWithMainImageDto>('/api/Stock/withImages', request, 'page');
   },
   getCountryPage: (request: DropdownPageRequest): Promise<PagedResponse<CountryDto>> => {
-    return getDropdownPage<CountryDto>('/api/Country', request, 'pageNumber');
+    return getDropdownPageByQuery<CountryDto>('/api/Country', request);
   },
   getCityPage: (request: DropdownPageRequest): Promise<PagedResponse<CityDto>> => {
     return getDropdownPage<CityDto>('/api/City', request, 'pageNumber');
