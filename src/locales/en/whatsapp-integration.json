@@ -58,6 +58,36 @@
       "status": "Status"
     }
   },
+  "drafts": {
+    "title": "WhatsApp Quote Drafts",
+    "description": "Review carts created by customers through WhatsApp before creating CRM quotations.",
+    "tableTitle": "Representative Review Queue",
+    "searchPlaceholder": "Search phone, customer, or message...",
+    "empty": "No drafts found.",
+    "total": "{{count}} drafts",
+    "customerMessage": "Customer message",
+    "mainLine": "Main product",
+    "relatedLine": "Related product",
+    "status": {
+      "WaitingRepresentativeReview": "Representative review"
+    },
+    "columns": {
+      "createdDate": "Date",
+      "phone": "Phone",
+      "customer": "Customer",
+      "status": "Status",
+      "lineCount": "Lines",
+      "grandTotal": "Grand Total"
+    },
+    "lineColumns": {
+      "code": "Code",
+      "name": "Stock",
+      "quantity": "Quantity",
+      "unitPrice": "Unit Price",
+      "total": "Total",
+      "type": "Type"
+    }
+  },
   "flow": {
     "title": "WhatsApp Quote Flow",
     "description": "A safe module plan for customers to request quotes from their phone.",

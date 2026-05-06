@@ -3,6 +3,7 @@ import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   UpdateWhatsappIntegrationSettingsDto,
   WhatsappIntegrationLogDto,
+  WhatsappQuoteDraftDto,
   WhatsappIntegrationStatusDto,
   WhatsappSendMessageResultDto,
   WhatsappTestMessageDto,
@@ -99,5 +100,36 @@ export const whatsappIntegrationApi = {
     }
 
     throw new Error(getErrorMessage(response, 'WhatsApp integration logs could not be loaded.'));
+  },
+
+  getQuoteDrafts: async (
+    query: Omit<PagedParams, 'filters'> & {
+      filters?: PagedParams['filters'] | Record<string, unknown>;
+    } = {}
+  ): Promise<PagedResponse<WhatsappQuoteDraftDto>> => {
+    const queryParams = new URLSearchParams();
+    if (query.pageNumber && query.pageNumber > 0) queryParams.set('pageNumber', String(query.pageNumber));
+    if (query.pageSize && query.pageSize > 0) queryParams.set('pageSize', String(query.pageSize));
+    if (query.search?.trim()) queryParams.set('search', query.search.trim());
+    if (query.sortBy) queryParams.set('sortBy', query.sortBy);
+    if (query.sortDirection) queryParams.set('sortDirection', query.sortDirection);
+    if (Array.isArray(query.filters) && query.filters.length > 0) {
+      queryParams.set('filters', JSON.stringify(query.filters));
+      queryParams.set('filterLogic', query.filterLogic ?? 'and');
+    } else if (query.filters && Object.keys(query.filters).length > 0) {
+      queryParams.set('filters', JSON.stringify(query.filters));
+      queryParams.set('filterLogic', query.filterLogic ?? 'and');
+    }
+
+    const suffix = queryParams.toString();
+    const response = await api.get<ApiResponse<PagedResponse<WhatsappQuoteDraftDto> & { items?: WhatsappQuoteDraftDto[] }>>(
+      `${WHATSAPP_INTEGRATION_BASE}/quote-drafts${suffix ? `?${suffix}` : ''}`
+    );
+
+    if (response.success && response.data) {
+      return normalizePaged(response.data);
+    }
+
+    throw new Error(getErrorMessage(response, 'WhatsApp quote drafts could not be loaded.'));
   },
 };

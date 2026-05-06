@@ -54,3 +54,36 @@ export interface WhatsappIntegrationLogDto {
   metadataJson?: string | null;
   createdDate: string;
 }
+
+export interface WhatsappQuoteDraftLineDto {
+  id: number;
+  stockId: number;
+  productCode: string;
+  productName: string;
+  unit?: string | null;
+  groupCode?: string | null;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  lineGrandTotal: number;
+  isMainProduct: boolean;
+  isMandatoryRelatedProduct: boolean;
+}
+
+export interface WhatsappQuoteDraftDto {
+  id: number;
+  tenantId: string;
+  conversationId: number;
+  customerId?: number | null;
+  customerName?: string | null;
+  contactId?: number | null;
+  contactName?: string | null;
+  quotationId?: number | null;
+  phoneNumber: string;
+  status: string;
+  total: number;
+  grandTotal: number;
+  customerMessage?: string | null;
+  createdDate: string;
+  lines: WhatsappQuoteDraftLineDto[];
+}

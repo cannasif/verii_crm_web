@@ -258,6 +258,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             children: [
               { title: t('sidebar.whatsappIntegrationConnection'), href: '/settings/integrations/whatsapp' },
               { title: t('sidebar.whatsappIntegrationFlow'), href: '/settings/integrations/whatsapp/flow' },
+              { title: t('sidebar.whatsappIntegrationDrafts'), href: '/settings/integrations/whatsapp/drafts' },
               { title: t('sidebar.whatsappIntegrationLogs'), href: '/settings/integrations/whatsapp/logs' },
             ],
           },

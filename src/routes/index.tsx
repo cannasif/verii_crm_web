@@ -108,6 +108,7 @@ const OutlookAuthInformationPage = lazyImport(() => import('@/features/outlook-i
 const WhatsappConnectionPage = lazyImport(() => import('@/features/whatsapp-integration'), 'WhatsappConnectionPage');
 const WhatsappFlowPage = lazyImport(() => import('@/features/whatsapp-integration'), 'WhatsappFlowPage');
 const WhatsappLogsPage = lazyImport(() => import('@/features/whatsapp-integration'), 'WhatsappLogsPage');
+const WhatsappQuoteDraftsPage = lazyImport(() => import('@/features/whatsapp-integration'), 'WhatsappQuoteDraftsPage');
 
 export function createAppRouter() {
   return createBrowserRouter([
@@ -214,6 +215,7 @@ export function createAppRouter() {
         { path: 'settings/integrations/outlook/auth', element: <OutlookAuthInformationPage /> },
         { path: 'settings/integrations/whatsapp', element: <WhatsappConnectionPage /> },
         { path: 'settings/integrations/whatsapp/flow', element: <WhatsappFlowPage /> },
+        { path: 'settings/integrations/whatsapp/drafts', element: <WhatsappQuoteDraftsPage /> },
         { path: 'settings/integrations/whatsapp/logs', element: <WhatsappLogsPage /> },
         { path: 'profile', element: <ProfilePage /> },
       ],

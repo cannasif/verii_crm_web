@@ -113,6 +113,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/settings/integrations/outlook/auth': 'settings.integrations.outlook.view',
   '/settings/integrations/whatsapp': 'settings.integrations.whatsapp.view',
   '/settings/integrations/whatsapp/flow': 'settings.integrations.whatsapp.view',
+  '/settings/integrations/whatsapp/drafts': 'settings.integrations.whatsapp.view',
   '/settings/integrations/whatsapp/logs': 'settings.integrations.whatsapp.view',
   '/access-control/guide': 'access-control.permission-groups.view',
   '/access-control/audit-logs': 'access-control.permission-groups.view',

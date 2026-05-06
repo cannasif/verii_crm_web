@@ -58,6 +58,36 @@
       "status": "Durum"
     }
   },
+  "drafts": {
+    "title": "WhatsApp Teklif Taslakları",
+    "description": "Müşterinin WhatsApp üzerinden oluşturduğu sepetleri temsilci kontrolü için izleyin.",
+    "tableTitle": "Temsilci Kontrol Kuyruğu",
+    "searchPlaceholder": "Telefon, müşteri veya mesaj ara...",
+    "empty": "Taslak bulunamadı.",
+    "total": "{{count}} taslak",
+    "customerMessage": "Müşteri mesajı",
+    "mainLine": "Ana ürün",
+    "relatedLine": "Bağlı ürün",
+    "status": {
+      "WaitingRepresentativeReview": "Temsilci kontrolünde"
+    },
+    "columns": {
+      "createdDate": "Tarih",
+      "phone": "Telefon",
+      "customer": "Müşteri",
+      "status": "Durum",
+      "lineCount": "Kalem",
+      "grandTotal": "Genel Toplam"
+    },
+    "lineColumns": {
+      "code": "Kod",
+      "name": "Stok",
+      "quantity": "Miktar",
+      "unitPrice": "Birim Fiyat",
+      "total": "Toplam",
+      "type": "Tip"
+    }
+  },
   "flow": {
     "title": "WhatsApp Teklif Akışı",
     "description": "Müşterinin telefon üzerinden teklif talebi oluşturması için uygulanacak güvenli modül planı.",
