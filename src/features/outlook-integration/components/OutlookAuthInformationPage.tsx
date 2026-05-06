@@ -21,7 +21,7 @@ export function OutlookAuthInformationPage(): ReactElement {
         <p className="text-muted-foreground mt-1">{t('page.authInformationDescription')}</p>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+      <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader>
           <CardTitle>{t('authInformation.currentStatusTitle')}</CardTitle>
         </CardHeader>
@@ -31,7 +31,7 @@ export function OutlookAuthInformationPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+      <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader>
           <CardTitle>{t('authInformation.setupGuideTitle')}</CardTitle>
         </CardHeader>
@@ -44,7 +44,7 @@ export function OutlookAuthInformationPage(): ReactElement {
             <li>{t('authInformation.setupStep4')}</li>
             <li>{t('authInformation.setupStep5')}</li>
           </ol>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2">
+          <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-2">
             <p className="text-xs font-medium text-muted-foreground mb-1.5">{t('authInformation.callbackLabel')}</p>
             <p className="text-sm font-medium break-all text-foreground">{callbackUrl}</p>
           </div>
@@ -56,7 +56,7 @@ export function OutlookAuthInformationPage(): ReactElement {
           >
             {t('authInformation.consoleLinkLabel')}
           </a>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2 text-sm text-muted-foreground space-y-2">
+          <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-2 text-sm text-muted-foreground space-y-2">
             <p className="font-medium text-foreground">{t('authInformation.permissionTitle')}</p>
             <p>{t('authInformation.permissionHint')}</p>
           </div>

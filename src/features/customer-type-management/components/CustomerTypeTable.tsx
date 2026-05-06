@@ -15,7 +15,9 @@ import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
 import { useDeleteCustomerType } from '../hooks/useDeleteCustomerType';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import type { CustomerTypeDto } from '../types/customer-type-types';
-import { Edit2, Trash2, Tag, FileText, Calendar, User } from 'lucide-react';
+import { Edit2, Trash2, Tag, Calendar, User } from 'lucide-react';
+
+import { DescriptionCell } from '@/components/shared';
 import { Alert02Icon } from 'hugeicons-react';
 import { toast } from 'sonner';
 
@@ -66,7 +68,7 @@ interface CustomerTypeTableProps {
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerTypeDto>[] => [
   { key: 'id', label: t('table.id'), type: 'text', className: 'font-medium w-[50px] md:w-[70px]' },
   { key: 'name', label: t('table.name'), type: 'badge', className: 'font-semibold text-slate-900 dark:text-white min-w-[140px] md:min-w-[180px]' },
-  { key: 'description', label: t('table.description'), type: 'description', className: 'min-w-[180px] md:min-w-[220px]' },
+  { key: 'description', label: t('table.description'), type: 'description', className: 'min-w-[180px] md:min-w-[220px] max-w-[300px]' },
   { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
   { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
 ];
@@ -74,7 +76,8 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerTypeDto>[] => 
 function renderCellContent(
   item: CustomerTypeDto,
   column: ColumnDef<CustomerTypeDto>,
-  i18n: { language: string }
+  i18n: { language: string },
+  colWidth?: number
 ): React.ReactNode {
   const value = item[column.key];
   if (!value && value !== 0) return '-';
@@ -82,30 +85,27 @@ function renderCellContent(
   switch (column.type) {
     case 'badge':
       return (
-        <div className="flex items-center gap-2">
-          <Tag size={14} className="text-pink-500" />
-          {String(value)}
+        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+          <Tag size={14} className="text-pink-500 shrink-0" />
+          <span className="truncate">{String(value)}</span>
         </div>
       );
-    case 'description':
-      return (
-        <div className="flex items-start gap-2">
-          <FileText size={14} className="text-slate-400 mt-0.5 shrink-0" />
-          {String(value)}
-        </div>
-      );
+    case 'description': {
+      const content = String(value);
+      return <DescriptionCell content={content} colWidth={colWidth} />;
+    }
     case 'date':
       return (
-        <div className="flex items-center gap-2 text-xs">
-          <Calendar size={14} className="text-pink-500/50" />
-          {new Date(String(value)).toLocaleDateString(i18n.language)}
+        <div className="flex items-center gap-2 text-xs min-w-0 overflow-hidden">
+          <Calendar size={14} className="text-pink-500/50 shrink-0" />
+          <span className="truncate">{new Date(String(value)).toLocaleDateString(i18n.language)}</span>
         </div>
       );
     case 'user':
       return (
-        <div className="flex items-center gap-2 text-xs">
-          <User size={14} className="text-indigo-500/50" />
-          {String(value)}
+        <div className="flex items-center gap-2 text-xs min-w-0 overflow-hidden">
+          <User size={14} className="text-indigo-500/50 shrink-0" />
+          <span className="truncate">{String(value)}</span>
         </div>
       );
     default:
@@ -174,9 +174,9 @@ export function CustomerTypeTable({
     }
   };
 
-  const cellRenderer = (row: CustomerTypeDto, key: CustomerTypeColumnKey): React.ReactNode => {
+  const cellRenderer = (row: CustomerTypeDto, key: CustomerTypeColumnKey, colWidth?: number): React.ReactNode => {
     const col = tableColumns.find((c) => c.key === key);
-    if (col) return renderCellContent(row, col, i18n);
+    if (col) return renderCellContent(row, col, i18n, colWidth);
     const val = row[key];
     if (val == null && val !== 0) return '-';
     return String(val);
@@ -210,44 +210,44 @@ export function CustomerTypeTable({
   return (
     <>
       <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
-      <DataTableGrid<CustomerTypeDto, CustomerTypeColumnKey>
-        toolbar={toolbar}
-        columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
-        rows={rows}
-        rowKey={rowKey}
-        renderCell={cellRenderer}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        onSort={onSort}
-        renderSortIcon={renderSortIcon}
-        isLoading={isLoading}
-        isError={false}
-        loadingText={loadingText}
-        errorText={errorText}
-        emptyText={emptyText}
-        minTableWidthClassName={minTableWidthClassName}
-        showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
-        actionsHeaderLabel={actionsHeaderLabel}
-        renderActionsCell={renderActionsCell}
-        rowClassName={rowClassName}
-        onRowDoubleClick={onEdit}
-        pageSize={pageSize}
-        pageSizeOptions={pageSizeOptions}
-        onPageSizeChange={onPageSizeChange}
-        pageNumber={pageNumber}
-        totalPages={totalPages}
-        hasPreviousPage={hasPreviousPage}
-        hasNextPage={hasNextPage}
-        onPreviousPage={onPreviousPage}
-        onNextPage={onNextPage}
-        previousLabel={previousLabel}
-        nextLabel={nextLabel}
-        paginationInfoText={paginationInfoText}
-        disablePaginationButtons={disablePaginationButtons}
-        centerColumnHeaders
-        onColumnOrderChange={onColumnOrderChange}
-      />
+        <DataTableGrid<CustomerTypeDto, CustomerTypeColumnKey>
+          toolbar={toolbar}
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={rows}
+          rowKey={rowKey}
+          renderCell={cellRenderer}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSort={onSort}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={false}
+          loadingText={loadingText}
+          errorText={errorText}
+          emptyText={emptyText}
+          minTableWidthClassName={minTableWidthClassName}
+          showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
+          actionsHeaderLabel={actionsHeaderLabel}
+          renderActionsCell={renderActionsCell}
+          rowClassName={rowClassName}
+          onRowDoubleClick={onEdit}
+          pageSize={pageSize}
+          pageSizeOptions={pageSizeOptions}
+          onPageSizeChange={onPageSizeChange}
+          pageNumber={pageNumber}
+          totalPages={totalPages}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          onPreviousPage={onPreviousPage}
+          onNextPage={onNextPage}
+          previousLabel={previousLabel}
+          nextLabel={nextLabel}
+          paginationInfoText={paginationInfoText}
+          disablePaginationButtons={disablePaginationButtons}
+          centerColumnHeaders
+          onColumnOrderChange={onColumnOrderChange}
+        />
       </div>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

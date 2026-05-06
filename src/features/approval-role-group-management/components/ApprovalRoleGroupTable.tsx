@@ -63,8 +63,8 @@ interface ApprovalRoleGroupTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalRoleGroupDto>[] => [
-  { key: 'id', label: t('approvalRoleGroup.table.id'), className: 'w-[100px]' },
-  { key: 'name', label: t('approvalRoleGroup.table.name'), className: 'min-w-[200px]' },
+  { key: 'id', label: t('approvalRoleGroup.table.id'), className: 'w-[50px]' },
+  { key: 'name', label: t('approvalRoleGroup.table.name'), className: 'w-[200px]' },
   { key: 'createdDate', label: t('approvalRoleGroup.table.createdDate'), className: 'w-[160px]' },
   { key: 'createdByFullUser', label: t('approvalRoleGroup.table.createdBy'), className: 'w-[160px]' },
 ];
@@ -158,43 +158,43 @@ export function ApprovalRoleGroupTable({
   return (
     <>
       <ManagementDataTableChrome>
-      <DataTableGrid<ApprovalRoleGroupDto, ApprovalRoleGroupColumnKey>
-        toolbar={toolbar}
-        columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
-        rows={rows}
-        rowKey={rowKey}
-        renderCell={renderCell}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        onSort={onSort}
-        renderSortIcon={renderSortIcon}
-        isLoading={isLoading}
-        isError={false}
-        loadingText={loadingText}
-        errorText={errorText}
-        emptyText={emptyText}
-        minTableWidthClassName={minTableWidthClassName}
-        showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
-        actionsHeaderLabel={actionsHeaderLabel}
-        renderActionsCell={renderActionsCell}
-        rowClassName={rowClassName}
-        pageSize={pageSize}
-        pageSizeOptions={pageSizeOptions}
-        onPageSizeChange={onPageSizeChange}
-        pageNumber={pageNumber}
-        totalPages={totalPages}
-        hasPreviousPage={hasPreviousPage}
-        hasNextPage={hasNextPage}
-        onPreviousPage={onPreviousPage}
-        onNextPage={onNextPage}
-        previousLabel={previousLabel}
-        nextLabel={nextLabel}
-        paginationInfoText={paginationInfoText}
-        disablePaginationButtons={disablePaginationButtons}
-        centerColumnHeaders
-        onColumnOrderChange={onColumnOrderChange}
-      />
+        <DataTableGrid<ApprovalRoleGroupDto, ApprovalRoleGroupColumnKey>
+          toolbar={toolbar}
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={rows}
+          rowKey={rowKey}
+          renderCell={renderCell}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSort={onSort}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={false}
+          loadingText={loadingText}
+          errorText={errorText}
+          emptyText={emptyText}
+          minTableWidthClassName={minTableWidthClassName}
+          showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
+          actionsHeaderLabel={actionsHeaderLabel}
+          renderActionsCell={renderActionsCell}
+          rowClassName={rowClassName}
+          pageSize={pageSize}
+          pageSizeOptions={pageSizeOptions}
+          onPageSizeChange={onPageSizeChange}
+          pageNumber={pageNumber}
+          totalPages={totalPages}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          onPreviousPage={onPreviousPage}
+          onNextPage={onNextPage}
+          previousLabel={previousLabel}
+          nextLabel={nextLabel}
+          paginationInfoText={paginationInfoText}
+          disablePaginationButtons={disablePaginationButtons}
+          centerColumnHeaders
+          onColumnOrderChange={onColumnOrderChange}
+        />
       </ManagementDataTableChrome>
 
       <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

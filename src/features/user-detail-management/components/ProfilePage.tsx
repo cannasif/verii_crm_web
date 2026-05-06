@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -81,6 +80,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ProfilePictureEditor } from './ProfilePictureEditor';
 
 interface StatCardProps {
   title: string;
@@ -93,7 +93,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon: Icon, description, colorClass, progress }: StatCardProps) {
   return (
-    <div className="relative group overflow-hidden rounded-3xl border border-slate-200 dark:border-white/20 bg-white/60 dark:bg-[#1D1726] p-6 transition-all backdrop-blur-xl">
+    <div className="relative group overflow-hidden rounded-3xl border border-slate-300 dark:border-white/25 bg-white/60 dark:bg-[#1D1726] p-6 transition-all backdrop-blur-xl">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">{title}</p>
@@ -134,6 +134,8 @@ export function ProfilePage(): ReactElement {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] = useState(false);
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const { data: userDetail, isLoading: isLoadingDetail, refetch: refetchUserDetail } = useUserDetailByUserId(userId);
   const { data: overview, isLoading: isLoadingOverview } = useSalesmenOverviewQuery(userId);
@@ -191,15 +193,27 @@ export function ProfilePage(): ReactElement {
     }
   }, [userDetail, form]);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(reader.result as string);
+      setIsEditorOpen(true);
+    };
+    reader.readAsDataURL(file);
+
+    event.target.value = '';
+  };
+
+  const handleSaveCroppedImage = async (croppedBlob: Blob): Promise<void> => {
     try {
-      const result = await uploadProfilePicture.mutateAsync({ userId, file });
+      const file = new File([croppedBlob], 'profile-picture.jpg', { type: 'image/jpeg' });
+      await uploadProfilePicture.mutateAsync({ userId, file });
       await refetchUserDetail();
-      if (result?.profilePictureUrl) {
-        setPreviewUrl(getImageUrl(result.profilePictureUrl));
-      }
+      setIsEditorOpen(false);
+      setSelectedImage(null);
     } catch (err) {
       console.error(err);
     }
@@ -259,28 +273,22 @@ export function ProfilePage(): ReactElement {
   return (
     <div className="w-full space-y-6 pb-20 px-4 sm:px-8">
       <div className="space-y-4">
-        <Breadcrumb
-          items={[
-            { label: t('sidebar.home') },
-            { label: t('userDetailManagement.profilePageTitle'), isActive: true },
-          ]}
-        />
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-all bg-white/80 dark:bg-white/5 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm w-fit"
+          className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-all bg-white/80 dark:bg-white/5 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-white/15 shadow-sm w-fit"
         >
           <ArrowLeft size={16} />
           {t('userDetailManagement.backToHome')}
         </Link>
       </div>
 
-      <section className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-white/5 bg-linear-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 backdrop-blur-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none">
+      <section className="relative overflow-hidden rounded-3xl border border-slate-300 dark:border-white/10 bg-linear-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 backdrop-blur-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none">
         <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 blur-3xl -mr-20 -mt-20 rounded-full" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/10 blur-3xl -ml-20 -mb-20 rounded-full" />
 
         <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8">
           <div className="relative shrink-0 group">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl border-4 border-white/80 dark:border-white/10 bg-muted overflow-hidden shadow-2xl ring-4 ring-pink-500/20 group-hover:ring-pink-500/40 transition-all duration-500">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl border-4 border-slate-300/50 dark:border-white/20 bg-muted overflow-hidden shadow-2xl ring-4 ring-pink-500/20 group-hover:ring-pink-500/40 transition-all duration-500">
               {previewUrl ? (
                 <img src={previewUrl} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               ) : (
@@ -328,7 +336,7 @@ export function ProfilePage(): ReactElement {
                     Profil Ayarları
                   </Button>
                 </SheetTrigger>
-                <SheetContent showCloseButton={false} className="w-full sm:max-w-2xl overflow-y-auto border-l border-white/20 bg-white/90 dark:bg-[#1D1726]/95 backdrop-blur-3xl p-0">
+                <SheetContent showCloseButton={false} className="w-full sm:max-w-2xl overflow-y-auto border-l border-white/20 bg-white/90 dark:bg-[#180F22] backdrop-blur-3xl p-0">
                   <div className="p-8 space-y-8 relative">
                     <div className="absolute right-8 top-8 z-50">
                       <SheetClose asChild>
@@ -343,7 +351,7 @@ export function ProfilePage(): ReactElement {
                     </SheetHeader>
 
                     <Tabs defaultValue="personal" className="w-full">
-                      <TabsList className="w-full grid grid-cols-2 p-1 bg-slate-100 dark:bg-white/5 rounded-2xl h-14 mb-8">
+                      <TabsList className="w-full grid grid-cols-2 p-1 bg-slate-100 dark:bg-[#211629] rounded-2xl h-14 mb-8">
                         <TabsTrigger value="personal" className="rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm transition-all flex items-center gap-2">
                           <User size={16} />
                           {t('userDetailManagement.personalInfo')}
@@ -355,7 +363,7 @@ export function ProfilePage(): ReactElement {
                       </TabsList>
 
                       <TabsContent value="personal" className="mt-0 space-y-6">
-                        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-10 border border-slate-200 dark:border-white/10 shadow-sm">
+                        <div className="bg-white/60 dark:bg-[#211629] backdrop-blur-xl rounded-3xl p-10 border border-slate-200 dark:border-white/10 shadow-sm">
                           <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -375,7 +383,7 @@ export function ProfilePage(): ReactElement {
                                             {...field}
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
                                             placeholder="Örn: 175"
                                           />
                                         </div>
@@ -400,7 +408,7 @@ export function ProfilePage(): ReactElement {
                                             {...field}
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
                                             placeholder="Örn: 70"
                                           />
                                         </div>
@@ -425,7 +433,7 @@ export function ProfilePage(): ReactElement {
                                         value={field.value !== undefined ? String(field.value) : undefined}
                                       >
                                         <FormControl>
-                                          <SelectTrigger className="w-full pl-12 h-14 min-h-[56px] py-0 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:ring-0 focus:ring-offset-0 focus:border-pink-500 transition-all flex items-center">
+                                          <SelectTrigger className="w-full pl-12 h-14 min-h-[56px] py-0 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus:ring-0 focus:ring-offset-0 focus:border-pink-500 transition-all flex items-center">
                                             <SelectValue placeholder={t('userDetailManagement.selectGender')} />
                                           </SelectTrigger>
                                         </FormControl>
@@ -458,7 +466,7 @@ export function ProfilePage(): ReactElement {
                                             type="text"
                                             {...field}
                                             value={field.value ?? ''}
-                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
                                             placeholder={t('userDetailManagement.enterPhoneNumber')}
                                           />
                                         </div>
@@ -482,7 +490,7 @@ export function ProfilePage(): ReactElement {
                                             type="email"
                                             {...field}
                                             value={field.value ?? ''}
-                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
                                             placeholder={t('userDetailManagement.enterEmail')}
                                           />
                                         </div>
@@ -508,7 +516,7 @@ export function ProfilePage(): ReactElement {
                                           type="url"
                                           {...field}
                                           value={field.value ?? ''}
-                                          className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                          className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
                                           placeholder={t('userDetailManagement.enterLinkedinUrl')}
                                         />
                                       </div>
@@ -533,7 +541,7 @@ export function ProfilePage(): ReactElement {
                                           {...field}
                                           value={field.value ?? ''}
                                           rows={4}
-                                          className="pl-14 pt-5 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 resize-none transition-all"
+                                          className="pl-14 pt-5 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 resize-none transition-all"
                                           placeholder={t('userDetailManagement.enterDescription')}
                                         />
                                       </div>
@@ -551,7 +559,7 @@ export function ProfilePage(): ReactElement {
                       </TabsContent>
 
                       <TabsContent value="security" className="mt-0">
-                        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-10 border border-slate-200 dark:border-white/10 shadow-sm">
+                        <div className="bg-white/60 dark:bg-[#211629] backdrop-blur-xl rounded-3xl p-10 border border-slate-200 dark:border-white/10 shadow-sm">
                           <Form {...changePasswordForm}>
                             <form onSubmit={changePasswordForm.handleSubmit(handleChangePasswordSubmit)} className="space-y-6">
                               <FormField
@@ -568,7 +576,7 @@ export function ProfilePage(): ReactElement {
                                         <Input
                                           type={isCurrentPasswordVisible ? 'text' : 'password'}
                                           {...field}
-                                          className="pl-12 pr-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-orange-500 transition-all"
+                                          className="pl-12 pr-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-orange-500 transition-all"
                                           placeholder="••••••••"
                                         />
                                         <button
@@ -598,7 +606,7 @@ export function ProfilePage(): ReactElement {
                                         <Input
                                           type={isNewPasswordVisible ? 'text' : 'password'}
                                           {...field}
-                                          className="pl-12 pr-12 h-14 text-base rounded-xl bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-orange-500 transition-all"
+                                          className="pl-12 pr-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-orange-500 transition-all"
                                           placeholder={t('userDetailManagement.newPasswordPlaceholder')}
                                         />
                                         <button
@@ -668,7 +676,7 @@ export function ProfilePage(): ReactElement {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        <Card className="rounded-3xl border-slate-200 dark:border-white/20 bg-white/40 dark:bg-[#1D1726] backdrop-blur-xl shadow-lg">
+        <Card className="rounded-3xl border border-slate-300 dark:border-white/25 bg-white/40 dark:bg-[#1D1726] backdrop-blur-xl shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div className="space-y-1">
               <CardTitle className="text-lg font-black flex items-center gap-2">
@@ -680,7 +688,7 @@ export function ProfilePage(): ReactElement {
           </CardHeader>
           <CardContent className="space-y-6 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/10 shadow-md">
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/15 shadow-md">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-pink-100 dark:bg-pink-500/10 text-pink-600">
                     <MessageSquare size={20} />
@@ -690,7 +698,7 @@ export function ProfilePage(): ReactElement {
                 <div className="text-3xl font-black text-slate-900 dark:text-white">{kpis?.totalDemands || 0}</div>
               </div>
 
-              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/10 shadow-md">
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/15 shadow-md">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-500/10 text-blue-600">
                     <FileText size={20} />
@@ -700,7 +708,7 @@ export function ProfilePage(): ReactElement {
                 <div className="text-3xl font-black text-slate-900 dark:text-white">{kpis?.totalQuotations || 0}</div>
               </div>
 
-              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/10 shadow-md">
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/15 shadow-md">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600">
                     <CheckCircle size={20} />
@@ -736,7 +744,7 @@ export function ProfilePage(): ReactElement {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-slate-200 dark:border-white/20 bg-white/40 dark:bg-[#1D1726] backdrop-blur-xl shadow-lg">
+        <Card className="rounded-3xl border border-slate-300 dark:border-white/25 bg-white/40 dark:bg-[#1D1726] backdrop-blur-xl shadow-lg">
           <CardHeader>
             <CardTitle className="text-lg font-black flex items-center gap-2">
               <Activity size={20} className="text-orange-500" />
@@ -757,7 +765,7 @@ export function ProfilePage(): ReactElement {
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-500/5 border border-orange-500/10 group hover:bg-orange-500/10 transition-colors">
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-500/5 border border-orange-500/30 group hover:bg-orange-500/10 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-500/20">
                     <Zap size={20} />
@@ -774,6 +782,16 @@ export function ProfilePage(): ReactElement {
         </Card>
       </div>
 
+      <ProfilePictureEditor
+        image={selectedImage}
+        isOpen={isEditorOpen}
+        onClose={() => {
+          setIsEditorOpen(false);
+          setSelectedImage(null);
+        }}
+        onSave={handleSaveCroppedImage}
+        isSaving={uploadProfilePicture.isPending}
+      />
     </div>
   );
 }

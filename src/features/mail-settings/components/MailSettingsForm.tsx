@@ -77,7 +77,7 @@ export function MailSettingsForm({
 
   if (isLoading) {
     return (
-      <Card className="bg-white/70 dark:bg-[#190b20]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+      <Card className="bg-white/70 dark:bg-[#190b20]/60 backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
         <CardContent className="pt-6">
           <p className="text-muted-foreground text-sm font-medium">{t('common.loading')}</p>
         </CardContent>
@@ -88,7 +88,7 @@ export function MailSettingsForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <Card className="bg-white/70 dark:bg-[#180F22]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+        <Card className="bg-white/70 dark:bg-[#180F22]/60 backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
           <CardContent className="space-y-6 pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
@@ -139,7 +139,7 @@ export function MailSettingsForm({
               control={form.control}
               name="enableSsl"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-xl border border-slate-200 dark:bg-[#180F22] dark:border-[#3b3142] p-4 px-3">
+                <FormItem className="flex flex-row items-center justify-between rounded-xl border border-slate-300/50 dark:bg-[#180F22] dark:border-white/10 p-4 px-3">
                   <div className="space-y-0.5">
                     <FormLabel className="text-sm font-medium">
                       {t('mailSettings.Fields.EnableSsl')}

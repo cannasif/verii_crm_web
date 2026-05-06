@@ -4,8 +4,9 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { DataTableActionBar, type DataTableGridColumn, DescriptionCell } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
@@ -347,7 +348,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
               visibleColumnKeys={orderedVisibleColumns}
               rows={currentPageRows}
               rowKey={(r) => r.id}
-              renderCell={(row, key) => {
+              renderCell={(row, key, colWidth) => {
                 const val = row[key];
                 if (key === 'documentType') return getDocumentTypeLabel(t, row.documentType);
                 if (key === 'isActive') {
@@ -361,6 +362,10 @@ export function ApprovalFlowManagementPage(): ReactElement {
                       {row.isActive ? t('approvalFlow.active') : t('approvalFlow.inactive')}
                     </span>
                   );
+                }
+                if (key === 'description') {
+                  const content = String(val ?? '');
+                  return <DescriptionCell content={content} colWidth={colWidth} />;
                 }
                 if (val == null && val !== 0) return '-';
                 if (key === 'id') return `#${val}`;

@@ -65,7 +65,7 @@ interface TitleTableProps {
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<TitleDto>[] => [
   { key: 'id', label: t('table.id'), type: 'id', className: 'w-[100px]' },
-  { key: 'titleName', label: t('table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
+  { key: 'titleName', label: t('table.name'), type: 'text', className: 'w-[150px] font-medium' },
   { key: 'code', label: t('table.code'), type: 'text', className: 'w-[140px]' },
   { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'w-[160px]' },
   { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'w-[160px]' },

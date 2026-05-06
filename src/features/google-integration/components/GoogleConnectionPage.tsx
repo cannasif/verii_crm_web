@@ -71,7 +71,7 @@ export function GoogleConnectionPage(): ReactElement {
         </p>
       </div>
 
-      <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+      <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
         <CardHeader className="flex flex-row items-center space-y-0 pb-4">
           <CardTitle className="flex items-center gap-2">
             {t('connection.statusCardTitle')}:
@@ -82,7 +82,7 @@ export function GoogleConnectionPage(): ReactElement {
               </span>
             ) : (
               <>
-                <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#26122b] px-2 py-1 text-sm font-medium ml-1 text-foreground">
+                <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#26122b] px-2 py-1 text-sm font-medium ml-1 text-foreground">
                   {isConnected ? t('connection.connected') : t('connection.notConnected')}
                 </div>
                 {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -97,19 +97,19 @@ export function GoogleConnectionPage(): ReactElement {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-sm">
                 <div>
                   <p className="text-muted-foreground mb-1.5">{t('connection.googleEmailLabel')}</p>
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2">
+                  <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-2">
                     <p className="font-medium break-words">{status?.googleEmail || '-'}</p>
                   </div>
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-1.5">{t('connection.expiresAtLabel')}</p>
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2">
+                  <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-2">
                     <p className="font-medium">{formatDate(status?.expiresAt)}</p>
                   </div>
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-1.5">{t('connection.scopeLabel')}</p>
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2">
+                  <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-2">
                     <p className="font-medium break-words">{scopesText}</p>
                   </div>
                 </div>

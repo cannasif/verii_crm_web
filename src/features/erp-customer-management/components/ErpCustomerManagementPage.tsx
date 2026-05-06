@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { DataTableActionBar, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
@@ -287,77 +287,79 @@ export function ErpCustomerManagementPage(): ReactElement {
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-            <ErpCustomerTable
-              columns={columns}
-              visibleColumnKeys={orderedVisibleColumns}
-              rows={currentPageRows}
-              rowKey={(r) => r.customerCode}
-              renderCell={(row, key) => {
-                const val = row[key];
-                if (val == null && val !== 0) return '-';
-                if (key === 'website' && val) {
-                  return (
-                    <a href={String(val)} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
-                      {String(val)}
-                    </a>
+            <ManagementDataTableChrome>
+              <ErpCustomerTable
+                columns={columns}
+                visibleColumnKeys={orderedVisibleColumns}
+                rows={currentPageRows}
+                rowKey={(r) => r.customerCode}
+                renderCell={(row, key) => {
+                  const val = row[key];
+                  if (val == null && val !== 0) return '-';
+                  if (key === 'website' && val) {
+                    return (
+                      <a href={String(val)} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
+                        {String(val)}
+                      </a>
+                    );
+                  }
+                  return String(val);
+                }}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={(k) => {
+                  if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+                  else {
+                    setSortBy(k);
+                    setSortDirection('asc');
+                  }
+                }}
+                renderSortIcon={(k) => {
+                  if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
+                  return sortDirection === 'asc' ? (
+                    <ArrowUp className="h-3.5 w-3.5 text-foreground" />
+                  ) : (
+                    <ArrowDown className="h-3.5 w-3.5 text-foreground" />
                   );
-                }
-                return String(val);
-              }}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-              onSort={(k) => {
-                if (sortBy === k) setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-                else {
-                  setSortBy(k);
-                  setSortDirection('asc');
-                }
-              }}
-              renderSortIcon={(k) => {
-                if (sortBy !== k) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
-                return sortDirection === 'asc' ? (
-                  <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-                ) : (
-                  <ArrowDown className="h-3.5 w-3.5 text-foreground" />
-                );
-              }}
-              isLoading={isLoading}
-              loadingText={t('loading')}
-              errorText={t('noData')}
-              emptyText={t('noData')}
-              minTableWidthClassName="min-w-[800px] lg:min-w-[1100px]"
-              showActionsColumn={false}
-              onRowClick={handleRowClick}
-              rowClassName="group cursor-pointer"
-              pageSize={pageSize}
-              pageSizeOptions={PAGE_SIZE_OPTIONS}
-              onPageSizeChange={(s) => {
-                setPageSize(s);
-                setPageNumber(1);
-              }}
-              pageNumber={pageNumber}
-              totalPages={totalPages}
-              hasPreviousPage={pageNumber > 1}
-              hasNextPage={pageNumber < totalPages}
-              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-              previousLabel={t('common.previous', { ns: 'common' })}
-              nextLabel={t('common.next', { ns: 'common' })}
-              paginationInfoText={t('common.table.showing', {
-                from: startRow,
-                to: endRow,
-                total: totalCount,
-              })}
-              disablePaginationButtons={false}
-              onColumnOrderChange={(newVisibleOrder) => {
-                setColumnOrder((currentOrder) => {
-                  const hiddenCols = currentOrder.filter(k => !newVisibleOrder.includes(k));
-                  const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                  saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                  return finalOrder;
-                });
-              }}
-            />
+                }}
+                isLoading={isLoading}
+                loadingText={t('loading')}
+                errorText={t('noData')}
+                emptyText={t('noData')}
+                minTableWidthClassName="min-w-[800px] lg:min-w-[1100px]"
+                showActionsColumn={false}
+                onRowClick={handleRowClick}
+                rowClassName="group cursor-pointer"
+                pageSize={pageSize}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                onPageSizeChange={(s) => {
+                  setPageSize(s);
+                  setPageNumber(1);
+                }}
+                pageNumber={pageNumber}
+                totalPages={totalPages}
+                hasPreviousPage={pageNumber > 1}
+                hasNextPage={pageNumber < totalPages}
+                onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
+                onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+                previousLabel={t('common.previous', { ns: 'common' })}
+                nextLabel={t('common.next', { ns: 'common' })}
+                paginationInfoText={t('common.table.showing', {
+                  from: startRow,
+                  to: endRow,
+                  total: totalCount,
+                })}
+                disablePaginationButtons={false}
+                onColumnOrderChange={(newVisibleOrder) => {
+                  setColumnOrder((currentOrder) => {
+                    const hiddenCols = currentOrder.filter(k => !newVisibleOrder.includes(k));
+                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                    return finalOrder;
+                  });
+                }}
+              />
+            </ManagementDataTableChrome>
           </div>
         </CardContent>
       </Card>

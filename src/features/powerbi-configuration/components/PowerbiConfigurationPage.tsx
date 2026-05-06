@@ -42,7 +42,7 @@ export function PowerbiConfigurationPage(): ReactElement {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-pink-100 dark:bg-white/5 border border-pink-200 dark:border-white/10">
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-pink-100 dark:bg-white/5 border border-slate-300 dark:border-white/20">
             <Loader2 className="h-8 w-8 animate-spin text-pink-600 dark:text-pink-400" />
           </div>
           <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{t('common.loading')}</p>
@@ -55,7 +55,7 @@ export function PowerbiConfigurationPage(): ReactElement {
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-slate-300 dark:border-white/20 relative overflow-hidden group">
             <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <BarChart2 className="h-7 w-7 text-pink-600 dark:text-pink-400 relative z-10" />
           </div>

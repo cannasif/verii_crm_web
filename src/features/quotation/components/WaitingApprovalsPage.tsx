@@ -18,8 +18,8 @@ import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import {
   DataTableGrid,
+  DataTableActionBar,
   ManagementDataTableChrome,
-  type DataTableActionBarProps,
   type DataTableGridColumn,
 } from '@/components/shared';
 import { Button } from '@/components/ui/button';
@@ -330,7 +330,7 @@ export function WaitingApprovalsPage(): ReactElement {
   };
 
   const renderActionsCell = (approval: ApprovalActionGetDto): ReactElement => (
-    <div className="flex justify-end gap-2">
+    <div className="flex justify-center gap-2">
       <Button
         variant="default"
         size="sm"
@@ -361,6 +361,11 @@ export function WaitingApprovalsPage(): ReactElement {
   );
 
   const handleGridRefresh = useCallback(async (): Promise<void> => {
+    setSearchTerm('');
+    setSearchResetKey((prev) => prev + 1);
+    setDraftFilterRows([]);
+    setAppliedFilterRows([]);
+    setPageNumber(1);
     await queryClient.invalidateQueries({ queryKey: [QUOTATION_QUERY_KEYS.WAITING_APPROVALS] });
   }, [queryClient]);
 
@@ -379,97 +384,13 @@ export function WaitingApprovalsPage(): ReactElement {
             <Clock className="h-5 w-5" />
             {t('waitingApprovals.title')}
           </CardTitle>
-        </CardHeader>
-        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
-          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-          <ManagementDataTableChrome>
-          <DataTableGrid<ApprovalActionGetDto, WaitingApprovalColumnKey>
-            actionBar={{
-              pageKey: PAGE_KEY,
-              userId: user?.id,
-              columns: baseColumns,
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: (newVisibleOrder) => {
-                setColumnOrder((currentOrder) => {
-                  const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
-                  const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                  saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                  return finalOrder;
-                });
-              },
-              exportFileName: 'quotation-waiting-approvals',
-              exportColumns,
-              exportRows,
-              getExportData,
-              filterColumns,
-              defaultFilterColumn: 'QuotationOfferNo',
-              draftFilterRows,
-              onDraftFilterRowsChange: setDraftFilterRows,
-              onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
-              onClearFilters: () => {
-                setDraftFilterRows([]);
-                setAppliedFilterRows([]);
-                setSearchResetKey((prev) => prev + 1);
-              },
-              translationNamespace: 'quotation',
-              appliedFilterCount: appliedFilters.length,
-              search: {
-                onSearchChange: setSearchTerm,
-                placeholder: t('common.search', { ns: 'common' }),
-                minLength: 1,
-                resetKey: searchResetKey,
-              },
-              refresh: {
-                onRefresh: () => {
-                  void handleGridRefresh();
-                },
-                isLoading: waitingApprovalsQuery.isFetching,
-                cooldownSeconds: 60,
-                label: t('list.refresh', { defaultValue: 'Yenile' }),
-              },
-            } satisfies DataTableActionBarProps}
-            columns={columns}
-            visibleColumnKeys={orderedVisibleColumns}
-            rows={currentPageRows}
-            rowKey={(row) => String(row.id)}
-            renderCell={renderCell}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={onSort}
-            renderSortIcon={renderSortIcon}
-            isLoading={waitingApprovalsQuery.isLoading || waitingApprovalsQuery.isFetching}
-            isError={waitingApprovalsQuery.isError}
-            loadingText={t('loading')}
-            errorText={t('loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-            emptyText={t('waitingApprovals.noApprovals')}
-            minTableWidthClassName="min-w-[1500px]"
-            showActionsColumn
-            actionsHeaderLabel={t('actions')}
-            renderActionsCell={renderActionsCell}
-            iconOnlyActions={false}
-            rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
-            onRowClick={(approval) => navigate(`/quotations/${getQuotationTargetId(approval)}`)}
-            onRowDoubleClick={(approval) => navigate(`/quotations/${getQuotationTargetId(approval)}`)}
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={setPageSize}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={hasPreviousPage}
-            hasNextPage={hasNextPage}
-            onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-            onNextPage={() => setPageNumber((prev) => prev + 1)}
-            previousLabel={t('previous')}
-            nextLabel={t('next')}
-            paginationInfoText={t('common.paginationInfo', {
-              ns: 'common',
-              start: startRow,
-              end: endRow,
-              total: totalCount,
-            })}
-            disablePaginationButtons={waitingApprovalsQuery.isFetching}
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
             onColumnOrderChange={(newVisibleOrder) => {
               setColumnOrder((currentOrder) => {
                 const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
@@ -478,9 +399,93 @@ export function WaitingApprovalsPage(): ReactElement {
                 return finalOrder;
               });
             }}
-            centerColumnHeaders
+            exportFileName="quotation-waiting-approvals"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            getExportData={getExportData}
+            filterColumns={filterColumns}
+            defaultFilterColumn="QuotationOfferNo"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+              setSearchResetKey((prev) => prev + 1);
+            }}
+            translationNamespace="quotation"
+            appliedFilterCount={appliedFilters.length}
+            search={{
+              onSearchChange: setSearchTerm,
+              placeholder: t('common.search', { ns: 'common' }),
+              minLength: 1,
+              resetKey: searchResetKey,
+            }}
+            refresh={{
+              onRefresh: () => {
+                void handleGridRefresh();
+              },
+              isLoading: waitingApprovalsQuery.isFetching,
+              cooldownSeconds: 60,
+              label: t('list.refresh', { defaultValue: 'Yenile' }),
+            }}
           />
-          </ManagementDataTableChrome>
+        </CardHeader>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+            <ManagementDataTableChrome>
+              <DataTableGrid<ApprovalActionGetDto, WaitingApprovalColumnKey>
+                columns={columns}
+                visibleColumnKeys={orderedVisibleColumns}
+                rows={currentPageRows}
+                rowKey={(row) => String(row.id)}
+                renderCell={renderCell}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={onSort}
+                renderSortIcon={renderSortIcon}
+                isLoading={waitingApprovalsQuery.isLoading || waitingApprovalsQuery.isFetching}
+                isError={waitingApprovalsQuery.isError}
+                loadingText={t('loading')}
+                errorText={t('loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                emptyText={t('waitingApprovals.noApprovals')}
+                minTableWidthClassName="min-w-[1500px]"
+                showActionsColumn
+                actionsHeaderLabel={t('actions')}
+                renderActionsCell={renderActionsCell}
+                iconOnlyActions={false}
+                rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
+                onRowClick={(approval) => navigate(`/quotations/${getQuotationTargetId(approval)}`)}
+                onRowDoubleClick={(approval) => navigate(`/quotations/${getQuotationTargetId(approval)}`)}
+                pageSize={pageSize}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                onPageSizeChange={setPageSize}
+                pageNumber={pageNumber}
+                totalPages={totalPages}
+                hasPreviousPage={hasPreviousPage}
+                hasNextPage={hasNextPage}
+                onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                onNextPage={() => setPageNumber((prev) => prev + 1)}
+                previousLabel={t('previous')}
+                nextLabel={t('next')}
+                paginationInfoText={t('common.paginationInfo', {
+                  ns: 'common',
+                  start: startRow,
+                  end: endRow,
+                  total: totalCount,
+                })}
+                disablePaginationButtons={waitingApprovalsQuery.isFetching}
+                centerColumnHeaders
+                onColumnOrderChange={(newVisibleOrder) => {
+                  setColumnOrder((currentOrder) => {
+                    const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                    return finalOrder;
+                  });
+                }}
+              />
+            </ManagementDataTableChrome>
           </div>
         </CardContent>
       </Card>

@@ -1,11 +1,11 @@
 import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
+import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
-import { type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
@@ -30,6 +30,7 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { applyProductPricingFilters, PRODUCT_PRICING_FILTER_COLUMNS } from '../types/product-pricing-filter.types';
 import { queryKeys } from '../utils/query-keys';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+
 
 const EMPTY_ITEMS: ProductPricingGetDto[] = [];
 const PAGE_KEY = 'product-pricing-management';
@@ -327,66 +328,74 @@ export function ProductPricingManagementPage(): ReactElement {
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title')}</CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
+            exportFileName="product-pricings"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            getExportData={getExportData}
+            filterColumns={filterColumns}
+            defaultFilterColumn="erpProductCode"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+              setSearchResetKey((value) => value + 1);
+            }}
+            translationNamespace="product-pricing-management"
+            appliedFilterCount={appliedFilterCount}
+            search={{
+              onSearchChange: setSearchTerm,
+              placeholder: t('searchPlaceholder'),
+              minLength: 1,
+              resetKey: searchResetKey,
+            }}
+            refresh={{
+              onRefresh: () => {
+                void handleGridRefresh();
+              },
+              isLoading,
+              cooldownSeconds: 60,
+              label: resolveLabel(t, 'common.refresh', 'Yenile'),
+            }}
+            leftSlot={
+              <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl">
+                {(['all', 'active', 'archive'] as const).map((filter) => (
+                  <Button
+                    key={filter}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveFilter(filter)}
+                    className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 transition-all ${activeFilter === filter
+                      ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                      }`}
+                  >
+                    {t(`filter.${filter}`)}
+                  </Button>
+                ))}
+              </div>
+            }
+          />
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <ProductPricingTable
-              actionBar={{
-                pageKey: PAGE_KEY,
-                userId: user?.id,
-                columns: baseColumns,
-                visibleColumns,
-                columnOrder,
-                onVisibleColumnsChange: setVisibleColumns,
-                onColumnOrderChange: setColumnOrder,
-                exportFileName: 'product-pricings',
-                exportColumns,
-                exportRows,
-                getExportData,
-                filterColumns,
-                defaultFilterColumn: 'erpProductCode',
-                draftFilterRows,
-                onDraftFilterRowsChange: setDraftFilterRows,
-                onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
-                onClearFilters: () => {
-                  setDraftFilterRows([]);
-                  setAppliedFilterRows([]);
-                },
-                translationNamespace: 'product-pricing-management',
-                appliedFilterCount,
-                search: {
-                  onSearchChange: setSearchTerm,
-                  placeholder: t('searchPlaceholder'),
-                  minLength: 1,
-                  resetKey: searchResetKey,
-                },
-                refresh: {
-                  onRefresh: () => {
-                    void handleGridRefresh();
-                  },
-                  isLoading,
-                  cooldownSeconds: 60,
-                  label: resolveLabel(t, 'common.refresh', 'Yenile'),
-                },
-                leftSlot: (
-                  <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl">
-                    {(['all', 'active', 'archive'] as const).map((filter) => (
-                      <Button
-                        key={filter}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setActiveFilter(filter)}
-                        className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 transition-all ${activeFilter === filter
-                          ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
-                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                          }`}
-                      >
-                        {t(`filter.${filter}`)}
-                      </Button>
-                    ))}
-                  </div>
-                ),
-              } satisfies DataTableActionBarProps}
               columns={columns}
               visibleColumnKeys={orderedVisibleColumns}
               rows={currentPageRows}

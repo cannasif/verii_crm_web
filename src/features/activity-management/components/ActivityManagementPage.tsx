@@ -32,8 +32,9 @@ import {
   MessageSquareText,
   Shapes,
 } from 'lucide-react';
+
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
+import { DataTableGrid, DataTableActionBar, type DataTableGridColumn, DescriptionCell } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
@@ -426,11 +427,15 @@ export function ActivityManagementPage(): ReactElement {
     [tableColumns]
   );
 
-  const renderCell = (activity: ActivityDto, key: string): ReactNode => {
+  const renderCell = (activity: ActivityDto, key: string, colWidth?: number): ReactNode => {
     const value = activity[key as keyof ActivityDto];
 
     if (key === 'status') return <ActivityStatusBadge status={activity.status} />;
     if (key === 'priority') return <ActivityPriorityBadge priority={activity.priority} />;
+    if (key === 'subject') {
+      const content = String(value ?? '');
+      return <DescriptionCell content={content} colWidth={colWidth} />;
+    }
     if (key === 'startDateTime') {
       const dateValue =
         typeof value === 'string' || typeof value === 'number' || value instanceof Date ? value : null;
@@ -619,65 +624,65 @@ export function ActivityManagementPage(): ReactElement {
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
             {t('table.title', { defaultValue: t('table.title') })}
           </CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={(newVisibleOrder: string[]) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
+            exportFileName="activities"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            getExportData={getExportData}
+            filterColumns={filterColumns}
+            defaultFilterColumn="Subject"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            filterLogic={draftFilterLogic}
+            onFilterLogicChange={setDraftFilterLogic}
+            onApplyFilters={() => {
+              setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows as ActivityFilterRow[]));
+              setAppliedFilterLogic(draftFilterLogic);
+              setPageNumber(1);
+            }}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setDraftFilterLogic('and');
+              setAppliedAdvancedFilters([]);
+              setAppliedFilterLogic('and');
+              setPageNumber(1);
+            }}
+            translationNamespace="activity-management"
+            appliedFilterCount={appliedFilterCount}
+            search={{
+              onSearchChange: setSearchTerm,
+              placeholder: t('search', { ns: 'common' }),
+              minLength: 1,
+              resetKey: searchResetKey,
+            }}
+            refresh={{
+              onRefresh: () => {
+                void handleGridRefresh();
+              },
+              isLoading: activitiesLoading,
+              cooldownSeconds: 60,
+              label: t('refresh', { ns: 'common' }),
+            }}
+          />
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
               <DataTableGrid<ActivityDto, string>
-                actionBar={{
-                  pageKey: PAGE_KEY,
-                  userId: user?.id,
-                  columns: baseColumns,
-                  visibleColumns,
-                  columnOrder,
-                  onVisibleColumnsChange: setVisibleColumns,
-                  onColumnOrderChange: (newVisibleOrder) => {
-                    setColumnOrder((currentOrder) => {
-                      const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
-                      const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                      saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                      return finalOrder;
-                    });
-                  },
-                  exportFileName: 'activities',
-                  exportColumns,
-                  exportRows,
-                  getExportData,
-                  filterColumns,
-                  defaultFilterColumn: 'Subject',
-                  draftFilterRows,
-                  onDraftFilterRowsChange: setDraftFilterRows,
-                  filterLogic: draftFilterLogic,
-                  onFilterLogicChange: setDraftFilterLogic,
-                  onApplyFilters: () => {
-                    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows as ActivityFilterRow[]));
-                    setAppliedFilterLogic(draftFilterLogic);
-                    setPageNumber(1);
-                  },
-                  onClearFilters: () => {
-                    setDraftFilterRows([]);
-                    setDraftFilterLogic('and');
-                    setAppliedAdvancedFilters([]);
-                    setAppliedFilterLogic('and');
-                    setPageNumber(1);
-                  },
-                  translationNamespace: 'activity-management',
-                  appliedFilterCount,
-                  search: {
-                    onSearchChange: setSearchTerm,
-                    placeholder: t('search', { ns: 'common' }),
-                    minLength: 1,
-                    resetKey: searchResetKey,
-                  },
-                  refresh: {
-                    onRefresh: () => {
-                      void handleGridRefresh();
-                    },
-                    isLoading: activitiesLoading,
-                    cooldownSeconds: 60,
-                    label: t('refresh', { ns: 'common' }),
-                  },
-                } satisfies DataTableActionBarProps}
                 columns={columns}
                 visibleColumnKeys={orderedVisibleColumns}
                 rows={activities}

@@ -96,7 +96,7 @@ type PdfReportTemplateColumnKey =
 
 const TABLE_COLUMNS: Array<{ key: PdfReportTemplateColumnKey; labelKey: string; className?: string; sortable?: boolean }> = [
   { key: 'id', labelKey: 'reportDesigner.list.id', className: 'w-[80px] font-mono text-slate-500', sortable: true },
-  { key: 'title', labelKey: 'pdfReportDesigner.title', className: 'min-w-[260px]', sortable: true },
+  { key: 'title', labelKey: 'pdfReportDesigner.title', className: 'w-[350px]', sortable: true },
   { key: 'layoutPreset', labelKey: 'pdfReportDesigner.layoutPreset.label', className: 'w-[180px]', sortable: false },
   { key: 'ruleType', labelKey: 'pdfReportDesigner.documentType', className: 'w-[180px]', sortable: true },
   { key: 'isActive', labelKey: 'pdfReportDesigner.active', className: 'w-[120px]', sortable: true },
@@ -513,6 +513,7 @@ export function PdfReportDesignerListPage(): ReactElement {
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <ManagementDataTableChrome>
               <DataTableGrid<ReportTemplateListItemDto, PdfReportTemplateColumnKey>
+                centerColumnHeaders
                 columns={columns}
                 visibleColumnKeys={orderedVisibleColumns}
                 rows={templates}

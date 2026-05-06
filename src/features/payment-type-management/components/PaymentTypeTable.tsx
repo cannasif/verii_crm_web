@@ -66,7 +66,7 @@ interface PaymentTypeTableProps {
 export const getColumnsConfig = (t: TFunction): ColumnDef<PaymentTypeDto>[] => [
   { key: 'id', label: t('table.id'), type: 'id', className: 'w-[100px]' },
   { key: 'name', label: t('table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
-  { key: 'description', label: t('table.description'), type: 'text', className: 'min-w-[200px]' },
+  { key: 'description', label: t('table.description'), type: 'text', className: 'min-w-[200px] max-w-[300px]' },
   { key: 'createdDate', label: t('createdDate'), type: 'date', className: 'w-[160px]' },
   { key: 'updatedDate', label: t('updatedDate'), type: 'date', className: 'w-[160px]' },
   { key: 'isDeleted', label: t('table.status'), type: 'status', className: 'w-[120px]' },

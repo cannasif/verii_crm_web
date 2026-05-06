@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { KeyRound, Loader2, Plus, RefreshCw, Settings, ShieldCheck, Users2 } from 'lucide-react';
+import { KeyRound, Loader2, Plus, RefreshCw, Settings, ShieldCheck, Users2, Edit2, Trash2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DataTableActionBar,
@@ -217,21 +217,23 @@ export function PermissionGroupsPage(): ReactElement {
           <Button
             variant="ghost"
             size="sm"
-            className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 disabled:opacity-50 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
+            className="rounded-xl text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-900/30 font-semibold"
             onClick={() => handlePermissionsClick(item)}
             title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
             disabled={item.isSystemAdmin}
           >
-            <Settings size={16} />
+            <Settings size={16} className="mr-2" />
+            {t('permissionGroups.managePermissions', { defaultValue: 'Yetkiler' })}
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 disabled:opacity-50 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
+            className="rounded-xl text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 font-semibold"
             onClick={() => handleEditClick(item)}
             disabled={item.isSystemAdmin}
             title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
           >
+            <Edit2 size={16} className="mr-2" />
             {t('common.edit')}
           </Button>
         </>
@@ -240,12 +242,13 @@ export function PermissionGroupsPage(): ReactElement {
         <Button
           variant="ghost"
           size="sm"
-          className="rounded-xl text-red-600 hover:bg-red-50 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-950/30"
+          className="rounded-xl text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 font-semibold"
           onClick={() => handleDeleteClick(item)}
           disabled={item.isSystemAdmin}
           title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
         >
-          {t('common.delete.action')}
+          <Trash2 size={16} className="mr-2" />
+          {t('common.delete', { defaultValue: t('common.delete.action') })}
         </Button>
       )}
     </div>

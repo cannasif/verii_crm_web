@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AlertCircle, Eye, Loader2, RefreshCw, SearchX } from 'lucide-react';
+import { AlertCircle, Eye, Loader2, RefreshCw, SearchX, List } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -232,14 +232,13 @@ export function AuditLogsPage(): ReactElement {
         </div>
         {traceFilter ? (
           <Button
-            variant="outline"
-            className="rounded-xl"
+            className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0 border-0"
             onClick={() => {
               setTraceFilter(null);
               setPageNumber(1);
             }}
           >
-            <SearchX className="mr-2 size-4" />
+            <SearchX className="mr-2 size-4 stroke-[3px]" />
             {t('auditLogs.clearTraceFilter')}
           </Button>
         ) : null}
@@ -404,6 +403,7 @@ export function AuditLogsPage(): ReactElement {
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <ManagementDataTableChrome>
               <DataTableGrid<AuditLogDto, AuditLogColumnKey>
+                centerColumnHeaders
                 columns={columns}
                 visibleColumnKeys={columnOrder.filter((key) => visibleColumns.includes(key)) as AuditLogColumnKey[]}
                 rows={items}
@@ -434,21 +434,22 @@ export function AuditLogsPage(): ReactElement {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
+                      className="rounded-xl text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 font-semibold"
                       onClick={() => setSelectedAuditLogId(row.id)}
                     >
-                      <Eye className="mr-2 size-4" />
+                      <Eye size={16} className="mr-2" />
                       {t('auditLogs.viewDetail')}
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="rounded-xl text-slate-600 hover:bg-amber-50 hover:text-amber-700 dark:text-slate-300 dark:hover:bg-amber-900/30 dark:hover:text-amber-300"
+                      className="rounded-xl text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30 font-semibold"
                       onClick={() => {
                         setTraceFilter(row.traceId);
                         setPageNumber(1);
                       }}
                     >
+                      <List size={16} className="mr-2" />
                       {t('auditLogs.filterTrace')}
                     </Button>
                   </div>
