@@ -87,3 +87,35 @@ export interface WhatsappQuoteDraftDto {
   createdDate: string;
   lines: WhatsappQuoteDraftLineDto[];
 }
+
+export interface WhatsappQuoteDraftConvertRequestDto {
+  potentialCustomerId?: number | null;
+  erpCustomerCode?: string | null;
+  deliveryDate?: string | null;
+  representativeId?: number | null;
+  paymentTypeId?: number | null;
+  documentSerialTypeId: number;
+  offerType: string;
+  offerDate?: string | null;
+  currency: string;
+  salesTypeDefinitionId?: number | null;
+  description?: string | null;
+  sendWhatsappMessage: boolean;
+  attachPdf: boolean;
+  customerMessage?: string | null;
+}
+
+export interface WhatsappQuoteDraftSendRequestDto {
+  attachPdf: boolean;
+  customerMessage?: string | null;
+}
+
+export interface WhatsappQuoteDraftActionResultDto {
+  draftId: number;
+  quotationId?: number | null;
+  offerNo?: string | null;
+  status: string;
+  whatsappMessageSent: boolean;
+  pdfSent: boolean;
+  message?: string | null;
+}

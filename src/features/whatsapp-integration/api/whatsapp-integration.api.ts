@@ -4,6 +4,9 @@ import type {
   UpdateWhatsappIntegrationSettingsDto,
   WhatsappIntegrationLogDto,
   WhatsappQuoteDraftDto,
+  WhatsappQuoteDraftActionResultDto,
+  WhatsappQuoteDraftConvertRequestDto,
+  WhatsappQuoteDraftSendRequestDto,
   WhatsappIntegrationStatusDto,
   WhatsappSendMessageResultDto,
   WhatsappTestMessageDto,
@@ -131,5 +134,37 @@ export const whatsappIntegrationApi = {
     }
 
     throw new Error(getErrorMessage(response, 'WhatsApp quote drafts could not be loaded.'));
+  },
+
+  convertQuoteDraft: async (
+    draftId: number,
+    payload: WhatsappQuoteDraftConvertRequestDto
+  ): Promise<WhatsappQuoteDraftActionResultDto> => {
+    const response = await api.post<ApiResponse<WhatsappQuoteDraftActionResultDto>>(
+      `${WHATSAPP_INTEGRATION_BASE}/quote-drafts/${draftId}/convert`,
+      payload
+    );
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(getErrorMessage(response, 'WhatsApp quote draft could not be converted.'));
+  },
+
+  sendQuoteDraft: async (
+    draftId: number,
+    payload: WhatsappQuoteDraftSendRequestDto
+  ): Promise<WhatsappQuoteDraftActionResultDto> => {
+    const response = await api.post<ApiResponse<WhatsappQuoteDraftActionResultDto>>(
+      `${WHATSAPP_INTEGRATION_BASE}/quote-drafts/${draftId}/send`,
+      payload
+    );
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(getErrorMessage(response, 'WhatsApp quote draft could not be sent.'));
   },
 };
