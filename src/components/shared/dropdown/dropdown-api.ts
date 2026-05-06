@@ -118,11 +118,10 @@ export const dropdownApi = {
     return getDropdownPageByQuery<CustomerDto>('/api/Customer', request);
   },
   getStockPage: (request: DropdownPageRequest): Promise<PagedResponse<StockGetDto>> => {
-    // Stock API expects `page` instead of `pageNumber` for dropdown requests.
-    return getDropdownPage<StockGetDto>('/api/Stock', request, 'page');
+    return getDropdownPageByQuery<StockGetDto>('/api/Stock', request);
   },
   getStockWithImagesPage: (request: DropdownPageRequest): Promise<PagedResponse<StockGetWithMainImageDto>> => {
-    return getDropdownPage<StockGetWithMainImageDto>('/api/Stock/withImages', request, 'page');
+    return getDropdownPageByQuery<StockGetWithMainImageDto>('/api/Stock/withImages', request);
   },
   getCountryPage: (request: DropdownPageRequest): Promise<PagedResponse<CountryDto>> => {
     return getDropdownPageByQuery<CountryDto>('/api/Country', request);

@@ -1,6 +1,5 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
-import { appendPagedQueryParams } from '@/utils/query-params';
 import type {
   StockGetDto,
   StockGetWithMainImageDto,
@@ -15,13 +14,15 @@ import type {
 
 export const stockApi = {
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<StockGetDto>> => {
-    const queryParams = appendPagedQueryParams(new URLSearchParams(), params, {
-      pageParamName: 'page',
+    const response = await api.post<ApiResponse<PagedResponse<StockGetDto>>>('/api/Stock/query', {
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 10,
+      search: params.search ?? '',
+      sortBy: params.sortBy ?? 'Id',
+      sortDirection: params.sortDirection ?? 'asc',
+      filterLogic: params.filterLogic ?? 'and',
+      filters: params.filters ?? [],
     });
-
-    const response = await api.get<ApiResponse<PagedResponse<StockGetDto>>>(
-      `/api/Stock?${queryParams.toString()}`
-    );
     
     if (!response.success) {
       throw new Error(response.message || 'Stok listesi yüklenemedi');
@@ -222,13 +223,15 @@ export const stockApi = {
   },
 
   getListWithImages: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<StockGetWithMainImageDto>> => {
-    const queryParams = appendPagedQueryParams(new URLSearchParams(), params, {
-      pageParamName: 'page',
+    const response = await api.post<ApiResponse<PagedResponse<StockGetWithMainImageDto>>>('/api/Stock/withImages/query', {
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 10,
+      search: params.search ?? '',
+      sortBy: params.sortBy ?? 'Id',
+      sortDirection: params.sortDirection ?? 'asc',
+      filterLogic: params.filterLogic ?? 'and',
+      filters: params.filters ?? [],
     });
-
-    const response = await api.get<ApiResponse<PagedResponse<StockGetWithMainImageDto>>>(
-      `/api/Stock/withImages?${queryParams.toString()}`
-    );
     
     if (!response.success) {
       throw new Error(response.message || 'Görselli stok listesi yüklenemedi');
