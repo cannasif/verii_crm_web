@@ -4,19 +4,17 @@ import type { ApprovalUserRoleDto, CreateApprovalUserRoleDto, UpdateApprovalUser
 
 export const approvalUserRoleApi = {
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<ApprovalUserRoleDto>> => {
-    const queryParams = new URLSearchParams();
-    if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
-    if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-    if (params.search) queryParams.append('search', params.search);
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params.filters) {
-      queryParams.append('filters', JSON.stringify(params.filters));
-      queryParams.append('filterLogic', params.filterLogic ?? 'and');
-    }
-
-    const response = await api.get<ApiResponse<PagedResponse<ApprovalUserRoleDto>>>(
-      `/api/ApprovalUserRole?${queryParams.toString()}`
+    const response = await api.post<ApiResponse<PagedResponse<ApprovalUserRoleDto>>>(
+      '/api/ApprovalUserRole/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
     );
     
     if (response.success && response.data) {
