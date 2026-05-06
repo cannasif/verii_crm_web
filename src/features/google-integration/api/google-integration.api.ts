@@ -61,33 +61,19 @@ export const googleIntegrationApi = {
   getLogs: async (
     query: Omit<PagedParams, 'filters'> & { filters?: PagedParams['filters'] | Record<string, unknown>; errorsOnly?: boolean } = {}
   ): Promise<PagedResponse<GoogleIntegrationLogDto>> => {
-    const queryParams = new URLSearchParams();
-    if (query.pageNumber && query.pageNumber > 0) {
-      queryParams.set('pageNumber', String(query.pageNumber));
-    }
-    if (query.pageSize && query.pageSize > 0) {
-      queryParams.set('pageSize', String(query.pageSize));
-    }
-    if (query.errorsOnly) {
-      queryParams.set('errorsOnly', 'true');
-    }
-    if (query.sortBy) {
-      queryParams.set('sortBy', query.sortBy);
-    }
-    if (query.sortDirection) {
-      queryParams.set('sortDirection', query.sortDirection);
-    }
-    if (Array.isArray(query.filters) && query.filters.length > 0) {
-      queryParams.set('filters', JSON.stringify(query.filters));
-      queryParams.set('filterLogic', query.filterLogic ?? 'and');
-    } else if (query.filters && Object.keys(query.filters).length > 0) {
-      queryParams.set('filters', JSON.stringify(query.filters));
-      queryParams.set('filterLogic', query.filterLogic ?? 'and');
-    }
-
-    const suffix = queryParams.toString();
-    const endpoint = `${GOOGLE_INTEGRATION_BASE}/logs${suffix ? `?${suffix}` : ''}`;
-    const response = await api.get<ApiResponse<PagedResponse<GoogleIntegrationLogDto>>>(endpoint);
+    const response = await api.post<ApiResponse<PagedResponse<GoogleIntegrationLogDto>>>(
+      `${GOOGLE_INTEGRATION_BASE}/logs/query`,
+      {
+        pageNumber: query.pageNumber ?? 1,
+        pageSize: query.pageSize ?? 10,
+        search: query.search ?? '',
+        sortBy: query.sortBy ?? 'Id',
+        sortDirection: query.sortDirection ?? 'desc',
+        filterLogic: query.filterLogic ?? 'and',
+        filters: query.filters ?? [],
+        errorsOnly: query.errorsOnly ?? false,
+      }
+    );
     if (response.success && response.data) {
       const pagedData = response.data as PagedResponse<GoogleIntegrationLogDto> & {
         items?: GoogleIntegrationLogDto[];
@@ -146,36 +132,20 @@ export const googleIntegrationApi = {
       errorsOnly?: boolean;
     } = {}
   ): Promise<PagedResponse<GoogleCustomerMailLogDto>> => {
-    const queryParams = new URLSearchParams();
-    if (query.pageNumber && query.pageNumber > 0) {
-      queryParams.set('pageNumber', String(query.pageNumber));
-    }
-    if (query.pageSize && query.pageSize > 0) {
-      queryParams.set('pageSize', String(query.pageSize));
-    }
-    if (query.customerId && query.customerId > 0) {
-      queryParams.set('customerId', String(query.customerId));
-    }
-    if (query.errorsOnly) {
-      queryParams.set('errorsOnly', 'true');
-    }
-    if (query.sortBy) {
-      queryParams.set('sortBy', query.sortBy);
-    }
-    if (query.sortDirection) {
-      queryParams.set('sortDirection', query.sortDirection);
-    }
-    if (Array.isArray(query.filters) && query.filters.length > 0) {
-      queryParams.set('filters', JSON.stringify(query.filters));
-      queryParams.set('filterLogic', query.filterLogic ?? 'and');
-    } else if (query.filters && Object.keys(query.filters).length > 0) {
-      queryParams.set('filters', JSON.stringify(query.filters));
-      queryParams.set('filterLogic', query.filterLogic ?? 'and');
-    }
-
-    const suffix = queryParams.toString();
-    const endpoint = `${GOOGLE_CUSTOMER_MAIL_BASE}/logs${suffix ? `?${suffix}` : ''}`;
-    const response = await api.get<ApiResponse<PagedResponse<GoogleCustomerMailLogDto>>>(endpoint);
+    const response = await api.post<ApiResponse<PagedResponse<GoogleCustomerMailLogDto>>>(
+      `${GOOGLE_CUSTOMER_MAIL_BASE}/logs/query`,
+      {
+        pageNumber: query.pageNumber ?? 1,
+        pageSize: query.pageSize ?? 10,
+        search: query.search ?? '',
+        sortBy: query.sortBy ?? 'Id',
+        sortDirection: query.sortDirection ?? 'desc',
+        filterLogic: query.filterLogic ?? 'and',
+        filters: query.filters ?? [],
+        customerId: query.customerId ?? undefined,
+        errorsOnly: query.errorsOnly ?? false,
+      }
+    );
 
     if (response.success && response.data) {
       const pagedData = response.data as PagedResponse<GoogleCustomerMailLogDto> & {

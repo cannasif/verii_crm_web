@@ -77,25 +77,19 @@ export const whatsappIntegrationApi = {
       direction?: string;
     } = {}
   ): Promise<PagedResponse<WhatsappIntegrationLogDto>> => {
-    const queryParams = new URLSearchParams();
-    if (query.pageNumber && query.pageNumber > 0) queryParams.set('pageNumber', String(query.pageNumber));
-    if (query.pageSize && query.pageSize > 0) queryParams.set('pageSize', String(query.pageSize));
-    if (query.search?.trim()) queryParams.set('search', query.search.trim());
-    if (query.errorsOnly) queryParams.set('errorsOnly', 'true');
-    if (query.direction?.trim()) queryParams.set('direction', query.direction.trim());
-    if (query.sortBy) queryParams.set('sortBy', query.sortBy);
-    if (query.sortDirection) queryParams.set('sortDirection', query.sortDirection);
-    if (Array.isArray(query.filters) && query.filters.length > 0) {
-      queryParams.set('filters', JSON.stringify(query.filters));
-      queryParams.set('filterLogic', query.filterLogic ?? 'and');
-    } else if (query.filters && Object.keys(query.filters).length > 0) {
-      queryParams.set('filters', JSON.stringify(query.filters));
-      queryParams.set('filterLogic', query.filterLogic ?? 'and');
-    }
-
-    const suffix = queryParams.toString();
-    const response = await api.get<ApiResponse<PagedResponse<WhatsappIntegrationLogDto> & { items?: WhatsappIntegrationLogDto[] }>>(
-      `${WHATSAPP_INTEGRATION_BASE}/logs${suffix ? `?${suffix}` : ''}`
+    const response = await api.post<ApiResponse<PagedResponse<WhatsappIntegrationLogDto> & { items?: WhatsappIntegrationLogDto[] }>>(
+      `${WHATSAPP_INTEGRATION_BASE}/logs/query`,
+      {
+        pageNumber: query.pageNumber ?? 1,
+        pageSize: query.pageSize ?? 10,
+        search: query.search ?? '',
+        sortBy: query.sortBy ?? 'Id',
+        sortDirection: query.sortDirection ?? 'desc',
+        filterLogic: query.filterLogic ?? 'and',
+        filters: query.filters ?? [],
+        errorsOnly: query.errorsOnly ?? false,
+        direction: query.direction ?? undefined,
+      }
     );
 
     if (response.success && response.data) {
@@ -110,23 +104,17 @@ export const whatsappIntegrationApi = {
       filters?: PagedParams['filters'] | Record<string, unknown>;
     } = {}
   ): Promise<PagedResponse<WhatsappQuoteDraftDto>> => {
-    const queryParams = new URLSearchParams();
-    if (query.pageNumber && query.pageNumber > 0) queryParams.set('pageNumber', String(query.pageNumber));
-    if (query.pageSize && query.pageSize > 0) queryParams.set('pageSize', String(query.pageSize));
-    if (query.search?.trim()) queryParams.set('search', query.search.trim());
-    if (query.sortBy) queryParams.set('sortBy', query.sortBy);
-    if (query.sortDirection) queryParams.set('sortDirection', query.sortDirection);
-    if (Array.isArray(query.filters) && query.filters.length > 0) {
-      queryParams.set('filters', JSON.stringify(query.filters));
-      queryParams.set('filterLogic', query.filterLogic ?? 'and');
-    } else if (query.filters && Object.keys(query.filters).length > 0) {
-      queryParams.set('filters', JSON.stringify(query.filters));
-      queryParams.set('filterLogic', query.filterLogic ?? 'and');
-    }
-
-    const suffix = queryParams.toString();
-    const response = await api.get<ApiResponse<PagedResponse<WhatsappQuoteDraftDto> & { items?: WhatsappQuoteDraftDto[] }>>(
-      `${WHATSAPP_INTEGRATION_BASE}/quote-drafts${suffix ? `?${suffix}` : ''}`
+    const response = await api.post<ApiResponse<PagedResponse<WhatsappQuoteDraftDto> & { items?: WhatsappQuoteDraftDto[] }>>(
+      `${WHATSAPP_INTEGRATION_BASE}/quote-drafts/query`,
+      {
+        pageNumber: query.pageNumber ?? 1,
+        pageSize: query.pageSize ?? 10,
+        search: query.search ?? '',
+        sortBy: query.sortBy ?? 'Id',
+        sortDirection: query.sortDirection ?? 'desc',
+        filterLogic: query.filterLogic ?? 'and',
+        filters: query.filters ?? [],
+      }
     );
 
     if (response.success && response.data) {
