@@ -74,8 +74,14 @@ export const notificationApi = {
     sortDirection: 'asc' | 'desc' = 'desc'
   ): Promise<PagedResponse<NotificationDto>> => {
     try {
-      const response = await api.get<ApiResponse<BackendPagedResponse>>('/api/Notification/user-notifications', {
-        params: { pageNumber, pageSize, sortBy, sortDirection },
+      const response = await api.post<ApiResponse<BackendPagedResponse>>('/api/Notification/user-notifications/query', {
+        pageNumber,
+        pageSize,
+        search: '',
+        sortBy,
+        sortDirection,
+        filterLogic: 'and',
+        filters: [],
       });
       
       if (!response || !response.success || !response.data) {
@@ -155,4 +161,3 @@ export const notificationApi = {
     );
   },
 };
-
