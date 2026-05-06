@@ -87,6 +87,32 @@ async function getDropdownPage<T>(
   return normalizePagedResponse(response.data as PagedResponse<T> & { items?: T[] });
 }
 
+async function getDropdownPageByQuery<T>(
+  endpoint: string,
+  request: DropdownPageRequest
+): Promise<PagedResponse<T>> {
+  const payload = {
+    pageNumber: request.pageNumber,
+    pageSize: request.pageSize,
+    search: request.search ?? '',
+    sortBy: request.sortBy ?? 'Id',
+    sortDirection: request.sortDirection ?? 'asc',
+    filterLogic: request.filterLogic ?? 'or',
+    filters: request.filters ?? [],
+    ...(request.contextUserId ? { contextUserId: request.contextUserId } : {}),
+  };
+
+  const response = await api.post<ApiResponse<PagedResponse<T>>>(`${endpoint}/query`, payload, {
+    signal: request.signal,
+  });
+
+  if (!response.success || !response.data) {
+    throw new Error(response.message || 'Dropdown listesi yuklenemedi');
+  }
+
+  return normalizePagedResponse(response.data as PagedResponse<T> & { items?: T[] });
+}
+
 export const dropdownApi = {
   getCustomerPage: (request: DropdownPageRequest): Promise<PagedResponse<CustomerDto>> => {
     return getDropdownPage<CustomerDto>('/api/Customer', request, 'pageNumber');
@@ -126,7 +152,7 @@ export const dropdownApi = {
     return getDropdownPage<ActivityTypeDto>('/api/ActivityType', request, 'pageNumber');
   },
   getPaymentTypePage: (request: DropdownPageRequest): Promise<PagedResponse<PaymentTypeDto>> => {
-    return getDropdownPage<PaymentTypeDto>('/api/PaymentType', request, 'pageNumber');
+    return getDropdownPageByQuery<PaymentTypeDto>('/api/PaymentType', request);
   },
   getActivityMeetingTypePage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
     return getDropdownPage<ActivityTypeDto>('/api/ActivityMeetingType', request, 'pageNumber');
