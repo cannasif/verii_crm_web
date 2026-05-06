@@ -253,6 +253,14 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
               { title: t('sidebar.outlookIntegrationAuthInformation'), href: '/settings/integrations/outlook/auth' },
             ],
           },
+          {
+            title: t('sidebar.whatsappIntegration'),
+            children: [
+              { title: t('sidebar.whatsappIntegrationConnection'), href: '/settings/integrations/whatsapp' },
+              { title: t('sidebar.whatsappIntegrationFlow'), href: '/settings/integrations/whatsapp/flow' },
+              { title: t('sidebar.whatsappIntegrationLogs'), href: '/settings/integrations/whatsapp/logs' },
+            ],
+          },
         ],
       },
     ];

@@ -1,0 +1,85 @@
+{
+  "page": {
+    "connectionTitle": "WhatsApp Integration",
+    "connectionDescription": "Manage Meta WhatsApp Cloud API settings, verify webhook connectivity, and send test messages."
+  },
+  "settings": {
+    "title": "Connection Settings",
+    "configured": "Ready",
+    "notConfigured": "Missing",
+    "enabled": "Enable integration",
+    "enabledDescription": "When enabled, webhook and test sends use these settings.",
+    "displayName": "Display Name",
+    "graphApiVersion": "Graph API Version",
+    "phoneNumberId": "Phone Number ID",
+    "businessAccountId": "Business Account ID",
+    "verifyToken": "Webhook Verify Token",
+    "accessToken": "Access Token",
+    "appSecret": "App Secret",
+    "keepCurrent": "Current value will be kept",
+    "save": "Save Settings",
+    "saveSuccess": "WhatsApp settings saved.",
+    "saveError": "WhatsApp settings could not be saved."
+  },
+  "webhook": {
+    "title": "Webhook",
+    "url": "Meta Webhook URL",
+    "lastInbound": "Last inbound webhook",
+    "lastOutbound": "Last outbound message"
+  },
+  "test": {
+    "title": "Test Message",
+    "phone": "Phone",
+    "message": "Message",
+    "defaultMessage": "This is a V3RII CRM WhatsApp test message.",
+    "send": "Send Test",
+    "sendSuccess": "WhatsApp test message sent.",
+    "sendError": "WhatsApp test message could not be sent."
+  },
+  "logs": {
+    "title": "WhatsApp Logs",
+    "description": "Monitor webhook, test message, and future quote flow records.",
+    "tableTitle": "Operation Records",
+    "searchPlaceholder": "Search phone, message, or operation...",
+    "errorsOnly": "Errors only",
+    "directionAll": "All directions",
+    "inbound": "Inbound",
+    "outbound": "Outbound",
+    "success": "Success",
+    "error": "Error",
+    "empty": "No records found.",
+    "total": "{{count}} records",
+    "columns": {
+      "date": "Date",
+      "direction": "Direction",
+      "operation": "Operation",
+      "phone": "Phone",
+      "message": "Message",
+      "status": "Status"
+    }
+  },
+  "flow": {
+    "title": "WhatsApp Quote Flow",
+    "description": "A safe module plan for customers to request quotes from their phone.",
+    "steps": {
+      "inbound": {
+        "title": "1. Message Intake",
+        "text": "Incoming customer messages are received through webhook, signature-checked, and logged as raw events."
+      },
+      "intent": {
+        "title": "2. Intent and Stock Selection",
+        "text": "Customers are guided through catalog or stock branches; free text is not converted into orders directly."
+      },
+      "quote": {
+        "title": "3. Quote Draft",
+        "text": "Selections create a CRM quote draft; no final document is created before representative review."
+      },
+      "handoff": {
+        "title": "4. Representative Approval",
+        "text": "Price, discount, delivery, and customer checks are completed before the quote is sent back."
+      }
+    },
+    "nextPhaseTitle": "Next Phase",
+    "nextPhaseText": "This phase opens the foundation. Conversation flow, catalog selections, quote drafts, and WhatsApp template sends will be added in a separate controlled phase."
+  }
+}

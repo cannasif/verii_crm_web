@@ -1,0 +1,85 @@
+{
+  "page": {
+    "connectionTitle": "WhatsApp Entegrasyonu",
+    "connectionDescription": "Meta WhatsApp Cloud API ayarlarını yönetin, webhook bağlantısını doğrulayın ve test mesajı gönderin."
+  },
+  "settings": {
+    "title": "Bağlantı Ayarları",
+    "configured": "Hazır",
+    "notConfigured": "Eksik",
+    "enabled": "Entegrasyonu aktif kullan",
+    "enabledDescription": "Aktif olduğunda webhook ve test gönderimleri bu ayarları kullanır.",
+    "displayName": "Görünen Ad",
+    "graphApiVersion": "Graph API Versiyonu",
+    "phoneNumberId": "Phone Number ID",
+    "businessAccountId": "Business Account ID",
+    "verifyToken": "Webhook Verify Token",
+    "accessToken": "Access Token",
+    "appSecret": "App Secret",
+    "keepCurrent": "Mevcut değer korunacak",
+    "save": "Ayarları Kaydet",
+    "saveSuccess": "WhatsApp ayarları kaydedildi.",
+    "saveError": "WhatsApp ayarları kaydedilemedi."
+  },
+  "webhook": {
+    "title": "Webhook",
+    "url": "Meta Webhook URL",
+    "lastInbound": "Son gelen webhook",
+    "lastOutbound": "Son giden mesaj"
+  },
+  "test": {
+    "title": "Test Mesajı",
+    "phone": "Telefon",
+    "message": "Mesaj",
+    "defaultMessage": "V3RII CRM WhatsApp test mesajıdır.",
+    "send": "Test Gönder",
+    "sendSuccess": "WhatsApp test mesajı gönderildi.",
+    "sendError": "WhatsApp test mesajı gönderilemedi."
+  },
+  "logs": {
+    "title": "WhatsApp Logları",
+    "description": "Webhook, test mesajı ve ileride teklif akışı kayıtlarını izleyin.",
+    "tableTitle": "İşlem Kayıtları",
+    "searchPlaceholder": "Telefon, mesaj veya işlem ara...",
+    "errorsOnly": "Sadece hatalar",
+    "directionAll": "Tüm yönler",
+    "inbound": "Gelen",
+    "outbound": "Giden",
+    "success": "Başarılı",
+    "error": "Hata",
+    "empty": "Kayıt bulunamadı.",
+    "total": "{{count}} kayıt",
+    "columns": {
+      "date": "Tarih",
+      "direction": "Yön",
+      "operation": "İşlem",
+      "phone": "Telefon",
+      "message": "Mesaj",
+      "status": "Durum"
+    }
+  },
+  "flow": {
+    "title": "WhatsApp Teklif Akışı",
+    "description": "Müşterinin telefon üzerinden teklif talebi oluşturması için uygulanacak güvenli modül planı.",
+    "steps": {
+      "inbound": {
+        "title": "1. Mesaj Alımı",
+        "text": "Müşteriden gelen mesaj webhook üzerinden alınır, imza kontrolü yapılır ve ham kayıt loglanır."
+      },
+      "intent": {
+        "title": "2. Niyet ve Stok Seçimi",
+        "text": "Müşteri katalog veya stok kırılımından yönlendirilir; serbest metin doğrudan siparişe çevrilmez."
+      },
+      "quote": {
+        "title": "3. Teklif Taslağı",
+        "text": "Seçimler CRM tarafında taslak teklif olarak açılır, temsilci kontrol etmeden kesin belge oluşmaz."
+      },
+      "handoff": {
+        "title": "4. Temsilci Onayı",
+        "text": "Fiyat, iskonto, teslim ve cari kontrolleri yapıldıktan sonra teklif müşteriye gönderilir."
+      }
+    },
+    "nextPhaseTitle": "Sonraki Faz",
+    "nextPhaseText": "Bu faz altyapıyı açar. Konuşma akışı, katalog seçimleri, teklif taslağı ve WhatsApp template gönderimleri ayrı kontrollü fazda eklenecek."
+  }
+}
