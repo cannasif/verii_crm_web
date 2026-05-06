@@ -29,7 +29,7 @@ type ApprovalFlowColumnKey = keyof ApprovalFlowDto;
 export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalFlowDto>[] => [
   { key: 'id', label: t('approvalFlow.table.id'), className: 'w-[100px]' },
   { key: 'documentType', label: t('approvalFlow.table.documentType'), className: 'min-w-[150px]' },
-  { key: 'description', label: t('approvalFlow.table.description'), className: 'min-w-[200px]' },
+  { key: 'description', label: t('approvalFlow.table.description'), className: 'min-w-[200px] max-w-[300px]' },
   { key: 'isActive', label: t('approvalFlow.table.isActive'), className: 'w-[120px]' },
   { key: 'createdDate', label: t('approvalFlow.table.createdDate'), className: 'w-[160px]' },
   { key: 'createdByFullUser', label: t('approvalFlow.table.createdBy'), className: 'w-[160px]' },
@@ -42,7 +42,7 @@ interface ApprovalFlowTableProps {
   visibleColumnKeys: ApprovalFlowColumnKey[];
   rows: ApprovalFlowDto[];
   rowKey: (row: ApprovalFlowDto) => string | number;
-  renderCell: (row: ApprovalFlowDto, key: ApprovalFlowColumnKey) => React.ReactNode;
+  renderCell: (row: ApprovalFlowDto, key: ApprovalFlowColumnKey, colWidth?: number) => React.ReactNode;
   sortBy: ApprovalFlowColumnKey;
   sortDirection: 'asc' | 'desc';
   onSort: (key: ApprovalFlowColumnKey) => void;

@@ -19,3 +19,4 @@ export { ProductSelectDialog } from './ProductSelectDialog';
 export type { ProductSelectionResult } from './ProductSelectDialog';
 export { NotesDialog } from './NotesDialog';
 export type { NoteLine } from './NotesDialog';
+export { DescriptionCell } from './DescriptionCell';

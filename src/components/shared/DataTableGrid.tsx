@@ -1,4 +1,4 @@
-import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState, useEffect } from 'react';
+import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, GripVertical } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
@@ -19,6 +19,7 @@ export interface DataTableGridColumn<TKey extends string> {
   sortable?: boolean;
   headClassName?: string;
   cellClassName?: string;
+  defaultWidth?: number;
 }
 
 interface DataTableGridProps<TRow, TKey extends string> {
@@ -28,7 +29,7 @@ interface DataTableGridProps<TRow, TKey extends string> {
   visibleColumnKeys: TKey[];
   rows: TRow[];
   rowKey: (row: TRow) => string | number;
-  renderCell: (row: TRow, columnKey: TKey) => ReactNode;
+  renderCell: (row: TRow, columnKey: TKey, columnWidth?: number) => ReactNode;
   sortBy?: TKey;
   sortDirection?: DataTableSortDirection;
   onSort?: (columnKey: TKey) => void;
@@ -60,11 +61,15 @@ interface DataTableGridProps<TRow, TKey extends string> {
   nextLabel: string;
   paginationInfoText: string;
   disablePaginationButtons?: boolean;
-
   centerColumnHeaders?: boolean;
   enableColumnDragAndDrop?: boolean;
   onColumnOrderChange?: (newOrder: TKey[]) => void;
+  enableColumnResize?: boolean;
 }
+
+const MIN_COL_WIDTH = 60;
+const DEFAULT_COL_WIDTH = 150;
+const ACTIONS_COL_WIDTH = 84;
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) return false;
@@ -83,6 +88,10 @@ function SortableTableHead<TKey extends string>({
   renderSortIcon,
   centerColumnHeaders,
   enableDragAndDrop,
+  width,
+  onResizeStart,
+  onTouchStart,
+  isResizing,
 }: {
   columnKey: TKey;
   column?: DataTableGridColumn<TKey>;
@@ -91,6 +100,10 @@ function SortableTableHead<TKey extends string>({
   renderSortIcon?: (key: TKey) => ReactNode;
   centerColumnHeaders?: boolean;
   enableDragAndDrop?: boolean;
+  width?: number;
+  onResizeStart?: (e: React.MouseEvent, key: TKey) => void;
+  onTouchStart?: (e: React.TouchEvent, key: TKey) => void;
+  isResizing?: boolean;
 }) {
   const isDraggable = enableDragAndDrop && columnKey.toLowerCase() !== 'id';
 
@@ -103,26 +116,37 @@ function SortableTableHead<TKey extends string>({
     isDragging,
   } = useSortable({ id: columnKey, disabled: !isDraggable });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.8 : 1,
-    zIndex: isDragging ? 10 : 'auto',
-    position: isDragging ? 'relative' as const : 'static' as const,
+    zIndex: isDragging ? 10 : (isResizing ? 5 : 'auto'),
+    position: 'relative' as const,
+    width: width !== undefined ? `${width}px` : undefined,
+    minWidth: width !== undefined ? `${width}px` : undefined,
+    maxWidth: width !== undefined ? `${width}px` : undefined,
+    overflow: 'hidden',
   };
 
   return (
     <TableHead
       ref={setNodeRef}
       style={style}
-      className={cn(centerColumnHeaders && 'text-center', column?.headClassName, isDragging && 'bg-slate-100 dark:bg-white/10 shadow-md')}
+
+      data-col-key={columnKey}
+      className={cn(
+        centerColumnHeaders && 'text-center',
+        column?.headClassName,
+        isDragging && 'bg-slate-100 dark:bg-white/10 shadow-md',
+        'select-none'
+      )}
     >
-      <div className={cn("flex items-center gap-1 w-full", centerColumnHeaders ? "justify-center" : "justify-start")}>
+      <div className={cn("flex items-center gap-1 w-full pr-2", centerColumnHeaders ? "justify-center" : "justify-start")}>
         {isDraggable && (
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 -ml-2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors shrink-0 touch-none"
+            className="cursor-grab active:cursor-grabbing p-1 py-1.5 ml-1 rounded-[.3rem] border border-slate-200 bg-white/50 text-slate-400 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:text-slate-300 transition-colors shrink-0 touch-none shadow-sm"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
             data-no-drag-scroll="true"
           >
@@ -135,21 +159,45 @@ function SortableTableHead<TKey extends string>({
             size="sm"
             onClick={() => onSort?.(columnKey)}
             className={cn(
-              'h-7 hover:bg-transparent flex-1',
+              'h-7 hover:bg-transparent flex-1 min-w-0',
               centerColumnHeaders
                 ? 'inline-flex min-h-7 w-full max-w-full flex-nowrap items-center justify-center gap-1 px-1'
                 : 'px-1 -ml-1 text-left justify-start'
             )}
           >
-            <span className={cn(centerColumnHeaders && 'truncate')}>{column?.label ?? columnKey}</span>
+            <span className="truncate">{column?.label ?? columnKey}</span>
             {renderSortIcon?.(columnKey)}
           </Button>
         ) : (
-          <span className={cn("flex-1 px-1", centerColumnHeaders ? "text-center block w-full" : "text-left")}>
+          <span className={cn("flex-1 px-1 truncate min-w-0", centerColumnHeaders ? "text-center block w-full" : "text-left")}>
             {column?.label ?? columnKey}
           </span>
         )}
       </div>
+
+      {onResizeStart && (
+        <div
+          className={cn(
+            'absolute right-0 top-0 h-full w-1.5 cursor-col-resize z-10 group/resize flex items-center justify-center',
+            isResizing && 'bg-pink-500/10'
+          )}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onResizeStart(e, columnKey);
+          }}
+          onTouchStart={(e) => {
+            onTouchStart?.(e, columnKey);
+          }}
+          data-no-drag-scroll="true"
+        >
+          <div className={cn(
+            'h-4/5 w-0.5 rounded-full transition-colors',
+            'bg-transparent group-hover/resize:bg-pink-500/70 dark:group-hover/resize:bg-pink-400/70',
+            isResizing && 'bg-pink-500 dark:bg-pink-400'
+          )} />
+        </div>
+      )}
     </TableHead>
   );
 }
@@ -196,6 +244,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   centerColumnHeaders = false,
   enableColumnDragAndDrop = true,
   onColumnOrderChange,
+  enableColumnResize = true,
 }: DataTableGridProps<TRow, TKey>): ReactElement {
   const { t } = useTranslation('common');
   const MISSING_TRANSLATION = 'Çeviri eksik';
@@ -205,18 +254,84 @@ export function DataTableGrid<TRow, TKey extends string>({
   const resolvedActionsHeaderLabel = actionsHeaderLabel === MISSING_TRANSLATION ? t('actions', { ns: 'common' }) : actionsHeaderLabel;
 
   const [localVisibleColumnKeys, setLocalVisibleColumnKeys] = useState<TKey[]>(visibleColumnKeys);
-
   const lastPropRef = useRef(visibleColumnKeys);
 
   useEffect(() => {
     const isSame = visibleColumnKeys.length === lastPropRef.current.length &&
       visibleColumnKeys.every((key, i) => key === lastPropRef.current[i]);
-
     if (!isSame) {
       setLocalVisibleColumnKeys(visibleColumnKeys);
       lastPropRef.current = visibleColumnKeys;
     }
   }, [visibleColumnKeys]);
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  const [resizingKey, setResizingKey] = useState<string | null>(null);
+  const resizeStateRef = useRef<{ key: string; startX: number; startWidth: number } | null>(null);
+
+  const theadRowRef = useRef<HTMLTableRowElement | null>(null);
+
+  const startResizing = useCallback((clientX: number, key: TKey) => {
+    const snapshotWidths: Record<string, number> = {};
+    if (theadRowRef.current) {
+      theadRowRef.current
+        .querySelectorAll<HTMLTableCellElement>('th[data-col-key]')
+        .forEach((th) => {
+          const colKey = th.getAttribute('data-col-key');
+          if (colKey) snapshotWidths[colKey] = th.getBoundingClientRect().width;
+        });
+    }
+
+    const startWidth = snapshotWidths[key] ?? (columnWidths[key] ?? DEFAULT_COL_WIDTH);
+    setColumnWidths(prev => ({ ...prev, ...snapshotWidths }));
+    resizeStateRef.current = { key, startX: clientX, startWidth };
+    setResizingKey(key);
+  }, [columnWidths]);
+
+  const handleResizeStart = useCallback((e: React.MouseEvent, key: TKey) => {
+    startResizing(e.clientX, key);
+  }, [startResizing]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent, key: TKey) => {
+    startResizing(e.touches[0].clientX, key);
+  }, [startResizing]);
+
+  useEffect(() => {
+    if (!resizingKey) return;
+
+    const handleMove = (clientX: number) => {
+      const state = resizeStateRef.current;
+      if (!state) return;
+      const delta = clientX - state.startX;
+      const newWidth = Math.max(MIN_COL_WIDTH, state.startWidth + delta);
+      setColumnWidths(prev => ({ ...prev, [state.key]: newWidth }));
+    };
+
+    const onMouseMove = (e: MouseEvent) => handleMove(e.clientX);
+    const onTouchMove = (e: TouchEvent) => {
+
+      if (e.cancelable) e.preventDefault();
+      handleMove(e.touches[0].clientX);
+    };
+
+    const handleMouseUp = () => {
+      resizeStateRef.current = null;
+      setResizingKey(null);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('touchend', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [resizingKey]);
+
 
   const [isDragging, setIsDragging] = useState(false);
   const lastRowClickRef = useRef<{ key: string | number; timestamp: number } | null>(null);
@@ -233,10 +348,8 @@ export function DataTableGrid<TRow, TKey extends string>({
   const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>): void => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     if (isInteractiveTarget(event.target)) return;
-
     const container = tableScrollRef.current;
     if (!container) return;
-
     dragStateRef.current = {
       isDragging: true,
       startX: event.clientX,
@@ -252,12 +365,8 @@ export function DataTableGrid<TRow, TKey extends string>({
     const container = tableScrollRef.current;
     if (!container || !dragStateRef.current.isDragging) return;
     if (dragStateRef.current.pointerId !== event.pointerId) return;
-
     const deltaX = event.clientX - dragStateRef.current.startX;
-    if (Math.abs(deltaX) > 4) {
-      dragStateRef.current.moved = true;
-    }
-
+    if (Math.abs(deltaX) > 4) dragStateRef.current.moved = true;
     container.scrollLeft = dragStateRef.current.startScrollLeft - deltaX;
   };
 
@@ -280,22 +389,17 @@ export function DataTableGrid<TRow, TKey extends string>({
       lastRowClickRef.current = null;
       return;
     }
-
     const key = rowKey(row);
     const now = Date.now();
     const lastClick = lastRowClickRef.current;
-    const isFastSecondClick =
-      lastClick != null && lastClick.key === key && now - lastClick.timestamp <= 320;
-
+    const isFastSecondClick = lastClick != null && lastClick.key === key && now - lastClick.timestamp <= 320;
     onRowClick?.(row);
-
     if (isFastSecondClick && onRowDoubleClick) {
       suppressNativeDoubleClickUntilRef.current = now + 400;
       onRowDoubleClick(row);
       lastRowClickRef.current = null;
       return;
     }
-
     lastRowClickRef.current = { key, timestamp: now };
   };
 
@@ -306,20 +410,9 @@ export function DataTableGrid<TRow, TKey extends string>({
   };
 
   const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 1,
-        tolerance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+    useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 1, tolerance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   const handleDragEndDnd = (event: DragEndEvent) => {
@@ -327,14 +420,7 @@ export function DataTableGrid<TRow, TKey extends string>({
     if (over && active.id !== over.id) {
       const oldIndex = localVisibleColumnKeys.indexOf(active.id as TKey);
       let newIndex = localVisibleColumnKeys.indexOf(over.id as TKey);
-
-      // 'id' sütununun yerini koruması için:
-      // Eğer 'id' sütunu ilk sıradaysa ve başka bir sütun ilk sıraya taşınmaya çalışılıyorsa,
-      // taşınan sütunu en az 2. sıraya (index 1) yerleştir.
-      if (String(localVisibleColumnKeys[0]).toLowerCase() === 'id' && newIndex === 0) {
-        newIndex = 1;
-      }
-
+      if (String(localVisibleColumnKeys[0]).toLowerCase() === 'id' && newIndex === 0) newIndex = 1;
       if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
         const newKeys = arrayMove(localVisibleColumnKeys, oldIndex, newIndex);
         setLocalVisibleColumnKeys(newKeys);
@@ -344,6 +430,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   };
 
   const colSpan = localVisibleColumnKeys.length + (showActionsColumn ? 1 : 0) || 1;
+  const hasAnyWidth = enableColumnResize && localVisibleColumnKeys.some(k => columnWidths[k] !== undefined);
 
   return (
     <div className="flex min-w-0 w-full flex-col gap-2">
@@ -352,7 +439,11 @@ export function DataTableGrid<TRow, TKey extends string>({
         ref={tableScrollRef}
         className={cn(
           'rounded-md border overflow-x-auto w-full min-w-0 *:data-[slot=table-container]:overflow-visible',
-          isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
+          resizingKey
+            ? 'cursor-col-resize select-none'
+            : isDragging
+              ? 'cursor-grabbing select-none'
+              : 'cursor-grab'
         )}
         onPointerDown={handleDragStart}
         onPointerMove={handleDragMove}
@@ -360,7 +451,24 @@ export function DataTableGrid<TRow, TKey extends string>({
         onPointerCancel={handleDragEnd}
         onClickCapture={handleClickCapture}
       >
-        <Table className={minTableWidthClassName}>
+        <Table className={cn(minTableWidthClassName, hasAnyWidth && 'table-fixed')}>
+          {hasAnyWidth && (
+            <colgroup>
+              {localVisibleColumnKeys.map((key) => (
+                <col
+                  key={key}
+                  style={{
+                    width: columnWidths[key] ? `${columnWidths[key]}px` : undefined,
+                    minWidth: columnWidths[key] ? `${columnWidths[key]}px` : undefined,
+                  }}
+                />
+              ))}
+              {showActionsColumn && (
+                <col style={{ width: `${ACTIONS_COL_WIDTH}px`, minWidth: `${ACTIONS_COL_WIDTH}px` }} />
+              )}
+            </colgroup>
+          )}
+
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -368,8 +476,12 @@ export function DataTableGrid<TRow, TKey extends string>({
             autoScroll={false}
           >
             <TableHeader>
-              <TableRow>
-                <SortableContext items={localVisibleColumnKeys.filter((k) => String(k).toLowerCase() !== 'id')} strategy={horizontalListSortingStrategy}>
+
+              <TableRow ref={theadRowRef}>
+                <SortableContext
+                  items={localVisibleColumnKeys.filter((k) => String(k).toLowerCase() !== 'id')}
+                  strategy={horizontalListSortingStrategy}
+                >
                   {localVisibleColumnKeys.map((key) => {
                     const column = columns.find((item) => item.key === key);
                     const sortable = Boolean(onSort && column?.sortable !== false);
@@ -383,13 +495,20 @@ export function DataTableGrid<TRow, TKey extends string>({
                         renderSortIcon={renderSortIcon}
                         centerColumnHeaders={centerColumnHeaders}
                         enableDragAndDrop={enableColumnDragAndDrop}
+                        onResizeStart={enableColumnResize ? handleResizeStart : undefined}
+                        onTouchStart={enableColumnResize ? handleTouchStart : undefined}
+                        isResizing={resizingKey === key}
+                        width={columnWidths[key]}
                       />
                     );
                   })}
                 </SortableContext>
                 {showActionsColumn && (
                   <TableHead
-                    className={cn(iconOnlyActions ? 'w-[84px] text-center' : 'min-w-[280px] text-right')}
+                    className={cn(
+                      iconOnlyActions ? 'w-[84px]' : 'min-w-[280px]',
+                      centerColumnHeaders ? 'text-center' : (iconOnlyActions ? 'text-center' : 'text-right')
+                    )}
                   >
                     {resolvedActionsHeaderLabel}
                   </TableHead>
@@ -397,6 +516,7 @@ export function DataTableGrid<TRow, TKey extends string>({
               </TableRow>
             </TableHeader>
           </DndContext>
+
           <TableBody>
             {isLoading &&
               Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
@@ -448,9 +568,23 @@ export function DataTableGrid<TRow, TKey extends string>({
                   >
                     {localVisibleColumnKeys.map((key) => {
                       const column = columns.find((item) => item.key === key);
+                      const colWidth = columnWidths[key];
                       return (
-                        <TableCell key={`${rowKey(row)}-${key}`} className={column?.cellClassName}>
-                          {renderCell(row, key)}
+                        <TableCell
+                          key={`${rowKey(row)}-${key}`}
+                          className={cn(column?.cellClassName, colWidth !== undefined && 'max-w-0')}
+                          style={
+                            colWidth !== undefined
+                              ? { width: `${colWidth}px`, maxWidth: `${colWidth}px`, overflow: 'hidden' }
+                              : undefined
+                          }
+                        >
+                          <div className={cn(
+                            'min-w-0',
+                            colWidth !== undefined && 'overflow-hidden truncate [&>div]:min-w-0 [&>div]:overflow-hidden [&_span]:truncate [&_span]:min-w-0'
+                          )}>
+                            {renderCell(row, key, colWidth)}
+                          </div>
                         </TableCell>
                       );
                     })}

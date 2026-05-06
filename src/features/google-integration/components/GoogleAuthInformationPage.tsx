@@ -85,7 +85,7 @@ export function GoogleAuthInformationPage(): ReactElement {
   if (settingsQuery.isLoading) {
     return (
       <div className="w-full">
-        <Card className="bg-white/70 dark:bg-[#190b20]/60 backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+        <Card className="bg-white/70 dark:bg-[#190b20]/60 backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
           <CardContent className="py-8">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -100,7 +100,7 @@ export function GoogleAuthInformationPage(): ReactElement {
   return (
     <div className="w-full space-y-6">
       {!canManage && (
-        <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+        <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
           <CardContent className="py-6 text-sm text-muted-foreground">
             {t('common:forbiddenDescription')}
           </CardContent>
@@ -114,7 +114,7 @@ export function GoogleAuthInformationPage(): ReactElement {
             <p className="text-muted-foreground mt-1">{t('page.authInformationDescription')}</p>
           </div>
 
-          <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+          <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle>{t('authInformation.cardTitle')}</CardTitle>
             </CardHeader>
@@ -153,7 +153,7 @@ export function GoogleAuthInformationPage(): ReactElement {
                   />
                   <div className="text-sm text-muted-foreground flex items-center gap-2 mt-2">
                     {t('authInformation.currentSecretLabel')}:
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#26122b] px-2 py-1 text-foreground">
+                    <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#26122b] px-2 py-1 text-foreground">
                       <span className="font-medium">{maskedSecret || '-'}</span>
                     </div>
                   </div>
@@ -161,20 +161,20 @@ export function GoogleAuthInformationPage(): ReactElement {
 
                 <div>
                   <p className="text-sm text-muted-foreground mb-1.5">{t('authInformation.redirectUriLabel')}</p>
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-1">
+                  <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-1">
                     <p className="font-medium break-all">{redirectUri || '-'}</p>
                   </div>
                 </div>
 
                 <div>
                   <p className="text-sm text-muted-foreground mb-1.5">{t('authInformation.scopesLabel')}</p>
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-1">
+                  <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-1">
                     <p className="font-medium break-words">{scopes || '-'}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between rounded-md border p-3">
+              <div className="flex items-center justify-between rounded-md border border-slate-300/60 dark:border-white/15 p-3">
                 <div>
                   <p className="font-medium">{t('authInformation.enableLabel')}</p>
                   <p className="text-xs text-muted-foreground">{t('authInformation.enableDescription')}</p>
@@ -199,7 +199,7 @@ export function GoogleAuthInformationPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border-white/60 dark:border-white/5 shadow-sm rounded-2xl transition-all duration-300">
+          <Card className="bg-white/70 dark:bg-[#180F22] backdrop-blur-xl border border-slate-300/80 dark:border-white/15 shadow-sm rounded-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle>{t('authInformation.setupGuideTitle')}</CardTitle>
             </CardHeader>
@@ -213,7 +213,7 @@ export function GoogleAuthInformationPage(): ReactElement {
                 <li>{t('authInformation.setupStep5')}</li>
                 <li>{t('authInformation.setupStep6')}</li>
               </ol>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2">
+              <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-2">
                 <p className="text-xs font-medium text-muted-foreground mb-1.5">{t('authInformation.callbackLabel')}</p>
                 <p className="text-sm font-medium break-all text-foreground">{callbackUrl}</p>
               </div>
@@ -225,7 +225,7 @@ export function GoogleAuthInformationPage(): ReactElement {
               >
                 {t('authInformation.consoleLinkLabel')}
               </a>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-[#3b3142] dark:bg-[#1e1627] px-3 py-2 text-sm text-muted-foreground space-y-2">
+              <div className="rounded-lg border border-slate-300/60 bg-slate-50 dark:border-white/10 dark:bg-[#1e1627] px-3 py-2 text-sm text-muted-foreground space-y-2">
                 <p className="font-medium text-foreground">{t('authInformation.apiEnableTitle')}</p>
                 <p>{t('authInformation.apiEnableHint')}</p>
                 <div className="flex flex-wrap gap-3">

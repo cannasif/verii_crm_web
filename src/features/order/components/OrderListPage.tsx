@@ -17,8 +17,8 @@ import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import {
   DataTableGrid,
+  DataTableActionBar,
   ManagementDataTableChrome,
-  type DataTableActionBarProps,
   type DataTableGridColumn,
 } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -429,73 +429,72 @@ export function OrderListPage(): ReactElement {
               <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
                 {t('list.cardTitle', { defaultValue: 'Sipariş listesi' })}
               </CardTitle>
+              <DataTableActionBar
+                pageKey={PAGE_KEY}
+                userId={user?.id}
+                columns={baseColumns}
+                visibleColumns={visibleColumns}
+                columnOrder={columnOrder}
+                onVisibleColumnsChange={setVisibleColumns}
+                onColumnOrderChange={(newVisibleOrder) => {
+                  setColumnOrder((currentOrder) => {
+                    const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                    return finalOrder;
+                  });
+                }}
+                exportFileName="order-list"
+                exportColumns={exportColumns}
+                exportRows={exportRows}
+                getExportData={getExportData}
+                filterColumns={filterColumns}
+                defaultFilterColumn="OfferNo"
+                draftFilterRows={draftFilterRows}
+                onDraftFilterRowsChange={setDraftFilterRows}
+                onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+                onClearFilters={() => {
+                  setDraftFilterRows([]);
+                  setAppliedFilterRows([]);
+                  setSearchResetKey((prev) => prev + 1);
+                }}
+                translationNamespace="order"
+                appliedFilterCount={appliedFilters.length}
+                search={{
+                  onSearchChange: setSearchTerm,
+                  placeholder: t('common.search'),
+                  minLength: 1,
+                  resetKey: searchResetKey,
+                }}
+                refresh={{
+                  onRefresh: () => {
+                    void handleGridRefresh();
+                  },
+                  isLoading: orderQuery.isFetching,
+                  cooldownSeconds: 60,
+                  label: t('list.refresh', { defaultValue: 'Yenile' }),
+                }}
+                leftSlot={
+                  <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
+                    <SelectTrigger className="w-[180px] h-9 border-slate-200/60 bg-white/50 dark:border-white/5 dark:bg-white/5">
+                      <SelectValue placeholder={t('approval.statusFilterLabel')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('common.all')}</SelectItem>
+                      <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                      <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
+                      <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
+                      <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
+                      <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                }
+              />
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
               <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
                 <ManagementDataTableChrome>
                   <DataTableGrid<OrderGetDto, OrderColumnKey>
-                    actionBar={{
-                      pageKey: PAGE_KEY,
-                      userId: user?.id,
-                      columns: baseColumns,
-                      visibleColumns,
-                      columnOrder,
-                      onVisibleColumnsChange: setVisibleColumns,
-                      onColumnOrderChange: (newVisibleOrder) => {
-                        setColumnOrder((currentOrder) => {
-                          const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
-                          const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                          saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                          return finalOrder;
-                        });
-                      },
-                      exportFileName: 'order-list',
-                      exportColumns,
-                      exportRows,
-                      getExportData,
-                      filterColumns,
-                      defaultFilterColumn: 'OfferNo',
-                      draftFilterRows,
-                      onDraftFilterRowsChange: setDraftFilterRows,
-                      onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
-                      onClearFilters: () => {
-                        setDraftFilterRows([]);
-                        setAppliedFilterRows([]);
-                      },
-                      translationNamespace: 'order',
-                      appliedFilterCount: appliedFilters.length,
-                      search: {
-                        onSearchChange: setSearchTerm,
-                        placeholder: t('common.search'),
-                        minLength: 1,
-                        resetKey: searchResetKey,
-                      },
-                      refresh: {
-                        onRefresh: () => {
-                          void handleGridRefresh();
-                        },
-                        isLoading: orderQuery.isFetching,
-                        cooldownSeconds: 60,
-                        label: t('list.refresh', { defaultValue: 'Yenile' }),
-                      },
-                      leftSlot: (
-                        <>
-                          <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-                            <SelectTrigger className="w-[180px] h-9">
-                              <SelectValue placeholder={t('approval.statusFilterLabel')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">{t('common.all')}</SelectItem>
-                              <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
-                              <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-                              <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-                              <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-                              <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </>
-                      ),
-                    } satisfies DataTableActionBarProps}
                     columns={columns}
                     visibleColumnKeys={orderedVisibleColumns}
                     rows={currentPageRows}

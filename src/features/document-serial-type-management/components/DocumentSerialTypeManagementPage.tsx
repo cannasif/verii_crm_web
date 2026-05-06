@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DataTableGrid,
+  DataTableActionBar,
   ManagementDataTableChrome,
-  type DataTableActionBarProps,
   type DataTableGridColumn,
 } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -354,49 +354,57 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title')}</CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
+            exportFileName="document-serial-types"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            getExportData={getExportData}
+            filterColumns={filterColumns}
+            defaultFilterColumn="serialPrefix"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            onApplyFilters={() => setAppliedAdvancedFilters(documentSerialTypeRowsToBackendFilters(draftFilterRows))}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedAdvancedFilters([]);
+              setSearchResetKey((value) => value + 1);
+            }}
+            translationNamespace="document-serial-type-management"
+            appliedFilterCount={appliedFilterCount}
+            search={{
+              onSearchChange: setSearchTerm,
+              placeholder: t('search'),
+              minLength: 1,
+              resetKey: searchResetKey,
+            }}
+            refresh={{
+              onRefresh: () => {
+                void handleGridRefresh();
+              },
+              isLoading: isLoading || isFetching,
+              cooldownSeconds: 60,
+              label: resolveLabel(t, 'common.refresh', 'Yenile'),
+            }}
+          />
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <ManagementDataTableChrome>
               <DataTableGrid<DocumentSerialTypeDto, DocumentSerialTypeColumnKey>
-                actionBar={{
-                  pageKey: PAGE_KEY,
-                  userId: user?.id,
-                  columns: baseColumns,
-                  visibleColumns,
-                  columnOrder,
-                  onVisibleColumnsChange: setVisibleColumns,
-                  onColumnOrderChange: setColumnOrder,
-                  exportFileName: 'document-serial-types',
-                  exportColumns,
-                  exportRows,
-                  getExportData,
-                  filterColumns,
-                  defaultFilterColumn: 'serialPrefix',
-                  draftFilterRows,
-                  onDraftFilterRowsChange: setDraftFilterRows,
-                  onApplyFilters: () => setAppliedAdvancedFilters(documentSerialTypeRowsToBackendFilters(draftFilterRows)),
-                  onClearFilters: () => {
-                    setDraftFilterRows([]);
-                    setAppliedAdvancedFilters([]);
-                  },
-                  translationNamespace: 'document-serial-type-management',
-                  appliedFilterCount,
-                  search: {
-                    onSearchChange: setSearchTerm,
-                    placeholder: t('search'),
-                    minLength: 1,
-                    resetKey: searchResetKey,
-                  },
-                  refresh: {
-                    onRefresh: () => {
-                      void handleGridRefresh();
-                    },
-                    isLoading,
-                    cooldownSeconds: 60,
-                    label: resolveLabel(t, 'common.refresh', 'Yenile'),
-                  },
-                } satisfies DataTableActionBarProps}
                 columns={columns}
                 visibleColumnKeys={orderedVisibleColumns}
                 rows={documentSerialTypes}

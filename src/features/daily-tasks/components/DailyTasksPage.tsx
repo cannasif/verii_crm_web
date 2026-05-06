@@ -1426,7 +1426,7 @@ export function DailyTasksPage(): ReactElement {
       ) : null}
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_0.7fr]">
-        <div className="rounded-3xl border border-white/20 bg-white/70 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#130c1f]/70">
+        <div className="rounded-3xl border border-slate-300/80 bg-white/70 p-5 shadow-sm backdrop-blur-xl dark:border-white/15 dark:bg-[#130c1f]/70">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -1482,7 +1482,7 @@ export function DailyTasksPage(): ReactElement {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/20 bg-white/70 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#130c1f]/70">
+        <div className="rounded-3xl border border-slate-300/80 bg-white/70 p-5 shadow-sm backdrop-blur-xl dark:border-white/15 dark:bg-[#130c1f]/70">
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
               {t('dailyTasks.workloadTitle', { defaultValue: 'İş yükü dağılımı' })}
@@ -1538,8 +1538,7 @@ export function DailyTasksPage(): ReactElement {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 
-        {/* 2. KONTROL PANELİ: Responsive Layout */}
-        <div className="sticky top-2 z-30 rounded-[2rem] border border-slate-200/60 dark:border-white/10 bg-white/90 dark:bg-[#0c0516]/90 p-3 shadow-2xl backdrop-blur-2xl transition-all duration-300 md:p-4">
+        <div className="sticky top-2 z-30 rounded-[2rem] border border-slate-300/80 dark:border-white/20 bg-white/90 dark:bg-[#0c0516]/90 p-3 shadow-2xl backdrop-blur-2xl transition-all duration-300 md:p-4">
           <div className="my-1 grid grid-cols-1 gap-3 py-1 lg:grid-cols-[minmax(220px,320px)_auto_minmax(320px,1fr)] lg:items-stretch">
             <div className="my-1 relative h-10 w-full min-w-0">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -1688,7 +1687,7 @@ export function DailyTasksPage(): ReactElement {
                     tabIndex={0}
                     onClick={() => handleEdit(activity)}
                     onKeyDown={(e) => e.key === 'Enter' && handleEdit(activity)}
-                    className="group relative bg-white/80 dark:bg-[#150d22]/80 backdrop-blur-md border border-white/50 dark:border-white/5 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-3 md:gap-4 overflow-hidden cursor-pointer"
+                    className="group relative bg-white/80 dark:bg-[#150d22]/80 backdrop-blur-md border border-slate-300 dark:border-white/20 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-3 md:gap-4 overflow-hidden cursor-pointer"
                   >
                     {/* Sol Kenar Öncelik Çizgisi */}
                     <div className={`absolute left-0 top-0 bottom-0 w-1 ${activity.priority === 'High' ? 'bg-red-500' : activity.priority === 'Medium' ? 'bg-orange-500' : 'bg-blue-500'}`} />
@@ -1776,7 +1775,7 @@ export function DailyTasksPage(): ReactElement {
 
           {/* --- LİSTE GÖRÜNÜMÜ --- */}
           <TabsContent value="list" className="mt-0">
-            <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl overflow-hidden">
+            <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-slate-300 dark:border-white/15 shadow-sm rounded-2xl overflow-hidden">
               {filteredActivities.length === 0 ? (
                 <div className="py-20 text-center text-slate-400">{t('dailyTasks.noTasks')}</div>
               ) : (
@@ -1860,7 +1859,7 @@ export function DailyTasksPage(): ReactElement {
                 ].map((item, index) => (
                   <div
                     key={`calendar-summary-${index}`}
-                    className="rounded-2xl border border-white/50 bg-white/65 p-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#140d20]/65"
+                    className="rounded-2xl border border-slate-300/80 bg-white/65 p-4 shadow-sm backdrop-blur-xl dark:border-white/15 dark:bg-[#140d20]/65"
                   >
                     <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                       {item.label}
@@ -1873,7 +1872,7 @@ export function DailyTasksPage(): ReactElement {
               </div>
 
               <div className="grid grid-cols-1 gap-4">
-                <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-4 md:p-6 overflow-hidden">
+                <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-slate-300 dark:border-white/15 shadow-sm rounded-2xl p-4 md:p-6 overflow-hidden">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 rounded-lg p-1">
                       <Button

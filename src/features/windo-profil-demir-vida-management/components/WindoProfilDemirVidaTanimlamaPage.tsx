@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { DataTableActionBar, DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import {
@@ -357,7 +357,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-            <DataTableGrid
+            <ManagementDataTableChrome>
+              <DataTableGrid
               columns={columns}
               visibleColumnKeys={orderedVisibleColumns}
               rows={data}
@@ -392,6 +393,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               emptyText={t('table.empty')}
               minTableWidthClassName="min-w-[720px]"
               showActionsColumn
+              centerColumnHeaders
               actionsHeaderLabel={t('table.actions')}
               renderActionsCell={(item) => (
                 <div className="flex justify-end gap-2">
@@ -449,6 +451,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                 });
               }}
             />
+            </ManagementDataTableChrome>
           </div>
         </CardContent>
       </Card>

@@ -46,14 +46,14 @@ type RecurringColumnKey = 'id' | 'job' | 'cron' | 'nextExecution' | 'lastExecuti
 const headerCardStyle = `
   relative overflow-hidden rounded-[2.5rem] p-8 mb-8
   bg-white dark:bg-[#180F22]
-  border border-slate-100 dark:border-white/5
+  border border-slate-300/80 dark:border-white/15
   shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)]
 `;
 
 const statCardStyle = `
   relative overflow-hidden rounded-[2rem] p-6
   bg-white dark:bg-[#1E1627]
-  border border-slate-100 dark:border-white/5
+  border border-slate-300 dark:border-white/20
   shadow-sm hover:shadow-md transition-all duration-300
 `;
 
@@ -334,7 +334,7 @@ export function HangfireMonitoringPage(): ReactElement {
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.25fr_0.95fr]">
-        <Card className="overflow-hidden border-none bg-white dark:bg-[linear-gradient(135deg,#1E1627_10%,#1E1627_45%,#EB2757_300%)] text-black dark:text-white shadow-xl rounded-2x1">
+        <Card className="overflow-hidden border border-slate-300 dark:border-white/20 bg-white dark:bg-[linear-gradient(135deg,#1E1627_10%,#1E1627_45%,#EB2757_300%)] text-black dark:text-white shadow-xl rounded-2xl">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-xl">
               <Play className="h-5 w-5" />
@@ -426,7 +426,7 @@ export function HangfireMonitoringPage(): ReactElement {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200/20 bg-white dark:bg-[#1E1627] shadow-sm rounded-2x1">
+        <Card className="border border-slate-300 dark:border-white/20 bg-white dark:bg-[#1E1627] shadow-sm rounded-2xl">
           <CardHeader>
             <CardTitle>{t('summary.title', { defaultValue: 'Sistem Özeti' })}</CardTitle>
             <CardDescription>
@@ -434,7 +434,7 @@ export function HangfireMonitoringPage(): ReactElement {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 dark:border-white/5 dark:bg-white/5">
+            <div className="rounded-2xl border border-slate-300 dark:bg-white/5 dark:border-white/10 bg-slate-50/50 p-5">
               <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 {t('summary.totalJobs', { defaultValue: 'Toplam recurring job' })}
               </div>
@@ -443,7 +443,7 @@ export function HangfireMonitoringPage(): ReactElement {
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-5 dark:border-emerald-500/20 dark:bg-emerald-500/10">
+              <div className="rounded-2xl border border-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/30 bg-emerald-50/50 p-5">
                 <div className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                   {t('summary.withQueue', { defaultValue: 'Aktif Kuyruklar' })}
                 </div>
@@ -451,7 +451,7 @@ export function HangfireMonitoringPage(): ReactElement {
                   {recurringHealth.withQueue}
                 </div>
               </div>
-              <div className="rounded-2xl border border-red-100 bg-red-50/50 p-5 dark:border-red-500/20 dark:bg-red-500/10">
+              <div className="rounded-2xl border border-red-400 dark:bg-red-500/10 dark:border-red-500/30 bg-red-50/50 p-5">
                 <div className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400">
                   {t('summary.withErrors', { defaultValue: 'Hatalı İşler' })}
                 </div>
@@ -460,7 +460,7 @@ export function HangfireMonitoringPage(): ReactElement {
                 </div>
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-linear-to-br from-pink-500/5 to-orange-500/5 border border-pink-500/10 dark:from-pink-500/10 dark:to-orange-500/10">
+            <div className="p-4 rounded-2xl bg-linear-to-br from-pink-500/5 to-orange-500/5 border border-pink-400 dark:from-pink-500/10 dark:to-orange-500/10 dark:border-pink-500/30">
               <p className="text-xs font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
                 {t('summary.help', {
                   defaultValue: 'Bu ekran, zamanlanmış işleri hızla tetiklemek ve başarılı/başarısız job akışını tek noktadan izlemek için ürünleştirilmiştir.',
@@ -471,7 +471,7 @@ export function HangfireMonitoringPage(): ReactElement {
         </Card>
       </div>
 
-      <Card className="border-slate-200/20 bg-white dark:bg-[#180F22] shadow-xl rounded-2xl overflow-hidden mt-6">
+      <Card className="border border-slate-300 dark:border-white/20 bg-white dark:bg-[#180F22] shadow-xl rounded-2xl overflow-hidden mt-6">
         <CardHeader className="px-8 py-0">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-pink-500/10 text-pink-600 dark:text-pink-400">
@@ -521,7 +521,7 @@ export function HangfireMonitoringPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card className="border-none bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
+      <Card className="border border-slate-300 dark:border-white/20 bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
         <CardHeader className="px-8 py-0">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
@@ -569,7 +569,7 @@ export function HangfireMonitoringPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card className="border-none bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
+      <Card className="border border-slate-300 dark:border-white/20 bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
         <CardHeader className="px-8 py-0">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400">
@@ -617,7 +617,7 @@ export function HangfireMonitoringPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card className="border-none bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
+      <Card className="border border-slate-300 dark:border-white/20 bg-white dark:bg-[#180F22] shadow-xl rounded-[2.5rem] overflow-hidden">
         <CardHeader className="px-8 py-0">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">

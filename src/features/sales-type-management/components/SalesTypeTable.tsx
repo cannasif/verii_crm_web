@@ -64,7 +64,7 @@ interface SalesTypeTableProps {
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<SalesTypeGetDto>[] => [
   { key: 'salesType', label: t('table.salesType'), type: 'text', className: 'w-[140px]' },
-  { key: 'name', label: t('table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
+  { key: 'name', label: t('table.name'), type: 'text', className: 'w-[150px] font-medium' },
   { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'w-[180px]' },
 ];
 

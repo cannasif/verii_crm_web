@@ -14,7 +14,9 @@ import {
 import { useDeleteActivityType } from '../hooks/useDeleteActivityType';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import type { ActivityTypeDto } from '../types/activity-type-types';
-import { Edit2, Trash2, FileText, Calendar, User, ListTodo } from 'lucide-react';
+import { Edit2, Trash2, Calendar, User, ListTodo } from 'lucide-react';
+
+import { DescriptionCell } from '@/components/shared';
 import { Alert02Icon } from 'hugeicons-react';
 import { toast } from 'sonner';
 
@@ -65,7 +67,7 @@ interface ActivityTypeTableProps {
 export const getColumnsConfig = (t: TFunction): ColumnDef<ActivityTypeDto>[] => [
   { key: 'id', label: t('table.id'), type: 'text', className: 'font-medium w-[80px]' },
   { key: 'name', label: t('table.name'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[200px]' },
-  { key: 'description', label: t('table.description'), type: 'description', className: 'min-w-[250px]' },
+  { key: 'description', label: t('table.description'), type: 'description', className: 'min-w-[250px] max-w-[300px]' },
   { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
   { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
 ];
@@ -73,42 +75,38 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<ActivityTypeDto>[] => 
 function renderCellContent(
   item: ActivityTypeDto,
   column: ColumnDef<ActivityTypeDto>,
-  i18n: { language: string }
+  i18n: { language: string },
+  colWidth?: number
 ): React.ReactNode {
   const value = item[column.key];
   if (!value && value !== 0) return '-';
 
   switch (column.type) {
-    case 'description':
-      return (
-        <div className="flex items-center gap-2">
-          <FileText size={14} className="text-slate-400 shrink-0" />
-          <span className="truncate max-w-[300px]" title={String(value)}>
-            {String(value)}
-          </span>
-        </div>
-      );
+    case 'description': {
+      const content = String(value);
+      return <DescriptionCell content={content} colWidth={colWidth} />;
+    }
     case 'date':
       return (
-        <div className="flex items-center gap-2 text-xs">
-          <Calendar size={14} className="text-pink-500/50" />
-          {new Date(String(value)).toLocaleDateString(i18n.language)}
+        <div className="flex items-center gap-2 text-xs min-w-0 overflow-hidden">
+          <Calendar size={14} className="text-pink-500/50 shrink-0" />
+          <span className="truncate">{new Date(String(value)).toLocaleDateString(i18n.language)}</span>
         </div>
       );
     case 'user':
       return (
-        <div className="flex items-center gap-2 text-xs">
-          <User size={14} className="text-indigo-500/50" />
-          {String(value)}
+        <div className="flex items-center gap-2 text-xs min-w-0 overflow-hidden">
+          <User size={14} className="text-indigo-500/50 shrink-0" />
+          <span className="truncate">{String(value)}</span>
         </div>
       );
     case 'text':
     default:
       if (column.key === 'name') {
         return (
-          <div className="flex items-center gap-2">
-            <ListTodo size={14} className="text-slate-400" />
-            {String(value)}
+          <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+            <ListTodo size={14} className="text-slate-400 shrink-0" />
+            <span className="truncate">{String(value)}</span>
           </div>
         );
       }
@@ -117,6 +115,7 @@ function renderCellContent(
 }
 
 export function ActivityTypeTable({
+
   toolbar,
   columns,
   visibleColumnKeys,
@@ -177,9 +176,9 @@ export function ActivityTypeTable({
     }
   };
 
-  const cellRenderer = (row: ActivityTypeDto, key: ActivityTypeColumnKey): React.ReactNode => {
+  const cellRenderer = (row: ActivityTypeDto, key: ActivityTypeColumnKey, colWidth?: number): React.ReactNode => {
     const col = tableColumns.find((c) => c.key === key);
-    if (col) return renderCellContent(row, col, i18n);
+    if (col) return renderCellContent(row, col, i18n, colWidth);
     const val = row[key];
     if (val == null && val !== 0) return '-';
     return String(val);
@@ -213,43 +212,43 @@ export function ActivityTypeTable({
   return (
     <>
       <ManagementDataTableChrome>
-      <DataTableGrid<ActivityTypeDto, ActivityTypeColumnKey>
-        toolbar={toolbar}
-        columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
-        rows={rows}
-        rowKey={rowKey}
-        renderCell={cellRenderer}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        onSort={onSort}
-        renderSortIcon={renderSortIcon}
-        isLoading={isLoading}
-        isError={false}
-        loadingText={loadingText}
-        errorText={errorText}
-        emptyText={emptyText}
-        minTableWidthClassName={minTableWidthClassName}
-        showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
-        actionsHeaderLabel={actionsHeaderLabel}
-        renderActionsCell={renderActionsCell}
-        rowClassName={rowClassName}
-        pageSize={pageSize}
-        pageSizeOptions={pageSizeOptions}
-        onPageSizeChange={onPageSizeChange}
-        pageNumber={pageNumber}
-        totalPages={totalPages}
-        hasPreviousPage={hasPreviousPage}
-        hasNextPage={hasNextPage}
-        onPreviousPage={onPreviousPage}
-        onNextPage={onNextPage}
-        previousLabel={previousLabel}
-        nextLabel={nextLabel}
-        paginationInfoText={paginationInfoText}
-        disablePaginationButtons={disablePaginationButtons}
-        centerColumnHeaders
-        onColumnOrderChange={onColumnOrderChange}
-      />
+        <DataTableGrid<ActivityTypeDto, ActivityTypeColumnKey>
+          toolbar={toolbar}
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={rows}
+          rowKey={rowKey}
+          renderCell={cellRenderer}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSort={onSort}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={false}
+          loadingText={loadingText}
+          errorText={errorText}
+          emptyText={emptyText}
+          minTableWidthClassName={minTableWidthClassName}
+          showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
+          actionsHeaderLabel={actionsHeaderLabel}
+          renderActionsCell={renderActionsCell}
+          rowClassName={rowClassName}
+          pageSize={pageSize}
+          pageSizeOptions={pageSizeOptions}
+          onPageSizeChange={onPageSizeChange}
+          pageNumber={pageNumber}
+          totalPages={totalPages}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          onPreviousPage={onPreviousPage}
+          onNextPage={onNextPage}
+          previousLabel={previousLabel}
+          nextLabel={nextLabel}
+          paginationInfoText={paginationInfoText}
+          disablePaginationButtons={disablePaginationButtons}
+          centerColumnHeaders
+          onColumnOrderChange={onColumnOrderChange}
+        />
       </ManagementDataTableChrome>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

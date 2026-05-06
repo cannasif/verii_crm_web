@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { Edit2, Loader2, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -239,6 +239,7 @@ export function VisibilityPoliciesPage(): ReactElement {
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <ManagementDataTableChrome>
               <DataTableGrid<VisibilityPolicyDto, VisibilityPolicyColumnKey>
+                centerColumnHeaders
                 columns={columns}
                 visibleColumnKeys={columnOrder.filter((key) => visibleColumns.includes(key)) as VisibilityPolicyColumnKey[]}
                 rows={items}
@@ -275,12 +276,13 @@ export function VisibilityPoliciesPage(): ReactElement {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
+                        className="rounded-xl text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 font-semibold"
                         onClick={() => {
                           setEditingItem(row);
                           setFormOpen(true);
                         }}
                       >
+                        <Edit2 size={16} className="mr-2" />
                         {t('common.edit')}
                       </Button>
                     )}
@@ -288,11 +290,12 @@ export function VisibilityPoliciesPage(): ReactElement {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="rounded-xl text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                        className="rounded-xl text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 font-semibold"
                         onClick={() => deleteMutation.mutate(row.id)}
                         disabled={deleteMutation.isPending}
                       >
-                        <Trash2 className="size-4" />
+                        <Trash2 size={16} className="mr-2" />
+                        {t('common.delete', { defaultValue: t('common.delete.action') })}
                       </Button>
                     )}
                   </div>

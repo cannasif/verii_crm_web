@@ -20,7 +20,7 @@ export function getActivityColumns(t: TFunction): ActivityColumnDef<ActivityDto>
     {
       key: 'subject',
       label: ta(t, 'subject'),
-      className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]',
+      className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px] max-w-[300px]',
     },
     { key: 'activityType', label: ta(t, 'activityType'), className: 'whitespace-nowrap' },
     { key: 'paymentTypeName', label: ta(t, 'paymentType'), className: 'min-w-[120px] whitespace-nowrap' },

@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
-import { DataTableGrid, type DataTableActionBarProps, type DataTableGridColumn } from '@/components/shared';
+import { DataTableGrid, DataTableActionBar, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,13 +19,13 @@ import type { StockGetDto } from '../types';
 import type { PagedFilter } from '@/types/api';
 import { StockBulkImageImportDialog } from './StockBulkImageImportDialog';
 import {
-  MANAGEMENT_DATA_GRID_CLASSNAME,
   MANAGEMENT_LIST_CARD_CLASSNAME,
-  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
 
-const idColumnSurface = 'bg-slate-200/70 dark:bg-white/[0.07] border-r border-slate-300/90 dark:border-white/10';
-import { Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const PAGE_KEY = 'stock-list';
@@ -88,21 +88,20 @@ export function StockListPage(): ReactElement {
       baseColumns.map((col) => ({
         ...col,
         headClassName: cn(
-          'py-5 text-[11px] font-bold uppercase tracking-[0.1em]',
-          col.key === 'Id' ? idColumnSurface : '',
-          col.key === 'unit' ? 'text-center w-[120px]' : 'px-4'
+          'py-3 text-[11px] font-bold uppercase tracking-[0.1em] px-4',
+          col.key === 'unit' ? 'text-center w-[120px]' : ''
         ),
         cellClassName: cn(
-          'py-4 transition-all duration-300',
+          'py-2.5 transition-all duration-300 px-4',
           col.key === 'Id'
-            ? cn('font-mono text-[11px] text-zinc-400 group-hover:text-pink-500/70 px-4 text-center w-[60px]', 'bg-slate-100/80 dark:bg-white/[0.04] border-r border-slate-200/90 dark:border-white/[0.08]')
+            ? 'font-medium text-slate-500 w-[80px]'
             : col.key === 'ErpStockCode'
-              ? 'font-bold text-sm text-zinc-700 dark:text-zinc-200 group-hover:text-pink-600 dark:group-hover:text-pink-400 px-4'
+              ? 'font-semibold text-slate-900 dark:text-white'
               : col.key === 'StockName'
-                ? 'text-sm text-zinc-600 dark:text-zinc-300 font-medium px-4'
+                ? 'text-sm text-slate-600 dark:text-slate-300'
                 : col.key === 'unit'
                   ? 'text-center'
-                  : 'px-4'
+                  : ''
         ),
         sortable: col.key !== 'unit',
       })),
@@ -262,87 +261,77 @@ export function StockListPage(): ReactElement {
   };
 
   return (
-    <div className="relative space-y-6 overflow-hidden">
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
-
-      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-foreground transition-colors">
+    <div className="w-full space-y-6 relative">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('list.title')}
           </h1>
-          <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
             {t('list.description')}
           </p>
         </div>
         <StockBulkImageImportDialog />
       </div>
-      <div className={cn("relative z-10", MANAGEMENT_LIST_CARD_CLASSNAME)}>
-        <Card className="border-2 bg-transparent shadow-none">
-          <CardHeader>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-1">
-                <CardTitle className={cn("text-xl font-bold flex items-center gap-3", MANAGEMENT_LIST_CARD_TITLE_CLASSNAME)}>
-                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-pink-500/10 to-orange-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
-                    <Package size={20} />
-                  </div>
-                  {t('list.cardTitle', { defaultValue: 'Stok Yönetimi' })}
-                </CardTitle>
-              </div>
-            </div>
+      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+          <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+            <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+              {t('list.cardTitle', { defaultValue: 'Stok Yönetimi' })}
+            </CardTitle>
+            <DataTableActionBar
+              pageKey={PAGE_KEY}
+              userId={user?.id}
+              columns={baseColumns}
+              visibleColumns={visibleColumns}
+              columnOrder={columnOrder}
+              onVisibleColumnsChange={setVisibleColumns}
+              onColumnOrderChange={(newVisibleOrder) => {
+                setColumnOrder((currentOrder) => {
+                  const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                  const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                  saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                  return finalOrder;
+                });
+              }}
+              exportFileName="stock-list"
+              exportColumns={exportColumns}
+              exportRows={exportRows}
+              getExportData={getExportData}
+              filterColumns={filterColumns}
+              defaultFilterColumn="StockName"
+              draftFilterRows={draftFilterRows}
+              onDraftFilterRowsChange={setDraftFilterRows}
+              filterLogic={filterLogic}
+              onFilterLogicChange={setFilterLogic}
+              onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+              onClearFilters={() => {
+                setDraftFilterRows([]);
+                setAppliedFilterRows([]);
+                setFilterLogic('and');
+                setSearchResetKey((value) => value + 1);
+              }}
+              translationNamespace="stock"
+              appliedFilterCount={appliedFilters.length}
+              search={{
+                onSearchChange: setSearchTerm,
+                placeholder: t('common.search'),
+                minLength: 1,
+                resetKey: searchResetKey,
+              }}
+              refresh={{
+                onRefresh: () => {
+                  void handleGridRefresh();
+                },
+                isLoading: stockQuery.isFetching,
+                cooldownSeconds: 60,
+                label: resolveLabel(t, 'list.refresh', 'Yenile'),
+              }}
+            />
           </CardHeader>
-          <CardContent className="px-6 pb-6 pt-2">
-            <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
-              <DataTableGrid<StockGetDto, StockColumnKey>
-                actionBar={{
-                  pageKey: PAGE_KEY,
-                  userId: user?.id,
-                  columns: baseColumns,
-                  visibleColumns,
-                  columnOrder,
-                  onVisibleColumnsChange: setVisibleColumns,
-                  onColumnOrderChange: (newVisibleOrder) => {
-                    setColumnOrder((currentOrder) => {
-                      const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
-                      const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                      saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                      return finalOrder;
-                    });
-                  },
-                  exportFileName: 'stock-list',
-                  exportColumns,
-                  exportRows,
-                  getExportData,
-                  filterColumns,
-                  defaultFilterColumn: 'StockName',
-                  draftFilterRows,
-                  onDraftFilterRowsChange: setDraftFilterRows,
-                  filterLogic,
-                  onFilterLogicChange: setFilterLogic,
-                  onApplyFilters: () => setAppliedFilterRows(draftFilterRows),
-                  onClearFilters: () => {
-                    setDraftFilterRows([]);
-                    setAppliedFilterRows([]);
-                    setFilterLogic('and');
-                  },
-                  translationNamespace: 'stock',
-                  appliedFilterCount: appliedFilters.length,
-                  search: {
-                    onSearchChange: setSearchTerm,
-                    placeholder: t('common.search'),
-                    minLength: 1,
-                    resetKey: searchResetKey,
-                  },
-                  refresh: {
-                    onRefresh: () => {
-                      void handleGridRefresh();
-                    },
-                    isLoading: stockQuery.isFetching,
-                    cooldownSeconds: 60,
-                    label: t('list.refresh', { defaultValue: 'Yenile' }),
-                  },
-                } satisfies DataTableActionBarProps}
+          <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+            <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+              <ManagementDataTableChrome>
+                <DataTableGrid<StockGetDto, StockColumnKey>
                 columns={columns}
                 visibleColumnKeys={orderedVisibleColumns}
                 rows={currentPageRows}
@@ -361,21 +350,21 @@ export function StockListPage(): ReactElement {
                 showActionsColumn
                 actionsHeaderLabel={t('list.actions')}
                 renderActionsCell={(stock) => (
-                  <div className="flex justify-end pr-4">
+                  <div className="flex justify-end gap-2 opacity-100 transition-opacity pr-4">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-10 w-10 rounded-xl text-zinc-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-all duration-300 active:scale-95"
+                      className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleRowClick(stock.id);
                       }}
                     >
-                      <Eye className="h-5 w-5" />
+                      <Eye size={16} />
                     </Button>
                   </div>
                 )}
-                rowClassName="group cursor-pointer border-b border-zinc-50 dark:border-white/5 last:border-0 hover:bg-zinc-50/50 dark:hover:bg-white/[0.02] transition-all duration-300"
+                rowClassName="group"
                 onRowClick={(stock) => handleRowClick(stock.id)}
                 onRowDoubleClick={(stock) => handleRowClick(stock.id)}
                 pageSize={pageSize}
@@ -396,6 +385,7 @@ export function StockListPage(): ReactElement {
                   ns: 'common',
                 })}
                 disablePaginationButtons={stockQuery.isFetching}
+                centerColumnHeaders
                 onColumnOrderChange={(newVisibleOrder) => {
                   setColumnOrder((currentOrder) => {
                     const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
@@ -405,10 +395,10 @@ export function StockListPage(): ReactElement {
                   });
                 }}
               />
-            </div>
+            </ManagementDataTableChrome>
+          </div>
           </CardContent>
-        </Card>
-      </div>
+      </Card>
     </div>
   );
 }

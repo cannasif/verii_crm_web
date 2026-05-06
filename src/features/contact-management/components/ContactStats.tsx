@@ -40,30 +40,26 @@ export function ContactStats(): ReactElement {
   // ORTAK TASARIM DEĞİŞKENLERİ (CustomerStats ile birebir uyumlu)
   const cardStyle = `
     bg-white/60 dark:bg-[#1a1025]/40 
-    hover:bg-white/90 dark:hover:bg-[#1a1025]/80
-    border border-white/60 dark:border-white/5 
-    shadow-sm hover:shadow-md 
+    border shadow-sm
     backdrop-blur-md 
     transition-all duration-300 
-    hover:border-pink-500/30 
     group relative overflow-hidden
     p-4 rounded-2xl flex flex-col justify-between
   `;
-  
+
   const glowStyle = "absolute inset-0 bg-linear-to-r from-pink-50/0 to-orange-50/0 dark:from-pink-500/0 dark:to-orange-500/0 group-hover:from-pink-50/50 group-hover:to-orange-50/50 dark:group-hover:from-pink-500/5 dark:group-hover:to-orange-500/5 transition-all duration-500 pointer-events-none";
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      
-      {/* Kart 1: Toplam İletişim (Mavi Tema) */}
-      <div className={cardStyle}>
+
+      <div className={`${cardStyle} border-blue-400 dark:border-blue-400/50 `}>
         <div className={glowStyle} />
         <div className="flex justify-between items-start relative z-10">
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             {t('contactManagement.stats.totalContacts')}
           </span>
           <div className="p-2 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 rounded-lg shadow-sm border border-blue-100 dark:border-blue-500/20">
-             <Users size={18} />
+            <Users size={18} />
           </div>
         </div>
         <div className="mt-2 relative z-10">
@@ -71,15 +67,14 @@ export function ContactStats(): ReactElement {
         </div>
       </div>
 
-      {/* Kart 2: Aktif İletişim (Yeşil Tema) */}
-      <div className={cardStyle}>
+      <div className={`${cardStyle} border-green-400 dark:border-green-400/50`}>
         <div className={glowStyle} />
         <div className="flex justify-between items-start relative z-10">
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             {t('contactManagement.stats.activeContacts')}
           </span>
           <div className="p-2 bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400 rounded-lg shadow-sm border border-green-100 dark:border-green-500/20">
-             <CheckCircle2 size={18} />
+            <CheckCircle2 size={18} />
           </div>
         </div>
         <div className="mt-2 relative z-10">
@@ -87,15 +82,14 @@ export function ContactStats(): ReactElement {
         </div>
       </div>
 
-      {/* Kart 3: Bu Ay Yeni (Turuncu Tema) */}
-      <div className={cardStyle}>
+      <div className={`${cardStyle} border-orange-400 dark:border-orange-400/50`}>
         <div className={glowStyle} />
         <div className="flex justify-between items-start relative z-10">
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             {t('contactManagement.stats.newThisMonth')}
           </span>
           <div className="p-2 bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 rounded-lg shadow-sm border border-orange-100 dark:border-orange-500/20">
-             <Zap size={18} />
+            <Zap size={18} />
           </div>
         </div>
         <div className="mt-2 relative z-10">
