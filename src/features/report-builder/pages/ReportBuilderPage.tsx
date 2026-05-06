@@ -425,11 +425,21 @@ export function ReportBuilderPage(): ReactElement {
   }, []);
   const { data: usersResponse } = useUserList({
     pageNumber: 1,
-    pageSize: 100,
+    pageSize: 1000,
     sortBy: 'firstName',
     sortDirection: 'asc',
     filters: [{ column: 'isActive', operator: 'eq', value: 'true' }],
   });
+  const allUserOptions = useMemo<ComboboxOption[]>(
+    () =>
+      (usersResponse?.data ?? [])
+        .filter((user) => Boolean(user.email))
+        .map((user) => ({
+          value: String(user.id),
+          label: `${user.fullName || user.username} (${user.email})`,
+        })),
+    [usersResponse?.data],
+  );
   const userOptions = useMemo<ComboboxOption[]>(
     () =>
       (usersResponse?.data ?? [])
@@ -444,10 +454,10 @@ export function ReportBuilderPage(): ReactElement {
   const selectedAssignedUsers = useMemo(
     () =>
       assignedUserIds.map((userId) => {
-        const match = userOptions.find((option) => option.value === String(userId));
-        return { userId, label: match?.label ?? String(userId) };
+        const match = allUserOptions.find((option) => option.value === String(userId));
+        return { userId, label: match?.label ?? `Kullanici #${userId}` };
       }),
-    [assignedUserIds, userOptions],
+    [allUserOptions, assignedUserIds],
   );
   const allSelectableFields = useMemo(
     () => [

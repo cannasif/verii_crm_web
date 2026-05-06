@@ -238,14 +238,24 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
   };
   const { data: usersResponse } = useUserList({
     pageNumber: 1,
-    pageSize: 100,
+    pageSize: 1000,
     sortBy: 'fullName',
     sortDirection: 'asc',
   });
-  const userOptions = useMemo<ComboboxOption[]>(
+  const allUserOptions = useMemo<ComboboxOption[]>(
     () =>
       (usersResponse?.data ?? [])
         .filter((user) => Boolean(user.email))
+        .map((user) => ({
+          value: String(user.id),
+          label: `${user.fullName || user.username} (${user.email})`,
+        })),
+    [usersResponse?.data],
+  );
+  const userOptions = useMemo<ComboboxOption[]>(
+    () =>
+      (usersResponse?.data ?? [])
+        .filter((user) => user.isActive !== false && Boolean(user.email))
         .map((user) => ({
           value: String(user.id),
           label: `${user.fullName || user.username} (${user.email})`,
@@ -263,13 +273,13 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
   const selectedAssignedUserOptions = useMemo(
     () =>
       assignedUserIds.map((userId) => {
-        const match = userOptions.find((option) => option.value === String(userId));
+        const match = allUserOptions.find((option) => option.value === String(userId));
         return {
           userId,
-          label: match?.label ?? String(userId),
+          label: match?.label ?? `Kullanici #${userId}`,
         };
       }),
-    [assignedUserIds, userOptions],
+    [allUserOptions, assignedUserIds],
   );
 
   const axisField = config.axis?.field;

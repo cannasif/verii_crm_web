@@ -51,6 +51,13 @@ export function Combobox({
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
 
+  React.useEffect(() => {
+    if (!open && searchQuery) {
+      setSearchQuery("")
+      onSearchChange?.("")
+    }
+  }, [open, onSearchChange, searchQuery])
+
   const handleSearchChange = React.useCallback(
     (next: string) => {
       setSearchQuery(next)
@@ -107,6 +114,8 @@ export function Combobox({
                   value={option.label}
                   onSelect={() => {
                     onValueChange(option.value)
+                    setSearchQuery("")
+                    onSearchChange?.("")
                     setOpen(false)
                   }}
                 >
