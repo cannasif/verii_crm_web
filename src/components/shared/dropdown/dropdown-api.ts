@@ -134,7 +134,7 @@ export const dropdownApi = {
     return getDropdownPageByQuery<DistrictDto>('/api/District', request);
   },
   getUserPage: (request: DropdownPageRequest): Promise<PagedResponse<UserDto>> => {
-    return getDropdownPage<UserDto>('/api/User', request, 'pageNumber');
+    return getDropdownPageByQuery<UserDto>('/api/User', request);
   },
   getApprovalRolePage: (request: DropdownPageRequest): Promise<PagedResponse<ApprovalRoleDto>> => {
     return getDropdownPage<ApprovalRoleDto>('/api/ApprovalRole', request, 'pageNumber');
