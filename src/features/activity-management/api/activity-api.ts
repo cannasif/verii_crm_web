@@ -2,16 +2,22 @@ import { api } from '@/lib/axios';
 import i18n from '@/lib/i18n';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { ActivityDto, CreateActivityDto, UpdateActivityDto } from '../types/activity-types';
-import { appendPagedQueryParams } from '@/utils/query-params';
 
 const AM_NS = 'activity-management' as const;
 
 export const activityApi = {
   getList: async (params: Omit<PagedParams, 'filters'> & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<ActivityDto>> => {
-    const queryParams = appendPagedQueryParams(new URLSearchParams(), params);
-
-    const response = await api.get<ApiResponse<PagedResponse<ActivityDto>>>(
-      `/api/Activity?${queryParams.toString()}`
+    const response = await api.post<ApiResponse<PagedResponse<ActivityDto>>>(
+      '/api/Activity/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
     );
     
     if (response.success && response.data) {
