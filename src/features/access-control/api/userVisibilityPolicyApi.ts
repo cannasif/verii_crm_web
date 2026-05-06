@@ -9,25 +9,19 @@ import type {
   UserVisibilityPolicyDto,
 } from '../types/access-control.types';
 
-function buildQueryParams(params: PagedRequest): string {
-  const queryParams = new URLSearchParams();
-  if (params.pageNumber !== undefined) queryParams.append('pageNumber', params.pageNumber.toString());
-  if (params.pageSize !== undefined) queryParams.append('pageSize', params.pageSize.toString());
-  if (params.search) queryParams.append('search', params.search);
-  if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-  if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-  if (params.filters?.length) {
-    queryParams.append('filters', JSON.stringify(params.filters));
-    queryParams.append('filterLogic', params.filterLogic ?? 'and');
-  }
-  return queryParams.toString();
-}
-
 export const userVisibilityPolicyApi = {
   getList: async (params: PagedRequest): Promise<PagedResponse<UserVisibilityPolicyDto>> => {
-    const query = buildQueryParams(params);
-    const response = await api.get<ApiResponse<PagedResponse<UserVisibilityPolicyDto>>>(
-      `/api/user-visibility-policies${query ? `?${query}` : ''}`
+    const response = await api.post<ApiResponse<PagedResponse<UserVisibilityPolicyDto>>>(
+      '/api/user-visibility-policies/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
     );
     const data = extractData(response as ApiResponse<PagedResponse<UserVisibilityPolicyDto>>);
     const rawData = data as unknown as { items?: UserVisibilityPolicyDto[]; data?: UserVisibilityPolicyDto[] };
