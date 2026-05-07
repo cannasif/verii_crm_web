@@ -5,6 +5,13 @@ export interface Salesmen360CurrencyAmountDto {
   orderAmount: number;
 }
 
+export interface Salesmen360VisibleUserDto {
+  userId: number;
+  fullName: string;
+  email?: string | null;
+  isSelf: boolean;
+}
+
 export interface Salesmen360KpiDto {
   currency?: string | null;
   totalDemands: number;

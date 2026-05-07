@@ -1595,6 +1595,10 @@
     "error": "An error occurred while loading the overview",
     "retry": "Retry",
     "button": "Sales Representative 360",
+    "salesmanFilter": {
+      "label": "Salesperson",
+      "me": "Me"
+    },
     "currencyFilter": {
       "label": "Currency",
       "all": "All"

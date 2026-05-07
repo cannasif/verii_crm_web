@@ -5,6 +5,7 @@ import type {
   Salesmen360OverviewDto,
   Salesmen360AnalyticsSummaryDto,
   Salesmen360AnalyticsChartsDto,
+  Salesmen360VisibleUserDto,
   ExecuteRecommendedActionDto,
 } from '../types/salesmen360.types';
 import { api } from '@/lib/axios';
@@ -36,6 +37,15 @@ export async function getSalesmenOverview(params: {
     headers: Object.keys(headers).length > 0 ? headers : undefined,
   });
   return ensureData(response, 'Overview could not be loaded');
+}
+
+export async function getVisibleSalesmen(params?: {
+  signal?: AbortSignal;
+}): Promise<Salesmen360VisibleUserDto[]> {
+  const response = await api.get<ApiResponse<Salesmen360VisibleUserDto[] | null>>('/api/salesmen/visible-users', {
+    signal: params?.signal,
+  });
+  return ensureData(response, 'Visible salesmen could not be loaded');
 }
 
 export async function getSalesmenAnalyticsSummary(params: {

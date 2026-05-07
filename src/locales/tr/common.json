@@ -1599,6 +1599,10 @@
     "error": "Özet yüklenirken bir hata oluştu",
     "retry": "Tekrar Dene",
     "button": "Satış Temsilcisi 360",
+    "salesmanFilter": {
+      "label": "Satışçı",
+      "me": "Ben"
+    },
     "currencyFilter": {
       "label": "Para birimi",
       "all": "Tümü"

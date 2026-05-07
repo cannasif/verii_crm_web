@@ -1,5 +1,5 @@
-import { type ReactElement, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,6 +34,7 @@ import {
   useSalesmenAnalyticsChartsQuery,
   useSalesmenCohortQuery,
   useExecuteSalesmenActionMutation,
+  useVisibleSalesmenQuery,
 } from '../hooks/useSalesmen360';
 import { SalesmenCurrencySummaryCards } from './SalesmenCurrencySummaryCards';
 import { SalesmenAmountComparisonByCurrencyTable } from './SalesmenAmountComparisonByCurrencyTable';
@@ -463,23 +464,56 @@ function DistributionAndTrendCharts({
 
 export function Salesmen360Page(): ReactElement {
   const params = useParams<{ userId: string }>();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const authUser = useAuthStore((s) => s.user);
   const rawUserId = params.userId ?? '';
   const userId = rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('ALL');
   const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
+  const visibleSalesmenQuery = useVisibleSalesmenQuery();
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
   const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam);
   const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, activeTab === 'analytics');
   const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, activeTab === 'analytics');
   const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(userId, 12);
   const executeActionMutation = useExecuteSalesmenActionMutation(userId);
+  const visibleSalesmen = visibleSalesmenQuery.data ?? [];
+  const selectedSalesmanValue = userId > 0 ? String(userId) : undefined;
+
+  useEffect(() => {
+    if (visibleSalesmen.length === 0) {
+      return;
+    }
+
+    if (userId <= 0) {
+      navigate(`/salesmen-360/${visibleSalesmen[0].userId}`, { replace: true });
+      return;
+    }
+
+    if (!visibleSalesmen.some((item) => item.userId === userId)) {
+      navigate(`/salesmen-360/${visibleSalesmen[0].userId}`, { replace: true });
+    }
+  }, [navigate, userId, visibleSalesmen]);
 
   const currencyFormatter = new Intl.NumberFormat(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+
+  const selectedSalesmanLabel = useMemo(() => {
+    const selected = visibleSalesmen.find((item) => item.userId === userId);
+    if (!selected) {
+      return undefined;
+    }
+
+    const fullName = selected.fullName?.trim();
+    if (fullName && selected.email) {
+      return `${fullName} (${selected.email})`;
+    }
+
+    return fullName || selected.email || String(selected.userId);
+  }, [userId, visibleSalesmen]);
 
   const currenciesFromOverview = overview?.kpis?.totalsByCurrency ?? [];
   const currenciesFromSummary = summary?.totalsByCurrency ?? [];
@@ -597,25 +631,56 @@ export function Salesmen360Page(): ReactElement {
             </div>
           </div>
 
-          <div className="flex items-center gap-0 w-fit rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
-              <Target className="size-4 text-pink-500" />
-              <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
-                {t('salesman360.currencyFilter.label')}
-              </span>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            {visibleSalesmen.length > 1 && selectedSalesmanValue && (
+              <div className="flex items-center gap-0 w-fit rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-2 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
+                  <Users className="size-4 text-indigo-500" />
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                    {t('salesman360.salesmanFilter.label')}
+                  </span>
+                </div>
+                <Select value={selectedSalesmanValue} onValueChange={(value) => navigate(`/salesmen-360/${value}`)}>
+                  <SelectTrigger className="w-[300px] h-10 border-0 rounded-none bg-white dark:bg-transparent font-bold focus:ring-0 shadow-none hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                    <SelectValue>{selectedSalesmanLabel}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
+                    {visibleSalesmen.map((item) => {
+                      const fullName = item.fullName?.trim();
+                      const label = fullName && item.email
+                        ? `${fullName} (${item.email})`
+                        : fullName || item.email || String(item.userId);
+                      return (
+                        <SelectItem key={item.userId} value={String(item.userId)} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
+                          {item.isSelf ? `${label} • ${t('salesman360.salesmanFilter.me')}` : label}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="flex items-center gap-0 w-fit rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
+                <Target className="size-4 text-pink-500" />
+                <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                  {t('salesman360.currencyFilter.label')}
+                </span>
+              </div>
+              <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
+                <SelectTrigger className="w-[140px] h-10 border-0 rounded-none bg-white dark:bg-transparent font-bold focus:ring-0 shadow-none hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
+                  {currencyOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-              <SelectTrigger className="w-[140px] h-10 border-0 rounded-none bg-white dark:bg-transparent font-bold focus:ring-0 shadow-none hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
-                {currencyOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
         </div>
 

@@ -10,6 +10,7 @@ export const VISIBILITY_ENTITY_OPTIONS = [
   { value: 'Quotation', labelKey: 'visibilityPolicies.entity.quotation', fallback: 'Teklif' },
   { value: 'Demand', labelKey: 'visibilityPolicies.entity.demand', fallback: 'Talep' },
   { value: 'Order', labelKey: 'visibilityPolicies.entity.order', fallback: 'Sipariş' },
+  { value: 'Salesman360', labelKey: 'visibilityPolicies.entity.salesman360', fallback: 'Satışçı KPI' },
 ] as const;
 
 export function getVisibilityScopeMeta(scopeType: number): (typeof VISIBILITY_SCOPE_OPTIONS)[number] | undefined {

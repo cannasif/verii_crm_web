@@ -7,13 +7,23 @@ import {
   getSalesmenOverview,
   getSalesmenAnalyticsSummary,
   getSalesmenAnalyticsCharts,
+  getVisibleSalesmen,
 } from '../api/salesmen360Api';
-import type { ExecuteRecommendedActionDto } from '../types/salesmen360.types';
+import type { ExecuteRecommendedActionDto, Salesmen360VisibleUserDto } from '../types/salesmen360.types';
 
 const OVERVIEW_STALE_MS = 30_000;
 const SUMMARY_STALE_MS = 30_000;
 const CHARTS_STALE_MS = 45_000;
 const COHORT_STALE_MS = 300_000;
+const VISIBLE_USERS_STALE_MS = 60_000;
+
+export function useVisibleSalesmenQuery() {
+  return useQuery<Salesmen360VisibleUserDto[]>({
+    queryKey: ['salesmen360', 'visible-users'],
+    queryFn: ({ signal }) => getVisibleSalesmen({ signal }),
+    staleTime: VISIBLE_USERS_STALE_MS,
+  });
+}
 
 export function useSalesmenOverviewQuery(userId: number, currency?: string) {
   return useQuery({

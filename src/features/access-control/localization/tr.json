@@ -187,7 +187,8 @@
       "activity": "Aktivite",
       "quotation": "Teklif",
       "demand": "Talep",
-      "order": "Sipariş"
+      "order": "Sipariş",
+      "salesman360": "Satışçı KPI"
     }
   },
   "userVisibilityAssignments": {

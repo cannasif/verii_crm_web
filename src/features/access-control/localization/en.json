@@ -187,7 +187,8 @@
       "activity": "Activity",
       "quotation": "Quotation",
       "demand": "Demand",
-      "order": "Order"
+      "order": "Order",
+      "salesman360": "Salesperson KPI"
     }
   },
   "userVisibilityAssignments": {
