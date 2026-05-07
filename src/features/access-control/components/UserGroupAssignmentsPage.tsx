@@ -8,6 +8,7 @@ import { CheckCircle2, ShieldCheck, UserRound } from 'lucide-react';
 import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useUserPermissionGroupsQuery } from '../hooks/useUserPermissionGroupsQuery';
 import { useSetUserPermissionGroupsMutation } from '../hooks/useSetUserPermissionGroupsMutation';
+import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { PermissionGroupMultiSelect } from './PermissionGroupMultiSelect';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
 
@@ -22,6 +23,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
   const userDropdown = useUserOptionsInfinite(userSearchTerm, true);
   const { data: userGroups, isLoading: userGroupsLoading } = useUserPermissionGroupsQuery(selectedUserId);
   const setUserGroups = useSetUserPermissionGroupsMutation(selectedUserId ?? 0);
+  const { canUpdate } = useCrudPermissions('access-control.user-group-assignments.view');
 
   useEffect(() => {
     setPageTitle(t('userGroupAssignments.title'));
@@ -165,9 +167,9 @@ export function UserGroupAssignmentsPage(): ReactElement {
                 <PermissionGroupMultiSelect
                   value={selectedGroupIds}
                   onChange={handleGroupIdsChange}
-                  disabled={setUserGroups.isPending}
+                  disabled={setUserGroups.isPending || !canUpdate}
                 />
-                {hasChanges && (
+                {hasChanges && canUpdate && (
                   <div className="mt-4 flex items-center justify-end gap-1">
                     <FieldHelpTooltip text={t('help.userAssignment.save')} side="top" />
                     <Button
@@ -177,6 +179,11 @@ export function UserGroupAssignmentsPage(): ReactElement {
                     >
                       {setUserGroups.isPending ? t('common.saving') : t('common.save')}
                     </Button>
+                  </div>
+                )}
+                {!canUpdate && (
+                  <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+                    {t('common.forbidden', { defaultValue: 'Bu alanda degisiklik yetkin yok.' })}
                   </div>
                 )}
               </>

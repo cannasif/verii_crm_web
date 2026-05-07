@@ -12,6 +12,7 @@ import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdown
 import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { userVisibilityPolicyApi } from '../api/userVisibilityPolicyApi';
 import { visibilityPolicyApi } from '../api/visibilityPolicyApi';
+import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { getVisibilityScopeMeta, VISIBILITY_ENTITY_OPTIONS } from '../utils/visibility-options';
 import type { UserVisibilityPolicyDto, VisibilityPolicyDto } from '../types/access-control.types';
 
@@ -22,6 +23,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const userDropdown = useUserOptionsInfinite(userSearchTerm, true);
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.user-group-assignments.view');
 
   useEffect(() => {
     setPageTitle(t('userVisibilityAssignments.title'));
@@ -194,6 +196,14 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
               const assignment = assignmentsByEntity.get(entity.value);
               const entityPolicies = policies.filter((policy) => policy.entityType === entity.value && policy.isActive);
               const scopeMeta = assignment ? getVisibilityScopeMeta(assignment.scopeType) : null;
+              const canAssignNew = !assignment && canCreate;
+              const canReplaceExisting = Boolean(assignment) && canUpdate;
+              const canRemoveExisting = Boolean(assignment) && canDelete;
+              const disableSelect =
+                isMutating ||
+                assignmentsQuery.isLoading ||
+                policiesQuery.isLoading ||
+                (!canAssignNew && !canReplaceExisting && !canRemoveExisting);
 
               return (
                 <Card key={entity.value} className="rounded-2xl border border-slate-200 dark:border-white/10 dark:bg-[#180F22]">
@@ -218,15 +228,21 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
                     <Select
                       value={assignment ? String(assignment.visibilityPolicyId) : '__none__'}
                       onValueChange={(value) => void handlePolicySelection(entity.value, value)}
-                      disabled={isMutating || assignmentsQuery.isLoading || policiesQuery.isLoading}
+                      disabled={disableSelect}
                     >
                       <SelectTrigger className="h-11 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                         <SelectValue placeholder={t('userVisibilityAssignments.selectPolicyPlaceholder')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__none__">{t('userVisibilityAssignments.noPolicy')}</SelectItem>
+                        <SelectItem value="__none__" disabled={Boolean(assignment) && !canRemoveExisting}>
+                          {t('userVisibilityAssignments.noPolicy')}
+                        </SelectItem>
                         {entityPolicies.map((policy: VisibilityPolicyDto) => (
-                          <SelectItem key={policy.id} value={String(policy.id)}>
+                          <SelectItem
+                            key={policy.id}
+                            value={String(policy.id)}
+                            disabled={assignment ? !canReplaceExisting : !canAssignNew}
+                          >
                             {policy.name}
                           </SelectItem>
                         ))}
@@ -235,6 +251,11 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
                     {assignment && (
                       <div className="rounded-xl bg-slate-100/80 px-3 py-2 text-sm text-slate-600 dark:bg-white/5 dark:text-slate-300">
                         {assignment.visibilityPolicyName}
+                      </div>
+                    )}
+                    {!canAssignNew && !canReplaceExisting && !canRemoveExisting && (
+                      <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+                        {t('common.forbidden', { defaultValue: 'Bu alanda degisiklik yetkin yok.' })}
                       </div>
                     )}
                   </CardContent>
