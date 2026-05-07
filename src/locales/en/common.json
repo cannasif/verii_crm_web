@@ -1605,11 +1605,21 @@
     "button": "Sales Representative 360",
     "salesmanFilter": {
       "label": "Salesperson",
-      "me": "Me"
+      "me": "Me",
+      "searchPlaceholder": "Search by name or email…",
+      "noResults": "No matches."
     },
     "currencyFilter": {
       "label": "Currency",
       "all": "All"
+    },
+    "periodFilter": {
+      "label": "Period",
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "year": "This year",
+      "custom": "Custom range"
     },
     "currencyTotals": {
       "title": "Totals by currency",
@@ -3540,7 +3550,7 @@
   },
   "catalogStockPicker": {
     "title": "Select Stock From Catalog",
-    "description": "Browse down through the catalog like Trendyol or Amazon, then pick the stock from the linked product list.",
+    "description": "Browse the catalog by category, then pick stock from the linked product list.",
     "hierarchyBlueprintTitle": "Recommended category flow",
     "hierarchyBlueprintDescription": "Keep the same structure in the catalog: main category, subcategory, brand, series, and finally products.",
     "hierarchyExampleLabel": "Example",
@@ -3566,6 +3576,14 @@
     "step3Title": "Pick Stock",
     "catalogsTitle": "Catalogs",
     "categoriesTitle": "Categories",
+    "categoryNavigationLayoutLabel": "Category list",
+    "categoryNavigationLayoutRich": "With sub-preview",
+    "categoryNavigationLayoutLevelList": "Level list",
+    "categoryLevelTableTitle": "Options at this level",
+    "categoryLevelTableSubtitle": "Siblings in one list; click a row to go deeper or pick a leaf.",
+    "categoryLevelTableColNav": "Go deeper or select",
+    "categoryLevelTableColLevel": "Lvl",
+    "categoryLevelTableColType": "Type",
     "stocksTitle": "Category Stocks",
     "loadingCatalogs": "Loading catalogs...",
     "loadingCategories": "Loading categories...",
@@ -3612,7 +3630,6 @@
     "resetBranch": "Root",
     "resetBranchTooltip": "Clears the category path, selected branch, and search; returns to the root category list of this catalog.",
     "categoryClientSearchPlaceholder": "Search category name, code, or path…",
-    "categoryClientSearchFootnote": "Temporary: the full tree is fetched in the browser; large catalogs may be slow and issue many requests. Prefer backend search long term.",
     "categoryClientSearchLoadingTree": "Loading category tree…",
     "categoryClientSearchError": "Could not load the category tree.",
     "categoryClientSearchRetry": "Retry",

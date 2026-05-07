@@ -993,9 +993,23 @@
     "error": "An error occurred while loading the overview",
     "retry": "Erneut versuchen",
     "button": "Verkäufer 360",
+    "salesmanFilter": {
+      "label": "Verkäufer",
+      "me": "Ich",
+      "searchPlaceholder": "Nach Name oder E-Mail suchen…",
+      "noResults": "Keine Treffer."
+    },
     "currencyFilter": {
       "label": "Währung",
       "all": "Alle"
+    },
+    "periodFilter": {
+      "label": "Zeitraum",
+      "today": "Heute",
+      "week": "Diese Woche",
+      "month": "Dieser Monat",
+      "year": "Dieses Jahr",
+      "custom": "Benutzerdefiniert"
     },
     "currencyTotals": {
       "title": "Summen nach Währung",
@@ -2892,7 +2906,7 @@
   },
   "catalogStockPicker": {
     "title": "Bestand aus Katalog auswählen",
-    "description": "Gehen Sie wie bei Trendyol, Hepsiburada oder Amazon durch den Katalog und wählen Sie dann den Bestand aus der verknüpften Produktliste aus.",
+    "description": "Navigieren Sie durch den Katalog und wählen Sie dann den Bestand aus der verknüpften Produktliste aus.",
     "openButton": "Aus Katalog wählen",
     "hierarchyInfoButton": "Empfohlener Kategoriefluss",
     "scrollBack": "Nach links scrollen",
@@ -2907,6 +2921,14 @@
     "step3Title": "Bestand wählen",
     "catalogsTitle": "Kataloge",
     "categoriesTitle": "Kategorien",
+    "categoryNavigationLayoutLabel": "Kategorieliste",
+    "categoryNavigationLayoutRich": "Mit Untervorschau",
+    "categoryNavigationLayoutLevelList": "Ebenenliste",
+    "categoryLevelTableTitle": "Optionen auf dieser Ebene",
+    "categoryLevelTableSubtitle": "Geschwister in einer Tabelle; Zeile anklicken um fortzufahren.",
+    "categoryLevelTableColNav": "Weiter oder auswählen",
+    "categoryLevelTableColLevel": "St.",
+    "categoryLevelTableColType": "Typ",
     "stocksTitle": "Kategoriebestände",
     "loadingCatalogs": "Kataloge werden geladen...",
     "loadingCategories": "Kategorien werden geladen...",
@@ -2943,7 +2965,6 @@
     "resetBranch": "Wurzel",
     "resetBranchTooltip": "Setzt Kategoriepfad, gewählte Ebene und Suche zurück; zurück zur Stammkategorie dieser Liste.",
     "categoryClientSearchPlaceholder": "Kategoriename, Code oder Pfad suchen…",
-    "categoryClientSearchFootnote": "Vorläufig: Der gesamte Baum wird im Browser geladen; große Kataloge können langsam sein und viele Anfragen auslösen.",
     "categoryClientSearchLoadingTree": "Kategoriebaum wird geladen…",
     "categoryClientSearchError": "Kategoriebaum konnte nicht geladen werden.",
     "categoryClientSearchRetry": "Erneut versuchen",

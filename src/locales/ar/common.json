@@ -989,9 +989,23 @@
     "error": "حدث خطأ أثناء تحميل النظرة العامة",
     "retry": "إعادة المحاولة",
     "button": "مندوب مبيعات 360",
+    "salesmanFilter": {
+      "label": "مندوب المبيعات",
+      "me": "أنا",
+      "searchPlaceholder": "ابحث بالاسم أو البريد…",
+      "noResults": "لا توجد نتائج."
+    },
     "currencyFilter": {
       "label": "العملة",
       "all": "الكل"
+    },
+    "periodFilter": {
+      "label": "الفترة",
+      "today": "اليوم",
+      "week": "هذا الأسبوع",
+      "month": "هذا الشهر",
+      "year": "هذه السنة",
+      "custom": "نطاق مخصص"
     },
     "currencyTotals": {
       "title": "المجاميع حسب العملة",
@@ -4594,6 +4608,14 @@
     "step3Title": "اختيار المخزون",
     "catalogsTitle": "الكتالوجات",
     "categoriesTitle": "التصنيفات",
+    "categoryNavigationLayoutLabel": "قائمة التصنيفات",
+    "categoryNavigationLayoutRich": "مع معاينة الفروع",
+    "categoryNavigationLayoutLevelList": "قائمة المستويات",
+    "categoryLevelTableTitle": "الخيارات في هذا المستوى",
+    "categoryLevelTableSubtitle": "خيارات على نفس المستوى؛ انقر صفًا للمتابعة.",
+    "categoryLevelTableColNav": "انتقل للأسفل أو اختر",
+    "categoryLevelTableColLevel": "مستوى",
+    "categoryLevelTableColType": "النوع",
     "stocksTitle": "مخزون التصنيف",
     "loadingCatalogs": "جاري تحميل الكتالوجات...",
     "loadingCategories": "جاري تحميل التصنيفات...",
@@ -4640,7 +4662,6 @@
     "resetBranch": "جذر",
     "resetBranchTooltip": "يمسح مسار التصنيف والفرع المحدد والبحث؛ يعود إلى قائمة الجذر لهذا الكتالوج.",
     "categoryClientSearchPlaceholder": "ابحث بالاسم أو الرمز أو المسار…",
-    "categoryClientSearchFootnote": "مؤقت: يتم جلب الشجرة كاملة في المتصفح؛ الكتالوجات الكبيرة قد تكون بطيئة.",
     "categoryClientSearchLoadingTree": "جاري تحميل شجرة التصنيفات…",
     "categoryClientSearchError": "تعذر تحميل شجرة التصنيفات.",
     "categoryClientSearchRetry": "إعادة المحاولة",

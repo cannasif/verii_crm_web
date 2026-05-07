@@ -989,9 +989,23 @@
     "error": "Error al cargar el resumen",
     "retry": "Reintentar",
     "button": "Representante de ventas 360",
+    "salesmanFilter": {
+      "label": "Vendedor",
+      "me": "Yo",
+      "searchPlaceholder": "Buscar por nombre o correo…",
+      "noResults": "Sin resultados."
+    },
     "currencyFilter": {
       "label": "Moneda",
       "all": "Todas"
+    },
+    "periodFilter": {
+      "label": "Período",
+      "today": "Hoy",
+      "week": "Esta semana",
+      "month": "Este mes",
+      "year": "Este año",
+      "custom": "Rango personalizado"
     },
     "currencyTotals": {
       "title": "Totales por moneda",
@@ -4594,6 +4608,14 @@
     "step3Title": "Elegir stock",
     "catalogsTitle": "Catálogos",
     "categoriesTitle": "Categorías",
+    "categoryNavigationLayoutLabel": "Lista de categorías",
+    "categoryNavigationLayoutRich": "Con vista previa",
+    "categoryNavigationLayoutLevelList": "Lista por nivel",
+    "categoryLevelTableTitle": "Opciones en este nivel",
+    "categoryLevelTableSubtitle": "Opciones del mismo nivel; haz clic en una fila para continuar.",
+    "categoryLevelTableColNav": "Entrar o seleccionar",
+    "categoryLevelTableColLevel": "Niv.",
+    "categoryLevelTableColType": "Tipo",
     "stocksTitle": "Stocks de la categoría",
     "loadingCatalogs": "Cargando catálogos...",
     "loadingCategories": "Cargando categorías...",
@@ -4640,7 +4662,6 @@
     "resetBranch": "Raíz",
     "resetBranchTooltip": "Borra la ruta de categoría, la rama seleccionada y la búsqueda; vuelve a la lista raíz de este catálogo.",
     "categoryClientSearchPlaceholder": "Buscar nombre, código o ruta…",
-    "categoryClientSearchFootnote": "Temporal: el árbol completo se carga en el navegador; catálogos grandes pueden ser lentos.",
     "categoryClientSearchLoadingTree": "Cargando árbol de categorías…",
     "categoryClientSearchError": "No se pudo cargar el árbol de categorías.",
     "categoryClientSearchRetry": "Reintentar",

@@ -1609,11 +1609,21 @@
     "button": "Satış Temsilcisi 360",
     "salesmanFilter": {
       "label": "Satışçı",
-      "me": "Ben"
+      "me": "Ben",
+      "searchPlaceholder": "İsim veya e-posta ile ara…",
+      "noResults": "Eşleşen satış temsilcisi yok."
     },
     "currencyFilter": {
       "label": "Para birimi",
       "all": "Tümü"
+    },
+    "periodFilter": {
+      "label": "Dönem",
+      "today": "Bugün",
+      "week": "Bu hafta",
+      "month": "Bu ay",
+      "year": "Bu yıl",
+      "custom": "Özel aralık"
     },
     "currencyTotals": {
       "title": "Para birimine göre toplamlar",
@@ -3559,7 +3569,7 @@
   },
   "catalogStockPicker": {
     "title": "Katalogtan Stok Seç",
-    "description": "Trendyol veya Hepsiburada benzeri şekilde katalogdan kategoriye in, sonra bağlı stokları seç.",
+    "description": "Katalogda kategorilere inin, ardından bağlı stokları seçin.",
     "hierarchyBlueprintTitle": "Önerilen kategori akışı",
     "hierarchyBlueprintDescription": "Katalog içinde aynı mantığı koru: ana kategori, alt kategori, marka, seri ve en sonda ürünler.",
     "hierarchyExampleLabel": "Örnek",
@@ -3585,6 +3595,14 @@
     "step3Title": "Stoğu Seç",
     "catalogsTitle": "Kataloglar",
     "categoriesTitle": "Kategoriler",
+    "categoryNavigationLayoutLabel": "Kategori listesi",
+    "categoryNavigationLayoutRich": "Alt kırılımlı",
+    "categoryNavigationLayoutLevelList": "Seviye listesi",
+    "categoryLevelTableTitle": "Bu seviyedeki kırılımlar",
+    "categoryLevelTableSubtitle": "Aynı seviyedeki seçenekler; satıra tıklayarak alt seviyeye in veya uç kategoriyi seç.",
+    "categoryLevelTableColNav": "İlerle veya seç",
+    "categoryLevelTableColLevel": "Seviye",
+    "categoryLevelTableColType": "Tür",
     "stocksTitle": "Kategori Stokları",
     "loadingCatalogs": "Kataloglar yükleniyor...",
     "loadingCategories": "Kategoriler yükleniyor...",
@@ -3631,7 +3649,6 @@
     "resetBranch": "Kök",
     "resetBranchTooltip": "Kategori yolunu, seçili kırılımı ve aramayı sıfırlar; seçilen katalogun kök listesine döner.",
     "categoryClientSearchPlaceholder": "Kategori adı, kod veya yol ara…",
-    "categoryClientSearchFootnote": "Geçici çözüm: ağaç tarayıcıda toplanır; çok büyük kataloglarda ilk yükleme ve çok sayıda istek oluşabilir. Kalıcı çözüm için backend araması.",
     "categoryClientSearchLoadingTree": "Kategori ağacı yükleniyor…",
     "categoryClientSearchError": "Kategori ağacı yüklenemedi.",
     "categoryClientSearchRetry": "Yeniden dene",

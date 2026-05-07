@@ -989,9 +989,23 @@
     "error": "An error occurred while loading the overview",
     "retry": "Réessayer",
     "button": "Représentant des ventes 360",
+    "salesmanFilter": {
+      "label": "Commercial",
+      "me": "Moi",
+      "searchPlaceholder": "Rechercher par nom ou e-mail…",
+      "noResults": "Aucun résultat."
+    },
     "currencyFilter": {
       "label": "Devise",
       "all": "Toutes"
+    },
+    "periodFilter": {
+      "label": "Période",
+      "today": "Aujourd'hui",
+      "week": "Cette semaine",
+      "month": "Ce mois",
+      "year": "Cette année",
+      "custom": "Plage personnalisée"
     },
     "currencyTotals": {
       "title": "Totaux par devise",
@@ -4549,6 +4563,14 @@
     "step3Title": "Choisir le stock",
     "catalogsTitle": "Catalogues",
     "categoriesTitle": "Catégories",
+    "categoryNavigationLayoutLabel": "Liste des catégories",
+    "categoryNavigationLayoutRich": "Avec aperçu des sous-niveaux",
+    "categoryNavigationLayoutLevelList": "Liste par niveau",
+    "categoryLevelTableTitle": "Options à ce niveau",
+    "categoryLevelTableSubtitle": "Les choix du même niveau; cliquez une ligne pour continuer.",
+    "categoryLevelTableColNav": "Descendre ou sélectionner",
+    "categoryLevelTableColLevel": "Niv.",
+    "categoryLevelTableColType": "Type",
     "stocksTitle": "Stocks de la catégorie",
     "loadingCatalogs": "Chargement des catalogues...",
     "loadingCategories": "Chargement des catégories...",
@@ -4595,7 +4617,6 @@
     "resetBranch": "Racine",
     "resetBranchTooltip": "Efface le chemin des catégories, la branche sélectionnée et la recherche ; revient à la liste racine de ce catalogue.",
     "categoryClientSearchPlaceholder": "Rechercher nom, code ou chemin…",
-    "categoryClientSearchFootnote": "Temporaire : l’arbre complet est chargé dans le navigateur ; les gros catalogues peuvent être lents.",
     "categoryClientSearchLoadingTree": "Chargement de l’arborescence…",
     "categoryClientSearchError": "Impossible de charger l’arborescence.",
     "categoryClientSearchRetry": "Réessayer",
