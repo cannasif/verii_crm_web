@@ -10,8 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleHelp,
-  GitBranch,
   FolderTree,
+  GitBranch,
   LayoutGrid,
   List,
   MinusCircle,
@@ -24,6 +24,7 @@ import {
   X,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -372,6 +373,7 @@ export function CatalogStockSelectDialog({
   const [mobileStocksOpen, setMobileStocksOpen] = useState(true);
   const [categoryClientSearch, setCategoryClientSearch] = useState('');
   const [categorySearchShowBranches, setCategorySearchShowBranches] = useState(false);
+  const [categoryPanelLayout, setCategoryPanelLayout] = useState<'rich' | 'levelList'>('rich');
   const debouncedStockSearch = useDebouncedValue(stockSearch, 300);
   const debouncedCategoryClientSearch = useDebouncedValue(categoryClientSearch, 320);
   const wasOpenRef = useRef(false);
@@ -397,6 +399,7 @@ export function CatalogStockSelectDialog({
       setMobileStocksOpen(true);
       setCategoryClientSearch('');
       setCategorySearchShowBranches(false);
+      setCategoryPanelLayout('rich');
       wasOpenRef.current = false;
       initialDraftSnapshotRef.current = [];
       documentLinesSnapshotRef.current = [];
@@ -553,6 +556,7 @@ export function CatalogStockSelectDialog({
     setPageNumber(1);
     setCategoryClientSearch('');
     setCategorySearchShowBranches(false);
+    setCategoryPanelLayout('rich');
   };
 
   const activateCategorySelection = useCallback(
@@ -1173,12 +1177,12 @@ export function CatalogStockSelectDialog({
         <button
           type="button"
           onClick={() => onOpenChange(false)}
-          aria-label={t('common.cancel')}
+          aria-label={t('cancel', { ns: 'common' })}
           className="absolute right-2.5 top-2.5 z-30 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300/90 bg-white text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:border-red-400/60 hover:bg-red-50 hover:text-red-600 hover:shadow-[0_0_16px_rgba(239,68,68,0.35)] dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:shadow-[0_0_18px_rgba(239,68,68,0.3)] sm:right-3 sm:top-3 sm:h-9 sm:w-9"
         >
           <X className="h-4 w-4" />
         </button>
-        <DialogHeader className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-2 pr-12 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl before:pointer-events-none before:absolute before:inset-x-0 before:-bottom-px before:h-px before:bg-gradient-to-r before:from-transparent before:via-pink-500/35 before:to-transparent dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-4 sm:py-2.5 sm:pr-14">
+        <DialogHeader className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-1.5 pr-12 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl before:pointer-events-none before:absolute before:inset-x-0 before:-bottom-px before:h-px before:bg-gradient-to-r before:from-transparent before:via-pink-500/35 before:to-transparent dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-4 sm:py-2 sm:pr-14 xl:py-1.5 xl:pb-2">
           <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
             <div className="min-w-0 flex-1">
               <DialogTitle className="flex items-center gap-2 text-base font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-lg">
@@ -1280,15 +1284,16 @@ export function CatalogStockSelectDialog({
           </div>
         </DialogHeader>
 
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-0 overflow-hidden xl:grid xl:grid-cols-[minmax(260px,27%)_minmax(0,1fr)] 2xl:grid-cols-[minmax(300px,24%)_minmax(0,1fr)]">
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-0 overflow-hidden xl:grid xl:min-h-0 xl:grid-cols-[minmax(220px,22%)_minmax(0,1fr)] xl:items-stretch 2xl:grid-cols-[minmax(236px,21%)_minmax(0,1fr)]">
           <div
             className={cn(
-              'flex shrink-0 flex-col overflow-hidden border-b border-slate-300/90 shadow-[inset_-1px_0_0_rgba(148,163,184,0.12)] backdrop-blur-sm dark:border-white/10 dark:shadow-none xl:shadow-[inset_-1px_0_0_rgba(148,163,184,0.14)] dark:xl:shadow-none',
-              'bg-[linear-gradient(180deg,rgba(248,250,252,0.85),rgba(241,245,249,0.45))]',
-              'dark:bg-white/[0.02] dark:bg-none',
-              'min-h-0 max-xl:min-h-[100px] xl:h-full xl:max-h-none xl:border-r xl:border-slate-300/90 xl:border-b-0',
+              'flex flex-col overflow-hidden border-b border-slate-300/90 shadow-[inset_-1px_0_0_rgba(148,163,184,0.12)] backdrop-blur-sm dark:border-white/10 dark:shadow-none xl:shadow-[inset_-1px_0_0_rgba(148,163,184,0.14)] dark:xl:shadow-none',
+              'bg-[linear-gradient(180deg,rgba(248,250,252,0.92),rgba(241,245,249,0.55))]',
+              'dark:bg-[linear-gradient(180deg,rgba(24,24,27,0.55),rgba(9,9,11,0.42))]',
+              'min-h-0 max-xl:min-h-[100px] xl:h-full xl:min-h-0 xl:max-h-none xl:self-stretch xl:border-r xl:border-slate-300/90 xl:border-b-0',
+              'max-xl:shrink-0',
               mobileCategoriesOpen ? 'max-lg:max-h-[min(52dvh,460px)]' : 'max-lg:max-h-[2.75rem]',
-              'lg:max-h-[min(42dvh,340px)] xl:max-h-none',
+              'lg:max-h-[min(52dvh,460px)] xl:max-h-none',
             )}
           >
             <button
@@ -1312,11 +1317,11 @@ export function CatalogStockSelectDialog({
 
             <div
               className={cn(
-                'flex min-h-0 flex-1 flex-col overflow-hidden',
+                'flex min-h-0 flex-1 flex-col overflow-hidden xl:-mt-px xl:h-full xl:border-t-0',
                 !mobileCategoriesOpen && 'max-lg:hidden lg:flex',
               )}
             >
-            <div className="border-b border-slate-300/90 bg-gradient-to-b from-white to-transparent px-3 py-2 dark:border-white/10 dark:from-white/[0.02] sm:px-4 sm:py-2.5">
+            <div className="shrink-0 border-b border-slate-300/90 bg-gradient-to-b from-white to-transparent px-3 py-1.5 shadow-[inset_0_-1px_0_rgba(148,163,184,0.06)] dark:border-white/10 dark:from-white/[0.03] dark:shadow-none sm:px-3.5 sm:py-2 xl:px-3 xl:pb-1.5 xl:pt-1">
               <div
                 className={cn(
                   'flex items-center justify-between gap-2',
@@ -1375,7 +1380,7 @@ export function CatalogStockSelectDialog({
                 syncKey={categoryScrollSyncKey}
                 scrollBackLabel={t('catalogStockPicker.scrollBack')}
                 scrollForwardLabel={t('catalogStockPicker.scrollForward')}
-                className="mt-2"
+                className="mt-1.5"
                 scrollStep={220}
                 trackClassName="[scrollbar-width:thin]"
               >
@@ -1399,6 +1404,46 @@ export function CatalogStockSelectDialog({
                 ))}
               </HorizontalScrollRow>
 
+              {selectedCatalog ? (
+                <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-slate-200/90 pt-2 dark:border-white/[0.06]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    {t('catalogStockPicker.categoryNavigationLayoutLabel')}
+                  </span>
+                  <div className="inline-flex rounded-lg border border-slate-300/90 bg-white p-0.5 shadow-sm dark:border-white/12 dark:bg-white/[0.04]">
+                    <Button
+                      type="button"
+                      variant={categoryPanelLayout === 'rich' ? 'default' : 'ghost'}
+                      size="sm"
+                      className={cn(
+                        'h-7 gap-1 rounded-md px-2.5 text-[10px] font-semibold sm:h-8 sm:px-3 sm:text-[11px]',
+                        categoryPanelLayout === 'rich'
+                          ? 'bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-600 dark:hover:bg-pink-500'
+                          : 'text-slate-600 dark:text-slate-300'
+                      )}
+                      onClick={() => setCategoryPanelLayout('rich')}
+                    >
+                      <LayoutGrid className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
+                      {t('catalogStockPicker.categoryNavigationLayoutRich')}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={categoryPanelLayout === 'levelList' ? 'default' : 'ghost'}
+                      size="sm"
+                      className={cn(
+                        'h-7 gap-1 rounded-md px-2.5 text-[10px] font-semibold sm:h-8 sm:px-3 sm:text-[11px]',
+                        categoryPanelLayout === 'levelList'
+                          ? 'bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-600 dark:hover:bg-pink-500'
+                          : 'text-slate-600 dark:text-slate-300'
+                      )}
+                      onClick={() => setCategoryPanelLayout('levelList')}
+                    >
+                      <List className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
+                      {t('catalogStockPicker.categoryNavigationLayoutLevelList')}
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+
               <div className="mt-3 space-y-2 border-t border-slate-200/95 pt-3 dark:border-white/[0.06]">
                 {fullCategoryTreeQuery.isError ? (
                   <div className="flex flex-wrap items-center gap-2 rounded-lg border border-red-300/50 bg-red-50/90 px-2.5 py-2 text-[11px] text-red-800 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-100">
@@ -1420,10 +1465,6 @@ export function CatalogStockSelectDialog({
                     <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-pink-500" aria-hidden />
                     <span>{t('catalogStockPicker.categoryClientSearchLoadingTree')}</span>
                   </div>
-                ) : fullCategoryTreeQuery.data?.length ? (
-                  <p className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
-                    {t('catalogStockPicker.categoryClientSearchFootnote')}
-                  </p>
                 ) : null}
 
                 <div className="relative">
@@ -1507,138 +1548,278 @@ export function CatalogStockSelectDialog({
               </div>
             </div>
 
-            <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-2.5 py-2 [-webkit-overflow-scrolling:touch] sm:px-3 sm:py-2.5">
+            <div
+              className={cn(
+                'relative flex min-h-0 flex-1 flex-col overscroll-contain bg-[linear-gradient(180deg,rgba(255,255,255,0.35)_0%,transparent_28%),linear-gradient(180deg,transparent,rgba(241,245,249,0.35)_100%)] [-webkit-overflow-scrolling:touch] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0%,transparent_30%),linear-gradient(180deg,transparent,rgba(9,9,11,0.45)_100%)]',
+                categoryPanelLayout === 'levelList'
+                  ? 'touch-pan-y overflow-hidden px-2.5 py-1.5 sm:px-3 sm:py-2 xl:px-2.5 xl:py-1 xl:ring-1 xl:ring-inset xl:ring-slate-200/40 dark:xl:ring-white/[0.05]'
+                  : 'touch-pan-y overflow-y-auto px-2.5 py-2 sm:px-3 sm:py-2.5 xl:px-3 xl:py-3 xl:ring-1 xl:ring-inset xl:ring-slate-200/40 dark:xl:ring-white/[0.05]',
+              )}
+            >
               {categoriesQuery.isLoading ? (
-                <div className="rounded-lg border border-dashed border-slate-300/90 bg-slate-50/80 px-3 py-6 text-center text-xs text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-slate-400">
-                  {t('catalogStockPicker.loadingCategories')}
-                </div>
+                categoryPanelLayout === 'levelList' ? (
+                  <div className="flex min-h-[9rem] flex-1 flex-col justify-center xl:min-h-0">
+                    <div className="rounded-lg border border-dashed border-slate-300/90 bg-slate-50/80 px-3 py-6 text-center text-xs text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-slate-400">
+                      {t('catalogStockPicker.loadingCategories')}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-dashed border-slate-300/90 bg-slate-50/80 px-3 py-6 text-center text-xs text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-slate-400">
+                    {t('catalogStockPicker.loadingCategories')}
+                  </div>
+                )
               ) : categoriesQuery.data?.length ? (
-                <div className="relative">
-                  <ul
-                    className={cn(
-                      'relative space-y-1',
-                      categoryTreeDepth > 0 &&
-                        'ml-0.5 border-l-2 border-pink-400/50 pl-3 dark:border-pink-500/20',
-                    )}
-                  >
-                    {categoriesQuery.data.map((category) => {
-                      const isActive = selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId;
-                      return (
-                        <li
-                          key={category.catalogCategoryId}
-                          className={cn(
-                            'group/category relative rounded-xl border transition-all duration-200',
-                            isActive
-                              ? 'border-pink-400/45 bg-gradient-to-br from-pink-500/[0.07] to-white/80 shadow-[0_0_0_1px_rgba(236,72,153,0.12)] dark:border-pink-500/35 dark:from-pink-500/10 dark:to-transparent'
-                              : 'border-slate-300/80 bg-white shadow-sm hover:border-pink-300/50 hover:bg-white dark:border-white/[0.07] dark:bg-white/[0.02] dark:shadow-none dark:hover:border-pink-500/25',
-                          )}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleCategoryClick(category)}
-                            className="flex w-full items-start gap-2 px-2 py-2 text-left sm:gap-2.5 sm:px-2.5"
-                          >
-                            <span
-                              className={cn(
-                                'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors',
-                                category.hasChildren
-                                  ? 'border-pink-300/70 bg-pink-50 text-pink-600 dark:border-pink-500/25 dark:bg-pink-500/[0.06] dark:text-pink-300'
-                                  : 'border-slate-300/85 bg-slate-50 text-pink-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-pink-300',
-                              )}
-                              aria-hidden
-                            >
-                              {category.hasChildren ? (
-                                <GitBranch className="h-3.5 w-3.5 opacity-90" />
-                              ) : (
-                                <span className="text-[10px] font-bold leading-none">●</span>
-                              )}
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-1">
-                                    <span className="truncate text-[13px] font-semibold leading-tight text-slate-900 dark:text-slate-50">
+                categoryPanelLayout === 'levelList' ? (
+                  <div className="flex min-h-0 flex-1 flex-col justify-start overflow-hidden xl:justify-center">
+                    <div className="min-h-0 w-full max-h-full min-w-0 flex-1 touch-pan-y overflow-y-auto [-webkit-overflow-scrolling:touch]">
+                      <div className="relative min-w-0 max-w-full pb-0.5">
+                    <div className="max-w-full min-w-0 overflow-hidden rounded-xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/30 ring-1 ring-slate-200/40 dark:border-white/10 dark:bg-[#130822]/95 dark:shadow-none dark:ring-white/[0.06]">
+                      <div className="flex items-center gap-2.5 border-b border-slate-200/90 bg-gradient-to-r from-pink-500/[0.08] via-white to-slate-50/80 px-3 py-2.5 dark:border-white/10 dark:from-pink-500/[0.12] dark:via-transparent dark:to-white/[0.02]">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-pink-300/45 bg-pink-50 text-pink-600 shadow-sm dark:border-pink-500/35 dark:bg-pink-500/15 dark:text-pink-300">
+                          <List className="h-4 w-4" aria-hidden />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-pink-600 dark:text-pink-300">
+                            {t('catalogStockPicker.categoryLevelTableTitle')}
+                          </p>
+                          <p className="mt-0.5 line-clamp-2 text-[10px] font-medium leading-snug text-slate-500 dark:text-slate-400">
+                            {t('catalogStockPicker.categoryLevelTableSubtitle')}
+                          </p>
+                        </div>
+                      </div>
+                      <Table
+                        containerClassName="overflow-x-hidden"
+                        className="table-fixed min-w-0"
+                      >
+                        <TableHeader className="sticky top-0 z-[2] shadow-[0_1px_0_rgba(148,163,184,0.25)] dark:shadow-[0_1px_0_rgba(255,255,255,0.06)]">
+                          <TableRow className="border-slate-200/90 bg-slate-50/98 backdrop-blur-sm hover:bg-slate-50/98 dark:border-white/10 dark:bg-zinc-950/90 dark:hover:bg-zinc-950/90">
+                            <TableHead className="h-9 w-9 shrink-0 border-r border-slate-200/90 py-1.5 pl-1 pr-2 text-center text-[9px] font-semibold uppercase tracking-[0.06em] text-slate-500 whitespace-nowrap dark:border-white/[0.08] dark:text-slate-400">
+                              {t('catalogStockPicker.categoryLevelTableColLevel')}
+                            </TableHead>
+                            <TableHead className="h-9 w-[30%] max-w-[30%] min-w-0 border-0 py-1.5 pl-2.5 pr-3 text-left text-[9px] font-semibold uppercase tracking-[0.06em] text-slate-500 dark:text-slate-400">
+                              {t('catalogStockPicker.listColCode')}
+                            </TableHead>
+                            <TableHead className="h-9 min-w-0 py-1.5 pl-1 pr-1 text-left text-[9px] font-semibold uppercase tracking-[0.06em] text-slate-500 dark:text-slate-400">
+                              {t('catalogStockPicker.listColName')}
+                            </TableHead>
+                            <TableHead className="h-9 w-7 px-0 py-1.5 text-center align-middle">
+                              <span className="sr-only">{t('catalogStockPicker.categoryLevelTableColNav')}</span>
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {categoriesQuery.data.map((category) => {
+                            const isActive = selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId;
+                            return (
+                              <TableRow
+                                key={category.catalogCategoryId}
+                                data-state={isActive ? 'selected' : undefined}
+                                className={cn(
+                                  'cursor-pointer border-slate-200/85 transition-colors odd:bg-white/80 even:bg-slate-50/65 dark:border-white/[0.06] dark:odd:bg-transparent dark:even:bg-white/[0.03]',
+                                  isActive
+                                    ? 'bg-pink-50/95 hover:bg-pink-50 data-[state=selected]:bg-pink-50/95 dark:bg-pink-500/14 dark:hover:bg-pink-500/18 dark:data-[state=selected]:bg-pink-500/14'
+                                    : 'hover:bg-pink-500/[0.055] dark:hover:bg-white/[0.06]',
+                                )}
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => handleCategoryClick(category)}
+                                onKeyDown={(event) => {
+                                  if (event.key === 'Enter' || event.key === ' ') {
+                                    event.preventDefault();
+                                    handleCategoryClick(category);
+                                  }
+                                }}
+                              >
+                                <TableCell className="w-9 shrink-0 border-r border-slate-200/85 px-1 py-1.5 text-center align-middle dark:border-white/[0.07]">
+                                  <span className="inline-flex min-w-[1.35rem] max-w-full items-center justify-center rounded-md border border-slate-200/90 bg-slate-50/95 px-1 py-0.5 font-mono text-[9px] font-semibold tabular-nums leading-none text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] dark:border-white/12 dark:bg-white/[0.07] dark:text-slate-300 dark:shadow-none">
+                                    {category.level}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="max-w-0 w-[30%] min-w-0 overflow-hidden py-1.5 pl-2.5 pr-3 align-middle">
+                                  <Tooltip delayDuration={300}>
+                                    <TooltipTrigger asChild>
+                                      <span className="inline-flex max-w-full min-w-0 cursor-default items-center truncate rounded-full border border-pink-300/45 bg-gradient-to-r from-pink-500/[0.12] via-pink-500/[0.06] to-transparent px-2 py-0.5 font-mono text-[10px] font-medium leading-tight tracking-tight text-pink-700 shadow-sm dark:border-pink-500/35 dark:from-pink-500/20 dark:via-pink-500/10 dark:to-transparent dark:text-pink-100 dark:shadow-none">
+                                        {category.code}
+                                      </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      side="top"
+                                      align="start"
+                                      className="max-w-[min(90vw,22rem)] break-all font-mono text-xs"
+                                    >
+                                      {category.code}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TableCell>
+                                <TableCell className="min-w-0 overflow-hidden py-1.5 pl-1.5 pr-1 align-top whitespace-normal">
+                                  <div className="min-w-0">
+                                    <div className="line-clamp-2 text-[11px] font-medium leading-snug tracking-tight text-slate-800 dark:text-slate-100">
                                       {category.name}
-                                    </span>
-                                    {category.hasChildren ? (
-                                      <ChevronRight className="h-3 w-3 shrink-0 text-slate-300 opacity-0 transition-all group-hover/category:translate-x-0.5 group-hover/category:opacity-100 dark:text-slate-500" aria-hidden />
+                                    </div>
+                                    {category.fullPath ? (
+                                      <div className="mt-0.5 line-clamp-2 text-[9px] font-normal leading-relaxed tracking-wide text-slate-500 dark:text-slate-400">
+                                        {category.fullPath}
+                                      </div>
                                     ) : null}
                                   </div>
-                                  <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                    <span className="font-mono text-[9px] tracking-wide text-pink-600/75 dark:text-pink-300/80">
-                                      {category.code}
-                                    </span>
-                                    <span className="text-[9px] text-slate-300 dark:text-slate-600">·</span>
-                                    <span className="text-[9px] tabular-nums text-slate-400 dark:text-slate-500">
-                                      L{category.level}
-                                    </span>
-                                    <span className="text-[9px] text-slate-300 dark:text-slate-600">·</span>
-                                    <span
+                                </TableCell>
+                                <TableCell className="w-7 px-0 py-1.5 text-center align-middle">
+                                  {category.hasChildren ? (
+                                    <ChevronRight
                                       className={cn(
-                                        'text-[9px] font-medium',
-                                        category.hasChildren ? 'text-cyan-600/90 dark:text-cyan-300/90' : 'text-pink-600/90 dark:text-pink-300/90',
+                                        'mx-auto block h-4 w-4 shrink-0 stroke-[2.5] transition-transform',
+                                        isActive
+                                          ? 'text-cyan-500 drop-shadow-[0_0_6px_rgba(6,182,212,0.35)] dark:text-cyan-300'
+                                          : 'text-cyan-600/90 dark:text-cyan-400/90',
                                       )}
-                                    >
-                                      {category.hasChildren
-                                        ? t('catalogStockPicker.subCategoryBadge')
-                                        : t('catalogStockPicker.leafBadge')}
-                                    </span>
+                                      aria-hidden
+                                    />
+                                  ) : null}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative min-w-0 max-w-full">
+                    <ul
+                      className={cn(
+                        'relative space-y-1',
+                        categoryTreeDepth > 0 &&
+                          'ml-0.5 border-l-2 border-pink-400/50 pl-3 dark:border-pink-500/20',
+                      )}
+                    >
+                      {categoriesQuery.data.map((category) => {
+                        const isActive = selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId;
+                        return (
+                          <li
+                            key={category.catalogCategoryId}
+                            className={cn(
+                              'group/category relative rounded-xl border transition-all duration-200',
+                              isActive
+                                ? 'border-pink-400/45 bg-gradient-to-br from-pink-500/[0.07] to-white/80 shadow-[0_0_0_1px_rgba(236,72,153,0.12)] dark:border-pink-500/35 dark:from-pink-500/10 dark:to-transparent'
+                                : 'border-slate-300/80 bg-white shadow-sm hover:border-pink-300/50 hover:bg-white dark:border-white/[0.07] dark:bg-white/[0.02] dark:shadow-none dark:hover:border-pink-500/25',
+                            )}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleCategoryClick(category)}
+                              className="flex w-full items-start gap-2 px-2 py-2 text-left sm:gap-2.5 sm:px-2.5"
+                            >
+                              <span
+                                className={cn(
+                                  'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors',
+                                  category.hasChildren
+                                    ? 'border-pink-300/70 bg-pink-50 text-pink-600 dark:border-pink-500/25 dark:bg-pink-500/[0.06] dark:text-pink-300'
+                                    : 'border-slate-300/85 bg-slate-50 text-pink-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-pink-300',
+                                )}
+                                aria-hidden
+                              >
+                                {category.hasChildren ? (
+                                  <GitBranch className="h-3.5 w-3.5 opacity-90" />
+                                ) : (
+                                  <span className="text-[10px] font-bold leading-none">●</span>
+                                )}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1">
+                                      <span className="truncate text-[13px] font-semibold leading-tight text-slate-900 dark:text-slate-50">
+                                        {category.name}
+                                      </span>
+                                      {category.hasChildren ? (
+                                        <ChevronRight className="h-3 w-3 shrink-0 text-slate-300 opacity-0 transition-all group-hover/category:translate-x-0.5 group-hover/category:opacity-100 dark:text-slate-500" aria-hidden />
+                                      ) : null}
+                                    </div>
+                                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                      <span className="font-mono text-[9px] tracking-wide text-pink-600/75 dark:text-pink-300/80">
+                                        {category.code}
+                                      </span>
+                                      <span className="text-[9px] text-slate-300 dark:text-slate-600">·</span>
+                                      <span className="text-[9px] tabular-nums text-slate-400 dark:text-slate-500">
+                                        L{category.level}
+                                      </span>
+                                      <span className="text-[9px] text-slate-300 dark:text-slate-600">·</span>
+                                      <span
+                                        className={cn(
+                                          'text-[9px] font-medium',
+                                          category.hasChildren ? 'text-cyan-600/90 dark:text-cyan-300/90' : 'text-pink-600/90 dark:text-pink-300/90',
+                                        )}
+                                      >
+                                        {category.hasChildren
+                                          ? t('catalogStockPicker.subCategoryBadge')
+                                          : t('catalogStockPicker.leafBadge')}
+                                      </span>
+                                    </div>
+                                    {category.fullPath ? (
+                                      <p className="mt-1 line-clamp-1 border-l border-slate-200/60 pl-2 text-[9px] leading-snug text-slate-400 dark:border-white/10 dark:text-slate-500">
+                                        {category.fullPath}
+                                      </p>
+                                    ) : null}
+                                    {category.description ? (
+                                      <p className="mt-1 line-clamp-1 text-[10px] text-slate-500 dark:text-slate-400">
+                                        {category.description}
+                                      </p>
+                                    ) : null}
                                   </div>
-                                  {category.fullPath ? (
-                                    <p className="mt-1 line-clamp-1 border-l border-slate-200/60 pl-2 text-[9px] leading-snug text-slate-400 dark:border-white/10 dark:text-slate-500">
-                                      {category.fullPath}
-                                    </p>
-                                  ) : null}
-                                  {category.description ? (
-                                    <p className="mt-1 line-clamp-1 text-[10px] text-slate-500 dark:text-slate-400">
-                                      {category.description}
-                                    </p>
-                                  ) : null}
                                 </div>
                               </div>
-                            </div>
-                          </button>
+                            </button>
 
-                          {category.hasChildren && selectedCatalog != null ? (
-                            <CategoryInlinePreviewTree
-                              row={category}
-                              catalogId={selectedCatalog.id}
-                              dialogOpen={open}
-                              onNavigateChain={handlePreviewNavigateChain}
-                            />
-                          ) : null}
+                            {category.hasChildren && selectedCatalog != null ? (
+                              <CategoryInlinePreviewTree
+                                row={category}
+                                catalogId={selectedCatalog.id}
+                                dialogOpen={open}
+                                onNavigateChain={handlePreviewNavigateChain}
+                              />
+                            ) : null}
 
-                          <div className="flex flex-wrap gap-1 border-t border-slate-200/95 bg-slate-50 px-2 py-1.5 dark:border-white/[0.06] dark:bg-white/[0.02] sm:px-2.5">
-                            {category.hasChildren ? (
+                            <div className="flex flex-wrap gap-1 border-t border-slate-200/95 bg-slate-50 px-2 py-1.5 dark:border-white/[0.06] dark:bg-white/[0.02] sm:px-2.5">
+                              {category.hasChildren ? (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleCategoryClick(category)}
+                                  className="h-7 rounded-md border border-slate-300/90 bg-white px-2 text-[10px] font-medium text-slate-800 shadow-sm dark:border-white/12 dark:bg-white/[0.05] dark:text-slate-200"
+                                >
+                                  {t('catalogStockPicker.browseChildrenButton')}
+                                </Button>
+                              ) : null}
                               <Button
                                 type="button"
-                                variant="outline"
                                 size="sm"
-                                onClick={() => handleCategoryClick(category)}
-                                className="h-7 rounded-md border border-slate-300/90 bg-white px-2 text-[10px] font-medium text-slate-800 shadow-sm dark:border-white/12 dark:bg-white/[0.05] dark:text-slate-200"
+                                onClick={() => handleCategoryList(category)}
+                                className={cn(
+                                  'h-7 rounded-md px-2.5 text-[10px] font-semibold shadow-sm transition-all',
+                                  isActive
+                                    ? 'bg-pink-500 text-white hover:bg-pink-600 dark:bg-pink-600 dark:hover:bg-pink-500'
+                                    : 'border border-pink-300/55 bg-pink-50 text-pink-700 hover:bg-pink-100 dark:border-pink-500/30 dark:bg-pink-500/15 dark:text-pink-100 dark:hover:bg-pink-500/25',
+                                )}
+                                variant={category.hasChildren ? 'secondary' : 'default'}
                               >
-                                {t('catalogStockPicker.browseChildrenButton')}
+                                {t('catalogStockPicker.listDescendantsButton')}
                               </Button>
-                            ) : null}
-                            <Button
-                              type="button"
-                              size="sm"
-                              onClick={() => handleCategoryList(category)}
-                              className={cn(
-                                'h-7 rounded-md px-2.5 text-[10px] font-semibold shadow-sm transition-all',
-                                isActive
-                                  ? 'bg-pink-500 text-white hover:bg-pink-600 dark:bg-pink-600 dark:hover:bg-pink-500'
-                                  : 'border border-pink-300/55 bg-pink-50 text-pink-700 hover:bg-pink-100 dark:border-pink-500/30 dark:bg-pink-500/15 dark:text-pink-100 dark:hover:bg-pink-500/25',
-                              )}
-                              variant={category.hasChildren ? 'secondary' : 'default'}
-                            >
-                              {t('catalogStockPicker.listDescendantsButton')}
-                            </Button>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )
+              )
+              : categoryPanelLayout === 'levelList' ? (
+                <div className="flex min-h-[9rem] flex-1 flex-col justify-center xl:min-h-0">
+                  <div className="rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/90 p-6 text-sm text-slate-600 dark:border-white/15 dark:bg-white/[0.02] dark:text-slate-400">
+                    {t('catalogStockPicker.emptyCategories')}
+                  </div>
                 </div>
               ) : (
                 <div className="rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/90 p-6 text-sm text-slate-600 dark:border-white/15 dark:bg-white/[0.02] dark:text-slate-400">
@@ -1868,7 +2049,7 @@ export function CatalogStockSelectDialog({
                   className="border border-slate-300/90 bg-white text-slate-800 shadow-sm backdrop-blur-sm hover:border-slate-400 hover:bg-slate-50 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-white/25 dark:hover:bg-white/10"
                   onClick={() => onOpenChange(false)}
                 >
-                  {t('common.cancel')}
+                  {t('cancel', { ns: 'common' })}
                 </Button>
                 {multiSelect ? (
                   <Button

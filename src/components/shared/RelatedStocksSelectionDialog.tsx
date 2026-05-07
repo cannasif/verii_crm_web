@@ -33,7 +33,7 @@ export function RelatedStocksSelectionDialog({
   relatedStocks,
   onConfirm,
 }: RelatedStocksSelectionDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [selectedStockIds, setSelectedStockIds] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
 
