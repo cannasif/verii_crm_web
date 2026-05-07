@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -7,11 +7,6 @@ import type {
   Salesmen360AnalyticsSummaryDto,
 } from '../types/salesmen360.types';
 import { Coins, History, TrendingUp, Zap, FileSearch } from 'lucide-react';
-
-const formatter = new Intl.NumberFormat(undefined, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 interface SalesmenCurrencySummaryCardsProps {
   isAllCurrencies: boolean;
@@ -28,13 +23,21 @@ export function SalesmenCurrencySummaryCards({
   isLoading,
   lastActivityDateFormatted,
 }: SalesmenCurrencySummaryCardsProps): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const formatter = useMemo(
+    () =>
+      new Intl.NumberFormat(i18n.resolvedLanguage ?? i18n.language, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    [i18n.resolvedLanguage, i18n.language]
+  );
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         {[1, 2, 3, 4, 5].map((i) => (
-          <Card key={i} className="rounded-2xl border border-slate-200 bg-white/50 dark:border-white/10 dark:bg-white/[0.02]">
+          <Card key={i} className="rounded-2xl border border-slate-200 bg-white/50 dark:border-white/10 dark:bg-white/2">
             <CardContent className="pt-6">
               <Skeleton className="h-4 w-32 mb-2 rounded-lg" />
               <Skeleton className="h-8 w-20 rounded-lg" />
@@ -48,7 +51,7 @@ export function SalesmenCurrencySummaryCards({
   if (isAllCurrencies) {
     if (!totalsByCurrency.length) {
       return (
-        <Card className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 dark:border-white/10 dark:bg-white/[0.02] p-10">
+        <Card className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 dark:border-white/10 dark:bg-white/2 p-10">
           <CardContent className="flex flex-col items-center justify-center gap-3 text-slate-400">
             <FileSearch className="size-10 opacity-20" />
             <p className="text-sm font-medium">{t('common.noData')}</p>
@@ -59,7 +62,7 @@ export function SalesmenCurrencySummaryCards({
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {totalsByCurrency.map((row) => (
-          <Card key={row.currency} className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/[0.03] shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+          <Card key={row.currency} className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
               <Coins className="size-6" />
             </div>
@@ -98,7 +101,7 @@ export function SalesmenCurrencySummaryCards({
   };
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden group">
+      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
         <CardContent className="pt-4 pb-3 px-5 border-l-4 border-l-pink-500">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-500/10 border border-pink-200 dark:border-pink-500/20 shadow-sm transition-transform group-hover:scale-105">
@@ -112,7 +115,7 @@ export function SalesmenCurrencySummaryCards({
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden group">
+      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
         <CardContent className="pt-4 pb-3 px-5 border-l-4 border-l-orange-500">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 shadow-sm transition-transform group-hover:scale-105">
@@ -126,7 +129,7 @@ export function SalesmenCurrencySummaryCards({
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden group">
+      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
         <CardContent className="pt-4 pb-3 px-5 border-l-4 border-l-emerald-500">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 shadow-sm transition-transform group-hover:scale-105">
@@ -140,7 +143,7 @@ export function SalesmenCurrencySummaryCards({
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden group">
+      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
         <CardContent className="pt-4 pb-3 px-5 border-l-4 border-l-indigo-500">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 shadow-sm transition-transform group-hover:scale-105">
@@ -154,7 +157,7 @@ export function SalesmenCurrencySummaryCards({
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden group">
+      <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
         <CardContent className="pt-4 pb-3 px-5 border-l-4 border-l-slate-400">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm">

@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -13,12 +13,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { Salesmen360AmountComparisonDto } from '../types/salesmen360.types';
 import { FileSearch, LineChart } from 'lucide-react';
 
-
-const formatter = new Intl.NumberFormat(undefined, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 interface SalesmenAmountComparisonByCurrencyTableProps {
   rows: Salesmen360AmountComparisonDto[];
   isLoading: boolean;
@@ -28,11 +22,19 @@ export function SalesmenAmountComparisonByCurrencyTable({
   rows,
   isLoading,
 }: SalesmenAmountComparisonByCurrencyTableProps): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const formatter = useMemo(
+    () =>
+      new Intl.NumberFormat(i18n.resolvedLanguage ?? i18n.language, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    [i18n.resolvedLanguage, i18n.language]
+  );
 
   if (isLoading) {
     return (
-      <Card className="rounded-2xl border border-slate-200 bg-white/50 dark:border-white/10 dark:bg-white/[0.02] p-1 shadow-sm">
+      <Card className="rounded-2xl border border-slate-200 bg-white/50 dark:border-white/10 dark:bg-white/2 p-1 shadow-sm">
         <CardHeader className="px-5 pt-4">
           <Skeleton className="h-5 w-48 rounded-lg" />
         </CardHeader>
@@ -45,7 +47,7 @@ export function SalesmenAmountComparisonByCurrencyTable({
 
   if (!rows?.length) {
     return (
-      <Card className="rounded-2xl border border-slate-200 bg-white/80 p-2 dark:border-white/10 dark:bg-white/[0.03] shadow-sm">
+      <Card className="rounded-2xl border border-slate-200 bg-white/80 p-2 dark:border-white/10 dark:bg-white/3 shadow-sm">
         <CardHeader className="px-5 pt-4">
           <CardTitle className="text-base font-bold text-slate-800 dark:text-white">
             {t('salesman360.analyticsCharts.amountComparisonTitle')}
@@ -60,7 +62,7 @@ export function SalesmenAmountComparisonByCurrencyTable({
   }
 
   return (
-    <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden h-full group">
+    <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden h-full group">
       <div className="px-5 pt-1 pb-2.5 border-b border-slate-100 dark:border-white/5 flex items-center gap-2.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 shadow-sm transition-transform group-hover:scale-105">
           <LineChart className="size-4 text-indigo-600 dark:text-indigo-400" />
