@@ -27,64 +27,28 @@ interface DropdownPageRequest {
 }
 
 function normalizePagedResponse<T>(pagedData: PagedResponse<T> & { items?: T[] }): PagedResponse<T> {
-  if (pagedData.items && !pagedData.data) {
-    return {
-      ...pagedData,
-      data: pagedData.items,
-    };
-  }
+  const data = Array.isArray(pagedData.data)
+    ? pagedData.data
+    : Array.isArray(pagedData.items)
+      ? pagedData.items
+      : [];
 
-  return pagedData;
+  return {
+    ...pagedData,
+    data,
+    totalCount: pagedData.totalCount ?? data.length,
+    pageNumber: pagedData.pageNumber ?? 1,
+    pageSize: pagedData.pageSize ?? data.length,
+    totalPages: pagedData.totalPages ?? 1,
+    hasPreviousPage: pagedData.hasPreviousPage ?? false,
+    hasNextPage: pagedData.hasNextPage ?? false,
+  };
 }
 
-function buildPagedQueryParams(
-  request: Omit<DropdownPageRequest, 'signal'>,
-  pageNumberParamName: 'pageNumber' | 'page'
-): URLSearchParams {
-  const queryParams = new URLSearchParams();
-  queryParams.append(pageNumberParamName, request.pageNumber.toString());
-  queryParams.append('pageSize', request.pageSize.toString());
-
-  if (request.search) {
-    queryParams.append('search', request.search);
-  }
-
-  if (request.sortBy) {
-    queryParams.append('sortBy', request.sortBy);
-  }
-
-  if (request.sortDirection) {
-    queryParams.append('sortDirection', request.sortDirection);
-  }
-
-  if (request.contextUserId) {
-    queryParams.append('contextUserId', request.contextUserId.toString());
-  }
-
-  if (request.filters) {
-    queryParams.append('filters', JSON.stringify(request.filters));
-    queryParams.append('filterLogic', request.filterLogic ?? 'or');
-  }
-
-  return queryParams;
-}
-
-async function getDropdownPage<T>(
-  endpoint: string,
-  request: DropdownPageRequest,
-  pageNumberParamName: 'pageNumber' | 'page' = 'pageNumber'
-): Promise<PagedResponse<T>> {
-  const queryParams = buildPagedQueryParams(request, pageNumberParamName);
-  // Pass AbortSignal so stale dropdown requests are cancelled on new search terms.
-  const response = await api.get<ApiResponse<PagedResponse<T>>>(`${endpoint}?${queryParams.toString()}`, {
-    signal: request.signal,
-  });
-
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Dropdown listesi yüklenemedi');
-  }
-
-  return normalizePagedResponse(response.data as PagedResponse<T> & { items?: T[] });
+function toQueryEndpoint(endpoint: string): string {
+  return endpoint.replace(/\/+$/, '').endsWith('/query')
+    ? endpoint.replace(/\/+$/, '')
+    : `${endpoint.replace(/\/+$/, '')}/query`;
 }
 
 async function getDropdownPageByQuery<T>(
@@ -102,7 +66,7 @@ async function getDropdownPageByQuery<T>(
     ...(request.contextUserId ? { contextUserId: request.contextUserId } : {}),
   };
 
-  const response = await api.post<ApiResponse<PagedResponse<T>>>(`${endpoint}/query`, payload, {
+  const response = await api.post<ApiResponse<PagedResponse<T>>>(toQueryEndpoint(endpoint), payload, {
     signal: request.signal,
   });
 
@@ -136,10 +100,10 @@ export const dropdownApi = {
     return getDropdownPageByQuery<UserDto>('/api/User', request);
   },
   getApprovalRolePage: (request: DropdownPageRequest): Promise<PagedResponse<ApprovalRoleDto>> => {
-    return getDropdownPageByQuery<ApprovalRoleDto>('/api/ApprovalRole/query', request);
+    return getDropdownPageByQuery<ApprovalRoleDto>('/api/ApprovalRole', request);
   },
   getApprovalRoleGroupPage: (request: DropdownPageRequest): Promise<PagedResponse<ApprovalRoleGroupDto>> => {
-    return getDropdownPageByQuery<ApprovalRoleGroupDto>('/api/ApprovalRoleGroup/query', request);
+    return getDropdownPageByQuery<ApprovalRoleGroupDto>('/api/ApprovalRoleGroup', request);
   },
   getTitlePage: (request: DropdownPageRequest): Promise<PagedResponse<TitleDto>> => {
     return getDropdownPageByQuery<TitleDto>('/api/Title', request);
@@ -163,6 +127,6 @@ export const dropdownApi = {
     return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityShipping', request);
   },
   getSalesTypePage: (request: DropdownPageRequest): Promise<PagedResponse<SalesTypeGetDto>> => {
-    return getDropdownPage<SalesTypeGetDto>('/api/SalesType', request, 'pageNumber');
+    return getDropdownPageByQuery<SalesTypeGetDto>('/api/SalesType', request);
   },
 };
