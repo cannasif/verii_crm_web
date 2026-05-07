@@ -6,7 +6,7 @@ let cachedProjectCodes: ProjeDto[] | null = null;
 
 export const erpCommonApi = {
   getCustomers: async (): Promise<ErpCustomer[]> => {
-    const response = await api.get('/api/Erp/getAllCustomers') as ApiResponse<ErpCustomer[]>;
+    const response = await api.get('/api/NetsisRead/getAllCustomers') as ApiResponse<ErpCustomer[]>;
     if (response.success && response.data) {
       return response.data;
     }
@@ -18,7 +18,7 @@ export const erpCommonApi = {
     if (cariKodu) {
       queryParams.append('cariKodu', cariKodu);
     }
-    const url = `/api/Erp/getAllCustomers${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const url = `/api/NetsisRead/getAllCustomers${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     const response = await api.get(url) as ApiResponse<CariDto[]>;
     if (response.success && response.data) {
       return response.data;
@@ -27,7 +27,7 @@ export const erpCommonApi = {
   },
 
   getProjects: async (): Promise<ErpProject[]> => {
-    const response = await api.get('/api/Erp/getAllProjects') as ApiResponse<ErpProject[]>;
+    const response = await api.get('/api/NetsisRead/getProjectCodes') as ApiResponse<ErpProject[]>;
     if (response.success && response.data) {
       return response.data;
     }
@@ -35,7 +35,7 @@ export const erpCommonApi = {
   },
 
   getProjectCodes: async (): Promise<ProjeDto[]> => {
-    const response = await api.get<ApiResponse<ProjeDto[]>>('/api/Erp/getProjectCodes');
+    const response = await api.get<ApiResponse<ProjeDto[]>>('/api/NetsisRead/getProjectCodes');
     if (response.success && response.data) {
       return response.data;
     }
@@ -50,7 +50,7 @@ export const erpCommonApi = {
   }): Promise<PagedResponse<ProjeDto>> => {
     const { pageNumber, pageSize, filters } = params;
     if (!cachedProjectCodes) {
-      const response = await api.get<ApiResponse<ProjeDto[]>>('/api/Erp/getProjectCodes', { signal: params.signal });
+      const response = await api.get<ApiResponse<ProjeDto[]>>('/api/NetsisRead/getProjectCodes', { signal: params.signal });
       if (!response.success || !response.data) {
         throw new Error(response.message || 'Proje kodları yüklenemedi');
       }
@@ -94,7 +94,7 @@ export const erpCommonApi = {
   },
 
   getProducts: async (): Promise<ErpProduct[]> => {
-    const response = await api.get('/api/Erp/getAllProducts') as ApiResponse<ErpProduct[]>;
+    const response = await api.get('/api/NetsisRead/getAllProducts') as ApiResponse<ErpProduct[]>;
     if (response.success && response.data) {
       return response.data;
     }
@@ -102,7 +102,7 @@ export const erpCommonApi = {
   },
 
   getBranches: async (): Promise<BranchErp[]> => {
-    const response = await api.get('/api/Erp/getBranches') as ApiResponse<BranchErp[]>;
+    const response = await api.get('/api/NetsisRead/getBranches') as ApiResponse<BranchErp[]>;
     if (response.success && response.data) {
       return response.data;
     }
@@ -115,7 +115,7 @@ export const erpCommonApi = {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const dateString = `${year}-${month}-${day}`;
-    const url = `/api/Erp/getExchangeRate?tarih=${dateString}&fiyatTipi=${fiyatTipi}`;
+    const url = `/api/NetsisRead/getExchangeRate?tarih=${dateString}&fiyatTipi=${fiyatTipi}`;
     const response = await api.get(url) as ApiResponse<KurDto[]>;
     if (response.success && response.data) {
       return response.data;
@@ -125,7 +125,7 @@ export const erpCommonApi = {
 
   getStokGroup: async (grupKodu?: string): Promise<StokGroupDto[]> => {
     const grupKoduParam = grupKodu && grupKodu.trim() !== '' ? grupKodu : '';
-    const url = `/api/Erp/getStokGroup?grupKodu=${encodeURIComponent(grupKoduParam)}`;
+    const url = `/api/NetsisRead/getStokGroup?grupKodu=${encodeURIComponent(grupKoduParam)}`;
     const response = await api.get(url) as ApiResponse<StokGroupDto[]>;
     if (response.success && response.data) {
       return response.data;
