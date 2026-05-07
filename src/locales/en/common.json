@@ -1691,9 +1691,17 @@
       "empty": "No recommended actions",
       "execute": "Execute",
       "recommendedActions": {
+        "CLEAN_OPEN_PIPELINE": {
+          "title": "Clean open pipeline",
+          "reason": "{{count}} open quotations require prioritization."
+        },
         "INCREASE_ACTIVITY_CADENCE": {
           "title": "Increase activity cadence",
-          "reason": "Only 2 activities in the last 7 days."
+          "reason": "Only {{count}} activities in the last 7 days."
+        },
+        "REVIEW_LOST_QUOTATION_REASONS": {
+          "title": "Review lost quotation reasons",
+          "reason": "90-day win rate is {{rate}}%."
         }
       }
     },

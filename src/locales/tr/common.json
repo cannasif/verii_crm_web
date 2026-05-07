@@ -1695,9 +1695,17 @@
       "empty": "Önerilen aksiyon yok",
       "execute": "Uygula",
       "recommendedActions": {
+        "CLEAN_OPEN_PIPELINE": {
+          "title": "Açık fırsat hattını düzenle",
+          "reason": "{{count}} açık teklif önceliklendirme gerektiriyor."
+        },
         "INCREASE_ACTIVITY_CADENCE": {
           "title": "Aktivite temposunu artır",
-          "reason": "Son 7 günde yalnızca 2 aktivite var."
+          "reason": "Son 7 günde yalnızca {{count}} aktivite var."
+        },
+        "REVIEW_LOST_QUOTATION_REASONS": {
+          "title": "Kaybedilen teklif nedenlerini gözden geçir",
+          "reason": "90 günlük kazanma oranı %{{rate}}."
         }
       }
     },
