@@ -33,7 +33,7 @@
     "createdBy": "Creado por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
     "page": "Página {{current}} / {{total}}",
-    "title": "Aktivite Tipi Listesi"
+    "title": "Lista de tipos de actividad"
   },
   "stats": {
     "totalActivityTypes": "Total de tipos de actividad",
@@ -53,16 +53,16 @@
     "confirmMessage": "¿Seguro que desea eliminar el tipo de actividad {{name}}?"
   },
   "advancedFilter": {
-    "columnName": "Activity Type Name",
-    "columnDescription": "Description",
-    "columnCreatedBy": "Created By"
+    "columnName": "Nombre del tipo de actividad",
+    "columnDescription": "Descripción",
+    "columnCreatedBy": "Creado por"
   },
   "activityType": {
     "table": {
-      "title": "Aktivite Tipi Listesi"
+      "title": "Lista de tipos de actividad"
     },
-    "error": "Bir hata oluştu"
+    "error": "Se produjo un error"
   },
-  "create": "Yeni Aktivite Tipi",
-  "error": "Bir hata oluştu"
+  "create": "Nuevo tipo de actividad",
+  "error": "Se produjo un error"
 }

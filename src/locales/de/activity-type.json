@@ -33,7 +33,7 @@
     "createdBy": "Erstellt von",
     "showing": "Zeige {{from}}-{{to}} von {{total}}",
     "page": "Seite {{current}} / {{total}}",
-    "title": "Aktivite Tipi Listesi"
+    "title": "Aktivitätsart-Liste"
   },
   "stats": {
     "totalActivityTypes": "Gesamtanzahl Aktivitätsarten",
@@ -45,24 +45,24 @@
     "createError": "Fehler beim Erstellen der Aktivitätsart",
     "updateSuccess": "Aktivitätsart erfolgreich aktualisiert",
     "updateError": "Fehler beim Aktualisieren der Aktivitätsart",
-    "deleteSuccess": "Activity type deleted successfully",
-    "deleteError": "Failed to delete activity type"
+    "deleteSuccess": "Aktivitätsart erfolgreich gelöscht",
+    "deleteError": "Fehler beim Löschen der Aktivitätsart"
   },
   "deleteConfirm": {
-    "confirmTitle": "Delete Activity Type",
-    "confirmMessage": "Are you sure you want to delete {{name}} activity type?"
+    "confirmTitle": "Aktivitätsart löschen",
+    "confirmMessage": "Sind Sie sicher, dass Sie die Aktivitätsart {{name}} löschen möchten?"
   },
   "advancedFilter": {
-    "columnName": "Activity Type Name",
-    "columnDescription": "Description",
-    "columnCreatedBy": "Created By"
+    "columnName": "Name der Aktivitätsart",
+    "columnDescription": "Beschreibung",
+    "columnCreatedBy": "Erstellt von"
   },
   "activityType": {
     "table": {
-      "title": "Aktivite Tipi Listesi"
+      "title": "Aktivitätsart-Liste"
     },
-    "error": "Bir hata oluştu"
+    "error": "Ein Fehler ist aufgetreten"
   },
-  "create": "Yeni Aktivite Tipi",
-  "error": "Bir hata oluştu"
+  "create": "Neue Aktivitätsart",
+  "error": "Ein Fehler ist aufgetreten"
 }

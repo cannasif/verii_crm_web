@@ -21,16 +21,16 @@
   "list": {
     "revise": "مراجعة",
     "showing": "عرض {{from}}-{{to}} من {{total}}",
-    "detail": "Detay",
-    "cardTitle": "Sipariş listesi",
-    "refresh": "Yenile",
-    "title": "Sipariş Listesi",
-    "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
-    "createNew": "Yeni Sipariş إنشاء",
-    "actions": "İşlemler",
+    "detail": "التفاصيل",
+    "cardTitle": "قائمة الطلبات",
+    "refresh": "تحديث",
+    "title": "قائمة الطلبات",
+    "description": "عرض وإدارة سجلات الطلبات",
+    "createNew": "إنشاء طلب جديد",
+    "actions": "إجراءات",
     "id": "ID",
     "offerNo": "رقم العرض",
-    "revisionNo": "Revizyon No",
+    "revisionNo": "رقم المراجعة",
     "customer": "العميل",
     "customerCode": "رمز العميل",
     "representative": "مندوب المبيعات",
@@ -144,7 +144,7 @@
       "confirmMessageMultiple": "Seçili satırları silmek istediğinizden emin misiniz?"
     },
     "max200Chars": "Maksimum 200 karakter",
-    "addLine": "Satır Ekle",
+    "addLine": "إضافة بند",
     "noItems": "Henüz satır bulunmuyor",
     "groupCode": "Grup Kodu",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
@@ -265,9 +265,9 @@
     "stepRejected": "Reddedildi"
   },
   "sections": {
-    "header": "Başlık Bilgileri",
-    "lines": "Satırlar",
-    "summary": "Özet"
+    "header": "معلومات الرأس",
+    "lines": "الأصناف",
+    "summary": "الملخص"
   },
   "revision": {
     "success": "Revizyon kaydı oluşturuldu.",

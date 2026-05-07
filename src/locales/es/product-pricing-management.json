@@ -110,8 +110,8 @@
     "updatedDate": "Fecha de Actualización",
     "showing": "Mostrando {{from}}-{{to}} de {{total}}",
     "page": "Página {{current}} de {{total}}",
-    "title": "Fiyatlandırma Listesi",
-    "noData": "Veri bulunamadı"
+    "title": "Lista de Precios",
+    "noData": "No se encontraron datos"
   },
   "previous": "Anterior",
   "next": "Siguiente",
@@ -127,8 +127,8 @@
     "archive": "Archivo"
   },
   "advancedFilter": {
-    "columnErpProductCode": "ERP Ürün Kodu",
-    "columnErpGroupCode": "ERP Grup Kodu",
-    "columnCurrency": "Para Birimi"
+    "columnErpProductCode": "Código de Producto ERP",
+    "columnErpGroupCode": "Código de Grupo ERP",
+    "columnCurrency": "Moneda"
   }
 }

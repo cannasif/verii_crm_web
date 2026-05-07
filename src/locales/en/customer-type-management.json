@@ -26,7 +26,7 @@
     "updatedBy": "Updated By",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "title": "Müşteri Tipi Listesi"
+    "title": "Customer Type List"
   },
   "form": {
     "addCustomerType": "Add New Customer Type",
@@ -49,9 +49,9 @@
     "confirmMessage": "Are you sure you want to delete {{name}} customer type?",
     "confirmButton": "Delete",
     "deleting": "Deleting...",
-    "action": "Sil",
-    "success": "Müşteri tipi başarıyla silindi",
-    "error": "Müşteri tipi silinemedi"
+    "action": "Delete",
+    "success": "Customer type deleted successfully",
+    "error": "Customer type could not be deleted"
   },
   "messages": {
     "createSuccess": "Customer type created successfully",
@@ -63,14 +63,14 @@
   },
   "customerTypeManagement": {
     "table": {
-      "title": "Müşteri Tipi Listesi"
+      "title": "Customer Type List"
     },
-    "error": "Hata oluştu",
+    "error": "An error occurred",
     "delete": {
-      "success": "Müşteri tipi başarıyla silindi",
-      "error": "Müşteri tipi silinemedi",
-      "action": "Sil"
+      "success": "Customer type deleted successfully",
+      "error": "Customer type could not be deleted",
+      "action": "Delete"
     }
   },
-  "error": "Hata oluştu"
+  "error": "An error occurred"
 }

@@ -32,7 +32,8 @@
     "updatedBy": "Updated By",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "salutation": "address"
+    "salutation": "address",
+    "status": "Status"
   },
   "form": {
     "addContact": "Add New Contact",

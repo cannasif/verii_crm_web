@@ -33,7 +33,7 @@
     "createdBy": "تم الإنشاء بواسطة",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
     "page": "صفحة {{current}} / {{total}}",
-    "title": "Aktivite Tipi Listesi"
+    "title": "قائمة أنواع الأنشطة"
   },
   "stats": {
     "totalActivityTypes": "إجمالي أنواع الأنشطة",
@@ -53,16 +53,16 @@
     "confirmMessage": "هل أنت متأكد أنك تريد حذف نوع النشاط {{name}}؟"
   },
   "advancedFilter": {
-    "columnName": "Activity Type Name",
-    "columnDescription": "Description",
-    "columnCreatedBy": "Created By"
+    "columnName": "اسم نوع النشاط",
+    "columnDescription": "الوصف",
+    "columnCreatedBy": "تم الإنشاء بواسطة"
   },
   "activityType": {
     "table": {
-      "title": "Aktivite Tipi Listesi"
+      "title": "قائمة أنواع الأنشطة"
     },
-    "error": "Bir hata oluştu"
+    "error": "حدث خطأ"
   },
-  "create": "Yeni Aktivite Tipi",
-  "error": "Bir hata oluştu"
+  "create": "نوع نشاط جديد",
+  "error": "حدث خطأ"
 }

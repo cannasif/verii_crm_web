@@ -21,16 +21,16 @@
   "list": {
     "revise": "Revisiona",
     "showing": "Visualizzazione {{from}}-{{to}} di {{total}}",
-    "detail": "Detay",
-    "cardTitle": "Sipariş listesi",
-    "refresh": "Yenile",
-    "title": "Sipariş Listesi",
-    "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
-    "createNew": "Yeni Sipariş Crea",
-    "actions": "İşlemler",
+    "detail": "Dettaglio",
+    "cardTitle": "Elenco ordini",
+    "refresh": "Aggiorna",
+    "title": "Elenco ordini",
+    "description": "Visualizza e gestisci i record degli ordini",
+    "createNew": "Crea nuovo ordine",
+    "actions": "Azioni",
     "id": "ID",
     "offerNo": "N. Offerta",
-    "revisionNo": "Revizyon No",
+    "revisionNo": "N. revisione",
     "customer": "Cliente",
     "customerCode": "Codice cliente",
     "representative": "Rappresentante di Vendita",
@@ -41,13 +41,13 @@
     "status": "Stato"
   },
   "detail": {
-    "title": "Dettaglio Preventivo",
-    "subtitle": "Sipariş bilgilerini, onay akışını ve raporları görüntüleyin",
-    "notFound": "Sipariş bulunamadı",
-    "revisionNo": "Revizyon No",
-    "tabDetail": "Detay",
-    "tabApprovalFlow": "Onay Akışı",
-    "tabReport": "Rapor"
+    "title": "Dettaglio Ordine",
+    "subtitle": "Visualizza le informazioni sull'ordine, il flusso di approvazione e i report",
+    "notFound": "Ordine non trovato",
+    "revisionNo": "N. revisione",
+    "tabDetail": "Dettaglio",
+    "tabApprovalFlow": "Flusso di Approvazione",
+    "tabReport": "Report"
   },
   "create": {
     "title": "Crea Nuovo Preventivo",
@@ -56,11 +56,11 @@
     "successMessage": "Il preventivo è stato inviato al processo di approvazione.",
     "error": "Impossibile Creare il Preventivo",
     "errorMessage": "Si è verificato un errore durante la creazione del preventivo.",
-    "subtitle": "Sipariş başlığı, satırlar ve kur bilgilerini yönetin",
-    "deliveryDateRequired": "Teslimat tarihi zorunludur.",
-    "paymentTypeRequired": "Ödeme tipi seçimi zorunludur.",
-    "invalidCurrency": "Geçerli bir para birimi seçin.",
-    "validationError": "Lütfen zorunlu alanları kontrol edin.",
+    "subtitle": "Gestisci l'intestazione dell'ordine, le righe e le informazioni sul tasso di cambio",
+    "deliveryDateRequired": "La data di consegna è obbligatoria.",
+    "paymentTypeRequired": "La selezione del tipo di pagamento è obbligatoria.",
+    "invalidCurrency": "Seleziona una valuta valida.",
+    "validationError": "Controlla i campi obbligatori.",
     "notesMaxLengthError": "Ogni nota può contenere al massimo 400 caratteri.",
     "pageTitle": "Ordine",
     "pageDescription": "Compila testata, aggiungi righe, controlla il riepilogo e salva.",
@@ -144,7 +144,7 @@
       "confirmMessageMultiple": "Seçili satırları silmek istediğinizden emin misiniz?"
     },
     "max200Chars": "Maksimum 200 karakter",
-    "addLine": "Satır Ekle",
+    "addLine": "Aggiungi riga",
     "noItems": "Henüz satır bulunmuyor",
     "groupCode": "Grup Kodu",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
@@ -184,10 +184,10 @@
     "totalVat": "Totale IVA",
     "grandTotal": "Totale Generale",
     "orderTotalAnalysis": "Analisi totale ordine",
-    "generalDiscount": "Genel İskonto",
-    "generalDiscountRate": "Genel İskonto Oranı",
-    "generalDiscountAmount": "Genel İskonto Tutarı",
-    "generalDiscountHelp": "Bu alan tüm sipariş toplamına uygulanacak genel iskontoyu ifade eder."
+    "generalDiscount": "Sconto Generale",
+    "generalDiscountRate": "Tasso Sconto Generale",
+    "generalDiscountAmount": "Importo Sconto Generale",
+    "generalDiscountHelp": "Questo campo rappresenta lo sconto generale da applicare all'importo totale dell'ordine."
   },
   "offerType": {
     "domestic": "Nazionale",
@@ -265,9 +265,9 @@
     "stepRejected": "Reddedildi"
   },
   "sections": {
-    "header": "Başlık Bilgileri",
-    "lines": "Satırlar",
-    "summary": "Özet"
+    "header": "Informazioni di intestazione",
+    "lines": "Righe",
+    "summary": "Riepilogo"
   },
   "revision": {
     "success": "Revizyon kaydı oluşturuldu.",
