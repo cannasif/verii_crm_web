@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CalendarDays, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins } from 'lucide-react';
+import { CalendarDays, ChevronDown, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +27,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import { useAuthStore } from '@/stores/auth-store';
 import {
   useSalesmenOverviewQuery,
@@ -46,6 +55,7 @@ import type {
   Salesmen360DistributionDto,
   Salesmen360AmountComparisonDto,
   Salesmen360PeriodKey,
+  Salesmen360VisibleUserDto,
 } from '../types/salesmen360.types';
 import { cn } from '@/lib/utils';
 import { formatSalesmen360PeriodLabel, translateSalesmen360RfmSegment } from '../utils/localizedDisplay';
@@ -64,6 +74,151 @@ function KpiCardSkeleton(): ReactElement {
 
 const CHART_COLORS = ['#ec4899', '#f59e0b', '#8b5cf6'];
 const SALESMAN_360_PERIOD_OPTIONS: Salesmen360PeriodKey[] = ['today', 'week', 'month', 'year'];
+
+const SALESMEN_360_FILTER_OUTER =
+  'group/filter flex min-h-11 w-fit max-w-full items-stretch overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm ring-1 ring-slate-950/[0.03] transition-[box-shadow,border-color] duration-200 hover:border-pink-200/80 hover:shadow-md hover:shadow-pink-500/[0.07] dark:border-white/10 dark:bg-linear-to-br dark:from-[#1E1627]/95 dark:to-[#130822]/98 dark:ring-white/[0.05] dark:hover:border-pink-400/30 dark:hover:shadow-pink-500/10';
+
+const SALESMEN_360_FILTER_LABEL_SEGMENT =
+  'flex shrink-0 items-center gap-2.5 border-r border-slate-200/80 bg-linear-to-b from-slate-50/98 to-slate-100/35 px-3 py-2 dark:border-white/10 dark:from-white/[0.07] dark:to-transparent';
+
+const SALESMEN_360_FILTER_MICRO_LABEL =
+  'max-w-[5rem] truncate text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 sm:max-w-[7rem] dark:text-slate-400';
+
+const SALESMEN_360_FILTER_TRIGGER =
+  'h-11 min-h-11 w-full min-w-0 border-0 bg-transparent px-3 text-sm font-semibold text-slate-800 shadow-none transition-colors rounded-none rounded-r-2xl hover:bg-pink-50/45 focus:ring-0 focus:ring-offset-0 focus-visible:bg-pink-50/55 focus-visible:outline-none data-[state=open]:bg-pink-50/50 dark:text-white/95 dark:hover:bg-white/[0.05] dark:focus-visible:bg-pink-500/[0.14] dark:data-[state=open]:bg-pink-500/15 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-pink-500/55 [&_svg]:opacity-80 dark:[&_svg]:text-pink-400/80';
+
+const SALESMEN_360_FILTER_CONTENT =
+  'z-50 max-h-72 overflow-y-auto rounded-2xl border border-slate-200/90 bg-white/98 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1E1627]/98';
+
+const SALESMEN_360_FILTER_ITEM =
+  'cursor-pointer rounded-xl py-2.5 pl-3 pr-9 text-sm font-medium text-slate-700 transition-colors focus:bg-pink-50 focus:text-pink-950 data-[highlighted]:bg-pink-50 data-[state=checked]:bg-pink-50/90 dark:text-slate-200 dark:focus:bg-pink-500/18 dark:focus:text-pink-50 dark:data-[highlighted]:bg-pink-500/18 dark:data-[state=checked]:bg-pink-500/22';
+
+const SALESMEN_360_FILTER_ICON_WRAP = {
+  salesman:
+    'border-indigo-200/90 bg-indigo-50 text-indigo-600 shadow-indigo-500/10 dark:border-indigo-400/25 dark:bg-indigo-500/12 dark:text-indigo-200',
+  currency:
+    'border-pink-200/90 bg-pink-50 text-pink-600 shadow-pink-500/10 dark:border-pink-400/25 dark:bg-pink-500/12 dark:text-pink-200',
+  period:
+    'border-amber-200/90 bg-amber-50 text-amber-600 shadow-amber-500/10 dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-200',
+} as const;
+
+function buildSalespersonOptionLabel(item: Salesmen360VisibleUserDto, meLabel: string): string {
+  const fullName = item.fullName?.trim();
+  const base =
+    fullName && item.email
+      ? `${fullName} (${item.email})`
+      : fullName || item.email || String(item.userId);
+  return item.isSelf ? `${base} • ${meLabel}` : base;
+}
+
+function Salesmen360SalespersonCombobox({
+  visibleSalesmen,
+  selectedUserId,
+  selectedLabel,
+  onSelectUserId,
+  triggerClassName,
+  outerClassName,
+}: {
+  visibleSalesmen: Salesmen360VisibleUserDto[];
+  selectedUserId: number;
+  selectedLabel: string | undefined;
+  onSelectUserId: (userId: number) => void;
+  triggerClassName: string;
+  outerClassName: string;
+}): ReactElement {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const meLabel = t('salesman360.salesmanFilter.me');
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <div className={outerClassName}>
+        <PopoverAnchor asChild>
+          <div className="flex min-w-0 w-full flex-1 items-stretch">
+            <div className={SALESMEN_360_FILTER_LABEL_SEGMENT}>
+              <div
+                className={cn(
+                  'flex size-8 shrink-0 items-center justify-center rounded-xl border shadow-sm',
+                  SALESMEN_360_FILTER_ICON_WRAP.salesman
+                )}
+              >
+                <Users className="size-4" aria-hidden />
+              </div>
+              <span className={SALESMEN_360_FILTER_MICRO_LABEL}>{t('salesman360.salesmanFilter.label')}</span>
+            </div>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                role="combobox"
+                aria-expanded={open}
+                aria-haspopup="listbox"
+                className={cn('flex min-w-0 items-center justify-between gap-2 text-left', triggerClassName)}
+              >
+                <span className="min-w-0 flex-1 truncate">{selectedLabel ?? String(selectedUserId)}</span>
+                <ChevronDown className="size-4 shrink-0 text-pink-500/55 opacity-80 dark:text-pink-400/80" aria-hidden />
+              </button>
+            </PopoverTrigger>
+          </div>
+        </PopoverAnchor>
+      </div>
+      <PopoverContent
+        align="start"
+        alignOffset={0}
+        side="bottom"
+        sideOffset={6}
+        className="z-50 w-[min(22rem,calc(100vw-2rem))] max-h-[min(20rem,70dvh)] overflow-hidden rounded-2xl border border-slate-200/90 bg-white/98 p-0 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1E1627]/98"
+      >
+        <Command
+          className="max-h-[min(18rem,65dvh)] rounded-none border-0 bg-transparent shadow-none [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input-wrapper]]:border-slate-200/80 dark:[&_[cmdk-input-wrapper]]:border-white/10"
+          filter={(value, search) => {
+            const uid = Number(value);
+            const item = visibleSalesmen.find((u) => u.userId === uid);
+            if (!item) {
+              return 0;
+            }
+            const q = search.trim().toLowerCase();
+            if (!q) {
+              return 1;
+            }
+            const name = (item.fullName ?? '').toLowerCase();
+            const email = (item.email ?? '').toLowerCase();
+            const idStr = String(item.userId);
+            if (name.includes(q) || email.includes(q) || idStr.includes(q)) {
+              return 1;
+            }
+            return 0;
+          }}
+        >
+          <CommandInput
+            placeholder={t('salesman360.salesmanFilter.searchPlaceholder')}
+            className="h-10 border-0"
+          />
+          <CommandList>
+            <CommandEmpty>{t('salesman360.salesmanFilter.noResults')}</CommandEmpty>
+            <CommandGroup value="salesmen-360-visible" className="p-1.5">
+              {visibleSalesmen.map((item) => (
+                <CommandItem
+                  key={item.userId}
+                  value={String(item.userId)}
+                  onSelect={(currentValue) => {
+                    onSelectUserId(Number(currentValue));
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    SALESMEN_360_FILTER_ITEM,
+                    'cursor-pointer data-[selected=true]:bg-pink-50 data-[selected=true]:text-pink-950 dark:data-[selected=true]:bg-pink-500/18 dark:data-[selected=true]:text-pink-50'
+                  )}
+                >
+                  {buildSalespersonOptionLabel(item, meLabel)}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 function CardTitleWithInfo({
   titleKey,
@@ -648,76 +803,75 @@ export function Salesmen360Page(): ReactElement {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-3">
             {visibleSalesmen.length > 1 && selectedSalesmanValue && (
-              <div className="flex items-center gap-0 w-fit rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-2 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
-                  <Users className="size-4 text-indigo-500" />
-                  <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
-                    {t('salesman360.salesmanFilter.label')}
-                  </span>
+              <Salesmen360SalespersonCombobox
+                outerClassName={cn(
+                  SALESMEN_360_FILTER_OUTER,
+                  'min-w-0 w-full sm:w-auto sm:min-w-[min(20rem,calc(100vw-2rem))] sm:max-w-[22rem]'
+                )}
+                visibleSalesmen={visibleSalesmen}
+                selectedUserId={userId}
+                selectedLabel={selectedSalesmanLabel}
+                onSelectUserId={(id) => navigate(`/salesmen-360/${id}`)}
+                triggerClassName={cn(SALESMEN_360_FILTER_TRIGGER, 'w-full min-w-0 sm:min-w-[11rem]')}
+              />
+            )}
+
+            <div className={cn(SALESMEN_360_FILTER_OUTER, 'min-w-0 sm:min-w-[10.5rem]')}>
+              <div className={SALESMEN_360_FILTER_LABEL_SEGMENT}>
+                <div
+                  className={cn(
+                    'flex size-8 shrink-0 items-center justify-center rounded-xl border shadow-sm',
+                    SALESMEN_360_FILTER_ICON_WRAP.currency
+                  )}
+                >
+                  <Target className="size-4" aria-hidden />
                 </div>
-                <Select value={selectedSalesmanValue} onValueChange={(value) => navigate(`/salesmen-360/${value}`)}>
-                  <SelectTrigger className="w-[300px] h-10 border-0 rounded-none bg-white dark:bg-transparent font-bold focus:ring-0 shadow-none hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                    <SelectValue>{selectedSalesmanLabel}</SelectValue>
+                <span className={SALESMEN_360_FILTER_MICRO_LABEL}>{t('salesman360.currencyFilter.label')}</span>
+              </div>
+              <div className="flex min-w-0 flex-1">
+                <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
+                  <SelectTrigger className={cn(SALESMEN_360_FILTER_TRIGGER, 'w-full min-w-[6.5rem]')}>
+                    <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
-                    {visibleSalesmen.map((item) => {
-                      const fullName = item.fullName?.trim();
-                      const label = fullName && item.email
-                        ? `${fullName} (${item.email})`
-                        : fullName || item.email || String(item.userId);
-                      return (
-                        <SelectItem key={item.userId} value={String(item.userId)} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
-                          {item.isSelf ? `${label} • ${t('salesman360.salesmanFilter.me')}` : label}
-                        </SelectItem>
-                      );
-                    })}
+                  <SelectContent sideOffset={6} className={SALESMEN_360_FILTER_CONTENT}>
+                    {currencyOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value} className={SALESMEN_360_FILTER_ITEM}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-            )}
-
-            <div className="flex items-center gap-0 w-fit rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-2 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
-                <Target className="size-4 text-pink-500" />
-                <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
-                  {t('salesman360.currencyFilter.label')}
-                </span>
-              </div>
-              <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-                <SelectTrigger className="w-[140px] h-10 border-0 rounded-none bg-white dark:bg-transparent font-bold focus:ring-0 shadow-none hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
-                  {currencyOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
-            <div className="flex items-center gap-0 w-fit rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-2 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
-                <CalendarDays className="size-4 text-orange-500" />
-                <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
-                  {t('salesman360.periodFilter.label')}
-                </span>
+            <div className={cn(SALESMEN_360_FILTER_OUTER, 'min-w-0 sm:min-w-[11rem]')}>
+              <div className={SALESMEN_360_FILTER_LABEL_SEGMENT}>
+                <div
+                  className={cn(
+                    'flex size-8 shrink-0 items-center justify-center rounded-xl border shadow-sm',
+                    SALESMEN_360_FILTER_ICON_WRAP.period
+                  )}
+                >
+                  <CalendarDays className="size-4" aria-hidden />
+                </div>
+                <span className={SALESMEN_360_FILTER_MICRO_LABEL}>{t('salesman360.periodFilter.label')}</span>
               </div>
-              <Select value={selectedPeriod} onValueChange={(value) => setSelectedPeriod(value as Salesmen360PeriodKey)}>
-                <SelectTrigger className="w-[150px] h-10 border-0 rounded-none bg-white dark:bg-transparent font-bold focus:ring-0 shadow-none hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
-                  {SALESMAN_360_PERIOD_OPTIONS.map((period) => (
-                    <SelectItem key={period} value={period} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
-                      {t(`salesman360.periodFilter.${period}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex min-w-0 flex-1">
+                <Select value={selectedPeriod} onValueChange={(value) => setSelectedPeriod(value as Salesmen360PeriodKey)}>
+                  <SelectTrigger className={cn(SALESMEN_360_FILTER_TRIGGER, 'w-full min-w-[6.75rem]')}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent sideOffset={6} className={SALESMEN_360_FILTER_CONTENT}>
+                    {SALESMAN_360_PERIOD_OPTIONS.map((period) => (
+                      <SelectItem key={period} value={period} className={SALESMEN_360_FILTER_ITEM}>
+                        {t(`salesman360.periodFilter.${period}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
