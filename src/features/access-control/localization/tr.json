@@ -334,6 +334,181 @@
     "userGroupAssignments": "Kullanıcı Grup Atamaları",
     "visibilityPolicies": "Görünürlük Politikaları",
     "userVisibilityAssignments": "Kullanıcı Görünürlük Atamaları",
-    "auditLogs": "Audit Kayıtları"
+    "auditLogs": "Audit Kayıtları",
+    "accessControlGuide": "Erişim kontrolü rehberi"
+  },
+  "guide": {
+    "title": "Erişim Kontrolü Rehberi",
+    "description": "Bu rehber, erişim kontrolü altındaki tüm ekranların ne işe yaradığını ve hangi ayarın ne sonuç ürettiğini tek yerde açıklar. Amaç, sistem mantığını ilk kez gören bir kullanıcının bile ne yapması gerektiğini net anlamasıdır.",
+    "hero": {
+      "coreLogicLabel": "Ana mantık",
+      "coreLogicValue": "İzin verir, görünürlük sınırlar.",
+      "finalCheckLabel": "Son kontrol",
+      "finalCheckValue": "Simülatörde doğrula."
+    },
+    "quickRulesTitle": "Bu sistemin 5 temel kuralı",
+    "quickRules": [
+      "Sayfa izni ayrı, kayıt görünürlüğü ayrı konudur. Bir kullanıcı sayfaya girebilir ama tüm kayıtları göremeyebilir.",
+      "İzin grubu ekranı kullanıcının hangi sayfayı açabileceğini ve hangi işlemi yapabileceğini belirler.",
+      "Görünürlük politikası ekranı kullanıcının o sayfadaki hangi kayıtları göreceğini belirler.",
+      "Kullanıcı grup atamaları grup atar. Kullanıcı görünürlük atamaları ise kullanıcı bazlı görünürlük istisnası tanımlar.",
+      "Görünürlük simülatörü sonucunu okumadan canlıya kural vermek risklidir; simülatörde sonucu mutlaka kontrol et."
+    ],
+    "screensTitle": "Hangi ekran ne işe yarar?",
+    "pageCards": [
+      {
+        "id": "permissionGroups",
+        "title": "İzin grupları",
+        "summary": "Bu ekran kullanıcının hangi modülleri görüp hangi aksiyonları yapabileceğini belirler.",
+        "bullets": [
+          "Teklifler ekranını açsın istiyorsan `sales.quotations.view` gibi görüntüleme izni vermelisin.",
+          "Yeni teklif oluştursun istiyorsan aynı grupta `sales.quotations.create` izni de olmalı.",
+          "Güncellesin istiyorsan `sales.quotations.update`, silsin istiyorsan `sales.quotations.delete` gerekir.",
+          "Buradaki izinler sayfa ve aksiyon kapısını açar; hangi kayıtları göreceğini tek başına belirlemez."
+        ]
+      },
+      {
+        "id": "userGroupAssignments",
+        "title": "Kullanıcı grup atamaları",
+        "summary": "Bu ekran bir kullanıcıya bir veya birden fazla izin grubu bağlamak için kullanılır.",
+        "bullets": [
+          "Kullanıcı seçilir, sonra o kullanıcının sahip olacağı gruplar seçilir.",
+          "Kullanıcı birden fazla gruptaysa izinler birleşir; yani bir grupta olan yetki diğer grubu da destekler.",
+          "Bir kullanıcıya yanlış grup verirsen, hiç tanımlamadığın sayfalara da erişim açabilirsin.",
+          "Bu ekran en çok rol dağıtımı için kullanılır: satış temsilcisi, yönetici, operasyon, sistem yöneticisi gibi."
+        ]
+      },
+      {
+        "id": "visibilityPolicies",
+        "title": "Görünürlük politikaları",
+        "summary": "Bu ekran teklif, aktivite, talep, sipariş gibi kayıtların kimlere görüneceğini kural bazlı tanımlar.",
+        "bullets": [
+          "Kullanıcı sayfaya girse bile burada ilgili varlık için kural yoksa yalnızca politika mantığının izin verdiği kadar kayıt görür.",
+          "Buradaki kapsam seçimi sistem davranışını değiştirir: yalnızca kendi kayıtları, bağlı olduğu ekip, şirket geneli gibi.",
+          "Aynı ekran, teklifler ve aktiviteler gibi farklı varlıklar için farklı görünürlük modeli tanımlamana yarar.",
+          "Bir politika aktif ama yanlış varlık için tanımlıysa beklediğin etki hiç oluşmaz."
+        ]
+      },
+      {
+        "id": "userVisibilityAssignments",
+        "title": "Kullanıcı görünürlük atamaları",
+        "summary": "Bu ekran kullanıcı bazlı görünürlük istisnası vermek için kullanılır.",
+        "bullets": [
+          "Standart kural yeterli değilse belirli bir kullanıcıya varlık bazlı farklı görünürlük politikası bağlayabilirsin.",
+          "Bu yapı, genel kural bozulmadan tek bir yönetici veya özel kullanıcı için farklı görünürlük vermek için idealdir.",
+          "Tüm şirketi etkileyen kural değil, istisna tanımlamak istiyorsan burada çalışmalısın.",
+          "Bu ekran grup yetkisi vermez; yalnızca kayıt görünürlüğünü değiştirir."
+        ]
+      },
+      {
+        "id": "visibilitySimulator",
+        "title": "Görünürlük simülatörü",
+        "summary": "Bu ekran bir kullanıcı, bir varlık ve bir kayıt seçildiğinde sistemin gerçekte ne göstereceğini test eder.",
+        "bullets": [
+          "Kural yazdın ama sonucundan emin değilsen burada kullanıcıyı ve varlık tipini seçip görünen kullanıcıları okuyabilirsin.",
+          "Belirli bir kaydın kimlik değerini yazarsan o kayıt için sonuç hesaplanır.",
+          "Onay geçersiz kılma veya denetim kayıtları varsa simülatör bunu da gösterir.",
+          "Canlıya çıkmadan önce sonuç doğru mu sorusunun en güvenli cevabı bu ekrandır."
+        ]
+      },
+      {
+        "id": "permissionDefinitions",
+        "title": "İzin tanımları",
+        "summary": "Bu ekran artık operasyonel zorunluluk için değil, sistem katalog mantığını anlamak için referans niteliğindedir.",
+        "bullets": [
+          "İzin kodları artık otomatik senkron mantığıyla yönetiliyor.",
+          "Günün sonunda yöneticinin ana çalışma alanı izin grupları ve atama ekranlarıdır.",
+          "Yeni rota veya yeni izin kataloğu geldiğinde sistem bunu otomatik kataloga alacak şekilde kurulmuştur."
+        ]
+      }
+    ],
+    "scenariosTitle": "Örnekli senaryolar",
+    "expectedResultLabel": "Beklenen sonuç",
+    "scenarios": [
+      {
+        "id": "s1",
+        "title": "Senaryo 1: Satış temsilcisi yalnızca kendi tekliflerini görsün",
+        "target": "Teklif ekranına girsin, yeni teklif açabilsin ama başkalarının tekliflerini görmesin.",
+        "steps": [
+          "İzin grupları ekranında kullanacağı gruba `sales.quotations.view` ve ihtiyaç varsa `sales.quotations.create` ekle.",
+          "Bu grubu kullanıcı grup atamaları ekranından ilgili satış temsilcisine ata.",
+          "Görünürlük politikaları ekranında Quotation varlığı için yalnızca kendi kayıtlarını gösteren bir politika tanımla.",
+          "Gerekirse bu politikayı kullanıcı görünürlük atamaları ekranından kullanıcıya bağla."
+        ],
+        "result": "Kullanıcı teklif sayfasını açar, yeni teklif oluşturabilir ama listede yalnızca kendi yetki kapsamına giren teklifleri görür."
+      },
+      {
+        "id": "s2",
+        "title": "Senaryo 2: Satış müdürü kendi ekibinin aktivitelerini görsün",
+        "target": "Müdürün ekip aktivitesini takip etmesi ama tüm şirket verisini görmemesi.",
+        "steps": [
+          "İzin grupları ekranında `activity.activity-management.view` iznini ilgili yönetici grubuna ekle.",
+          "Aktiviteyi güncelleyecekse `activity.activity-management.update` iznini de ekle.",
+          "Görünürlük politikaları ekranında Activity varlığı için ekibe bağlı kapsamı tanımlayan politikayı etkinleştir.",
+          "Bu politikayı doğrudan yönetici kullanıcıya veya uygun yönetici grubundaki kullanıcılara bağla."
+        ],
+        "result": "Yönetici aktivite ekranına girer, yalnızca kendi ekibiyle ilgili aktiviteleri görür; alakasız kullanıcıların aktiviteleri listelenmez."
+      },
+      {
+        "id": "s3",
+        "title": "Senaryo 3: Kullanıcı siparişleri yalnızca izlesin, oluşturamasın",
+        "target": "Sipariş ekranına girsin ama yeni sipariş açamasın.",
+        "steps": [
+          "İzin grupları ekranında `sales.orders.view` izni ver.",
+          "Aynı gruba `sales.orders.create` izni verme.",
+          "Kullanıcıya kullanıcı grup atamaları ekranından bu grubu ata."
+        ],
+        "result": "Kullanıcı sipariş listesini açabilir. Ancak yeni sipariş düğmesi veya oluşturma akışı izin olmadığı için kullanılamaz."
+      },
+      {
+        "id": "s4",
+        "title": "Senaryo 4: Onay sürecindeki bir teklif denetim amacıyla görünebilsin",
+        "target": "Normal görünürlük dışında kalan bir kaydın, onay etkisiyle neden göründüğünü açıklayabilsin.",
+        "steps": [
+          "Önce görünürlük simülatörü ekranında kullanıcıyı, varlık olarak Quotation ve ilgili kayıt kimliğini seç.",
+          "Önizleme ve denetim sonucuna bak.",
+          "Onay geçersiz kılma (approval override) varsa bunu denetim alanında göreceksin."
+        ],
+        "result": "Böylece kayıt neden görünüyor sorusunun cevabı tahminle değil, sistemin denetim verisiyle okunur."
+      }
+    ],
+    "mistakesTitle": "En sık yapılan hatalar",
+    "mistakes": [
+      "Yalnızca görünürlük kuralı tanımlayıp sayfa izni vermemek. Sonuç: kullanıcı sayfaya hiç giremez.",
+      "Yalnızca sayfa izni verip görünürlük kuralını düşünmemek. Sonuç: beklenenden fazla kayıt görülebilir.",
+      "Kullanıcıya birden fazla grup atayıp birleşen izin etkisini hesaba katmamak.",
+      "Simülatörde test etmeden canlı veri için politika yayımlamak.",
+      "Teklif, aktivite, talep ve sipariş varlık tiplerini karıştırmak."
+    ],
+    "checklistTitle": "Doğru kurulum sırası",
+    "checklist": [
+      "Önce kullanıcının hangi sayfaya girmesi gerektiğini netleştir.",
+      "Sonra o sayfadaki hangi aksiyonları yapması gerektiğini seç.",
+      "Ardından o varlık için hangi kayıtları göreceğini görünürlük ile sınırla.",
+      "Gerekirse kullanıcı bazlı istisnayı kullanıcı görünürlük atamaları ile ver.",
+      "En son görünürlük simülatörü ile sonucu test et."
+    ],
+    "faqTitle": "Sık sorulan sorular",
+    "faqs": [
+      {
+        "id": "faq1",
+        "question": "Bir kullanıcı teklif sayfasına girebiliyor ama kayıt göremiyor. Neden?",
+        "answer": "Sayfa izni vardır ama görünürlük kuralı kayıtları kısıtlıyordur. İzin doğru, görünürlük eksik veya fazla dar olabilir."
+      },
+      {
+        "id": "faq2",
+        "question": "Bir kullanıcı hiç teklif ekleyemiyor. Neden?",
+        "answer": "Genelde `sales.quotations.create` izni eksiktir. Görüntüleme izni ekranı açar; oluşturma izni yeni kayıt açma yetkisini verir."
+      },
+      {
+        "id": "faq3",
+        "question": "Bir kullanıcı fazla kayıt görüyor. Nereden başlamalıyım?",
+        "answer": "Önce hangi izin gruplarına bağlı olduğunu kontrol et. Sonra varlığa özel görünürlük politikası ve kullanıcı görünürlük ataması kayıtlarını incele. En sonda simülatörde aynı kullanıcıyı test et."
+      }
+    ],
+    "footer": {
+      "title": "Kısa karar kuralı",
+      "body": "Bir kullanıcı bir şey yapamıyorsa önce izin grupları tarafına bak. Fazla veya eksik kayıt görüyorsa önce görünürlük tarafına bak. Son kararı her zaman görünürlük simülatörü ile doğrula."
+    }
   }
 }

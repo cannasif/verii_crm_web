@@ -127,6 +127,180 @@
     "accessControl": "Zugriffskontrolle",
     "permissionDefinitions": "Berechtigungsdefinitionen",
     "permissionGroups": "Berechtigungsgruppen",
-    "userGroupAssignments": "Benutzer-Gruppenzuweisungen"
+    "userGroupAssignments": "Benutzer-Gruppenzuweisungen",
+    "accessControlGuide": "Leitfaden zur Zugriffskontrolle"
+  },
+  "guide": {
+    "title": "Access Control Guide",
+    "description": "This guide explains what each access-control screen does and what each setting changes. The goal is to make the system understandable even for someone who is seeing the model for the first time.",
+    "hero": {
+      "coreLogicLabel": "Core Logic",
+      "coreLogicValue": "Permissions allow, visibility limits.",
+      "finalCheckLabel": "Final Check",
+      "finalCheckValue": "Validate in simulator."
+    },
+    "quickRulesTitle": "Five Core Rules",
+    "quickRules": [
+      "Page permission and record visibility are different concerns. A user may open a page but still see only a subset of records.",
+      "Permission Groups decide which pages and actions the user can access.",
+      "Visibility Policies decide which records inside those pages the user can see.",
+      "User Group Assignments attach groups. User Visibility Assignments attach visibility exceptions for a specific user.",
+      "Do not publish a visibility rule without checking the result in Visibility Simulator."
+    ],
+    "screensTitle": "What Does Each Screen Do?",
+    "pageCards": [
+      {
+        "id": "permissionGroups",
+        "title": "Permission Groups",
+        "summary": "This screen controls which modules a user can open and which actions they can perform.",
+        "bullets": [
+          "If a user should open Quotations, they need a view permission such as `sales.quotations.view`.",
+          "If they should create quotations, the same group also needs `sales.quotations.create`.",
+          "If they should update or delete, the related update or delete permissions are also required.",
+          "These permissions open the page and action gates; they do not define record-level visibility by themselves."
+        ]
+      },
+      {
+        "id": "userGroupAssignments",
+        "title": "User Group Assignments",
+        "summary": "This screen attaches one or more permission groups to a user.",
+        "bullets": [
+          "You select a user first, then attach the groups that user should inherit.",
+          "When a user has multiple groups, permissions are merged.",
+          "A wrong group assignment can expose pages the user was never meant to access.",
+          "This screen is usually the main role distribution area: sales rep, manager, operations, system admin."
+        ]
+      },
+      {
+        "id": "visibilityPolicies",
+        "title": "Visibility Policies",
+        "summary": "This screen defines who can see records such as quotations, activities, demands, and orders.",
+        "bullets": [
+          "Even if the user can enter the page, this policy layer still decides which records are visible.",
+          "The selected scope changes behavior: own records only, team scope, company-wide scope, and similar patterns.",
+          "Different entities such as quotations and activities can use different visibility models.",
+          "If a policy is active but attached to the wrong entity, the expected result will never appear."
+        ]
+      },
+      {
+        "id": "userVisibilityAssignments",
+        "title": "User Visibility Assignments",
+        "summary": "This screen is for user-specific visibility exceptions.",
+        "bullets": [
+          "Use it when the standard policy is not enough and one user needs a different visibility model.",
+          "It is ideal for exceptions without changing the company-wide rule.",
+          "This screen does not grant page access; it only changes record visibility."
+        ]
+      },
+      {
+        "id": "visibilitySimulator",
+        "title": "Visibility Simulator",
+        "summary": "This screen shows what the system will really expose for a selected user and entity.",
+        "bullets": [
+          "If you are unsure about a rule, select the user and entity and inspect the visible users and the audit result.",
+          "If you enter a concrete record id, the simulation becomes record-specific.",
+          "Approval overrides and audit entries are surfaced here as well.",
+          "This is the safest place to validate the final behavior before relying on a policy in production."
+        ]
+      },
+      {
+        "id": "permissionDefinitions",
+        "title": "Permission Definitions",
+        "summary": "This screen is no longer an operational dependency for day-to-day administration.",
+        "bullets": [
+          "Permission codes are now handled through an automatic synchronization flow.",
+          "The main operational surfaces are Permission Groups and the assignment screens.",
+          "The catalog remains useful as a reference for understanding the underlying permission model."
+        ]
+      }
+    ],
+    "scenariosTitle": "Scenario-Based Examples",
+    "expectedResultLabel": "Expected Result",
+    "scenarios": [
+      {
+        "id": "s1",
+        "title": "Scenario 1: Sales rep should only see their own quotations",
+        "target": "The user should open quotations, maybe create them, but not see other people’s records.",
+        "steps": [
+          "Add `sales.quotations.view` and, if needed, `sales.quotations.create` to the relevant permission group.",
+          "Assign that group to the sales rep from User Group Assignments.",
+          "Create a quotation visibility policy that limits access to the user’s own records.",
+          "Attach that policy to the user if a user-level assignment is needed."
+        ],
+        "result": "The user opens the quotations page and can work there, but the list is still limited to their allowed records."
+      },
+      {
+        "id": "s2",
+        "title": "Scenario 2: Sales manager should see team activities",
+        "target": "The manager should monitor team activity without seeing unrelated company-wide records.",
+        "steps": [
+          "Add `activity.activity-management.view` to the manager group.",
+          "Add update permission too if the manager should edit activities.",
+          "Create an activity visibility policy with a team-oriented scope.",
+          "Assign that policy to the manager or the relevant users."
+        ],
+        "result": "The manager can open activities and see the team scope, but not unrelated records."
+      },
+      {
+        "id": "s3",
+        "title": "Scenario 3: User may view orders but must not create them",
+        "target": "The page should open, but the create flow should remain closed.",
+        "steps": [
+          "Grant `sales.orders.view`.",
+          "Do not grant `sales.orders.create`.",
+          "Assign the group to the user."
+        ],
+        "result": "The user can browse order data but cannot create a new order."
+      },
+      {
+        "id": "s4",
+        "title": "Scenario 4: Explain why a quotation becomes visible during approval",
+        "target": "Understand a special visibility result through audit evidence instead of guesswork.",
+        "steps": [
+          "Open Visibility Simulator and select the user.",
+          "Choose Quotation and enter the record id.",
+          "Review preview data and audit entries."
+        ],
+        "result": "If approval override logic is involved, the simulator shows that evidence directly."
+      }
+    ],
+    "mistakesTitle": "Common Mistakes",
+    "mistakes": [
+      "Defining visibility without granting page permission. Result: the user cannot even open the page.",
+      "Granting page permission without considering visibility. Result: the user may see too many records.",
+      "Ignoring merged permissions when a user belongs to multiple groups.",
+      "Publishing a policy without testing it in the simulator.",
+      "Mixing up entity types such as quotation, activity, demand, and order."
+    ],
+    "checklistTitle": "Recommended Setup Order",
+    "checklist": [
+      "First define which page the user must access.",
+      "Then define which actions they must perform on that page.",
+      "Then restrict which records they are allowed to see.",
+      "Use user-level visibility assignments only when you need a specific exception.",
+      "Validate the final result in Visibility Simulator."
+    ],
+    "faqTitle": "Frequently Asked Questions",
+    "faqs": [
+      {
+        "id": "faq1",
+        "question": "A user can open quotations but sees no records. Why?",
+        "answer": "Page permission is likely correct, but the visibility layer is restricting records too much or has not been assigned correctly."
+      },
+      {
+        "id": "faq2",
+        "question": "A user cannot create quotations. Why?",
+        "answer": "The usual cause is a missing `sales.quotations.create` permission. View opens the page; create opens the creation action."
+      },
+      {
+        "id": "faq3",
+        "question": "A user sees too many records. Where should I start?",
+        "answer": "Check assigned permission groups first, then entity-specific visibility policies and user visibility assignments, and finally verify the behavior in the simulator."
+      }
+    ],
+    "footer": {
+      "title": "Short decision rule",
+      "body": "If a user cannot perform an action, start with Permission Groups. If a user sees too many or too few records, start with Visibility. Always verify the final decision in Visibility Simulator."
+    }
   }
 }
