@@ -4602,7 +4602,10 @@
       "TimeFormat": "Time format",
       "NumberFormat": "Number format",
       "DecimalPlaces": "Decimal places",
-      "RestrictCustomersBySalesRepMatch": "Restrict customers by sales rep match"
+      "RestrictCustomersBySalesRepMatch": "Restrict customers by sales rep match",
+      "DemandApprovalCompletionAction": "Demand approval completion action",
+      "QuotationApprovalCompletionAction": "Quotation approval completion action",
+      "OrderApprovalCompletionAction": "Order approval completion action"
     },
     "Descriptions": {
       "RestrictCustomersBySalesRepMatch": "When enabled, customer lists and pickers are limited by the selected user's matched sales representative codes."
@@ -4613,12 +4616,35 @@
       "DefaultTimeZone": "Select time zone",
       "DateFormat": "Select date format",
       "TimeFormat": "Select time format",
-      "NumberFormat": "Select number format"
+      "NumberFormat": "Select number format",
+      "ApprovalCompletionAction": "Select approval completion action"
     },
     "NumberFormatOptions": {
       "trTR": "Turkish number format (1.234,56)",
       "enUS": "US number format (1,234.56)",
       "deDE": "German number format (1.234,56)"
+    },
+    "ApprovalCompletionActions": {
+      "Demand": {
+        "1": "Keep as approved only",
+        "2": "Create Netsis demand",
+        "3": "Create quotation",
+        "4": "Create Netsis demand record",
+        "5": "Create Netsis demand and quotation"
+      },
+      "Quotation": {
+        "1": "Keep as approved only",
+        "2": "Create Netsis quotation",
+        "3": "Create order",
+        "4": "Create Netsis quotation record",
+        "5": "Create Netsis quotation and order"
+      },
+      "Order": {
+        "1": "Keep as approved only",
+        "2": "Create Netsis order",
+        "3": "Create Netsis sales invoice",
+        "4": "Create Netsis order and sales invoice"
+      }
     },
     "LineFormSection": {
       "Title": "Line form (Profile / Rebar / Screw)",

@@ -4658,7 +4658,10 @@
       "TimeFormat": "Saat formatı",
       "NumberFormat": "Sayı formatı",
       "DecimalPlaces": "Ondalık basamak sayısı",
-      "RestrictCustomersBySalesRepMatch": "Müşterileri satış temsilcisi eşleşmesine göre sınırla"
+      "RestrictCustomersBySalesRepMatch": "Müşterileri satış temsilcisi eşleşmesine göre sınırla",
+      "DemandApprovalCompletionAction": "Talep onaylanınca yapılacak işlem",
+      "QuotationApprovalCompletionAction": "Teklif onaylanınca yapılacak işlem",
+      "OrderApprovalCompletionAction": "Sipariş onaylanınca yapılacak işlem"
     },
     "Descriptions": {
       "RestrictCustomersBySalesRepMatch": "Açık olduğunda müşteri listeleri ve seçim ekranları, ilgili kullanıcının satış temsilcisi eşleşmelerine göre daraltılır."
@@ -4669,12 +4672,35 @@
       "DefaultTimeZone": "Saat dilimi seçin",
       "DateFormat": "Tarih formatı seçin",
       "TimeFormat": "Saat formatı seçin",
-      "NumberFormat": "Sayı formatı seçin"
+      "NumberFormat": "Sayı formatı seçin",
+      "ApprovalCompletionAction": "Onay sonrası işlem seçin"
     },
     "NumberFormatOptions": {
       "trTR": "Türkçe sayı biçimi (1.234,56)",
       "enUS": "ABD sayı biçimi (1,234.56)",
       "deDE": "Almanca sayı biçimi (1.234,56)"
+    },
+    "ApprovalCompletionActions": {
+      "Demand": {
+        "1": "Sadece onaylandı kalsın",
+        "2": "Netsis'te talep aç",
+        "3": "Teklif kaydı aç",
+        "4": "Netsis'te talep kaydı aç",
+        "5": "Netsis'te talep aç ve teklif oluştur"
+      },
+      "Quotation": {
+        "1": "Sadece onaylandı kalsın",
+        "2": "Netsis'te teklif aç",
+        "3": "Sipariş kaydı aç",
+        "4": "Netsis'te teklif kaydı aç",
+        "5": "Netsis'te teklif aç ve sipariş oluştur"
+      },
+      "Order": {
+        "1": "Sadece onaylandı kalsın",
+        "2": "Netsis'te sipariş aç",
+        "3": "Netsis'te satış faturası aç",
+        "4": "Netsis'te sipariş ve satış faturası aç"
+      }
     },
     "LineFormSection": {
       "Title": "Satır formu (Profil / Demir / Vida)",

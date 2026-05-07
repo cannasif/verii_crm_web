@@ -53,6 +53,30 @@ export function SystemSettingsForm({
     [t]
   );
 
+  const demandActionOptions = useMemo(
+    () => [1, 2, 3, 4, 5].map((value) => ({
+      value: String(value),
+      label: t(`systemSettings.ApprovalCompletionActions.Demand.${value}`),
+    })),
+    [t]
+  );
+
+  const quotationActionOptions = useMemo(
+    () => [1, 2, 3, 4, 5].map((value) => ({
+      value: String(value),
+      label: t(`systemSettings.ApprovalCompletionActions.Quotation.${value}`),
+    })),
+    [t]
+  );
+
+  const orderActionOptions = useMemo(
+    () => [1, 2, 3, 4].map((value) => ({
+      value: String(value),
+      label: t(`systemSettings.ApprovalCompletionActions.Order.${value}`),
+    })),
+    [t]
+  );
+
   const form = useForm<SystemSettingsFormSchema>({
     resolver: zodResolver(systemSettingsFormSchema) as Resolver<SystemSettingsFormSchema>,
     mode: 'onChange',
@@ -61,6 +85,9 @@ export function SystemSettingsForm({
       numberFormat: 'tr-TR',
       decimalPlaces: 2,
       restrictCustomersBySalesRepMatch: false,
+      demandApprovalCompletionAction: 1,
+      quotationApprovalCompletionAction: 1,
+      orderApprovalCompletionAction: 1,
     },
   });
 
@@ -70,6 +97,9 @@ export function SystemSettingsForm({
       numberFormat: data.numberFormat,
       decimalPlaces: data.decimalPlaces,
       restrictCustomersBySalesRepMatch: data.restrictCustomersBySalesRepMatch,
+      demandApprovalCompletionAction: data.demandApprovalCompletionAction ?? 1,
+      quotationApprovalCompletionAction: data.quotationApprovalCompletionAction ?? 1,
+      orderApprovalCompletionAction: data.orderApprovalCompletionAction ?? 1,
     });
   }, [data, form]);
 
@@ -193,6 +223,81 @@ export function SystemSettingsForm({
                       </p>
                     </div>
                   </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="demandApprovalCompletionAction"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('systemSettings.Fields.DemandApprovalCompletionAction')}</FormLabel>
+                  <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {demandActionOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="quotationApprovalCompletionAction"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('systemSettings.Fields.QuotationApprovalCompletionAction')}</FormLabel>
+                  <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {quotationActionOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="orderApprovalCompletionAction"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('systemSettings.Fields.OrderApprovalCompletionAction')}</FormLabel>
+                  <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {orderActionOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

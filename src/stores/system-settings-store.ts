@@ -9,6 +9,9 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettingsDto = {
   numberFormat: 'tr-TR',
   decimalPlaces: 2,
   restrictCustomersBySalesRepMatch: false,
+  demandApprovalCompletionAction: 1,
+  quotationApprovalCompletionAction: 1,
+  orderApprovalCompletionAction: 1,
 };
 
 function pickSupportedString(
@@ -36,8 +39,17 @@ export function normalizeSystemSettings(
         ? Math.min(6, Math.max(0, settings.decimalPlaces))
         : DEFAULT_SYSTEM_SETTINGS.decimalPlaces,
     restrictCustomersBySalesRepMatch: Boolean(settings?.restrictCustomersBySalesRepMatch),
+    demandApprovalCompletionAction: normalizeActionValue(settings?.demandApprovalCompletionAction, 1, 5),
+    quotationApprovalCompletionAction: normalizeActionValue(settings?.quotationApprovalCompletionAction, 1, 5),
+    orderApprovalCompletionAction: normalizeActionValue(settings?.orderApprovalCompletionAction, 1, 4),
     updatedAt: settings?.updatedAt,
   };
+}
+
+function normalizeActionValue(value: number | undefined, min: number, max: number): number {
+  return typeof value === 'number' && Number.isInteger(value)
+    ? Math.min(max, Math.max(min, value))
+    : 1;
 }
 
 interface SystemSettingsState {

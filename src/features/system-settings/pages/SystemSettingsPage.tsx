@@ -22,6 +22,9 @@ export function SystemSettingsPage(): ReactElement {
       numberFormat: values.numberFormat,
       decimalPlaces: values.decimalPlaces,
       restrictCustomersBySalesRepMatch: values.restrictCustomersBySalesRepMatch,
+      demandApprovalCompletionAction: values.demandApprovalCompletionAction,
+      quotationApprovalCompletionAction: values.quotationApprovalCompletionAction,
+      orderApprovalCompletionAction: values.orderApprovalCompletionAction,
     };
 
     await updateMutation.mutateAsync(payload);
