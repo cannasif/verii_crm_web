@@ -121,7 +121,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/access-control/permission-groups': 'access-control.permission-groups.view',
   '/access-control/user-group-assignments': 'access-control.user-group-assignments.view',
   '/access-control/visibility-policies': 'access-control.permission-groups.view',
-  '/access-control/user-visibility-assignments': 'access-control.user-group-assignments.view',
+  '/access-control/user-visibility-assignments': 'access-control.user-visibility-assignments.view',
   '/access-control/visibility-simulator': 'access-control.permission-groups.view',
 };
 
@@ -222,7 +222,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/access-control\/permission-groups(\/|$)/, permission: 'access-control.permission-groups.view' },
   { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
   { pattern: /^\/access-control\/visibility-policies(\/|$)/, permission: 'access-control.permission-groups.view' },
-  { pattern: /^\/access-control\/user-visibility-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
+  { pattern: /^\/access-control\/user-visibility-assignments(\/|$)/, permission: 'access-control.user-visibility-assignments.view' },
   { pattern: /^\/access-control\/visibility-simulator(\/|$)/, permission: 'access-control.permission-groups.view' },
 ];
 
@@ -259,6 +259,7 @@ export const ACCESS_CONTROL_ADMIN_PERMISSIONS = [
   'access-control.permission-definitions.view',
   'access-control.permission-groups.view',
   'access-control.user-group-assignments.view',
+  'access-control.user-visibility-assignments.view',
 ] as const;
 
 export const RBAC_FALLBACK_PERMISSION = 'access-control.permission-definitions.view' as const;
@@ -343,6 +344,7 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'access-control.permission-definitions.view': { key: 'sidebar.permissionDefinitions', fallback: 'Yetki Tanimlari' },
   'access-control.permission-groups.view': { key: 'sidebar.permissionGroups', fallback: 'Yetki Gruplari' },
   'access-control.user-group-assignments.view': { key: 'sidebar.userGroupAssignments', fallback: 'Kullanici Grup Atamalari' },
+  'access-control.user-visibility-assignments.view': { key: 'sidebar.userVisibilityAssignments', fallback: 'Kullanici Gorunurluk Atamalari' },
 };
 
 export function getPermissionDisplayMeta(code: string): { key?: string; fallback: string } | null {

@@ -47,7 +47,7 @@ export const userVisibilityPolicyApi = {
   },
 
   delete: async (id: number): Promise<void> => {
-    const response = await api.delete<ApiResponse<object>>(`/api/user-visibility-policies/${id}`);
+    const response = await api.post<ApiResponse<object>>(`/api/user-visibility-policies/${id}/delete`);
     if (!(response as ApiResponse<object>).success) {
       throw new Error((response as ApiResponse<object>).message || 'Delete failed');
     }

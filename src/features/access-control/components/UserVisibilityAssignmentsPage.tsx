@@ -23,7 +23,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const userDropdown = useUserOptionsInfinite(userSearchTerm, true);
-  const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.user-group-assignments.view');
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.user-visibility-assignments.view');
 
   useEffect(() => {
     setPageTitle(t('userVisibilityAssignments.title'));
