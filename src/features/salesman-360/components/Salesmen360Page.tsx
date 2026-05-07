@@ -47,6 +47,7 @@ import type {
   Salesmen360AmountComparisonDto,
 } from '../types/salesmen360.types';
 import { cn } from '@/lib/utils';
+import { formatSalesmen360PeriodLabel, translateSalesmen360RfmSegment } from '../utils/localizedDisplay';
 
 function recommendedActionCodeToKey(code: string): string {
   return code
@@ -58,7 +59,7 @@ function recommendedActionCodeToKey(code: string): string {
 
 function KpiCardSkeleton(): ReactElement {
   return (
-    <Card className="rounded-2xl border border-slate-200 bg-white/50 p-1 dark:border-white/10 dark:bg-white/[0.02]">
+    <Card className="rounded-2xl border border-slate-200 bg-white/50 p-1 dark:border-white/10 dark:bg-white/2">
       <CardContent className="pt-4 pb-3 px-4">
         <Skeleton className="h-4 w-24 mb-2" />
         <Skeleton className="h-8 w-16" />
@@ -151,7 +152,7 @@ function ScoreRow({
 function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | undefined }): ReactElement {
   const { t } = useTranslation();
   return (
-    <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden relative group">
+    <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden relative group">
       <div className="pt-3 pb-2.5 px-5 border-b border-slate-100 dark:border-white/5">
         <CardTitleWithInfo
           titleKey="salesman360.revenueQuality.title"
@@ -190,7 +191,7 @@ function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | 
               </Tooltip>
             </div>
             <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-xs font-bold text-slate-700 dark:text-white border border-slate-200 dark:border-white/10">
-              {quality?.rfmSegment ?? '-'}
+              {translateSalesmen360RfmSegment(quality?.rfmSegment ?? null, t)}
             </span>
           </div>
         </div>
@@ -208,10 +209,13 @@ function CohortRetentionPanel({
 }: {
   rows: CohortRetentionDto[] | undefined;
 }): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const first = rows?.[0];
+  const cohortLabel = first?.cohortKey
+    ? formatSalesmen360PeriodLabel(first.cohortKey, i18n.language)
+    : '';
   return (
-    <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden group">
+    <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
       <div className="pt-3 pb-2.5 px-5 border-b border-slate-100 dark:border-white/5">
         <CardTitleWithInfo
           titleKey="salesman360.cohort.title"
@@ -230,12 +234,14 @@ function CohortRetentionPanel({
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{t('salesman360.cohort.cohortKey')}</span>
-              <span className="text-sm font-bold text-pink-600 dark:text-pink-400">{first.cohortKey}</span>
+              <span className="text-sm font-bold text-pink-600 dark:text-pink-400">{cohortLabel || first.cohortKey}</span>
             </div>
             <div className="max-h-60 overflow-auto pr-1 custom-scrollbar space-y-1">
               {first.points.map((point) => (
                 <div key={`${point.periodMonth}-${point.periodIndex}`} className="flex items-center justify-between text-sm py-2 px-1 border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50/50 dark:hover:bg-white/5 rounded-lg transition-colors group">
-                  <span className="font-medium text-slate-600 dark:text-slate-400">{point.periodMonth}</span>
+                  <span className="font-medium text-slate-600 dark:text-slate-400">
+                    {formatSalesmen360PeriodLabel(point.periodMonth, i18n.language)}
+                  </span>
                   <div className="flex items-center gap-3">
                     <div className="w-24 h-1.5 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden hidden sm:block">
                       <div className="h-full bg-pink-500 rounded-full" style={{ width: `${point.retentionRate}%` }} />
@@ -263,7 +269,7 @@ function RecommendedActionsPanel({
 }): ReactElement {
   const { t } = useTranslation();
   return (
-    <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden group">
+    <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
       <div className="pt-3 pb-2.5 px-5 border-b border-slate-100 dark:border-white/5">
         <CardTitleWithInfo
           titleKey="salesman360.actions.title"
@@ -322,6 +328,7 @@ function DistributionAndTrendCharts({
   isSingleCurrency,
   currencyFormatter,
   t,
+  locale,
   noDataKey,
   chartsEnabled = true,
 }: {
@@ -331,6 +338,7 @@ function DistributionAndTrendCharts({
   isSingleCurrency: boolean;
   currencyFormatter: Intl.NumberFormat;
   t: (key: string) => string;
+  locale: string;
   noDataKey: string;
   chartsEnabled?: boolean;
 }): ReactElement {
@@ -351,7 +359,7 @@ function DistributionAndTrendCharts({
 
   return (
     <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-      <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden">
+      <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden">
         <CardHeader className="pb-2 pt-4 px-5">
           <CardTitle className="text-base font-bold text-slate-800 dark:text-white">{t('salesman360.analyticsCharts.distributionTitle')}</CardTitle>
         </CardHeader>
@@ -394,7 +402,7 @@ function DistributionAndTrendCharts({
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden lg:col-span-2">
+      <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden lg:col-span-2">
         <CardHeader className="pb-2 pt-4 px-5">
           <CardTitle className="text-base font-bold text-slate-800 dark:text-white">{t('salesman360.analyticsCharts.monthlyTrendTitle')}</CardTitle>
         </CardHeader>
@@ -411,9 +419,19 @@ function DistributionAndTrendCharts({
               <Recharts.ResponsiveContainer width="100%" height="100%">
                 <Recharts.LineChart data={monthlyTrend} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
                   <Recharts.CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-100 dark:stroke-white/5" />
-                  <Recharts.XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} dy={10} />
+                  <Recharts.XAxis
+                    dataKey="month"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 11, fill: '#64748b' }}
+                    dy={10}
+                    tickFormatter={(v) => formatSalesmen360PeriodLabel(String(v), locale)}
+                  />
                   <Recharts.YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
-                  <Recharts.Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} />
+                  <Recharts.Tooltip
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}
+                    labelFormatter={(label) => formatSalesmen360PeriodLabel(String(label), locale)}
+                  />
                   <Recharts.Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: '600' }} />
                   <Recharts.Line type="monotone" dataKey="demandCount" name={t('salesman360.analyticsCharts.demand')} stroke={CHART_COLORS[0]} strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6 }} />
                   <Recharts.Line type="monotone" dataKey="quotationCount" name={t('salesman360.analyticsCharts.quotation')} stroke={CHART_COLORS[1]} strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6 }} />
@@ -426,7 +444,7 @@ function DistributionAndTrendCharts({
       </Card>
 
       {isSingleCurrency && (
-        <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden lg:col-span-3">
+        <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden lg:col-span-3">
           <CardHeader className="pb-2 pt-4 px-5">
             <CardTitle className="text-base font-bold text-slate-800 dark:text-white">{t('salesman360.analyticsCharts.amountComparisonTitle')}</CardTitle>
           </CardHeader>
@@ -496,10 +514,14 @@ export function Salesmen360Page(): ReactElement {
     }
   }, [navigate, userId, visibleSalesmen]);
 
-  const currencyFormatter = new Intl.NumberFormat(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  const currencyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(i18n.resolvedLanguage ?? i18n.language, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    [i18n.resolvedLanguage, i18n.language]
+  );
 
   const selectedSalesmanLabel = useMemo(() => {
     const selected = visibleSalesmen.find((item) => item.userId === userId);
@@ -546,7 +568,7 @@ export function Salesmen360Page(): ReactElement {
   if (userId <= 0) {
     return (
       <div className="w-full px-6 py-10">
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 dark:border-white/10 dark:bg-white/[0.02] p-20 text-center flex flex-col items-center gap-4">
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 dark:border-white/10 dark:bg-white/2 p-20 text-center flex flex-col items-center gap-4">
           <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
             <Target className="h-10 w-10 text-slate-300" />
           </div>
@@ -578,7 +600,7 @@ export function Salesmen360Page(): ReactElement {
       /not found|bulunamadı/i.test((error as Error)?.message ?? '');
     return (
       <div className="w-full px-6 py-10">
-        <Card className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] shadow-xl overflow-hidden">
+        <Card className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/2 shadow-xl overflow-hidden">
           <CardContent className="p-20 text-center space-y-6">
             <div className="flex h-20 w-20 mx-auto items-center justify-center rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20">
               <RefreshCw className="h-10 w-10 text-red-400" />
@@ -698,7 +720,7 @@ export function Salesmen360Page(): ReactElement {
 
           <TabsContent value="overview" className="space-y-6 outline-none">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden">
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-500/10 border border-pink-200 dark:border-pink-500/20 shadow-sm transition-transform">
@@ -709,7 +731,7 @@ export function Salesmen360Page(): ReactElement {
                   <p className="text-2xl font-black mt-2.5 text-slate-900 dark:text-white tabular-nums pl-10.5">{kpis.totalDemands ?? 0}</p>
                 </CardContent>
               </Card>
-              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden">
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 shadow-sm transition-transform">
@@ -720,7 +742,7 @@ export function Salesmen360Page(): ReactElement {
                   <p className="text-2xl font-black mt-2.5 text-slate-900 dark:text-white tabular-nums pl-10.5">{kpis.totalQuotations ?? 0}</p>
                 </CardContent>
               </Card>
-              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden">
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 shadow-sm transition-transform">
@@ -731,7 +753,7 @@ export function Salesmen360Page(): ReactElement {
                   <p className="text-2xl font-black mt-2.5 text-slate-900 dark:text-white tabular-nums pl-10.5">{kpis.totalOrders ?? 0}</p>
                 </CardContent>
               </Card>
-              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden">
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 shadow-sm transition-transform">
@@ -762,7 +784,7 @@ export function Salesmen360Page(): ReactElement {
               {isCohortLoading ? <KpiCardSkeleton /> : <CohortRetentionPanel rows={cohortData} />}
 
               {overviewTotalsByCurrency.length > 0 && (
-                <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden group">
+                <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
                   <div className="pt-3 pb-2.5 px-5 border-b border-slate-100 dark:border-white/5 flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 shadow-sm transition-transform group-hover:scale-105">
                       <Coins className="size-4 text-emerald-600 dark:text-emerald-400" />
@@ -799,19 +821,19 @@ export function Salesmen360Page(): ReactElement {
 
             {!isAllCurrencies && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden border-l-pink-500 border-l-4">
+                <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden border-l-pink-500 border-l-4">
                   <CardContent className="pt-4 pb-3 px-6">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('salesman360.kpi.totalDemandAmount')}</p>
                     <p className="text-2xl font-black mt-2 text-slate-900 dark:text-white">{currencyFormatter.format(kpis.totalDemandAmount ?? 0)}</p>
                   </CardContent>
                 </Card>
-                <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden border-l-orange-500 border-l-4">
+                <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden border-l-orange-500 border-l-4">
                   <CardContent className="pt-4 pb-3 px-6">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('salesman360.kpi.totalQuotationAmount')}</p>
                     <p className="text-2xl font-black mt-2 text-slate-900 dark:text-white">{currencyFormatter.format(kpis.totalQuotationAmount ?? 0)}</p>
                   </CardContent>
                 </Card>
-                <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/[0.03] shadow-sm overflow-hidden border-l-emerald-500 border-l-4">
+                <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden border-l-emerald-500 border-l-4">
                   <CardContent className="pt-4 pb-3 px-6">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('salesman360.kpi.totalOrderAmount')}</p>
                     <p className="text-2xl font-black mt-2 text-slate-900 dark:text-white">{currencyFormatter.format(kpis.totalOrderAmount ?? 0)}</p>
@@ -853,7 +875,7 @@ export function Salesmen360Page(): ReactElement {
                 ) : isChartsLoading ? (
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {[1, 2, 3].map((i) => (
-                      <Card key={i} className="rounded-2xl border border-slate-200 bg-white/50 dark:border-white/10 dark:bg-white/[0.02]">
+                      <Card key={i} className="rounded-2xl border border-slate-200 bg-white/50 dark:border-white/10 dark:bg-white/2">
                         <CardHeader><Skeleton className="h-6 w-40 rounded-lg" /></CardHeader>
                         <CardContent><Skeleton className="h-64 w-full rounded-xl" /></CardContent>
                       </Card>
@@ -867,6 +889,7 @@ export function Salesmen360Page(): ReactElement {
                     isSingleCurrency={!isAllCurrencies}
                     currencyFormatter={currencyFormatter}
                     t={t}
+                    locale={i18n.language}
                     noDataKey="common.noData"
                     chartsEnabled={activeTab === 'analytics'}
                   />
