@@ -48,14 +48,7 @@ import type {
 } from '../types/salesmen360.types';
 import { cn } from '@/lib/utils';
 import { formatSalesmen360PeriodLabel, translateSalesmen360RfmSegment } from '../utils/localizedDisplay';
-
-function recommendedActionCodeToKey(code: string): string {
-  return code
-    .replace(/\s+/g, '_')
-    .replace(/([A-Z])/g, '_$1')
-    .replace(/^_/, '')
-    .toUpperCase();
-}
+import { translateRecommendedActionCopy } from '../utils/recommendedActionsI18n';
 
 function KpiCardSkeleton(): ReactElement {
   return (
@@ -287,9 +280,7 @@ function RecommendedActionsPanel({
         ) : (
           <div className="space-y-3">
             {rows.map((action) => {
-              const actionKey = recommendedActionCodeToKey(action.actionCode);
-              const title = t(`salesman360.actions.recommendedActions.${actionKey}.title`, { defaultValue: action.title });
-              const reason = t(`salesman360.actions.recommendedActions.${actionKey}.reason`, { defaultValue: action.reason ?? '-' });
+              const { title, reason } = translateRecommendedActionCopy(action, t);
               return (
                 <div key={`${action.actionCode}-${action.title}`} className="group relative rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 p-4 shadow-sm hover:shadow-md hover:border-pink-500/30 transition-all">
                   <div className="flex items-start justify-between gap-4">
