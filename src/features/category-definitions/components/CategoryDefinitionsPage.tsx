@@ -126,7 +126,7 @@ export function CategoryDefinitionsPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const catalogsQuery = useCatalogs();
-  const catalogs = catalogsQuery.data ?? [];
+  const catalogs = useMemo(() => catalogsQuery.data ?? [], [catalogsQuery.data]);
   const selectedCatalog = useMemo<ProductCatalogDto | null>(
     () => catalogs.find((catalog) => catalog.id === selectedCatalogId) ?? null,
     [catalogs, selectedCatalogId]
@@ -180,9 +180,9 @@ export function CategoryDefinitionsPage(): ReactElement {
 
   const breadcrumbItems = useMemo(
     () => [
-      { label: t('sidebar.definitions') },
-      { label: t('sidebar.productDefinitions') },
-      { label: t('sidebar.categoryDefinitions'), isActive: true },
+      { label: t('sidebar.definitions', { ns: 'common' }) },
+      { label: t('sidebar.productDefinitions', { ns: 'common' }) },
+      { label: t('sidebar.categoryDefinitions', { ns: 'common' }), isActive: true },
     ],
     [t]
   );
@@ -712,7 +712,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                   className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#130822] hover:bg-slate-50 dark:hover:bg-white/5 font-semibold"
                 >
                   <RefreshCcw className="mr-2 h-4 w-4" />
-                  {t('common.refresh')}
+                  {t('refresh', { ns: 'common' })}
                 </Button>
                 <Button
                   variant="outline"
@@ -748,7 +748,7 @@ export function CategoryDefinitionsPage(): ReactElement {
             {activeParent ? (
               <Button variant="ghost" size="sm" className="px-3 rounded-lg font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5" onClick={handleBack}>
                 <ChevronRight className="mr-1 h-4 w-4 rotate-180" />
-                {t('common.back')}
+                {t('back', { ns: 'common' })}
               </Button>
             ) : null}
 
@@ -880,11 +880,11 @@ export function CategoryDefinitionsPage(): ReactElement {
                       <div className="mt-4 flex gap-2">
                         <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-white/10 bg-white dark:bg-[#130822] hover:bg-slate-50 dark:hover:bg-white/5 font-semibold" onClick={() => { setEditingCatalog(selectedCatalog); setIsCreateCatalogOpen(true); }}>
                           <Pencil className="mr-2 h-4 w-4 text-pink-500" />
-                          {t('common.edit')}
+                          {t('edit', { ns: 'common' })}
                         </Button>
                         <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-white/10 bg-white dark:bg-[#130822] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 font-semibold" onClick={() => setCatalogToDelete(selectedCatalog)}>
                           <Trash2 className="mr-2 h-4 w-4" />
-                          {t('common.delete.action')}
+                          {t('delete.action', { ns: 'common' })}
                         </Button>
                       </div>
                     ) : null}
@@ -918,11 +918,11 @@ export function CategoryDefinitionsPage(): ReactElement {
                       <div className="mt-4 flex gap-2">
                         <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-white/10 bg-white dark:bg-[#130822] hover:bg-slate-50 dark:hover:bg-white/5 font-semibold" onClick={() => { setEditingCategory(selectedLeaf); setIsCreateCategoryOpen(true); }}>
                           <Pencil className="mr-2 h-4 w-4 text-pink-500" />
-                          {t('common.edit')}
+                          {t('edit', { ns: 'common' })}
                         </Button>
                         <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-white/10 bg-white dark:bg-[#130822] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 font-semibold" onClick={() => setCategoryToDelete(selectedLeaf)}>
                           <Trash2 className="mr-2 h-4 w-4" />
-                          {t('common.delete.action')}
+                          {t('delete.action', { ns: 'common' })}
                         </Button>
                       </div>
                     ) : null}
@@ -1173,11 +1173,11 @@ export function CategoryDefinitionsPage(): ReactElement {
                           <div className="flex items-center gap-2">
                             <Button variant="outline" size="sm" onClick={() => { setEditingRule(rule); setIsRuleDialogOpen(true); }}>
                               <Pencil className="mr-2 h-4 w-4" />
-                              {t('common.edit')}
+                              {t('edit', { ns: 'common' })}
                             </Button>
                             <Button variant="outline" size="sm" onClick={() => setRuleToDelete(rule)}>
                               <Trash2 className="mr-2 h-4 w-4" />
-                              {t('common.delete.action')}
+                              {t('delete.action', { ns: 'common' })}
                             </Button>
                           </div>
                         </div>
@@ -1359,7 +1359,7 @@ export function CategoryDefinitionsPage(): ReactElement {
           </div>
 
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel', { ns: 'common' })}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => void handleApplyStockHierarchyImport()}
               disabled={!stockHierarchyPreviewResult || applyStockHierarchyImport.isPending}
@@ -1375,15 +1375,15 @@ export function CategoryDefinitionsPage(): ReactElement {
       <AlertDialog open={catalogToDelete != null} onOpenChange={(open) => !open && setCatalogToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.delete.confirmTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete.confirmTitle', { ns: 'common' })}</AlertDialogTitle>
             <AlertDialogDescription>
               {t('categoryDefinitions.deleteCatalogConfirm', { name: catalogToDelete?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel', { ns: 'common' })}</AlertDialogCancel>
             <AlertDialogAction onClick={() => void handleDeleteCatalog()} disabled={deleteCatalog.isPending}>
-              {deleteCatalog.isPending ? t('common.deleting') : t('common.delete.action')}
+              {deleteCatalog.isPending ? t('deleting', { ns: 'common' }) : t('delete.action', { ns: 'common' })}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1392,15 +1392,15 @@ export function CategoryDefinitionsPage(): ReactElement {
       <AlertDialog open={categoryToDelete != null} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.delete.confirmTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete.confirmTitle', { ns: 'common' })}</AlertDialogTitle>
             <AlertDialogDescription>
               {t('categoryDefinitions.deleteCategoryConfirm', { name: categoryToDelete?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel', { ns: 'common' })}</AlertDialogCancel>
             <AlertDialogAction onClick={() => void handleDeleteCategory()} disabled={deleteCatalogCategory.isPending}>
-              {deleteCatalogCategory.isPending ? t('common.deleting') : t('common.delete.action')}
+              {deleteCatalogCategory.isPending ? t('deleting', { ns: 'common' }) : t('delete.action', { ns: 'common' })}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1409,13 +1409,13 @@ export function CategoryDefinitionsPage(): ReactElement {
       <AlertDialog open={stockAssignmentToDelete != null} onOpenChange={(open) => !open && setStockAssignmentToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.delete.confirmTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete.confirmTitle', { ns: 'common' })}</AlertDialogTitle>
             <AlertDialogDescription>{t('categoryDefinitions.deleteStockConfirm')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel', { ns: 'common' })}</AlertDialogCancel>
             <AlertDialogAction onClick={() => void handleDeleteStockAssignment()} disabled={deleteStockCategoryAssignment.isPending}>
-              {deleteStockCategoryAssignment.isPending ? t('common.deleting') : t('common.delete.action')}
+              {deleteStockCategoryAssignment.isPending ? t('deleting', { ns: 'common' }) : t('delete.action', { ns: 'common' })}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1444,15 +1444,15 @@ export function CategoryDefinitionsPage(): ReactElement {
       <AlertDialog open={ruleToDelete != null} onOpenChange={(open) => !open && setRuleToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.delete.confirmTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete.confirmTitle', { ns: 'common' })}</AlertDialogTitle>
             <AlertDialogDescription>
               {t('categoryDefinitions.deleteRuleConfirm', { name: ruleToDelete?.ruleName ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel', { ns: 'common' })}</AlertDialogCancel>
             <AlertDialogAction onClick={() => void handleDeleteRule()} disabled={deleteCategoryRule.isPending}>
-              {deleteCategoryRule.isPending ? t('common.deleting') : t('common.delete.action')}
+              {deleteCategoryRule.isPending ? t('deleting', { ns: 'common' }) : t('delete.action', { ns: 'common' })}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
