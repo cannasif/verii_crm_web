@@ -119,16 +119,16 @@
     "updatedDate": "Date de Mise à Jour",
     "showing": "Affichage de {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "title": "Fiyatlandırma Listesi",
-    "noData": "Veri bulunamadı"
+    "title": "Liste des Prix",
+    "noData": "Aucune donnée trouvée"
   },
   "previous": "Précédent",
   "next": "Suivant",
   "deleteConfirmTitle": "Confirmation de suppression",
   "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cet enregistrement ? Cette action est irréversible.",
   "advancedFilter": {
-    "columnErpProductCode": "ERP Ürün Kodu",
-    "columnErpGroupCode": "ERP Grup Kodu",
-    "columnCurrency": "Para Birimi"
+    "columnErpProductCode": "Code Produit ERP",
+    "columnErpGroupCode": "Code Groupe ERP",
+    "columnCurrency": "Devise"
   }
 }

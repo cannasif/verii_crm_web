@@ -22,7 +22,8 @@
     "updatedBy": "Aktualisiert von",
     "showing": "Zeige {{from}}-{{to}} / {{total}}",
     "page": "Seite {{current}} / {{total}}",
-    "salutation": "Adresse"
+    "salutation": "Adresse",
+    "status": "Status"
   },
   "form": {
     "addContact": "Hinzufügen Neu Contact",

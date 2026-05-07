@@ -248,9 +248,9 @@
   "backToDemands": "Back to Demands",
   "untitled": "Untitled",
   "sections": {
-    "header": "Header Information",
-    "lines": "Lines",
-    "summary": "Summary"
+    "header": "Información de cabecera",
+    "lines": "Líneas",
+    "summary": "Resumen"
   },
   "approval": {
     "approve": "Approve",

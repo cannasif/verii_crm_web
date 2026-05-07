@@ -22,7 +22,8 @@
     "updatedBy": "Aggiornato Da",
     "showing": "Visualizzazione {{from}}-{{to}} / {{total}}",
     "page": "Pagina {{current}} / {{total}}",
-    "salutation": "indirizzo"
+    "salutation": "indirizzo",
+    "status": "Stato"
   },
   "form": {
     "addContact": "Aggiungi Nuovo Contatto",
@@ -59,7 +60,7 @@
     "salutationMs": "Donna",
     "salutationMrs": "Caro",
     "salutationDr": "Dott.",
-    "firstName": "Name",
+    "firstName": "Nome",
     "firstNamePlaceholder": "Inserisci il nome",
     "lastName": "Cognome",
     "lastNamePlaceholder": "Inserisci il cognome",

@@ -21,16 +21,16 @@
   "list": {
     "revise": "Réviser",
     "showing": "Affichage de {{from}} à {{to}} sur {{total}}",
-    "detail": "Detay",
-    "cardTitle": "Sipariş listesi",
-    "refresh": "Yenile",
-    "title": "Sipariş Listesi",
-    "description": "Sipariş kayıtlarını görüntüleyin ve yönetin",
-    "createNew": "Yeni Sipariş Créer",
-    "actions": "İşlemler",
+    "detail": "Détail",
+    "cardTitle": "Liste des commandes",
+    "refresh": "Actualiser",
+    "title": "Liste des commandes",
+    "description": "Afficher et gérer les enregistrements de commandes",
+    "createNew": "Créer une nouvelle commande",
+    "actions": "Actions",
     "id": "ID",
     "offerNo": "N° Offre",
-    "revisionNo": "Revizyon No",
+    "revisionNo": "N° de révision",
     "customer": "Client",
     "customerCode": "Code client",
     "representative": "Représentant Commercial",
@@ -144,7 +144,7 @@
       "confirmMessageMultiple": "Seçili satırları silmek istediğinizden emin misiniz?"
     },
     "max200Chars": "Maksimum 200 karakter",
-    "addLine": "Satır Ekle",
+    "addLine": "Ajouter une ligne",
     "noItems": "Henüz satır bulunmuyor",
     "groupCode": "Grup Kodu",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
@@ -265,9 +265,9 @@
     "stepRejected": "Reddedildi"
   },
   "sections": {
-    "header": "Başlık Bilgileri",
-    "lines": "Satırlar",
-    "summary": "Özet"
+    "header": "Informations d'en-tête",
+    "lines": "Lignes",
+    "summary": "Résumé"
   },
   "revision": {
     "success": "Revizyon kaydı oluşturuldu.",

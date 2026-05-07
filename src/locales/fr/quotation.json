@@ -151,7 +151,7 @@
     "subtotal": "Rechercher Toplam",
     "grandTotal": "Genel Toplam",
     "approvalRequired": "Onay Gerekli",
-    "addTitle": "Satır Ekle",
+    "addTitle": "Ajouter une ligne",
     "editTitle": "Satır Modifier",
     "noItems": "Henüz satır bulunmuyor",
     "unit": "Birim",
@@ -253,15 +253,15 @@
   "date": "Tarih",
   "offerNo": "Teklif No",
   "customerAccount": "Müşteri Hesabı",
-  "export": "Dışa Aktar",
-  "exportPdf": "PDF Dışa Aktar",
-  "shareMail": "E-posta ile Paylaş",
-  "shareWhatsapp": "WhatsApp ile Paylaş",
+  "export": "Exporter",
+  "exportPdf": "Exporter en PDF",
+  "shareMail": "Partager par e-mail",
+  "shareWhatsapp": "Partager via WhatsApp",
   "approval": {
     "approve": "Onayla",
     "reject": "Reddet",
     "sending": "Gönderiliyor...",
-    "sendForApproval": "Onaya Gönder",
+    "sendForApproval": "Envoyer pour approbation",
     "approveSuccess": "Teklif başarıyla onaylandı.",
     "approveError": "Teklif onaylanamadı.",
     "rejectSuccess": "Teklif reddedildi.",
@@ -293,9 +293,9 @@
     "maxCountError": "En fazla 10 not ekleyebilirsiniz."
   },
   "sections": {
-    "header": "Başlık Bilgileri",
-    "lines": "Satırlar",
-    "summary": "Özet"
+    "header": "Informations d'en-tête",
+    "lines": "Lignes",
+    "summary": "Résumé"
   },
   "share": {
     "downloaded": "Dosya indirildi.",

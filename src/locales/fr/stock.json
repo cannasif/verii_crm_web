@@ -77,12 +77,12 @@
     "noImages": "Aucune image téléchargée pour le moment",
     "deleteConfirm": "Supprimer l'image",
     "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cette image ?",
-    "uploading": "Görseller yükleniyor...",
-    "isPrimary": "Ana görsel",
-    "noImagesDesc": "Bu stok için henüz bir görsel kaydı bulunmuyor.",
+    "uploading": "Téléchargement des images...",
+    "isPrimary": "Image principale",
+    "noImagesDesc": "Aucun enregistrement d'image trouvé pour ce stock pour le moment.",
     "cancel": "Annuler",
-    "deleting": "Siliniyor...",
-    "confirmDelete": "Evet, Sil"
+    "deleting": "Suppression en cours...",
+    "confirmDelete": "Oui, Supprimer"
   },
   "relations": {
     "add": "Ajouter un stock associé",
@@ -119,5 +119,23 @@
     "setPrimarySuccess": "Image principale définie avec succès",
     "relationCreateSuccess": "Stock associé ajouté avec succès",
     "error": "Une erreur s'est produite"
+  },
+  "bulkImport": {
+    "button": "Téléchargement groupé d'images",
+    "title": "Téléchargement groupé d'images de stock",
+    "description": "Téléchargez un seul ZIP. Le système lira le code de stock ERP à partir du nom du dossier et ajoutera les images au stock concerné en arrière-plan.",
+    "rule1": "Les dossiers à l'intérieur du ZIP doivent être groupés par code de stock ERP.",
+    "rule2": "Exemples supportés : STK-001/image1.jpg, STK-001/1/image2.png, Images/STK-001/image3.jpg",
+    "rule3": "Si le système trouve le code de stock, il ajoute les images à ce stock ; sinon, il ignore ce fichier.",
+    "rule4": "Les archives volumineuses sont traitées en arrière-plan en tant que tâche Hangfire. Ce champ attend une archive ZIP.",
+    "fileRequired": "Veuillez d'abord sélectionner un fichier ZIP.",
+    "queued": "L'importation groupée d'images a été mise en file d'attente. Job : {{jobId}}",
+    "structureTitle": "Structure du fichier ZIP",
+    "selectArchive": "Sélectionner l'archive ZIP",
+    "uploadHint": "Glissez et déposez le fichier ZIP ici ou cliquez pour sélectionner",
+    "uploadLimit": "Maximum 500 Mo (Traité en arrière-plan)",
+    "notesTitle": "Éléments à considérer",
+    "submitting": "Mise en file d'attente...",
+    "submit": "Télécharger le ZIP et démarrer"
   }
 }

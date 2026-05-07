@@ -38,7 +38,7 @@
     "createdBy": "Created By",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "title": "Aktivite Tipi Listesi"
+    "title": "Activity Type List"
   },
   "stats": {
     "totalActivityTypes": "Total Activity Types",
@@ -58,8 +58,8 @@
     "confirmMessage": "Are you sure you want to delete {{name}} activity type?"
   },
   "activityType": {
-    "error": "Bir hata oluştu"
+    "error": "An error occurred"
   },
-  "create": "Yeni Aktivite Tipi",
-  "error": "Bir hata oluştu"
+  "create": "New Activity Type",
+  "error": "An error occurred"
 }

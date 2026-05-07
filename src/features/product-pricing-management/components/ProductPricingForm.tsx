@@ -276,7 +276,7 @@ export function ProductPricingForm({
                       <FormField control={form.control} name="listPrice" render={({ field }) => (
                         <FormItem className="space-y-2">
                           <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'listPrice')}>
-                            <Tag size={14} className="text-emerald-500" /> Liste Fiyatı
+                            <Tag size={14} className="text-emerald-500" /> {t('listPrice')}
                           </FormLabel>
                           <FormControl>
                             <div className="relative group">
@@ -293,7 +293,7 @@ export function ProductPricingForm({
                       <FormField control={form.control} name="costPrice" render={({ field }) => (
                         <FormItem className="space-y-2">
                           <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'costPrice')}>
-                            <Coins size={14} className="text-red-500" /> Maliyet Fiyatı
+                            <Coins size={14} className="text-red-500" /> {t('costPrice')}
                           </FormLabel>
                           <FormControl>
                             <div className="relative group">
@@ -314,7 +314,7 @@ export function ProductPricingForm({
                           <FormField key={num} control={form.control} name={`discount${num}` as any} render={({ field }) => (
                             <FormItem className="space-y-2">
                               <FormLabel className={LABEL_STYLE}>
-                                <Percent size={12} className="text-orange-500" /> İsk. {num} (%)
+                                <Percent size={12} className="text-orange-500" /> {t(`discount${num}`)} (%)
                               </FormLabel>
                               <FormControl>
                                 <Input type="number" step="0.01" inputMode="decimal" {...field} className={`${INPUT_STYLE} text-center font-bold`} />
