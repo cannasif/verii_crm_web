@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins } from 'lucide-react';
+import { CalendarDays, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -45,6 +45,7 @@ import type {
   RevenueQualityDto,
   Salesmen360DistributionDto,
   Salesmen360AmountComparisonDto,
+  Salesmen360PeriodKey,
 } from '../types/salesmen360.types';
 import { cn } from '@/lib/utils';
 import { formatSalesmen360PeriodLabel, translateSalesmen360RfmSegment } from '../utils/localizedDisplay';
@@ -62,6 +63,7 @@ function KpiCardSkeleton(): ReactElement {
 }
 
 const CHART_COLORS = ['#ec4899', '#f59e0b', '#8b5cf6'];
+const SALESMAN_360_PERIOD_OPTIONS: Salesmen360PeriodKey[] = ['today', 'week', 'month', 'year'];
 
 function CardTitleWithInfo({
   titleKey,
@@ -479,12 +481,14 @@ export function Salesmen360Page(): ReactElement {
   const rawUserId = params.userId ?? '';
   const userId = rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('ALL');
+  const [selectedPeriod, setSelectedPeriod] = useState<Salesmen360PeriodKey>('month');
   const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
   const visibleSalesmenQuery = useVisibleSalesmenQuery();
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
-  const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam);
-  const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, activeTab === 'analytics');
-  const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, activeTab === 'analytics');
+  const periodParams = useMemo(() => ({ period: selectedPeriod }), [selectedPeriod]);
+  const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam, periodParams);
+  const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, periodParams, activeTab === 'analytics');
+  const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, periodParams, activeTab === 'analytics');
   const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(userId, 12);
   const executeActionMutation = useExecuteSalesmenActionMutation(userId);
   const visibleSalesmen = visibleSalesmenQuery.data ?? [];
@@ -689,6 +693,27 @@ export function Salesmen360Page(): ReactElement {
                   {currencyOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
                       {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-0 w-fit rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
+                <CalendarDays className="size-4 text-orange-500" />
+                <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                  {t('salesman360.periodFilter.label')}
+                </span>
+              </div>
+              <Select value={selectedPeriod} onValueChange={(value) => setSelectedPeriod(value as Salesmen360PeriodKey)}>
+                <SelectTrigger className="w-[150px] h-10 border-0 rounded-none bg-white dark:bg-transparent font-bold focus:ring-0 shadow-none hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
+                  {SALESMAN_360_PERIOD_OPTIONS.map((period) => (
+                    <SelectItem key={period} value={period} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
+                      {t(`salesman360.periodFilter.${period}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>

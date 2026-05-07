@@ -1530,6 +1530,14 @@
       "label": "Para birimi",
       "all": "Tümü"
     },
+    "periodFilter": {
+      "label": "Dönem",
+      "today": "Bugün",
+      "week": "Bu hafta",
+      "month": "Bu ay",
+      "year": "Bu yıl",
+      "custom": "Özel"
+    },
     "currencyTotals": {
       "currency": "Para birimi",
       "demandAmount": "Talep tutarı",
@@ -1628,7 +1636,7 @@
       "totalOrderAmount": "Toplam Sipariş Tutarı"
     },
     "analytics": {
-      "last12MonthsOrderAmount": "Son 12 Ay Sipariş Tutarı",
+      "last12MonthsOrderAmount": "Seçili Dönem Sipariş Tutarı",
       "openQuotationAmount": "Açık Teklif Tutarı",
       "openOrderAmount": "Açık Sipariş Tutarı",
       "activityCount": "Aktivite Sayısı",
@@ -1644,7 +1652,7 @@
       "demand": "Talep",
       "quotation": "Teklif",
       "order": "Sipariş",
-      "last12MonthsOrderAmount": "Son 12 Ay Sipariş Tutarı",
+      "last12MonthsOrderAmount": "Seçili Dönem Sipariş Tutarı",
       "openQuotationAmount": "Açık Teklif Tutarı",
       "openOrderAmount": "Açık Sipariş Tutarı"
     },

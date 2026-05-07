@@ -912,6 +912,14 @@
       "label": "Valuta",
       "all": "Tutte"
     },
+    "periodFilter": {
+      "label": "Periodo",
+      "today": "Oggi",
+      "week": "Questa settimana",
+      "month": "Questo mese",
+      "year": "Quest'anno",
+      "custom": "Personalizzato"
+    },
     "currencyTotals": {
       "currency": "Valuta",
       "demandAmount": "Importo richiesta",
@@ -1006,7 +1014,7 @@
       "totalOrderAmount": "Importo totale ordini"
     },
     "analytics": {
-      "last12MonthsOrderAmount": "Importo ordini ultimi 12 mesi",
+      "last12MonthsOrderAmount": "Importo ordini periodo selezionato",
       "openQuotationAmount": "Importo preventivi aperti",
       "openOrderAmount": "Importo ordini aperti",
       "activityCount": "Numero attività",
@@ -1022,7 +1030,7 @@
       "demand": "Richiesta",
       "quotation": "Preventivo",
       "order": "Ordine",
-      "last12MonthsOrderAmount": "Importo ordini ultimi 12 mesi",
+      "last12MonthsOrderAmount": "Importo ordini periodo selezionato",
       "openQuotationAmount": "Importo preventivi aperti",
       "openOrderAmount": "Importo ordini aperti"
     },

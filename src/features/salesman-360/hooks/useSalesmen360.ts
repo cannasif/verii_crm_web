@@ -9,7 +9,7 @@ import {
   getSalesmenAnalyticsCharts,
   getVisibleSalesmen,
 } from '../api/salesmen360Api';
-import type { ExecuteRecommendedActionDto, Salesmen360VisibleUserDto } from '../types/salesmen360.types';
+import type { ExecuteRecommendedActionDto, Salesmen360PeriodParams, Salesmen360VisibleUserDto } from '../types/salesmen360.types';
 
 const OVERVIEW_STALE_MS = 30_000;
 const SUMMARY_STALE_MS = 30_000;
@@ -25,23 +25,32 @@ export function useVisibleSalesmenQuery() {
   });
 }
 
-export function useSalesmenOverviewQuery(userId: number, currency?: string) {
+function getPeriodQueryKey(periodParams?: Salesmen360PeriodParams) {
+  return [
+    periodParams?.period ?? 'month',
+    periodParams?.startDate ?? '',
+    periodParams?.endDate ?? '',
+  ];
+}
+
+export function useSalesmenOverviewQuery(userId: number, currency?: string, periodParams?: Salesmen360PeriodParams) {
   return useQuery({
-    queryKey: ['salesmen360', 'overview', userId, currency ?? 'ALL'],
+    queryKey: ['salesmen360', 'overview', userId, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
     queryFn: ({ signal }) =>
-      getSalesmenOverview({ userId, currency: currency && currency !== 'ALL' ? currency : undefined, signal }),
+      getSalesmenOverview({ userId, currency: currency && currency !== 'ALL' ? currency : undefined, periodParams, signal }),
     staleTime: OVERVIEW_STALE_MS,
     enabled: userId > 0,
   });
 }
 
-export function useSalesmenAnalyticsSummaryQuery(userId: number, currency?: string, enabled = true) {
+export function useSalesmenAnalyticsSummaryQuery(userId: number, currency?: string, periodParams?: Salesmen360PeriodParams, enabled = true) {
   return useQuery({
-    queryKey: ['salesmen360', 'summary', userId, currency ?? 'ALL'],
+    queryKey: ['salesmen360', 'summary', userId, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
     queryFn: ({ signal }) =>
       getSalesmenAnalyticsSummary({
         userId,
         currency: currency && currency !== 'ALL' ? currency : undefined,
+        periodParams,
         signal,
       }),
     staleTime: SUMMARY_STALE_MS,
@@ -53,15 +62,17 @@ export function useSalesmenAnalyticsChartsQuery(
   userId: number,
   months = 12,
   currency?: string,
+  periodParams?: Salesmen360PeriodParams,
   enabled = true
 ) {
   return useQuery({
-    queryKey: ['salesmen360', 'charts', userId, months, currency ?? 'ALL'],
+    queryKey: ['salesmen360', 'charts', userId, months, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
     queryFn: ({ signal }) =>
       getSalesmenAnalyticsCharts({
         userId,
         months,
         currency: currency && currency !== 'ALL' ? currency : undefined,
+        periodParams,
         signal,
       }),
     staleTime: CHARTS_STALE_MS,

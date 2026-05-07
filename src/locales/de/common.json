@@ -916,6 +916,14 @@
       "label": "Währung",
       "all": "Alle"
     },
+    "periodFilter": {
+      "label": "Zeitraum",
+      "today": "Heute",
+      "week": "Diese Woche",
+      "month": "Dieser Monat",
+      "year": "Dieses Jahr",
+      "custom": "Benutzerdefiniert"
+    },
     "currencyTotals": {
       "currency": "Währung",
       "demandAmount": "Anfragebetrag",
@@ -1010,7 +1018,7 @@
       "totalOrderAmount": "Gesamter Bestellbetrag"
     },
     "analytics": {
-      "last12MonthsOrderAmount": "Bestellbetrag der letzten 12 Monate",
+      "last12MonthsOrderAmount": "Bestellbetrag im ausgewählten Zeitraum",
       "openQuotationAmount": "Offener Angebotsbetrag",
       "openOrderAmount": "Offener Bestellbetrag",
       "activityCount": "Aktivitätsanzahl",
@@ -1026,7 +1034,7 @@
       "demand": "Anfrage",
       "quotation": "Angebot",
       "order": "Bestellung",
-      "last12MonthsOrderAmount": "Bestellbetrag der letzten 12 Monate",
+      "last12MonthsOrderAmount": "Bestellbetrag im ausgewählten Zeitraum",
       "openQuotationAmount": "Offener Angebotsbetrag",
       "openOrderAmount": "Offener Bestellbetrag"
     },

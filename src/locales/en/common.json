@@ -1526,6 +1526,14 @@
       "label": "Currency",
       "all": "All"
     },
+    "periodFilter": {
+      "label": "Period",
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "year": "This year",
+      "custom": "Custom"
+    },
     "currencyTotals": {
       "currency": "Currency",
       "demandAmount": "Demand amount",
@@ -1624,7 +1632,7 @@
       "totalOrderAmount": "Total Order Amount"
     },
     "analytics": {
-      "last12MonthsOrderAmount": "Last 12 Months Order Amount",
+      "last12MonthsOrderAmount": "Selected Period Order Amount",
       "openQuotationAmount": "Open Quotation Amount",
       "openOrderAmount": "Open Order Amount",
       "activityCount": "Activity Count",
@@ -1640,7 +1648,7 @@
       "demand": "Demand",
       "quotation": "Quotation",
       "order": "Order",
-      "last12MonthsOrderAmount": "Last 12 Months Order Amount",
+      "last12MonthsOrderAmount": "Selected Period Order Amount",
       "openQuotationAmount": "Open Quotation Amount",
       "openOrderAmount": "Open Order Amount"
     },

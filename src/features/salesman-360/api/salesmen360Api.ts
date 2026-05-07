@@ -7,6 +7,7 @@ import type {
   Salesmen360AnalyticsChartsDto,
   Salesmen360VisibleUserDto,
   ExecuteRecommendedActionDto,
+  Salesmen360PeriodParams,
 } from '../types/salesmen360.types';
 import { api } from '@/lib/axios';
 
@@ -17,16 +18,28 @@ function ensureData<T>(response: ApiResponse<T | null>, fallbackMessage: string)
   return response.data;
 }
 
+function appendPeriodParams(search: URLSearchParams, periodParams?: Salesmen360PeriodParams): void {
+  const period = periodParams?.period ?? 'month';
+  search.set('period', period);
+  if (period === 'custom') {
+    if (periodParams?.startDate) search.set('startDate', periodParams.startDate);
+    if (periodParams?.endDate) search.set('endDate', periodParams.endDate);
+  }
+}
+
 export async function getSalesmenOverview(params: {
   userId: number;
   currency?: string;
+  periodParams?: Salesmen360PeriodParams;
   signal?: AbortSignal;
 }): Promise<Salesmen360OverviewDto> {
-  const { userId, currency, signal } = params;
-  const url =
-    currency != null && currency !== ''
-      ? `/api/salesmen/${userId}/overview?currency=${encodeURIComponent(currency)}`
-      : `/api/salesmen/${userId}/overview`;
+  const { userId, currency, periodParams, signal } = params;
+  const search = new URLSearchParams();
+  appendPeriodParams(search, periodParams);
+  if (currency != null && currency !== '') {
+    search.set('currency', currency);
+  }
+  const url = `/api/salesmen/${userId}/overview?${search.toString()}`;
   const headers: Record<string, string> = {};
   if (currency != null && currency !== '') {
     headers['X-Currency'] = currency;
@@ -51,13 +64,16 @@ export async function getVisibleSalesmen(params?: {
 export async function getSalesmenAnalyticsSummary(params: {
   userId: number;
   currency?: string;
+  periodParams?: Salesmen360PeriodParams;
   signal?: AbortSignal;
 }): Promise<Salesmen360AnalyticsSummaryDto> {
-  const { userId, currency, signal } = params;
-  const url =
-    currency != null && currency !== ''
-      ? `/api/salesmen/${userId}/analytics/summary?currency=${encodeURIComponent(currency)}`
-      : `/api/salesmen/${userId}/analytics/summary`;
+  const { userId, currency, periodParams, signal } = params;
+  const search = new URLSearchParams();
+  appendPeriodParams(search, periodParams);
+  if (currency != null && currency !== '') {
+    search.set('currency', currency);
+  }
+  const url = `/api/salesmen/${userId}/analytics/summary?${search.toString()}`;
   const headers: Record<string, string> = {};
   if (currency != null && currency !== '') {
     headers['X-Currency'] = currency;
@@ -74,10 +90,12 @@ export async function getSalesmenAnalyticsCharts(params: {
   userId: number;
   months?: number;
   currency?: string;
+  periodParams?: Salesmen360PeriodParams;
   signal?: AbortSignal;
 }): Promise<Salesmen360AnalyticsChartsDto> {
-  const { userId, months = 12, currency, signal } = params;
+  const { userId, months = 12, currency, periodParams, signal } = params;
   const search = new URLSearchParams({ months: String(months) });
+  appendPeriodParams(search, periodParams);
   if (currency != null && currency !== '') {
     search.set('currency', currency);
   }
