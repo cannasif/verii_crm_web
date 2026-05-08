@@ -4660,10 +4660,10 @@
       "Quotation": {
         "1": "Keep as approved only",
         "2": "Create Netsis quotation",
-        "3": "Create order",
-        "4": "Create order",
+        "3": "Create CRM order",
+        "4": "Create Netsis order",
         "5": "Create Netsis quotation and order",
-        "6": "Create order and Netsis order"
+        "6": "Create CRM order and Netsis order"
       },
       "Order": {
         "1": "Keep as approved only",
