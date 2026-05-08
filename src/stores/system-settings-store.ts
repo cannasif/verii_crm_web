@@ -40,7 +40,7 @@ export function normalizeSystemSettings(
         : DEFAULT_SYSTEM_SETTINGS.decimalPlaces,
     restrictCustomersBySalesRepMatch: Boolean(settings?.restrictCustomersBySalesRepMatch),
     demandApprovalCompletionAction: normalizeActionValue(settings?.demandApprovalCompletionAction, 1, 5),
-    quotationApprovalCompletionAction: normalizeActionValue(settings?.quotationApprovalCompletionAction, 1, 5),
+    quotationApprovalCompletionAction: normalizeActionValue(settings?.quotationApprovalCompletionAction, 1, 6),
     orderApprovalCompletionAction: normalizeActionValue(settings?.orderApprovalCompletionAction, 1, 4),
     updatedAt: settings?.updatedAt,
   };

@@ -4661,8 +4661,9 @@
         "1": "Keep as approved only",
         "2": "Create Netsis quotation",
         "3": "Create order",
-        "4": "Create Netsis quotation record",
-        "5": "Create Netsis quotation and order"
+        "4": "Create order",
+        "5": "Create Netsis quotation and order",
+        "6": "Create order and Netsis order"
       },
       "Order": {
         "1": "Keep as approved only",

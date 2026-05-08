@@ -54,7 +54,7 @@ export function SystemSettingsForm({
   );
 
   const demandActionOptions = useMemo(
-    () => [1, 2, 3, 4, 5].map((value) => ({
+    () => [1, 2, 3, 5].map((value) => ({
       value: String(value),
       label: t(`systemSettings.ApprovalCompletionActions.Demand.${value}`),
     })),
@@ -62,7 +62,7 @@ export function SystemSettingsForm({
   );
 
   const quotationActionOptions = useMemo(
-    () => [1, 2, 3, 4, 5].map((value) => ({
+    () => [1, 2, 3, 4, 5, 6].map((value) => ({
       value: String(value),
       label: t(`systemSettings.ApprovalCompletionActions.Quotation.${value}`),
     })),
@@ -70,7 +70,7 @@ export function SystemSettingsForm({
   );
 
   const orderActionOptions = useMemo(
-    () => [1, 2, 3, 4].map((value) => ({
+    () => [1, 2, 3].map((value) => ({
       value: String(value),
       label: t(`systemSettings.ApprovalCompletionActions.Order.${value}`),
     })),

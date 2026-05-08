@@ -26,7 +26,7 @@ export const systemSettingsFormSchema = z.object({
   decimalPlaces: z.coerce.number().int().min(0).max(6),
   restrictCustomersBySalesRepMatch: z.boolean(),
   demandApprovalCompletionAction: z.coerce.number().int().min(1).max(5),
-  quotationApprovalCompletionAction: z.coerce.number().int().min(1).max(5),
+  quotationApprovalCompletionAction: z.coerce.number().int().min(1).max(6),
   orderApprovalCompletionAction: z.coerce.number().int().min(1).max(4),
 });
 

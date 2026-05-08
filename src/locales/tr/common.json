@@ -4717,8 +4717,9 @@
         "1": "Sadece onaylandı kalsın",
         "2": "Netsis'te teklif aç",
         "3": "Sipariş kaydı aç",
-        "4": "Netsis'te teklif kaydı aç",
-        "5": "Netsis'te teklif aç ve sipariş oluştur"
+        "4": "Sipariş kaydı aç",
+        "5": "Netsis'te teklif aç ve sipariş oluştur",
+        "6": "Sipariş kaydı aç ve Netsis'te sipariş oluştur"
       },
       "Order": {
         "1": "Sadece onaylandı kalsın",
